@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fc91a3867441284a87621a0b4c0e40d, type: 3}
+  m_Name: AudioAnalysisConfig
+  m_EditorClassIdentifier: Assembly-CSharp::AudioAnalysisConfig
+  spectrumSize: 1024
+  fftWindow: 5
+  audioChannel: 0
+  energySmoothing: 0.15
+  bandSmoothing: 0.2
+  bands:
+  - label: Sub Bass
+    minHz: 20
+    maxHz: 60
+  - label: Bass
+    minHz: 60
+    maxHz: 250
+  - label: Low Mid
+    minHz: 250
+    maxHz: 500
+  - label: Mid
+    minHz: 500
+    maxHz: 2000
+  - label: High Mid
+    minHz: 2000
+    maxHz: 4000
+  - label: Treble
+    minHz: 4000
+    maxHz: 20000
+  enableEnergy: 1
+  enableBands: 1
+  enablePeaks: 1
+  enableOnsets: 1
+  enableBeat: 1
+  enableKick: 1
+  enableSnare: 1
+  enableHiHat: 1
+  energyThreshold: 0.05
+  peakThreshold: 0.15
+  onsetThreshold: 0.1
+  beatThreshold: 0.1
+  kickThreshold: 0.12
+  snareThreshold: 0.08
+  hiHatThreshold: 0.04
+  peakCooldown: 0.1
+  onsetCooldown: 0.05
+  beatCooldown: 0.2
+  kickCooldown: 0.1
+  snareCooldown: 0.1
+  hiHatCooldown: 0.04
+  enableDebugLog: 0
+  enableVisualizer: 1
+  visualizerBarCount: 32
+  visualizerLEDCount: 20
+  visualizerHeight: 180
+  visualizerSmoothing: 0.109
+  visualizerSensitivity: 15.4
+  visualizerPeakHold: 1.2
+  visualizerPeakFall: 1.5
+  visualizerLogScale: 1
