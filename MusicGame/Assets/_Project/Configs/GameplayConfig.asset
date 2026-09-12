@@ -153,11 +153,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  energyThreshold: 0.25
+  energyThreshold: 0.4
   minRingSpacing: 0.2
   useOnsets: 1
   useBeatGrid: 1
-  beatGridSubdivision: 1
+  beatGridSubdivision: 0.7
   classificationConfidenceMargin: 0.24
   confidenceKeepThreshold: 0.4
   strengthThinningBias: 1
@@ -166,9 +166,9 @@ MonoBehaviour:
   collectibleDensity: 0.7
   collectibleRadius: 0.5
   collectibleLateralMargin: 0.6
-  collectibleSurfaceClearance: 0.3
-  minVerticalOffset: 0.3
-  maxVerticalOffset: 1.6
+  collectibleSurfaceClearance: 0.05
+  bonusMinJumpHeightFactor: 0.15
+  bonusMaxJumpHeightFactor: 0.6
   verticalOffsetCurve:
     serializedVersion: 2
     m_Curve:
@@ -182,8 +182,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.6
-      value: 0.15
+      time: 0.82
+      value: 0.08
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -191,8 +191,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.85
-      value: 0.4
+      time: 0.95
+      value: 0.3
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -213,11 +213,18 @@ MonoBehaviour:
     m_RotationOrder: 4
   patternProbability: 0.12
   collectibleSeed: 1337
+  offTrackBonusChance: 0.15
+  offTrackBonusMaxOffset: 1.5
+  offTrackBonusScoreMultiplier: 1.5
+  offTrackBonusMinJumpHeightFactor: 0.7
+  offTrackBonusMaxJumpHeightFactor: 1
   poolInitialSize: 8
   poolMaxSize: 40
   spawnLookAhead: 1.5
   recycleGrace: 5
   pulseLeadTime: 0.05
+  bonusVisualActivationDistanceThirdPerson: 2
+  bonusVisualActivationDistanceFirstPerson: 4
   enableMusicEnvironment: 1
   colorSampleInterval: 0.4
   chromaEMAAlpha: 0.12
@@ -247,8 +254,41 @@ MonoBehaviour:
   midEnergyColor: {r: 0.95, g: 0.85, b: 0.1, a: 1}
   highEnergyColor: {r: 0.95, g: 0.15, b: 0.1, a: 1}
   enableFallOffPath: 1
-  pathFallMargin: 0.5
+  fallDeathDepth: 0.1
   fallFadeOutDuration: 0.6
+  fallProtectionCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.7
+      value: 0.55
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.82
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   fallPenaltyCurve:
     serializedVersion: 2
     m_Curve:
@@ -274,10 +314,28 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   noFallScoreMultiplier: 1.2
-  respawnMode: 1
   checkpointRespawnDelay: 0.5
   checkpointMusicFadeInDuration: 0.8
-  enableCheckpoints: 1
+  enableCheckpoints: 0
   checkpointIntervalSeconds: 60
   createGroundPlane: 1
   terrainAmbientFloor: 0.35
+  enableFrequencyBackground: 1
+  freqBgBarCount: 24
+  freqBgVerticalBlockCount: 8
+  freqBgArcSpanDegrees: 180
+  freqBgArcRadius: 40
+  freqBgGridHeight: 6
+  freqBgHorizonVerticalOffset: -2
+  freqBgLedBorderSize: 0.08
+  freqBgEmission: 1.2
+  freqBgGain: 1
+  freqBgSmoothing: 0.6
+  freqBgWaterLevel: -1.4
+  freqBgWaterDarkness: 0.9
+  freqBgWaterNoiseScale: 10
+  freqBgWaveStrength: 0.02
+  freqBgWaveSpeed: 0.08
+  freqBgReflectionOpacity: 0.4
+  freqBgReflectionLength: 0.4
+  freqBgReflectionDistortion: 0.15

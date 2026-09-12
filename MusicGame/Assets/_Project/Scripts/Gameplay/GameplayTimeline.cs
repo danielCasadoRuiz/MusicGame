@@ -144,13 +144,25 @@ public class GameplayTimeline
 
         float firstMicroKeptRaw = MinTime(kept);
 
-        // Max jump height reachable (v²/2g), with a safety margin so a rolled offset is
-        // always physically reachable regardless of horizontal timing. Not type-dependent —
-        // only the FLOOR (how much clearance a specific collectible's own size needs) is.
-        float maxJump = config.gravity < 0f
+        // Single source of truth for "how high can the player actually jump" (v²/2g) — every
+        // bonus height derives from THIS, never from an independent world-unit range, so changing
+        // jumpForce/gravity re-tunes every bonus height automatically. bonusMinJumpHeightFactor/
+        // bonusMaxJumpHeightFactor (both 0..1) carve out the usable band within it; vFloorDesign is
+        // only a design target — CollectibleFloor still raises it per-type for physical clearance.
+        float maxJumpHeight = config.gravity < 0f
             ? (config.jumpForce * config.jumpForce) / (2f * -config.gravity)
-            : config.maxVerticalOffset;
-        float vCeil = Mathf.Max(0f, Mathf.Min(config.maxVerticalOffset, maxJump * 0.85f));
+            : 0f;
+        float vFloorDesign = maxJumpHeight * config.bonusMinJumpHeightFactor;
+        float vCeil        = maxJumpHeight * config.bonusMaxJumpHeightFactor;
+
+        // OFF-TRACK bonuses are deliberately DECOUPLED from the normal-bonus range above — they're
+        // framed as "how close to the player's FULL jump capability" directly against maxJumpHeight,
+        // not as a fraction of the (separately tunable, often more conservative) normal ceiling. If
+        // they shared one range, lowering bonusMaxJumpHeightFactor for ordinary bonuses would
+        // quietly make off-track bonuses easier too, even though those should always demand a real,
+        // near-full-height jump regardless of how the normal ceiling is tuned.
+        float offTrackFloorDesign = maxJumpHeight * config.offTrackBonusMinJumpHeightFactor;
+        float offTrackCeil        = maxJumpHeight * config.offTrackBonusMaxJumpHeightFactor;
 
         var events = new List<TimelineEvent>(kept.Count);
         int  i     = 0;
@@ -165,8 +177,8 @@ public class GameplayTimeline
                     run++;
             }
 
-            if (run > 1) EmitPattern(kept, i, run, config, path, rng, vCeil, warmup, speed, events);
-            else         EmitSingle(kept[i], config, path, rng, vCeil, warmup, speed, events);
+            if (run > 1) EmitPattern(kept, i, run, config, path, rng, vFloorDesign, vCeil, warmup, speed, events);
+            else         EmitSingle(kept[i], config, path, rng, vFloorDesign, vCeil, offTrackFloorDesign, offTrackCeil, warmup, speed, events);
 
             i += run;
         }
@@ -178,7 +190,7 @@ public class GameplayTimeline
         if (config.IsSpawnEnabled(RingType.Impact))
             foreach (var m in macroEvents)
                 if (m.type == MacroEventType.Impact)
-                    EmitMacroCollectible(m, RingType.Impact, config, path, vCeil, events);
+                    EmitMacroCollectible(m, RingType.Impact, config, path, vFloorDesign, vCeil, events);
 
         // Peak no longer auto-spawns a collectible — it's climax-tagging metadata on
         // MacroEvents (see BuildMacroEvents). config.spawnPeak (default OFF) opts back into a
@@ -187,7 +199,7 @@ public class GameplayTimeline
         if (config.spawnPeak)
             foreach (var m in macroEvents)
                 if (m.type == MacroEventType.Peak)
-                    EmitMacroCollectible(m, RingType.Peak, config, path, vCeil, events);
+                    EmitMacroCollectible(m, RingType.Peak, config, path, vFloorDesign, vCeil, events);
 
         events.Sort((a, b) => a.eventTime.CompareTo(b.eventTime));
 
@@ -362,9 +374,10 @@ public class GameplayTimeline
     // scattered Micro collectibles even while both are still plain primitives, and keeps it
     // reachable regardless of whatever Micro event(s) share this exact instant.
     private static void EmitMacroCollectible(MacroEvent m, RingType type, GameplayConfig config,
-                                             MusicPath path, float vCeil, List<TimelineEvent> events)
+                                             MusicPath path, float vFloorDesign, float vCeil,
+                                             List<TimelineEvent> events)
     {
-        float vFloor = CollectibleFloor(type, config, vCeil);
+        float vFloor = CollectibleFloor(type, config, vFloorDesign, vCeil);
         float vOff   = Mathf.Lerp(vFloor, vCeil, 0.5f);
 
         events.Add(new TimelineEvent
@@ -466,15 +479,45 @@ public class GameplayTimeline
     // ── Placement ─────────────────────────────────────────────────────────────────
 
     private static void EmitSingle(Candidate c, GameplayConfig config, MusicPath path, System.Random rng,
-                                   float vCeil, float warmup, float speed,
+                                   float vFloorDesign, float vCeil,
+                                   float offTrackFloorDesign, float offTrackCeil,
+                                   float warmup, float speed,
                                    List<TimelineEvent> events)
     {
-        float songTime = warmup + c.time;
-        float dist     = songTime * speed;
-        float half     = LateralHalfRange(path, config, dist);
-        float lateral  = half > 0f ? (float)(rng.NextDouble() * 2.0 - 1.0) * half : 0f;
-        float vFloor   = CollectibleFloor(c.type, config, vCeil);
-        float vOff     = RollVertical(config, rng, vFloor, vCeil);
+        float songTime  = warmup + c.time;
+        float dist      = songTime * speed;
+        bool  offTrack  = rng.NextDouble() < config.offTrackBonusChance;
+
+        float lateral;
+        float vOff;
+        float floorClearance;
+        if (offTrack)
+        {
+            // Beyond the track's REAL local half-width (never a world X/Z constant) by a small,
+            // jump+air-control-reachable extra — same collectibleRadius clearance normal
+            // placement uses, plus up to offTrackBonusMaxOffset, randomized left/right.
+            float halfWidth = path.GetWidth(dist) * 0.5f;
+            float extra     = (float)rng.NextDouble() * config.offTrackBonusMaxOffset;
+            float side      = rng.NextDouble() < 0.5 ? -1f : 1f;
+            lateral = side * (halfWidth + config.collectibleRadius + extra);
+
+            // Its OWN range — offTrackBonusMinJumpHeightFactor..offTrackBonusMaxJumpHeightFactor
+            // of maxJumpHeight DIRECTLY, decoupled from the normal-bonus ceiling (see Generate's
+            // own comment on offTrackFloorDesign/offTrackCeil). Uniform roll, bypassing
+            // verticalOffsetCurve (that shaping is about "how often should this need a jump";
+            // off-track bonuses always need one, and sit high on purpose: visually obvious as a
+            // jump target, naturally in-path during a jump's arc, never floating low with nothing
+            // beneath it). Still hard-floored per type for physical clearance, same as normal bonuses.
+            floorClearance = CollectibleFloor(c.type, config, offTrackFloorDesign, offTrackCeil);
+            vOff = floorClearance + (float)rng.NextDouble() * (offTrackCeil - floorClearance);
+        }
+        else
+        {
+            floorClearance = CollectibleFloor(c.type, config, vFloorDesign, vCeil);
+            float half = LateralHalfRange(path, config, dist);
+            lateral = half > 0f ? (float)(rng.NextDouble() * 2.0 - 1.0) * half : 0f;
+            vOff    = RollVertical(config, rng, floorClearance, vCeil);
+        }
 
         events.Add(new TimelineEvent
         {
@@ -484,18 +527,19 @@ public class GameplayTimeline
             ringType       = c.type,
             lateralOffset  = lateral,
             verticalOffset = vOff,
-            floorClearance = vFloor,
+            floorClearance = floorClearance,
             strength       = c.strength,
             sourceFeature  = c.sourceFeature,
             confidence     = c.confidence,
             contributors   = c.sourceFeature,
+            isOffTrack     = offTrack,
         });
     }
 
     // A short run of consecutive kept candidates, close together in time, becomes one
     // coordinated shape (arc or stair) instead of independent random heights/positions.
     private static void EmitPattern(List<Candidate> kept, int start, int run, GameplayConfig config,
-                                    MusicPath path, System.Random rng, float vCeil,
+                                    MusicPath path, System.Random rng, float vFloorDesign, float vCeil,
                                     float warmup, float speed, List<TimelineEvent> events)
     {
         bool  stair = rng.NextDouble() < 0.5;
@@ -515,7 +559,7 @@ public class GameplayTimeline
             float songTime = warmup + c.time;
             float dist     = songTime * speed;
 
-            float vFloor = CollectibleFloor(c.type, config, vCeil);
+            float vFloor = CollectibleFloor(c.type, config, vFloorDesign, vCeil);
             float t       = run > 1 ? k / (float)(run - 1) : 0f;
             float shapeT  = stair ? t : (t < 0.5f ? t * 2f : (1f - t) * 2f); // stair: linear, arc: up-then-down
             // Same compression curve as single collectibles (RollVertical) — a pattern's peak
@@ -562,20 +606,20 @@ public class GameplayTimeline
         return Mathf.Lerp(vFloor, vCeil, heightFrac);
     }
 
-    // Minimum CLEARANCE above the real surface for this specific collectible type, derived
-    // from its actual authored prefab's mesh bounds where available (never hardcoded) — a cube
-    // half-height + a small safety margin, so nothing can ever be generated embedded in the
-    // ground regardless of what minVerticalOffset is configured to.
+    // Minimum CLEARANCE above the real surface for this specific collectible type, derived from
+    // its actual authored prefab's mesh bounds where available (never hardcoded) — a cube half-
+    // height + a small safety margin, so nothing can ever be generated embedded in the ground no
+    // matter what vFloorDesign (bonusMinJumpHeightFactor * maxJumpHeight) is set to.
     //
     // Reserves clearance for the LARGEST the visual mesh ever gets, not just its resting
     // (scale=1) size: RingController's beat-synced pulse briefly scales the mesh up (an instant
     // "punch") past 1.0 — up to RingController.MaxPulseScale(type) — around the object's own
     // pivot, so without this the bottom of that momentarily-larger mesh could dip below the
     // surface even though the resting collider/mesh sat cleanly on top.
-    private static float CollectibleFloor(RingType type, GameplayConfig config, float vCeil)
+    private static float CollectibleFloor(RingType type, GameplayConfig config, float vFloorDesign, float vCeil)
     {
         float safeMinClearance = CollectibleMaxHalfHeight(type, config) + config.collectibleSurfaceClearance;
-        return Mathf.Clamp(Mathf.Max(config.minVerticalOffset, safeMinClearance), 0f, vCeil);
+        return Mathf.Clamp(Mathf.Max(vFloorDesign, safeMinClearance), 0f, vCeil);
     }
 
     /// <summary>

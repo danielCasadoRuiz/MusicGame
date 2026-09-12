@@ -170,6 +170,19 @@ public class GameplayHUD : MonoBehaviour
         _totalValueText = view.totalValue;
         _progressFill   = view.progressFill;
 
+        // Static column-header labels are baked into the prefab at Editor-bake time (whatever
+        // locale was active then) — re-set them here from the CURRENT locale so the prefab path
+        // behaves identically to the procedural one regardless of when/in what language the
+        // prefab was last built.
+        SetLabel(view.kickLabel,   RingType.Kick);
+        SetLabel(view.snareLabel,  RingType.Snare);
+        SetLabel(view.hiHatLabel,  RingType.HiHat);
+        SetLabel(view.beatLabel,   RingType.Beat);
+        SetLabel(view.onsetLabel,  RingType.Onset);
+        SetLabel(view.impactLabel, RingType.Impact);
+        if (view.scoreLabel != null) view.scoreLabel.text = Loc.Get("HUD.Score");
+        if (view.totalLabel != null) view.totalLabel.text = Loc.Get("HUD.Total");
+
         _tagsStrip    = view.tagsStrip.GetComponent<RectTransform>();
         _tagStyleText = view.tagStyle;
         _tagVibeText  = view.tagVibe;
@@ -188,26 +201,26 @@ public class GameplayHUD : MonoBehaviour
         var topBar = UIFactory.CreatePanel("TopBar", _liveRoot, new Color(0.03f, 0.03f, 0.03f, 0.88f));
         UIFactory.SetBox(topBar.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, new Vector2(0f, 44f));
 
-        var cells = new (string label, RingType? type)[]
+        var cells = new (string labelKey, RingType? type)[]
         {
-            ("KICK",   RingType.Kick),   ("SNARE",  RingType.Snare), ("HI-HAT", RingType.HiHat), ("BEAT", RingType.Beat),
-            ("ONSET",  RingType.Onset),  ("IMPACT", RingType.Impact),("SCORE",  null),            ("TOTAL", null),
+            ("HUD.Kick",   RingType.Kick),   ("HUD.Snare",  RingType.Snare), ("HUD.HiHat", RingType.HiHat), ("HUD.Beat", RingType.Beat),
+            ("HUD.Onset",  RingType.Onset),  ("HUD.Impact", RingType.Impact),("HUD.Score",  null),           ("HUD.Total", null),
         };
         for (int i = 0; i < cells.Length; i++)
         {
-            var cell = UIFactory.CreateRect($"Cell_{cells[i].label}", topBar.rectTransform);
+            var cell = UIFactory.CreateRect($"Cell_{cells[i].labelKey}", topBar.rectTransform);
             float xMin = i / 8f, xMax = (i + 1) / 8f;
             UIFactory.SetBox(cell, new Vector2(xMin, 0f), new Vector2(xMax, 1f), new Vector2(0f, 1f), new Vector2(6f, 0f), new Vector2(-6f, 0f));
 
-            var label = UIFactory.CreateText("Label", cell, cells[i].label, 12, RingColorOr(cells[i].type, Color.white), TextAnchor.UpperLeft);
+            var label = UIFactory.CreateText("Label", cell, Loc.Get(cells[i].labelKey), 12, RingColorOr(cells[i].type, Color.white), TextAnchor.UpperLeft);
             UIFactory.SetBox(label.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -3f), new Vector2(0f, 20f));
 
             var value = UIFactory.CreateText("Value", cell, "0", 14, Color.white, TextAnchor.UpperLeft);
             UIFactory.SetBox(value.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -22f), new Vector2(0f, 20f));
 
-            if (cells[i].label == "SCORE")      _scoreValueText = value;
-            else if (cells[i].label == "TOTAL") _totalValueText = value;
-            else                                _counterValues[cells[i].type.Value] = value;
+            if (cells[i].labelKey == "HUD.Score")      _scoreValueText = value;
+            else if (cells[i].labelKey == "HUD.Total") _totalValueText = value;
+            else                                       _counterValues[cells[i].type.Value] = value;
         }
 
         var progressBg = UIFactory.CreateFillBar("SongProgress", _liveRoot, new Color(0.10f, 0.10f, 0.10f), new Color(0.18f, 0.75f, 0.95f), out _progressFill);
@@ -264,9 +277,9 @@ public class GameplayHUD : MonoBehaviour
         _tagsStrip.gameObject.SetActive(any);
         if (!any) return;
 
-        SetTagLine(_tagStyleText, "STYLE", style);
-        SetTagLine(_tagVibeText,  "VIBE",  vibe);
-        SetTagLine(_tagOtherText, "OTHER", other);
+        SetTagLine(_tagStyleText, Loc.Get("HUD.TagStyle"), style);
+        SetTagLine(_tagVibeText,  Loc.Get("HUD.TagVibe"),  vibe);
+        SetTagLine(_tagOtherText, Loc.Get("HUD.TagOther"), other);
     }
 
     private void SetTagLine(Text text, string label, string content)
@@ -286,6 +299,16 @@ public class GameplayHUD : MonoBehaviour
 
     private Color RingColorOr(RingType? type, Color fallback) => type.HasValue && config != null ? config.RingColor(type.Value) : fallback;
 
+    // Single source of truth for "which localization key does this RingType's short HUD label
+    // use" — shared by the top-bar column headers and the end-screen performance rows (RowLabel)
+    // so there's exactly one place mapping RingType → text, never two that could drift apart.
+    private static string RingTypeKey(RingType type) => $"HUD.{type}";
+
+    private static void SetLabel(Text text, RingType type)
+    {
+        if (text != null) text.text = Loc.Get(RingTypeKey(type));
+    }
+
     // ── Wire: end screen (prefab path — see EndScreenView's own doc) ─────────
 
     private void WireEndScreen(EndScreenView view)
@@ -298,6 +321,12 @@ public class GameplayHUD : MonoBehaviour
         _fallsText        = view.fallsText;
         _noFallBonusText  = view.noFallBonusText;
         _sessionText      = view.sessionText;
+
+        // Same reasoning as WireLiveHud's label re-set — these were baked once at Editor-bake
+        // time, so re-apply from the current locale here rather than trusting the prefab's value.
+        if (view.titleText != null) view.titleText.text = Loc.Get("EndScreen.Title");
+        if (view.restartButtonLabel  != null) view.restartButtonLabel.text  = Loc.Get("EndScreen.Restart");
+        if (view.continueButtonLabel != null) view.continueButtonLabel.text = Loc.Get("EndScreen.Continue");
 
         view.restartButton.onClick.AddListener(OnRestartClicked);
         view.continueButton.onClick.AddListener(OnContinueClicked);
@@ -324,7 +353,7 @@ public class GameplayHUD : MonoBehaviour
         var content = panel.rectTransform;
         float y = -16f;
 
-        var title = UIFactory.CreateText("Title", content, "─── RESULTS ───", 20, Color.white);
+        var title = UIFactory.CreateText("Title", content, Loc.Get("EndScreen.Title"), 20, Color.white);
         UIFactory.StackTop(title.rectTransform, ref y, 30f);
 
         _ratingLabelText = UIFactory.CreateText("Rating", content, "", 22, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold);
@@ -353,12 +382,12 @@ public class GameplayHUD : MonoBehaviour
 
         y -= 10f;
         float btnW = 150f, btnH = 40f, gap = 16f;
-        var restartBtn = UIFactory.CreateButton("RestartButton", content, "RESTART", out _);
+        var restartBtn = UIFactory.CreateButton("RestartButton", content, Loc.Get("EndScreen.Restart"), out _);
         UIFactory.SetBox(restartBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(-(btnW + gap) / 2f, y), new Vector2(btnW, btnH));
         restartBtn.onClick.AddListener(OnRestartClicked);
 
-        var continueBtn = UIFactory.CreateButton("ContinueButton", content, "CONTINUE", out _);
+        var continueBtn = UIFactory.CreateButton("ContinueButton", content, Loc.Get("EndScreen.Continue"), out _);
         UIFactory.SetBox(continueBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2((btnW + gap) / 2f, y), new Vector2(btnW, btnH));
         continueBtn.onClick.AddListener(OnContinueClicked);
@@ -398,7 +427,8 @@ public class GameplayHUD : MonoBehaviour
         _ratingBarFill.fillAmount = displayRating;
         _ratingBarFill.color      = ratingColor;
 
-        _scoreSummaryText.text = $"score {s.Score} / {_finalMaxPossibleScore}  (raw {_finalNormalizedScore * 100f:F0}%)";
+        _scoreSummaryText.text = Loc.Get("EndScreen.ScoreSummary",
+            s.Score.ToString(), _finalMaxPossibleScore.ToString(), (_finalNormalizedScore * 100f).ToString("F0"));
 
         foreach (var go in _rowObjects) Destroy(go);
         _rowObjects.Clear();
@@ -414,14 +444,14 @@ public class GameplayHUD : MonoBehaviour
             }
         }
 
-        _fallsText.text = $"Falls: {_finalFallCount}";
+        _fallsText.text = Loc.Get("EndScreen.Falls", _finalFallCount.ToString());
 
         bool noFallBonus = _finalFallCount == 0 && config != null && config.noFallScoreMultiplier > 1f;
         _noFallBonusText.gameObject.SetActive(noFallBonus);
         if (noFallBonus)
         {
             int pctBonus = Mathf.RoundToInt((config.noFallScoreMultiplier - 1f) * 100f);
-            _noFallBonusText.text = $"NO FALL BONUS +{pctBonus}%";
+            _noFallBonusText.text = Loc.Get("EndScreen.NoFallBonus", pctBonus.ToString());
         }
 
         var session = manager?.Session;
@@ -429,8 +459,8 @@ public class GameplayHUD : MonoBehaviour
         _sessionText.gameObject.SetActive(showSession);
         if (showSession)
         {
-            _sessionText.text = $"Session: {session.RunsCompleted} run{(session.RunsCompleted == 1 ? "" : "s")} · " +
-                                 $"{session.NormalizedScore * 100f:F0}% avg";
+            string key = session.RunsCompleted == 1 ? "EndScreen.SessionSingular" : "EndScreen.SessionPlural";
+            _sessionText.text = Loc.Get(key, session.RunsCompleted.ToString(), (session.NormalizedScore * 100f).ToString("F0"));
         }
     }
 
@@ -454,14 +484,14 @@ public class GameplayHUD : MonoBehaviour
         return row.gameObject;
     }
 
-    private static string RatingLabel(float displayRating) => displayRating switch
+    private static string RatingLabel(float displayRating) => Loc.Get(displayRating switch
     {
-        < 0.20f => "POBRE",
-        < 0.40f => "FLUIX",
-        < 0.60f => "DECENT",
-        < 0.85f => "MOLT BO",
-        _       => "BRUTAL",
-    };
+        < 0.20f => "EndScreen.RatingPoor",
+        < 0.40f => "EndScreen.RatingWeak",
+        < 0.60f => "EndScreen.RatingDecent",
+        < 0.85f => "EndScreen.RatingGreat",
+        _       => "EndScreen.RatingInsane",
+    });
 
-    private static string RowLabel(RingType type) => type == RingType.HiHat ? "HI-HAT" : type.ToString().ToUpperInvariant();
+    private static string RowLabel(RingType type) => Loc.Get(RingTypeKey(type));
 }

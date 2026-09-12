@@ -17,6 +17,7 @@ public class GameplayManager : MonoBehaviour
     private GameplayTimeline _timeline;
     private int              _nextEventIdx;
     private int              _nextPulseIdx;
+    private int              _nextRevealIdx; // distance-based EARLY visual reveal — see RevealEvent()
     private int              _nextMacroIdx;
     private SongProfile      _profile;
     private int              _fallCount;
@@ -79,11 +80,11 @@ public class GameplayManager : MonoBehaviour
     // 0..1, earned/maxPossible for THIS song's actual generated timeline — see ComputeMaxPossibleScore.
     public float              NormalizedScore  => _maxPossibleScore > 0 ? Mathf.Clamp01((float)_stats.Score / _maxPossibleScore) : 0f;
 
-    // Debug-only: same v²/2g formula GameplayTimeline uses to bound collectible heights —
-    // exposed here (not duplicated) purely so the debug HUD can show it for comparison.
+    // Debug-only: the same maxJumpHeight * bonusMaxJumpHeightFactor GameplayTimeline uses as the
+    // bonus vertical ceiling — exposed here (not duplicated) purely so the debug HUD can show it.
     public float MaxReachableJumpHeight => config.gravity < 0f
-        ? (config.jumpForce * config.jumpForce) / (2f * -config.gravity) * 0.85f
-        : config.maxVerticalOffset;
+        ? (config.jumpForce * config.jumpForce) / (2f * -config.gravity) * config.bonusMaxJumpHeightFactor
+        : 0f;
 
     // Set true by FallRespawnSystem while it owns the audio (Pause + Play cycle).
     // Prevents the song-end check from firing when audio is Paused for respawn.
@@ -133,7 +134,7 @@ public class GameplayManager : MonoBehaviour
         _onProfile = e => StartCoroutine(GenerateAndStart(e.Profile));
         _onRing    = e =>
         {
-            int points = ScoreFor(e.Type, e.TimingError);
+            int points = ScoreFor(e.Type, e.TimingError, e.IsOffTrack);
             _stats.Register(e.Type);
             _stats.AddScore(points);
 
@@ -175,9 +176,10 @@ public class GameplayManager : MonoBehaviour
         // Generate timeline (no startZ needed — eventDistance is path-relative)
         _timeline         = GameplayTimeline.Generate(profile, config, path);
         _maxPossibleScore = ComputePerTypePotential();
-        _nextEventIdx = 0;
-        _nextPulseIdx = 0;
-        _nextMacroIdx = 0;
+        _nextEventIdx  = 0;
+        _nextPulseIdx  = 0;
+        _nextRevealIdx = 0;
+        _nextMacroIdx  = 0;
 
         // Pools
         InitializePools();
@@ -216,11 +218,11 @@ public class GameplayManager : MonoBehaviour
     {
         if (!_running || _timeline == null) return;
 
-        float musicDist     = _clock.MusicDistance;
-        // The player's ACTUAL distance — includes forwardOffset/surge. Spawn/despawn windows
-        // are measured from here, not from musicDistance alone, so a surging player doesn't
-        // outrun collectibles that haven't spawned yet or lose ones still ahead of them.
-        float playerDist    = musicDist + playerController.ForwardOffset;
+        // The player's ACTUAL distance (CanonicalDistance + surge) — single source of truth,
+        // read from PlayerController rather than re-deriving MusicDistance + ForwardOffset here.
+        // Spawn/despawn windows are measured from here, so a surging player doesn't outrun
+        // collectibles that haven't spawned yet or lose ones still ahead of them.
+        float playerDist    = playerController.ActualDistance;
         float lookAheadD    = playerDist + config.spawnLookAhead * config.playerSpeed;
 
         // Activate upcoming events — this only makes them visible/spawned ahead of time so the
@@ -230,6 +232,24 @@ public class GameplayManager : MonoBehaviour
         {
             ActivateEvent(_timeline.Events[_nextEventIdx], _nextEventIdx);
             _nextEventIdx++;
+        }
+
+        // EARLY visual reveal — purely spatial, separate from the musical trigger below. This is
+        // what makes a ring visibly grow/react AHEAD of the player instead of right as they cross
+        // it — the actual beat-synced reaction (full-strength Pulse + BeatPulseEvent/camera kick)
+        // still fires exactly on the music's own schedule via the pulseLeadTime loop right after
+        // this one, completely untouched. Distance depends on the CURRENT camera view (Third/
+        // First Person read differently) — CameraFollow is the single authority for both "which
+        // view is active" and "what that maps to" (GameplayConfig.GetBonusVisualActivationDistance),
+        // so this changes immediately on a view toggle with zero branching here.
+        float revealDistance = CameraFollow.Instance != null
+            ? CameraFollow.Instance.EffectiveBonusVisualActivationDistance
+            : config.bonusVisualActivationDistanceThirdPerson;
+        while (_nextRevealIdx < _timeline.Events.Length &&
+               _timeline.Events[_nextRevealIdx].eventDistance - playerDist <= revealDistance)
+        {
+            RevealEvent(_nextRevealIdx);
+            _nextRevealIdx++;
         }
 
         // Fire beat pulses config.pulseLeadTime seconds BEFORE the player actually reaches
@@ -326,7 +346,7 @@ public class GameplayManager : MonoBehaviour
     /// they're structurally guaranteed (alwaysKeep) moments, not statistically rare ones, so
     /// they don't participate in the rarity distribution (see GameplayTimeline).
     /// </summary>
-    private int ScoreFor(RingType type, float timingError)
+    private int ScoreFor(RingType type, float timingError, bool isOffTrack)
     {
         float timing = TimingMultiplier(timingError);
 
@@ -336,6 +356,7 @@ public class GameplayManager : MonoBehaviour
             RingType.Impact => config.impactBonusPoints * timing,
             _               => config.baseScorePerRing * _timeline.RarityMultiplier(type) * timing,
         };
+        if (isOffTrack) raw *= config.offTrackBonusScoreMultiplier;
         return Mathf.RoundToInt(raw);
     }
 
@@ -370,7 +391,7 @@ public class GameplayManager : MonoBehaviour
         int sum = 0;
         foreach (var e in _timeline.Events)
         {
-            int perfectScore = ScoreFor(e.ringType, 0f);
+            int perfectScore = ScoreFor(e.ringType, 0f, e.isOffTrack);
             sum += perfectScore;
 
             _availableByType.TryGetValue(e.ringType, out int c); _availableByType[e.ringType] = c + 1;
@@ -620,6 +641,19 @@ public class GameplayManager : MonoBehaviour
         _activeEvents.Add(new ActiveEvent { evt = evt, go = go, pool = pool, index = index });
     }
 
+    // ── Visual reveal (purely spatial, no musical meaning — see Update()'s reveal loop) ───────
+
+    private void RevealEvent(int index)
+    {
+        var evt = _timeline.Events[index];
+        if (evt.eventType != EventType.Ring) return;
+
+        // Mild strength (0) — a soft "notice me" grow, deliberately weaker than the real
+        // beat-synced Pulse(evt.strength) that still fires later at the exact musical moment.
+        // No BeatPulseEvent here: that's the musical trigger, this is purely visual.
+        FindActiveRing(index)?.Pulse(0f);
+    }
+
     // ── Beat pulse (fires exactly on the musical moment) ──────────────────────
 
     private void FirePulse(int index)
@@ -627,29 +661,33 @@ public class GameplayManager : MonoBehaviour
         var evt = _timeline.Events[index];
         if (evt.eventType != EventType.Ring) return;
 
-        Vector3 pos = default;
-        bool    havePos = false;
-
-        for (int i = 0; i < _activeEvents.Count; i++)
+        var     rc  = FindActiveRing(index);
+        Vector3 pos;
+        if (rc != null)
         {
-            if (_activeEvents[i].index != index) continue;
-            var rc = _activeEvents[i].go.GetComponent<RingController>();
-            if (rc != null) rc.Pulse(evt.strength);
-            pos     = _activeEvents[i].go.transform.position;
-            havePos = true;
-            break;
+            rc.Pulse(evt.strength);
+            pos = rc.transform.position;
         }
-
-        if (!havePos)
+        else
         {
             // Ring was already collected/recycled before its own beat arrived (e.g. the
             // player surged ahead of schedule) — the beat still happened, just fall back
             // to its path position for camera/FX purposes.
             var path = MusicWorldManager.Instance?.Path;
-            if (path != null) pos = path.GetSample(evt.eventDistance).position;
+            pos = path != null ? path.GetSample(evt.eventDistance).position : default;
         }
 
         EventBus.Publish(new BeatPulseEvent { Type = evt.ringType, Strength = evt.strength, Position = pos });
+    }
+
+    /// <summary>The currently-active RingController for a given timeline index, or null if it's
+    /// not spawned/already recycled — shared lookup for RevealEvent and FirePulse.</summary>
+    private RingController FindActiveRing(int index)
+    {
+        for (int i = 0; i < _activeEvents.Count; i++)
+            if (_activeEvents[i].index == index)
+                return _activeEvents[i].go.GetComponent<RingController>();
+        return null;
     }
 
     // ── Respawn API (called by FallRespawnSystem) ─────────────────────────────
@@ -666,8 +704,9 @@ public class GameplayManager : MonoBehaviour
 
     public void SetNextEventIndex(int idx)
     {
-        _nextEventIdx = Mathf.Clamp(idx, 0, _timeline?.Events.Length ?? 0);
-        _nextPulseIdx = _nextEventIdx;
+        _nextEventIdx  = Mathf.Clamp(idx, 0, _timeline?.Events.Length ?? 0);
+        _nextPulseIdx  = _nextEventIdx;
+        _nextRevealIdx = _nextEventIdx;
     }
 
     /// <summary>Realigns the Macro-event cursor to a resumed songTime (checkpoint respawn or

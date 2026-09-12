@@ -14,6 +14,9 @@ using UnityEngine.UI;
 /// </summary>
 public class EndScreenView : MonoBehaviour
 {
+    [Header("Title (localized — see Loc)")]
+    public Text titleText;
+
     [Header("Rating")]
     public Text  ratingLabel;
     public Image ratingBarFill;
@@ -29,5 +32,7 @@ public class EndScreenView : MonoBehaviour
 
     [Header("Buttons")]
     public Button restartButton;
+    public Text   restartButtonLabel;
     public Button continueButton;
+    public Text   continueButtonLabel;
 }

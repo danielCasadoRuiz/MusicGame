@@ -12,11 +12,15 @@ public class PauseView : MonoBehaviour
     [Header("Pause button (shown during live gameplay)")]
     public GameObject pauseButtonRoot;
     public Button     pauseButton;
+    public Text       pauseButtonLabel;
 
     [Header("Paused overlay")]
     public GameObject overlayRoot;
+    public Text        titleText;
     public Button      resumeButton;
+    public Text        resumeButtonLabel;
     public Button      restartButton;
+    public Text        restartButtonLabel;
 
     [Header("Camera view toggle (sits just below the Pause button, live gameplay only)")]
     public GameObject cameraToggleButtonRoot;

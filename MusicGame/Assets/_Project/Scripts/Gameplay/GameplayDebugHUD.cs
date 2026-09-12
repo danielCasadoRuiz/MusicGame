@@ -140,8 +140,9 @@ public class GameplayDebugHUD : MonoBehaviour
         var path = MusicWorldManager.Instance?.Path;
         if (path == null) { Row(x, ref y, w, "No path"); return; }
 
-        var   clock  = MusicClock.Instance;
-        float dist   = (clock?.MusicDistance ?? 0f) + (_player?.ForwardOffset ?? 0f);
+        // PlayerController is the single authority for "where the player actually is" — read
+        // ActualDistance from there rather than re-deriving MusicDistance + ForwardOffset here.
+        float dist   = _player?.ActualDistance ?? 0f;
         var   sample = path.GetSample(dist);
 
         Row(x, ref y, w, $"TotalLength: {path.TotalLength:F1} u  Samples:{path.SampleCount}");
@@ -155,9 +156,9 @@ public class GameplayDebugHUD : MonoBehaviour
 
         var clock = MusicClock.Instance;
 
-        float minimumDistance = clock?.MusicDistance ?? 0f;
+        float minimumDistance = _player.CanonicalDistance;
         float maximumDistance = minimumDistance + _player.MaxForwardDistance;
-        float playerDistance  = minimumDistance + _player.ForwardOffset;
+        float playerDistance  = _player.ActualDistance;
 
         Row(x, ref y, w, $"songTime:       {clock?.SongTime ?? 0f:F3} s");
         Row(x, ref y, w, $"musicDistance:  {minimumDistance:F2} u  (window {minimumDistance:F1} .. {maximumDistance:F1})");
@@ -426,10 +427,10 @@ public class GameplayDebugHUD : MonoBehaviour
             }
         }
 
-        // Longitudinal playable window: [minimumDistance, minimumDistance + maxForwardDistance]
-        if (clock != null && _player != null)
+        // Longitudinal playable window: [canonicalDistance, canonicalDistance + maxForwardDistance]
+        if (_player != null)
         {
-            float minDist = clock.MusicDistance;
+            float minDist = _player.CanonicalDistance;
             float maxDist = minDist + _player.MaxForwardDistance;
 
             Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.9f); // minimumDistance — player can never fall behind this

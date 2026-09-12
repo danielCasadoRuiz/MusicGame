@@ -1,0 +1,204 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UIText Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: UIText
+  m_TableCollectionNameGuidString: 8bd28840241ae794fb97ea8830652eaf
+  m_Entries:
+  - m_Id: 3248276168704
+    m_Key: Analyzing.Title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111744
+    m_Key: Analyzing.Tip01
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111745
+    m_Key: Analyzing.Tip02
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111746
+    m_Key: Analyzing.Tip03
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111747
+    m_Key: Analyzing.Tip04
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111748
+    m_Key: Analyzing.Tip05
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111749
+    m_Key: Analyzing.Tip06
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111750
+    m_Key: Analyzing.Tip07
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111751
+    m_Key: Analyzing.Tip08
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111752
+    m_Key: Analyzing.Tip09
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111753
+    m_Key: Analyzing.Tip10
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111754
+    m_Key: Analyzing.Tip11
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111755
+    m_Key: Analyzing.Tip12
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111756
+    m_Key: Pause.PauseButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111757
+    m_Key: Pause.Title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111758
+    m_Key: Pause.Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111759
+    m_Key: Pause.RestartSong
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111760
+    m_Key: Pause.ThirdPerson
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111761
+    m_Key: Pause.FirstPerson
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111762
+    m_Key: HUD.Kick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111763
+    m_Key: HUD.Snare
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111764
+    m_Key: HUD.HiHat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111765
+    m_Key: HUD.Beat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111766
+    m_Key: HUD.Onset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111767
+    m_Key: HUD.Peak
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111768
+    m_Key: HUD.Impact
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111769
+    m_Key: HUD.Score
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111770
+    m_Key: HUD.Total
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111771
+    m_Key: HUD.TagStyle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111772
+    m_Key: HUD.TagVibe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111773
+    m_Key: HUD.TagOther
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111774
+    m_Key: EndScreen.Title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111775
+    m_Key: EndScreen.Restart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111776
+    m_Key: EndScreen.Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111777
+    m_Key: EndScreen.RatingPoor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111778
+    m_Key: EndScreen.RatingWeak
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111779
+    m_Key: EndScreen.RatingDecent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111780
+    m_Key: EndScreen.RatingGreat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111781
+    m_Key: EndScreen.RatingInsane
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111782
+    m_Key: EndScreen.ScoreSummary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111783
+    m_Key: EndScreen.Falls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111784
+    m_Key: EndScreen.NoFallBonus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111785
+    m_Key: EndScreen.SessionSingular
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3248318111786
+    m_Key: EndScreen.SessionPlural
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3572857825983987778
+  references:
+    version: 2
+    RefIds:
+    - rid: 3572857825983987778
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1789237372461

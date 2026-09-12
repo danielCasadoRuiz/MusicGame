@@ -103,10 +103,13 @@ public class FallRespawnSystem : MonoBehaviour
         if (!_active || _processing || _player == null || _config == null) return;
         if (!_config.enableFallOffPath) return;
 
-        // PlayerController is the single authority for the lateral limit (computed from the
-        // same path sample it moves against) — read its result instead of recomputing it here
-        // against a possibly different sample/frame.
-        if (_player.IsAtLateralLimit)
+        // PlayerController is the single authority for this (computed from the same path sample
+        // it moves against) — read its result instead of recomputing it here against a possibly
+        // different sample/frame. Being laterally outside the track (IsAtLateralLimit) no longer
+        // triggers this by itself — only actually sinking below the track's own surface plane
+        // does, so a jump toward a bonus near/outside the edge can still be corrected mid-air
+        // with air control instead of dying the instant the lateral clamp is reached.
+        if (_player.IsBelowTrackSurface)
             TriggerFall();
     }
 
@@ -123,8 +126,7 @@ public class FallRespawnSystem : MonoBehaviour
         float fallSongTime = MusicClock.Instance?.SongTime ?? 0f;
 
         Debug.Log($"[FALL] pos={_player.transform.position:F1}  y={_player.transform.position.y:F2}  " +
-                  $"fallSongTime={fallSongTime:F2}  " +
-                  $"playerDistance={(MusicClock.Instance != null ? MusicClock.Instance.MusicDistance + _player.ForwardOffset : -1f):F1}");
+                  $"fallSongTime={fallSongTime:F2}  playerDistance={_player.ActualDistance:F1}");
         _player.EnterFallState();
         EventBus.Publish(new PlayerFellEvent { FallSongTime = fallSongTime });
         StartCoroutine(FallSequence(fallSongTime));
@@ -166,44 +168,34 @@ public class FallRespawnSystem : MonoBehaviour
     /// </summary>
     private IEnumerator RespawnAtSongTime(float songTime, float targetVol)
     {
-        float musicDistance = songTime * _config.playerSpeed; // matches MusicClock.MusicDistance = SongTime * UnitsPerSecond
-        float audioTime     = Mathf.Max(0f, songTime - _config.warmupTime);
+        float audioTime = Mathf.Max(0f, songTime - _config.warmupTime);
 
-        Debug.Log($"[RESPAWN] songTime={songTime:F2}  dist={musicDistance:F1}");
-
-        // Resync audio/clock and rebuild solid ground at the fall distance BEFORE the player is
-        // actually teleported there — so by the time PlayerController resumes normal movement,
-        // MusicClock.MusicDistance and the ground both already agree with the new position.
-        // Without this ordering, the ground window (still centered wherever the player fell)
-        // could be far from the respawn point for up to a frame, and MusicClock briefly still
-        // reflects the pre-fall distance — either can show up as a fall-through/hitch right
-        // after respawn depending on script execution order, which this removes entirely.
+        // Resync audio/clock BEFORE the player repositions itself — so by the time
+        // PlayerController.SnapToCanonicalPosition() reads MusicClock.MusicDistance below, it
+        // already reflects the fall's songTime. Without this ordering, the ground window (still
+        // centered wherever the player fell) could be far from the respawn point for up to a
+        // frame, and MusicClock briefly still reflects the pre-fall distance — either can show up
+        // as a fall-through/hitch right after respawn depending on script execution order, which
+        // this removes entirely.
         _audio.time = audioTime;
         _audio.Play();
         MusicClock.Instance?.ForceUpdate();
+
+        // Read back (not re-derived from songTime*speed — PlayerController.CanonicalDistance is
+        // the only place that formula lives) purely to size the ground-rebuild window.
+        float musicDistance = MusicClock.Instance?.MusicDistance ?? 0f;
+        Debug.Log($"[RESPAWN] songTime={songTime:F2}  dist={musicDistance:F1}");
         MusicWorldManager.Instance?.RebuildNow(musicDistance);
 
-        var path = MusicWorldManager.Instance?.Path;
-        if (path != null)
-        {
-            var s = path.GetSample(musicDistance);
-            // Surface, not centerline — see CheckpointSystem.SurfacePosition's doc: the walkable
-            // surface sits above the centerline by the frequency-driven relief.
-            Vector3 respawnPos = MusicWorldManager.Instance != null
-                ? MusicWorldManager.Instance.SampleSurface(musicDistance, 0f).position
-                : s.position;
-
-            // Respawn() is the single, complete hand-back of control (resets forwardOffset/
-            // lateralOffset/verticalVelocity, clears fall state, re-enables the
-            // CharacterController) — it is NOT followed by ExitFallState() below. That used to
-            // run a SECOND time after the fade-in wait, which — now that Respawn() already
-            // restores full movement authority immediately — would silently wipe out any
-            // legitimate input/movement the player made during that ~1s fade-in window. One
-            // authority, one reset, done here.
-            _player.Respawn(respawnPos, Quaternion.LookRotation(s.tangent, Vector3.up));
-            Debug.Log($"[PLAYER RESET] forwardOffset={_player.ForwardOffset:F2}  lateralOffset={_player.LateralOffset:F2}  " +
-                      $"verticalVelocity={_player.VerticalVelocity:F2}");
-        }
+        // Single authority for "where the player belongs" — no distance formula or surface-
+        // sampling duplicated here (see PlayerController.SnapToCanonicalPosition's own doc).
+        _player.SnapToCanonicalPosition();
+        // Explicit, not inferred — CameraFollow doesn't guess a teleport happened by comparing
+        // distances; it's told. Was already done in RestartSong() but missing here, which is
+        // exactly why the camera used to visibly glide back to center after a fall respawn.
+        CameraFollow.Instance?.SnapToPlayer();
+        Debug.Log($"[PLAYER RESET] forwardOffset={_player.ForwardOffset:F2}  lateralOffset={_player.LateralOffset:F2}  " +
+                  $"verticalVelocity={_player.VerticalVelocity:F2}");
 
         _manager.ReturnAllActiveToPool();
         _manager.SetNextEventIndex(FindFirstEventIndexAtOrAfter(songTime));
@@ -247,14 +239,13 @@ public class FallRespawnSystem : MonoBehaviour
         // where the player was just teleported (distance 0) — see ReinitializeClock's doc.
         _manager.ReinitializeClock(0f);
 
-        var path = MusicWorldManager.Instance?.Path;
-        if (path != null)
+        if (MusicWorldManager.Instance?.Path != null)
         {
-            var s = path.GetSample(0f);
             MusicWorldManager.Instance.RebuildNow(0f);
-            // Surface, not centerline — see CheckpointSystem.SurfacePosition's doc.
-            Vector3 respawnPos = MusicWorldManager.Instance.SampleSurface(0f, 0f).position;
-            _player.Respawn(respawnPos, Quaternion.LookRotation(s.tangent, Vector3.up));
+            // Single authority for "where the player belongs" — MusicClock.MusicDistance is
+            // already 0 here (ReinitializeClock(0f) above), so this places the player at the
+            // path start exactly like before, without duplicating the sample/surface logic.
+            _player.SnapToCanonicalPosition();
             CameraFollow.Instance?.SnapToPlayer();
             Debug.Log($"[PLAYER RESET] forwardOffset={_player.ForwardOffset:F2}  lateralOffset={_player.LateralOffset:F2}  " +
                       $"verticalVelocity={_player.VerticalVelocity:F2}");

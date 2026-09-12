@@ -215,33 +215,79 @@ public class GameplayConfig : ScriptableObject
     [Tooltip("Extra clearance kept between a collectible's edge and the path's walkable edge")]
     public float collectibleLateralMargin = 0.6f;
     [Tooltip("Extra safety margin above the collectible's own half-height when computing the " +
-             "minimum clearance above the real surface. Generous on purpose — the surface query " +
-             "used for placement is a close but not pixel-perfect analytic approximation of the " +
-             "actual (smoothed/clamped) rendered mesh, so this absorbs that gap. Reduce later if " +
-             "collectibles end up floating too high.")]
-    public float collectibleSurfaceClearance = 0.3f;
-    [Tooltip("Lowest CLEARANCE above the real surface (not an absolute Y) for an 'easy', no-" +
-             "jump-needed collectible. Hard-floored at generation time to collectibleRadius + " +
-             "a small margin no matter what this is set to — collectibles can never be embedded.")]
-    public float minVerticalOffset        = 0.3f;
-    [Tooltip("Highest height above the path a collectible may roll to — clamped at generation " +
-             "time to what the player's jump (jumpForce/gravity) can actually reach")]
-    public float maxVerticalOffset        = 1.6f;
-    [Tooltip("X = a uniform 0..1 roll. Y = 0..1 fraction of [surface-clearance..maxVerticalOffset] " +
-             "the collectible actually lands at. Reshapes the roll so most collectibles land low " +
-             "(no jump needed — lateral movement stays the main gameplay), a smaller share land " +
-             "moderately elevated, and only a few reach the top (a clear, deliberate jump). " +
-             "Default keeps the curve under ~0.15 for the bottom ~60% of rolls, then rises to 1.0.")]
+             "minimum clearance above the real surface. This is a FLOOR that OVERRIDES " +
+             "bonusMinJumpHeightFactor whenever it would be higher (see CollectibleFloor) — with " +
+             "the actual ring meshes (small, ~0.15 half-height) the old 0.3 default made this " +
+             "physical floor bigger than the jump-based design floor for every single type, so " +
+             "EVERY bonus sat at ~0.5-0.6 no matter how low the curve rolled, regardless of " +
+             "verticalOffsetCurve tuning. Lowered so the jump-based range is normally what decides " +
+             "height; this only kicks in as a true embedding backstop. Raise it again only if " +
+             "collectibles visibly clip into the ground.")]
+    public float collectibleSurfaceClearance = 0.05f;
+    [Tooltip("Bottom of the bonus vertical range, as a 0..1 FRACTION of maxJumpHeight " +
+             "(jumpForce²/(2·|gravity|), the player's own real jump reach) — never an absolute " +
+             "world-unit height. Hard-floored per collectible type at generation time to its own " +
+             "physical clearance (mesh half-height + collectibleSurfaceClearance) no matter what " +
+             "this is set to, so nothing can ever be embedded. Change jumpForce/gravity and every " +
+             "bonus height adapts automatically — no world-unit range to keep in sync by hand.")]
+    [Range(0f, 1f)] public float bonusMinJumpHeightFactor = 0.15f;
+    [Tooltip("Top of the bonus vertical range, as a 0..1 fraction of maxJumpHeight. Normal bonuses " +
+             "use the FULL [bonusMinJumpHeightFactor..bonusMaxJumpHeightFactor] range (shaped by " +
+             "verticalOffsetCurve below). OffTrack bonuses always use the TOP 30% of this SAME " +
+             "range (see GameplayTimeline.EmitSingle) — never a second, independent range. Lower " +
+             "this if bonuses still feel too high/floaty overall; raise it for a higher, more " +
+             "jump-heavy ceiling — this is the single knob for 'how high can the tallest bonus be'.")]
+    [Range(0f, 1f)] public float bonusMaxJumpHeightFactor = 0.6f;
+    [Tooltip("X = a uniform 0..1 roll. Y = 0..1 fraction of the bonus vertical range " +
+             "(bonusMinJumpHeightFactor..bonusMaxJumpHeightFactor of maxJumpHeight) the collectible " +
+             "actually lands at. Reshapes the roll so the large majority hug the floor (no jump " +
+             "needed — lateral movement stays the main gameplay), a small minority land moderately " +
+             "elevated, and only a rare handful reach the top (a deliberate jump) — rare, not scarce. " +
+             "Default keeps the curve under ~0.08 for the bottom ~82% of rolls, ~0.08→0.3 for the " +
+             "next ~13%, and only the top ~5% climb to 1.0. To recalibrate 'how often should this " +
+             "need a jump' without touching the height RANGE itself, move the middle keyframes' " +
+             "TIME (x) — push them right (e.g. 0.9/0.97) for even fewer jumps, left (e.g. 0.7/0.9) " +
+             "for more. Move their VALUE (y) down for an even flatter/closer-to-ground plateau.")]
     public AnimationCurve verticalOffsetCurve = new AnimationCurve(
-        new Keyframe(0f,   0f),
-        new Keyframe(0.6f, 0.15f),
-        new Keyframe(0.85f, 0.4f),
-        new Keyframe(1f,   1f));
+        new Keyframe(0f,    0f),
+        new Keyframe(0.82f, 0.08f),
+        new Keyframe(0.95f, 0.3f),
+        new Keyframe(1f,    1f));
     [Tooltip("0..1 chance a short run of consecutive collectibles becomes one coordinated small " +
              "height pattern (arc / stair) instead of independent random heights")]
     [Range(0f, 1f)] public float patternProbability = 0.12f;
     [Tooltip("Seed for collectible lateral/vertical placement — same song + same seed = same layout")]
     public int   collectibleSeed = 1337;
+
+    // ── Off-Track Bonuses ─────────────────────────────────────────────────────
+    // Risky variants of an ordinary single collectible (GameplayTimeline.EmitSingle only —
+    // pattern runs are untouched): placed just beyond the track's real local half-width instead
+    // of safely inside it, so reaching one requires jumping off the path and using air control
+    // to get back — see PlayerController.IsBelowTrackSurface/FallRespawnSystem for why that's
+    // now survivable. isOffTrack is decided and stored on the TimelineEvent right here, at
+    // generation time — never re-derived from position later.
+    [Header("Off-Track Bonuses")]
+    [Tooltip("0..1 chance an ordinary single collectible becomes an off-track one instead.")]
+    [Range(0f, 1f)] public float offTrackBonusChance = 0.15f;
+    [Tooltip("How far BEYOND the track's real local half-width (path.GetWidth/2, not world X/Z) " +
+             "an off-track bonus can additionally sit — a small, jump+air-control-reachable " +
+             "extension, picked randomly left or right each time.")]
+    public float offTrackBonusMaxOffset = 1.5f;
+    [Tooltip("Score multiplier for collecting an off-track bonus vs. an equivalent normal one — " +
+             "risk/reward, applied on top of the SAME ScoreFor() calculation every other " +
+             "collectible uses (rarity/timing/type all still apply first).")]
+    public float offTrackBonusScoreMultiplier = 1.5f;
+    [Tooltip("Bottom of the OFF-TRACK bonus height range, as a 0..1 fraction of maxJumpHeight " +
+             "directly (jumpForce²/(2·|gravity|)) — deliberately INDEPENDENT of " +
+             "bonusMinJumpHeightFactor/bonusMaxJumpHeightFactor (the normal-bonus range). An " +
+             "off-track bonus must always demand something close to the player's FULL jump " +
+             "capability, regardless of how conservatively the normal-bonus ceiling is tuned — " +
+             "if the two shared one range, lowering the normal ceiling would quietly lower how " +
+             "high off-track bonuses sit too, even though those are meant to stay demanding.")]
+    [Range(0f, 1f)] public float offTrackBonusMinJumpHeightFactor = 0.7f;
+    [Tooltip("Top of the OFF-TRACK bonus height range, as a 0..1 fraction of maxJumpHeight " +
+             "directly. 1.0 = right at the theoretical peak of a full jump.")]
+    [Range(0f, 1f)] public float offTrackBonusMaxJumpHeightFactor = 1.0f;
 
     // ── Object Pooling ────────────────────────────────────────────────────────
     [Header("Object Pooling")]
@@ -264,6 +310,33 @@ public class GameplayConfig : ScriptableObject
              "systematically desyncs the visual pop from what you actually hear. Only raise it " +
              "if you deliberately want the punch to read as slightly ahead of the beat.")]
     public float pulseLeadTime   = 0f;
+
+    // ── Visual Anticipation ───────────────────────────────────────────────────
+    // Deliberately SPATIAL, not time-based — the path can curve/climb/descend, and this is a
+    // "how far ahead on the path" question, not a "how many seconds" one (unlike pulseLeadTime
+    // above, which IS about timing and stays exactly on the beat, untouched by this).
+    [Header("Visual Anticipation")]
+    // World units ahead of the player's actual distance (PlayerController.ActualDistance) at
+    // which a ring/bonus starts visually growing/revealing — a separate, EARLY, purely visual
+    // cue (a mild GameplayManager.RevealEvent → RingController.Pulse(0)) so you SEE it
+    // materialize ahead of you instead of right as you cross it. The real musical reaction
+    // (full-strength Pulse + BeatPulseEvent/camera kick, via pulseLeadTime above) still fires
+    // exactly on the beat, completely unaffected by either of these. Keep both comfortably
+    // BELOW spawnLookAhead*playerSpeed, or a ring wouldn't exist in the pool yet when its reveal
+    // distance is reached. Split Third/First Person because perceived distance differs a lot
+    // between the two — GetBonusVisualActivationDistance() below is the single place that picks
+    // between them, so nobody else needs an if(firstPerson) branch of their own.
+    [Tooltip("Reveal distance while in Third Person.")]
+    public float bonusVisualActivationDistanceThirdPerson = 8f;
+    [Tooltip("Reveal distance while in First Person — perception of distance is different up " +
+             "close, so this is deliberately a separate value from the Third Person one.")]
+    public float bonusVisualActivationDistanceFirstPerson = 8f;
+
+    /// <summary>Single source of truth for "which of the two values applies right now" —
+    /// GameplayManager just calls this (via CameraFollow.EffectiveBonusVisualActivationDistance,
+    /// which supplies the current CameraViewMode), never branching on the mode itself.</summary>
+    public float GetBonusVisualActivationDistance(CameraViewMode mode) =>
+        mode == CameraViewMode.FirstPerson ? bonusVisualActivationDistanceFirstPerson : bonusVisualActivationDistanceThirdPerson;
 
     // ── Music Environment (background color) ──────────────────────────────────
     // Ambient mood driven by the same SongProfile analysis, not a per-frame FFT visualizer and
@@ -410,8 +483,14 @@ public class GameplayConfig : ScriptableObject
     // ── Fall Off Path ─────────────────────────────────────────────────────────
     [Header("Fall Off Path")]
     public bool  enableFallOffPath   = true;
-    [Tooltip("Extra lateral tolerance beyond path half-width before triggering a fall")]
-    public float pathFallMargin      = 0.5f;
+    [Tooltip("How far BELOW the track's local surface plane (PlayerController.IsBelowTrackSurface, " +
+             "using the path sample's own position/up at the player's distance — not a world Y) " +
+             "the player must sink before a fall is confirmed. Being laterally outside the track " +
+             "but still above this plane (e.g. mid-air over the void, correctable with air control " +
+             "— see PlayerController.UpdateLateralOffset/config.allowAirControl) no longer counts " +
+             "as a fall by itself. Small on purpose: it's just a buffer against false " +
+             "positives right at the surface, not a tolerance for genuinely hanging in the air.")]
+    public float fallDeathDepth      = 0.1f;
     [Tooltip("Duration of the audio fade-out on fall")]
     public float fallFadeOutDuration = 0.6f;
 

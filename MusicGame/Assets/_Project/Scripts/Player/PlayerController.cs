@@ -9,23 +9,38 @@ using UnityEngine.InputSystem;
 /// Per frame, three independent pieces of state are updated (pure — no transform writes),
 /// then folded into exactly one CharacterController.Move() call:
 ///
-///   forwardOffset  ∈ [0, config.maxSurge]         — distance ahead of the music; eases back
-///                                                    to 0 when not pressed, never negative
-///                                                    (so playerDistance can never fall behind
-///                                                    MusicClock.MusicDistance)
-///   playerDistance = MusicClock.MusicDistance + forwardOffset
-///   sample         = MusicPath.GetSample(playerDistance)   — ONE sample/frame; position,
+///   CanonicalDistance = MusicClock.MusicDistance  — where the player belongs RIGHT NOW
+///                                                    according to the music. Exposed publicly;
+///                                                    this is the ONLY place that formula lives —
+///                                                    CameraFollow/GameplayManager/FallRespawnSystem/
+///                                                    debug all read it from here instead of each
+///                                                    re-deriving songTime*speed themselves.
+///   forwardOffset  ∈ [0, config.maxSurge]         — distance ahead of CanonicalDistance; eases
+///                                                    back to 0 when not pressed, never negative
+///                                                    (so ActualDistance can never fall behind
+///                                                    CanonicalDistance)
+///   ActualDistance = CanonicalDistance + forwardOffset  — where the player REALLY is (incl. surge)
+///   sample         = MusicPath.GetSample(ActualDistance)   — ONE sample/frame; position,
 ///                                                    right, up and width all come from it
-///   lateralOffset  ∈ [-limit, +limit] where limit = sample.width/2 + pathFallMargin
-///                                                    (same sample as above — the lateral
-///                                                    limit is part of this authoritative
-///                                                    calc, not a separate clamp elsewhere)
+///   lateralOffset  — UNCLAMPED path-local right units; how far the player can actually get
+///                                                    off the track is decided entirely by physics
+///                                                    (strafeSpeed, jumpForce, gravity, air time),
+///                                                    never by an artificial limit. Lateral input
+///                                                    works identically whether grounded or airborne
+///                                                    (gated only by config.allowAirControl) — WHY
+///                                                    the player is airborne (jumped, or just ran
+///                                                    off a steep downhill bump and briefly lost
+///                                                    ground contact) never changes that. LateralLimit
+///                                                    (= sample.width/2) is only a reference value
+///                                                    for "where the real edge is", read by the
+///                                                    HUD/debug and IsAtLateralLimit.
 ///   verticalVelocity — real gravity/jump, resolved by the SAME Move() call against
 ///                                                    MusicWorldManager's real ground collider
 ///
-/// Fall state (EnterFallState/ExitFallState) and Respawn() are the only exceptions: they are
-/// explicit, event-driven handoffs from FallRespawnSystem, and they fully reset forwardOffset/
-/// lateralOffset/verticalVelocity so the next frame doesn't fight its way back from stale state.
+/// Fall state (EnterFallState/ExitFallState), Respawn() and SnapToCanonicalPosition() are the
+/// only exceptions: they are explicit, event-driven handoffs from FallRespawnSystem, and they
+/// fully reset forwardOffset/lateralOffset/verticalVelocity so the next frame doesn't fight its
+/// way back from stale state.
 /// </summary>
 public class PlayerController : MonoBehaviour
 {
@@ -54,10 +69,32 @@ public class PlayerController : MonoBehaviour
     public bool  IsGrounded         => _cc != null && _cc.isGrounded;
     public float MaxForwardDistance => config.maxSurge;
 
-    // Local-width-aware lateral bound, computed once per frame in UpdateLateralOffset —
-    // the single authoritative source FallRespawnSystem reads instead of recomputing it.
+    /// <summary>Where the player belongs RIGHT NOW according to the music — single source of
+    /// truth for "songTime/MusicDistance → longitudinal position". Nobody else should
+    /// re-derive this from MusicClock directly.</summary>
+    public float CanonicalDistance => MusicClock.Instance?.MusicDistance ?? 0f;
+
+    /// <summary>Where the player REALLY is, including surge. What GameplayManager's spawn/
+    /// recycle windows and the debug HUD should read instead of MusicDistance + ForwardOffset.</summary>
+    public float ActualDistance => CanonicalDistance + _forwardOffset;
+
+    // The track's real half-width at the player's own distance, computed once per frame in
+    // UpdateLateralOffset — a REFERENCE value only (HUD/debug, IsAtLateralLimit below); it does
+    // NOT clamp _lateralOffset. How far the player can actually get outside it is pure physics
+    // (strafeSpeed/jumpForce/gravity/air time), and being past it is not, by itself, a fall — see
+    // IsBelowTrackSurface.
     public float LateralLimit     { get; private set; }
     public bool  IsAtLateralLimit { get; private set; }
+
+    /// <summary>
+    /// True once the player has sunk below the TRACK's own local surface plane by more than
+    /// config.fallDeathDepth — the single authoritative fall signal FallRespawnSystem reads.
+    /// Uses the path's local frame (sample.position/sample.up at the player's own distance), not
+    /// a world Y, so it stays correct on slopes/hills/future curves. Being laterally outside the
+    /// track (IsAtLateralLimit) but still above this plane — e.g. airborne over the void,
+    /// correctable with air control — does NOT count as a fall.
+    /// </summary>
+    public bool IsBelowTrackSurface { get; private set; }
 
     // Purely so CameraFollow can hide the player's own body in First Person without hardcoding
     // anything about the current provisional capsule — whatever BuildVisual() ends up creating
@@ -89,10 +126,9 @@ public class PlayerController : MonoBehaviour
         var path  = MusicWorldManager.Instance?.Path;
         if (clock == null || path == null) return;
 
-        // ── 1. Longitudinal: forwardOffset never negative → never behind the music ─────────
+        // ── 1. Longitudinal: forwardOffset never negative → never behind CanonicalDistance ──
         UpdateForwardOffset();
-        float playerDistance = clock.MusicDistance + _forwardOffset;
-        var   sample         = path.GetSample(playerDistance);
+        var sample = path.GetSample(ActualDistance);
 
         // ── 2. Lateral: clamped by the SAME sample used for the final position ─────────────
         UpdateLateralOffset(sample.width);
@@ -102,6 +138,12 @@ public class PlayerController : MonoBehaviour
 
         // ── 4. Single motion authority ──────────────────────────────────────────────────────
         ApplyMotion(sample);
+
+        // ── 5. Fall check: below the TRACK's local surface plane, not the lateral limit ─────
+        // Reaching IsAtLateralLimit (still computed above, just no longer used for this) no
+        // longer confirms a fall by itself — being laterally outside the track but still above
+        // it (e.g. mid-air over the void, correctable with air control) is fine.
+        UpdateIsBelowTrackSurface(sample);
     }
 
     // ── Longitudinal ─────────────────────────────────────────────────────────────
@@ -122,15 +164,18 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateLateralOffset(float pathWidth)
     {
-        LateralLimit = pathWidth * 0.5f + config.pathFallMargin;
+        // Reference only — the real edge, no artificial extra margin. Does not clamp anything
+        // below; see LateralLimit's own doc comment.
+        LateralLimit = pathWidth * 0.5f;
 
-        // Grounded (or allowAirControl=true): full direct control from input, same as always —
-        // and this is also where _lateralVelocity is kept up to date, so a jump taken mid-strafe
-        // has a real velocity ready to carry into the air below.
-        // Airborne with allowAirControl=false: input is ignored entirely — whatever velocity was
-        // last set while grounded keeps applying unchanged (no decay, no new player-driven
-        // acceleration/direction change) until landing.
-        if (config.allowAirControl || _cc.isGrounded)
+        bool grounded = _cc.isGrounded;
+
+        // Lateral input works the same regardless of WHY the player is airborne — jumped, ran
+        // off a steep downhill bump and briefly lost ground contact, whatever. Grounded: always
+        // full control. Airborne: full control too, but only if allowAirControl is on; if it's
+        // off, input is ignored and whatever velocity was last set while grounded just keeps
+        // applying unchanged (no decay, no new player-driven direction change) until landing.
+        if (grounded || config.allowAirControl)
         {
             var kb = Keyboard.current;
             float dir = 0f;
@@ -142,11 +187,12 @@ public class PlayerController : MonoBehaviour
             _lateralVelocity = dir * config.strafeSpeed;
         }
 
-        _lateralOffset = Mathf.Clamp(
-            _lateralOffset + _lateralVelocity * Time.deltaTime,
-            -LateralLimit, LateralLimit);
+        // Unclamped — how far this can actually carry the player is pure physics (strafeSpeed
+        // while it applies, jumpForce/gravity/air time bounding how long that lasts), not a limit
+        // imposed here.
+        _lateralOffset += _lateralVelocity * Time.deltaTime;
 
-        IsAtLateralLimit = Mathf.Abs(_lateralOffset) >= LateralLimit - 0.001f;
+        IsAtLateralLimit = Mathf.Abs(_lateralOffset) >= LateralLimit;
     }
 
     // ── Vertical ─────────────────────────────────────────────────────────────────
@@ -179,6 +225,18 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(sample.tangent, Vector3.up);
     }
 
+    // ── Fall detection (vertical, track-relative — NOT the lateral limit) ──────────────────
+
+    private void UpdateIsBelowTrackSurface(in MusicPath.Sample sample)
+    {
+        // Height relative to the TRACK's own local plane at this distance (position + up), not a
+        // world Y — stays correct on slopes/hills/future curves. Standing normally on the (frequency-
+        // driven, possibly bumpy) walkable surface gives a small POSITIVE value here (the surface
+        // sits above the centerline); only sinking fallDeathDepth below the centerline itself counts.
+        float signedHeight = Vector3.Dot(transform.position - sample.position, sample.up);
+        IsBelowTrackSurface = signedHeight < -config.fallDeathDepth;
+    }
+
     // ── Fall state ────────────────────────────────────────────────────────────
 
     public void EnterFallState()
@@ -208,6 +266,26 @@ public class PlayerController : MonoBehaviour
         if (_cc != null) _cc.enabled = true;
     }
 
+    /// <summary>
+    /// Teleports the player to wherever CanonicalDistance says it belongs RIGHT NOW (sampling the
+    /// real walkable surface, not the path centerline) — the single respawn/restart entry point.
+    /// FallRespawnSystem calls this instead of recomputing songTime*speed and the surface-sample
+    /// logic itself; it only needs to resync MusicClock to the right songTime FIRST (so
+    /// CanonicalDistance reads correctly), then call this.
+    /// </summary>
+    public void SnapToCanonicalPosition()
+    {
+        var world = MusicWorldManager.Instance;
+        var path  = world?.Path;
+        if (path == null) return;
+
+        float dist   = CanonicalDistance;
+        var   sample = path.GetSample(dist);
+        // Surface, not centerline — the walkable surface sits above it by the frequency-driven relief.
+        Vector3 pos = world != null ? world.SampleSurface(dist, 0f).position : sample.position;
+        Respawn(pos, Quaternion.LookRotation(sample.tangent, Vector3.up));
+    }
+
     // Resets every piece of per-frame motion state so the frame right after a respawn/fall-exit
     // computes forwardOffset/lateralOffset/verticalVelocity fresh instead of chasing stale values.
     private void ResetMotionState()
@@ -216,9 +294,10 @@ public class PlayerController : MonoBehaviour
         _forwardOffset    = 0f;
         _lateralOffset    = 0f;
         _lateralVelocity  = 0f;
-        _verticalVelocity = 0f;
-        LateralLimit      = 0f;
-        IsAtLateralLimit  = false;
+        _verticalVelocity    = 0f;
+        LateralLimit         = 0f;
+        IsAtLateralLimit     = false;
+        IsBelowTrackSurface  = false;
     }
 
     private void UpdateFall()

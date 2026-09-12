@@ -20,6 +20,16 @@ public class LiveHudView : MonoBehaviour
     public Text scoreValue;
     public Text totalValue;
 
+    [Header("Counter labels (localized — see Loc)")]
+    public Text kickLabel;
+    public Text snareLabel;
+    public Text hiHatLabel;
+    public Text beatLabel;
+    public Text onsetLabel;
+    public Text impactLabel;
+    public Text scoreLabel;
+    public Text totalLabel;
+
     [Header("Progress")]
     public Image progressFill;
 

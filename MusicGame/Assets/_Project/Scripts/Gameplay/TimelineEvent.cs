@@ -31,6 +31,10 @@ public struct TimelineEvent
     // matters: using path-up for the WHOLE offset on a tilted surface can under-clear the real
     // surface; using surface-normal for the WHOLE offset can shove a tall jump sideways.
     public float     floorClearance;
+    // Decided ONCE at generation time (GameplayTimeline.EmitSingle) — never inferred later from
+    // lateralOffset/track width at collection time. Carried through Activate() into
+    // RingController's own _sourceEvent, which is what RingCollectedEvent.IsOffTrack reads.
+    public bool      isOffTrack;
     public float     strength;        // 0..1 musical signal strength (post-fusion)
     public string    sourceFeature;   // dominant raw signal: "Kick", "Snare", "HiHat", "Beat", "Onset", "Impact", "Peak"
     public float     confidence;      // 0..1 — how many independent raw signals agreed this is a real moment

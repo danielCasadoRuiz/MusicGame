@@ -119,16 +119,16 @@ public static class UIPrefabBuilder
         UIFactory.SetBox(root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, new Vector2(0f, 100f));
         var view = root.gameObject.AddComponent<LiveHudView>();
 
-        var cells = new (string label, RingType? type, System.Action<Text> assign)[]
+        var cells = new (string labelKey, RingType? type, System.Action<Text> assignValue, System.Action<Text> assignLabel)[]
         {
-            ("KICK",   RingType.Kick,   t => view.kickValue   = t),
-            ("SNARE",  RingType.Snare,  t => view.snareValue  = t),
-            ("HI-HAT", RingType.HiHat,  t => view.hiHatValue  = t),
-            ("BEAT",   RingType.Beat,   t => view.beatValue   = t),
-            ("ONSET",  RingType.Onset,  t => view.onsetValue  = t),
-            ("IMPACT", RingType.Impact, t => view.impactValue = t),
-            ("SCORE",  null,            t => view.scoreValue  = t),
-            ("TOTAL",  null,            t => view.totalValue  = t),
+            ("HUD.Kick",   RingType.Kick,   t => view.kickValue   = t, t => view.kickLabel   = t),
+            ("HUD.Snare",  RingType.Snare,  t => view.snareValue  = t, t => view.snareLabel  = t),
+            ("HUD.HiHat",  RingType.HiHat,  t => view.hiHatValue  = t, t => view.hiHatLabel  = t),
+            ("HUD.Beat",   RingType.Beat,   t => view.beatValue   = t, t => view.beatLabel   = t),
+            ("HUD.Onset",  RingType.Onset,  t => view.onsetValue  = t, t => view.onsetLabel  = t),
+            ("HUD.Impact", RingType.Impact, t => view.impactValue = t, t => view.impactLabel = t),
+            ("HUD.Score",  null,            t => view.scoreValue  = t, t => view.scoreLabel  = t),
+            ("HUD.Total",  null,            t => view.totalValue  = t, t => view.totalLabel  = t),
         };
 
         var topBar = UIFactory.CreatePanel("TopBar", root, new Color(0.03f, 0.03f, 0.03f, 0.88f));
@@ -136,18 +136,19 @@ public static class UIPrefabBuilder
 
         for (int i = 0; i < cells.Length; i++)
         {
-            var cell = UIFactory.CreateRect($"Cell_{cells[i].label}", topBar.rectTransform);
+            var cell = UIFactory.CreateRect($"Cell_{cells[i].labelKey}", topBar.rectTransform);
             float xMin = i / 8f, xMax = (i + 1) / 8f;
             UIFactory.SetBox(cell, new Vector2(xMin, 0f), new Vector2(xMax, 1f), new Vector2(0f, 1f), new Vector2(6f, 0f), new Vector2(-6f, 0f));
 
             Color labelColor = cells[i].type.HasValue && config != null ? config.RingColor(cells[i].type.Value) : Color.white;
-            var label = UIFactory.CreateText("Label", cell, cells[i].label, 12, labelColor, TextAnchor.UpperLeft);
+            var label = UIFactory.CreateText("Label", cell, Loc.Get(cells[i].labelKey), 12, labelColor, TextAnchor.UpperLeft);
             UIFactory.SetBox(label.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -3f), new Vector2(0f, 20f));
+            cells[i].assignLabel(label);
 
             var value = UIFactory.CreateText("Value", cell, "0", 14, Color.white, TextAnchor.UpperLeft);
             UIFactory.SetBox(value.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -22f), new Vector2(0f, 20f));
 
-            cells[i].assign(value);
+            cells[i].assignValue(value);
         }
 
         var progressBg = UIFactory.CreateFillBar("SongProgress", root, new Color(0.10f, 0.10f, 0.10f), new Color(0.18f, 0.75f, 0.95f), out var progressFill);
@@ -196,8 +197,9 @@ public static class UIPrefabBuilder
         var content = panel.rectTransform;
         float y = -16f;
 
-        var title = UIFactory.CreateText("Title", content, "─── RESULTS ───", 20, Color.white);
+        var title = UIFactory.CreateText("Title", content, Loc.Get("EndScreen.Title"), 20, Color.white);
         UIFactory.StackTop(title.rectTransform, ref y, 30f);
+        view.titleText = title;
 
         var rating = UIFactory.CreateText("Rating", content, "", 22, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold);
         UIFactory.StackTop(rating.rectTransform, ref y, 32f);
@@ -232,15 +234,17 @@ public static class UIPrefabBuilder
 
         y -= 10f;
         float btnW = 150f, btnH = 40f, gap = 16f;
-        var restartBtn = UIFactory.CreateButton("RestartButton", content, "RESTART", out _);
+        var restartBtn = UIFactory.CreateButton("RestartButton", content, Loc.Get("EndScreen.Restart"), out var restartLabel);
         UIFactory.SetBox(restartBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(-(btnW + gap) / 2f, y), new Vector2(btnW, btnH));
-        view.restartButton = restartBtn;
+        view.restartButton      = restartBtn;
+        view.restartButtonLabel = restartLabel;
 
-        var continueBtn = UIFactory.CreateButton("ContinueButton", content, "CONTINUE", out _);
+        var continueBtn = UIFactory.CreateButton("ContinueButton", content, Loc.Get("EndScreen.Continue"), out var continueLabel);
         UIFactory.SetBox(continueBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2((btnW + gap) / 2f, y), new Vector2(btnW, btnH));
-        view.continueButton = continueBtn;
+        view.continueButton      = continueBtn;
+        view.continueButtonLabel = continueLabel;
 
         return root.gameObject;
     }
@@ -253,11 +257,12 @@ public static class UIPrefabBuilder
         UIFactory.Stretch(root);
         var view = root.gameObject.AddComponent<PauseView>();
 
-        var pauseBtn = UIFactory.CreateButton("PauseButton", root, "Pause", out _);
+        var pauseBtn = UIFactory.CreateButton("PauseButton", root, Loc.Get("Pause.PauseButton"), out var pauseLabel);
         UIFactory.SetBox(pauseBtn.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
             new Vector2(-12f, -12f), new Vector2(84f, 28f));
-        view.pauseButtonRoot = pauseBtn.gameObject;
-        view.pauseButton     = pauseBtn;
+        view.pauseButtonRoot  = pauseBtn.gameObject;
+        view.pauseButton      = pauseBtn;
+        view.pauseButtonLabel = pauseLabel;
 
         var overlay = UIFactory.CreateRect("PausedOverlay", root);
         UIFactory.Stretch(overlay);
@@ -276,21 +281,24 @@ public static class UIPrefabBuilder
         var content = panel.rectTransform;
         float y = -14f;
 
-        var title = UIFactory.CreateText("Title", content, "PAUSED", 18, Color.white);
+        var title = UIFactory.CreateText("Title", content, Loc.Get("Pause.Title"), 18, Color.white);
         UIFactory.StackTop(title.rectTransform, ref y, 28f, 0f);
+        view.titleText = title;
 
         y = -60f;
         float btnW = pw - 40f, btnH = 34f;
-        var resumeBtn = UIFactory.CreateButton("ResumeButton", content, "RESUME", out _);
+        var resumeBtn = UIFactory.CreateButton("ResumeButton", content, Loc.Get("Pause.Resume"), out var resumeLabel);
         UIFactory.SetBox(resumeBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, y), new Vector2(btnW, btnH));
-        view.resumeButton = resumeBtn;
+        view.resumeButton      = resumeBtn;
+        view.resumeButtonLabel = resumeLabel;
         y -= btnH + 12f;
 
-        var restartBtn = UIFactory.CreateButton("RestartButton", content, "RESTART SONG", out _);
+        var restartBtn = UIFactory.CreateButton("RestartButton", content, Loc.Get("Pause.RestartSong"), out var restartLabel);
         UIFactory.SetBox(restartBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, y), new Vector2(btnW, btnH));
-        view.restartButton = restartBtn;
+        view.restartButton      = restartBtn;
+        view.restartButtonLabel = restartLabel;
 
         return root.gameObject;
     }

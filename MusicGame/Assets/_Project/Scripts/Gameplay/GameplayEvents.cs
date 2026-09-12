@@ -25,6 +25,7 @@ public struct RingCollectedEvent
     public float    Strength;      // TimelineEvent.strength
     public float    Confidence;    // TimelineEvent.confidence — classification certainty (see GameplayTimeline.ClassifyOnset), or 1.0 for a Macro-as-collectible (Impact/Peak)
     public string   Contributors;  // TimelineEvent.contributors — e.g. "Kick" or "Impact+Peak" (climax-tagged)
+    public bool     IsOffTrack;    // TimelineEvent.isOffTrack — decided at generation time, never inferred here
 }
 
 /// <summary>

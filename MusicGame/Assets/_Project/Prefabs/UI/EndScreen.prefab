@@ -78,7 +78,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: RESTART
+  m_Text: EndScreen.Restart
 --- !u!1 &747496201131487051
 GameObject:
   m_ObjectHideFlags: 0
@@ -174,7 +174,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2877092509637129076
 RectTransform:
   m_ObjectHideFlags: 0
@@ -208,6 +208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78f1355ccf5ca104db8339779e7cb1a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EndScreenView
+  titleText: {fileID: 8254170319238380410}
   ratingLabel: {fileID: 222604757680794130}
   ratingBarFill: {fileID: 209188495664510905}
   scoreSummary: {fileID: 598632794073980466}
@@ -216,7 +217,9 @@ MonoBehaviour:
   noFallBonusText: {fileID: 7296321482691217390}
   sessionText: {fileID: 5060751642658754520}
   restartButton: {fileID: 6750812921272831606}
+  restartButtonLabel: {fileID: 2648747871129915697}
   continueButton: {fileID: 1168434329509918551}
+  continueButtonLabel: {fileID: 2509691953304930744}
 --- !u!1 &1463886621717992441
 GameObject:
   m_ObjectHideFlags: 0
@@ -453,7 +456,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2500\u2500\u2500 RESULTS \u2500\u2500\u2500"
+  m_Text: EndScreen.Title
 --- !u!1 &5858114473278337614
 GameObject:
   m_ObjectHideFlags: 0
@@ -722,7 +725,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: CONTINUE
+  m_Text: EndScreen.Continue
 --- !u!1 &6605842842625002118
 GameObject:
   m_ObjectHideFlags: 0

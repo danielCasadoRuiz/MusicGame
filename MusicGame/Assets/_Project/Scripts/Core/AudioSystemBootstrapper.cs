@@ -16,6 +16,9 @@ public class AudioSystemBootstrapper : MonoBehaviour
         var sampler     = gameObject.AddComponent<AudioSampler>();
         var analyzer    = gameObject.AddComponent<AudioAnalyzer>();
         var preAnalyzer = gameObject.AddComponent<AudioPreAnalyzer>();
+        // Shows itself only between PreAnalysisStartedEvent and SongProfileReadyEvent (never on a
+        // cache hit, which skips straight to SongProfileReadyEvent) — see its own class doc.
+        gameObject.AddComponent<AnalyzingScreenController>();
 
         _contextProvider = new AudioContextProvider();
         _contextProvider.Initialize(audioSource);

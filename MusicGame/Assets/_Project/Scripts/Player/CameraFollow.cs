@@ -34,6 +34,13 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private float heightAbovePath = 5f;    // units above path surface
     [SerializeField] private float xSmoothTime     = 0.15f; // lateral smoothing
     [SerializeField] private float posSmoothTime   = 0.06f; // world-space position smoothing
+    [Tooltip("true: exact original behavior — Third Person's rotation is a full LookAt toward the " +
+             "player, which can wobble side to side as the player strafes laterally. false (new " +
+             "default): yaw is LOCKED to the path's own heading at the camera's position instead — " +
+             "it still turns through genuine track curves (that's the path curving, not the " +
+             "player), it just no longer reacts to the player's lateral position/LookAt jitter. " +
+             "Pitch still follows the player's height either way, so vertical framing is unchanged.")]
+    [SerializeField] private bool thirdPersonAllowYawRotation = false;
 
     [Header("Energy Response")]
     [SerializeField] private float energyHeightPeak = 2f;   // extra height at max intensity
@@ -61,6 +68,14 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private bool enableDebugToggleKey = true;
 
     public CameraViewMode ViewMode => _viewMode;
+
+    /// <summary>Single query point for "what's the current bonus visual reveal distance" —
+    /// GameplayManager just reads this, with zero if(firstPerson) branching of its own. Changes
+    /// immediately on a view toggle (next reveal check just uses the new value; already-revealed
+    /// events are untouched). GameplayConfig.GetBonusVisualActivationDistance is the actual
+    /// Third/First Person mapping; this just supplies it with the CURRENT mode.</summary>
+    public float EffectiveBonusVisualActivationDistance =>
+        config != null ? config.GetBonusVisualActivationDistance(_viewMode) : 0f;
 
     // ── Runtime: Third Person smoothing state (kept up to date regardless of active view mode,
     // so switching back to Third Person never has to "catch up" from stale values) ─────────────
@@ -103,18 +118,30 @@ public class CameraFollow : MonoBehaviour
 
     /// <summary>
     /// Forces the NEXT LateUpdate to hard-snap to the player instead of gliding there via
-    /// SmoothDamp — call right after teleporting the player (restart/respawn) so the camera
-    /// doesn't visibly swoop in from wherever it was sitting before the teleport. Does NOT
-    /// touch ViewMode — a restart never changes which view you were in.
+    /// SmoothDamp — call right after teleporting the player (restart/respawn), AFTER the player's
+    /// own reset (ResetMotionState/Respawn) has already run, so LateralOffset/CanonicalDistance
+    /// read back here are the POST-reset values, not stale ones. Does NOT touch ViewMode — a
+    /// restart never changes which view you were in.
+    ///
+    /// Must clear _smoothedLateral itself, not just its velocity (_velX): _smoothedLateral is a
+    /// SmoothDamp'd float re-evaluated every LateUpdate regardless of _initialized, so leaving it
+    /// at its pre-teleport value meant the very first "hard snap" frame still built its position
+    /// from a stale lateral offset — only _velX was zeroed, so it then took several more frames of
+    /// SmoothDamp to visibly crawl from the old lateral position to the new (correct) one. That
+    /// multi-frame crawl was the whole bug; resetting the value itself here removes it entirely.
+    /// _energyHeight is reset for the same reason (no stale smoothed value carried across a hard
+    /// reset) — a fresh gameplay moment should read its energy fresh, not ease into it.
     /// </summary>
     public void SnapToPlayer()
     {
-        _initialized   = false;
-        _transitioning = false;
-        _velPos  = Vector3.zero;
-        _velX    = 0f;
-        _kick    = 0f;
-        _kickVel = 0f;
+        _initialized     = false;
+        _transitioning   = false;
+        _velPos          = Vector3.zero;
+        _velX            = 0f;
+        _kick            = 0f;
+        _kickVel         = 0f;
+        _smoothedLateral = playerController != null ? playerController.LateralOffset : 0f;
+        _energyHeight    = 0f;
     }
 
     /// <summary>
@@ -139,6 +166,33 @@ public class CameraFollow : MonoBehaviour
         PlayerPrefs.Save();
 
         EventBus.Publish(new CameraViewChangedEvent { Mode = mode });
+    }
+
+    /// <summary>
+    /// Third Person's rotation — the ONLY place that decides it, used for the first-frame snap,
+    /// the view-transition blend target, and the steady-state frame, so thirdPersonAllowYawRotation
+    /// behaves identically everywhere instead of three slightly different LookAt call sites.
+    /// </summary>
+    private Quaternion ComputeThirdPersonRotation(Vector3 camPos, Vector3 tangent)
+    {
+        Vector3 toLook = _smoothedLookAt - camPos;
+
+        if (thirdPersonAllowYawRotation)
+        {
+            // Exact original behavior — full LookAt toward the player.
+            Vector3 dir = toLook.sqrMagnitude > 0.0001f ? toLook.normalized : transform.forward;
+            return Quaternion.LookRotation(dir, Vector3.up);
+        }
+
+        // Yaw LOCKED to the path's own heading (still turns through real curves — that's the
+        // path, not the player) — pitch still tracks the look-at target's height, built directly
+        // from vectors (not Euler angles) to avoid any up/down sign ambiguity.
+        Vector3 flatTangent = new Vector3(tangent.x, 0f, tangent.z);
+        flatTangent = flatTangent.sqrMagnitude > 0.0001f ? flatTangent.normalized : Vector3.forward;
+
+        float   horizDist = new Vector3(toLook.x, 0f, toLook.z).magnitude;
+        Vector3 forward   = flatTangent * Mathf.Max(horizDist, 0.01f) + Vector3.up * toLook.y;
+        return Quaternion.LookRotation(forward.normalized, Vector3.up);
     }
 
     private void ApplyRendererVisibility()
@@ -200,7 +254,13 @@ public class CameraFollow : MonoBehaviour
         // ── Third Person natural pose — computed EVERY frame regardless of active view mode,
         // so its smoothing state is always caught up (see class doc) and so it's available as a
         // transition endpoint even while First Person is active. ─────────────────────────────
-        float camDist   = Mathf.Max(0f, clock.MusicDistance - behindDistance);
+        // Framed off PlayerController.CanonicalDistance (the player's own authority on "where it
+        // belongs right now"), NOT MusicDistance directly — CameraFollow consumes the player's
+        // state, it doesn't re-derive it from the music itself. Deliberately CanonicalDistance,
+        // not ActualDistance: the camera must keep ignoring surge exactly as before (that's what
+        // lets the player visibly pull ahead of the camera on a surge — see class doc).
+        float playerBaseDistance = playerController != null ? playerController.CanonicalDistance : clock.MusicDistance;
+        float camDist   = Mathf.Max(0f, playerBaseDistance - behindDistance);
         var   camSample = path.GetSample(camDist);
 
         float targetLateral = playerController != null ? playerController.LateralOffset : 0f;
@@ -238,7 +298,7 @@ public class CameraFollow : MonoBehaviour
             if (_viewMode == CameraViewMode.ThirdPerson)
             {
                 transform.position = thirdPersonPos;
-                transform.LookAt(_smoothedLookAt, Vector3.up);
+                transform.rotation = ComputeThirdPersonRotation(thirdPersonPos, camSample.tangent);
             }
             else
             {
@@ -260,10 +320,9 @@ public class CameraFollow : MonoBehaviour
             if (_viewMode == CameraViewMode.ThirdPerson)
             {
                 endPos = thirdPersonPos;
-                // Derived the same way plain Third Person derives it below (LookAt from the
-                // actual resting position toward the smoothed look target).
-                endRot = Quaternion.LookRotation((_smoothedLookAt - endPos).sqrMagnitude > 0.0001f
-                    ? (_smoothedLookAt - endPos).normalized : transform.forward, Vector3.up);
+                // Derived the same way plain Third Person derives it below — respects
+                // thirdPersonAllowYawRotation for the transition's end pose too.
+                endRot = ComputeThirdPersonRotation(endPos, camSample.tangent);
             }
             else
             {
@@ -280,10 +339,10 @@ public class CameraFollow : MonoBehaviour
 
         if (_viewMode == CameraViewMode.ThirdPerson)
         {
-            // Exact original Third Person behavior — position smoothed, then LookAt from
-            // wherever that smoothing actually landed (not from the raw unsmoothed target).
+            // Exact original Third Person behavior — position smoothed, then rotation resolved
+            // from wherever that smoothing actually landed (not from the raw unsmoothed target).
             transform.position = Vector3.SmoothDamp(transform.position, thirdPersonPos, ref _velPos, posSmoothTime);
-            transform.LookAt(_smoothedLookAt, Vector3.up);
+            transform.rotation = ComputeThirdPersonRotation(transform.position, camSample.tangent);
         }
         else
         {
