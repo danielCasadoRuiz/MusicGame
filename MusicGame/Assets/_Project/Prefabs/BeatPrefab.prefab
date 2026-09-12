@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3994615206550306524}
   - component: {fileID: 5667127705549809720}
   - component: {fileID: 1188342779837276347}
+  - component: {fileID: 1000000000000000104}
   m_Layer: 0
   m_Name: BeatPrefab
   m_TagString: Untagged
@@ -112,3 +113,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1000000000000000104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5434954073038206104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f847c0fd6ff154246bf2fd258194e130, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  ghostScale: 0.35
+  pickupLeeway: 2
+  collectSound: {fileID: 0}
+  collectVolume: 1

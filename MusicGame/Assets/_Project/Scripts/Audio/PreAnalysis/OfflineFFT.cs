@@ -66,6 +66,28 @@ public static class OfflineFFT
         }
     }
 
+    /// <summary>
+    /// Raw (unnormalized) power spectrum |FFT|^2, including the Nyquist bin (n/2+1 bins total)
+    /// — the convention librosa's STFT/melspectrogram uses, unlike Compute() above which returns
+    /// a magnitude/n-normalized spectrum without the Nyquist bin for the existing visualizer/
+    /// detector pipeline. Kept as a separate method so that pipeline's normalization is untouched.
+    /// </summary>
+    public static float[] ComputePowerSpectrum(float[] samples, FFTWindowType windowType)
+    {
+        int n = samples.Length;
+
+        float[] real = ApplyWindow(samples, windowType);
+        float[] imag = new float[n];
+
+        Transform(real, imag);
+
+        float[] power = new float[n / 2 + 1];
+        for (int i = 0; i <= n / 2; i++)
+            power[i] = real[i] * real[i] + imag[i] * imag[i];
+
+        return power;
+    }
+
     private static float[] ApplyWindow(float[] samples, FFTWindowType type)
     {
         int     n    = samples.Length;
@@ -78,6 +100,11 @@ public static class OfflineFFT
             {
                 FFTWindowType.Hanning =>
                     0.5f * (1f - Mathf.Cos(2f * Mathf.PI * i / nm1)),
+                // "Periodic"/DFT-even Hann (denominator n, not n-1) — the convention scipy's
+                // get_window(..., fftbins=True) and librosa's STFT use for windowing, as opposed
+                // to the symmetric Hanning case above (kept unchanged for existing callers).
+                FFTWindowType.HannPeriodic =>
+                    0.5f - 0.5f * Mathf.Cos(2f * Mathf.PI * i / n),
                 FFTWindowType.Hamming =>
                     0.54f - 0.46f * Mathf.Cos(2f * Mathf.PI * i / nm1),
                 FFTWindowType.BlackmanHarris =>
@@ -93,4 +120,4 @@ public static class OfflineFFT
     }
 }
 
-public enum FFTWindowType { Rectangular, Hanning, Hamming, BlackmanHarris }
+public enum FFTWindowType { Rectangular, Hanning, Hamming, BlackmanHarris, HannPeriodic }

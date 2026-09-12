@@ -9,8 +9,25 @@ public class AudioPreAnalyzer : MonoBehaviour
         // Wait one frame so all OnEnable() subscriptions are registered before publishing any event
         yield return null;
 
-        if (SongCache.TryLoad(clip, out var cached))
+        // A cache saved before visualBandEnvelopes existed won't have it — fall through to a
+        // full re-analysis rather than silently shipping a flat, bandless ground mesh.
+        if (SongCache.TryLoad(clip, out var cached) && cached.VisualBandCount > 0)
         {
+            // Derived features are always recomputed (fast, < 1 s) so config changes take effect
+            RunOfflineAnalyzers(cached, config);
+
+            // Semantic tags ARE cached (ML inference isn't "fast"), so on a normal cache hit we
+            // do NOT re-run them — only if tagging just got enabled or the model/preprocessing
+            // changed (ModelVersion bump) do we re-tag, without discarding anything else cached.
+            bool needsRetag = config.advancedEnabled && config.advancedSemanticTagging &&
+                              (!cached.HasMusicTags || cached.musicTagModelVersion != SentisMusicTagger.ModelVersion);
+            if (needsRetag)
+            {
+                float[] monoForTag = MixToMono(GetClipData(clip), clip.channels);
+                yield return RunSemanticTagging(monoForTag, clip.frequency, cached, config);
+                SongCache.Save(clip, cached);
+            }
+
             EventBus.Publish(new SongProfileReadyEvent { Profile = cached });
             onComplete?.Invoke(cached);
             yield break;
@@ -20,10 +37,8 @@ public class AudioPreAnalyzer : MonoBehaviour
 
         int sampleRate   = clip.frequency;
         int channels     = clip.channels;
-        int totalSamples = clip.samples * channels;
 
-        float[] raw  = new float[totalSamples];
-        clip.GetData(raw, 0);
+        float[] raw  = GetClipData(clip);
 
         float[] mono = MixToMono(raw, channels);
 
@@ -34,14 +49,36 @@ public class AudioPreAnalyzer : MonoBehaviour
         int   numBands       = config.bands.Length;
         int   framesPerYield = 150;
 
+        // Visual spectrum: a SEPARATE, higher-resolution band set (log-spaced 20 Hz..Nyquist)
+        // used by the ground mesh cross-section and the debug spectrum panel. Independent from
+        // `config.bands` above so it can never disturb Kick/Snare/HiHat classification, which
+        // relies on that exact 6-band layout by index.
+        int    numVisualBands  = Mathf.Max(1, config.visualBandCount);
+        var    visualBandDefs  = BuildLogBands(numVisualBands, 20f, sampleRate * 0.5f);
+
+        // ── Core arrays ────────────────────────────────────────────────────────
         float[]   energyEnv   = new float[numFrames];
         float[]   spectralCen = new float[numFrames];
         float[]   spectralFlx = new float[numFrames];
         float[][] bandEnv     = new float[numBands][];
         for (int b = 0; b < numBands; b++) bandEnv[b] = new float[numFrames];
+        float[][] visualBandEnv = new float[numVisualBands][];
+        for (int b = 0; b < numVisualBands; b++) visualBandEnv[b] = new float[numFrames];
+
+        // ── Advanced per-frame arrays (allocated only if the feature is enabled) ─
+        bool needFlatness = config.advancedEnabled &&
+                            (config.advancedTimbre || config.advancedVoice || config.advancedStructure);
+        bool needChroma   = config.advancedEnabled && config.advancedHarmony;
+        bool needVoice    = config.advancedEnabled && config.advancedVoice;
+
+        float[] spectralFlatness = needFlatness ? new float[numFrames]      : null;
+        float[] chromaFlat       = needChroma   ? new float[numFrames * 12] : null;
+        float[] voiceProb        = needVoice    ? new float[numFrames]       : null;
+        float[] chromaBuf        = needChroma   ? new float[12]              : null;
 
         float[] prevSpectrum = null;
 
+        // ── Main FFT loop ──────────────────────────────────────────────────────
         for (int f = 0; f < numFrames; f++)
         {
             float[] chunk = new float[windowSize];
@@ -82,6 +119,25 @@ public class AudioPreAnalyzer : MonoBehaviour
             for (int b = 0; b < numBands; b++)
                 bandEnv[b][f] = ComputeBandEnergy(spectrum, config.bands[b], sampleRate, windowSize);
 
+            // Visual spectrum — reuses the SAME per-frame spectrum, no extra FFT
+            for (int b = 0; b < numVisualBands; b++)
+                visualBandEnv[b][f] = ComputeBandEnergy(spectrum, visualBandDefs[b], sampleRate, windowSize);
+
+            // ── Advanced per-frame (reuse spectrum, no extra FFT) ───────────────
+            float flat = 0.5f;
+            if (needFlatness)
+            {
+                flat = AdvancedFFTFeatures.SpectralFlatness(spectrum);
+                spectralFlatness[f] = flat;
+            }
+            if (needChroma)
+            {
+                AdvancedFFTFeatures.ComputeChroma(spectrum, sampleRate, windowSize, chromaBuf);
+                System.Array.Copy(chromaBuf, 0, chromaFlat, f * 12, 12);
+            }
+            if (needVoice)
+                voiceProb[f] = AdvancedFFTFeatures.VoiceProbability(spectrum, sampleRate, windowSize, flat);
+
             if (f % framesPerYield == 0)
             {
                 EventBus.Publish(new PreAnalysisProgressEvent { Progress = (float)f / numFrames });
@@ -89,6 +145,7 @@ public class AudioPreAnalyzer : MonoBehaviour
             }
         }
 
+        // ── Post-loop aggregation ──────────────────────────────────────────────
         float avgEnergy = 0f, maxEnergy = 0f;
         for (int f = 0; f < numFrames; f++)
         {
@@ -103,26 +160,120 @@ public class AudioPreAnalyzer : MonoBehaviour
 
         var profile = new SongProfile
         {
-            duration         = (float)mono.Length / sampleRate,
-            sampleRate       = sampleRate,
-            estimatedBPM     = bpm,
-            averageEnergy    = avgEnergy,
-            maxEnergy        = maxEnergy,
-            analysisHopTime  = hopTime,
-            energyEnvelope   = energyEnv,
-            spectralCentroid = spectralCen,
-            spectralFlux     = spectralFlx,
-            onsetTimes       = onsets,
-            bandEnvelopes    = bandEnv,
-            segments         = segments,
+            duration          = (float)mono.Length / sampleRate,
+            sampleRate        = sampleRate,
+            estimatedBPM      = bpm,
+            averageEnergy     = avgEnergy,
+            maxEnergy         = maxEnergy,
+            analysisHopTime   = hopTime,
+            energyEnvelope    = energyEnv,
+            spectralCentroid  = spectralCen,
+            spectralFlux      = spectralFlx,
+            onsetTimes        = onsets,
+            bandEnvelopes     = bandEnv,
+            visualBandEnvelopes = visualBandEnv,
+            segments          = segments,
+            spectralFlatness  = spectralFlatness,
+            chromaFlat        = chromaFlat,
+            voiceProbability  = voiceProb,
+            estimatedKey      = -1,
         };
 
+        // Semantic tags (unlike loudness/dynamics/harmony/etc. below) ARE part of what gets
+        // cached — ML inference isn't "fast to recompute" — so this must run BEFORE the save.
+        if (config.advancedEnabled && config.advancedSemanticTagging)
+            yield return RunSemanticTagging(mono, sampleRate, profile, config);
+
+        // Save BEFORE running derived analyzers: the cache stores raw per-frame arrays.
+        // Derived features (loudness, dynamics, zones, harmony, etc.) are always
+        // recomputed from the cached data — they're fast and excluded from cache
+        // so config changes take effect without invalidating the cache.
         SongCache.Save(clip, profile);
+
+        RunOfflineAnalyzers(profile, config);
         EventBus.Publish(new SongProfileReadyEvent { Profile = profile });
         onComplete?.Invoke(profile);
     }
 
-    // ─── Helpers ──────────────────────────────────────────────────────────
+    // ── Offline analyzer pipeline ──────────────────────────────────────────────
+
+    private static void RunOfflineAnalyzers(SongProfile profile, AudioAnalysisConfig config)
+    {
+        if (!config.advancedEnabled) return;
+
+        var ctx = new OfflineAnalysisContext
+        {
+            Config           = config,
+            SampleRate       = profile.sampleRate,
+            HopTime          = profile.analysisHopTime,
+            Duration         = profile.duration,
+            NumFrames        = profile.energyEnvelope?.Length ?? 0,
+            AvgEnergy        = profile.averageEnergy,
+            MaxEnergy        = profile.maxEnergy,
+            EstimatedBPM     = profile.estimatedBPM,
+            EnergyEnvelope   = profile.energyEnvelope,
+            SpectralCentroid = profile.spectralCentroid,
+            SpectralFlux     = profile.spectralFlux,
+            OnsetTimes       = profile.onsetTimes,
+            BandEnvelopes    = profile.bandEnvelopes,
+            SpectralFlatness = profile.spectralFlatness,
+            ChromaFlat       = profile.chromaFlat,
+            VoiceProb        = profile.voiceProbability,
+        };
+
+        // Order matters: TimbralAnalyzer must run before DynamicsAnalyzer (writes intensity)
+        IOfflineAnalyzer[] analyzers =
+        {
+            new LoudnessAnalyzer(),
+            new TimbralAnalyzer(),    // writes intensity → needed by DynamicsAnalyzer
+            new DynamicsAnalyzer(),   // reads intensity
+            new StructureAnalyzer(),  // reads intensity, timbralChange
+            new HarmonyAnalyzer(),
+            new VoiceAnalyzer(),
+            new SimilarityAnalyzer(),
+        };
+
+        foreach (var a in analyzers)
+            if (a.IsEnabled(config))
+                a.Analyze(ctx, profile);
+    }
+
+    // ── Semantic tagging (musicnn / Sentis) ────────────────────────────────────
+
+    private static float[] GetClipData(AudioClip clip)
+    {
+        float[] raw = new float[clip.samples * clip.channels];
+        clip.GetData(raw, 0);
+        return raw;
+    }
+
+    /// <summary>
+    /// Runs local ML inference (see SentisMusicTagger) and writes the result straight onto
+    /// `profile`. Owns the tagger's lifetime — created and Dispose()'d here — so no Sentis
+    /// worker/tensor ever lives past this single coroutine, in line with "no ML during
+    /// gameplay": tagging only ever runs here, during pre-analysis.
+    /// </summary>
+    private static IEnumerator RunSemanticTagging(float[] mono, int sampleRate, SongProfile profile, AudioAnalysisConfig config)
+    {
+        IMusicTagger tagger = new SentisMusicTagger(config);
+        if (!tagger.IsAvailable)
+        {
+            tagger.Dispose();
+            yield break;
+        }
+
+        MusicTagScore[] result = null;
+        yield return tagger.Tag(mono, sampleRate, r => result = r);
+        tagger.Dispose();
+
+        if (result != null)
+        {
+            profile.musicTags            = result;
+            profile.musicTagModelVersion = SentisMusicTagger.ModelVersion;
+        }
+    }
+
+    // ─── Core helpers ─────────────────────────────────────────────────────────
 
     private static float[] MixToMono(float[] samples, int channels)
     {
@@ -138,7 +289,24 @@ public class AudioPreAnalyzer : MonoBehaviour
         return mono;
     }
 
-    private static float ComputeBandEnergy(float[] spectrum, FrequencyBandConfig band, int sampleRate, int windowSize)
+    // Log-spaced band edges (finer resolution at low frequencies, matching how an equalizer
+    // is normally laid out) — deterministic given (count, minHz, maxHz), so the same visual
+    // band layout is reproduced identically every time a song is analyzed.
+    private static FrequencyBandConfig[] BuildLogBands(int count, float minHz, float maxHz)
+    {
+        var bands = new FrequencyBandConfig[count];
+        float ratio = maxHz / minHz;
+        for (int i = 0; i < count; i++)
+        {
+            float lo = minHz * Mathf.Pow(ratio, (float)i / count);
+            float hi = minHz * Mathf.Pow(ratio, (float)(i + 1) / count);
+            bands[i] = new FrequencyBandConfig($"VB{i}", lo, hi);
+        }
+        return bands;
+    }
+
+    private static float ComputeBandEnergy(float[] spectrum, FrequencyBandConfig band,
+                                           int sampleRate, int windowSize)
     {
         int lo = Mathf.Clamp(Mathf.RoundToInt(band.minHz * windowSize / sampleRate), 0, spectrum.Length - 1);
         int hi = Mathf.Clamp(Mathf.RoundToInt(band.maxHz * windowSize / sampleRate), 0, spectrum.Length - 1);
@@ -150,7 +318,7 @@ public class AudioPreAnalyzer : MonoBehaviour
 
     private static float[] DetectOnsets(float[] flux, float hopTime)
     {
-        int  halfWin = 21; // ~1 s local window at typical hop sizes
+        int  halfWin = 21;
         var  onsets  = new List<float>();
 
         for (int i = 1; i < flux.Length - 1; i++)
@@ -166,7 +334,6 @@ public class AudioPreAnalyzer : MonoBehaviour
             for (int j = lo; j <= hi; j++) variance += (flux[j] - mean) * (flux[j] - mean);
             float std = Mathf.Sqrt(variance / (hi - lo + 1));
 
-            // Local maximum above adaptive threshold
             if (flux[i] > mean + 1.5f * std && flux[i] > flux[i - 1] && flux[i] >= flux[i + 1])
                 onsets.Add(i * hopTime);
         }
@@ -186,7 +353,6 @@ public class AudioPreAnalyzer : MonoBehaviour
         for (int i = 0; i < onsets.Length - 1; i++)
         {
             float ioi = onsets[i + 1] - onsets[i];
-            // Test IOI and its common multiples/divisors (half-beat, beat, double)
             for (float mult = 0.5f; mult <= 2.01f; mult += 0.5f)
             {
                 float period = ioi * mult;

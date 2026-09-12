@@ -7,6 +7,8 @@ public class AudioSystemBootstrapper : MonoBehaviour
     [SerializeField] private AudioAnalysisConfig config;
     [SerializeField] private bool autoPlayAfterAnalysis = true;
 
+    public AudioAnalysisConfig Config => config;
+
     private AudioContextProvider _contextProvider;
 
     private void Awake()
@@ -33,7 +35,7 @@ public class AudioSystemBootstrapper : MonoBehaviour
         if (config != null && config.enableVisualizer)
         {
             var visualizer = gameObject.AddComponent<AudioDebugVisualizer>();
-            visualizer.Initialize(config);
+            visualizer.Initialize(config, audioSource);
         }
 
         if (audioSource.clip != null)

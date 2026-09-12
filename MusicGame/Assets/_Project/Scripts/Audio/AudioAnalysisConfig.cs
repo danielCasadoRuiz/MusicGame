@@ -53,8 +53,68 @@ public class AudioAnalysisConfig : ScriptableObject
     [Header("Debug")]
     public bool enableDebugLog = false;
 
+    // ── Advanced Pre-Analysis ────────────────────────────────────────────────
+    // These run once offline after the FFT loop and populate extra SongProfile fields.
+
+    [Header("Advanced Pre-Analysis (master switch)")]
+    public bool advancedEnabled = true;
+
+    [Header("Advanced — Loudness / RMS dB")]
+    public bool advancedLoudness = true;
+
+    [Header("Advanced — Dynamics")]
+    public bool  advancedDynamics    = true;
+    [Range(0f, 0.3f)]  public float silenceThreshold  = 0.05f;  // fraction of avg energy
+    [Range(0.05f, 0.5f)] public float breakThreshold  = 0.20f;
+    [Range(0.5f, 1f)]  public float impactThreshold   = 0.75f;
+    public float buildupMinLength = 3f;    // seconds
+    public float crescendoWindow  = 2.5f;  // seconds
+
+    [Header("Advanced — Timbre (flatness / aggressiveness)")]
+    public bool advancedTimbre = true;
+
+    [Header("Advanced — Structure (density / complexity / danceability)")]
+    public bool advancedStructure = true;
+
+    [Header("Advanced — Harmony (chroma / key / mode)")]
+    public bool advancedHarmony = true;
+
+    [Header("Advanced — Voice detection")]
+    public bool  advancedVoice      = true;
+    [Range(0f, 1f)] public float voiceThreshold = 0.30f;
+    public float voiceMinDuration = 1.5f;  // seconds
+
+    [Header("Advanced — Section similarity (expensive)")]
+    public bool  advancedSimilarity       = false;  // disabled by default
+    [Range(2f, 16f)] public float similaritySegmentSize = 4f;
+    [Range(0.6f, 1f)] public float similarityThreshold  = 0.82f;
+
+    [Header("Advanced — Semantic Music Tagging")]
+    [Tooltip("Runs a local musicnn model (Sentis/ONNX, on-device, no network) once during pre-" +
+             "analysis to get real genre/mood tags (funk, dance, happy, ...). Cached alongside " +
+             "the rest of the song's analysis — see SongProfile.musicTagModelVersion.")]
+    public bool  advancedSemanticTagging = true;
+    [Tooltip("How many of the model's top-scoring tags to keep after thresholding.")]
+    [Range(1, 20)] public int   semanticTagTopN    = 8;
+    [Tooltip("Tags scoring below this are dropped even if they'd otherwise make the Top N.")]
+    [Range(0f, 1f)] public float semanticTagMinScore = 0.05f;
+    [Tooltip("Shows a verbose raw-tag breakdown in the F1 debug HUD (the compact STYLE/VIBE/" +
+             "OTHER summary in the live top bar is controlled by advancedSemanticTagging alone).")]
+    public bool  semanticTagDebugUI = false;
+
+    [Header("Visual Spectrum (mesh cross-section + debug spectrum)")]
+    [Tooltip("Independent from the 6 classification bands above (Kick/Snare/HiHat detection " +
+             "keeps using those, unchanged). Log-spaced from 20 Hz to Nyquist, computed once " +
+             "offline in the same FFT pass — this is what the ground mesh and the debug " +
+             "spectrum panel both read, so they always show the exact same data.")]
+    [Range(8, 64)] public int visualBandCount = 24;
+
     [Header("Visualizer")]
     public bool  enableVisualizer      = true;
+    [Tooltip("When true, the bottom frequency-bar panel only shows while the song is actually " +
+             "playing (AudioSource.isPlaying) — hidden before the song starts, while paused, " +
+             "and after it ends, instead of staying on screen frozen at stale values.")]
+    public bool  showFrequencyBarDuringGameplay = true;
     public int   visualizerBarCount    = 32;
     public int   visualizerLEDCount    = 20;
     public float visualizerHeight      = 180f;

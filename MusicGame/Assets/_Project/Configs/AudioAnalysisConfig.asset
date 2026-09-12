@@ -58,7 +58,26 @@ MonoBehaviour:
   snareCooldown: 0.1
   hiHatCooldown: 0.04
   enableDebugLog: 0
+  advancedEnabled: 1
+  advancedLoudness: 1
+  advancedDynamics: 1
+  silenceThreshold: 0.05
+  breakThreshold: 0.2
+  impactThreshold: 0.75
+  buildupMinLength: 3
+  crescendoWindow: 2.5
+  advancedTimbre: 1
+  advancedStructure: 1
+  advancedHarmony: 1
+  advancedVoice: 1
+  voiceThreshold: 0.3
+  voiceMinDuration: 1.5
+  advancedSimilarity: 0
+  similaritySegmentSize: 4
+  similarityThreshold: 0.82
+  visualBandCount: 24
   enableVisualizer: 1
+  showFrequencyBarDuringGameplay: 1
   visualizerBarCount: 32
   visualizerLEDCount: 20
   visualizerHeight: 180
