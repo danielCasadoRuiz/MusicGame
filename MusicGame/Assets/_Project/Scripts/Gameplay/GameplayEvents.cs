@@ -64,3 +64,12 @@ public struct ContinuePressedEvent  { public CollectionStats Stats; }
 /// (ring pulse, camera kick) so the world visibly reacts on the beat itself.
 /// </summary>
 public struct BeatPulseEvent { public RingType Type; public float Strength; public Vector3 Position; }
+
+/// <summary>
+/// Fired by CameraFollow whenever the view mode actually changes (UI button OR the 'V' debug
+/// key — both call CameraFollow.ToggleView(), there is only one path). Purely informational: the
+/// HUD's view-toggle button subscribes to this to refresh its own icon/text, independent of
+/// which input triggered the change. Camera positioning/transition itself is NOT driven by this
+/// event — CameraFollow owns that directly.
+/// </summary>
+public struct CameraViewChangedEvent { public CameraViewMode Mode; }

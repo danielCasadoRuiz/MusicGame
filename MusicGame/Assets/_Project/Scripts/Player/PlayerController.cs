@@ -59,6 +59,11 @@ public class PlayerController : MonoBehaviour
     public float LateralLimit     { get; private set; }
     public bool  IsAtLateralLimit { get; private set; }
 
+    // Purely so CameraFollow can hide the player's own body in First Person without hardcoding
+    // anything about the current provisional capsule — whatever BuildVisual() ends up creating
+    // (capsule today, a real avatar later) is exposed here automatically, no GameObject.Find.
+    public Renderer[] VisualRenderers { get; private set; } = System.Array.Empty<Renderer>();
+
     public void StartRunning() => _running = true;
     public void StopRunning()  => _running = false;
 
@@ -248,5 +253,7 @@ public class PlayerController : MonoBehaviour
             { color = new Color(0.25f, 0.65f, 1f) };
         cap.GetComponent<MeshRenderer>().material = mat;
         cap.name = "Visual";
+
+        VisualRenderers = GetComponentsInChildren<Renderer>(true);
     }
 }

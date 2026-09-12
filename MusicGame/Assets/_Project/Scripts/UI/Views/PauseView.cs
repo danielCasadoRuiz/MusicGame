@@ -17,4 +17,13 @@ public class PauseView : MonoBehaviour
     public GameObject overlayRoot;
     public Button      resumeButton;
     public Button      restartButton;
+
+    [Header("Camera view toggle (sits just below the Pause button, live gameplay only)")]
+    public GameObject cameraToggleButtonRoot;
+    public Button      cameraToggleButton;
+    public Image       cameraToggleIcon;
+    public Text        cameraToggleLabel;
+    [Tooltip("Optional — if left empty the icon Image is simply hidden and only the text switches.")]
+    public Sprite      thirdPersonIcon;
+    public Sprite      firstPersonIcon;
 }

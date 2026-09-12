@@ -57,6 +57,11 @@ public class PauseController : MonoBehaviour
     // ── uGUI refs ────────────────────────────────────────────────────────────
     private RectTransform _pauseButtonRoot;
     private RectTransform _overlayRoot;
+    private RectTransform _cameraToggleButtonRoot;
+    private Image         _cameraToggleIcon;
+    private Text          _cameraToggleLabel;
+    private Sprite        _thirdPersonIcon;
+    private Sprite        _firstPersonIcon;
 
     private void Awake()
     {
@@ -69,11 +74,18 @@ public class PauseController : MonoBehaviour
         if (Instance == this) Instance = null;
     }
 
-    private System.Action<GameEndedEvent>       _onEnd;
-    private System.Action<PlayerRespawnedEvent> _onRespawned;
+    private System.Action<GameEndedEvent>        _onEnd;
+    private System.Action<PlayerRespawnedEvent>  _onRespawned;
+    private System.Action<CameraViewChangedEvent> _onViewChanged;
 
     private void OnEnable()
     {
+        // Refreshes the toggle button's icon/text regardless of what triggered the change (UI
+        // click, the 'V' debug key, or anything else that ever calls CameraFollow.SetView) — the
+        // button never talks to CameraFollow directly except to request a toggle.
+        _onViewChanged = e => RefreshCameraToggleDisplay(e.Mode);
+        EventBus.Subscribe(_onViewChanged);
+
         // An instance that never went through Initialize() (stray/duplicate component) has no UI
         // wired yet. LOG loudly instead of throwing — an uncaught exception here would abort the
         // REST of the event's subscribers too (multicast delegate invocation stops dead the
@@ -100,6 +112,7 @@ public class PauseController : MonoBehaviour
     {
         EventBus.Unsubscribe(_onEnd);
         EventBus.Unsubscribe(_onRespawned);
+        EventBus.Unsubscribe(_onViewChanged);
     }
 
     private bool _loggedNotBuilt;
@@ -198,6 +211,15 @@ public class PauseController : MonoBehaviour
         view.resumeButton.onClick.AddListener(Resume);
         view.restartButton.onClick.AddListener(RestartSongFromPause);
 
+        _cameraToggleButtonRoot = view.cameraToggleButtonRoot != null ? view.cameraToggleButtonRoot.GetComponent<RectTransform>() : null;
+        _cameraToggleIcon       = view.cameraToggleIcon;
+        _cameraToggleLabel      = view.cameraToggleLabel;
+        _thirdPersonIcon        = view.thirdPersonIcon;
+        _firstPersonIcon        = view.firstPersonIcon;
+        if (view.cameraToggleButton != null)
+            view.cameraToggleButton.onClick.AddListener(() => CameraFollow.Instance?.ToggleView());
+        RefreshCameraToggleDisplay(CameraFollow.Instance != null ? CameraFollow.Instance.ViewMode : CameraViewMode.ThirdPerson);
+
         RefreshVisibility();
     }
 
@@ -211,6 +233,13 @@ public class PauseController : MonoBehaviour
             new Vector2(-12f, -12f), new Vector2(84f, 28f));
         pauseBtn.onClick.AddListener(Pause);
         _pauseButtonRoot = pauseBtn.GetComponent<RectTransform>();
+
+        var cameraToggleBtn = UIFactory.CreateButton("CameraToggleButton", canvas, "Third Person", out _cameraToggleLabel);
+        UIFactory.SetBox(cameraToggleBtn.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+            new Vector2(-12f, -46f), new Vector2(120f, 28f));
+        cameraToggleBtn.onClick.AddListener(() => CameraFollow.Instance?.ToggleView());
+        _cameraToggleButtonRoot = cameraToggleBtn.GetComponent<RectTransform>();
+        RefreshCameraToggleDisplay(CameraFollow.Instance != null ? CameraFollow.Instance.ViewMode : CameraViewMode.ThirdPerson);
 
         _overlayRoot = UIFactory.CreateRect("PausedOverlay", canvas);
         UIFactory.Stretch(_overlayRoot);
@@ -250,6 +279,24 @@ public class PauseController : MonoBehaviour
     private void RefreshVisibility()
     {
         _overlayRoot.gameObject.SetActive(!_ended && _paused);
-        _pauseButtonRoot.gameObject.SetActive(!_ended && !_paused && _manager != null && _manager.IsRunning);
+
+        bool showPersistentButtons = !_ended && !_paused && _manager != null && _manager.IsRunning;
+        _pauseButtonRoot.gameObject.SetActive(showPersistentButtons);
+        if (_cameraToggleButtonRoot != null) _cameraToggleButtonRoot.gameObject.SetActive(showPersistentButtons);
+    }
+
+    /// <summary>Purely cosmetic — swaps the toggle button's icon/text to reflect the CURRENT
+    /// mode (i.e. "Third Person" is shown while playing in third person, not as a call to
+    /// action). Never touches CameraFollow itself.</summary>
+    private void RefreshCameraToggleDisplay(CameraViewMode mode)
+    {
+        bool isThird = mode == CameraViewMode.ThirdPerson;
+        if (_cameraToggleLabel != null) _cameraToggleLabel.text = isThird ? "Third Person" : "First Person";
+        if (_cameraToggleIcon != null)
+        {
+            var sprite = isThird ? _thirdPersonIcon : _firstPersonIcon;
+            _cameraToggleIcon.sprite = sprite;
+            _cameraToggleIcon.enabled = sprite != null;
+        }
     }
 }
