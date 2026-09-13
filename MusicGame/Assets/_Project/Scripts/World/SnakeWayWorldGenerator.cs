@@ -32,21 +32,23 @@ public class SnakeWayWorldGenerator : IMusicWorldGenerator
     private float _maxWidth;
     private float _speed;
 
-    public MusicPath Generate(SongProfile profile, GameplayConfig config, Vector3 startPos)
+    public MusicPath Generate(SongProfile profile, MusicRunnerGameplayConfig config, Vector3 startPos)
     {
-        _cpInterval   = config.pathControlPointInterval;
-        _sampleSpacing = config.pathSampleSpacing;
+        var level = config.levelGeneration;
+        _cpInterval   = level.pathControlPointInterval;
+        _sampleSpacing = level.pathSampleSpacing;
         _baseY        = startPos.y;
-        _heightAmp    = config.pathHeightAmplitude;
-        _maxTurn      = config.pathMaxTurnAngle;
-        // basePathWidth ± half the configured variation — see GameplayConfig's doc comment on
-        // basePathWidth for why this is expressed as base+variation instead of a raw min/max pair.
-        float halfVariation = Mathf.Max(0f, config.pathWidthVariation) * 0.5f;
-        _minWidth     = Mathf.Max(1f, config.basePathWidth - halfVariation);
-        _maxWidth     = Mathf.Max(_minWidth, config.basePathWidth + halfVariation);
-        _speed        = config.playerSpeed;
+        _heightAmp    = level.pathHeightAmplitude;
+        _maxTurn      = level.pathMaxTurnAngle;
+        // basePathWidth ± half the configured variation — see MusicRunnerLevelConfig's doc
+        // comment on basePathWidth for why this is expressed as base+variation instead of a raw
+        // min/max pair.
+        float halfVariation = Mathf.Max(0f, level.pathWidthVariation) * 0.5f;
+        _minWidth     = Mathf.Max(1f, level.basePathWidth - halfVariation);
+        _maxWidth     = Mathf.Max(_minWidth, level.basePathWidth + halfVariation);
+        _speed        = config.core.playerSpeed;
 
-        var rng = new System.Random(config.pathSeed);
+        var rng = new System.Random(level.pathSeed);
 
         var cps    = new List<Vector3>();
         var widths = new List<float>();
@@ -55,8 +57,8 @@ public class SnakeWayWorldGenerator : IMusicWorldGenerator
         Vector3 pos   = startPos;
         float   theta = 0f;            // heading in radians; 0 = +Z world
 
-        float warmupDist = config.warmupTime * _speed;
-        int   warmupCPs  = Mathf.Max(1, Mathf.CeilToInt(config.warmupTime / _cpInterval));
+        float warmupDist = config.core.warmupTime * _speed;
+        int   warmupCPs  = Mathf.Max(1, Mathf.CeilToInt(config.core.warmupTime / _cpInterval));
         float stepWarmup = warmupDist / warmupCPs;
 
         cps.Add(pos);

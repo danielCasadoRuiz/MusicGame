@@ -27,7 +27,7 @@ public class CameraFollow : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private PlayerController playerController;
-    [SerializeField] private GameplayConfig   config;
+    [SerializeField] private MusicRunnerGameplayConfig config;
 
     [Header("Position (Third Person)")]
     [SerializeField] private float behindDistance  = 12f;   // arc-length behind canonical position
@@ -72,10 +72,10 @@ public class CameraFollow : MonoBehaviour
     /// <summary>Single query point for "what's the current bonus visual reveal distance" —
     /// GameplayManager just reads this, with zero if(firstPerson) branching of its own. Changes
     /// immediately on a view toggle (next reveal check just uses the new value; already-revealed
-    /// events are untouched). GameplayConfig.GetBonusVisualActivationDistance is the actual
-    /// Third/First Person mapping; this just supplies it with the CURRENT mode.</summary>
+    /// events are untouched). MusicRunnerCollectiblesConfig.GetBonusVisualActivationDistance is
+    /// the actual Third/First Person mapping; this just supplies it with the CURRENT mode.</summary>
     public float EffectiveBonusVisualActivationDistance =>
-        config != null ? config.GetBonusVisualActivationDistance(_viewMode) : 0f;
+        config != null ? config.collectibles.GetBonusVisualActivationDistance(_viewMode) : 0f;
 
     // ── Runtime: Third Person smoothing state (kept up to date regardless of active view mode,
     // so switching back to Third Person never has to "catch up" from stale values) ─────────────
@@ -266,9 +266,9 @@ public class CameraFollow : MonoBehaviour
         float targetLateral = playerController != null ? playerController.LateralOffset : 0f;
         _smoothedLateral = Mathf.SmoothDamp(_smoothedLateral, targetLateral, ref _velX, xSmoothTime);
 
-        if (_profile != null && clock.IsRunning && clock.SongTime > config.warmupTime)
+        if (_profile != null && clock.IsRunning && clock.SongTime > config.core.warmupTime)
         {
-            float songT = clock.SongTime - config.warmupTime;
+            float songT = clock.SongTime - config.core.warmupTime;
             float e     = _profile.GetIntensityAt(songT);
             _energyHeight = Mathf.Lerp(_energyHeight, e * energyHeightPeak, energySmooth * Time.deltaTime);
         }

@@ -35,10 +35,22 @@ using UnityEngine;
 ///
 /// Created dynamically by GameplayManager, same pattern as every other subsystem — call
 /// Initialize() after AddComponent.
+///
+/// ALSO owns the shared "how intense is the music right now" driver
+/// (SmoothedMacroIntensity, 0..1) that every reactive Horizon World system (ProceduralSky,
+/// HorizonWater, HorizonMountainLayers, HorizonHaze) reads to blend its OWN base/Intense colors —
+/// see EnvironmentConfig's own doc on the Macro Palette. This is a SEPARATE output from the
+/// legacy chroma-hue backgroundColor above (different purpose, different smoothing), computed
+/// from the SAME already-existing continuous macro signals (profile.GetIntensityAt/GetBuildupAt)
+/// — no new analysis. MusicEnvironmentController is the sole WRITER of this value; every other
+/// system only ever READS it, so there's exactly one place that owns "how intense is it right
+/// now" instead of several systems each re-deriving/smoothing their own competing version.
 /// </summary>
 public class MusicEnvironmentController : MonoBehaviour
 {
-    private GameplayConfig _config;
+    public static MusicEnvironmentController Instance { get; private set; }
+
+    private EnvironmentConfig _config;
     private SongProfile    _profile;
 
     private readonly float[] _chromaEMA = new float[12];
@@ -53,7 +65,9 @@ public class MusicEnvironmentController : MonoBehaviour
     private Color _currentColor = Color.black;
     private Color _targetColor  = Color.black;
 
-    public void Initialize(GameplayConfig config) => _config = config;
+    private float _smoothedMacroIntensity;
+
+    public void Initialize(EnvironmentConfig config) => _config = config;
 
     // Debug-only readouts (see GameplayDebugHUD).
     public Color CurrentColor     => _currentColor;
@@ -61,6 +75,25 @@ public class MusicEnvironmentController : MonoBehaviour
     public float LastBuildupValue => _lastBuildup;
     public float LastClarity      => _lastClarity;
     public bool  HasProfile       => _profile != null;
+
+    /// <summary>0..1, slow-smoothed (seconds, never per-beat) "how intense is the music right
+    /// now" — the shared driver every Horizon World palette system blends its base/Intense colors
+    /// with. Always 0 when modulation is disabled (EnvironmentConfig.enableMusicEnvironmentModulation)
+    /// or no controller/config exists yet, so callers can read this unconditionally with no null
+    /// checks of their own.</summary>
+    public float SmoothedMacroIntensity =>
+        _config != null && _config.enableMusicEnvironmentModulation ? _smoothedMacroIntensity : 0f;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(this); return; }
+        Instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
+    }
 
     private System.Action<SongProfileReadyEvent>  _onProfile;
     private System.Action<MacroEventOccurredEvent> _onMacro;
@@ -71,8 +104,12 @@ public class MusicEnvironmentController : MonoBehaviour
         _onMacro   = e =>
         {
             if (_config == null) return;
-            if (e.Type == MacroEventType.Impact || e.Type == MacroEventType.Drop)
-                _currentColor = Color.Lerp(_currentColor, _targetColor, _config.macroSnapFraction);
+            if (e.Type != MacroEventType.Impact && e.Type != MacroEventType.Drop) return;
+
+            _currentColor = Color.Lerp(_currentColor, _targetColor, _config.macroSnapFraction);
+
+            if (_config.enableMusicEnvironmentModulation)
+                _smoothedMacroIntensity = Mathf.Lerp(_smoothedMacroIntensity, 1f, Mathf.Clamp01(_config.paletteMacroSnapFraction));
         };
         EventBus.Subscribe(_onProfile);
         EventBus.Subscribe(_onMacro);
@@ -86,10 +123,28 @@ public class MusicEnvironmentController : MonoBehaviour
 
     private void Update()
     {
-        if (_config == null || !_config.enableMusicEnvironment || _profile == null) return;
+        if (_config == null) return;
 
         var clock = MusicClock.Instance;
-        if (clock == null || !clock.IsRunning) return;
+        bool clockRunning = clock != null && clock.IsRunning;
+
+        // ── Shared macro-intensity driver (Horizon World palette modulation) ────────────────
+        // Deliberately independent of enableMusicEnvironment below (that one only gates the
+        // LEGACY plain-camera background color) — the Horizon palette should keep working even
+        // if that legacy fallback is disabled.
+        if (_config.enableMusicEnvironmentModulation && _profile != null && clockRunning)
+        {
+            float rawIntensity = Mathf.Clamp01(
+                _profile.GetIntensityAt(clock.SongTime) * 0.5f +
+                _profile.GetBuildupAt(clock.SongTime)   * 0.5f);
+            float rate = 1f - Mathf.Exp(-Time.deltaTime / Mathf.Max(0.01f, _config.paletteMacroSmoothingTime));
+            _smoothedMacroIntensity = Mathf.Lerp(_smoothedMacroIntensity, rawIntensity, rate);
+        }
+
+        // ── Legacy plain-camera background color (fallback for when Horizon World is disabled,
+        // or a genuine no-op — harmless either way — when it's enabled and controls its own sky
+        // instead) ───────────────────────────────────────────────────────────────────────────
+        if (!_config.enableMusicEnvironment || _profile == null || !clockRunning) return;
 
         _sampleTimer -= Time.deltaTime;
         if (_sampleTimer <= 0f)
@@ -98,11 +153,18 @@ public class MusicEnvironmentController : MonoBehaviour
             SampleFeatures(clock.SongTime);
         }
 
-        float rate = 1f - Mathf.Exp(-Time.deltaTime / Mathf.Max(0.01f, _config.colorSmoothingTimeConstant));
-        _currentColor = Color.Lerp(_currentColor, _targetColor, rate);
+        float colorRate = 1f - Mathf.Exp(-Time.deltaTime / Mathf.Max(0.01f, _config.colorSmoothingTimeConstant));
+        _currentColor = Color.Lerp(_currentColor, _targetColor, colorRate);
 
-        var cam = Camera.main;
-        if (cam != null) cam.backgroundColor = _currentColor;
+        // Single owner of Camera.main.backgroundColor — skipped entirely once the Horizon World
+        // camera stack is active, since the Main Camera's clear flags become Depth-only then and
+        // this write would be a pure no-op (see HorizonCameraController).
+        bool horizonActive = HorizonCameraController.Instance != null && HorizonCameraController.Instance.IsActive;
+        if (!horizonActive)
+        {
+            var cam = Camera.main;
+            if (cam != null) cam.backgroundColor = _currentColor;
+        }
     }
 
     private void SampleFeatures(float songTime)

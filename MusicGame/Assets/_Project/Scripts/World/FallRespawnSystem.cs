@@ -18,7 +18,7 @@ public class FallRespawnSystem : MonoBehaviour
     private AudioSource     _audio;
     private PlayerController _player;
     private GameplayManager  _manager;
-    private GameplayConfig   _config;
+    private MusicRunnerCoreConfig _config;
 
     private bool _active;
     private bool _processing;
@@ -37,7 +37,7 @@ public class FallRespawnSystem : MonoBehaviour
     }
 
     public void Initialize(AudioSource audio, PlayerController player,
-                           GameplayManager manager, GameplayConfig config)
+                           GameplayManager manager, MusicRunnerCoreConfig config)
     {
         _audio   = audio;
         _player  = player;

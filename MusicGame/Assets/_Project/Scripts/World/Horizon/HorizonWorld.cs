@@ -4,14 +4,24 @@ using UnityEngine.Rendering.Universal;
 
 /// <summary>
 /// Thin composition root for the Horizon World — creates and wires HorizonCameraController,
-/// SpectrumBars3D, HorizonBarsReflectionCamera, HorizonWater, ProceduralSkyController and
-/// HorizonMountainLayers, and drives their per-frame Tick() calls. Deliberately does none of the
-/// actual work itself (positions/meshes/shaders/camera stacking all live in their own single-
-/// responsibility component) — this is just the one place GameplayManager talks to.
+/// HorizonWater, SpectrumBars3D (which also owns the mirrored reflection bars — see its own
+/// doc), ProceduralSkyController and HorizonMountainLayers, and drives their per-frame Tick()
+/// calls IN A FIXED, DETERMINISTIC ORDER from ITS OWN LateUpdate() — never relying on Unity's
+/// ambiguous cross-script Update/LateUpdate ordering. Deliberately does none of the actual visual
+/// work itself (positions/meshes/shaders/camera stacking all live in their own single-
+/// responsibility component) — this is just the one place GameplayManager talks to, and the one
+/// place that decides WHEN each of those runs.
+///
+/// Order matters: HorizonCameraController.Tick() (positions the Horizon Camera for THIS frame)
+/// runs FIRST since HorizonMountainLayers' parallax offset depends on its CameraDelta being
+/// current. [DefaultExecutionOrder] guarantees this whole LateUpdate also runs AFTER
+/// CameraFollow's (which moves the real gameplay Main Camera that HorizonCameraController reads
+/// from), since two different MonoBehaviours' default LateUpdate order is otherwise undefined.
 ///
 /// Created dynamically via GetOrCreate(GameObject host) — no scene GameObject/prefab needed, same
 /// pattern the rest of this project already uses.
 /// </summary>
+[DefaultExecutionOrder(500)]
 public class HorizonWorld : MonoBehaviour
 {
     public static HorizonWorld Instance { get; private set; }
@@ -22,11 +32,10 @@ public class HorizonWorld : MonoBehaviour
         return host.AddComponent<HorizonWorld>();
     }
 
-    private GameplayConfig _config;
+    private HorizonConfig _config;
     private HorizonCameraController      _cameraController;
-    private SpectrumBars3D               _bars;
-    private HorizonBarsReflectionCamera  _reflectionCamera;
     private HorizonWater                 _water;
+    private SpectrumBars3D               _bars;
     private ProceduralSkyController      _sky;
     private HorizonMountainLayers        _mountains;
 
@@ -41,7 +50,7 @@ public class HorizonWorld : MonoBehaviour
         if (Instance == this) Instance = null;
     }
 
-    public void Initialize(GameplayConfig config)
+    public void Initialize(HorizonConfig config)
     {
         _config = config;
         if (!config.enableHorizonWorld) return;
@@ -52,14 +61,14 @@ public class HorizonWorld : MonoBehaviour
 
         var root = _cameraController.HorizonRoot;
 
-        _bars = gameObject.AddComponent<SpectrumBars3D>();
-        _bars.Initialize(config, root);
-
-        _reflectionCamera = gameObject.AddComponent<HorizonBarsReflectionCamera>();
-        _reflectionCamera.Initialize(config, root, _cameraController.HorizonCamera);
-
+        // Water FIRST — SpectrumBars3D reads its WaterLevelWorldY (single source of truth) to
+        // mirror each bar's own reflection bar across the same plane the water actually renders
+        // at, so the two can never drift apart.
         _water = gameObject.AddComponent<HorizonWater>();
-        _water.Initialize(config, root, _reflectionCamera);
+        _water.Initialize(config, root);
+
+        _bars = gameObject.AddComponent<SpectrumBars3D>();
+        _bars.Initialize(config, root, _water);
 
         _sky = gameObject.AddComponent<ProceduralSkyController>();
         _sky.Initialize(config, _cameraController.HorizonCamera);
@@ -131,7 +140,7 @@ public class HorizonWorld : MonoBehaviour
         if (tonemap.mode.value == TonemappingMode.None) tonemap.mode.Override(TonemappingMode.Neutral);
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (_cameraController == null || !_cameraController.IsActive) return;
 
@@ -139,9 +148,11 @@ public class HorizonWorld : MonoBehaviour
         var clock = MusicClock.Instance;
         if (world == null || clock == null) return;
 
-        _bars.Tick(world, clock.SongTime);
-        _reflectionCamera.Tick();
+        // Order is deliberate — see class doc. Camera FIRST (HorizonMountainLayers' parallax
+        // depends on its CameraDelta being current this frame), everything else after.
+        _cameraController.Tick();
         _water.Tick();
+        _bars.Tick(world, clock.SongTime);
         _sky.Tick();
         _mountains.Tick();
     }

@@ -90,10 +90,10 @@ public class GameplayTimeline
         public float    confidence;     // 0..1 — see ClassifyOnset; >= confidenceKeepThreshold bypasses thinning
     }
 
-    public static GameplayTimeline Generate(SongProfile profile, GameplayConfig config, MusicPath path)
+    public static GameplayTimeline Generate(SongProfile profile, MusicRunnerGameplayConfig config, MusicPath path)
     {
-        float warmup = config.warmupTime;
-        float speed  = config.playerSpeed;
+        float warmup = config.core.warmupTime;
+        float speed  = config.core.playerSpeed;
 
         // Macro first — Impact placement doesn't depend on Micro, but keeping the order
         // explicit documents that Micro's buildup-density read (profile.GetBuildupAt) and
@@ -108,17 +108,17 @@ public class GameplayTimeline
             ? profile.onsetTimes[0] : -1f;
         float firstClassifiedRaw = MinTime(micro, c => c.sourceFeature != "Beat");
 
-        micro.RemoveAll(c => !config.IsSpawnEnabled(c.type));
+        micro.RemoveAll(c => !config.collectibles.IsSpawnEnabled(c.type));
 
         // Composition rule: a non-confident Micro candidate (ambiguous Onset fallback, or the
         // synthetic Beat filler) right on top of a reliable Impact/Drop is redundant — the
         // Impact already represents that moment well, and keeping both would just be visual
         // noise with no extra musical information. A CONFIDENTLY classified Kick/Snare/HiHat is
         // NEVER absorbed this way — it coexists with the Impact, since it IS real information.
-        micro.RemoveAll(c => c.confidence < config.confidenceKeepThreshold
+        micro.RemoveAll(c => c.confidence < config.collectibles.confidenceKeepThreshold
                            && IsNearMacroImpact(c.time, macroEvents, config));
 
-        var rng  = new System.Random(config.collectibleSeed);
+        var rng  = new System.Random(config.collectibles.collectibleSeed);
         var kept = new List<Candidate>(micro.Count);
         foreach (var c in micro)
         {
@@ -126,17 +126,17 @@ public class GameplayTimeline
             // representation — never lost to a random roll. Only genuinely uncertain
             // classifications (ambiguous Onset fallback) and the synthetic beat-grid filler
             // fall through to density thinning below.
-            if (c.confidence >= config.confidenceKeepThreshold) { kept.Add(c); continue; }
+            if (c.confidence >= config.collectibles.confidenceKeepThreshold) { kept.Add(c); continue; }
 
             // Buildup sections get progressively denser — the simple, real Buildup gameplay
             // effect for this iteration (see class doc).
-            float buildupFactor = Mathf.Lerp(1f, config.buildupDensityBoost, profile.GetBuildupAt(c.time));
+            float buildupFactor = Mathf.Lerp(1f, config.collectibles.buildupDensityBoost, profile.GetBuildupAt(c.time));
 
             // Strength-aware survival: at strength≈1 this approaches a guaranteed keep; at
             // strength≈0 it falls back to collectibleDensity's baseline odds. Thinning should
             // mostly cut weak/marginal/uncertain detections, never a clearly loud, obvious hit.
-            float strengthAware = Mathf.Lerp(config.collectibleDensity, 1f, c.strength);
-            float prob = Mathf.Lerp(config.collectibleDensity, strengthAware, config.strengthThinningBias);
+            float strengthAware = Mathf.Lerp(config.collectibles.collectibleDensity, 1f, c.strength);
+            float prob = Mathf.Lerp(config.collectibles.collectibleDensity, strengthAware, config.collectibles.strengthThinningBias);
             prob *= buildupFactor;
             prob *= c.dampedByVocal ? 0.6f : 1f;
             if (rng.NextDouble() < Mathf.Clamp01(prob)) kept.Add(c);
@@ -149,11 +149,11 @@ public class GameplayTimeline
         // jumpForce/gravity re-tunes every bonus height automatically. bonusMinJumpHeightFactor/
         // bonusMaxJumpHeightFactor (both 0..1) carve out the usable band within it; vFloorDesign is
         // only a design target — CollectibleFloor still raises it per-type for physical clearance.
-        float maxJumpHeight = config.gravity < 0f
-            ? (config.jumpForce * config.jumpForce) / (2f * -config.gravity)
+        float maxJumpHeight = config.core.gravity < 0f
+            ? (config.core.jumpForce * config.core.jumpForce) / (2f * -config.core.gravity)
             : 0f;
-        float vFloorDesign = maxJumpHeight * config.bonusMinJumpHeightFactor;
-        float vCeil        = maxJumpHeight * config.bonusMaxJumpHeightFactor;
+        float vFloorDesign = maxJumpHeight * config.collectibles.bonusMinJumpHeightFactor;
+        float vCeil        = maxJumpHeight * config.collectibles.bonusMaxJumpHeightFactor;
 
         // OFF-TRACK bonuses are deliberately DECOUPLED from the normal-bonus range above — they're
         // framed as "how close to the player's FULL jump capability" directly against maxJumpHeight,
@@ -161,15 +161,15 @@ public class GameplayTimeline
         // they shared one range, lowering bonusMaxJumpHeightFactor for ordinary bonuses would
         // quietly make off-track bonuses easier too, even though those should always demand a real,
         // near-full-height jump regardless of how the normal ceiling is tuned.
-        float offTrackFloorDesign = maxJumpHeight * config.offTrackBonusMinJumpHeightFactor;
-        float offTrackCeil        = maxJumpHeight * config.offTrackBonusMaxJumpHeightFactor;
+        float offTrackFloorDesign = maxJumpHeight * config.collectibles.offTrackBonusMinJumpHeightFactor;
+        float offTrackCeil        = maxJumpHeight * config.collectibles.offTrackBonusMaxJumpHeightFactor;
 
         var events = new List<TimelineEvent>(kept.Count);
         int  i     = 0;
         while (i < kept.Count)
         {
             int run = 1;
-            if (rng.NextDouble() < config.patternProbability)
+            if (rng.NextDouble() < config.collectibles.patternProbability)
             {
                 int maxRun = 2 + rng.Next(0, 3); // 2..4
                 while (run < maxRun && i + run < kept.Count &&
@@ -187,16 +187,16 @@ public class GameplayTimeline
         // Impact spawns its own centered, always-kept pickup — entirely independent of
         // Micro's thinning/pattern logic. It never competes with or replaces whatever Micro
         // event(s) happen to land at the same instant; both simply coexist.
-        if (config.IsSpawnEnabled(RingType.Impact))
+        if (config.collectibles.IsSpawnEnabled(RingType.Impact))
             foreach (var m in macroEvents)
                 if (m.type == MacroEventType.Impact)
                     EmitMacroCollectible(m, RingType.Impact, config, path, vFloorDesign, vCeil, events);
 
         // Peak no longer auto-spawns a collectible — it's climax-tagging metadata on
-        // MacroEvents (see BuildMacroEvents). config.spawnPeak (default OFF) opts back into a
+        // MacroEvents (see BuildMacroEvents). config.collectibles.spawnPeak (default OFF) opts back into a
         // standalone "climax" collectible for the rare case a Peak has no nearby Impact/Drop
         // to tag instead.
-        if (config.spawnPeak)
+        if (config.collectibles.spawnPeak)
             foreach (var m in macroEvents)
                 if (m.type == MacroEventType.Peak)
                     EmitMacroCollectible(m, RingType.Peak, config, path, vFloorDesign, vCeil, events);
@@ -247,7 +247,7 @@ public class GameplayTimeline
     /// median and just get the neutral 1.0 (they can never be collected anyway).
     /// </summary>
     private static Dictionary<RingType, float> ComputeRarityMultipliers(
-        Dictionary<RingType, int> counts, GameplayConfig config)
+        Dictionary<RingType, int> counts, MusicRunnerGameplayConfig config)
     {
         var result = new Dictionary<RingType, float>();
 
@@ -265,14 +265,14 @@ public class GameplayTimeline
             ? active[active.Count / 2]
             : (active[active.Count / 2 - 1] + active[active.Count / 2]) * 0.5f;
 
-        float spread = Mathf.Max(0.0001f, config.rarityLogSpread);
+        float spread = Mathf.Max(0.0001f, config.scoring.rarityLogSpread);
         foreach (var kv in counts)
         {
             if (kv.Value <= 0) { result[kv.Key] = 1f; continue; }
             float logRatio    = Mathf.Log(kv.Value / median);
             float clamped     = Mathf.Clamp(logRatio, -spread, spread);
             float normalized  = (spread - clamped) / (2f * spread); // 0 = most common, 1 = rarest
-            result[kv.Key] = Mathf.Lerp(config.rarityMultiplierRange.x, config.rarityMultiplierRange.y, normalized);
+            result[kv.Key] = Mathf.Lerp(config.scoring.rarityMultiplierRange.x, config.scoring.rarityMultiplierRange.y, normalized);
         }
         return result;
     }
@@ -289,10 +289,10 @@ public class GameplayTimeline
     /// ClimaxTagTolerance as the climax; only if nothing is nearby does it become its own
     /// standalone MacroEvent.
     /// </summary>
-    private static MacroEvent[] BuildMacroEvents(SongProfile profile, GameplayConfig config)
+    private static MacroEvent[] BuildMacroEvents(SongProfile profile, MusicRunnerGameplayConfig config)
     {
-        float warmup = config.warmupTime;
-        float speed  = config.playerSpeed;
+        float warmup = config.core.warmupTime;
+        float speed  = config.core.playerSpeed;
 
         MacroEvent Make(float t, MacroEventType type, float strength, bool climax = false)
         {
@@ -356,15 +356,15 @@ public class GameplayTimeline
     }
 
     // Used only for the ambiguous/filler-absorption rule above — deliberately a tighter window
-    // (config.ambiguousAbsorptionWindow) than ClimaxTagTolerance, which is about "is this THE
+    // (config.collectibles.ambiguousAbsorptionWindow) than ClimaxTagTolerance, which is about "is this THE
     // song's climax", a different question from "is this Micro candidate redundant right here".
-    private static bool IsNearMacroImpact(float microTime, MacroEvent[] macroEvents, GameplayConfig config)
+    private static bool IsNearMacroImpact(float microTime, MacroEvent[] macroEvents, MusicRunnerGameplayConfig config)
     {
-        float microEventTime = config.warmupTime + microTime;
+        float microEventTime = config.core.warmupTime + microTime;
         foreach (var m in macroEvents)
         {
             if (m.type != MacroEventType.Impact && m.type != MacroEventType.Drop) continue;
-            if (Mathf.Abs(m.eventTime - microEventTime) <= config.ambiguousAbsorptionWindow) return true;
+            if (Mathf.Abs(m.eventTime - microEventTime) <= config.collectibles.ambiguousAbsorptionWindow) return true;
         }
         return false;
     }
@@ -373,7 +373,7 @@ public class GameplayTimeline
     // a simple, deliberate composition rule that keeps it visually distinct from the
     // scattered Micro collectibles even while both are still plain primitives, and keeps it
     // reachable regardless of whatever Micro event(s) share this exact instant.
-    private static void EmitMacroCollectible(MacroEvent m, RingType type, GameplayConfig config,
+    private static void EmitMacroCollectible(MacroEvent m, RingType type, MusicRunnerGameplayConfig config,
                                              MusicPath path, float vFloorDesign, float vCeil,
                                              List<TimelineEvent> events)
     {
@@ -398,7 +398,7 @@ public class GameplayTimeline
 
     // ── Micro candidate collection ───────────────────────────────────────────────────
 
-    private static List<Candidate> CollectMicroCandidates(SongProfile profile, GameplayConfig config)
+    private static List<Candidate> CollectMicroCandidates(SongProfile profile, MusicRunnerGameplayConfig config)
     {
         var list      = new List<Candidate>();
         var bandAvgs  = ComputeBandAverages(profile);
@@ -406,24 +406,24 @@ public class GameplayTimeline
 
         float LastTime(RingType t) => lastTypeT.TryGetValue(t, out var v) ? v : -999f;
 
-        // config.minRingSpacing is a CEILING, not a fixed floor — a flat 0.20s absolute minimum
+        // config.levelGeneration.minRingSpacing is a CEILING, not a fixed floor — a flat 0.20s absolute minimum
         // silently discards every other hit of a straight 16th-note pattern at ~120+ BPM (16th
         // note = 125ms), exactly the fast repeated same-instrument patterns (hi-hat rolls,
         // funk/disco) that should read as rich, not sparse. Scale it down for faster songs;
         // never scale it UP past the configured value for slow ones.
-        float minSpacing = config.minRingSpacing;
+        float minSpacing = config.levelGeneration.minRingSpacing;
         if (profile.estimatedBPM > 0f)
         {
             float sixteenthNote = 15f / profile.estimatedBPM; // 60/BPM/4
-            minSpacing = Mathf.Min(config.minRingSpacing, sixteenthNote * 0.6f);
+            minSpacing = Mathf.Min(config.levelGeneration.minRingSpacing, sixteenthNote * 0.6f);
         }
 
         // ── Onset-driven: classified by spectral shape into Kick/Snare/HiHat/Onset ──────────
-        if (config.useOnsets && profile.onsetTimes != null)
+        if (config.levelGeneration.useOnsets && profile.onsetTimes != null)
         {
             foreach (float t in profile.onsetTimes)
             {
-                if (profile.GetEnergyAt(t) < profile.averageEnergy * config.energyThreshold)
+                if (profile.GetEnergyAt(t) < profile.averageEnergy * config.levelGeneration.energyThreshold)
                     continue;
 
                 var (type, classConfidence) = ClassifyOnset(profile, t, bandAvgs, config);
@@ -445,14 +445,14 @@ public class GameplayTimeline
         // ── Beat-grid fill: lowest-priority filler for gaps the onsets didn't cover ─────────
         // Deliberately NOT damped by vocals — it exists precisely to keep a baseline rhythm
         // going through sections (like vocals) where onset classification backs off.
-        if (config.useBeatGrid && profile.estimatedBPM > 0f)
+        if (config.levelGeneration.useBeatGrid && profile.estimatedBPM > 0f)
         {
-            float period    = 60f / profile.estimatedBPM * config.beatGridSubdivision;
+            float period    = 60f / profile.estimatedBPM * config.levelGeneration.beatGridSubdivision;
             float proximity = period * 0.28f;
 
             for (float t = period; t < profile.duration - 0.5f; t += period)
             {
-                if (profile.GetEnergyAt(t) < profile.averageEnergy * config.energyThreshold)
+                if (profile.GetEnergyAt(t) < profile.averageEnergy * config.levelGeneration.energyThreshold)
                     continue;
 
                 bool occupied = false;
@@ -478,7 +478,7 @@ public class GameplayTimeline
 
     // ── Placement ─────────────────────────────────────────────────────────────────
 
-    private static void EmitSingle(Candidate c, GameplayConfig config, MusicPath path, System.Random rng,
+    private static void EmitSingle(Candidate c, MusicRunnerGameplayConfig config, MusicPath path, System.Random rng,
                                    float vFloorDesign, float vCeil,
                                    float offTrackFloorDesign, float offTrackCeil,
                                    float warmup, float speed,
@@ -486,7 +486,7 @@ public class GameplayTimeline
     {
         float songTime  = warmup + c.time;
         float dist      = songTime * speed;
-        bool  offTrack  = rng.NextDouble() < config.offTrackBonusChance;
+        bool  offTrack  = rng.NextDouble() < config.collectibles.offTrackBonusChance;
 
         float lateral;
         float vOff;
@@ -497,9 +497,9 @@ public class GameplayTimeline
             // jump+air-control-reachable extra — same collectibleRadius clearance normal
             // placement uses, plus up to offTrackBonusMaxOffset, randomized left/right.
             float halfWidth = path.GetWidth(dist) * 0.5f;
-            float extra     = (float)rng.NextDouble() * config.offTrackBonusMaxOffset;
+            float extra     = (float)rng.NextDouble() * config.collectibles.offTrackBonusMaxOffset;
             float side      = rng.NextDouble() < 0.5 ? -1f : 1f;
-            lateral = side * (halfWidth + config.collectibleRadius + extra);
+            lateral = side * (halfWidth + config.collectibles.collectibleRadius + extra);
 
             // Its OWN range — offTrackBonusMinJumpHeightFactor..offTrackBonusMaxJumpHeightFactor
             // of maxJumpHeight DIRECTLY, decoupled from the normal-bonus ceiling (see Generate's
@@ -538,7 +538,7 @@ public class GameplayTimeline
 
     // A short run of consecutive kept candidates, close together in time, becomes one
     // coordinated shape (arc or stair) instead of independent random heights/positions.
-    private static void EmitPattern(List<Candidate> kept, int start, int run, GameplayConfig config,
+    private static void EmitPattern(List<Candidate> kept, int start, int run, MusicRunnerGameplayConfig config,
                                     MusicPath path, System.Random rng, float vFloorDesign, float vCeil,
                                     float warmup, float speed, List<TimelineEvent> events)
     {
@@ -565,7 +565,7 @@ public class GameplayTimeline
             // Same compression curve as single collectibles (RollVertical) — a pattern's peak
             // can still reach vCeil (a rewarding "reach up" moment), but most of its shape stays
             // in the easy/no-jump band, consistent with ordinary collectibles.
-            float vOff = Mathf.Lerp(vFloor, vCeil, Mathf.Clamp01(config.verticalOffsetCurve.Evaluate(shapeT)));
+            float vOff = Mathf.Lerp(vFloor, vCeil, Mathf.Clamp01(config.collectibles.verticalOffsetCurve.Evaluate(shapeT)));
 
             float half    = LateralHalfRange(path, config, dist);
             float jitter  = half > 0f ? (float)(rng.NextDouble() * 2.0 - 1.0) * half * 0.25f : 0f;
@@ -588,21 +588,21 @@ public class GameplayTimeline
         }
     }
 
-    private static float LateralHalfRange(MusicPath path, GameplayConfig config, float eventDistance)
+    private static float LateralHalfRange(MusicPath path, MusicRunnerGameplayConfig config, float eventDistance)
     {
         float halfWidth = path.GetWidth(eventDistance) * 0.5f;
-        float usable    = halfWidth - config.collectibleLateralMargin - config.collectibleRadius;
+        float usable    = halfWidth - config.collectibles.collectibleLateralMargin - config.collectibles.collectibleRadius;
         return Mathf.Max(0f, usable);
     }
 
-    // config.verticalOffsetCurve reshapes a uniform 0..1 roll into the actual height fraction —
+    // config.collectibles.verticalOffsetCurve reshapes a uniform 0..1 roll into the actual height fraction —
     // its default shape keeps most rolls low (no jump needed), a smaller share moderately
     // elevated, and only a few reaching vCeil (a clear jump). See its tooltip for the exact
     // default keys; this is the single knob that controls "how often should this require a jump".
-    private static float RollVertical(GameplayConfig config, System.Random rng, float vFloor, float vCeil)
+    private static float RollVertical(MusicRunnerGameplayConfig config, System.Random rng, float vFloor, float vCeil)
     {
         float t          = (float)rng.NextDouble();
-        float heightFrac = Mathf.Clamp01(config.verticalOffsetCurve.Evaluate(t));
+        float heightFrac = Mathf.Clamp01(config.collectibles.verticalOffsetCurve.Evaluate(t));
         return Mathf.Lerp(vFloor, vCeil, heightFrac);
     }
 
@@ -616,9 +616,9 @@ public class GameplayTimeline
     // "punch") past 1.0 — up to RingController.MaxPulseScale(type) — around the object's own
     // pivot, so without this the bottom of that momentarily-larger mesh could dip below the
     // surface even though the resting collider/mesh sat cleanly on top.
-    private static float CollectibleFloor(RingType type, GameplayConfig config, float vFloorDesign, float vCeil)
+    private static float CollectibleFloor(RingType type, MusicRunnerGameplayConfig config, float vFloorDesign, float vCeil)
     {
-        float safeMinClearance = CollectibleMaxHalfHeight(type, config) + config.collectibleSurfaceClearance;
+        float safeMinClearance = CollectibleMaxHalfHeight(type, config) + config.collectibles.collectibleSurfaceClearance;
         return Mathf.Clamp(Mathf.Max(vFloorDesign, safeMinClearance), 0f, vCeil);
     }
 
@@ -629,10 +629,10 @@ public class GameplayTimeline
     /// clearance split) use the exact same number — a debug tool verifying ground clearance can
     /// also call this directly instead of re-deriving it.
     /// </summary>
-    public static float CollectibleMaxHalfHeight(RingType type, GameplayConfig config)
+    public static float CollectibleMaxHalfHeight(RingType type, MusicRunnerGameplayConfig config)
     {
-        var   prefab     = config.ResolvePrefab(type);
-        float halfHeight = config.collectibleRadius;
+        var   prefab     = config.collectibles.ResolvePrefab(type);
+        float halfHeight = config.collectibles.collectibleRadius;
         if (prefab != null)
         {
             var mf = prefab.GetComponentInChildren<MeshFilter>();
@@ -661,7 +661,7 @@ public class GameplayTimeline
     /// source separation or a trained classifier, not more heuristics on one spectrum.
     /// </summary>
     private static (RingType type, float confidence) ClassifyOnset(
-        SongProfile profile, float time, float[] bandAvgs, GameplayConfig config)
+        SongProfile profile, float time, float[] bandAvgs, MusicRunnerGameplayConfig config)
     {
         // -1 = flatness data not computed (advancedTimbre off) — every check below treats that
         // as "no opinion" and falls back to the centroid/band-only behaviour.
@@ -715,7 +715,7 @@ public class GameplayTimeline
         float winner   = Mathf.Max(snare, treble);
         float runnerUp = Mathf.Min(snare, treble);
         float margin   = winner > 0.0001f ? (winner - runnerUp) / winner : 0f;
-        if (margin < config.classificationConfidenceMargin) return (RingType.Onset, AmbiguousConfidence);
+        if (margin < config.levelGeneration.classificationConfidenceMargin) return (RingType.Onset, AmbiguousConfidence);
 
         return (treble >= snare ? RingType.HiHat : RingType.Snare, ConfidentClassification);
     }

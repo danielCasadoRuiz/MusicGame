@@ -883,9 +883,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28800ed31a743a3458db808a4649da5e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  config: {fileID: 11400000, guid: ba62efeeb2c6ff944accb79089cc10e9, type: 2}
+  m_Name:
+  m_EditorClassIdentifier:
+  config: {fileID: 11400000, guid: 4d3b30da92954a16ac415f6d2bb95e7c, type: 2}
 --- !u!114 &3300000001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -899,7 +899,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1989522755}
-  config: {fileID: 11400000, guid: ba62efeeb2c6ff944accb79089cc10e9, type: 2}
+  config: {fileID: 11400000, guid: c797592768f344c4b43bf7b0cc29d8b8, type: 2}
   playerController: {fileID: 3100000004}
 --- !u!114 &3400000001
 MonoBehaviour:
@@ -914,7 +914,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 3100000004}
-  config: {fileID: 11400000, guid: ba62efeeb2c6ff944accb79089cc10e9, type: 2}
+  config: {fileID: 11400000, guid: c797592768f344c4b43bf7b0cc29d8b8, type: 2}
   behindDistance: 3
   heightAbovePath: 4
   xSmoothTime: 1

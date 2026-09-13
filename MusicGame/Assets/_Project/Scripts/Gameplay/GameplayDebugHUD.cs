@@ -289,7 +289,7 @@ public class GameplayDebugHUD : MonoBehaviour
                          $"(normalized {_manager.NormalizedScore * 100f:F0}%)");
         foreach (var rt in counts.Keys)
         {
-            bool   spawnEnabled = _manager.Config == null || _manager.Config.IsSpawnEnabled(rt);
+            bool   spawnEnabled = _manager.Config == null || _manager.Config.collectibles.IsSpawnEnabled(rt);
             string warn = counts[rt] != 0 ? ""
                         : !spawnEnabled   ? "  <color=#888888>(off)</color>"
                         :                   "  <color=#ff6666>(0!)</color>";

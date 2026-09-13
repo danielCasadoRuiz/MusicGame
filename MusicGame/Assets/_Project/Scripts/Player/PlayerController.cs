@@ -44,7 +44,7 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private GameplayConfig config;
+    [SerializeField] private MusicRunnerCoreConfig config;
 
     // ── State ─────────────────────────────────────────────────────────────────
     private float _forwardOffset;    // distance-space, 0 <= forwardOffset <= config.maxSurge

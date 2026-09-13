@@ -29,7 +29,7 @@ public class MusicWorldManager : MonoBehaviour
         }
     }
 
-    private GameplayConfig _config;
+    private MusicRunnerGameplayConfig _config;
     private Material       _pathMaterial; // optional
 
     public MusicPath Path    { get; private set; }
@@ -113,7 +113,7 @@ public class MusicWorldManager : MonoBehaviour
     private const float GroundWindowAhead  = 60f;
     private const float GroundRebuildStep  = 15f;
 
-    // ── Playhead scanline (see GameplayConfig's own doc for the design) ─────────
+    // ── Playhead scanline (see MusicRunnerLevelConfig's own doc for the design) ─────────
     // Per-chunk (set once per rebuild via MaterialPropertyBlock — no Material cloning):
     private static readonly int StartMusicDistanceID = Shader.PropertyToID("_StartMusicDistance");
     private static readonly int EndMusicDistanceID    = Shader.PropertyToID("_EndMusicDistance");
@@ -140,7 +140,7 @@ public class MusicWorldManager : MonoBehaviour
         return host.AddComponent<MusicWorldManager>();
     }
 
-    public void Initialize(GameplayConfig config, Material pathMaterial = null)
+    public void Initialize(MusicRunnerGameplayConfig config, Material pathMaterial = null)
     {
         _config       = config;
         _pathMaterial = pathMaterial;
@@ -188,16 +188,16 @@ public class MusicWorldManager : MonoBehaviour
     {
         if (_config == null) return;
 
-        Shader.SetGlobalFloat(PlayheadEnabledID, _config.playheadEnabled ? 1f : 0f);
-        if (!_config.playheadEnabled) return;
+        Shader.SetGlobalFloat(PlayheadEnabledID, _config.levelGeneration.playheadEnabled ? 1f : 0f);
+        if (!_config.levelGeneration.playheadEnabled) return;
 
-        Shader.SetGlobalFloat(PlayheadDistanceID, musicDistance + _config.playheadOffset);
-        Shader.SetGlobalFloat(PlayheadWidthID, Mathf.Max(0.001f, _config.playheadLineWidth));
-        Shader.SetGlobalFloat(PlayheadEmissionID, Mathf.Max(0f, _config.playheadEmissionIntensity));
-        Shader.SetGlobalFloat(PlayheadUseFreqID, _config.playheadUseFrequencyColors ? 1f : 0f);
-        Shader.SetGlobalColor(PlayheadColorID, _config.playheadSingleColor);
+        Shader.SetGlobalFloat(PlayheadDistanceID, musicDistance + _config.levelGeneration.playheadOffset);
+        Shader.SetGlobalFloat(PlayheadWidthID, Mathf.Max(0.001f, _config.levelGeneration.playheadLineWidth));
+        Shader.SetGlobalFloat(PlayheadEmissionID, Mathf.Max(0f, _config.levelGeneration.playheadEmissionIntensity));
+        Shader.SetGlobalFloat(PlayheadUseFreqID, _config.levelGeneration.playheadUseFrequencyColors ? 1f : 0f);
+        Shader.SetGlobalColor(PlayheadColorID, _config.levelGeneration.playheadSingleColor);
 
-        if (_config.playheadUseFrequencyColors)
+        if (_config.levelGeneration.playheadUseFrequencyColors)
             UpdateFrequencyTexture(musicDistance);
     }
 
@@ -225,7 +225,7 @@ public class MusicWorldManager : MonoBehaviour
             _freqPixels = new Color32[numBands];
         }
 
-        float time = _config.playerSpeed > 0f ? Mathf.Max(0f, musicDistance / _config.playerSpeed) : 0f;
+        float time = _config.core.playerSpeed > 0f ? Mathf.Max(0f, musicDistance / _config.core.playerSpeed) : 0f;
         for (int b = 0; b < numBands; b++)
             _freqPixels[b] = VuColor(NormalizedBandValue(b, time));
 
@@ -251,10 +251,10 @@ public class MusicWorldManager : MonoBehaviour
     {
         if (_config == null) { Debug.LogError("[MusicWorldManager] Not initialized — call Initialize() first."); return; }
 
-        Vector3 startPos = new Vector3(0f, _config.pathBaseHeight, 0f);
+        Vector3 startPos = new Vector3(0f, _config.levelGeneration.pathBaseHeight, 0f);
         Path     = new SnakeWayWorldGenerator().Generate(profile, _config, startPos);
         _profile = profile;
-        _bandReference = ComputeBandReferences(profile, _config.frequencyColorReferencePercentile);
+        _bandReference = ComputeBandReferences(profile, _config.levelGeneration.frequencyColorReferencePercentile);
         FrequencyBandsUsed = profile.VisualBandCount;
 
         if (_meshMaterial != null) Destroy(_meshMaterial);
@@ -287,7 +287,7 @@ public class MusicWorldManager : MonoBehaviour
         if (_bandReference == null || b < 0 || b >= _bandReference.Length || _profile == null) return 0f;
         float norm = _bandReference[b] > 0.0001f ? _profile.GetVisualBandEnergyAtSmooth(b, time) / _bandReference[b] : 0f;
         norm = Mathf.Clamp01(norm);
-        return Mathf.Pow(norm, Mathf.Max(0.01f, _config.frequencyContrastGamma));
+        return Mathf.Pow(norm, Mathf.Max(0.01f, _config.levelGeneration.frequencyContrastGamma));
     }
 
     // Raw analytic surface height (0..1 normalized), with NO smoothing/slope-clamp — used for
@@ -297,7 +297,7 @@ public class MusicWorldManager : MonoBehaviour
     // reproducible from either side of a chunk boundary, which is what keeps normals seam-free.
     private float HeightAt(float distance, float lateralFrac, int numBands)
     {
-        float time = _config.playerSpeed > 0f ? Mathf.Max(0f, distance / _config.playerSpeed) : 0f;
+        float time = _config.core.playerSpeed > 0f ? Mathf.Max(0f, distance / _config.core.playerSpeed) : 0f;
         return numBands > 0 ? BlendedNormalized(lateralFrac, time, numBands) : 0f;
     }
 
@@ -329,7 +329,7 @@ public class MusicWorldManager : MonoBehaviour
         _groundWindowCenter = centerDistance;
         if (_groundGO != null) Destroy(_groundGO);
 
-        float rowSpacing = 1f / Mathf.Max(_config.longitudinalSegmentsPerMeter, 0.01f);
+        float rowSpacing = 1f / Mathf.Max(_config.levelGeneration.longitudinalSegmentsPerMeter, 0.01f);
         float total      = Path.TotalLength;
         if (total < rowSpacing) return;
 
@@ -342,7 +342,7 @@ public class MusicWorldManager : MonoBehaviour
         int rows      = rowIndex1 - rowIndex0 + 1;
         if (rows < 2) return;
 
-        int cols     = Mathf.Max(2, _config.crossMeshSegments) + 1;
+        int cols     = Mathf.Max(2, _config.levelGeneration.crossMeshSegments) + 1;
         int numBands = _profile?.VisualBandCount ?? 0;
 
         // Sample MusicPath directly on the GLOBAL distance grid — decoupled from MusicPath's
@@ -359,7 +359,7 @@ public class MusicWorldManager : MonoBehaviour
         var grid = new float[rows, cols];
         for (int r = 0; r < rows; r++)
         {
-            float time = _config.playerSpeed > 0f ? Mathf.Max(0f, rowDistance[r] / _config.playerSpeed) : 0f;
+            float time = _config.core.playerSpeed > 0f ? Mathf.Max(0f, rowDistance[r] / _config.core.playerSpeed) : 0f;
             for (int c = 0; c < cols; c++)
             {
                 float lateralFrac = cols > 1 ? (float)c / (cols - 1) : 0.5f;
@@ -372,12 +372,12 @@ public class MusicWorldManager : MonoBehaviour
         // change the other's feel. Neither touches crossMeshSegments/vertex count: this is just
         // more CPU box-blur passes over the SAME grid, at rebuild time (~every 1.5s of travel),
         // not per-frame — cheap regardless of how high either is set.
-        float smoothness         = Mathf.Clamp01(_config.pathSmoothness);
+        float smoothness         = Mathf.Clamp01(_config.levelGeneration.pathSmoothness);
         int   longitudinalPasses = Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(1f, 3f, smoothness)));
         float smoothingRadius    = Mathf.Lerp(1f, 3f, smoothness);
         int   radiusZ            = Mathf.Max(1, Mathf.RoundToInt(smoothingRadius / Mathf.Max(rowSpacing, 0.01f)));
 
-        float crossSmoothness = Mathf.Clamp01(_config.crossSmoothness);
+        float crossSmoothness = Mathf.Clamp01(_config.levelGeneration.crossSmoothness);
         int   lateralPasses   = Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(1f, 3f, crossSmoothness)));
         int   radiusX         = Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(1f, 4f, crossSmoothness)));
 
@@ -407,20 +407,20 @@ public class MusicWorldManager : MonoBehaviour
         // i.e. a max rise/run of 1.0) with headroom for the discretized/interpolated mesh —
         // NOT arbitrary small constants — so raising maxFrequencyHeight for more dramatic
         // relief doesn't require touching these.
-        float scale = Mathf.Max(0.001f, _config.maxFrequencyHeight);
+        float scale = Mathf.Max(0.001f, _config.levelGeneration.maxFrequencyHeight);
         for (int c = 0; c < cols; c++)
         {
             for (int r = 1; r < rows; r++)
             {
                 float dz = rowDistance[r] - rowDistance[r - 1];
-                float maxDelta = (_config.longitudinalSlopeLimit * Mathf.Max(dz, 0.001f)) / scale;
+                float maxDelta = (_config.levelGeneration.longitudinalSlopeLimit * Mathf.Max(dz, 0.001f)) / scale;
                 grid[r, c] = Mathf.Clamp(grid[r, c], grid[r - 1, c] - maxDelta, grid[r - 1, c] + maxDelta);
             }
         }
         for (int r = 0; r < rows; r++)
         {
             float colSpacing = cols > 1 ? rowSample[r].width / (cols - 1) : 1f;
-            float maxDeltaX  = (_config.crossSlopeLimit * Mathf.Max(colSpacing, 0.001f)) / scale;
+            float maxDeltaX  = (_config.levelGeneration.crossSlopeLimit * Mathf.Max(colSpacing, 0.001f)) / scale;
             for (int c = 1; c < cols; c++)
                 grid[r, c] = Mathf.Clamp(grid[r, c], grid[r, c - 1] - maxDeltaX, grid[r, c - 1] + maxDeltaX);
         }
@@ -490,7 +490,7 @@ public class MusicWorldManager : MonoBehaviour
     }
 
     // ── Mesh + per-vertex colour (terrain color itself stays texture-free — see class doc for
-    // why; UVs exist only so the playhead scanline shader can locate itself, see GameplayConfig's
+    // why; UVs exist only so the playhead scanline shader can locate itself, see MusicRunnerLevelConfig's
     // Playhead Scanline doc) ─────────────────────────────────────────────────────
 
     private void BuildMesh(float[,] grid, MusicPath.Sample[] rowSample, float[] rowDistance,
@@ -616,7 +616,7 @@ public class MusicWorldManager : MonoBehaviour
                      ?? Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
         var mat = new Material(shader) { color = Color.white };
         if (mat.HasProperty("_AmbientFloor"))
-            mat.SetFloat("_AmbientFloor", Mathf.Clamp01(_config.terrainAmbientFloor));
+            mat.SetFloat("_AmbientFloor", Mathf.Clamp01(_config.levelGeneration.terrainAmbientFloor));
         return mat;
     }
 
@@ -653,17 +653,17 @@ public class MusicWorldManager : MonoBehaviour
         return refs;
     }
 
-    // Classic VU-meter gradient: low → mid → high, configurable in GameplayConfig.
+    // Classic VU-meter gradient: low → mid → high, configurable in MusicRunnerLevelConfig.
     private Color VuColor(float t) => t < 0.5f
-        ? Color.Lerp(_config.lowEnergyColor, _config.midEnergyColor, t * 2f)
-        : Color.Lerp(_config.midEnergyColor, _config.highEnergyColor, (t - 0.5f) * 2f);
+        ? Color.Lerp(_config.levelGeneration.lowEnergyColor, _config.levelGeneration.midEnergyColor, t * 2f)
+        : Color.Lerp(_config.levelGeneration.midEnergyColor, _config.levelGeneration.highEnergyColor, (t - 0.5f) * 2f);
 
     // Terrain-only color remap — exaggerates how soon the palette reaches red, WITHOUT touching
     // the value used for height/geometry (that stays plain `norm`). Never used by the scanline's
     // FrequencyTexture (UpdateFrequencyTexture calls VuColor directly) — that one is meant to
     // stay a faithful, un-exaggerated equalizer reading.
     private Color TerrainVuColor(float processedValue) =>
-        VuColor(Mathf.Clamp01(processedValue / Mathf.Max(0.05f, _config.terrainColorRedThreshold)));
+        VuColor(Mathf.Clamp01(processedValue / Mathf.Max(0.05f, _config.levelGeneration.terrainColorRedThreshold)));
 
     // ── Debug HUD support ────────────────────────────────────────────────────────
 
@@ -674,7 +674,7 @@ public class MusicWorldManager : MonoBehaviour
         int numBands = _profile?.VisualBandCount ?? 0;
         if (_profile == null || _bandReference == null || numBands == 0) { normalized = 0f; return 0f; }
 
-        float time = _config.playerSpeed > 0f ? Mathf.Max(0f, distance / _config.playerSpeed) : 0f;
+        float time = _config.core.playerSpeed > 0f ? Mathf.Max(0f, distance / _config.core.playerSpeed) : 0f;
         int   b0   = Mathf.Clamp(Mathf.FloorToInt(Mathf.Clamp01(lateralFrac) * numBands - 0.5f), 0, numBands - 1);
         float raw  = _bandReference[b0] > 0.0001f ? _profile.GetVisualBandEnergyAt(b0, time) / _bandReference[b0] : 0f;
 
@@ -699,7 +699,7 @@ public class MusicWorldManager : MonoBehaviour
 
         var   sample     = Path.GetSample(distance);
         float lateralFrac = LateralFracFromOffset(sample, lateralOffset);
-        return ConservativeHeightAt(distance, lateralFrac, numBands) * Mathf.Max(0f, _config.maxFrequencyHeight);
+        return ConservativeHeightAt(distance, lateralFrac, numBands) * Mathf.Max(0f, _config.levelGeneration.maxFrequencyHeight);
     }
 
     // The actual rendered mesh applies longitudinal smoothing (box blur) that this single-point
@@ -713,7 +713,7 @@ public class MusicWorldManager : MonoBehaviour
         // Same radius formula RebuildGroundWindow derives from pathSmoothness — kept in sync so
         // this single-point query's safety margin always matches what the rendered mesh actually
         // does, regardless of where pathSmoothness is set.
-        float radius = Mathf.Lerp(1f, 3f, Mathf.Clamp01(_config.pathSmoothness));
+        float radius = Mathf.Lerp(1f, 3f, Mathf.Clamp01(_config.levelGeneration.pathSmoothness));
         float best   = HeightAt(distance, lateralFrac, numBands);
         if (radius > 0.01f)
         {
@@ -748,7 +748,7 @@ public class MusicWorldManager : MonoBehaviour
 
         var   sample = Path.GetSample(distance);
         float lateralFrac = LateralFracFromOffset(sample, lateralOffset);
-        float scale  = Mathf.Max(0f, _config.maxFrequencyHeight);
+        float scale  = Mathf.Max(0f, _config.levelGeneration.maxFrequencyHeight);
         float height = ConservativeHeightAt(distance, lateralFrac, numBands) * scale;
 
         const float d = 0.5f; // finite-difference step, world units

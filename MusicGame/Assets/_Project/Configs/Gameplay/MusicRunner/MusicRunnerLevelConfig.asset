@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb3484ecaf20408191d885b4f731de28, type: 3}
+  m_Name: MusicRunnerLevelConfig
+  m_EditorClassIdentifier: Assembly-CSharp::MusicRunnerLevelConfig
+  pathBaseHeight: 0
+  pathControlPointInterval: 1
+  pathSampleSpacing: 0.5
+  pathHeightAmplitude: 6
+  pathMaxTurnAngle: 2
+  basePathWidth: 7
+  pathWidthVariation: 10
+  pathSeed: 1
+  maxFrequencyHeight: 3.85
+  frequencyColorReferencePercentile: 0.9
+  frequencyContrastGamma: 0.6
+  crossMeshSegments: 48
+  longitudinalSegmentsPerMeter: 4
+  pathSmoothness: 0.5
+  crossSmoothness: 0.35
+  crossSlopeLimit: 0.85
+  longitudinalSlopeLimit: 0.7
+  lowEnergyColor: {r: 0.15, g: 0.85, b: 0.25, a: 1}
+  midEnergyColor: {r: 0.95, g: 0.85, b: 0.1, a: 1}
+  highEnergyColor: {r: 0.95, g: 0.15, b: 0.1, a: 1}
+  terrainColorRedThreshold: 0.75
+  terrainAmbientFloor: 0.35
+  playheadEnabled: 1
+  playheadOffset: 1
+  playheadLineWidth: 0.06
+  playheadEmissionIntensity: 3
+  playheadUseFrequencyColors: 0
+  playheadSingleColor: {r: 0.15, g: 1, b: 0.4, a: 1}
+  createGroundPlane: 1
+  energyThreshold: 0.4
+  minRingSpacing: 0.2
+  useOnsets: 1
+  useBeatGrid: 1
+  beatGridSubdivision: 0.7
+  classificationConfidenceMargin: 0.24

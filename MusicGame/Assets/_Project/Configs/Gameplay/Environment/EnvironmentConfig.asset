@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7a9e354878f4776bdc6b6b5173a264e, type: 3}
+  m_Name: EnvironmentConfig
+  m_EditorClassIdentifier: Assembly-CSharp::EnvironmentConfig
+  horizon: {fileID: 11400000, guid: 4d854be180d74ed3b7bc96b88b7f14da, type: 2}
+  enableMusicEnvironment: 1
+  colorSampleInterval: 0.4
+  chromaEMAAlpha: 0.12
+  colorSmoothingTimeConstant: 3
+  hueConfidenceThreshold: 0.12
+  baseSaturation: 0.55
+  baseValue: 0.35
+  buildupIntensityBoost: 1.4
+  macroSnapFraction: 0.5
+  gameplayFogEnabled: 1
+  gameplayFogColor: {r: 0.04, g: 0.045, b: 0.10, a: 1}
+  gameplayFogStartDistance: 18
+  gameplayFogEndDistance: 75
+  gameplayFogStrength: 1

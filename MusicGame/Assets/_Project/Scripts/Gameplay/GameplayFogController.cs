@@ -2,10 +2,16 @@ using UnityEngine;
 
 /// <summary>
 /// Real distance fog for the GAMEPLAY world only (ground/circuit + rings/bonuses) — a different
-/// concept from Horizon Haze (see GameplayConfig's own doc). Implemented via Unity's built-in
+/// concept from Horizon Haze (see EnvironmentConfig's own doc). Implemented via Unity's built-in
 /// RenderSettings.fog (Linear mode): ring/bonus materials use the stock URP Lit shader, which
 /// already blends RenderSettings.fog automatically (see LitForwardPass.hlsl), and
 /// VertexColorLit.shader (the ground) now does the same blend explicitly.
+///
+/// OWNERSHIP: the ONLY system that writes RenderSettings.fog*.
+///
+/// STATIC: every one of these values is pure art-direction that never changes during a song —
+/// applied ONCE at Initialize, never every frame. Re-applied on demand only if
+/// EnvironmentConfig.devLiveConfigSync is on, for live-tuning in Play mode.
 ///
 /// Deliberately never affects the Horizon World: none of its shaders (HorizonBar, CheapWater,
 /// ProceduralSky, HorizonMountainLayer) sample fog at all, so RenderSettings.fog being globally
@@ -14,11 +20,21 @@ using UnityEngine;
 /// </summary>
 public class GameplayFogController : MonoBehaviour
 {
-    private GameplayConfig _config;
+    private EnvironmentConfig _config;
 
-    public void Initialize(GameplayConfig config) => _config = config;
+    public void Initialize(EnvironmentConfig config)
+    {
+        _config = config;
+        ApplyStaticConfig();
+    }
 
     private void Update()
+    {
+        if (_config == null || !_config.devLiveConfigSync) return;
+        ApplyStaticConfig();
+    }
+
+    public void ApplyStaticConfig()
     {
         if (_config == null) return;
 

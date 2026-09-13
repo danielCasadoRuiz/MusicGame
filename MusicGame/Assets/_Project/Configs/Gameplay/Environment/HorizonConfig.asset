@@ -1,0 +1,125 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4437a89fe3a9476e99b644eb359fad1f, type: 3}
+  m_Name: HorizonConfig
+  m_EditorClassIdentifier: Assembly-CSharp::HorizonConfig
+  enableHorizonWorld: 1
+  horizonParallaxFactor: 0.03
+  horizonBloomIntensity: 1.1
+  horizonBloomThreshold: 0.6
+  horizonBloomScatter: 0.7
+  horizonBloomForceApply: 1
+  horizonBarCount: 48
+  horizonArcSpanDegrees: 180
+  horizonArcRadius: 40
+  horizonBarVerticalOffset: -2
+  horizonBarMinHeight: 0.3
+  horizonBarMaxHeight: 6
+  horizonBarWidthFraction: 0.94
+  horizonBarDepth: 1.5
+  horizonBarAmplitudeGradient:
+    serializedVersion: 2
+    key0: {r: 0.1, g: 0.95, b: 0.85, a: 1}
+    key1: {r: 0.15, g: 0.55, b: 0.98, a: 1}
+    key2: {r: 0.55, g: 0.25, b: 0.95, a: 0}
+    key3: {r: 0.9, g: 0.2, b: 0.75, a: 0}
+    key4: {r: 1, g: 0.45, b: 0.3, a: 0}
+    key5: {r: 1, g: 0.2, b: 0.15, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 16384
+    ctime2: 29491
+    ctime3: 39321
+    ctime4: 49151
+    ctime5: 65535
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 6
+    m_NumAlphaKeys: 2
+  horizonBarBaseEmission: 0.6
+  horizonBarAmplitudeEmissionBoost: 3.5
+  horizonBarMaxEmission: 6
+  horizonBarGain: 1
+  horizonBarAttack: 0.15
+  horizonBarRelease: 0.6
+  horizonReflectionEnabled: 1
+  horizonReflectionRTSize: {x: 512, y: 256}
+  horizonReflectionOpacity: 0.55
+  horizonReflectionDistortion: 0.35
+  horizonReflectionEmission: 2
+  horizonWaterLevel: -3
+  horizonWaterDarkness: 0.92
+  horizonWaterNormalMapA: {fileID: 2800000, guid: 3db65efd39be40c1aebe6f749bef2404, type: 3}
+  horizonWaterNormalMapB: {fileID: 2800000, guid: 0fab0ae066ed43138662c4bfefd84087, type: 3}
+  horizonWaterTilingA: 6
+  horizonWaterScrollA: {x: 0.035, y: 0.015}
+  horizonWaterTilingB: 17
+  horizonWaterScrollB: {x: -0.012, y: 0.028}
+  horizonWaterNormalStrength: 0.25
+  horizonWaterFresnelPower: 5
+  horizonWaterSpecularPower: 48
+  horizonWaterSpecularIntensity: 0.6
+  horizonWaterHorizonTint: {r: 0.9, g: 0.5, b: 0.4, a: 1}
+  horizonWaterHorizonTintStrength: 0.25
+  horizonSkyZenithColor: {r: 0.02, g: 0.02, b: 0.06, a: 1}
+  horizonSkyUpperColor: {r: 0.1, g: 0.05, b: 0.22, a: 1}
+  horizonSkyLowerColor: {r: 0.45, g: 0.16, b: 0.32, a: 1}
+  horizonSkyHorizonColor: {r: 0.85, g: 0.4, b: 0.3, a: 1}
+  horizonSkyNoiseScale: 1.5
+  horizonSkyNoiseStrength: 0.08
+  horizonGlowColor: {r: 1, g: 0.6, b: 0.5, a: 1}
+  horizonGlowIntensity: 1
+  horizonSunColor: {r: 1, g: 0.85, b: 0.7, a: 1}
+  horizonSunAzimuthDeg: 0
+  horizonSunElevationDeg: 12
+  horizonSunSize: 0.0209
+  horizonSunGlowSize: 0.25
+  horizonSunGlowIntensity: 1.2
+  horizonMountainsEnabled: 1
+  horizonMountainFarTexture: {fileID: 2800000, guid: 27919e72d6cf4134ae7c78aec237f077, type: 3}
+  horizonMountainNearTexture: {fileID: 2800000, guid: 5941111bf25c48e5a33eeba1c548001e, type: 3}
+  horizonMountainFarTint: {r: 0.3, g: 0.24, b: 0.48, a: 1}
+  horizonMountainNearTint: {r: 0.05, g: 0.04, b: 0.08, a: 1}
+  horizonMountainFarOpacity: 0.85
+  horizonMountainNearOpacity: 1
+  horizonMountainFarScale: {x: 90, y: 16}
+  horizonMountainNearScale: {x: 90, y: 14}
+  horizonMountainFarVerticalOffset: 0
+  horizonMountainNearVerticalOffset: -1
+  horizonMountainFarBrightness: 1
+  horizonMountainNearBrightness: 1
+  horizonMountainFarDistance: 1.6
+  horizonMountainNearDistance: 1.3
+  horizonMountainFarParallax: 0.015
+  horizonMountainNearParallax: 0.05
+  horizonHazeColor: {r: 0.35, g: 0.2, b: 0.35, a: 1}
+  horizonHazeDensity: 0.35
+  horizonHazeStartHeight: 0
+  horizonHazeEndHeight: 10
+  horizonHazeHorizonIntensity: 0.3
+  horizonHazeHorizonTintColor: {r: 0.55, g: 0.3, b: 0.38, a: 1}
+  horizonHazeHorizonTintAmount: 0.35
+  horizonHazeDistanceIntensity: 0.5
+  horizonMacroReactivity: 1
+  horizonMacroSmoothingTime: 4
+  horizonMacroSnapFraction: 0.4

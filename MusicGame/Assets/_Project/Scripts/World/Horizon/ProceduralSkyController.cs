@@ -4,27 +4,41 @@ using UnityEngine;
 /// Owns the Horizon Camera's procedural sky material (ProceduralSky.shader) — a per-camera Skybox
 /// override, so it never touches RenderSettings.skybox / the gameplay Main Camera at all.
 ///
-/// MACRO reactivity (separate from the bars' fast MICRO response): profile.GetBuildupAt eases the
-/// horizon glow intensity up over horizonMacroSmoothingTime seconds, and an Impact/Drop
-/// MacroEventOccurredEvent snaps it partway toward the target (same "partway there" idea
-/// MusicEnvironmentController.macroSnapFraction already uses for the background color) — always
-/// slow/smoothed, never a per-beat flicker. Deliberately independent of MusicEnvironmentController
-/// (which still drives Camera.backgroundColor as a fallback when Horizon World is disabled) rather
-/// than reading its output directly, so this keeps working even if that system is ever disabled.
+/// OWNERSHIP: this is the ONLY system that writes to the sky material's shader properties.
+///
+/// STATIC vs DYNAMIC: noise scale/strength, sun position/size/glow-size and the sun COLOR are
+/// pure art-direction — applied once in ApplyStaticConfig() (Initialize, or every frame only if
+/// HorizonConfig.devLiveConfigSync is on for live-tuning). The sky's four gradient colors + glow
+/// intensity ARE genuinely dynamic — see MACRO below — so those alone are resent every frame,
+/// via cached property IDs, no allocation.
+///
+/// MACRO reactivity: reads MusicEnvironmentController.Instance.SmoothedMacroIntensity (a single
+/// shared, slow-smoothed 0..1 driver computed once from profile intensity/buildup — see that
+/// class's own doc) and blends each of its own BASE colors toward HorizonConfig's matching
+/// *Intense color by that amount — FinalColor = Lerp(base, intense, smoothedIntensity). Never
+/// derives its own competing smoothing/subscription — MusicEnvironmentController is the sole
+/// owner of "how intense is the music right now".
 /// </summary>
 public class ProceduralSkyController : MonoBehaviour
 {
-    private GameplayConfig _config;
-    private SongProfile    _profile;
-    private Material       _material;
+    private static readonly int ZenithColorID  = Shader.PropertyToID("_ZenithColor");
+    private static readonly int UpperColorID   = Shader.PropertyToID("_UpperColor");
+    private static readonly int LowerColorID   = Shader.PropertyToID("_LowerColor");
+    private static readonly int HorizonColorID = Shader.PropertyToID("_HorizonColor");
+    private static readonly int NoiseScaleID    = Shader.PropertyToID("_NoiseScale");
+    private static readonly int NoiseStrengthID = Shader.PropertyToID("_NoiseStrength");
+    private static readonly int GlowColorID     = Shader.PropertyToID("_GlowColor");
+    private static readonly int GlowIntensityID = Shader.PropertyToID("_GlowIntensity");
+    private static readonly int SunColorID      = Shader.PropertyToID("_SunColor");
+    private static readonly int SunDirectionID  = Shader.PropertyToID("_SunDirection");
+    private static readonly int SunSizeID       = Shader.PropertyToID("_SunSize");
+    private static readonly int SunGlowSizeID      = Shader.PropertyToID("_SunGlowSize");
+    private static readonly int SunGlowIntensityID = Shader.PropertyToID("_SunGlowIntensity");
 
-    private float _glowBias;      // 0..~1 extra multiplier on horizonGlowIntensity, macro-smoothed
-    private float _targetGlowBias;
+    private HorizonConfig _config;
+    private Material      _material;
 
-    private System.Action<SongProfileReadyEvent>  _onProfile;
-    private System.Action<MacroEventOccurredEvent> _onMacro;
-
-    public void Initialize(GameplayConfig config, Camera horizonCamera)
+    public void Initialize(HorizonConfig config, Camera horizonCamera)
     {
         _config = config;
 
@@ -40,68 +54,52 @@ public class ProceduralSkyController : MonoBehaviour
         var skybox = horizonCamera.gameObject.AddComponent<Skybox>();
         skybox.material = _material;
 
-        ApplyStaticValues();
-    }
-
-    private void OnEnable()
-    {
-        _onProfile = e => _profile = e.Profile;
-        _onMacro   = e =>
-        {
-            if (_config == null || !_config.horizonMacroReactivity) return;
-            if (e.Type == MacroEventType.Impact || e.Type == MacroEventType.Drop)
-                _glowBias = Mathf.Lerp(_glowBias, _targetGlowBias, Mathf.Clamp01(_config.horizonMacroSnapFraction));
-        };
-        EventBus.Subscribe(_onProfile);
-        EventBus.Subscribe(_onMacro);
-    }
-
-    private void OnDisable()
-    {
-        EventBus.Unsubscribe(_onProfile);
-        EventBus.Unsubscribe(_onMacro);
+        ApplyStaticConfig();
+        ApplyDynamic(0f);
     }
 
     public void Tick()
     {
         if (_config == null || _material == null) return;
 
-        if (_config.horizonMacroReactivity && _profile != null)
-        {
-            var clock = MusicClock.Instance;
-            if (clock != null && clock.IsRunning)
-            {
-                _targetGlowBias = Mathf.Clamp01(_profile.GetBuildupAt(clock.SongTime));
-                float rate = 1f - Mathf.Exp(-Time.deltaTime / Mathf.Max(0.01f, _config.horizonMacroSmoothingTime));
-                _glowBias = Mathf.Lerp(_glowBias, _targetGlowBias, rate);
-            }
-        }
-        else
-        {
-            _glowBias = 0f;
-        }
+        if (_config.devLiveConfigSync) ApplyStaticConfig();
 
-        _material.SetFloat("_GlowIntensity", Mathf.Max(0f, _config.horizonGlowIntensity) * (1f + _glowBias));
-        ApplyStaticValues();
+        float intensity = MusicEnvironmentController.Instance != null
+            ? MusicEnvironmentController.Instance.SmoothedMacroIntensity
+            : 0f;
+        ApplyDynamic(intensity);
     }
 
-    private void ApplyStaticValues()
+    /// <summary>The genuinely-dynamic slice: the 4 gradient colors + glow intensity, blended
+    /// BASE→Intense by the shared macro-intensity driver. Cheap (a handful of Color.Lerp calls),
+    /// so this runs every frame unconditionally — it's the one part of this shader that's
+    /// SUPPOSED to change continuously.</summary>
+    private void ApplyDynamic(float intensity)
     {
-        _material.SetColor("_ZenithColor",  _config.horizonSkyZenithColor);
-        _material.SetColor("_UpperColor",   _config.horizonSkyUpperColor);
-        _material.SetColor("_LowerColor",   _config.horizonSkyLowerColor);
-        _material.SetColor("_HorizonColor", _config.horizonSkyHorizonColor);
-        _material.SetFloat("_NoiseScale",    _config.horizonSkyNoiseScale);
-        _material.SetFloat("_NoiseStrength", _config.horizonSkyNoiseStrength);
-        _material.SetColor("_GlowColor", _config.horizonGlowColor);
-        _material.SetColor("_SunColor",  _config.horizonSunColor);
+        _material.SetColor(ZenithColorID,  Color.Lerp(_config.horizonSkyZenithColor,  _config.horizonSkyZenithColorIntense,  intensity));
+        _material.SetColor(UpperColorID,   Color.Lerp(_config.horizonSkyUpperColor,   _config.horizonSkyUpperColorIntense,   intensity));
+        _material.SetColor(LowerColorID,   Color.Lerp(_config.horizonSkyLowerColor,   _config.horizonSkyLowerColorIntense,   intensity));
+        _material.SetColor(HorizonColorID, Color.Lerp(_config.horizonSkyHorizonColor, _config.horizonSkyHorizonColorIntense, intensity));
+
+        float glowMul = Mathf.Lerp(1f, Mathf.Max(0f, _config.horizonGlowIntensityIntenseMultiplier), intensity);
+        _material.SetFloat(GlowIntensityID, Mathf.Max(0f, _config.horizonGlowIntensity) * glowMul);
+    }
+
+    /// <summary>Pure art-direction — never changes on its own, so applied once here (Initialize)
+    /// and only re-applied on demand (HorizonConfig.devLiveConfigSync, for live-tuning in Play).</summary>
+    public void ApplyStaticConfig()
+    {
+        _material.SetFloat(NoiseScaleID,    _config.horizonSkyNoiseScale);
+        _material.SetFloat(NoiseStrengthID, _config.horizonSkyNoiseStrength);
+        _material.SetColor(GlowColorID, _config.horizonGlowColor);
+        _material.SetColor(SunColorID,  _config.horizonSunColor);
 
         float az = _config.horizonSunAzimuthDeg * Mathf.Deg2Rad;
         float el = _config.horizonSunElevationDeg * Mathf.Deg2Rad;
         Vector3 sunDir = new Vector3(Mathf.Sin(az) * Mathf.Cos(el), Mathf.Sin(el), Mathf.Cos(az) * Mathf.Cos(el));
-        _material.SetVector("_SunDirection", sunDir);
-        _material.SetFloat("_SunSize", _config.horizonSunSize);
-        _material.SetFloat("_SunGlowSize", _config.horizonSunGlowSize);
-        _material.SetFloat("_SunGlowIntensity", _config.horizonSunGlowIntensity);
+        _material.SetVector(SunDirectionID, sunDir);
+        _material.SetFloat(SunSizeID, _config.horizonSunSize);
+        _material.SetFloat(SunGlowSizeID, _config.horizonSunGlowSize);
+        _material.SetFloat(SunGlowIntensityID, _config.horizonSunGlowIntensity);
     }
 }

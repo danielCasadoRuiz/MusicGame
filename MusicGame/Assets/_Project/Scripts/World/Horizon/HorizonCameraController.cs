@@ -5,7 +5,7 @@ using UnityEngine.Rendering.Universal;
 /// Owns the separate "Horizon World" — a URP camera stack Base camera that renders ONLY the
 /// "Horizon" layer (spectrum bars, reflections, water, procedural sky), sitting at a near-FIXED
 /// position that only copies the gameplay Main Camera's PITCH and FOV every frame — never its
-/// full translation, and deliberately NEVER its yaw (see LateUpdate — the path's own heading can
+/// full translation, and deliberately NEVER its yaw (see Tick() — the path's own heading can
 /// drift as it curves, and copying that would visibly swing the whole spectrum arc off-center).
 /// The Main Camera itself becomes an Overlay stacked on top of it.
 ///
@@ -32,20 +32,12 @@ public class HorizonCameraController : MonoBehaviour
     public static HorizonCameraController Instance { get; private set; }
 
     public const string HorizonLayerName = "Horizon";
-    /// <summary>Second, OPTIONAL layer holding only the neon bars — lets the bar-reflection
-    /// capture camera (HorizonBarsReflectionCamera) cull to just them. If this layer doesn't
-    /// exist, everything still works — bars simply stay on HorizonLayerName and the reflection
-    /// feature disables itself (see HorizonBarsReflectionCamera).</summary>
-    public const string BarsLayerName = "HorizonBars";
 
     public Camera    HorizonCamera { get; private set; }
     public Transform HorizonRoot   { get; private set; }
     public bool       IsActive      { get; private set; }
-    /// <summary>Bars' own layer index, or -1 if BarsLayerName doesn't exist in this project —
-    /// callers (SpectrumBars3D, HorizonBarsReflectionCamera) fall back to HorizonLayer when -1.</summary>
-    public int BarsLayer { get; private set; } = -1;
 
-    private GameplayConfig _config;
+    private HorizonConfig _config;
     private Camera         _mainCamera;
     private Vector3        _mainCameraStartPos;
     private float          _fixedYaw; // the Horizon World's own heading — NEVER updated after Initialize
@@ -76,7 +68,7 @@ public class HorizonCameraController : MonoBehaviour
         if (HorizonRoot != null) Destroy(HorizonRoot.gameObject);
     }
 
-    public void Initialize(GameplayConfig config)
+    public void Initialize(HorizonConfig config)
     {
         _config = config;
         if (!config.enableHorizonWorld) return;
@@ -97,15 +89,6 @@ public class HorizonCameraController : MonoBehaviour
             return;
         }
 
-        BarsLayer = LayerMask.NameToLayer(BarsLayerName);
-        if (BarsLayer < 0)
-        {
-            Debug.LogWarning($"[HorizonCameraController] Optional layer '{BarsLayerName}' doesn't " +
-                              "exist — the RenderTexture bar reflection feature will stay disabled " +
-                              "(bars still render normally on the '" + HorizonLayerName + "' layer). " +
-                              "Add it in Project Settings > Tags and Layers to enable it.");
-        }
-
         _mainCameraStartPos = _mainCamera.transform.position;
         _fixedYaw           = _mainCamera.transform.eulerAngles.y;
 
@@ -114,7 +97,6 @@ public class HorizonCameraController : MonoBehaviour
         HorizonRoot.position = _mainCameraStartPos;
 
         int cullMask = 1 << layer;
-        if (BarsLayer >= 0) cullMask |= 1 << BarsLayer;
 
         var camGO = new GameObject("[Horizon Camera]");
         camGO.transform.SetParent(HorizonRoot, false);
@@ -143,7 +125,14 @@ public class HorizonCameraController : MonoBehaviour
         IsActive = true;
     }
 
-    private void LateUpdate()
+    /// <summary>
+    /// Called by HorizonWorld's own LateUpdate() as the FIRST step of its deterministic per-frame
+    /// sequence — deliberately NOT a Unity LateUpdate() of its own, so every other Horizon World
+    /// system that depends on this camera's transform/parallax delta for THIS exact frame (e.g.
+    /// HorizonMountainLayers' parallax offset) never reads a one-frame-stale value, regardless of
+    /// Unity's otherwise-undefined cross-script LateUpdate ordering.
+    /// </summary>
+    public void Tick()
     {
         if (!IsActive || _mainCamera == null || HorizonCamera == null) return;
 

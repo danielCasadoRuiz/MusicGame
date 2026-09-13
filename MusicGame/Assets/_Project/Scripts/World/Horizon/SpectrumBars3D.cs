@@ -3,9 +3,24 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// Real volumetric spectrum-analyzer bars (box geometry, not flat LED quads) arranged in an arc
-/// inside the Horizon World — parented under HorizonCameraController.Instance.HorizonRoot, so they
-/// sit at a fixed position independent of the Player/gameplay camera.
+/// Real volumetric spectrum-analyzer bars arranged in an arc inside the Horizon World — parented
+/// under HorizonCameraController.Instance.HorizonRoot, so they sit at a fixed position independent
+/// of the Player/gameplay camera.
+///
+/// Each bar is a genuine per-object cube (shared unit-cube Mesh + shared URP Lit Material, one
+/// MeshRenderer per bar) instead of a single hand-baked unlit mesh — this gives real PBR
+/// lighting/specular (a "plastic/acrylic" volume, not a flat-shaded neon rectangle) while keeping
+/// per-bar BaseColor/EmissionColor fully independent via a single REUSED MaterialPropertyBlock
+/// (Clear()'d and refilled per bar, never allocated per frame, never a Material instance per bar).
+///
+/// REFLECTION: each bar has exactly one matching "reflection bar" — the SAME mesh, a SEPARATE
+/// simple unlit+opaque material (MusicGame/HorizonBarReflection), positioned by mirroring the real
+/// bar's center across HorizonWater.WaterLevelWorldY (same X/Z, same height, exactly reflected Y)
+/// — deterministic geometry, no camera/RenderTexture involved. It reads the SAME amplitude/color
+/// this frame already computed for its real bar (darkened via horizonReflectionBrightness), never
+/// a second analysis. Being real OPAQUE geometry, it's captured by URP's _CameraOpaqueTexture,
+/// which CheapWater.shader samples+distorts — so the water surface sitting above it is what sells
+/// the "reflection", not the reflection bar's own geometry looking imperfect.
 ///
 /// Data: reuses the SAME MusicWorldManager.NormalizedBandValue(band, time) the ground mesh and the
 /// old FrequencyBackground both already used, averaged over each bar's own band range — never a
@@ -14,112 +29,125 @@ using UnityEngine.Rendering;
 /// amplitude (0..1) drives BOTH height and color from the SAME value, independently:
 ///   amplitude -> Mathf.Lerp(minHeight, maxHeight, amplitude)      (height)
 ///   amplitude -> horizonBarAmplitudeGradient.Evaluate(amplitude)  (color)
-/// Never the other way around (color is never derived from the final height). The water's
-/// reflection no longer reads BarColors directly — HorizonBarsReflectionCamera captures this
-/// mesh's own rendered pixels into a RenderTexture instead, so it's automatically exact.
-///
-/// One shared Mesh + one shared Material for every bar (no per-bar GameObject, no per-bar Material
-/// instance) — a single draw call for the whole spectrum, cheaper than even GPU-instancing this
-/// many small boxes would be. Geometry (all vertex positions, since bar HEIGHT changes every
-/// frame) and vertex colors are both rewritten in place into cached arrays each frame — no
-/// per-frame heap allocation beyond Unity's own Mesh API bookkeeping.
+/// Never the other way around (color is never derived from the final height).
 /// </summary>
 public class SpectrumBars3D : MonoBehaviour
 {
-    private const int FacesPerBar = 4;   // front (inner), top, left, right — back/bottom are never visible
-    private const int VertsPerFace = 4;
-    private const int VertsPerBar = FacesPerBar * VertsPerFace;
-    private const int TrisPerFace = 2;
-    private const int IndicesPerBar = FacesPerBar * TrisPerFace * 3;
+    private static readonly int MetallicID   = Shader.PropertyToID("_Metallic");
+    private static readonly int SmoothnessID = Shader.PropertyToID("_Smoothness");
+    private static readonly int BaseColorID     = Shader.PropertyToID("_BaseColor");
+    private static readonly int EmissionColorID = Shader.PropertyToID("_EmissionColor");
+    private static readonly int ReflColorID        = Shader.PropertyToID("_Color");
+    private static readonly int ReflFadeDistanceID = Shader.PropertyToID("_FadeDistance");
+    private static readonly int ReflFadeColorID    = Shader.PropertyToID("_FadeColor");
+    private static readonly int ReflWaterLevelID   = Shader.PropertyToID("_WaterLevelWorldY");
 
-    private GameplayConfig _config;
-    private Mesh     _mesh;
-    private Material _material;
+    private HorizonConfig _config;
+    private Transform     _root;
+    private HorizonWater  _water;
 
-    private Vector3[] _verts;
-    private Color[]   _colors;
-    private int[]     _tris;
+    private Mesh     _cubeMesh;
+    private Material _barMaterial;
+    private Material _reflectionMaterial;
+    private MaterialPropertyBlock _mpb; // reused every call — Clear()'d, never allocated per frame
+
+    private Transform[] _barT;
+    private Renderer[]  _barR;
+    private Transform[] _reflT;
+    private Renderer[]  _reflR;
 
     private float[] _smoothedAmplitude;
     private Color[] _barColor;   // one solid color per bar, this frame — exposed for debug/HUD use
 
-    private int   _builtBarCount = -1;
-    private float _builtArcSpan = float.NaN, _builtArcRadius = float.NaN, _builtWidthFrac = float.NaN, _builtDepth = float.NaN;
+    private int _builtBarCount = -1;
 
     public IReadOnlyList<Color> BarColors => _barColor;
     public int BarCount => _config != null ? Mathf.Max(1, _config.horizonBarCount) : 0;
 
-    public void Initialize(GameplayConfig config, Transform root)
+    public void Initialize(HorizonConfig config, Transform root, HorizonWater water)
     {
         _config = config;
+        _root = root;
+        _water = water;
 
-        // Prefer the dedicated bars-only layer (lets HorizonBarsReflectionCamera cull to just
-        // this mesh) — falls back to the general Horizon layer if that optional layer doesn't
-        // exist, same graceful-degrade pattern used everywhere else in this system.
-        int barsLayer = HorizonCameraController.Instance != null ? HorizonCameraController.Instance.BarsLayer : -1;
-        int layer = barsLayer >= 0 ? barsLayer : LayerMask.NameToLayer(HorizonCameraController.HorizonLayerName);
+        _cubeMesh = BuildCubeMesh();
+        _mpb = new MaterialPropertyBlock();
 
-        var shader = Shader.Find("MusicGame/HorizonBar") ?? Shader.Find("Universal Render Pipeline/Unlit");
-        _material  = new Material(shader) { name = "Horizon_Bars" };
+        var litShader = Shader.Find("Universal Render Pipeline/Lit");
+        _barMaterial = new Material(litShader) { name = "Horizon_Bars", enableInstancing = true };
+        _barMaterial.EnableKeyword("_EMISSION");
+        _barMaterial.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
 
-        var go = new GameObject("SpectrumBars3D");
-        go.layer = Mathf.Max(0, layer);
-        go.transform.SetParent(root, false);
+        var reflShader = Shader.Find("MusicGame/HorizonBarReflection") ?? litShader;
+        _reflectionMaterial = new Material(reflShader) { name = "Horizon_BarsReflection", enableInstancing = true };
 
-        _mesh = new Mesh { name = "Horizon_Bars" };
-        _mesh.MarkDynamic();
-        go.AddComponent<MeshFilter>().sharedMesh = _mesh;
-        var mr = go.AddComponent<MeshRenderer>();
-        mr.sharedMaterial = _material;
-        mr.shadowCastingMode = ShadowCastingMode.Off;
-        mr.receiveShadows = false;
-
-        RebuildTopologyIfNeeded();
+        ApplyStaticConfig();
+        RebuildBarObjectsIfNeeded();
     }
 
-    private void RebuildTopologyIfNeeded()
+    /// <summary>Pure art-direction (Metallic/Smoothness/reflection fade params) — applied once and
+    /// only re-applied on demand (HorizonConfig.devLiveConfigSync). Never per-bar — these are
+    /// SHARED material properties, not MaterialPropertyBlock overrides.</summary>
+    public void ApplyStaticConfig()
+    {
+        _barMaterial.SetFloat(MetallicID, Mathf.Clamp01(_config.horizonBarMetallic));
+        _barMaterial.SetFloat(SmoothnessID, Mathf.Clamp01(_config.horizonBarSmoothness));
+
+        _reflectionMaterial.SetFloat(ReflFadeDistanceID, Mathf.Max(0.01f, _config.horizonReflectionFadeDistance));
+        _reflectionMaterial.SetColor(ReflFadeColorID, _config.horizonReflectionFadeColor);
+        if (_water != null) _reflectionMaterial.SetFloat(ReflWaterLevelID, _water.WaterLevelWorldY);
+    }
+
+    private void RebuildBarObjectsIfNeeded()
     {
         int barCount = Mathf.Max(1, _config.horizonBarCount);
-        if (barCount == _builtBarCount &&
-            Mathf.Approximately(_builtArcSpan, _config.horizonArcSpanDegrees) &&
-            Mathf.Approximately(_builtArcRadius, _config.horizonArcRadius) &&
-            Mathf.Approximately(_builtWidthFrac, _config.horizonBarWidthFraction) &&
-            Mathf.Approximately(_builtDepth, _config.horizonBarDepth))
-            return;
+        if (barCount == _builtBarCount) return;
 
-        _verts  = new Vector3[barCount * VertsPerBar];
-        _colors = new Color[barCount * VertsPerBar];
-        _tris   = new int[barCount * IndicesPerBar];
+        DestroyBarObjects();
+
+        int layer = LayerMask.NameToLayer(HorizonCameraController.HorizonLayerName);
+
+        _barT = new Transform[barCount];
+        _barR = new Renderer[barCount];
+        _reflT = new Transform[barCount];
+        _reflR = new Renderer[barCount];
+        _smoothedAmplitude = new float[barCount];
+        _barColor = new Color[barCount];
 
         for (int c = 0; c < barCount; c++)
         {
-            int vi = c * VertsPerBar, ti = c * IndicesPerBar;
-            for (int f = 0; f < FacesPerBar; f++)
-                FillQuadIndices(_tris, ti + f * TrisPerFace * 3, vi + f * VertsPerFace);
+            var go = new GameObject($"Bar_{c}");
+            go.layer = Mathf.Max(0, layer);
+            go.transform.SetParent(_root, false);
+            go.AddComponent<MeshFilter>().sharedMesh = _cubeMesh;
+            var mr = go.AddComponent<MeshRenderer>();
+            mr.sharedMaterial = _barMaterial;
+            mr.shadowCastingMode = ShadowCastingMode.Off;
+            mr.receiveShadows = false;
+            _barT[c] = go.transform;
+            _barR[c] = mr;
+
+            var rgo = new GameObject($"BarReflection_{c}");
+            rgo.layer = Mathf.Max(0, layer);
+            rgo.transform.SetParent(_root, false);
+            rgo.AddComponent<MeshFilter>().sharedMesh = _cubeMesh;
+            var rmr = rgo.AddComponent<MeshRenderer>();
+            rmr.sharedMaterial = _reflectionMaterial;
+            rmr.shadowCastingMode = ShadowCastingMode.Off;
+            rmr.receiveShadows = false;
+            _reflT[c] = rgo.transform;
+            _reflR[c] = rmr;
         }
 
-        _smoothedAmplitude = new float[barCount];
-        _barColor           = new Color[barCount];
-
         _builtBarCount = barCount;
-        _builtArcSpan = _config.horizonArcSpanDegrees;
-        _builtArcRadius = _config.horizonArcRadius;
-        _builtWidthFrac = _config.horizonBarWidthFraction;
-        _builtDepth = _config.horizonBarDepth;
-
-        // Clear() first — reassigning a SMALLER vertex array while the mesh still holds the
-        // previous (possibly larger) triangle indices would throw; Clear() drops both safely
-        // before either is set again below.
-        _mesh.Clear();
-        _mesh.vertices  = _verts;
-        _mesh.colors    = _colors;
-        _mesh.triangles = _tris;
     }
 
-    private static void FillQuadIndices(int[] tris, int t, int b)
+    private void DestroyBarObjects()
     {
-        tris[t + 0] = b + 0; tris[t + 1] = b + 2; tris[t + 2] = b + 1;
-        tris[t + 3] = b + 1; tris[t + 4] = b + 2; tris[t + 5] = b + 3;
+        if (_barT != null)
+            foreach (var t in _barT) if (t != null) Destroy(t.gameObject);
+        if (_reflT != null)
+            foreach (var t in _reflT) if (t != null) Destroy(t.gameObject);
     }
 
     /// <summary>Averages NormalizedBandValue over the real-band range this bar covers — remapping
@@ -143,17 +171,32 @@ public class SpectrumBars3D : MonoBehaviour
     {
         if (_config == null || world == null) return;
 
-        RebuildTopologyIfNeeded();
+        RebuildBarObjectsIfNeeded();
+        if (_config.devLiveConfigSync) ApplyStaticConfig();
 
         int barCount      = _builtBarCount;
         int realBandCount = Mathf.Max(1, world.FrequencyBandsUsed);
         float halfSpan    = _config.horizonArcSpanDegrees * 0.5f * Mathf.Deg2Rad;
-        float innerR      = _config.horizonArcRadius;
-        float outerR      = innerR + Mathf.Max(0.01f, _config.horizonBarDepth);
+        float radius      = _config.horizonArcRadius;
         float gain        = Mathf.Max(0f, _config.horizonBarGain);
         float dt          = Time.deltaTime;
         float attackAlpha  = 1f - Mathf.Pow(Mathf.Clamp01(_config.horizonBarAttack), Mathf.Max(dt, 0.0001f) * 60f);
         float releaseAlpha = 1f - Mathf.Pow(Mathf.Clamp01(_config.horizonBarRelease), Mathf.Max(dt, 0.0001f) * 60f);
+        // Read the SHARED macro-intensity driver ONCE per Tick (not per-bar) — see
+        // MusicEnvironmentController's own doc on why it's the sole owner/writer of this value.
+        float macroIntensity = MusicEnvironmentController.Instance != null
+            ? MusicEnvironmentController.Instance.SmoothedMacroIntensity
+            : 0f;
+
+        // Mirror plane, expressed in the SAME local (root-relative) space bar transforms use —
+        // HorizonWater.WaterLevelWorldY is the single source of truth, so the two can never drift.
+        float waterLevelLocalY = _water != null
+            ? _water.WaterLevelWorldY - _root.position.y
+            : _config.horizonWaterLevel;
+
+        bool reflectionsOn = _config.horizonReflectionEnabled;
+        float reflBrightness = Mathf.Max(0f, _config.horizonReflectionBrightness);
+        float reflStretchY   = Mathf.Max(0.01f, _config.horizonReflectionStretchY);
 
         for (int c = 0; c < barCount; c++)
         {
@@ -170,62 +213,73 @@ public class SpectrumBars3D : MonoBehaviour
             // COLOR comes from the amplitude directly — never from the final height. Emission =
             // a constant floor (so quiet bars still glow a little) PLUS an amplitude-scaled boost
             // (the main "louder = brighter" knob), hard-clamped so Bloom never blows out to white.
-            Color baseColor = _config.horizonBarAmplitudeGradient.Evaluate(current);
+            Color gradientColor = _config.horizonBarAmplitudeGradient.Evaluate(current);
             float emissionAmount = Mathf.Min(
                 _config.horizonBarMaxEmission,
                 _config.horizonBarBaseEmission + current * _config.horizonBarAmplitudeEmissionBoost);
-            Color emissive = baseColor * (1f + emissionAmount);
-            _barColor[c] = emissive; // pre-haze, exposed for debug/HUD use
+
+            Color hazedBase = HorizonHaze.Apply(gradientColor, _config.horizonBarVerticalOffset, 0f, macroIntensity, _config);
+            hazedBase.a = 1f;
+            Color emissiveColor = hazedBase * emissionAmount;
+            _barColor[c] = hazedBase * (1f + emissionAmount); // pre-haze-adjusted, exposed for debug/HUD use
 
             float height = Mathf.Lerp(_config.horizonBarMinHeight, _config.horizonBarMaxHeight, current);
 
             float aCenter = Mathf.Lerp(-halfSpan, halfSpan, tCenter);
-            float slice   = (halfSpan * 2f / barCount) * 0.5f * Mathf.Clamp01(_config.horizonBarWidthFraction);
-            float a0 = aCenter - slice, a1 = aCenter + slice;
+            Vector3 dir = new Vector3(Mathf.Sin(aCenter), 0f, Mathf.Cos(aCenter));
+            Quaternion rot = Quaternion.LookRotation(dir, Vector3.up); // local Z = radial (depth), local X = tangential (width)
 
-            Vector3 dirA0 = new Vector3(Mathf.Sin(a0), 0f, Mathf.Cos(a0));
-            Vector3 dirA1 = new Vector3(Mathf.Sin(a1), 0f, Mathf.Cos(a1));
+            float slice = (halfSpan * 2f / barCount) * Mathf.Clamp01(_config.horizonBarWidthFraction);
+            float chordWidth = 2f * radius * Mathf.Sin(slice * 0.5f);
+            float depth = Mathf.Max(0.01f, _config.horizonBarDepth);
 
             float yBase = _config.horizonBarVerticalOffset;
             float yTop  = yBase + height;
+            float yCenter = (yBase + yTop) * 0.5f;
 
-            Vector3 innerBL = dirA0 * innerR + Vector3.up * yBase;
-            Vector3 innerBR = dirA1 * innerR + Vector3.up * yBase;
-            Vector3 innerTL = dirA0 * innerR + Vector3.up * yTop;
-            Vector3 innerTR = dirA1 * innerR + Vector3.up * yTop;
-            Vector3 outerBL = dirA0 * outerR + Vector3.up * yBase;
-            Vector3 outerBR = dirA1 * outerR + Vector3.up * yBase;
-            Vector3 outerTL = dirA0 * outerR + Vector3.up * yTop;
-            Vector3 outerTR = dirA1 * outerR + Vector3.up * yTop;
+            var t = _barT[c];
+            t.localPosition = dir * radius + Vector3.up * yCenter;
+            t.localRotation = rot;
+            t.localScale    = new Vector3(chordWidth, height, depth);
 
-            int vi = c * VertsPerBar;
+            _mpb.Clear();
+            _mpb.SetColor(BaseColorID, hazedBase);
+            _mpb.SetColor(EmissionColorID, emissiveColor);
+            _barR[c].SetPropertyBlock(_mpb);
 
-            // Face 0: front (inner, facing the camera/center)
-            _verts[vi + 0] = innerBL; _verts[vi + 1] = innerBR; _verts[vi + 2] = innerTL; _verts[vi + 3] = innerTR;
-            // Face 1: top
-            _verts[vi + 4] = innerTL; _verts[vi + 5] = innerTR; _verts[vi + 6] = outerTL; _verts[vi + 7] = outerTR;
-            // Face 2: left side
-            _verts[vi + 8] = innerBL; _verts[vi + 9] = outerBL; _verts[vi + 10] = innerTL; _verts[vi + 11] = outerTL;
-            // Face 3: right side
-            _verts[vi + 12] = innerBR; _verts[vi + 13] = outerBR; _verts[vi + 14] = innerTR; _verts[vi + 15] = outerTR;
+            // ── Reflection bar: mirrored across the water plane, same X/Z, same height ─────────
+            var rt = _reflT[c];
+            if (reflectionsOn)
+            {
+                _reflR[c].enabled = true;
+                float reflYCenter = 2f * waterLevelLocalY - yCenter;
+                rt.localPosition = dir * radius + Vector3.up * reflYCenter;
+                rt.localRotation = rot;
+                rt.localScale    = new Vector3(chordWidth, height * reflStretchY, depth);
 
-            // Cheap fake-bevel: a flat per-face brightness multiplier baked straight into vertex
-            // color (unlit shader — no real lighting/normals needed for this to read as volume).
-            // Haze is applied AFTER the bevel, at the bar's OWN base height (closest to the
-            // horizon line) — see HorizonHaze's own doc for why this is baked here instead of a
-            // shader/global-uniform pass.
-            Color top   = HorizonHaze.Apply(emissive * 1.15f, yBase, _config); top.a = 1f;
-            Color front = HorizonHaze.Apply(emissive,         yBase, _config); front.a = 1f;
-            Color side  = HorizonHaze.Apply(emissive * 0.82f, yBase, _config); side.a = 1f;
-
-            _colors[vi + 0] = _colors[vi + 1] = _colors[vi + 2] = _colors[vi + 3] = front;
-            _colors[vi + 4] = _colors[vi + 5] = _colors[vi + 6] = _colors[vi + 7] = top;
-            _colors[vi + 8] = _colors[vi + 9] = _colors[vi + 10] = _colors[vi + 11] = side;
-            _colors[vi + 12] = _colors[vi + 13] = _colors[vi + 14] = _colors[vi + 15] = side;
+                Color reflColor = (hazedBase * (1f + emissionAmount)) * reflBrightness;
+                _mpb.Clear();
+                _mpb.SetColor(ReflColorID, reflColor);
+                _reflR[c].SetPropertyBlock(_mpb);
+            }
+            else
+            {
+                _reflR[c].enabled = false;
+            }
         }
+    }
 
-        _mesh.vertices = _verts;
-        _mesh.colors   = _colors;
-        _mesh.RecalculateBounds();
+    private void OnDestroy() => DestroyBarObjects();
+
+    /// <summary>Unity's own built-in cube primitive mesh, copied once — guaranteed-correct
+    /// winding/normals/UVs with zero hand-derived geometry risk, shared by every bar AND its
+    /// reflection (never per-bar/per-instance).</summary>
+    private static Mesh BuildCubeMesh()
+    {
+        var temp = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        var mesh = Object.Instantiate(temp.GetComponent<MeshFilter>().sharedMesh);
+        mesh.name = "HorizonBarCube";
+        Object.Destroy(temp);
+        return mesh;
     }
 }

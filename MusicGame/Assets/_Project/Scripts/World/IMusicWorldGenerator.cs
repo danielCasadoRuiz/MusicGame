@@ -14,5 +14,5 @@ public interface IMusicWorldGenerator
     /// startPosition = world position where the path should begin (usually the player's spawn point).
     /// The returned path covers musicDistance [0 .. (warmupTime + songDuration) * unitsPerSecond].
     /// </summary>
-    MusicPath Generate(SongProfile profile, GameplayConfig config, Vector3 startPosition);
+    MusicPath Generate(SongProfile profile, MusicRunnerGameplayConfig config, Vector3 startPosition);
 }

@@ -44,7 +44,7 @@ public class CheckpointSystem : MonoBehaviour
     // ── Initialization ────────────────────────────────────────────────────────
 
     public void Initialize(SongProfile    profile,
-                           GameplayConfig config,
+                           MusicRunnerCoreConfig config,
                            MusicPath      path,
                            GameplayTimeline timeline)
     {

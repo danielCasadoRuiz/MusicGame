@@ -1,11 +1,11 @@
 // URP shader for the procedural music-terrain: main-light diffuse + shadows (cast AND
 // receive), multiplied by the per-vertex musical colour (green/yellow/red from
 // MusicWorldManager). _AmbientFloor keeps shadowed areas from going pure black so the musical
-// gradient stays readable there too (see GameplayConfig.terrainAmbientFloor).
+// gradient stays readable there too (see MusicRunnerLevelConfig.terrainAmbientFloor).
 //
 // Playhead scanline: a transversal glowing band tracking the current song position, added on
-// top of the lit vertex color (MusicWorldManager.UpdatePlayheadGlobals/GameplayConfig's own
-// doc has the full design). _StartMusicDistance/_EndMusicDistance are PER-CHUNK (set via
+// top of the lit vertex color (MusicWorldManager.UpdatePlayheadGlobals/MusicRunnerLevelConfig's
+// own doc has the full design). _StartMusicDistance/_EndMusicDistance are PER-CHUNK (set via
 // MaterialPropertyBlock, one ground mesh instance at a time — never a second Material), every
 // other _Playhead*/_FreqTex value is GLOBAL (Shader.SetGlobalX, shared by whichever chunk(s)
 // are currently rendered, no per-chunk CPU work at all).

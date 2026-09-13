@@ -1,9 +1,10 @@
 // Stylized water surface for the Horizon World: dark, near-flat, TWO independently tiling/
 // scrolling normal maps combined for a subtle microwave ripple (falls back to a flat default
 // normal if no textures are assigned — see HorizonWater.cs), a Blinn-Phong specular highlight +
-// Fresnel rim from the main directional light, and an optional sampled reflection of the neon
-// bars (HorizonBarsReflectionCamera's mirrored RenderTexture capture, blended in via Fresnel so
-// it reads strongest at grazing/far angles, like a real reflective surface).
+// Fresnel rim from the main directional light, and REFRACTION of whatever opaque geometry sits
+// behind/below it (URP's _CameraOpaqueTexture) — this is what makes the mirrored reflection bars
+// (SpectrumBars3D) sitting just below the water plane read as a wobbly, distorted reflection
+// instead of a perfect duplicate. No RenderTexture/second camera involved.
 Shader "MusicGame/CheapWater"
 {
     Properties
@@ -22,11 +23,7 @@ Shader "MusicGame/CheapWater"
         _SpecularIntensity("Specular Intensity", Float) = 0.6
         _HorizonTint("Horizon Tint Color", Color) = (0.9, 0.5, 0.4, 1)
         _HorizonTintStrength("Horizon Tint Strength", Range(0,1)) = 0.25
-        _ReflectionTex("Reflection Tex (RT)", 2D) = "black" {}
-        _ReflectionEnabled("Reflection Enabled", Float) = 0
-        _ReflectionOpacity("Reflection Opacity", Range(0,1)) = 0.6
-        _ReflectionEmission("Reflection Emission", Float) = 1.6
-        _ReflectionDistortion("Reflection Distortion", Range(0,1)) = 0.35
+        _RefractionStrength("Refraction Strength", Range(0,0.2)) = 0.08
     }
     SubShader
     {
@@ -43,6 +40,7 @@ Shader "MusicGame/CheapWater"
             #pragma fragment frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareOpaqueTexture.hlsl"
 
             struct Attributes
             {
@@ -60,12 +58,10 @@ Shader "MusicGame/CheapWater"
                 float3 tangentWS    : TEXCOORD2;
                 float3 bitangentWS  : TEXCOORD3;
                 float2 uv           : TEXCOORD4;
-                float4 reflClipPos  : TEXCOORD5;
             };
 
             TEXTURE2D(_NormalMapA); SAMPLER(sampler_NormalMapA);
             TEXTURE2D(_NormalMapB); SAMPLER(sampler_NormalMapB);
-            TEXTURE2D(_ReflectionTex); SAMPLER(sampler_ReflectionTex);
 
             CBUFFER_START(UnityPerMaterial)
             float4 _BaseColor;
@@ -78,16 +74,8 @@ Shader "MusicGame/CheapWater"
             float  _SpecularIntensity;
             float4 _HorizonTint;
             float  _HorizonTintStrength;
-            float  _ReflectionEnabled;
-            float  _ReflectionOpacity;
-            float  _ReflectionEmission;
-            float  _ReflectionDistortion;
+            float  _RefractionStrength;
             CBUFFER_END
-
-            // Pushed globally once/frame by HorizonBarsReflectionCamera — the exact view*proj of
-            // the mirrored capture camera, so the reflection UV is correct regardless of which
-            // camera is currently rendering this water surface.
-            float4x4 _HorizonReflectionVP;
 
             Varyings vert(Attributes IN)
             {
@@ -98,7 +86,6 @@ Shader "MusicGame/CheapWater"
                 OUT.tangentWS   = TransformObjectToWorldDir(IN.tangentOS.xyz);
                 OUT.bitangentWS = cross(OUT.normalWS, OUT.tangentWS) * IN.tangentOS.w;
                 OUT.uv          = IN.uv;
-                OUT.reflClipPos = mul(_HorizonReflectionVP, float4(OUT.positionWS, 1.0));
                 return OUT;
             }
 
@@ -123,28 +110,18 @@ Shader "MusicGame/CheapWater"
                 float horizonFacing = 1.0 - saturate(abs(viewDir.y) * 4.0);
                 float3 horizonTint  = _HorizonTint.rgb * horizonFacing * _HorizonTintStrength;
 
-                float3 rgb = _BaseColor.rgb
+                // ── Refraction: distorts whatever opaque geometry (the mirrored reflection bars,
+                // see SpectrumBars3D) is sitting behind/below this surface — offset the screen UV
+                // by the SAME tangent-space normal wobble already driving the ripple, so the
+                // distortion always reads as "this water surface" doing it, never a separate effect.
+                float2 screenUV = GetNormalizedScreenSpaceUV(IN.positionHCS);
+                float2 refractedUV = screenUV + nTan.xy * _RefractionStrength;
+                float3 sceneColor = SampleSceneColor(refractedUV);
+
+                float3 rgb = _BaseColor.rgb * 0.4 + sceneColor * 0.6
                            + _FresnelColor.rgb * fres
                            + mainLight.color * spec
                            + horizonTint;
-
-                // ── Bar reflection (mirrored RenderTexture capture) ─────────────────────────
-                // Strongest at grazing/far angles (same Fresnel term as the surface itself) —
-                // reads as a real reflective surface, not a flat decal.
-                if (_ReflectionEnabled > 0.5)
-                {
-                    // _HorizonReflectionVP was built with GL.GetGPUProjectionMatrix(..., true) on
-                    // the CPU side specifically so this NDC->UV remap needs no extra platform-
-                    // specific Y flip here — see HorizonBarsReflectionCamera.
-                    float2 reflUV = (IN.reflClipPos.xy / IN.reflClipPos.w) * 0.5 + 0.5;
-                    reflUV += nTan.xy * _ReflectionDistortion * 0.15;
-
-                    float3 reflColor = SAMPLE_TEXTURE2D(_ReflectionTex, sampler_ReflectionTex, reflUV).rgb;
-                    reflColor *= (1.0 + _ReflectionEmission);
-                    float reflMask = saturate(fres) * _ReflectionOpacity
-                                   * (reflUV.x > 0 && reflUV.x < 1 && reflUV.y > 0 && reflUV.y < 1 ? 1.0 : 0.0);
-                    rgb = lerp(rgb, reflColor, reflMask);
-                }
 
                 return float4(rgb, _BaseColor.a);
             }

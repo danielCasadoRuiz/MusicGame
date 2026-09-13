@@ -74,12 +74,13 @@ public static class UIPrefabBuilder
     }
 
     // Best-effort — used only to pre-color the ring-type labels/rows to match the game's actual
-    // config at bake time; picks the first GameplayConfig asset found. Falls back to white if
-    // none exists yet (still fully functional, just uncolored until you retouch the prefab).
-    private static GameplayConfig FindGameplayConfig()
+    // config at bake time; picks the first MusicRunnerCollectiblesConfig asset found. Falls back
+    // to white if none exists yet (still fully functional, just uncolored until you retouch the
+    // prefab).
+    private static MusicRunnerCollectiblesConfig FindGameplayConfig()
     {
-        foreach (var guid in AssetDatabase.FindAssets("t:GameplayConfig"))
-            return AssetDatabase.LoadAssetAtPath<GameplayConfig>(AssetDatabase.GUIDToAssetPath(guid));
+        foreach (var guid in AssetDatabase.FindAssets("t:MusicRunnerCollectiblesConfig"))
+            return AssetDatabase.LoadAssetAtPath<MusicRunnerCollectiblesConfig>(AssetDatabase.GUIDToAssetPath(guid));
         return null;
     }
 
@@ -113,7 +114,7 @@ public static class UIPrefabBuilder
 
     // ── Live HUD ──────────────────────────────────────────────────────────────
 
-    private static GameObject BuildLiveHud(RectTransform canvas, GameplayConfig config)
+    private static GameObject BuildLiveHud(RectTransform canvas, MusicRunnerCollectiblesConfig config)
     {
         var root = UIFactory.CreateRect("LiveHUD", canvas);
         UIFactory.SetBox(root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, new Vector2(0f, 100f));

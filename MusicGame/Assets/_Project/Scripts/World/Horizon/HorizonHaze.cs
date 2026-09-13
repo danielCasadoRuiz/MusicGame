@@ -15,22 +15,32 @@ using UnityEngine;
 /// bars or the near mountain layer; 1 = far, e.g. the far mountain layer) — this is what lets two
 /// elements at the SAME height still haze differently depending on how "far away" they represent,
 /// which a height-only blend could never do.
+///
+/// MACRO reactivity: the haze's own target color subtly blends toward
+/// HorizonConfig.horizonHazeColorIntense by the caller-supplied `macroIntensity` (0..1, read ONCE
+/// per Tick from MusicEnvironmentController.Instance.SmoothedMacroIntensity by the caller, never
+/// re-derived here) — this class stays a pure, stateless function; it owns the haze BLEND math,
+/// not the shared intensity driver itself.
 /// </summary>
 public static class HorizonHaze
 {
-    /// <summary>Back-compatible 3-arg overload — no extra distance contribution (distance01 = 0).</summary>
-    public static Color Apply(Color color, float localHeight, GameplayConfig config) =>
-        Apply(color, localHeight, 0f, config);
+    /// <summary>Back-compatible overload — no distance contribution, no macro blend.</summary>
+    public static Color Apply(Color color, float localHeight, HorizonConfig config) =>
+        Apply(color, localHeight, 0f, 0f, config);
+
+    /// <summary>Back-compatible overload — no macro blend.</summary>
+    public static Color Apply(Color color, float localHeight, float distance01, HorizonConfig config) =>
+        Apply(color, localHeight, distance01, 0f, config);
 
     /// <summary>
-    /// Blends `color` toward config.horizonHazeColor based on `localHeight` (Horizon World units,
-    /// relative to the bar/ridge baseline — NOT world Y) AND `distance01` (0..1, caller-defined
-    /// "how far away does this element represent") — low/near elements get pulled further into
-    /// the haze; tall/high/close elements stay clearer. An extra exponential boost near height 0
-    /// (the horizon line itself) lets that seam read as deliberately hazy even when Start/End
-    /// Height are set wide, plus an optional warm/pink tint blended in only at that seam.
+    /// Blends `color` toward the (macro-blended) haze color based on `localHeight` (Horizon World
+    /// units, relative to the bar/ridge baseline — NOT world Y) AND `distance01` (0..1, caller-
+    /// defined "how far away does this element represent") — low/near elements get pulled further
+    /// into the haze; tall/high/close elements stay clearer. An extra exponential boost near
+    /// height 0 (the horizon line itself) lets that seam read as deliberately hazy even when
+    /// Start/End Height are set wide, plus an optional warm/pink tint blended in only at that seam.
     /// </summary>
-    public static Color Apply(Color color, float localHeight, float distance01, GameplayConfig config)
+    public static Color Apply(Color color, float localHeight, float distance01, float macroIntensity, HorizonConfig config)
     {
         float start = config.horizonHazeStartHeight;
         float end   = Mathf.Max(start + 0.01f, config.horizonHazeEndHeight);
@@ -41,7 +51,8 @@ public static class HorizonHaze
         float horizonBoost = Mathf.Exp(-Mathf.Abs(localHeight) * 0.5f) * Mathf.Clamp01(config.horizonHazeHorizonIntensity);
         float amount = Mathf.Clamp01(t + distanceBoost * (1f - t) + horizonBoost);
 
-        Color hazeColor = Color.Lerp(config.horizonHazeColor, config.horizonHazeHorizonTintColor,
+        Color baseHaze = Color.Lerp(config.horizonHazeColor, config.horizonHazeColorIntense, Mathf.Clamp01(macroIntensity));
+        Color hazeColor = Color.Lerp(baseHaze, config.horizonHazeHorizonTintColor,
             horizonBoost * Mathf.Clamp01(config.horizonHazeHorizonTintAmount));
 
         return Color.Lerp(color, hazeColor, amount);

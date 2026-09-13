@@ -13,7 +13,7 @@ using UnityEngine.UI;
 public class GameplayHUD : MonoBehaviour
 {
     [SerializeField] private AudioSource     audioSource;
-    [SerializeField] private GameplayConfig  config;
+    [SerializeField] private MusicRunnerGameplayConfig  config;
     [SerializeField] private GameplayManager manager;
 
     // Built from Initialize() (NOT Awake()) — Awake() fires synchronously the instant
@@ -22,7 +22,7 @@ public class GameplayHUD : MonoBehaviour
     // config/manager are already set the first time the UI is constructed.
     private bool _built;
 
-    public void Initialize(AudioSource source, GameplayConfig cfg, GameplayManager mgr,
+    public void Initialize(AudioSource source, MusicRunnerGameplayConfig cfg, GameplayManager mgr,
         LiveHudView liveHudView = null, EndScreenView endScreenView = null)
     {
         audioSource = source;
@@ -297,7 +297,7 @@ public class GameplayHUD : MonoBehaviour
         return parts.Count > 0 ? string.Join(" · ", parts) : null;
     }
 
-    private Color RingColorOr(RingType? type, Color fallback) => type.HasValue && config != null ? config.RingColor(type.Value) : fallback;
+    private Color RingColorOr(RingType? type, Color fallback) => type.HasValue && config != null ? config.collectibles.RingColor(type.Value) : fallback;
 
     // Single source of truth for "which localization key does this RingType's short HUD label
     // use" — shared by the top-bar column headers and the end-screen performance rows (RowLabel)
@@ -418,7 +418,7 @@ public class GameplayHUD : MonoBehaviour
         if (s == null) return;
 
         float displayRating = config != null
-            ? Mathf.Clamp01(config.performanceRatingCurve.Evaluate(_finalNormalizedScore))
+            ? Mathf.Clamp01(config.scoring.performanceRatingCurve.Evaluate(_finalNormalizedScore))
             : _finalNormalizedScore;
         Color ratingColor = Color.Lerp(new Color(0.9f, 0.3f, 0.25f), new Color(0.3f, 0.95f, 0.4f), displayRating);
 
@@ -446,11 +446,11 @@ public class GameplayHUD : MonoBehaviour
 
         _fallsText.text = Loc.Get("EndScreen.Falls", _finalFallCount.ToString());
 
-        bool noFallBonus = _finalFallCount == 0 && config != null && config.noFallScoreMultiplier > 1f;
+        bool noFallBonus = _finalFallCount == 0 && config != null && config.scoring.noFallScoreMultiplier > 1f;
         _noFallBonusText.gameObject.SetActive(noFallBonus);
         if (noFallBonus)
         {
-            int pctBonus = Mathf.RoundToInt((config.noFallScoreMultiplier - 1f) * 100f);
+            int pctBonus = Mathf.RoundToInt((config.scoring.noFallScoreMultiplier - 1f) * 100f);
             _noFallBonusText.text = Loc.Get("EndScreen.NoFallBonus", pctBonus.ToString());
         }
 
@@ -469,7 +469,7 @@ public class GameplayHUD : MonoBehaviour
         var row = UIFactory.CreateRect($"Row_{type}", parent);
         UIFactory.SetBox(row, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, y), new Vector2(0f, 20f));
 
-        Color color = config != null ? config.RingColor(type) : Color.white;
+        Color color = config != null ? config.collectibles.RingColor(type) : Color.white;
 
         var label = UIFactory.CreateText("Label", row, RowLabel(type), 12, color, TextAnchor.MiddleLeft);
         UIFactory.SetBox(label.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 0.5f), new Vector2(0f, 0f), new Vector2(70f, 0f));

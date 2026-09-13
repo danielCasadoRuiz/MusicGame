@@ -6,7 +6,7 @@ using UnityEngine;
 public class GameplayManager : MonoBehaviour
 {
     [SerializeField] private AudioSource      audioSource;
-    [SerializeField] private GameplayConfig   config;
+    [SerializeField] private MusicRunnerGameplayConfig config;
     [SerializeField] private PlayerController playerController;
 
     // ── Runtime state ─────────────────────────────────────────────────────────
@@ -72,7 +72,7 @@ public class GameplayManager : MonoBehaviour
     public int              NextEventIndex    => _nextEventIdx;
     public GameplayTimeline Timeline          => _timeline;
     public IReadOnlyDictionary<RingType, ObjectPool> RingPools => _ringPools;
-    public GameplayConfig   Config            => config;
+    public MusicRunnerGameplayConfig Config    => config;
     public int              FallCount         => _fallCount;
     public bool              IsRunning        => _running;
     public CollectionStats   Stats             => _stats;
@@ -82,8 +82,8 @@ public class GameplayManager : MonoBehaviour
 
     // Debug-only: the same maxJumpHeight * bonusMaxJumpHeightFactor GameplayTimeline uses as the
     // bonus vertical ceiling — exposed here (not duplicated) purely so the debug HUD can show it.
-    public float MaxReachableJumpHeight => config.gravity < 0f
-        ? (config.jumpForce * config.jumpForce) / (2f * -config.gravity) * config.bonusMaxJumpHeightFactor
+    public float MaxReachableJumpHeight => config.core.gravity < 0f
+        ? (config.core.jumpForce * config.core.jumpForce) / (2f * -config.core.gravity) * config.collectibles.bonusMaxJumpHeightFactor
         : 0f;
 
     // Set true by FallRespawnSystem while it owns the audio (Pause + Play cycle).
@@ -109,7 +109,7 @@ public class GameplayManager : MonoBehaviour
         _checkpoints = GetComponent<CheckpointSystem>()  ?? gameObject.AddComponent<CheckpointSystem>();
 
         _fallRespawn = GetComponent<FallRespawnSystem>()  ?? gameObject.AddComponent<FallRespawnSystem>();
-        _fallRespawn.Initialize(audioSource, playerController, this, config);
+        _fallRespawn.Initialize(audioSource, playerController, this, config.core);
 
         // Pre-built UI prefab instances (Tools > MusicGame > Build UI Prefabs), if the tool has
         // been run — GameplayHUD/PauseController fall back to building their UI procedurally
@@ -123,13 +123,13 @@ public class GameplayManager : MonoBehaviour
         pause.Initialize(audioSource, this, uiRegistry?.Pause);
 
         var environment = GetComponent<MusicEnvironmentController>() ?? gameObject.AddComponent<MusicEnvironmentController>();
-        environment.Initialize(config);
+        environment.Initialize(config.environment);
 
         var fog = GetComponent<GameplayFogController>() ?? gameObject.AddComponent<GameplayFogController>();
-        fog.Initialize(config);
+        fog.Initialize(config.environment);
 
         var horizonWorld = HorizonWorld.GetOrCreate(gameObject);
-        horizonWorld.Initialize(config);
+        horizonWorld.Initialize(config.environment.horizon);
     }
 
     private void OnEnable()
@@ -188,7 +188,7 @@ public class GameplayManager : MonoBehaviour
         InitializePools();
 
         // Checkpoints
-        _checkpoints.Initialize(profile, config, path, _timeline);
+        _checkpoints.Initialize(profile, config.core, path, _timeline);
 
         // Place player at path start — ON the real musical surface, not the MusicPath
         // centerline (the surface sits above it by the frequency-driven relief; using the
@@ -200,7 +200,7 @@ public class GameplayManager : MonoBehaviour
         playerController.transform.position = startPos;
         playerController.transform.rotation = Quaternion.LookRotation(startSample.tangent, Vector3.up);
 
-        _clock.Initialize(audioSource, config.warmupTime, config.playerSpeed);
+        _clock.Initialize(audioSource, config.core.warmupTime, config.core.playerSpeed);
 
         EventBus.Publish(new LevelGeneratedEvent { RingCount = _timeline.Events.Length });
 
@@ -209,7 +209,7 @@ public class GameplayManager : MonoBehaviour
         _fallRespawn.Activate();
         EventBus.Publish(new GameStartedEvent());
 
-        yield return new WaitForSeconds(config.warmupTime);
+        yield return new WaitForSeconds(config.core.warmupTime);
         audioSource.Play();
         _clock.ForceUpdate();
         _audioPlaying = true;
@@ -226,7 +226,7 @@ public class GameplayManager : MonoBehaviour
         // Spawn/despawn windows are measured from here, so a surging player doesn't outrun
         // collectibles that haven't spawned yet or lose ones still ahead of them.
         float playerDist    = playerController.ActualDistance;
-        float lookAheadD    = playerDist + config.spawnLookAhead * config.playerSpeed;
+        float lookAheadD    = playerDist + config.collectibles.spawnLookAhead * config.core.playerSpeed;
 
         // Activate upcoming events — this only makes them visible/spawned ahead of time so the
         // player can see them coming; it is NOT the synced moment.
@@ -243,11 +243,11 @@ public class GameplayManager : MonoBehaviour
         // still fires exactly on the music's own schedule via the pulseLeadTime loop right after
         // this one, completely untouched. Distance depends on the CURRENT camera view (Third/
         // First Person read differently) — CameraFollow is the single authority for both "which
-        // view is active" and "what that maps to" (GameplayConfig.GetBonusVisualActivationDistance),
+        // view is active" and "what that maps to" (MusicRunnerCollectiblesConfig.GetBonusVisualActivationDistance),
         // so this changes immediately on a view toggle with zero branching here.
         float revealDistance = CameraFollow.Instance != null
             ? CameraFollow.Instance.EffectiveBonusVisualActivationDistance
-            : config.bonusVisualActivationDistanceThirdPerson;
+            : config.collectibles.bonusVisualActivationDistanceThirdPerson;
         while (_nextRevealIdx < _timeline.Events.Length &&
                _timeline.Events[_nextRevealIdx].eventDistance - playerDist <= revealDistance)
         {
@@ -255,12 +255,12 @@ public class GameplayManager : MonoBehaviour
             _nextRevealIdx++;
         }
 
-        // Fire beat pulses config.pulseLeadTime seconds BEFORE the player actually reaches
+        // Fire beat pulses config.collectibles.pulseLeadTime seconds BEFORE the player actually reaches
         // each event. Firing exactly on arrival reads as "already past the player" by the
         // time it's perceived — a small lead keeps the pulse visibly ahead of/reachable by
         // the player while still landing close enough to feel tied to the music.
         while (_nextPulseIdx < _timeline.Events.Length &&
-               _clock.SongTime >= _timeline.Events[_nextPulseIdx].eventTime - config.pulseLeadTime)
+               _clock.SongTime >= _timeline.Events[_nextPulseIdx].eventTime - config.collectibles.pulseLeadTime)
         {
             FirePulse(_nextPulseIdx);
             _nextPulseIdx++;
@@ -282,7 +282,7 @@ public class GameplayManager : MonoBehaviour
 
         // Recycle passed events — only once genuinely unreachable behind the player's actual
         // position, never just because the music's own minimum has advanced past them.
-        float recycleThreshold = playerDist - config.recycleGrace;
+        float recycleThreshold = playerDist - config.collectibles.recycleGrace;
         for (int i = _activeEvents.Count - 1; i >= 0; i--)
         {
             var ae = _activeEvents[i];
@@ -327,8 +327,8 @@ public class GameplayManager : MonoBehaviour
 
             // No-Fall Bonus — only for a run that reached the end with zero falls. Applied once,
             // here, right before publishing the final stats.
-            if (_fallCount == 0 && config.noFallScoreMultiplier > 1f)
-                _stats.MultiplyScore(config.noFallScoreMultiplier);
+            if (_fallCount == 0 && config.scoring.noFallScoreMultiplier > 1f)
+                _stats.MultiplyScore(config.scoring.noFallScoreMultiplier);
 
             EventBus.Publish(new GameEndedEvent
             {
@@ -355,19 +355,19 @@ public class GameplayManager : MonoBehaviour
 
         float raw = type switch
         {
-            RingType.Peak   => config.peakBonusPoints   * timing,
-            RingType.Impact => config.impactBonusPoints * timing,
-            _               => config.baseScorePerRing * _timeline.RarityMultiplier(type) * timing,
+            RingType.Peak   => config.scoring.peakBonusPoints   * timing,
+            RingType.Impact => config.scoring.impactBonusPoints * timing,
+            _               => config.scoring.baseScorePerRing * _timeline.RarityMultiplier(type) * timing,
         };
-        if (isOffTrack) raw *= config.offTrackBonusScoreMultiplier;
+        if (isOffTrack) raw *= config.collectibles.offTrackBonusScoreMultiplier;
         return Mathf.RoundToInt(raw);
     }
 
     private float TimingMultiplier(float timingError)
     {
-        float window = Mathf.Max(0.0001f, config.maxUsefulTimingWindow);
+        float window = Mathf.Max(0.0001f, config.scoring.maxUsefulTimingWindow);
         float f      = Mathf.Clamp01(timingError / window);
-        return config.timingQualityCurve.Evaluate(f);
+        return config.scoring.timingQualityCurve.Evaluate(f);
     }
 
     /// <summary>
@@ -400,7 +400,7 @@ public class GameplayManager : MonoBehaviour
             _availableByType.TryGetValue(e.ringType, out int c); _availableByType[e.ringType] = c + 1;
             _maxScoreByType.TryGetValue(e.ringType, out int s);  _maxScoreByType[e.ringType]  = s + perfectScore;
         }
-        return Mathf.RoundToInt(sum * Mathf.Max(1f, config.noFallScoreMultiplier));
+        return Mathf.RoundToInt(sum * Mathf.Max(1f, config.scoring.noFallScoreMultiplier));
     }
 
     /// <summary>Builds the per-type performance profile — published in GameEndedEvent at song
@@ -452,14 +452,14 @@ public class GameplayManager : MonoBehaviour
     private float SongTimeToProgress(float songTime)
     {
         if (_profile == null || _profile.duration <= 0f) return 0f;
-        return Mathf.Clamp01((songTime - config.warmupTime) / _profile.duration);
+        return Mathf.Clamp01((songTime - config.core.warmupTime) / _profile.duration);
     }
 
     /// <summary>Inverse of SongTimeToProgress — turns a protectedProgress fraction back into an
     /// absolute songTime, so it can be compared against _pickupHistory's own songTime stamps.</summary>
     private float ProgressToSongTime(float progress)
     {
-        return config.warmupTime + Mathf.Clamp01(progress) * (_profile != null ? _profile.duration : 0f);
+        return config.core.warmupTime + Mathf.Clamp01(progress) * (_profile != null ? _profile.duration : 0f);
     }
 
     /// <summary>
@@ -471,7 +471,7 @@ public class GameplayManager : MonoBehaviour
     /// No discrete checkpoints anymore — "at risk" is everything in _pickupHistory collected
     /// AFTER protectedSongTime, a CONTINUOUS boundary derived from fallProtectionCurve:
     ///   fallProgress      = SongTimeToProgress(fallSongTime)
-    ///   protectedProgress = config.fallProtectionCurve.Evaluate(fallProgress)   — always <= fallProgress
+    ///   protectedProgress = config.scoring.fallProtectionCurve.Evaluate(fallProgress)   — always <= fallProgress
     ///   protectedSongTime = ProgressToSongTime(protectedProgress)
     /// Everything collected before protectedSongTime is now permanently safe; only pickups
     /// collected between protectedSongTime and the fall itself can be penalized. This is why a
@@ -485,7 +485,7 @@ public class GameplayManager : MonoBehaviour
     /// exactly what it was worth when collected (its own timing quality and rarity weighting at
     /// that moment) — never a fresh/re-rolled value.
     ///
-    /// fraction itself shrinks as the song progresses (config.fallPenaltyCurve, UNCHANGED), so
+    /// fraction itself shrinks as the song progresses (config.scoring.fallPenaltyCurve, UNCHANGED), so
     /// the same mistake costs less late in an otherwise-good run.
     /// </summary>
     private void ApplyFallPenalty(float fallSongTime)
@@ -494,10 +494,10 @@ public class GameplayManager : MonoBehaviour
         if (_pickupHistory.Count == 0) return; // nothing collected yet — nothing at risk
 
         float fallProgress      = SongTimeToProgress(fallSongTime);
-        float protectedProgress = Mathf.Clamp01(config.fallProtectionCurve.Evaluate(fallProgress));
+        float protectedProgress = Mathf.Clamp01(config.scoring.fallProtectionCurve.Evaluate(fallProgress));
         float protectedSongTime = ProgressToSongTime(protectedProgress);
 
-        float fraction = Mathf.Clamp01(config.fallPenaltyCurve.Evaluate(fallProgress));
+        float fraction = Mathf.Clamp01(config.scoring.fallPenaltyCurve.Evaluate(fallProgress));
         if (fraction <= 0f) return;
 
         foreach (var kv in _pickupHistory)
@@ -727,14 +727,14 @@ public class GameplayManager : MonoBehaviour
     /// <summary>
     /// warmupTime 0 for a manual restart (Pause / End Screen) — the player is teleported
     /// straight to distance 0 and audio plays back immediately, with no count-in wait; passing
-    /// the normal config.warmupTime here would make SongTime hard-snap to that offset the
+    /// the normal config.core.warmupTime here would make SongTime hard-snap to that offset the
     /// instant audio starts, leaving the just-teleported player behind where the music/ground
     /// think they should be. The original level-generation warmup (GenerateAndStart) is
     /// unaffected — this only changes what a RESTART's clock re-init does.
     /// </summary>
     public void ReinitializeClock(float warmupTime = 0f)
     {
-        _clock.Initialize(audioSource, warmupTime, config.playerSpeed);
+        _clock.Initialize(audioSource, warmupTime, config.core.playerSpeed);
     }
 
     // ── Pool initialization ───────────────────────────────────────────────────
@@ -742,13 +742,13 @@ public class GameplayManager : MonoBehaviour
     private void InitializePools()
     {
         _ringPools.Clear();
-        int init = config.poolInitialSize;
-        int max  = config.poolMaxSize;
+        int init = config.collectibles.poolInitialSize;
+        int max  = config.collectibles.poolMaxSize;
 
         foreach (RingType rt in System.Enum.GetValues(typeof(RingType)))
         {
             var captured = rt;
-            var prefab   = config.ResolvePrefab(captured);
+            var prefab   = config.collectibles.ResolvePrefab(captured);
             _ringPools[captured] = new ObjectPool(
                 captured.ToString(),
                 () => BuildPoolObject(captured, prefab),
@@ -782,7 +782,7 @@ public class GameplayManager : MonoBehaviour
             Destroy(go.GetComponent<Rigidbody>());
         }
 
-        // Material/colour ALWAYS comes from config.RingColor(type) — regardless of whether this
+        // Material/colour ALWAYS comes from config.collectibles.RingColor(type) — regardless of whether this
         // type uses a custom prefab (keeps its own mesh/shape) or the fallback cube — so the
         // event's real type is always what determines what you see, never whatever colour a
         // prefab happened to be authored with.
@@ -798,8 +798,20 @@ public class GameplayManager : MonoBehaviour
     private Material GetOrCreateMaterial(RingType type)
     {
         if (_materials.TryGetValue(type, out var mat)) return mat;
+
+        Color ringColor = config.collectibles.RingColor(type);
         mat = new Material(Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard"))
-            { color = config.RingColor(type) };
+            { color = ringColor };
+
+        // Deliberately independent/OFF-by-default emission — see MusicRunnerCollectiblesConfig's
+        // own doc on why rings don't automatically bloom just for being colored.
+        if (config.collectibles.ringEmissionEnabled)
+        {
+            mat.EnableKeyword("_EMISSION");
+            mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+            mat.SetColor("_EmissionColor", ringColor * Mathf.Max(0f, config.collectibles.ringEmissionIntensity));
+        }
+
         _materials[type] = mat;
         return mat;
     }
