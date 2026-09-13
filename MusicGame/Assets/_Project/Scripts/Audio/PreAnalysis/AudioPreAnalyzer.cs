@@ -10,8 +10,16 @@ public class AudioPreAnalyzer : MonoBehaviour
         yield return null;
 
         // A cache saved before visualBandEnvelopes existed won't have it — fall through to a
-        // full re-analysis rather than silently shipping a flat, bandless ground mesh.
-        if (SongCache.TryLoad(clip, out var cached) && cached.VisualBandCount > 0)
+        // full re-analysis rather than silently shipping a flat, bandless ground mesh. Same
+        // reasoning for chromaFlat: a cache saved with advancedHarmony off (or from before this
+        // feature existed) has it null, and there's no cheap way to derive chroma after the fact
+        // (needs the raw per-frame spectrum from the main FFT loop below, not just cached band
+        // envelopes) — so if harmony is wanted now but the cache doesn't have it, this must also
+        // fall through to a full re-analysis instead of silently running MusicEnvironmentController
+        // forever with an empty chroma vector (frozen hue, only saturation/value ever moving).
+        bool wantsChroma = config.advancedEnabled && config.advancedHarmony;
+        if (SongCache.TryLoad(clip, out var cached) && cached.VisualBandCount > 0 &&
+            (!wantsChroma || (cached.chromaFlat != null && cached.chromaFlat.Length > 0)))
         {
             // Derived features are always recomputed (fast, < 1 s) so config changes take effect
             RunOfflineAnalyzers(cached, config);

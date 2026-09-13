@@ -125,8 +125,11 @@ public class GameplayManager : MonoBehaviour
         var environment = GetComponent<MusicEnvironmentController>() ?? gameObject.AddComponent<MusicEnvironmentController>();
         environment.Initialize(config);
 
-        var freqBackground = FrequencyBackground.GetOrCreate(gameObject);
-        freqBackground.Initialize(config);
+        var fog = GetComponent<GameplayFogController>() ?? gameObject.AddComponent<GameplayFogController>();
+        fog.Initialize(config);
+
+        var horizonWorld = HorizonWorld.GetOrCreate(gameObject);
+        horizonWorld.Initialize(config);
     }
 
     private void OnEnable()

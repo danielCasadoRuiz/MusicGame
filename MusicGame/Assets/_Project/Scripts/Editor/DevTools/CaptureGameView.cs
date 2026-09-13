@@ -7,7 +7,7 @@ using UnityEngine;
 /// <summary>
 /// Dev-only tool (Editor folder — never ships): enters Play mode on SampleScene in batchmode,
 /// waits for the song/world to actually spin up, renders Camera.main to an offscreen
-/// RenderTexture, and saves a PNG — so visual changes (e.g. FrequencyBackground) can be
+/// RenderTexture, and saves a PNG — so visual changes (e.g. the Horizon World) can be
 /// screenshotted and compared without a human at the keyboard.
 ///
 /// IMPORTANT: entering Play Mode triggers a domain reload, which wipes ordinary static fields

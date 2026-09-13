@@ -238,21 +238,29 @@ MonoBehaviour:
   pathControlPointInterval: 1
   pathSampleSpacing: 0.5
   pathHeightAmplitude: 6
-  pathMaxTurnAngle: 18
+  pathMaxTurnAngle: 2
   basePathWidth: 7
   pathWidthVariation: 10
   pathSeed: 1
-  maxFrequencyHeight: 4
+  maxFrequencyHeight: 3.85
   frequencyColorReferencePercentile: 0.9
   frequencyContrastGamma: 0.6
   crossMeshSegments: 48
   longitudinalSegmentsPerMeter: 4
   pathSmoothness: 0.5
+  crossSmoothness: 0.35
   crossSlopeLimit: 0.85
   longitudinalSlopeLimit: 0.7
   lowEnergyColor: {r: 0.15, g: 0.85, b: 0.25, a: 1}
   midEnergyColor: {r: 0.95, g: 0.85, b: 0.1, a: 1}
   highEnergyColor: {r: 0.95, g: 0.15, b: 0.1, a: 1}
+  terrainColorRedThreshold: 0.75
+  playheadEnabled: 1
+  playheadOffset: 1
+  playheadLineWidth: 0.06
+  playheadEmissionIntensity: 3
+  playheadUseFrequencyColors: 0
+  playheadSingleColor: {r: 0.15, g: 1, b: 0.4, a: 1}
   enableFallOffPath: 1
   fallDeathDepth: 0.1
   fallFadeOutDuration: 0.6
@@ -320,22 +328,69 @@ MonoBehaviour:
   checkpointIntervalSeconds: 60
   createGroundPlane: 1
   terrainAmbientFloor: 0.35
-  enableFrequencyBackground: 1
-  freqBgBarCount: 24
-  freqBgVerticalBlockCount: 8
-  freqBgArcSpanDegrees: 180
-  freqBgArcRadius: 40
-  freqBgGridHeight: 6
-  freqBgHorizonVerticalOffset: -2
-  freqBgLedBorderSize: 0.08
-  freqBgEmission: 1.2
-  freqBgGain: 1
-  freqBgSmoothing: 0.6
-  freqBgWaterLevel: -1.4
-  freqBgWaterDarkness: 0.9
-  freqBgWaterNoiseScale: 10
-  freqBgWaveStrength: 0.02
-  freqBgWaveSpeed: 0.08
-  freqBgReflectionOpacity: 0.4
-  freqBgReflectionLength: 0.4
-  freqBgReflectionDistortion: 0.15
+  enableHorizonWorld: 1
+  horizonParallaxFactor: 0.03
+  horizonBloomIntensity: 1.1
+  horizonBloomThreshold: 0.6
+  horizonBarCount: 48
+  horizonArcSpanDegrees: 180
+  horizonArcRadius: 40
+  horizonBarVerticalOffset: -2
+  horizonBarMinHeight: 0.3
+  horizonBarMaxHeight: 6
+  horizonBarWidthFraction: 0.94
+  horizonBarDepth: 1.5
+  horizonBarBaseEmission: 0.6
+  horizonBarAmplitudeEmissionBoost: 3.5
+  horizonBarMaxEmission: 6
+  horizonBarGain: 1
+  horizonBarAttack: 0.15
+  horizonBarRelease: 0.6
+  horizonReflectionOpacity: 0.55
+  horizonReflectionLength: 0.6
+  horizonReflectionDistortion: 0.35
+  horizonReflectionEmission: 2
+  horizonWaterNormalMapA: {fileID: 2800000, guid: 3db65efd39be40c1aebe6f749bef2404, type: 3}
+  horizonWaterNormalMapB: {fileID: 2800000, guid: 0fab0ae066ed43138662c4bfefd84087, type: 3}
+  horizonWaterLevel: -1.4
+  horizonWaterDarkness: 0.92
+  horizonWaterTilingA: 6
+  horizonWaterSpeedA: 0.05
+  horizonWaterTilingB: 17
+  horizonWaterSpeedB: 0.03
+  horizonWaterNormalStrength: 0.25
+  horizonWaterFresnelPower: 5
+  horizonWaterHorizonTint: {r: 0.9, g: 0.5, b: 0.4, a: 1}
+  horizonWaterHorizonTintStrength: 0.25
+  horizonSkyZenithColor: {r: 0.02, g: 0.02, b: 0.06, a: 1}
+  horizonSkyUpperColor: {r: 0.10, g: 0.05, b: 0.22, a: 1}
+  horizonSkyLowerColor: {r: 0.45, g: 0.16, b: 0.32, a: 1}
+  horizonSkyHorizonColor: {r: 0.85, g: 0.40, b: 0.30, a: 1}
+  horizonSkyNoiseScale: 1.5
+  horizonSkyNoiseStrength: 0.08
+  horizonGlowColor: {r: 1, g: 0.6, b: 0.5, a: 1}
+  horizonGlowIntensity: 1
+  horizonSunColor: {r: 1, g: 0.85, b: 0.7, a: 1}
+  horizonSunAzimuthDeg: 0
+  horizonSunElevationDeg: 12
+  horizonSunSize: 0.03
+  horizonSunGlowSize: 0.25
+  horizonSunGlowIntensity: 1.2
+  horizonMountainsEnabled: 1
+  horizonMountainFarTexture: {fileID: 2800000, guid: 27919e72d6cf4134ae7c78aec237f077, type: 3}
+  horizonMountainNearTexture: {fileID: 2800000, guid: 5941111bf25c48e5a33eeba1c548001e, type: 3}
+  horizonMountainsFarColor: {r: 0.16, g: 0.10, b: 0.22, a: 1}
+  horizonMountainsNearColor: {r: 0.06, g: 0.04, b: 0.10, a: 1}
+  horizonMountainsHeight: 5
+  horizonMountainsJaggedness: 3
+  horizonMountainsSeed: 777
+  horizonMountainsBrightness: 1
+  horizonMountainsContrast: 1
+  horizonHazeColor: {r: 0.35, g: 0.20, b: 0.35, a: 1}
+  horizonHazeDensity: 0.35
+  horizonHazeStartHeight: 0
+  horizonHazeEndHeight: 10
+  horizonHazeHorizonIntensity: 0.3
+  horizonMacroReactivity: 1
+  horizonMacroSmoothingTime: 4
+  horizonMacroSnapFraction: 0.4

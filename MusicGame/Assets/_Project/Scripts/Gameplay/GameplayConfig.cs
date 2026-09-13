@@ -391,8 +391,12 @@ public class GameplayConfig : ScriptableObject
              "relief textured on top of this shape) — two genuinely different musical layers, " +
              "not two controls for the same thing.")]
     public float pathHeightAmplitude         = 6f;
-    [Tooltip("Maximum horizontal turn angle (degrees) per control point interval")]
-    public float pathMaxTurnAngle            = 18f;
+    [Tooltip("Maximum horizontal turn angle (degrees) per control point interval. Kept small on " +
+             "purpose — the player barely perceives these curves anyway, but they DO turn the " +
+             "gameplay camera's yaw, which used to visibly swing the Horizon World's spectrum arc " +
+             "off-center (see HorizonCameraController, which now also independently ignores the " +
+             "gameplay camera's yaw as a second, robust layer of protection against this).")]
+    public float pathMaxTurnAngle            = 2f;
     // Width is EDGE-TO-EDGE (full width, not half-width) in Unity units — and by this project's
     // existing scale (CharacterController radius 0.45, height 1.5) 1 unit ≈ 1 metre, so this
     // number is directly readable as metres. Both mesh generation (MusicWorldManager) and
@@ -421,7 +425,7 @@ public class GameplayConfig : ScriptableObject
              "0 — height = normalizedFrequency(0..1) × this, nothing else scales it. Layered ON " +
              "TOP of the path's own pathHeightAmplitude shape, not a replacement for it. Slope " +
              "safety limits below keep it walkable regardless of how large this is.")]
-    public float maxFrequencyHeight = 4f;
+    public float maxFrequencyHeight = 3.85f;
     [Tooltip("Each visual band is normalized against its OWN energy at this percentile of its " +
              "whole-song distribution (reaching it = normalizedFrequency 1.0 for that band). " +
              "Energy envelopes are right-skewed, so a plain average is rarely exceeded; a high " +
@@ -453,14 +457,21 @@ public class GameplayConfig : ScriptableObject
     public float longitudinalSegmentsPerMeter = 4f;
 
     [Header("World Mesh — Smoothness")]
-    [Tooltip("Single knob for how organic vs. sharp the terrain reads (0 = minimum, 1 = " +
-             "maximum) — replaces what used to be 3 separate pass-count/radius fields that " +
-             "mostly moved together. This is now a SECONDARY layer on top of the real fix " +
-             "(Catmull-Rom interpolated sampling, see SongProfile.GetVisualBandEnergyAtSmooth): " +
-             "that's what keeps real musical peaks from being flattened; this just rounds off " +
-             "residual roughness and the small seam the slope-safety clamp below can leave.")]
+    [Tooltip("How organic vs. sharp the terrain reads ALONG travel (0 = minimum, 1 = maximum) — " +
+             "does NOT affect the across-the-width look, see crossSmoothness for that. Secondary " +
+             "layer on top of the real fix (Catmull-Rom interpolated sampling, see SongProfile." +
+             "GetVisualBandEnergyAtSmooth): that's what keeps real musical peaks from being " +
+             "flattened; this just rounds off residual roughness and the small seam the " +
+             "longitudinal slope-safety clamp below can leave.")]
     [Range(0f, 1f)]
     public float pathSmoothness = 0.5f;
+    [Tooltip("How organic vs. sharp the terrain reads ACROSS the width (0 = minimum, 1 = " +
+             "maximum) — independent of pathSmoothness (along travel). Raise this if cross-" +
+             "sections look sharp/triangular/pointy; it never changes crossMeshSegments (no extra " +
+             "vertices/performance cost — same grid, just more CPU box-blur passes at rebuild " +
+             "time, ~every 1.5s of travel, not per-frame).")]
+    [Range(0f, 1f)]
+    public float crossSmoothness = 0.35f;
 
     [Header("World Mesh — Safety Limits")]
     [Tooltip("Max world-space rise per unit distance ACROSS the width (lateral). Expressed as a " +
@@ -479,6 +490,45 @@ public class GameplayConfig : ScriptableObject
     public Color midEnergyColor  = new Color(0.95f, 0.85f, 0.10f);
     [Tooltip("Vertex color at normalizedFrequency = 1.0")]
     public Color highEnergyColor = new Color(0.95f, 0.15f, 0.10f);
+    [Tooltip("Purely a COLOR remap (never touches height/geometry) — the processed value is " +
+             "divided by this before picking green/yellow/red, then clamped, so the palette " +
+             "reaches red at value == this instead of only at 1.0. Lower it if the terrain almost " +
+             "never reads as red/hot; 1.0 = no exaggeration (original behavior).")]
+    [Range(0.05f, 1f)] public float terrainColorRedThreshold = 0.75f;
+
+    // ── Playhead Scanline ────────────────────────────────────────────────────────
+    // A transversal neon line on the ground mesh itself, tracking the current music position —
+    // pure shader work (VertexColorLit.shader), no extra geometry/GameObjects. Each ground
+    // window ("chunk") gets its own start/end MusicDistance via a MaterialPropertyBlock (no new
+    // Material instance); MusicWorldManager pushes the few frame-varying values (current
+    // position + offset, frequency texture) as GLOBAL shader properties once per frame, so every
+    // chunk's shader resolves independently whether the playhead falls inside it — no per-frame
+    // CPU lookup of "which chunk is active".
+    [Header("Playhead Scanline")]
+    public bool  playheadEnabled = true;
+    [Tooltip("How far AHEAD of the player's canonical music-distance the line sits, in the same " +
+             "distance units as everything else here (== world meters along the path) — e.g. 1 " +
+             "means the line always sits ~1m ahead of the player.")]
+    public float playheadOffset = 1f;
+    [Tooltip("World-space width (meters) of the glowing band, measured ALONG the path (converted " +
+             "to UV internally against the CURRENT chunk's own length, so it always reads as the " +
+             "same physical width regardless of how long a given ground window happens to be) — " +
+             "constant regardless of how long the current ground window happens to be. Small on " +
+             "purpose for a thin laser-scan look; raise it for a thicker band.")]
+    public float playheadLineWidth = 0.06f;
+    [Tooltip("Multiplies the line's color before output — values > 1 push it into HDR so Bloom " +
+             "(URP Volume) picks it up as a glow. Has no effect without Bloom enabled.")]
+    public float playheadEmissionIntensity = 3f;
+    [Tooltip("true: the line shows the CURRENT frequency spectrum left(low)->right(high), reusing " +
+             "the exact same band data + green/yellow/red palette (lowEnergyColor/midEnergyColor/" +
+             "highEnergyColor) the ground's own color already uses. false: a single flat color " +
+             "(playheadSingleColor) — usually reads cleaner/more like a deliberate UI element.")]
+    public bool  playheadUseFrequencyColors = false;
+    [Tooltip("Flat HDR color used when playheadUseFrequencyColors is false — push it above 1 " +
+             "intensity (the HDR color picker's slider) for a neon/glowing look with Bloom, on " +
+             "top of the separate playheadEmissionIntensity multiplier.")]
+    [ColorUsage(true, true)]
+    public Color playheadSingleColor = new Color(0.15f, 1f, 0.4f, 1f);
 
     // ── Fall Off Path ─────────────────────────────────────────────────────────
     [Header("Fall Off Path")]
@@ -551,70 +601,292 @@ public class GameplayConfig : ScriptableObject
              "yellow/red gradient readable even in shadowed areas.")]
     [Range(0f, 1f)] public float terrainAmbientFloor = 0.35f;
 
-    // ── Frequency Background ("Frequency Horizon") ────────────────────────────
-    // A STATIC curved LED-grid mesh (Bar Count columns × Vertical Block Count rows, reproducing
-    // the old 2D equalizer's look — green/yellow/red tiers by ROW, small black border per cell,
-    // off cells fully transparent) that never deforms — amplitude only changes which cells are
-    // lit (color/alpha), never vertex positions. Behaves like a distant skybox: it follows the
-    // CAMERA's XZ position and yaw only (never the player/road/MusicDistance), so it never
-    // shows parallax and always occupies roughly the same left-to-right screen area. A separate
-    // flat fan mesh on the water plane fakes a "light reflected on water" look per column — not
-    // a mirrored copy of the LED grid. Reads the SAME MusicWorldManager.NormalizedBandValue data
-    // the ground mesh already uses, remapped onto Bar Count columns; color reuses the exact same
-    // green/yellow/red fields (lowEnergyColor/midEnergyColor/highEnergyColor) as the ground
-    // mesh's VuColor. Purely decorative — never touches gameplay/collision/sky.
-    [Header("Frequency Background — Enable")]
-    public bool enableFrequencyBackground = true;
+    // ── Gameplay Fog (circuit depth-fade — a different concept from Horizon Haze) ─────────────
+    // Real distance fog for the GAMEPLAY world only (ground/circuit + rings/bonuses) so distant
+    // parts of the track fade into darkness instead of being perfectly visible the whole time.
+    // Implemented via Unity's own RenderSettings.fog (Linear mode) + a small explicit fog blend
+    // added to VertexColorLit.shader (the ground) — ring/bonus materials use the built-in URP Lit
+    // shader, which already blends RenderSettings.fog automatically, no extra code needed there.
+    // Deliberately NEVER touches the Horizon World: none of its shaders (HorizonBar/CheapWater/
+    // ProceduralSky/mountain layers) sample fog at all, so RenderSettings.fog being globally "on"
+    // has zero visual effect on them regardless — see GameplayFogController.
+    [Header("Gameplay Fog — Circuit Distance Fade (NOT Horizon Haze)")]
+    public bool  gameplayFogEnabled = true;
+    public Color gameplayFogColor = new Color(0.04f, 0.045f, 0.10f);
+    [Tooltip("World-units distance from the camera where fog starts becoming visible.")]
+    public float gameplayFogStartDistance = 18f;
+    [Tooltip("World-units distance from the camera where fog reaches full density.")]
+    public float gameplayFogEndDistance = 75f;
+    [Tooltip("Steepens (>1) or relaxes (<1) the fog falloff between Start/End Distance without " +
+             "having to re-tune both distances by hand — 1 = falloff exactly as authored above.")]
+    [Range(0.1f, 3f)] public float gameplayFogStrength = 1f;
 
-    [Header("Frequency Background — Arc Shape")]
-    [Tooltip("Number of horizontal columns the arc is divided into — independent from the real " +
-             "analysis resolution (AudioAnalysisConfig.visualBandCount); real band data is " +
-             "averaged/remapped onto however many columns this is. More columns = visually " +
-             "smoother curve; fewer = chunkier/low-poly.")]
-    [Range(6, 64)] public int freqBgBarCount = 24;
-    [Tooltip("How many stacked LED blocks each column is divided into vertically (e.g. 8, like " +
-             "the old 2D equalizer). Amplitude only changes how many of these are lit.")]
-    [Range(2, 16)] public int freqBgVerticalBlockCount = 8;
+    // ── Horizon World ─────────────────────────────────────────────────────────
+    // A separate, camera-stacked 3D world (HorizonCameraController/SpectrumBars3D/
+    // HorizonBarsReflectionCamera/HorizonWater/ProceduralSky/HorizonMountainLayers, all in
+    // Assets/_Project/Scripts/World/Horizon) holding real volumetric spectrum bars + a mirrored
+    // RenderTexture bar reflection + water + procedural sky + PNG mountain layers. Rendered by
+    // its OWN camera (Base of a URP camera stack; the gameplay Main Camera becomes an Overlay
+    // with Depth Only clear) sitting at a near-FIXED position (only horizonParallaxFactor of the
+    // main camera's own movement bleeds through) that copies the main camera's rotation/FOV every
+    // frame — genuinely distant/parallax-free, unlike re-centering geometry on the camera every
+    // frame (which still reads as "attached", since it never has ANY relative motion at all).
+    // Bar amplitude reads the SAME MusicWorldManager.NormalizedBandValue data the ground mesh
+    // already uses (remapped onto Bar Count columns) — never a second analysis.
+    [Header("Horizon World — Enable")]
+    public bool enableHorizonWorld = true;
+    [Tooltip("0 = Horizon Camera position never moves (pure skybox-like distant backdrop). Small " +
+             "values (e.g. 0.02-0.1) let a fraction of the main camera's own translation bleed " +
+             "through for a subtle sense of depth/parallax, without ever looking 'attached'.")]
+    [Range(0f, 1f)] public float horizonParallaxFactor = 0.03f;
+    [Tooltip("Bloom intensity — applied onto whichever Volume/profile the scene actually uses " +
+             "(see horizonBloomForceApply). Pushed up for this iteration's 'dark scene, very " +
+             "bright neon' look.")]
+    public float horizonBloomIntensity = 1.1f;
+    [Tooltip("Bloom threshold — lower = more of the scene starts glowing, not just the brightest " +
+             "highlights.")]
+    [Range(0f, 2f)] public float horizonBloomThreshold = 0.6f;
+    [Tooltip("Bloom scatter (URP's blur-radius-like spread) — higher = softer/wider halo around " +
+             "each bright neon source.")]
+    [Range(0f, 1f)] public float horizonBloomScatter = 0.7f;
+    [Tooltip("Applied every frame onto WHATEVER Volume/profile the scene actually uses for Bloom " +
+             "(hand-authored 'Global Volume' included) — HorizonWorld no longer silently skips " +
+             "applying these values just because a Volume already exists in the scene.")]
+    public bool horizonBloomForceApply = true;
+
+    [Header("Horizon World — Bars: Arc Shape")]
+    [Tooltip("Number of vertical bars around the arc — independent from the real analysis " +
+             "resolution (AudioAnalysisConfig.visualBandCount); real band data is averaged/" +
+             "remapped onto however many bars this is.")]
+    [Range(6, 64)] public int horizonBarCount = 48;
     [Tooltip("Total angular span of the arc, centered directly ahead. 180 = a full semicircle.")]
-    public float freqBgArcSpanDegrees = 180f;
-    [Tooltip("Radius of the arc (Unity units) — distance from the camera. Kept fairly large since " +
-             "this is meant to read as a distant horizon, not something close to the player.")]
-    public float freqBgArcRadius = 40f;
-    [Tooltip("Total vertical extent of the LED grid (Unity units) — split evenly into Vertical Block Count rows.")]
-    public float freqBgGridHeight = 6f;
-    [Tooltip("Vertical offset of the whole grid from the CAMERA's own height (negative = below eye level).")]
-    public float freqBgHorizonVerticalOffset = -2f;
+    public float horizonArcSpanDegrees = 180f;
+    [Tooltip("Radius of the arc (Horizon World units — this is its OWN small, fixed coordinate " +
+             "space, not the gameplay world, so this can stay small/manageable regardless of how " +
+             "long the song/path is).")]
+    public float horizonArcRadius = 40f;
+    [Tooltip("Vertical offset of the whole bar row from the Horizon Camera's own fixed height.")]
+    public float horizonBarVerticalOffset = -2f;
 
-    [Header("Frequency Background — LED Look")]
-    [Tooltip("Black border size per LED cell, as a fraction (0..0.45) of that cell's own size.")]
-    [Range(0f, 0.45f)] public float freqBgLedBorderSize = 0.08f;
-    [Tooltip("Emission strength fed into the bloom post-process — higher = more neon glow on lit cells.")]
-    public float freqBgEmission = 1.2f;
-    [Tooltip("Multiplies the normalized band value before it decides how many LEDs are lit — >1 " +
-             "makes quiet moments read as louder, <1 tames overly hot signals.")]
-    public float freqBgGain = 1f;
-    [Tooltip("Exponential smoothing toward the target lit-count each frame (0 = instant, close to 1 = very lazy).")]
-    [Range(0f, 0.99f)] public float freqBgSmoothing = 0.6f;
+    [Header("Horizon World — Bars: Shape & Color")]
+    [Tooltip("Bar height at amplitude = 0.")]
+    public float horizonBarMinHeight = 0.3f;
+    [Tooltip("Bar height at amplitude = 1.")]
+    public float horizonBarMaxHeight = 6f;
+    [Tooltip("Fraction (0..1) of each bar's own angular slice actually filled by geometry — lower " +
+             "than 1 leaves a visible gap between bars (classic equalizer look). Kept close to 1 " +
+             "so the arc reads as densely packed, still individually readable bars.")]
+    [Range(0.1f, 1f)] public float horizonBarWidthFraction = 0.94f;
+    [Tooltip("Radial thickness (depth) of each bar box, in Horizon World units.")]
+    public float horizonBarDepth = 1.5f;
+    [Tooltip("Amplitude (0..1) → color. Evaluated from the RAW normalized amplitude, never from " +
+             "the final height — one solid color per bar per moment, no bass/mid/treble special-" +
+             "casing. Freely editable as a Unity Gradient in the Inspector.")]
+    public Gradient horizonBarAmplitudeGradient = DefaultAmplitudeGradient();
+    [Tooltip("Emission present even at amplitude = 0 — keeps quiet bars faintly glowing instead of " +
+             "going fully dark/dull, for a consistently neon look.")]
+    public float horizonBarBaseEmission = 0.6f;
+    [Tooltip("Extra emission ADDED on top of Base Emission, scaled by amplitude — this is the main " +
+             "'punchier on louder bands' knob.")]
+    public float horizonBarAmplitudeEmissionBoost = 3.5f;
+    [Tooltip("Hard clamp on the final emission multiplier (Base + Amplitude*Boost), regardless of " +
+             "how the two above are tuned — keeps Bloom from blowing out to flat white.")]
+    public float horizonBarMaxEmission = 6f;
+    [Tooltip("Multiplies the normalized band value before height/color — >1 makes quiet moments " +
+             "read as louder, <1 tames overly hot signals.")]
+    public float horizonBarGain = 1f;
+    [Tooltip("Exponential rise-speed toward a LOUDER target amplitude each frame (0 = instant, " +
+             "close to 1 = very lazy) — kept fast/low by default so bars punch on the beat.")]
+    [Range(0f, 0.99f)] public float horizonBarAttack = 0.15f;
+    [Tooltip("Exponential fall-speed toward a QUIETER target amplitude each frame — kept slower " +
+             "than Attack by default so bars have a brief decay tail instead of snapping down.")]
+    [Range(0f, 0.99f)] public float horizonBarRelease = 0.6f;
 
-    [Header("Frequency Background — Water")]
-    [Tooltip("Vertical level (relative to the camera) the water plane AND the reflection fan sit " +
-             "at — independent from Horizon Vertical Offset, which only affects the LED grid.")]
-    public float freqBgWaterLevel = -1.4f;
-    [Range(0f, 1f)] public float freqBgWaterDarkness = 0.9f;
-    [Tooltip("Tiling of the cheap analytic ripple pattern — higher = smaller/tighter ripples.")]
-    public float freqBgWaterNoiseScale = 10f;
-    [Tooltip("Amplitude of the cheap analytic ripple (no real wave simulation) — kept low so the " +
-             "water reads as calm, not visibly deformed.")]
-    public float freqBgWaveStrength = 0.02f;
-    public float freqBgWaveSpeed = 0.08f;
+    [Header("Horizon World — Bar Reflection (RenderTexture mirror capture)")]
+    [Tooltip("A dedicated camera renders ONLY the neon bars (their own layer, see " +
+             "HorizonCameraController.BarsLayerName) into a small mirrored RenderTexture; the " +
+             "water shader samples it, so the reflection is automatically the same shape/color/" +
+             "height as the real bars — never a hand-tuned separate fan mesh. Requires a second " +
+             "Project Settings layer (default name 'HorizonBars') — falls back to reflections " +
+             "disabled (still fully playable) if that layer doesn't exist, same graceful-degrade " +
+             "pattern as the 'Horizon' layer itself.")]
+    public bool horizonReflectionEnabled = true;
+    [Tooltip("Resolution of the reflection capture RenderTexture — kept small on purpose (this is " +
+             "meant to read as a distorted/blurred mirror image, not a sharp second copy).")]
+    public Vector2Int horizonReflectionRTSize = new Vector2Int(512, 256);
+    [Range(0f, 1f)] public float horizonReflectionOpacity = 0.6f;
+    [Tooltip("Shimmer/distortion strength applied to the sampled reflection UV — reuses the same " +
+             "water-surface normal perturbation, so the reflection distorts consistently with the " +
+             "water surface it sits on.")]
+    [Range(0f, 1f)] public float horizonReflectionDistortion = 0.35f;
+    [Tooltip("Extra HDR emission multiplier specific to the reflection (on top of the bar's own " +
+             "color/emission) — reflections read as glowing light on water, not just a dim copy.")]
+    public float horizonReflectionEmission = 1.6f;
 
-    [Header("Frequency Background — Reflection")]
-    [Range(0f, 1f)] public float freqBgReflectionOpacity = 0.4f;
-    [Tooltip("How far the fake reflection fan extends from the horizon toward the camera, as a " +
-             "fraction (0..1) of Arc Radius.")]
-    [Range(0f, 1f)] public float freqBgReflectionLength = 0.4f;
-    [Tooltip("Subtle shimmer strength applied to the reflection fan only, standing in for water distortion.")]
-    [Range(0f, 1f)] public float freqBgReflectionDistortion = 0.15f;
+    [Header("Horizon World — Water")]
+    // Two independently-tiling/scrolling NORMAL MAPS (assign real tileable normal-map textures
+    // here — see HorizonWater.cs doc for exactly what to provide) combined for a subtle, still-
+    // readable-as-water micro ripple. Falls back to Unity's flat default-normal texture if left
+    // unassigned (near-perfectly flat surface, no ripple detail — still fully functional, just
+    // less detailed) so the water never errors out with nothing assigned.
+    [Tooltip("Vertical level (relative to the Horizon Camera) the water plane sits at — " +
+             "independent from Bar Vertical Offset, which only affects the bars.")]
+    public float horizonWaterLevel = -1.4f;
+    [Tooltip("Overall darkness of the water base color — near 1 reads as almost-black at night.")]
+    [Range(0f, 1f)] public float horizonWaterDarkness = 0.92f;
+    [Tooltip("Tileable normal map A — e.g. a 'water normal' texture from any free PBR water/ripple " +
+             "pack. Left empty: falls back to a flat normal (still works, just no ripple detail).")]
+    public Texture2D horizonWaterNormalMapA;
+    [Tooltip("Tileable normal map B — should differ from A (different tiling/pattern) so the " +
+             "combined ripple never reads as one obviously-repeating texture.")]
+    public Texture2D horizonWaterNormalMapB;
+    [Tooltip("UV tiling of normal map A.")]
+    public float horizonWaterTilingA = 6f;
+    [Tooltip("Scroll velocity of normal map A (UV units/second, both axes) — diagonal by default.")]
+    public Vector2 horizonWaterScrollA = new Vector2(0.035f, 0.015f);
+    [Tooltip("UV tiling of normal map B — kept different from Tiling A so the two never align.")]
+    public float horizonWaterTilingB = 17f;
+    [Tooltip("Scroll velocity of normal map B — a different direction than A on purpose.")]
+    public Vector2 horizonWaterScrollB = new Vector2(-0.012f, 0.028f);
+    [Tooltip("How strongly the combined normal maps perturb the surface — small values keep the " +
+             "surface reading as calm/near-flat instead of big rolling waves.")]
+    [Range(0f, 2f)] public float horizonWaterNormalStrength = 0.4f;
+    [Tooltip("Fresnel (view-angle rim light) power — higher = tighter/sharper rim.")]
+    public float horizonWaterFresnelPower = 5f;
+    [Tooltip("Specular highlight tightness (higher = smaller/sharper glints, lower = broader/" +
+             "softer) — the water's own smoothness, independent of Fresnel.")]
+    [Range(4f, 256f)] public float horizonWaterSpecularPower = 48f;
+    [Tooltip("Specular highlight brightness multiplier.")]
+    public float horizonWaterSpecularIntensity = 0.6f;
+    [Tooltip("Faint color tint added where the water surface faces toward the horizon (grazing " +
+             "angle), picking up a hint of the sky's own horizon color.")]
+    public Color horizonWaterHorizonTint = new Color(0.9f, 0.5f, 0.4f);
+    [Range(0f, 1f)] public float horizonWaterHorizonTintStrength = 0.25f;
+
+    [Header("Horizon World — Procedural Sky")]
+    // Deliberately just a plain, cheap vertical gradient (near-black navy zenith, dark blue/
+    // purple mid-sky, a subtle purple/pink/coral band right at the horizon) + a barely-there
+    // noise wobble so it never reads as a perfectly flat linear ramp. The sky is a simple
+    // BACKGROUND — the mountains (PNG layers) and haze below are what carry the actual visual
+    // interest of the horizon line, not this shader.
+    public Color horizonSkyZenithColor  = new Color(0.015f, 0.015f, 0.035f);
+    public Color horizonSkyUpperColor   = new Color(0.05f, 0.05f, 0.12f);
+    public Color horizonSkyLowerColor   = new Color(0.16f, 0.09f, 0.22f);
+    public Color horizonSkyHorizonColor = new Color(0.55f, 0.28f, 0.34f);
+    [Tooltip("Low-frequency noise warping the vertical gradient bands so they don't read as a " +
+             "flat linear gradient. Kept subtle on purpose — this is a plain background, not a " +
+             "detailed procedural sky.")]
+    public float horizonSkyNoiseScale    = 1.2f;
+    [Range(0f, 1f)] public float horizonSkyNoiseStrength = 0.04f;
+    public Color horizonGlowColor     = new Color(1f, 0.6f, 0.5f);
+    [Range(0f, 3f)] public float horizonGlowIntensity = 1f;
+    public Color horizonSunColor = new Color(1f, 0.85f, 0.7f);
+    [Tooltip("Sun position in the sky, degrees (0 = straight ahead/ +Z, 90 = due right).")]
+    public float horizonSunAzimuthDeg   = 0f;
+    [Tooltip("Sun height, degrees above the horizon.")]
+    public float horizonSunElevationDeg = 12f;
+    [Range(0.001f, 0.2f)] public float horizonSunSize = 0.03f;
+    [Range(0f, 1f)] public float horizonSunGlowSize = 0.25f;
+    public float horizonSunGlowIntensity = 1.2f;
+
+    [Header("Horizon World — Mountains (PNG silhouette layers)")]
+    // No procedural mesh/noise anymore — each layer is a flat textured quad using a hand-authored
+    // PNG silhouette WITH ALPHA that you assign below, tinted/scaled/positioned from here. Assign
+    // NOTHING and a layer simply doesn't render (no procedural fallback texture is generated —
+    // see HorizonMountainLayers.cs doc for exactly what kind of PNG to provide).
+    public bool  horizonMountainsEnabled = true;
+    [Tooltip("Far-layer silhouette PNG (alpha channel = shape). Assign from Assets — none = this " +
+             "layer doesn't render.")]
+    public Texture2D horizonMountainFarTexture;
+    [Tooltip("Near-layer silhouette PNG (alpha channel = shape).")]
+    public Texture2D horizonMountainNearTexture;
+    [Tooltip("Tint multiplied over the FAR texture — less contrast, blue/violet, reads as " +
+             "integrated with the haze/sky.")]
+    public Color horizonMountainFarTint = new Color(0.30f, 0.24f, 0.48f, 1f);
+    [Tooltip("Tint multiplied over the NEAR texture — darker, more contrast, almost-black " +
+             "silhouette.")]
+    public Color horizonMountainNearTint = new Color(0.05f, 0.04f, 0.08f, 1f);
+    [Range(0f, 1f)] public float horizonMountainFarOpacity  = 0.85f;
+    [Range(0f, 1f)] public float horizonMountainNearOpacity = 1f;
+    [Tooltip("Uniform scale of the far layer's quad, in Horizon World units (width, height).")]
+    public Vector2 horizonMountainFarScale  = new Vector2(90f, 16f);
+    [Tooltip("Uniform scale of the near layer's quad, in Horizon World units (width, height).")]
+    public Vector2 horizonMountainNearScale = new Vector2(90f, 14f);
+    [Tooltip("Vertical offset of the far layer above the base horizon line.")]
+    public float horizonMountainFarVerticalOffset = 0f;
+    [Tooltip("Vertical offset of the near layer above the base horizon line.")]
+    public float horizonMountainNearVerticalOffset = -1f;
+    [Tooltip("Brightness multiplier applied to the far layer, after tint.")]
+    public float horizonMountainFarBrightness = 1f;
+    [Tooltip("Brightness multiplier applied to the near layer, after tint.")]
+    public float horizonMountainNearBrightness = 1f;
+    [Tooltip("Distance of the far layer from center, as a multiple of Arc Radius — kept further " +
+             "out than the bars so opaque depth-testing alone puts it behind them.")]
+    public float horizonMountainFarDistance  = 1.6f;
+    [Tooltip("Distance of the near layer from center, as a multiple of Arc Radius.")]
+    public float horizonMountainNearDistance = 1.3f;
+    [Tooltip("Fraction (0..1) of the Horizon Camera's own parallax translation the far layer " +
+             "additionally bleeds through — a very subtle extra sense of depth between layers. " +
+             "0 = perfectly locked to the horizon like the bars/sky.")]
+    [Range(0f, 1f)] public float horizonMountainFarParallax  = 0.015f;
+    [Tooltip("Parallax fraction for the near layer — kept higher than Far so the near layer " +
+             "drifts slightly more, selling the two-layer depth separation.")]
+    [Range(0f, 1f)] public float horizonMountainNearParallax = 0.05f;
+
+    [Header("Horizon World — Atmosphere / Haze")]
+    // Specific to the Horizon World ONLY — never Unity's global RenderSettings.fog (that's the
+    // separate Gameplay Fog concept above, for the circuit). Baked into the bars' own vertex
+    // colors (SpectrumBars3D) and the mountain layers' tint (HorizonMountainLayers) via
+    // HorizonHaze.Apply — cheap, no per-pixel distance-to-camera needed since everything here
+    // already sits within a small, known-radius space.
+    public Color horizonHazeColor = new Color(0.16f, 0.14f, 0.30f);
+    [Range(0f, 1f)] public float horizonHazeDensity = 0.35f;
+    [Tooltip("Height (Horizon World units, relative to the bar baseline) below which haze is at " +
+             "full density.")]
+    public float horizonHazeStartHeight = 0f;
+    [Tooltip("Height above which haze has fully cleared.")]
+    public float horizonHazeEndHeight = 10f;
+    [Tooltip("Extra haze boost right at the horizon line, on top of the height-based density.")]
+    [Range(0f, 1f)] public float horizonHazeHorizonIntensity = 0.3f;
+    [Tooltip("Optional warm/pink tint blended in ONLY at the horizon line itself (on top of the " +
+             "cooler Haze Color used everywhere else) — a small artistic touch, not the haze's " +
+             "main color.")]
+    public Color horizonHazeHorizonTintColor = new Color(0.55f, 0.30f, 0.38f);
+    [Range(0f, 1f)] public float horizonHazeHorizonTintAmount = 0.35f;
+    [Tooltip("How much a caller-supplied normalized DISTANCE (0 = close, e.g. the bars/near " +
+             "mountains; 1 = far, e.g. far mountains) adds on top of the height-based haze amount " +
+             "— this is what gives genuine atmospheric depth between layers instead of a single " +
+             "flat vertical gradient applied identically to everything.")]
+    [Range(0f, 1f)] public float horizonHazeDistanceIntensity = 0.5f;
+
+    [Header("Horizon World — Macro Reactivity")]
+    [Tooltip("If on, profile.GetBuildupAt/MacroEventOccurredEvent (Impact/Drop) gently bias sky " +
+             "glow/saturation over several seconds — deliberately slow/smoothed, never a per-beat " +
+             "flicker. Bars stay fast/reactive regardless of this toggle; this only affects the " +
+             "sky/water/glow layer.")]
+    public bool  horizonMacroReactivity = true;
+    [Tooltip("Seconds for the macro-driven glow bias to smooth toward its target.")]
+    public float horizonMacroSmoothingTime = 4f;
+    [Tooltip("How much an Impact/Drop MacroEvent snaps the glow bias toward full intensity (0..1, " +
+             "same 'partway there' idea as MusicEnvironmentController.macroSnapFraction).")]
+    [Range(0f, 1f)] public float horizonMacroSnapFraction = 0.4f;
+
+    private static Gradient DefaultAmplitudeGradient()
+    {
+        var g = new Gradient();
+        g.SetKeys(
+            new[]
+            {
+                new GradientColorKey(new Color(0.10f, 0.95f, 0.85f), 0.00f), // turquoise/cyan
+                new GradientColorKey(new Color(0.15f, 0.55f, 0.98f), 0.25f), // cyan/blue
+                new GradientColorKey(new Color(0.55f, 0.25f, 0.95f), 0.45f), // violet
+                new GradientColorKey(new Color(0.90f, 0.20f, 0.75f), 0.60f), // pink/magenta
+                new GradientColorKey(new Color(1.00f, 0.45f, 0.30f), 0.75f), // coral/orange
+                new GradientColorKey(new Color(1.00f, 0.20f, 0.15f), 1.00f), // red-orange
+            },
+            new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 1f) });
+        return g;
+    }
 
     // Single shared source of truth for RingType → prefab, so placement (GameplayTimeline,
     // which needs a prefab's real bounds) and pooling (GameplayManager) can never disagree.

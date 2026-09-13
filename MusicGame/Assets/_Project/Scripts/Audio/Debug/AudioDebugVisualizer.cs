@@ -5,7 +5,7 @@ using UnityEngine;
 /// Lightweight debug overlay: a small top-left "event flash" (PEAK/ONSET/BEAT/KICK/SNARE/HIHAT/
 /// BPM/SCAN%) — no per-band frequency bar UI anymore (removed; the underlying analysis data
 /// itself — SongProfile.visualBandEnvelopes, MusicWorldManager.NormalizedBandValue — is untouched
-/// and still drives the ground mesh and FrequencyBackground exactly as before).
+/// and still drives the ground mesh and the Horizon World's SpectrumBars3D exactly as before).
 /// </summary>
 public class AudioDebugVisualizer : MonoBehaviour
 {

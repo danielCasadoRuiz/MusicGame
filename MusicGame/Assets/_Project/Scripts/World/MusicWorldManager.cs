@@ -61,11 +61,21 @@ public class MusicWorldManager : MonoBehaviour
     // — geometrically interpolated across CrossSegments columns (a configurable, INDEPENDENT
     // mesh resolution). Column 0 = lowest frequency, last column = highest — deterministic,
     // identical for every window/chunk. Each column's height follows how energetic that band
-    // is right now. Coloured green→orange→red by the SAME normalized value used for height,
-    // via per-VERTEX colour (no texture) — see BuildMesh() — so geometry and colour can never
-    // disagree or desync from each other, and the debug spectrum panel (AudioDebugVisualizer)
-    // reads the exact same visualBandEnvelopes data, so pausing the song should show the same
-    // silhouette in both places.
+    // is right now.
+    //
+    // HEIGHT and terrain COLOR intentionally read the SAME processed (smoothed + slope-clamped)
+    // grid value — VISUALLY, the terrain's color has to read as "the shape of this terrain", not
+    // decorrelated from it (a raw pre-smoothing value was tried and looked wrong: physically-low
+    // patches could paint red while a visible ridge painted green, since the raw spectrum value
+    // and the smoothed/clamped height can diverge a lot at any single point). Color still gets
+    // its own independent knob — terrainColorRedThreshold (TerrainVuColor) — a pure remap of
+    // "how soon does the palette reach red", never touching the shared height/color value itself.
+    //
+    // The SCANLINE (FrequencyTexture, see UpdatePlayheadGlobals/UpdateFrequencyTexture) is the
+    // one place that DOES still read the raw, unsmoothed, per-instant NormalizedBandValue — it's
+    // a live "equalizer" reading of the CURRENT moment, not a description of the terrain sitting
+    // under the player, so it deliberately doesn't share the terrain's smoothing/clamping/color
+    // remap at all.
     //
     // Longitudinal row spacing is its own configurable resolution (longitudinalSegmentsPerMeter),
     // independent of MusicPath's own control-point/curve resolution (pathSampleSpacing) —
@@ -76,7 +86,8 @@ public class MusicWorldManager : MonoBehaviour
     // anchor below (matching the previous window's row at the same global index) is exact,
     // not an approximation.
     //
-    // Two smoothing/safety layers, because this is real CharacterController collision:
+    // Two smoothing/safety layers on HEIGHT (and, by sharing the same value, on terrain COLOR
+    // too — see above):
     //   - smoothing passes both along travel and across width (organic, no hard bar edges)
     //   - a hard slope clamp in BOTH directions, expressed in WORLD units and converted back
     //     through maxFrequencyHeight — guarantees no local slope ever exceeds what the
@@ -102,6 +113,24 @@ public class MusicWorldManager : MonoBehaviour
     private const float GroundWindowAhead  = 60f;
     private const float GroundRebuildStep  = 15f;
 
+    // ── Playhead scanline (see GameplayConfig's own doc for the design) ─────────
+    // Per-chunk (set once per rebuild via MaterialPropertyBlock — no Material cloning):
+    private static readonly int StartMusicDistanceID = Shader.PropertyToID("_StartMusicDistance");
+    private static readonly int EndMusicDistanceID    = Shader.PropertyToID("_EndMusicDistance");
+    private MaterialPropertyBlock _groundMPB;
+    // Global (pushed once per frame — every chunk's shader instance picks these up automatically,
+    // no per-chunk CPU work, no "which chunk is active" lookup):
+    private static readonly int PlayheadDistanceID = Shader.PropertyToID("_PlayheadMusicDistance");
+    private static readonly int PlayheadEnabledID  = Shader.PropertyToID("_PlayheadEnabled");
+    private static readonly int PlayheadWidthID    = Shader.PropertyToID("_PlayheadLineWidth");
+    private static readonly int PlayheadEmissionID = Shader.PropertyToID("_PlayheadEmission");
+    private static readonly int PlayheadUseFreqID  = Shader.PropertyToID("_PlayheadUseFreqColors");
+    private static readonly int PlayheadColorID    = Shader.PropertyToID("_PlayheadSingleColor");
+    private static readonly int FreqTexID          = Shader.PropertyToID("_FreqTex");
+    // Reused every frame — resized only if the band count itself changes (never mid-song).
+    private Texture2D _freqTex;
+    private Color32[] _freqPixels;
+
 
     // ── Factory ───────────────────────────────────────────────────────────────
 
@@ -123,6 +152,11 @@ public class MusicWorldManager : MonoBehaviour
     {
         if (Instance != null && Instance != this) { Destroy(this); return; }
         Instance = this;
+
+        // Never leave _FreqTex truly unbound (harmless either way, but avoids relying on
+        // undefined-texture-slot behavior before the first UpdateFrequencyTexture call, e.g. if
+        // playheadUseFrequencyColors starts false and is toggled on later).
+        Shader.SetGlobalTexture(FreqTexID, Texture2D.blackTexture);
     }
 
     private void OnDestroy()
@@ -130,6 +164,7 @@ public class MusicWorldManager : MonoBehaviour
         if (Instance == this) Instance = null;
         if (_groundGO != null) Destroy(_groundGO);
         if (_meshMaterial != null) Destroy(_meshMaterial);
+        if (_freqTex != null) Destroy(_freqTex);
     }
 
     private void Update()
@@ -141,6 +176,62 @@ public class MusicWorldManager : MonoBehaviour
         float dist = clock.MusicDistance;
         if (float.IsNaN(_groundWindowCenter) || Mathf.Abs(dist - _groundWindowCenter) > GroundRebuildStep)
             RebuildGroundWindow(dist);
+
+        UpdatePlayheadGlobals(dist);
+    }
+
+    // Everything here is GLOBAL shader state (Shader.SetGlobalX) — touches zero renderers/
+    // materials, costs nothing per-chunk, and needs no "which chunk is the player in" lookup:
+    // every chunk's own vertex UV.y + its MaterialPropertyBlock start/end already let its shader
+    // resolve independently whether the playhead line falls inside it.
+    private void UpdatePlayheadGlobals(float musicDistance)
+    {
+        if (_config == null) return;
+
+        Shader.SetGlobalFloat(PlayheadEnabledID, _config.playheadEnabled ? 1f : 0f);
+        if (!_config.playheadEnabled) return;
+
+        Shader.SetGlobalFloat(PlayheadDistanceID, musicDistance + _config.playheadOffset);
+        Shader.SetGlobalFloat(PlayheadWidthID, Mathf.Max(0.001f, _config.playheadLineWidth));
+        Shader.SetGlobalFloat(PlayheadEmissionID, Mathf.Max(0f, _config.playheadEmissionIntensity));
+        Shader.SetGlobalFloat(PlayheadUseFreqID, _config.playheadUseFrequencyColors ? 1f : 0f);
+        Shader.SetGlobalColor(PlayheadColorID, _config.playheadSingleColor);
+
+        if (_config.playheadUseFrequencyColors)
+            UpdateFrequencyTexture(musicDistance);
+    }
+
+    // A small 1D (Nx1) texture, one texel per visual band, so the shader can sample the WHOLE
+    // current spectrum with a single tex2D lookup at (uv.x, 0.5) instead of the shader touching
+    // per-band data directly. Reuses the EXACT same source (NormalizedBandValue) and palette
+    // (VuColor / low-mid-highEnergyColor) the ground mesh's own vertex colors already use — never
+    // a second color system to keep in sync. _freqPixels is resized only when the band count
+    // itself changes (effectively once, when the profile loads), so a normal frame just
+    // overwrites it in place and re-uploads — no per-frame allocation.
+    private void UpdateFrequencyTexture(float musicDistance)
+    {
+        int numBands = _profile?.VisualBandCount ?? 0;
+        if (numBands <= 0) return;
+
+        if (_freqTex == null || _freqTex.width != numBands)
+        {
+            if (_freqTex != null) Destroy(_freqTex);
+            _freqTex = new Texture2D(numBands, 1, TextureFormat.RGBA32, false, false)
+            {
+                name       = "MusicPath_PlayheadFreq",
+                wrapMode   = TextureWrapMode.Clamp,
+                filterMode = FilterMode.Bilinear,
+            };
+            _freqPixels = new Color32[numBands];
+        }
+
+        float time = _config.playerSpeed > 0f ? Mathf.Max(0f, musicDistance / _config.playerSpeed) : 0f;
+        for (int b = 0; b < numBands; b++)
+            _freqPixels[b] = VuColor(NormalizedBandValue(b, time));
+
+        _freqTex.SetPixels32(_freqPixels);
+        _freqTex.Apply(false);
+        Shader.SetGlobalTexture(FreqTexID, _freqTex);
     }
 
     private void OnEnable()
@@ -276,16 +367,22 @@ public class MusicWorldManager : MonoBehaviour
             }
         }
 
-        // ── 2/3. Smoothing — a SINGLE "pathSmoothness" knob (0..1) drives both axes, instead
-        // of 3 separate pass-count/radius fields that mostly moved the same result together.
+        // ── 2/3. Smoothing — LONGITUDINAL (pathSmoothness, along travel) and LATERAL
+        // (crossSmoothness, across the width) are independent knobs — turning up one doesn't
+        // change the other's feel. Neither touches crossMeshSegments/vertex count: this is just
+        // more CPU box-blur passes over the SAME grid, at rebuild time (~every 1.5s of travel),
+        // not per-frame — cheap regardless of how high either is set.
         float smoothness         = Mathf.Clamp01(_config.pathSmoothness);
         int   longitudinalPasses = Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(1f, 3f, smoothness)));
-        int   lateralPasses      = Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(1f, 2f, smoothness)));
         float smoothingRadius    = Mathf.Lerp(1f, 3f, smoothness);
         int   radiusZ            = Mathf.Max(1, Mathf.RoundToInt(smoothingRadius / Mathf.Max(rowSpacing, 0.01f)));
 
+        float crossSmoothness = Mathf.Clamp01(_config.crossSmoothness);
+        int   lateralPasses   = Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(1f, 3f, crossSmoothness)));
+        int   radiusX         = Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(1f, 4f, crossSmoothness)));
+
         BoxBlurLongitudinal(grid, rows, cols, radiusZ, longitudinalPasses);
-        BoxBlurLateral(grid, rows, cols, lateralPasses);
+        BoxBlurLateral(grid, rows, cols, radiusX, lateralPasses);
 
         // ── 4. Continuity anchor — seed row 0 from the PREVIOUS window's already-clamped
         // value at this same GLOBAL row index (when available). Without this, the slope-clamp
@@ -331,9 +428,14 @@ public class MusicWorldManager : MonoBehaviour
         // ── 6. Light post-clamp pass — the clamp above is a hard min/max box, which by
         // construction can leave a slope DISCONTINUITY (a visible kink) exactly at the edge
         // where it engages/releases, even though everything on either side is smooth. This is
-        // a small, FIXED, correctness-motivated pass (not part of the stylistic pathSmoothness
-        // knob above) — just enough to round that specific seam, not a general smoother.
+        // a small, FIXED, correctness-motivated pass (not part of the stylistic pathSmoothness/
+        // crossSmoothness knobs above) — just enough to round that specific seam, not a general
+        // smoother. BOTH axes were clamped above (longitudinal AND lateral slope limits), so both
+        // get this same tiny corrective pass — the lateral one was previously missing entirely,
+        // which is exactly what read as sharp/triangular peaks ACROSS the width: the lateral
+        // clamp's own kinks were never smoothed by anything.
         BoxBlurLongitudinal(grid, rows, cols, radius: 1, passes: 1);
+        BoxBlurLateral(grid, rows, cols, radius: 1, passes: 1);
 
         _prevGrid      = grid;
         _prevRowIndex0 = rowIndex0;
@@ -366,9 +468,9 @@ public class MusicWorldManager : MonoBehaviour
         }
     }
 
-    // Box-blur across the width (columns), ON TOP of the band-blend interpolation — radius is
-    // always 1 (immediate neighbours), only the pass COUNT varies with pathSmoothness.
-    private static void BoxBlurLateral(float[,] grid, int rows, int cols, int passes)
+    // Box-blur across the width (columns), ON TOP of the band-blend interpolation — both radius
+    // and pass count now configurable (crossSmoothness), independent of the longitudinal knob.
+    private static void BoxBlurLateral(float[,] grid, int rows, int cols, int radius, int passes)
     {
         for (int pass = 0; pass < passes; pass++)
         {
@@ -377,8 +479,8 @@ public class MusicWorldManager : MonoBehaviour
             {
                 for (int c = 0; c < cols; c++)
                 {
-                    int lo = Mathf.Max(0, c - 1);
-                    int hi = Mathf.Min(cols - 1, c + 1);
+                    int lo = Mathf.Max(0, c - radius);
+                    int hi = Mathf.Min(cols - 1, c + radius);
                     float sum = 0f;
                     for (int j = lo; j <= hi; j++) sum += src[r, j];
                     grid[r, c] = sum / (hi - lo + 1);
@@ -387,7 +489,9 @@ public class MusicWorldManager : MonoBehaviour
         }
     }
 
-    // ── Mesh + per-vertex colour (no texture — see class doc for why) ───────────
+    // ── Mesh + per-vertex colour (terrain color itself stays texture-free — see class doc for
+    // why; UVs exist only so the playhead scanline shader can locate itself, see GameplayConfig's
+    // Playhead Scanline doc) ─────────────────────────────────────────────────────
 
     private void BuildMesh(float[,] grid, MusicPath.Sample[] rowSample, float[] rowDistance,
                            int rows, int cols, float scale, float rowSpacing, int numBands)
@@ -395,6 +499,7 @@ public class MusicWorldManager : MonoBehaviour
         var verts   = new Vector3[rows * cols];
         var normals = new Vector3[rows * cols];
         var colors  = new Color32[rows * cols];
+        var uvs     = new Vector2[rows * cols];
 
         int VertIndex(int r, int c) => r * cols + c;
         float LateralFrac(int c) => cols > 1 ? (float)c / (cols - 1) : 0.5f;
@@ -421,7 +526,20 @@ public class MusicWorldManager : MonoBehaviour
                 float norm = Mathf.Clamp01(grid[r, c]);
 
                 verts[VertIndex(r, c)]  = s.position + s.right * xOff + s.up * (norm * scale);
-                colors[VertIndex(r, c)] = VuColor(norm);
+                // COLOR reads the SAME processed value as HEIGHT (norm = smoothed + slope-clamped)
+                // — a raw/un-smoothed color used to visually decorrelate from the geometry it was
+                // sitting on (physically-low zones painted red, ridges painted green), which read
+                // as incoherent rather than "reads the shape of the terrain". terrainColorRedThreshold
+                // is a pure COLOR remap (see TerrainVuColor) for "reach red sooner" without any of
+                // that — it never touches this shared `norm`/height value.
+                colors[VertIndex(r, c)] = TerrainVuColor(norm);
+                // x: 0=left..1=right across the track. y: 0=chunk start..1=chunk end, along
+                // travel — the playhead scanline (VertexColorLit.shader) is the only current
+                // consumer, matched exactly to rowDistance[0]/rowDistance[rows-1] below (the
+                // SAME two values pushed into the chunk's MaterialPropertyBlock), so a fragment's
+                // uv.y always means precisely "this fraction of the way from this chunk's own
+                // start distance to its own end distance".
+                uvs[VertIndex(r, c)] = new Vector2(lateralFrac, rows > 1 ? (float)r / (rows - 1) : 0f);
 
                 // Analytic normal from a central-difference height gradient — NOT
                 // Mesh.RecalculateNormals(), which only averages face normals WITHIN this one
@@ -456,6 +574,7 @@ public class MusicWorldManager : MonoBehaviour
         mesh.vertices  = verts;
         mesh.normals   = normals;
         mesh.colors32  = colors;
+        mesh.uv        = uvs;
         mesh.triangles = tris;
         mesh.RecalculateBounds();
 
@@ -471,6 +590,16 @@ public class MusicWorldManager : MonoBehaviour
         // readable (config.terrainAmbientFloor) instead of going to black under shadow.
         mr.shadowCastingMode = ShadowCastingMode.On;
         mr.receiveShadows    = true;
+
+        // This chunk's own [start, end] music-distance range, via MaterialPropertyBlock — NOT a
+        // cloned Material (that would defeat sharing _meshMaterial across every rebuild). Exactly
+        // the same two distances the UV.y above was built from, so the shader's
+        // playhead01 = (playheadDistance - start) / (end - start) lines up with UV.y perfectly.
+        _groundMPB ??= new MaterialPropertyBlock();
+        _groundMPB.Clear();
+        _groundMPB.SetFloat(StartMusicDistanceID, rowDistance[0]);
+        _groundMPB.SetFloat(EndMusicDistanceID, rowDistance[rows - 1]);
+        mr.SetPropertyBlock(_groundMPB);
 
         ReceiveShadows = mr.receiveShadows;
         ShadowCasting  = mr.shadowCastingMode;
@@ -528,6 +657,13 @@ public class MusicWorldManager : MonoBehaviour
     private Color VuColor(float t) => t < 0.5f
         ? Color.Lerp(_config.lowEnergyColor, _config.midEnergyColor, t * 2f)
         : Color.Lerp(_config.midEnergyColor, _config.highEnergyColor, (t - 0.5f) * 2f);
+
+    // Terrain-only color remap — exaggerates how soon the palette reaches red, WITHOUT touching
+    // the value used for height/geometry (that stays plain `norm`). Never used by the scanline's
+    // FrequencyTexture (UpdateFrequencyTexture calls VuColor directly) — that one is meant to
+    // stay a faithful, un-exaggerated equalizer reading.
+    private Color TerrainVuColor(float processedValue) =>
+        VuColor(Mathf.Clamp01(processedValue / Mathf.Max(0.05f, _config.terrainColorRedThreshold)));
 
     // ── Debug HUD support ────────────────────────────────────────────────────────
 
