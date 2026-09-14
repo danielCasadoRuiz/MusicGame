@@ -142,7 +142,10 @@ public class HorizonMountainLayers : MonoBehaviour
         _farRenderer.enabled  = farVisible;
         _nearRenderer.enabled = nearVisible;
 
-        float ridgeBase = _config.horizonBarVerticalOffset;
+        // Anchored to Water Level, the single vertical reference point for the whole Horizon World
+        // floor (see SpectrumBars3D's own doc) — mountains no longer read the old, separately-
+        // tuned "bar vertical offset" field (removed).
+        float ridgeBase = _config.horizonWaterLevel;
 
         if (farVisible)
         {

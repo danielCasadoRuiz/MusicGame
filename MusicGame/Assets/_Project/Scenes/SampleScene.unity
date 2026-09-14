@@ -259,7 +259,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 80
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -883,8 +883,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28800ed31a743a3458db808a4649da5e, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   config: {fileID: 11400000, guid: 4d3b30da92954a16ac415f6d2bb95e7c, type: 2}
 --- !u!114 &3300000001
 MonoBehaviour:
@@ -915,11 +915,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 3100000004}
   config: {fileID: 11400000, guid: c797592768f344c4b43bf7b0cc29d8b8, type: 2}
-  behindDistance: 3
-  heightAbovePath: 4
+  behindDistance: 5.33
+  heightAbovePath: 5.13
+  extraHeight: 0
   xSmoothTime: 1
   posSmoothTime: 0.06
   thirdPersonAllowYawRotation: 0
+  framePanDegrees: 16.7
   energyHeightPeak: 2
   energySmooth: 2
   kickStrength: 0.35

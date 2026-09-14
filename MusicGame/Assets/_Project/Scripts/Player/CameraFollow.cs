@@ -32,6 +32,15 @@ public class CameraFollow : MonoBehaviour
     [Header("Position (Third Person)")]
     [SerializeField] private float behindDistance  = 12f;   // arc-length behind canonical position
     [SerializeField] private float heightAbovePath = 5f;    // units above path surface
+    [Tooltip("Extra camera elevation, ADDED on top of Height Above Path — kept as a separate field " +
+             "so you can dial in a steeper/shallower viewing angle onto the scene (more top-down, " +
+             "more scenery visible below the player, different parallax against the Horizon World) " +
+             "without redefining what Height Above Path itself means. This is a POSITION change: " +
+             "because the camera always looks AT the player (see thirdPersonAllowYawRotation/" +
+             "Framing Pan below), the player stays centered on its look axis no matter what this is " +
+             "set to — it changes the ANGLE the shot is taken from, not where the player sits on " +
+             "screen. For that, use Framing Pan Degrees below instead. 0 = original height.")]
+    [SerializeField] private float extraHeight = 0f;
     [SerializeField] private float xSmoothTime     = 0.15f; // lateral smoothing
     [SerializeField] private float posSmoothTime   = 0.06f; // world-space position smoothing
     [Tooltip("true: exact original behavior — Third Person's rotation is a full LookAt toward the " +
@@ -41,6 +50,22 @@ public class CameraFollow : MonoBehaviour
              "player), it just no longer reacts to the player's lateral position/LookAt jitter. " +
              "Pitch still follows the player's height either way, so vertical framing is unchanged.")]
     [SerializeField] private bool thirdPersonAllowYawRotation = false;
+    [Header("Framing Pan (Composer-style, like Cinemachine's Composer)")]
+    [Tooltip("THIS is what actually moves the player up/down on screen — Height/Extra Height above " +
+             "only move the CAMERA (the shot's position/angle), but since the camera always looks " +
+             "directly AT the player, the player itself stays glued to the center of that look axis " +
+             "no matter how you reposition the camera (this is exactly the limitation you hit: " +
+             "position offsets can't 're-center' where the subject sits in the frame). A real pan " +
+             "instead tilts the camera's AIM away from the player by this many degrees — same idea " +
+             "as Cinemachine's Composer 'Screen Y': it doesn't move the camera at all, it just " +
+             "rotates it so the tracked subject projects somewhere other than dead-center.\n" +
+             "Positive = aim tilts UPWARD, so the player ends up LOWER in the frame and more of the " +
+             "scenery above (sky/Horizon World arc/mountains) becomes visible — exactly the 'frame " +
+             "the character toward the bottom, see the scene from above' composition. Negative = " +
+             "the opposite (player higher in frame, aim tilts down). 0 = player exactly centered on " +
+             "the look axis, the original behavior. Try small values first (5-15) — this is a real " +
+             "rotation, not a viewport crop, so large values will visibly swing the horizon.")]
+    [SerializeField] private float framePanDegrees = 0f;
 
     [Header("Energy Response")]
     [SerializeField] private float energyHeightPeak = 2f;   // extra height at max intensity
@@ -171,28 +196,44 @@ public class CameraFollow : MonoBehaviour
     /// <summary>
     /// Third Person's rotation — the ONLY place that decides it, used for the first-frame snap,
     /// the view-transition blend target, and the steady-state frame, so thirdPersonAllowYawRotation
-    /// behaves identically everywhere instead of three slightly different LookAt call sites.
+    /// AND framePanDegrees behave identically everywhere instead of several slightly different
+    /// LookAt call sites.
     /// </summary>
     private Quaternion ComputeThirdPersonRotation(Vector3 camPos, Vector3 tangent)
     {
         Vector3 toLook = _smoothedLookAt - camPos;
+        Vector3 forward;
 
         if (thirdPersonAllowYawRotation)
         {
             // Exact original behavior — full LookAt toward the player.
-            Vector3 dir = toLook.sqrMagnitude > 0.0001f ? toLook.normalized : transform.forward;
-            return Quaternion.LookRotation(dir, Vector3.up);
+            forward = toLook.sqrMagnitude > 0.0001f ? toLook.normalized : transform.forward;
+        }
+        else
+        {
+            // Yaw LOCKED to the path's own heading (still turns through real curves — that's the
+            // path, not the player) — pitch still tracks the look-at target's height, built
+            // directly from vectors (not Euler angles) to avoid any up/down sign ambiguity.
+            Vector3 flatTangent = new Vector3(tangent.x, 0f, tangent.z);
+            flatTangent = flatTangent.sqrMagnitude > 0.0001f ? flatTangent.normalized : Vector3.forward;
+
+            float horizDist = new Vector3(toLook.x, 0f, toLook.z).magnitude;
+            forward = (flatTangent * Mathf.Max(horizDist, 0.01f) + Vector3.up * toLook.y).normalized;
         }
 
-        // Yaw LOCKED to the path's own heading (still turns through real curves — that's the
-        // path, not the player) — pitch still tracks the look-at target's height, built directly
-        // from vectors (not Euler angles) to avoid any up/down sign ambiguity.
-        Vector3 flatTangent = new Vector3(tangent.x, 0f, tangent.z);
-        flatTangent = flatTangent.sqrMagnitude > 0.0001f ? flatTangent.normalized : Vector3.forward;
+        // Framing pan (Composer-style — see framePanDegrees doc): tilts the AIM, not the position,
+        // so the player ends up off-center in the frame instead of always being re-centered by the
+        // LookAt above. Rotating `forward` around the camera's own local right axis by a negative
+        // angle tilts the aim upward, which pushes the (unmoved) player DOWN in the frame — so a
+        // positive framePanDegrees reads as "player lower on screen", matching the tooltip.
+        if (Mathf.Abs(framePanDegrees) > 0.0001f)
+        {
+            Vector3 right = Vector3.Cross(Vector3.up, forward);
+            if (right.sqrMagnitude > 0.0001f)
+                forward = Quaternion.AngleAxis(-framePanDegrees, right.normalized) * forward;
+        }
 
-        float   horizDist = new Vector3(toLook.x, 0f, toLook.z).magnitude;
-        Vector3 forward   = flatTangent * Mathf.Max(horizDist, 0.01f) + Vector3.up * toLook.y;
-        return Quaternion.LookRotation(forward.normalized, Vector3.up);
+        return Quaternion.LookRotation(forward, Vector3.up);
     }
 
     private void ApplyRendererVisibility()
@@ -277,7 +318,7 @@ public class CameraFollow : MonoBehaviour
 
         Vector3 thirdPersonPos = camSample.position
                                + camSample.right * _smoothedLateral
-                               + Vector3.up      * (heightAbovePath + _energyHeight + _kick);
+                               + Vector3.up      * (heightAbovePath + extraHeight + _energyHeight + _kick);
 
         Vector3 playerLookPoint = playerController != null
             ? playerController.transform.position + Vector3.up * 0.75f

@@ -12,20 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4437a89fe3a9476e99b644eb359fad1f, type: 3}
   m_Name: HorizonConfig
   m_EditorClassIdentifier: Assembly-CSharp::HorizonConfig
+  devLiveConfigSync: 0
   enableHorizonWorld: 1
-  horizonParallaxFactor: 0.03
+  horizonParallaxFactor: 0
+  horizonParallaxMaxOffsetFraction: 0.3
   horizonBloomIntensity: 1.1
-  horizonBloomThreshold: 0.6
+  horizonBloomThreshold: 0.95
   horizonBloomScatter: 0.7
   horizonBloomForceApply: 1
-  horizonBarCount: 48
+  horizonBarCount: 34
   horizonArcSpanDegrees: 180
-  horizonArcRadius: 40
-  horizonBarVerticalOffset: -2
-  horizonBarMinHeight: 0.3
-  horizonBarMaxHeight: 6
-  horizonBarWidthFraction: 0.94
-  horizonBarDepth: 1.5
+  horizonArcRadius: 4.02
+  horizonBarsGroupOffset: {x: 0, y: 0, z: 3.27}
+  horizonBarScale: 1
+  horizonBarMinHeight: 0.1
+  horizonBarMaxHeight: 0.6
+  horizonBarWidth: 0.28
+  horizonBarDepth: 0.15
+  horizonBarOffsetAboveWater: 0
   horizonBarAmplitudeGradient:
     serializedVersion: 2
     key0: {r: 0.1, g: 0.95, b: 0.85, a: 1}
@@ -56,45 +60,69 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 6
     m_NumAlphaKeys: 2
-  horizonBarBaseEmission: 0.6
-  horizonBarAmplitudeEmissionBoost: 3.5
-  horizonBarMaxEmission: 6
+  horizonBarPlasticColor: {r: 0.85, g: 0.85, b: 0.88, a: 1}
+  horizonBarPlasticTintStrength: 1
+  horizonBarSmoothness: 0.42
+  horizonBarAmbientFloor: 0.41
+  horizonBarRimPower: 2.5
+  horizonBarRimStrength: 0.73
+  horizonBarTransmissionStrength: 1.35
+  horizonBarBaseEmission: 0.45
+  horizonBarAmplitudeEmissionBoost: 2.2
+  horizonBarMaxEmission: 3
   horizonBarGain: 1
   horizonBarAttack: 0.15
   horizonBarRelease: 0.6
   horizonReflectionEnabled: 1
-  horizonReflectionRTSize: {x: 512, y: 256}
-  horizonReflectionOpacity: 0.55
-  horizonReflectionDistortion: 0.35
-  horizonReflectionEmission: 2
-  horizonWaterLevel: -3
-  horizonWaterDarkness: 0.92
+  horizonReflectionBrightness: 1
+  horizonReflectionFadeDistance: 3
+  horizonReflectionFadeColor: {r: 0.208, g: 0.208, b: 0.208, a: 1}
+  horizonReflectionStretchY: 1
+  horizonReflectionExtraOffset: 0
+  horizonWaterLevel: -1
+  horizonWaterColor: {r: 0.012, g: 0.004, b: 0.18, a: 0.92}
+  horizonWaterDarkness: 0.5
+  horizonWaterFresnelColor: {r: 0.137, g: 0.482, b: 0.843, a: 1}
   horizonWaterNormalMapA: {fileID: 2800000, guid: 3db65efd39be40c1aebe6f749bef2404, type: 3}
   horizonWaterNormalMapB: {fileID: 2800000, guid: 0fab0ae066ed43138662c4bfefd84087, type: 3}
-  horizonWaterTilingA: 6
-  horizonWaterScrollA: {x: 0.035, y: 0.015}
-  horizonWaterTilingB: 17
-  horizonWaterScrollB: {x: -0.012, y: 0.028}
-  horizonWaterNormalStrength: 0.25
-  horizonWaterFresnelPower: 5
-  horizonWaterSpecularPower: 48
-  horizonWaterSpecularIntensity: 0.6
-  horizonWaterHorizonTint: {r: 0.9, g: 0.5, b: 0.4, a: 1}
-  horizonWaterHorizonTintStrength: 0.25
-  horizonSkyZenithColor: {r: 0.02, g: 0.02, b: 0.06, a: 1}
-  horizonSkyUpperColor: {r: 0.1, g: 0.05, b: 0.22, a: 1}
-  horizonSkyLowerColor: {r: 0.45, g: 0.16, b: 0.32, a: 1}
-  horizonSkyHorizonColor: {r: 0.85, g: 0.4, b: 0.3, a: 1}
-  horizonSkyNoiseScale: 1.5
+  horizonWaterTilingA: 20
+  horizonWaterScrollA: {x: 0.01, y: 0.01}
+  horizonWaterTilingB: 10
+  horizonWaterScrollB: {x: 0.05, y: 0.01}
+  horizonWaterNormalStrength: 0.05
+  horizonWaterFresnelPower: 9.13
+  horizonWaterSpecularPower: 24
+  horizonWaterSpecularIntensity: 0.5
+  horizonWaterHorizonTint: {r: 0.886, g: 0.055, b: 0.671, a: 1}
+  horizonWaterHorizonTintStrength: 0.07
+  horizonWaterRefractionStrength: 0.157
+  horizonWaterReflectionVisibility: 0.161
+  horizonSkyZenithColor: {r: 0.07, g: 0.08, b: 0.17, a: 1}
+  horizonSkyUpperColor: {r: 0.15, g: 0.16, b: 0.32, a: 1}
+  horizonSkyLowerColor: {r: 0.3, g: 0.21, b: 0.38, a: 1}
+  horizonSkyHorizonColor: {r: 0.46, g: 0.25, b: 0.38, a: 1}
+  horizonSkyNoiseScale: 5
   horizonSkyNoiseStrength: 0.08
-  horizonGlowColor: {r: 1, g: 0.6, b: 0.5, a: 1}
-  horizonGlowIntensity: 1
-  horizonSunColor: {r: 1, g: 0.85, b: 0.7, a: 1}
+  horizonGlowColor: {r: 0.95, g: 0.45, b: 0.4, a: 1}
+  horizonGlowIntensity: 0.5
+  horizonSunColor: {r: 1, g: 0.55, b: 0.45, a: 1}
   horizonSunAzimuthDeg: 0
-  horizonSunElevationDeg: 12
-  horizonSunSize: 0.0209
-  horizonSunGlowSize: 0.25
-  horizonSunGlowIntensity: 1.2
+  horizonSunElevationDeg: 2.3
+  horizonSunSize: 0.005
+  horizonSunGlowSize: 0.03
+  horizonSunGlowIntensity: 3.21
+  horizonSkyMacroResponseCurve: 0.55
+  horizonSkyZenithColorIntense: {r: 0.035, g: 0.049, b: 0.17, a: 1}
+  horizonSkyUpperColorIntense: {r: 0.0905, g: 0.104, b: 0.32, a: 1}
+  horizonSkyLowerColorIntense: {r: 0.272, g: 0.151, b: 0.38, a: 1}
+  horizonSkyHorizonColorIntense: {r: 0.46, g: 0.1765, b: 0.352, a: 1}
+  horizonGlowColorIntense: {r: 0.95, g: 0.275, b: 0.2075, a: 1}
+  horizonSunColorIntense: {r: 1, g: 0.3925, b: 0.2575, a: 1}
+  horizonGlowIntensityIntenseMultiplier: 1.6
+  horizonHazeColorIntense: {r: 0.3, g: 0.16, b: 0.42, a: 1}
+  horizonMountainFarTintIntense: {r: 0.4, g: 0.18, b: 0.5, a: 1}
+  horizonMountainNearTintIntense: {r: 0.1, g: 0.05, b: 0.14, a: 1}
+  horizonWaterHorizonTintIntense: {r: 0.5, g: 0.25, b: 0.55, a: 1}
   horizonMountainsEnabled: 1
   horizonMountainFarTexture: {fileID: 2800000, guid: 27919e72d6cf4134ae7c78aec237f077, type: 3}
   horizonMountainNearTexture: {fileID: 2800000, guid: 5941111bf25c48e5a33eeba1c548001e, type: 3}
@@ -120,6 +148,3 @@ MonoBehaviour:
   horizonHazeHorizonTintColor: {r: 0.55, g: 0.3, b: 0.38, a: 1}
   horizonHazeHorizonTintAmount: 0.35
   horizonHazeDistanceIntensity: 0.5
-  horizonMacroReactivity: 1
-  horizonMacroSmoothingTime: 4
-  horizonMacroSnapFraction: 0.4

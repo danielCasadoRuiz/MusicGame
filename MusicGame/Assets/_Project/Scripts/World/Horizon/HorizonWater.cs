@@ -36,12 +36,14 @@ public class HorizonWater : MonoBehaviour
     private static readonly int ScrollAID    = Shader.PropertyToID("_ScrollA");
     private static readonly int ScrollBID    = Shader.PropertyToID("_ScrollB");
     private static readonly int NormalStrengthID = Shader.PropertyToID("_NormalStrength");
+    private static readonly int FresnelColorID   = Shader.PropertyToID("_FresnelColor");
     private static readonly int FresnelPowerID   = Shader.PropertyToID("_FresnelPower");
     private static readonly int SpecularPowerID     = Shader.PropertyToID("_SpecularPower");
     private static readonly int SpecularIntensityID = Shader.PropertyToID("_SpecularIntensity");
     private static readonly int HorizonTintID         = Shader.PropertyToID("_HorizonTint");
     private static readonly int HorizonTintStrengthID = Shader.PropertyToID("_HorizonTintStrength");
     private static readonly int RefractionStrengthID  = Shader.PropertyToID("_RefractionStrength");
+    private static readonly int ReflectionVisibilityID = Shader.PropertyToID("_ReflectionVisibility");
 
     /// <summary>World-space Y of the actual rendered water plane — the single source of truth
     /// SpectrumBars3D mirrors its reflection bars across, so the two can never drift apart.</summary>
@@ -99,8 +101,12 @@ public class HorizonWater : MonoBehaviour
         _transform.localPosition = new Vector3(0f, _config.horizonWaterLevel - 0.02f, 0f);
         _transform.localScale    = new Vector3(waterSize, waterSize, 1f);
 
-        float d = Mathf.Clamp01(_config.horizonWaterDarkness);
-        Color waterColor = Color.Lerp(new Color(0.05f, 0.10f, 0.16f, 0.92f), new Color(0.005f, 0.01f, 0.03f, 0.95f), d);
+        // Water Color is now directly authored (see HorizonConfig.horizonWaterColor) rather than a
+        // hardcoded hue baked in here — Darkness (0..1) optionally crushes it toward ~15% of its
+        // own brightness (near-black but keeping a hint of hue), never toward an unrelated color.
+        Color baseColor = _config.horizonWaterColor;
+        Color darkened  = new Color(baseColor.r * 0.15f, baseColor.g * 0.15f, baseColor.b * 0.15f, baseColor.a);
+        Color waterColor = Color.Lerp(baseColor, darkened, Mathf.Clamp01(_config.horizonWaterDarkness));
         _material.SetColor(BaseColorID, waterColor);
 
         if (_config.horizonWaterNormalMapA != null) _material.SetTexture(NormalMapAID, _config.horizonWaterNormalMapA);
@@ -110,11 +116,13 @@ public class HorizonWater : MonoBehaviour
         _material.SetFloat(TilingBID, _config.horizonWaterTilingB);
         _material.SetVector(ScrollBID, new Vector4(_config.horizonWaterScrollB.x, _config.horizonWaterScrollB.y, 0f, 0f));
         _material.SetFloat(NormalStrengthID, _config.horizonWaterNormalStrength);
+        _material.SetColor(FresnelColorID, _config.horizonWaterFresnelColor);
         _material.SetFloat(FresnelPowerID, _config.horizonWaterFresnelPower);
         _material.SetFloat(SpecularPowerID, _config.horizonWaterSpecularPower);
         _material.SetFloat(SpecularIntensityID, _config.horizonWaterSpecularIntensity);
         _material.SetFloat(HorizonTintStrengthID, _config.horizonWaterHorizonTintStrength);
         _material.SetFloat(RefractionStrengthID, _config.horizonWaterRefractionStrength);
+        _material.SetFloat(ReflectionVisibilityID, Mathf.Clamp01(_config.horizonWaterReflectionVisibility));
     }
 
     private static Mesh BuildQuad()

@@ -24,6 +24,7 @@ Shader "MusicGame/CheapWater"
         _HorizonTint("Horizon Tint Color", Color) = (0.9, 0.5, 0.4, 1)
         _HorizonTintStrength("Horizon Tint Strength", Range(0,1)) = 0.25
         _RefractionStrength("Refraction Strength", Range(0,0.2)) = 0.08
+        _ReflectionVisibility("Reflection Visibility", Range(0,1)) = 0.6
     }
     SubShader
     {
@@ -75,6 +76,7 @@ Shader "MusicGame/CheapWater"
             float4 _HorizonTint;
             float  _HorizonTintStrength;
             float  _RefractionStrength;
+            float  _ReflectionVisibility;
             CBUFFER_END
 
             Varyings vert(Attributes IN)
@@ -118,7 +120,14 @@ Shader "MusicGame/CheapWater"
                 float2 refractedUV = screenUV + nTan.xy * _RefractionStrength;
                 float3 sceneColor = SampleSceneColor(refractedUV);
 
-                float3 rgb = _BaseColor.rgb * 0.4 + sceneColor * 0.6
+                // How much of the refracted reflection actually shows through, vs. the water's own
+                // opaque-ish color — THIS is the real "how visible is the reflection" knob (separate
+                // from the reflection bar's own brightness/fade, which only control the reflection's
+                // OWN color before the water even gets to it). Lowering this mutes the reflection by
+                // blending it toward the water's own dark tint, which reads as "murky/dark water",
+                // never a flat black silhouette (unlike crushing the reflection bar's own color).
+                float reflectionVis = saturate(_ReflectionVisibility);
+                float3 rgb = _BaseColor.rgb * (1.0 - reflectionVis) + sceneColor * reflectionVis
                            + _FresnelColor.rgb * fres
                            + mainLight.color * spec
                            + horizonTint;

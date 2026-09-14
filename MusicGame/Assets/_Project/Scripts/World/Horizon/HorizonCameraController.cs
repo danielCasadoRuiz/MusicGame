@@ -12,9 +12,14 @@ using UnityEngine.Rendering.Universal;
 /// Why a second camera instead of re-centering geometry on the camera every frame (the old
 /// FrequencyBackground approach): re-centering means the geometry has ZERO relative motion
 /// against the camera, ever — which reads as "attached to your face" regardless of how far away
-/// it visually sits. A genuinely separate camera at a fixed position, only copying view ANGLE
-/// (plus an optional small fraction of translation via horizonParallaxFactor for a subtle sense
-/// of depth), is how distant backgrounds are actually done.
+/// it visually sits. A genuinely separate camera at a fixed position, only copying view ANGLE, is
+/// how a real distant horizon/skybox is actually done — by DEFAULT horizonParallaxFactor is 0, so
+/// this camera's position genuinely never moves at all: exactly like a real horizon, no amount of
+/// running ever gets you a single unit closer to it. horizonParallaxFactor exists as an OPT-IN if
+/// you specifically want a subtle depth cue (a small fraction of the main camera's own translation
+/// bleeding through) instead — that offset is hard-capped at a FRACTION of Arc Radius (see Tick())
+/// so even with it enabled, a long enough run can't accumulate enough drift to catch up to/overtake
+/// the "distant, unreachable" ring of bars.
 ///
 /// HorizonRoot is a SEPARATE, permanently-fixed Transform (not this camera's own, which DOES
 /// move a little with parallax) — SpectrumBars3D/HorizonWater/HorizonMountainLayers parent under
@@ -148,6 +153,19 @@ public class HorizonCameraController : MonoBehaviour
 
         Vector3 delta = _mainCamera.transform.position - _mainCameraStartPos;
         CameraDelta = delta;
-        HorizonCamera.transform.position = HorizonRoot.position + delta * Mathf.Clamp01(_config.horizonParallaxFactor);
+
+        // Hard-capped (see horizonParallaxMaxOffsetFraction doc) — without this, a long enough run
+        // keeps accumulating delta*parallaxFactor without bound, and eventually exceeds Arc Radius:
+        // the "distant, unreachable" ring of bars then visually gets caught up to/overtaken.
+        // Clamping the OFFSET itself (not the raw delta), to a FRACTION of Arc Radius (not a fixed
+        // world-unit number), guarantees the Horizon Camera can never end up more than that fraction
+        // of "however far away the ring currently is" from its start position — regardless of how
+        // far the player runs, AND regardless of whatever Arc Radius happens to be tuned to (a fixed
+        // absolute cap silently stopped being safe the moment Arc Radius was later tuned smaller;
+        // this can't happen anymore since the cap now scales WITH Arc Radius automatically).
+        Vector3 offset = delta * Mathf.Clamp01(_config.horizonParallaxFactor);
+        float maxOffset = Mathf.Max(0f, _config.horizonArcRadius) * Mathf.Clamp01(_config.horizonParallaxMaxOffsetFraction);
+        offset = Vector3.ClampMagnitude(offset, maxOffset);
+        HorizonCamera.transform.position = HorizonRoot.position + offset;
     }
 }
