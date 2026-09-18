@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ae4a9535fe94aca8f568a41506ce5a1, type: 3}
+  m_Name: OpponentRoster
+  m_EditorClassIdentifier: Assembly-CSharp::OpponentRosterSO
+  opponents:
+  - {fileID: 11400000, guid: f789010320574530b0f2a0dbee4ede09, type: 2}
+  - {fileID: 11400000, guid: 1b06e1cf670c4d95a61056c0409bda04, type: 2}
+  - {fileID: 11400000, guid: c5e721c049e1454ba899e8145a1428a6, type: 2}
+  - {fileID: 11400000, guid: c3d7b80c3e774e9da9746c6900088591, type: 2}
+  - {fileID: 11400000, guid: b9dacdc2081d41f5ab8dc8504939a37b, type: 2}
+  - {fileID: 11400000, guid: c47199359c494be99459bd4d63cc54f2, type: 2}
+  - {fileID: 11400000, guid: 026c39cf814b460d8b6dd83bf06cacd8, type: 2}
+  - {fileID: 11400000, guid: 3839e39121aa4f1caa382efd156e5376, type: 2}

@@ -6,9 +6,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// One-shot Editor tool: builds all ten runtime UI screens — the three gameplay prefabs (LiveHud,
-/// EndScreen, PauseMenu) and the seven Frontend/Fight screens (IntroScreen, MainMenu, SongSelection,
-/// AnalyzingScreen, CountdownScreen, FinishBanner, FightHud) — using the exact same UIFactory calls
+/// One-shot Editor tool: builds all thirteen runtime UI screens — the three gameplay prefabs
+/// (LiveHud, EndScreen, PauseMenu), the seven Frontend/Fight screens (IntroScreen, MainMenu,
+/// SongSelection, AnalyzingScreen, CountdownScreen, FinishBanner, FightHud), and the three Fight-flow
+/// screens (OpponentSelection, VersusScreen, RoundIntro) — using the exact same UIFactory calls
 /// each screen's own controller used to run at PLAY time (with the same ThemeColorReceiver/
 /// ThemeTextReceiver wiring, so the saved prefabs come out theme-ready too), saves them as real
 /// .prefab assets under Assets/_Project/Prefabs/UI/, leaves connected instances in the currently
@@ -18,10 +19,11 @@ using UnityEngine.UI;
 /// the UIRegistry at startup and just READS the matching prefab instance instead of building
 /// anything itself — open the .prefab assets in the Prefab editor any time afterward to retouch
 /// colors/fonts/layout by hand; the game keeps working as long as the wired fields on each *View
-/// component still point at the right children. Song Selection is the one partial exception: only
-/// its static chrome is baked — the catalog rows stay dynamic runtime population either way.
+/// component still point at the right children. Song Selection and Opponent Selection are the two
+/// partial exceptions: only their static chrome is baked — the catalog rows / opponent grid cells
+/// stay dynamic runtime population either way.
 ///
-/// Safe to re-run: it rebuilds all ten prefabs + the scene instances + UIRegistry from scratch
+/// Safe to re-run: it rebuilds all thirteen prefabs + the scene instances + UIRegistry from scratch
 /// each time (so hand-made edits to the PREFAB ASSETS themselves are NOT preserved by re-running
 /// this — it's meant to be run once to get a starting point you then hand-tune).
 /// </summary>
@@ -64,6 +66,10 @@ public static class UIPrefabBuilder
         var finishBanner    = BuildFinishBanner(canvasRect);
         var fightHud        = BuildFightHud(canvasRect);
 
+        var opponentSelection = BuildOpponentSelection(canvasRect);
+        var versusScreen      = BuildVersusScreen(canvasRect);
+        var roundIntro        = BuildRoundIntro(canvasRect);
+
         // IMPORTANT: SaveAsPrefabAssetAndConnect returns the PREFAB ASSET (disk-only, never
         // instantiated into the running scene) — it also CONVERTS the passed scene GameObject
         // into a connected prefab instance, but that instance is a DIFFERENT object than the
@@ -81,6 +87,9 @@ public static class UIPrefabBuilder
         SaveAndConnect(countdownScreen, "CountdownScreen.prefab");
         SaveAndConnect(finishBanner,    "FinishBanner.prefab");
         SaveAndConnect(fightHud,        "FightHud.prefab");
+        SaveAndConnect(opponentSelection, "OpponentSelection.prefab");
+        SaveAndConnect(versusScreen,      "VersusScreen.prefab");
+        SaveAndConnect(roundIntro,        "RoundIntro.prefab");
 
         WireRegistry(
             liveHud.GetComponent<LiveHudView>(),
@@ -92,7 +101,10 @@ public static class UIPrefabBuilder
             analyzingScreen.GetComponent<AnalyzingScreenView>(),
             countdownScreen.GetComponent<CountdownScreenView>(),
             finishBanner.GetComponent<FinishBannerView>(),
-            fightHud.GetComponent<FightHudView>());
+            fightHud.GetComponent<FightHudView>(),
+            opponentSelection.GetComponent<OpponentSelectionView>(),
+            versusScreen.GetComponent<VersusScreenView>(),
+            roundIntro.GetComponent<RoundIntroView>());
 
         // These screens are ALWAYS-ACTIVE at runtime until their own Show()/Hide() toggles them
         // (Awake() flips them off) — but starting hidden in the EDITED scene, saved into the
@@ -105,9 +117,12 @@ public static class UIPrefabBuilder
         countdownScreen.SetActive(false);
         finishBanner.SetActive(false);
         fightHud.SetActive(false);
+        opponentSelection.SetActive(false);
+        versusScreen.SetActive(false);
+        roundIntro.SetActive(false);
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-        Debug.Log("[UIPrefabBuilder] Done — 10 UI prefabs saved under " +
+        Debug.Log("[UIPrefabBuilder] Done — 13 UI prefabs saved under " +
                   $"{FolderPath}, instances wired into UIRegistry in the scene. " +
                   "Remember to save the scene (Ctrl+S).");
     }
@@ -141,7 +156,8 @@ public static class UIPrefabBuilder
     private static void WireRegistry(LiveHudView liveHud, EndScreenView endScreen, PauseView pause,
         IntroScreenView introScreen, MainMenuView mainMenu, SongSelectionView songSelection,
         AnalyzingScreenView analyzing, CountdownScreenView countdown, FinishBannerView finishBanner,
-        FightHudView fightHud)
+        FightHudView fightHud, OpponentSelectionView opponentSelection, VersusScreenView versusScreen,
+        RoundIntroView roundIntro)
     {
         var registryGO = GameObject.Find("[UI Registry]");
         if (registryGO == null) registryGO = new GameObject("[UI Registry]");
@@ -158,6 +174,9 @@ public static class UIPrefabBuilder
         so.FindProperty("countdown").objectReferenceValue     = countdown;
         so.FindProperty("finishBanner").objectReferenceValue  = finishBanner;
         so.FindProperty("fightHud").objectReferenceValue      = fightHud;
+        so.FindProperty("opponentSelection").objectReferenceValue = opponentSelection;
+        so.FindProperty("versusScreen").objectReferenceValue      = versusScreen;
+        so.FindProperty("roundIntro").objectReferenceValue        = roundIntro;
         so.ApplyModifiedPropertiesWithoutUndo();
     }
 
@@ -760,6 +779,100 @@ public static class UIPrefabBuilder
         UIFactory.Stretch(transitionOverlay.rectTransform);
         transitionOverlay.gameObject.SetActive(false);
         view.transitionOverlay = transitionOverlay;
+
+        return root.gameObject;
+    }
+
+    // ── Opponent Selection ────────────────────────────────────────────────────
+
+    private static GameObject BuildOpponentSelection(RectTransform canvas)
+    {
+        var root = UIFactory.CreateRect("OpponentSelectionScreen", canvas);
+        UIFactory.Stretch(root);
+        var view = root.gameObject.AddComponent<OpponentSelectionView>();
+        view.root = root.gameObject;
+
+        var dim = UIFactory.CreatePanel("Dim", root, new Color(0.02f, 0.02f, 0.02f, 1f));
+        UIFactory.Stretch(dim.rectTransform);
+        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
+
+        var title = UIFactory.CreateText("Title", root, Loc.Get("OpponentSelection.Title"), 30, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, -50f), new Vector2(900f, 50f));
+        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
+        view.titleText = title;
+
+        // Cells themselves stay dynamic runtime population (OpponentSelectionController, one per
+        // OpponentRosterSO entry) — only the empty grid container + its GridLayoutGroup are baked.
+        // FixedColumnCount=4 gives today's 8-opponent roster its 2x4 layout, but adding/removing
+        // opponents just reflows the same grid — nothing here assumes exactly 8.
+        var grid = UIFactory.CreateRect("Grid", root);
+        UIFactory.SetBox(grid, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            Vector2.zero, new Vector2((180f + 16f) * 4f, (220f + 16f) * 2f));
+        var layout = grid.gameObject.AddComponent<GridLayoutGroup>();
+        layout.cellSize        = new Vector2(180f, 220f);
+        layout.spacing         = new Vector2(16f, 16f);
+        layout.childAlignment  = TextAnchor.MiddleCenter;
+        layout.constraint      = GridLayoutGroup.Constraint.FixedColumnCount;
+        layout.constraintCount = 4;
+        view.gridRoot = grid;
+
+        return root.gameObject;
+    }
+
+    // ── Versus Screen ─────────────────────────────────────────────────────────
+
+    private static GameObject BuildVersusScreen(RectTransform canvas)
+    {
+        var root = UIFactory.CreateRect("VersusScreen", canvas);
+        UIFactory.Stretch(root);
+        var view = root.gameObject.AddComponent<VersusScreenView>();
+        view.root = root.gameObject;
+
+        var dim = UIFactory.CreatePanel("Dim", root, new Color(0.02f, 0.02f, 0.02f, 1f));
+        UIFactory.Stretch(dim.rectTransform);
+        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
+
+        (view.playerPortrait, view.playerNameText)     = BuildVersusSide(root, "Player",   new Vector2(0.25f, 0.5f));
+        (view.opponentPortrait, view.opponentNameText) = BuildVersusSide(root, "Opponent", new Vector2(0.75f, 0.5f));
+
+        var vsText = UIFactory.CreateText("VS", root, Loc.Get("Fight.Versus"), 72, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(vsText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(300f, 150f));
+        vsText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
+        view.vsText = vsText;
+
+        return root.gameObject;
+    }
+
+    // anchor.x picks left/right half of the screen; portrait sits above its name, both centered
+    // on that anchor — same layout VersusScreenController's own procedural fallback uses.
+    private static (Image portrait, TextMeshProUGUI nameText) BuildVersusSide(RectTransform root, string label, Vector2 anchor)
+    {
+        var portraitRt = UIFactory.CreateRect(label + "Portrait", root);
+        var portrait = portraitRt.gameObject.AddComponent<Image>();
+        UIFactory.SetBox(portraitRt, anchor, anchor, new Vector2(0.5f, 0.5f), new Vector2(0f, 40f), new Vector2(280f, 280f));
+
+        var nameText = UIFactory.CreateText(label + "Name", root, "", 24, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(nameText.rectTransform, anchor, anchor, new Vector2(0.5f, 0.5f), new Vector2(0f, -130f), new Vector2(320f, 40f));
+        nameText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+
+        return (portrait, nameText);
+    }
+
+    // ── Round Intro (ROUND n / 3-2-1 / FIGHT!) ────────────────────────────────
+
+    private static GameObject BuildRoundIntro(RectTransform canvas)
+    {
+        var root = UIFactory.CreateRect("RoundIntroScreen", canvas);
+        UIFactory.Stretch(root);
+        var view = root.gameObject.AddComponent<RoundIntroView>();
+        view.root = root.gameObject;
+
+        var text = UIFactory.CreateText("Text", root, "", 96, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(text.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            Vector2.zero, new Vector2(700f, 200f));
+        text.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
+        view.text = text;
 
         return root.gameObject;
     }

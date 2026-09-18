@@ -39,6 +39,11 @@ public class UIFlowController : MonoBehaviour
         AddScreen<CountdownController>();
         AddScreen<FinishBannerController>();
         AddScreen<MobileControlsController>();
+        AddScreen<FightFlowController>();
+        AddScreen<FightMusicController>();
+        AddScreen<OpponentSelectionController>();
+        AddScreen<VersusScreenController>();
+        AddScreen<RoundIntroController>();
     }
 
     private void AddScreen<T>() where T : Component

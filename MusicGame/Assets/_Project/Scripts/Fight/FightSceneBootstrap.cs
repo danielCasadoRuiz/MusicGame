@@ -30,6 +30,16 @@ public class FightSceneBootstrap : MonoBehaviour
 
     private Camera _previousMainCamera;
 
+    // Same "Mode Scene opened directly in the Editor" allowance RunnerSceneBootstrap already has
+    // — lets a developer open Fight.unity and press Play directly (with FlowConfigSO.initialState
+    // temporarily set to Fight) without SceneFlowController trying to also load it, which is
+    // exactly the debug entry point the Fight-flow tooling relies on (see
+    // OpponentSelectionController/FightFlowController's own debug logging).
+    private void OnEnable()
+    {
+        AppBootstrap.Context?.SceneFlow.NotifyCurrentModeAlreadyLoaded(GameMode.Fight);
+    }
+
     private void Start()
     {
         LogIncomingData();

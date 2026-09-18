@@ -7,17 +7,20 @@ using UnityEngine.UI;
 /// <summary>
 /// Fight HUD — a Street-Fighter-style top bar (player name+health on the left, a countdown timer
 /// in the middle, opponent name+health on the right, a pause button at the far right) plus a pause
-/// menu (Resume / Main Menu), reachable from the pause button OR the Esc key. Shown on top of
-/// whatever's rendering underneath while GameFlowState is Fight. Lives in the always-loaded UI
-/// Scene (added by UIFlowController): it only ever talks to GameSession.Instance/
-/// ThemeManager.Instance/AppBootstrap.Context/EventBus, never to anything scene-local, so it stays
-/// correct regardless of which Mode Scene is currently active underneath it.
+/// menu (Resume / Main Menu), reachable from the pause button OR the Esc key. Only becomes ACTIVE
+/// once Fight's own internal sequence (see FightFlowController/FightFlowState) reaches Fighting —
+/// Opponent Selection/Versus/Round Intro/Countdown each render their own full-screen UI first (see
+/// OpponentSelectionController/VersusScreenController/RoundIntroController), so there's nothing for
+/// this HUD to show before then. Lives in the always-loaded UI Scene (added by UIFlowController):
+/// it only ever talks to GameSession.Instance/ThemeManager.Instance/AppBootstrap.Context/EventBus,
+/// never to anything scene-local, so it stays correct regardless of which Mode Scene is currently
+/// active underneath it.
 ///
 /// PLACEHOLDER, not real fight mechanics: health bars start full and never change (no damage system
-/// exists yet), the timer counts down but nothing happens at zero yet, and the opponent is just a
-/// themed name derived from GameSession.DetectedMusicStyleId — this only proves the HUD shell and
-/// its data wiring (Section 18 of the multi-scene refactor plan), matching FightSceneBootstrap's own
-/// "architectural shell" scope for the 3D placeholders.
+/// exists yet), the timer counts down but nothing happens at zero yet — this only proves the HUD
+/// shell and its data wiring, matching FightSceneBootstrap's own "architectural shell" scope for
+/// the 3D placeholders. The opponent's name IS real now (GameSession.SelectedOpponent, chosen by
+/// OpponentSelectionController's roulette), unlike the earlier style-name placeholder.
 ///
 /// The 3D placeholder content (arena, player/enemy placeholders, camera) is NOT here — that lives in
 /// FightSceneBootstrap, in the real Fight Mode Scene (Fight.unity), loaded/unloaded by
@@ -30,8 +33,7 @@ using UnityEngine.UI;
 /// </summary>
 public class FightController : MonoBehaviour
 {
-    private const float MatchDuration = 60f; // no real FightConfig yet — a single tunable value
-                                              // doesn't earn one; promote this if Fight grows more.
+    private FightFlowConfig _flowConfig; // roundDuration — see Awake()
 
     private RectTransform _root;
     private TextMeshProUGUI _timerText;
@@ -43,22 +45,26 @@ public class FightController : MonoBehaviour
     private bool _active;
     private float _timeRemaining;
 
-    // Masks the hard cut between Runner's own camera/view and Fight's static arena camera
-    // (FightSceneBootstrap disables one and enables the other the instant Fight.unity loads — see
-    // its own doc — there is no real async loading to wait for, everything there is built
-    // synchronously in one Start() call, so a short fixed fade covering that swap is enough; no
-    // "scene ready" signal to wait on). Lives HERE (the always-loaded UI Scene), not inside
-    // Fight.unity itself as originally suggested, specifically so it can render via the persistent
-    // UI Canvas the INSTANT GameFlowState.Fight is entered — before Fight.unity has even finished
-    // loading — rather than only from whenever that scene's own objects Awake.
+    // Masks whatever's left of the arena/camera the instant this HUD actually reveals itself —
+    // by the time ActivateHud() runs (FightFlowState.Fighting, well after Opponent Selection/
+    // Versus/Round Intro/Countdown have already been covering the screen for a while),
+    // Fight.unity's own camera swap (FightSceneBootstrap) happened long ago with nothing left to
+    // glitch, but a brief fade-from-black still makes the "FIGHT!" -> live arena reveal itself
+    // read as a deliberate beat instead of a hard cut. Lives HERE (the always-loaded UI Scene),
+    // not inside Fight.unity itself, so it renders via the persistent UI Canvas regardless of
+    // Fight.unity's own load state.
     private const float FightTransitionFadeSeconds = 0.4f;
     private Image      _transitionOverlay;
     private Coroutine  _transitionRoutine;
 
-    private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
+    private System.Action<GameFlowStateChangedEvent>  _onFlowStateChanged;
+    private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
 
     private void Awake()
     {
+        var appConfig = Resources.Load<AppConfigSO>("AppConfig");
+        _flowConfig = appConfig != null ? appConfig.fightFlow : null;
+
         var registry = FindFirstObjectByType<UIRegistry>();
         if (registry != null && registry.FightHud != null) WireUI(registry.FightHud);
         else Build();
@@ -66,17 +72,26 @@ public class FightController : MonoBehaviour
 
     private void OnEnable()
     {
+        // Only cleanup happens directly on GameFlowState — the HUD itself only ever becomes
+        // active once Fight's OWN internal sequence (see FightFlowController/FightFlowState)
+        // actually reaches Fighting: Opponent Selection/Versus/Round Intro/Countdown all render
+        // as their own full-screen UI first, so there's nothing for this HUD to show before then.
         _onFlowStateChanged = e =>
         {
-            if (e.Current == GameFlowState.Fight) EnterFight();
-            else if (e.Previous == GameFlowState.Fight) ExitFight();
+            if (e.Previous == GameFlowState.Fight) ExitFight();
+        };
+        _onFightFlowChanged = e =>
+        {
+            if (e.Current == FightFlowState.Fighting) ActivateHud();
         };
         EventBus.Subscribe(_onFlowStateChanged);
+        EventBus.Subscribe(_onFightFlowChanged);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onFlowStateChanged);
+        EventBus.Unsubscribe(_onFightFlowChanged);
         ExitFight();
     }
 
@@ -96,10 +111,10 @@ public class FightController : MonoBehaviour
         // just holds at 0:00 for now.
     }
 
-    private void EnterFight()
+    private void ActivateHud()
     {
         PopulateInfo();
-        _timeRemaining = MatchDuration;
+        _timeRemaining = _flowConfig != null ? _flowConfig.roundDuration : 60f;
         UpdateTimerText();
         SetPaused(false);
         _active = true;
@@ -116,8 +131,8 @@ public class FightController : MonoBehaviour
         }
     }
 
-    // Held fully opaque for one frame — long enough for FightSceneBootstrap's own Start() (camera
-    // swap + arena/placeholders) to actually happen before the fade begins revealing it.
+    // Held fully opaque for one frame before fading — gives _root's own newly-activated content
+    // (top bar, health bars) one frame to actually lay out/render before it's revealed.
     private IEnumerator FadeOutTransitionOverlay()
     {
         yield return null;
@@ -293,11 +308,11 @@ public class FightController : MonoBehaviour
 
     private void PopulateInfo()
     {
-        var session = GameSession.Instance;
-        var style = session != null ? session.DetectedMusicStyleId : MusicStyleId.Unknown;
-        _opponentNameText.text = style == MusicStyleId.Unknown
-            ? Loc.Get("Fight.RivalUnknown")
-            : Loc.Get("Fight.RivalNamed", style.ToString().ToUpperInvariant());
+        // The real pick from OpponentSelectionController's roulette (see GameSession.SelectedOpponent's
+        // own doc) — null only when Fight is reached directly for debugging, without a real
+        // Opponent Selection pass (see FightSceneBootstrap's own tolerant logging for that case).
+        var opponent = GameSession.Instance?.SelectedOpponent;
+        _opponentNameText.text = opponent != null ? opponent.displayName : Loc.Get("Fight.RivalUnknown");
 
         _playerHealthFill.fillAmount   = 1f;
         _opponentHealthFill.fillAmount = 1f;

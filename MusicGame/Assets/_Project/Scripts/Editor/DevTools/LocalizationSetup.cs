@@ -134,11 +134,16 @@ public static class LocalizationSetup
         // ── Fight HUD ────────────────────────────────────────────────────────────
         ("Fight.PlayerName",   "PLAYER",     "JUGADOR"),
         ("Fight.RivalUnknown", "RIVAL",      "RIVAL"),
-        ("Fight.RivalNamed",   "{0} RIVAL",  "RIVAL {0}"),
         ("Fight.Paused",       "PAUSED",     "PAUSA"),
         ("Fight.Pause",        "Pause",      "Pausa"),
         ("Fight.Resume",       "RESUME",     "REPRÈN"),
         ("Fight.MainMenu",     "MAIN MENU",  "MENÚ PRINCIPAL"),
+
+        // ── Fight flow (Opponent Selection -> Versus -> Round Intro -> Countdown) ──
+        ("OpponentSelection.Title", "CHOOSE YOUR OPPONENT", "TRIA EL TEU RIVAL"),
+        ("Fight.Versus",            "VS",                   "VS"),
+        ("Fight.RoundLabel",        "ROUND {0}",             "RONDA {0}"),
+        ("Fight.Banner",            "FIGHT!",                "LLUITA!"),
     };
 
     [MenuItem("Tools/MusicGame/Setup Localization")]

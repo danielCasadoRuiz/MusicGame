@@ -28,7 +28,10 @@ public class UIRegistry : MonoBehaviour
     [SerializeField] private FinishBannerView    finishBanner;
 
     [Header("Fight")]
-    [SerializeField] private FightHudView fightHud;
+    [SerializeField] private FightHudView            fightHud;
+    [SerializeField] private OpponentSelectionView   opponentSelection;
+    [SerializeField] private VersusScreenView        versusScreen;
+    [SerializeField] private RoundIntroView          roundIntro;
 
     public LiveHudView   LiveHud   => liveHud;
     public EndScreenView EndScreen => endScreen;
@@ -41,5 +44,8 @@ public class UIRegistry : MonoBehaviour
     public CountdownScreenView Countdown     => countdown;
     public FinishBannerView    FinishBanner  => finishBanner;
 
-    public FightHudView FightHud => fightHud;
+    public FightHudView          FightHud          => fightHud;
+    public OpponentSelectionView OpponentSelection => opponentSelection;
+    public VersusScreenView      VersusScreen      => versusScreen;
+    public RoundIntroView        RoundIntro        => roundIntro;
 }

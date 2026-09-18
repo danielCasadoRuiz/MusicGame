@@ -8,9 +8,10 @@ using UnityEngine;
 /// into a project asset.
 ///
 /// OWNERSHIP (who WRITES each field, per the app-flow/Theme refactor plan):
-///   Song Selection    → SelectedSong
-///   Song Analysis     → Profile
-///   Gameplay (end of run) → RunnerResults, RunnerFightResources, FighterStats, FightResources
+///   Song Selection      → SelectedSong
+///   Song Analysis       → Profile
+///   Gameplay (end of run)     → RunnerResults, RunnerFightResources, FighterStats, FightResources
+///   Opponent Selection roulette → SelectedOpponent, SelectedOpponentSong, SelectedOpponentLevelConfig
 /// Everything else only ever READS these fields. This is the single place that data lives — no
 /// parallel copies of "the current song" scattered across other systems.
 ///
@@ -69,6 +70,29 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
     /// future source can populate/accumulate it across runs without this class fighting that
     /// design once it exists.</summary>
     public FightResources FightResources { get; private set; }
+
+    /// <summary>The rival OpponentSelectionController's roulette settled on — written once, right
+    /// as the roulette's final hold begins (before Versus even shows), so it's already available
+    /// for a future Results-screen-style preview too. Null until a roulette actually completes
+    /// (e.g. Fight reached directly for debugging, skipping Opponent Selection — every downstream
+    /// reader tolerates that and falls back to a generic "unknown rival" display).</summary>
+    public OpponentDefinition SelectedOpponent { get; set; }
+
+    /// <summary>The specific song chosen from SelectedOpponent's own roster for this match — the
+    /// one FightMusicController locks in and keeps playing, unbroken, through Versus/Round Intro/
+    /// Countdown/Fighting. Kept here (not just inside FightMusicController) because it's also
+    /// meant to become the base musical material for the whole battle later, at which point
+    /// combat-specific systems will want to read it directly rather than reaching into a UI-scene
+    /// controller for it.</summary>
+    public AudioClip SelectedOpponentSong { get; set; }
+
+    /// <summary>SelectedOpponent.GetConfigForLevel(playerLevel), resolved ONCE at the same moment
+    /// as SelectedOpponent/SelectedOpponentSong and cached here — so Fight's future avatar/arena
+    /// spawning reads the exact same portrait/fighterPrefab/difficulty the player actually saw
+    /// during Opponent Selection/Versus, rather than re-resolving against a Player Level that
+    /// could (once that system exists) have changed in between. Null under the same conditions as
+    /// SelectedOpponent.</summary>
+    public OpponentLevelConfig SelectedOpponentLevelConfig { get; set; }
 
     private FightStatsConfig _fightStatsConfig;
     private bool             _loggedMissingFightStatsConfig;
