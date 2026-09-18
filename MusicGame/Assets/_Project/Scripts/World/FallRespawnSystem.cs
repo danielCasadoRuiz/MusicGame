@@ -57,8 +57,10 @@ public class FallRespawnSystem : MonoBehaviour
     /// exactly the same unpaused state the pause-menu's "Restart Song" button already relies on
     /// (Time.timeScale, AudioSource, MusicClock, and — importantly — PauseController's own
     /// `_paused` flag itself, which only Resume() clears; leaving it true would pop the PAUSED
-    /// overlay right back up the instant this restart finishes and _ended clears). Resume() is a
-    /// no-op if we weren't actually paused (the common end-screen case), so this is always safe.
+    /// overlay right back up the instant this restart finishes and _ended clears). GameEndedEvent
+    /// now leaves us genuinely paused (see PauseController's own _onEnd — the run freezes exactly
+    /// like a manual pause the instant it ends) — this Resume() is what actually lifts that,
+    /// same as a real mid-run pause; it simply no-ops if we somehow weren't paused at all.
     /// </summary>
     public void RestartSongManually()
     {

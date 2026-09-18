@@ -31,11 +31,18 @@ using UnityEngine.UI;
 ///      AudioPreAnalyzer's own CacheHitFakeDelaySeconds (not hard-synced to it — whichever finishes
 ///      first, Hide() cuts the other short, which is fine).
 ///
-/// GameFlowState only actually leaves SongAnalysis once SongAnalysisController's whole
-/// theme-transition wait is over (see its own FinishAnalysis) — that, not SongProfileReadyEvent
-/// (which fires the instant analysis itself is done, before that wait even starts), is this
-/// screen's only Hide() trigger; hiding on the earlier event would cut Phase 2/3 short and show
-/// nothing at all during the style reveal / theme transition.
+/// Stays up even AFTER GameFlowState leaves SongAnalysis for Gameplay — hiding right then would
+/// reveal Runner's Mode Scene still being loaded/built (SceneFlowController's load is async, and
+/// GameplayManager/MusicWorldManager/CameraFollow all still need to generate the level and hard-
+/// snap the camera into position), which is exactly the camera "jump" this was covering up before.
+/// The real Hide() trigger for that path is GameStartedEvent — GameplayManager only publishes it
+/// once the level is generated AND the player/camera are already placed (see its own
+/// GenerateAndStart) — so this overlay bridges the ENTIRE gap from "Play pressed" through "Runner
+/// is fully ready", with the "3, 2, 1, GO" Countdown taking over the instant it's gone. The
+/// failure path (a bad catalog load bouncing back to Song Selection) still hides immediately on
+/// leaving SongAnalysis, since there's no scene load to wait for there. Not SongProfileReadyEvent
+/// either way — that fires the instant analysis itself is done, before SongAnalysisController's
+/// theme-transition wait even starts, so hiding on it would cut Phase 2/3 short.
 ///
 /// Pure SCREEN CONTROLLER — theming lives entirely on generic receivers attached to each themed
 /// child (Dim: ThemeColorReceiver(Background), Title: ThemeTextReceiver(Primary/Display), Tip:
@@ -87,6 +94,7 @@ public class AnalyzingScreenController : MonoBehaviour
     private System.Action<PreAnalysisStartedEvent>   _onStarted;
     private System.Action<PreAnalysisProgressEvent>  _onProgress;
     private System.Action<MusicStyleDetectedEvent>   _onStyleDetected;
+    private System.Action<GameStartedEvent>          _onGameStarted;
 
     private void Awake()
     {
@@ -100,7 +108,18 @@ public class AnalyzingScreenController : MonoBehaviour
         _onFlowStateChanged = e =>
         {
             if (e.Current == GameFlowState.SongAnalysis) Show();
-            else if (e.Previous == GameFlowState.SongAnalysis) Hide();
+            // Only the FAILURE path (bounced back to Song Selection — see
+            // SongSelectionController.OnPlayClicked) hides here. The success path (→ Gameplay)
+            // deliberately does NOT hide on this transition — Runner's Mode Scene has only just
+            // started loading at this point (SceneFlowController.LoadMode is async), and
+            // GameplayManager/MusicWorldManager/CameraFollow all still need to build the level and
+            // hard-snap the camera into position afterward. Hiding here would reveal that whole
+            // setup process — including the camera's very first snap to the player, previously
+            // visible as a jarring jump — instead of covering it. GameStartedEvent (below) is the
+            // real "Runner is fully ready" signal: GameplayManager only publishes it once the
+            // level is generated AND the player/camera are already placed correctly (see its own
+            // GenerateAndStart).
+            else if (e.Previous == GameFlowState.SongAnalysis && e.Current != GameFlowState.Gameplay) Hide();
         };
         // Only recorded for Phase 3 to branch on later (see ShowStyleDetected) — Phase 1 already
         // started the instant this screen showed, well before analysis itself necessarily has.
@@ -111,10 +130,12 @@ public class AnalyzingScreenController : MonoBehaviour
             _progressFill.fillAmount = Mathf.Lerp(StyleDetectedFill, 1f, Mathf.Clamp01(e.Progress));
         };
         _onStyleDetected = e => ShowStyleDetected(e.Style);
+        _onGameStarted = _ => Hide();
         EventBus.Subscribe(_onFlowStateChanged);
         EventBus.Subscribe(_onStarted);
         EventBus.Subscribe(_onProgress);
         EventBus.Subscribe(_onStyleDetected);
+        EventBus.Subscribe(_onGameStarted);
 
         // Same UI-Scene-loads-asynchronously race as the other Frontend screens.
         if (AppBootstrap.Context != null && AppBootstrap.Context.AppFlow.CurrentState == GameFlowState.SongAnalysis)
@@ -127,6 +148,7 @@ public class AnalyzingScreenController : MonoBehaviour
         EventBus.Unsubscribe(_onStarted);
         EventBus.Unsubscribe(_onProgress);
         EventBus.Unsubscribe(_onStyleDetected);
+        EventBus.Unsubscribe(_onGameStarted);
     }
 
     // ── Prefab path — see AnalyzingScreenView's own doc ──────────────────────────

@@ -527,6 +527,14 @@ public static class UIPrefabBuilder
             new Vector2(0f, -120f), new Vector2(560f, 400f));
         view.songListRoot = songListRoot;
 
+        // Standalone button right below the list — NOT one of its rows (see SongSelectionView's
+        // own doc).
+        var playYourSongBtn = UIFactory.CreateButton("PlayYourSongButton", root, Loc.Get("SongSelection.PlayYourSong"), out var playYourSongLabel);
+        UIFactory.SetBox(playYourSongBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, -530f), new Vector2(560f, 50f));
+        playYourSongLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        view.playYourSongButton = playYourSongBtn; view.playYourSongLabel = playYourSongLabel;
+
         var streamingRow = UIFactory.CreateRect("StreamingRow", root);
         UIFactory.SetBox(streamingRow, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
             new Vector2(0f, 150f), new Vector2(560f, 44f));
@@ -710,6 +718,15 @@ public static class UIPrefabBuilder
         view.mainMenuButton = mainMenuBtn; view.mainMenuButtonLabel = mainMenuLabel;
 
         pausePanel.gameObject.SetActive(false);
+
+        // Masks the hard cut between Runner's camera and Fight's static arena camera — see
+        // FightController's own doc. Plain opaque black, not theme-driven: a scene-swap mask
+        // should work identically regardless of which theme happens to be active.
+        var transitionOverlay = UIFactory.CreatePanel("TransitionOverlay", root, new Color(0f, 0f, 0f, 1f));
+        UIFactory.Stretch(transitionOverlay.rectTransform);
+        transitionOverlay.gameObject.SetActive(false);
+        view.transitionOverlay = transitionOverlay;
+
         return root.gameObject;
     }
 }

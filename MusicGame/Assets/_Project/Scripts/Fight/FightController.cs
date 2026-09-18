@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -41,6 +42,18 @@ public class FightController : MonoBehaviour
     private bool _paused;
     private bool _active;
     private float _timeRemaining;
+
+    // Masks the hard cut between Runner's own camera/view and Fight's static arena camera
+    // (FightSceneBootstrap disables one and enables the other the instant Fight.unity loads — see
+    // its own doc — there is no real async loading to wait for, everything there is built
+    // synchronously in one Start() call, so a short fixed fade covering that swap is enough; no
+    // "scene ready" signal to wait on). Lives HERE (the always-loaded UI Scene), not inside
+    // Fight.unity itself as originally suggested, specifically so it can render via the persistent
+    // UI Canvas the INSTANT GameFlowState.Fight is entered — before Fight.unity has even finished
+    // loading — rather than only from whenever that scene's own objects Awake.
+    private const float FightTransitionFadeSeconds = 0.4f;
+    private Image      _transitionOverlay;
+    private Coroutine  _transitionRoutine;
 
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
 
@@ -92,12 +105,41 @@ public class FightController : MonoBehaviour
         _active = true;
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
+
+        if (_transitionOverlay != null)
+        {
+            _transitionOverlay.gameObject.SetActive(true);
+            _transitionOverlay.transform.SetAsLastSibling();
+            _transitionOverlay.color = new Color(0f, 0f, 0f, 1f);
+            if (_transitionRoutine != null) StopCoroutine(_transitionRoutine);
+            _transitionRoutine = StartCoroutine(FadeOutTransitionOverlay());
+        }
+    }
+
+    // Held fully opaque for one frame — long enough for FightSceneBootstrap's own Start() (camera
+    // swap + arena/placeholders) to actually happen before the fade begins revealing it.
+    private IEnumerator FadeOutTransitionOverlay()
+    {
+        yield return null;
+
+        float t = 0f;
+        while (t < FightTransitionFadeSeconds)
+        {
+            t += Time.deltaTime;
+            _transitionOverlay.color = new Color(0f, 0f, 0f, 1f - Mathf.Clamp01(t / FightTransitionFadeSeconds));
+            yield return null;
+        }
+        _transitionOverlay.gameObject.SetActive(false);
+        _transitionRoutine = null;
     }
 
     private void ExitFight()
     {
         _active = false;
         if (_root != null) _root.gameObject.SetActive(false);
+
+        if (_transitionRoutine != null) { StopCoroutine(_transitionRoutine); _transitionRoutine = null; }
+        if (_transitionOverlay != null) _transitionOverlay.gameObject.SetActive(false);
     }
 
     // ── Prefab path — see FightHudView's own doc ─────────────────────────────────
@@ -111,6 +153,8 @@ public class FightController : MonoBehaviour
         _opponentHealthFill = view.opponentHealthFill;
         _timerText          = view.timerText;
         _pausePanel         = view.pausePanel.GetComponent<RectTransform>();
+        _transitionOverlay  = view.transitionOverlay;
+        if (_transitionOverlay != null) _transitionOverlay.gameObject.SetActive(false);
 
         view.pauseButton.onClick.AddListener(() => SetPaused(!_paused));
         view.resumeButton.onClick.AddListener(() => SetPaused(false));
@@ -141,8 +185,17 @@ public class FightController : MonoBehaviour
 
         BuildTopBar();
         BuildPauseMenu();
+        BuildTransitionOverlay();
 
         _root.gameObject.SetActive(false);
+    }
+
+    private void BuildTransitionOverlay()
+    {
+        var overlay = UIFactory.CreatePanel("TransitionOverlay", _root, new Color(0f, 0f, 0f, 1f));
+        UIFactory.Stretch(overlay.rectTransform);
+        _transitionOverlay = overlay;
+        overlay.gameObject.SetActive(false);
     }
 
     private void BuildTopBar()

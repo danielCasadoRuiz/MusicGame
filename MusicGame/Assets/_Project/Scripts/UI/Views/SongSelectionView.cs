@@ -20,6 +20,10 @@ public class SongSelectionView : MonoBehaviour
     [Header("Song list (rows added dynamically at runtime)")]
     public RectTransform songListRoot;
 
+    [Header("Play Your Song — a standalone button, NOT part of the scrollable list")]
+    public Button      playYourSongButton;
+    public TextMeshProUGUI playYourSongLabel;
+
     [Header("Streaming placeholders")]
     public Button      spotifyButton;
     public TextMeshProUGUI spotifyLabel;

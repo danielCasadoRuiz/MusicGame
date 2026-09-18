@@ -24,6 +24,20 @@ public class GameplayManager : MonoBehaviour
     private int              _maxPossibleScore;
     private bool             _loggedSongEndSuppressed; // one-shot diagnostic guard, see Update()
 
+    // ── Manual play range (every song source, until a real algorithm exists — see
+    // MusicRunnerCoreConfig.useManualPlayRange's own doc) ───────────────────────────────────────
+    // The song is always analyzed in full (SongProfile/GameplayTimeline cover the WHOLE clip) —
+    // only PLAYBACK is limited to [SongPlayStart, SongPlayEnd]: audioSource starts there instead
+    // of at 0, the player spawns at the path distance that position corresponds to (not path
+    // distance 0), and the song is stopped early once it's reached (Update() below), which
+    // triggers the exact same end-of-song path a natural clip end would. Nothing about
+    // MusicClock/GameplayTimeline/checkpoints needs to know a range is even active — they all key
+    // off SongTime/audioSource.time, which already reflects the correct absolute position within
+    // the fully-analyzed song regardless of where playback started.
+    public float SongPlayStart { get; private set; }
+    public float SongPlayEnd   { get; private set; }
+    private float _songEndTime = -1f; // -1 = no manual cutoff; natural clip end applies
+
     // ── Per-type performance tracking ─────────────────────────────────────────
     // "Available"/per-type max are the actual PLAYABLE timeline for this song (computed once at
     // generation), never the raw SongProfile. Collected/earned/timing sums are monotonic —
@@ -208,12 +222,22 @@ public class GameplayManager : MonoBehaviour
         // Checkpoints
         _checkpoints.Initialize(profile, config.core, path, _timeline);
 
-        // Place player at path start — ON the real musical surface, not the MusicPath
-        // centerline (the surface sits above it by the frequency-driven relief; using the
-        // centerline directly can start the player metres below the actual ground mesh).
-        var     startSample = path.GetSample(0f);
+        (SongPlayStart, SongPlayEnd) = ResolvePlayRange(profile.duration);
+        _songEndTime = SongPlayEnd < profile.duration ? SongPlayEnd : -1f;
+
+        // Place the player at the path distance SongPlayStart corresponds to — NOT path distance
+        // 0 — since MusicDistance = SongTime * UnitsPerSecond and SongTime = warmupTime +
+        // audioSource.time (see MusicClock's own doc): audioSource is about to start playing from
+        // SongPlayStart below, so the player's canonical distance the instant movement begins is
+        // (warmupTime + SongPlayStart) * playerSpeed, not (warmupTime + 0) * playerSpeed. Spawning
+        // anywhere else would desync the player's visible position from that canonical distance
+        // the moment the run starts. ON the real musical surface, not the MusicPath centerline
+        // (the surface sits above it by the frequency-driven relief; using the centerline directly
+        // can start the player metres below the actual ground mesh).
+        float   startDistance = (config.core.warmupTime + SongPlayStart) * config.core.playerSpeed;
+        var     startSample = path.GetSample(startDistance);
         Vector3 startPos    = MusicWorldManager.Instance != null
-            ? MusicWorldManager.Instance.SampleSurface(0f, 0f).position
+            ? MusicWorldManager.Instance.SampleSurface(startDistance, 0f).position
             : startSample.position;
         playerController.transform.position = startPos;
         playerController.transform.rotation = Quaternion.LookRotation(startSample.tangent, Vector3.up);
@@ -228,9 +252,25 @@ public class GameplayManager : MonoBehaviour
         EventBus.Publish(new GameStartedEvent { WarmupTime = config.core.warmupTime });
 
         yield return new WaitForSeconds(config.core.warmupTime);
+        audioSource.time = SongPlayStart;
         audioSource.Play();
         _clock.ForceUpdate();
         _audioPlaying = true;
+    }
+
+    // A RUNNER concern (see MusicRunnerCoreConfig.useManualPlayRange's own doc) — applies to every
+    // song source today (catalog or uploaded alike) until a real "interesting chunk" algorithm
+    // exists for catalog/automatic songs. Returns (0, duration) — i.e. "no range" — whenever the
+    // manual range doesn't apply.
+    private (float start, float end) ResolvePlayRange(float duration)
+    {
+        if (!config.core.useManualPlayRange) return (0f, duration);
+
+        float start = Mathf.Clamp(config.core.manualPlayRangeStartSeconds, 0f, duration);
+        float end   = config.core.manualPlayRangeEndSeconds > 0f
+            ? Mathf.Clamp(config.core.manualPlayRangeEndSeconds, start + 1f, duration)
+            : duration;
+        return (start, end);
     }
 
     // ── Main loop ─────────────────────────────────────────────────────────────
@@ -318,6 +358,12 @@ public class GameplayManager : MonoBehaviour
 
         // Checkpoint tracking
         _checkpoints.UpdateCurrent(_clock.SongTime);
+
+        // Manual play range's early cutoff (see ResolvePlayRange) — stopping here feeds directly
+        // into the exact same "song end" detection right below, same as the clip just naturally
+        // running out.
+        if (_songEndTime > 0f && _audioPlaying && audioSource.isPlaying && audioSource.time >= _songEndTime)
+            audioSource.Stop();
 
         // Song end — skip if FallRespawnSystem has paused audio for a respawn
         if (_audioPlaying && !audioSource.isPlaying)

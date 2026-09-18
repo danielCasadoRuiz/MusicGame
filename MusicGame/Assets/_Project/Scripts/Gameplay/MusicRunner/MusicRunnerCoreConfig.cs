@@ -61,4 +61,19 @@ public class MusicRunnerCoreConfig : ScriptableObject
     public bool  enableCheckpoints            = true;
     [Tooltip("Song-time interval in seconds between auto-generated checkpoints")]
     public float checkpointIntervalSeconds    = 60f;
+
+    // ── Manual Play Range ─────────────────────────────────────────────────────
+    // A RUNNER concern, not an analysis one — the song is always analyzed in FULL regardless
+    // (SongProfile/GameplayTimeline need every second of it for the level itself); this only
+    // limits which window of it actually gets PLAYED (see GameplayManager.ResolvePlayRange/
+    // GenerateAndStart). Applies to every song source today — catalog or uploaded alike — while
+    // there's no real "interesting chunk" selection algorithm yet; once one exists, THAT decides
+    // the window for catalog/automatic songs and this manual override becomes upload-only again.
+    [Header("Manual Play Range (dev/testing — applies to every song until a real algorithm exists)")]
+    public bool  useManualPlayRange          = true;
+    [Tooltip("Seconds into the song where the played/analyzed window starts.")]
+    public float manualPlayRangeStartSeconds = 0f;
+    [Tooltip("Seconds into the song where the played window ends. Clamped to the song's actual " +
+             "length — a value of 0 (or beyond the song's length) means 'to the end'.")]
+    public float manualPlayRangeEndSeconds   = 60f;
 }

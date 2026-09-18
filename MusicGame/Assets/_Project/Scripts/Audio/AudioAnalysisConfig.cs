@@ -102,17 +102,6 @@ public class AudioAnalysisConfig : ScriptableObject
              "OTHER summary in the live top bar is controlled by advancedSemanticTagging alone).")]
     public bool  semanticTagDebugUI = false;
 
-    [Header("Manual Play Range — LOCAL/uploaded songs only")]
-    [Tooltip("Catalog/automatic songs will pick their own 'interesting chunk' algorithmically later " +
-             "(not built yet) — this manual override only ever applies to a locally-picked file " +
-             "(Song Selection's PLAY YOUR SONG), where there's no such algorithm to fall back on.")]
-    public bool  useManualPlayRange        = false;
-    [Tooltip("Seconds into the uploaded file where the played/analyzed window starts.")]
-    public float manualPlayRangeStartSeconds = 0f;
-    [Tooltip("Seconds into the uploaded file where the played/analyzed window ends. Clamped to the " +
-             "file's actual length — a value of 0 (or beyond the file's length) means 'to the end'.")]
-    public float manualPlayRangeEndSeconds   = 60f;
-
     [Header("Visual Spectrum (mesh cross-section + debug spectrum)")]
     [Tooltip("Independent from the 6 classification bands above (Kick/Snare/HiHat detection " +
              "keeps using those, unchanged). Log-spaced from 20 Hz to Nyquist, computed once " +

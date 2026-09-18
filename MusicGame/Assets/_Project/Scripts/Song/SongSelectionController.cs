@@ -53,9 +53,9 @@ public class SongSelectionController : MonoBehaviour
 
     private readonly List<IResourceLocation> _entries = new();
     private SongSelectionService _service;
-    private AudioAnalysisConfig  _analysisConfig;
 
-    private readonly List<Image> _rowBackgrounds = new();
+    private readonly List<Image> _rowBackgrounds = new(); // catalog rows only — see _localFileRowBackground
+    private Image _localFileRowBackground; // "Play Your Song" — a standalone button, not part of the list
     private int _selectedCatalogIndex = -1;
     private SelectedSongInfo? _selectedLocalInfo;
     private bool _isLoading;
@@ -66,9 +66,6 @@ public class SongSelectionController : MonoBehaviour
     private void Awake()
     {
         _service = gameObject.AddComponent<SongSelectionService>();
-
-        var appConfig = Resources.Load<AppConfigSO>("AppConfig");
-        _analysisConfig = appConfig != null ? appConfig.audioAnalysis : null;
 
         var registry = FindFirstObjectByType<UIRegistry>();
         if (registry != null && registry.SongSelection != null) WireUI(registry.SongSelection);
@@ -113,15 +110,18 @@ public class SongSelectionController : MonoBehaviour
         _playButton      = view.playButton;
         _playButtonLabel = view.playButtonLabel;
         _statusText      = view.statusText;
+        _localFileRowBackground = view.playYourSongButton.GetComponent<Image>();
 
         view.backButton.onClick.AddListener(() => AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu));
         view.playButton.onClick.AddListener(OnPlayClicked);
+        view.playYourSongButton.onClick.AddListener(OnPlayYourSongClicked);
 
         // Baked once at Editor-bake time — re-apply from the current locale here, same reasoning as
         // GameplayHUD/PauseController's own labels.
         view.titleText.text         = Loc.Get("SongSelection.Title");
         view.backButtonLabel.text   = Loc.Get("SongSelection.Back");
         view.playButtonLabel.text   = Loc.Get("SongSelection.Play");
+        view.playYourSongLabel.text = Loc.Get("SongSelection.PlayYourSong");
         view.spotifyLabel.text      = Loc.Get("SongSelection.Spotify") + " (" + Loc.Get("SongSelection.ComingSoon") + ")";
         view.youtubeMusicLabel.text = Loc.Get("SongSelection.YouTubeMusic") + " (" + Loc.Get("SongSelection.ComingSoon") + ")";
         view.amazonMusicLabel.text  = Loc.Get("SongSelection.AmazonMusic") + " (" + Loc.Get("SongSelection.ComingSoon") + ")";
@@ -153,6 +153,7 @@ public class SongSelectionController : MonoBehaviour
         title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
 
         BuildSongList();
+        BuildPlayYourSongButton();
         BuildStreamingRow();
         BuildBottomBar();
 
@@ -181,6 +182,22 @@ public class SongSelectionController : MonoBehaviour
         }
     }
 
+    // A standalone button right below the scrollable list — NOT one of its rows (a local file
+    // picker isn't part of "the catalog", and scrolling it out of view/mixing it in with however
+    // many catalog rows exist would make it easy to miss).
+    private void BuildPlayYourSongButton()
+    {
+        var btn = UIFactory.CreateButton("PlayYourSongButton", _root, Loc.Get("SongSelection.PlayYourSong"), out var label);
+        UIFactory.SetBox(btn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, -530f), new Vector2(560f, 50f));
+        btn.onClick.AddListener(OnPlayYourSongClicked);
+        label.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+
+        // Deliberately NOT a ThemeColorReceiver — its color depends on selection state (see
+        // RefreshRowHighlight), not just the theme, same reasoning as the catalog rows.
+        _localFileRowBackground = btn.GetComponent<Image>();
+    }
+
     // Queries every asset tagged with the "Song" Addressables label — this IS the catalog now,
     // there is no hand-authored list to fall back to. Resolves near-instantly (it's a local catalog
     // lookup, not a real download) — the screen is still hidden at this point in virtually every
@@ -203,11 +220,12 @@ public class SongSelectionController : MonoBehaviour
         RefreshPlayButtonInteractable();
     }
 
-    // Builds one row per catalog entry, in the order Addressables returned them, followed by the
-    // always-present "PLAY YOUR SONG" row — never called more than once per screen lifetime (this
-    // controller doesn't support the catalog changing while the screen is already up). _songListRoot
-    // is a VerticalLayoutGroup's Content transform (see UIFactory.CreateScrollRect) — rows just need
-    // their own height set; the layout group handles stacking/width/scrolling.
+    // Builds one row per catalog entry, in the order Addressables returned them — never called
+    // more than once per screen lifetime (this controller doesn't support the catalog changing
+    // while the screen is already up). _songListRoot is a VerticalLayoutGroup's Content transform
+    // (see UIFactory.CreateScrollRect) — rows just need their own height set; the layout group
+    // handles stacking/width/scrolling. "PLAY YOUR SONG" is NOT one of these rows — see
+    // BuildPlayYourSongButton, a standalone button outside the scrollable list.
     private void PopulateSongRows()
     {
         for (int i = 0; i < _entries.Count; i++)
@@ -228,12 +246,6 @@ public class SongSelectionController : MonoBehaviour
             _rowBackgrounds.Add(background);
             row.onClick.AddListener(() => SelectCatalogSong(index));
         }
-
-        var playYourSongBtn = UIFactory.CreateButton("PlayYourSongButton", _songListRoot, Loc.Get("SongSelection.PlayYourSong"), out var playYourSongLabel);
-        playYourSongBtn.GetComponent<RectTransform>().sizeDelta = new Vector2(0f, SongRowHeight);
-        playYourSongBtn.onClick.AddListener(OnPlayYourSongClicked);
-        playYourSongLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-        _rowBackgrounds.Add(playYourSongBtn.GetComponent<Image>());
     }
 
     private void BuildStreamingRow()
@@ -305,7 +317,7 @@ public class SongSelectionController : MonoBehaviour
 
     private void OnPlayYourSongClicked()
     {
-        var source = new LocalFileSongSource(LocalSongPickerFactory.Create(), _analysisConfig);
+        var source = new LocalFileSongSource(LocalSongPickerFactory.Create());
         StartCoroutine(source.Load(info =>
         {
             if (info == null)
@@ -323,14 +335,14 @@ public class SongSelectionController : MonoBehaviour
 
     private void RefreshRowHighlight(Color accent)
     {
-        // Local-file "row" is the last one in _rowBackgrounds (PlayYourSongButton); catalog rows
-        // come first, in the same order as _entries.
+        var selectedColor   = new Color(accent.r, accent.g, accent.b, 0.35f);
+        var unselectedColor = new Color(1f, 1f, 1f, 0.12f);
+
         for (int i = 0; i < _rowBackgrounds.Count; i++)
-        {
-            bool isLocalFileRow = i == _rowBackgrounds.Count - 1;
-            bool selected = isLocalFileRow ? _selectedLocalInfo.HasValue : i == _selectedCatalogIndex;
-            _rowBackgrounds[i].color = selected ? new Color(accent.r, accent.g, accent.b, 0.35f) : new Color(1f, 1f, 1f, 0.12f);
-        }
+            _rowBackgrounds[i].color = i == _selectedCatalogIndex ? selectedColor : unselectedColor;
+
+        if (_localFileRowBackground != null)
+            _localFileRowBackground.color = _selectedLocalInfo.HasValue ? selectedColor : unselectedColor;
     }
 
     private Color CurrentAccentColor() =>

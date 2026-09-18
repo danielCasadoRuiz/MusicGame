@@ -29,4 +29,7 @@ public class FightHudView : MonoBehaviour
     public TextMeshProUGUI resumeButtonLabel;
     public Button       mainMenuButton;
     public TextMeshProUGUI mainMenuButtonLabel;
+
+    [Header("Transition (masks the Runner→Fight camera cut)")]
+    public Image transitionOverlay;
 }

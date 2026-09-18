@@ -280,13 +280,20 @@ public class GameplayHUD : MonoBehaviour
         float pct   = _totalRings > 0 ? (float)total / _totalRings * 100f : 0f;
         _totalValueText.text = $"{total}  {pct:F0}%";
 
-        // _songDuration comes from SongProfileReadyEvent (see _onProfile) — falls back to the
-        // AudioSource's own clip length if that hasn't arrived for any reason, so the bar still
+        // Relative to the actual PLAYED window (manager.SongPlayStart..SongPlayEnd — the whole
+        // song for a catalog/automatic pick, or a manually-configured sub-range for an uploaded
+        // one — see GameplayManager.ResolvePlayRange), never the song's total duration: a 60-second
+        // range out of a 4-minute song should read 0%..100% over those 60 seconds, not crawl from
+        // ~4% to ~29%. Falls back to the AudioSource's own clip length when the range isn't
+        // resolved yet (e.g. this HUD ticking before GenerateAndStart has run) so the bar still
         // fills correctly instead of silently sitting at 0% for the whole run.
-        float duration = _songDuration > 0f ? _songDuration
-            : (audioSource != null && audioSource.clip != null ? audioSource.clip.length : 0f);
-        _progressFill.fillAmount = (audioSource != null && audioSource.isPlaying && duration > 0f)
-            ? Mathf.Clamp01(audioSource.time / duration)
+        float rangeStart = manager != null ? manager.SongPlayStart : 0f;
+        float rangeEnd   = manager != null && manager.SongPlayEnd > 0f ? manager.SongPlayEnd
+            : (_songDuration > 0f ? _songDuration
+                : (audioSource != null && audioSource.clip != null ? audioSource.clip.length : 0f));
+        float rangeLength = rangeEnd - rangeStart;
+        _progressFill.fillAmount = (audioSource != null && audioSource.isPlaying && rangeLength > 0f)
+            ? Mathf.Clamp01((audioSource.time - rangeStart) / rangeLength)
             : _progressFill.fillAmount;
 
         UpdateSemanticTagsStrip();
@@ -442,12 +449,24 @@ public class GameplayHUD : MonoBehaviour
         manager?.RequestRestartSong();
     }
 
-    // TEMPORARY: Continue only closes the end screen for now — it does NOT restart the song.
-    // Once there's an actual "next" destination (next song / scene), this is where that
-    // transition will be kicked off instead of just hiding the panel.
+    // RunnerSceneBootstrap turns ContinuePressedEvent into a transition to GameFlowState.Fight — a
+    // genuinely different Mode Scene, which Runner (this one included) gets fully unloaded for.
+    // PauseController.Resume() is what actually undoes the "frozen like a pause" state GameEndedEvent
+    // put us in (see its own _onEnd) — Time.timeScale is a GLOBAL Unity setting, so leaving it at 0
+    // here would silently freeze Fight too the instant it loads (its own Update()-driven timer/
+    // animations would never advance). Resume() no-ops harmlessly if we were somehow never paused.
+    //
+    // Deliberately does NOT call SetGameEnded(false) — unlike Restart (which stays in Runner and
+    // needs the end screen gone so the live HUD can take back over), Continue is LEAVING Runner
+    // entirely. Revealing the live HUD/frozen 3D world for even one frame here used to flash the
+    // Runner background before FightController's transition overlay (triggered by the
+    // GameFlowStateChangedEvent this publish cascades into, still within this same call) had a
+    // chance to cover it. Leaving the end screen exactly as it is until Runner unloads underneath
+    // it means the player only ever sees results → black transition, never a glimpse of the frozen
+    // world in between.
     private void OnContinueClicked()
     {
-        SetGameEnded(false);
+        PauseController.Instance?.Resume();
         var s = _finalStats ?? manager?.Stats;
         EventBus.Publish(new ContinuePressedEvent { Stats = s });
     }

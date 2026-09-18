@@ -94,8 +94,17 @@ public class PauseController : MonoBehaviour
         _onEnd = e =>
         {
             if (!_built) { LogNotBuilt(); return; }
+            // The run freezes exactly like a manual Pause the instant it ends — world/camera stop
+            // dead instead of coasting to rest behind the end screen (Time.timeScale = 0 zeroes
+            // every Time.deltaTime-based movement/smoothing everywhere, not just here). _ended is
+            // set FIRST so RefreshVisibility() (called from Pause() below) keeps the "PAUSED" panel
+            // and persistent buttons hidden even though _paused is now also true — only the caller
+            // ended screen shows. Continue/RestartSong are what actually reset this afterward (see
+            // GameplayHUD.OnContinueClicked and RestartSongFromPause/FallRespawnSystem) — Continue
+            // leaves for a whole different Mode Scene (Fight), so it must not leave
+            // Time.timeScale sitting at 0 for that scene to silently inherit.
             _ended = true;
-            if (_paused) Resume();
+            if (!_paused) Pause();
             RefreshVisibility();
         };
         // Restarting from the end screen (Restart) always publishes CheckpointIndex==0 — the
