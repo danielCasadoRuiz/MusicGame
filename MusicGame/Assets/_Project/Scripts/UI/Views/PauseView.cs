@@ -22,6 +22,8 @@ public class PauseView : MonoBehaviour
     public TextMeshProUGUI resumeButtonLabel;
     public Button      restartButton;
     public TextMeshProUGUI restartButtonLabel;
+    public Button      mainMenuButton;
+    public TextMeshProUGUI mainMenuButtonLabel;
 
     [Header("Camera view toggle (sits just below the Pause button, live gameplay only)")]
     public GameObject cameraToggleButtonRoot;

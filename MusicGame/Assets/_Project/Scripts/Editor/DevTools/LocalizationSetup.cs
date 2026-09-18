@@ -62,6 +62,7 @@ public static class LocalizationSetup
         ("Pause.Title",       "PAUSED",          "PAUSA"),
         ("Pause.Resume",      "RESUME",          "REPRÈN"),
         ("Pause.RestartSong", "RESTART SONG",    "REINICIA LA CANÇÓ"),
+        ("Pause.MainMenu",    "MAIN MENU",       "MENÚ PRINCIPAL"),
         ("Pause.ThirdPerson", "Third Person",    "Tercera Persona"),
         ("Pause.FirstPerson", "First Person",    "Primera Persona"),
 
@@ -78,7 +79,6 @@ public static class LocalizationSetup
         ("HUD.TagStyle", "STYLE",  "ESTIL"),
         ("HUD.TagVibe",  "VIBE",   "VIBE"),
         ("HUD.TagOther", "OTHER",  "ALTRES"),
-        ("HUD.TimeUp",   "TIME!",  "TEMPS!"),
 
         // ── End screen ───────────────────────────────────────────────────────────
         ("EndScreen.Title",          "─── RESULTS ───",   "─── RESULTATS ───"),
@@ -125,7 +125,8 @@ public static class LocalizationSetup
         ("SongSelection.LocalFileDefaultName", "Local File",                       "Fitxer local"),
 
         // ── Countdown ────────────────────────────────────────────────────────────
-        ("Countdown.Go", "GO!", "JA!"),
+        ("Countdown.Go",     "GO!",     "JA!"),
+        ("Countdown.Finish", "FINISH!", "FINAL!"),
 
         // ── Mobile controls ──────────────────────────────────────────────────────
         ("Mobile.Jump", "JUMP", "SALTA"),

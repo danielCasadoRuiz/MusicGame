@@ -17,6 +17,10 @@ using UnityEngine;
 ///
 /// MusicDistance = SongTime * UnitsPerSecond
 /// The player's canonical world position = path.GetSample(MusicDistance).position
+///
+/// A third mode, manual advance (see BeginManualAdvance), ignores the AudioSource entirely and
+/// just accumulates Time.deltaTime — used for GameplayManager's farewell stretch, once the song
+/// has genuinely finished and the AudioSource has already been stopped.
 /// </summary>
 public class MusicClock : MonoBehaviour
 {
@@ -33,6 +37,10 @@ public class MusicClock : MonoBehaviour
     private bool        _active;
     private bool        _audioPhase;   // true once we've crossed from warmup into audio-driven timing
     private float       _predicted;    // filtered SongTime
+    // See BeginManualAdvance's own doc — once true, Tick() ignores _source entirely and just
+    // accumulates Time.deltaTime, for the rest of this MusicClock's life (until the next
+    // Initialize()).
+    private bool        _manualAdvance;
 
     public float UnitsPerSecond { get; private set; }
     public float SongTime       { get; private set; }
@@ -62,6 +70,7 @@ public class MusicClock : MonoBehaviour
         IsRunning      = true;
         IsPaused       = false;
         _audioPhase    = false;
+        _manualAdvance = false;
         _predicted     = 0f;
         Tick();
     }
@@ -99,6 +108,20 @@ public class MusicClock : MonoBehaviour
         _audioPhase = false;
     }
 
+    /// <summary>
+    /// Switches SongTime to advancing purely via Time.deltaTime from here on, ignoring the
+    /// AudioSource entirely — continuing smoothly from whatever SongTime already is, with no
+    /// discontinuity. For GameplayManager's farewell stretch: the AudioSource is stopped the
+    /// instant the song finishes (see GameplayManager's own ending sequence), and a played range
+    /// ending at or near the clip's own natural end may have had no spare content to keep
+    /// "playing" through anyway — rather than reactively patching the wall-clock fallback once
+    /// that becomes a problem, this switches over UNCONDITIONALLY the moment farewell begins, so
+    /// the player's forward motion never depends on how much of the clip happened to be left.
+    /// Only Initialize() (a genuinely new run) turns this back off. Idempotent to call more than
+    /// once.
+    /// </summary>
+    public void BeginManualAdvance() => _manualAdvance = true;
+
     private void Update()
     {
         if (!_active || IsPaused) return;
@@ -107,6 +130,15 @@ public class MusicClock : MonoBehaviour
 
     private void Tick()
     {
+        if (_manualAdvance)
+        {
+            // Frame-smooth by construction — no filtering needed, same as the wall-clock branch
+            // below.
+            _predicted += Time.deltaTime;
+            SongTime    = _predicted;
+            return;
+        }
+
         bool audioPlaying = _source != null && _source.isPlaying;
         float raw = audioPlaying
             ? _warmupTime + _source.time

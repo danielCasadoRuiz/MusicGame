@@ -64,7 +64,6 @@ public class GameplayHUD : MonoBehaviour
     private Action<GameEndedEvent>        _onEnd;
     private Action<SongProfileReadyEvent> _onProfile;
     private Action<PlayerRespawnedEvent>  _onRespawned;
-    private Action<SongFinishedEvent>     _onSongFinished;
 
     // ── uGUI refs: live top bar ─────────────────────────────────────────────
     private RectTransform _liveRoot;
@@ -74,7 +73,6 @@ public class GameplayHUD : MonoBehaviour
     private Image _progressFill;
     private RectTransform _tagsStrip;
     private TextMeshProUGUI _tagStyleText, _tagVibeText, _tagOtherText;
-    private TextMeshProUGUI _timeUpText;
 
     // ── uGUI refs: end screen ───────────────────────────────────────────────
     private RectTransform _endRoot;
@@ -117,16 +115,11 @@ public class GameplayHUD : MonoBehaviour
         // A full restart publishes CheckpointIndex == 0 — kept as a safety net (Restart already
         // hides the end screen synchronously on click; Continue hides it directly too).
         _onRespawned = e => { if (_built && e.CheckpointIndex == 0) SetGameEnded(false); };
-        // Fires once the fade-out finishes (song logically over) — stays visible through the
-        // silent farewell stretch, then auto-hides with the rest of _liveRoot the instant
-        // GameEndedEvent's SetGameEnded(true) swaps in the end screen (see SetGameEnded).
-        _onSongFinished = e => { if (_built && _timeUpText != null) _timeUpText.gameObject.SetActive(true); };
 
         EventBus.Subscribe(_onLevel);
         EventBus.Subscribe(_onEnd);
         EventBus.Subscribe(_onProfile);
         EventBus.Subscribe(_onRespawned);
-        EventBus.Subscribe(_onSongFinished);
     }
 
     private void OnDisable()
@@ -135,7 +128,6 @@ public class GameplayHUD : MonoBehaviour
         EventBus.Unsubscribe(_onEnd);
         EventBus.Unsubscribe(_onProfile);
         EventBus.Unsubscribe(_onRespawned);
-        EventBus.Unsubscribe(_onSongFinished);
     }
 
     private bool _loggedNotBuilt;
@@ -161,9 +153,6 @@ public class GameplayHUD : MonoBehaviour
         _gameEnded = ended;
         _liveRoot.gameObject.SetActive(!ended);
         _endRoot.gameObject.SetActive(ended);
-        // A restart (ended == false, via onRespawned's CheckpointIndex == 0) must clear the
-        // banner too — otherwise a fresh run would start with it already showing.
-        if (!ended && _timeUpText != null) _timeUpText.gameObject.SetActive(false);
     }
 
     // ── Wire: live top bar (prefab path — see LiveHudView's own doc) ─────────
@@ -200,13 +189,6 @@ public class GameplayHUD : MonoBehaviour
         _tagVibeText  = view.tagVibe;
         _tagOtherText = view.tagOther;
         _tagsStrip.gameObject.SetActive(false);
-
-        _timeUpText = view.timeUpText;
-        if (_timeUpText != null)
-        {
-            _timeUpText.text = Loc.Get("HUD.TimeUp");
-            _timeUpText.gameObject.SetActive(false);
-        }
     }
 
     // ── Build: live top bar (procedural fallback — no UIRegistry in the scene yet) ───────────
@@ -283,13 +265,6 @@ public class GameplayHUD : MonoBehaviour
         _tagOtherText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         _tagsStrip.gameObject.SetActive(false);
-
-        // Song-finished banner — big, centered, hidden until SongFinishedEvent; auto-hides with
-        // the rest of _liveRoot once SetGameEnded(true) swaps in the end screen.
-        _timeUpText = UIFactory.CreateText("TimeUpBanner", _liveRoot, Loc.Get("HUD.TimeUp"), 48, Color.white, TextAlignmentOptions.Center);
-        UIFactory.SetBox(_timeUpText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 80f), new Vector2(600f, 80f));
-        _timeUpText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
-        _timeUpText.gameObject.SetActive(false);
     }
 
     private void UpdateLiveHud()

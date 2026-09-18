@@ -37,6 +37,7 @@ public class UIFlowController : MonoBehaviour
         AddScreen<MainMenuController>();
         AddScreen<SongSelectionController>();
         AddScreen<CountdownController>();
+        AddScreen<FinishBannerController>();
         AddScreen<MobileControlsController>();
     }
 

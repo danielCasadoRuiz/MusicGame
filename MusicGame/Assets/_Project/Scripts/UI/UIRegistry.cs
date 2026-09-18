@@ -25,6 +25,7 @@ public class UIRegistry : MonoBehaviour
     [SerializeField] private SongSelectionView   songSelection;
     [SerializeField] private AnalyzingScreenView analyzing;
     [SerializeField] private CountdownScreenView countdown;
+    [SerializeField] private FinishBannerView    finishBanner;
 
     [Header("Fight")]
     [SerializeField] private FightHudView fightHud;
@@ -38,6 +39,7 @@ public class UIRegistry : MonoBehaviour
     public SongSelectionView   SongSelection => songSelection;
     public AnalyzingScreenView Analyzing     => analyzing;
     public CountdownScreenView Countdown     => countdown;
+    public FinishBannerView    FinishBanner  => finishBanner;
 
     public FightHudView FightHud => fightHud;
 }

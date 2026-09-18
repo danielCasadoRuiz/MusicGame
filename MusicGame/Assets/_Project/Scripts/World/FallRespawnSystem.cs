@@ -77,17 +77,15 @@ public class FallRespawnSystem : MonoBehaviour
         // known-good unpaused state pause menu's own Restart already depends on — see doc above.
         PauseController.Instance?.Resume();
 
-        if (_manager != null) _manager.SuppressSongEnd = true;
-
         // GameplayManager.OriginalVolume, NOT _audio.volume directly — a run that reached its own
         // natural end fades the AudioSource to 0 as part of the ending sequence (see
         // GameplayManager's own Update()), so reading the AudioSource's CURRENT volume here could
         // capture 0 and silently restart the music at zero volume instead of its real level.
         float targetVol = _manager != null ? _manager.OriginalVolume : _audio.volume;
 
-        // try/finally: guarantees _processing (and SuppressSongEnd) can never get stuck true —
-        // a single uncaught exception here used to brick every future Restart click silently,
-        // with no way to recover short of restarting the whole game.
+        // try/finally: guarantees _processing can never get stuck true — a single uncaught
+        // exception here used to brick every future Restart click silently, with no way to
+        // recover short of restarting the whole game.
         try
         {
             _manager?.ResetRunState();
@@ -95,7 +93,6 @@ public class FallRespawnSystem : MonoBehaviour
         }
         finally
         {
-            if (_manager != null) _manager.SuppressSongEnd = false;
             _processing = false;
         }
     }
@@ -142,9 +139,6 @@ public class FallRespawnSystem : MonoBehaviour
     {
         float origVol = _audio.volume;
 
-        // Tell GameplayManager to ignore isPlaying==false while we own the audio
-        if (_manager != null) _manager.SuppressSongEnd = true;
-
         // Fade out
         float t = 0f, fadeOut = _config.fallFadeOutDuration;
         while (t < fadeOut)
@@ -160,7 +154,6 @@ public class FallRespawnSystem : MonoBehaviour
 
         yield return StartCoroutine(RespawnAtSongTime(fallSongTime, origVol));
 
-        if (_manager != null) _manager.SuppressSongEnd = false;
         _processing = false;
     }
 

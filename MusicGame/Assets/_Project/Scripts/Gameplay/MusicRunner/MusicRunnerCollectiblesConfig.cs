@@ -224,8 +224,9 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     [Header("Object Pooling")]
     public int   poolInitialSize = 8;
     public int   poolMaxSize     = 25;
-    [Tooltip("Seconds of song time ahead of the player's ACTUAL distance (musicDistance + " +
-             "forwardOffset — includes surge) to activate events from the pool")]
+    [Tooltip("Seconds of song time ahead of the music's own CANONICAL distance (musicDistance — " +
+             "deliberately NOT including surge's forwardOffset, so activation always tracks the " +
+             "song's own pace, never the player's) to activate events from the pool")]
     public float spawnLookAhead  = 1.0f;
     [Tooltip("World units behind the player's ACTUAL distance (musicDistance + forwardOffset) " +
              "an uncollected collectible is allowed to remain before it's recycled. Generous on " +
@@ -247,8 +248,9 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     // "how far ahead on the path" question, not a "how many seconds" one (unlike pulseLeadTime
     // above, which IS about timing and stays exactly on the beat, untouched by this).
     [Header("Visual Anticipation")]
-    // World units ahead of the player's actual distance (PlayerController.ActualDistance) at
-    // which a ring/bonus starts visually growing/revealing — a separate, EARLY, purely visual
+    // World units ahead of the music's own canonical distance (PlayerController.CanonicalDistance
+    // — NOT ActualDistance; surge must never pull a reveal forward) at which a ring/bonus starts
+    // visually growing/revealing — a separate, EARLY, purely visual
     // cue (a mild GameplayManager.RevealEvent → RingController.Pulse(0)) so you SEE it
     // materialize ahead of you instead of right as you cross it. The real musical reaction
     // (full-strength Pulse + BeatPulseEvent/camera kick, via pulseLeadTime above) still fires

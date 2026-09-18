@@ -183,7 +183,6 @@ public class PauseController : MonoBehaviour
         Time.timeScale = 0f;
         if (_audio != null) _audio.Pause();
         MusicClock.Instance?.Pause();
-        if (_manager != null) _manager.SuppressSongEnd = true;
 
         RefreshVisibility();
     }
@@ -196,7 +195,6 @@ public class PauseController : MonoBehaviour
         Time.timeScale = 1f;
         if (_audio != null) _audio.UnPause();
         MusicClock.Instance?.Resume();
-        if (_manager != null) _manager.SuppressSongEnd = false;
 
         RefreshVisibility();
     }
@@ -209,6 +207,19 @@ public class PauseController : MonoBehaviour
     /// </summary>
     public void RestartSongFromPause() => _manager?.RequestRestartSong();
 
+    /// <summary>
+    /// Leaving Runner entirely for a different Mode Scene (Frontend/MainMenu) — same "you're done"
+    /// exit Fight's own pause menu already offers (FightController.OnMainMenuClicked). Resume()
+    /// first so Time.timeScale/audio/MusicClock don't stay frozen at 0 and silently carry over
+    /// into whatever loads next (same reasoning as GameplayHUD.OnContinueClicked's own Resume()
+    /// call before leaving to Fight).
+    /// </summary>
+    private void OnMainMenuClicked()
+    {
+        Resume();
+        AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu);
+    }
+
     // ── UI ────────────────────────────────────────────────────────────────────
 
     // Prefab path — see PauseView's own doc.
@@ -220,6 +231,7 @@ public class PauseController : MonoBehaviour
         view.pauseButton.onClick.AddListener(Pause);
         view.resumeButton.onClick.AddListener(Resume);
         view.restartButton.onClick.AddListener(RestartSongFromPause);
+        view.mainMenuButton.onClick.AddListener(OnMainMenuClicked);
 
         _cameraToggleButtonRoot = view.cameraToggleButtonRoot != null ? view.cameraToggleButtonRoot.GetComponent<RectTransform>() : null;
         _cameraToggleIcon       = view.cameraToggleIcon;
@@ -236,6 +248,7 @@ public class PauseController : MonoBehaviour
         if (view.titleText          != null) view.titleText.text          = Loc.Get("Pause.Title");
         if (view.resumeButtonLabel  != null) view.resumeButtonLabel.text  = Loc.Get("Pause.Resume");
         if (view.restartButtonLabel != null) view.restartButtonLabel.text = Loc.Get("Pause.RestartSong");
+        if (view.mainMenuButtonLabel != null) view.mainMenuButtonLabel.text = Loc.Get("Pause.MainMenu");
 
         RefreshVisibility();
     }
@@ -269,7 +282,7 @@ public class PauseController : MonoBehaviour
         UIFactory.Stretch(dim.rectTransform);
         dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
-        float pw = 240f, ph = 170f;
+        float pw = 240f, ph = 216f; // +46 over the original 2-button height, room for MainMenu below Restart
         var panel = UIFactory.CreatePanel("Panel", _overlayRoot, new Color(0.04f, 0.04f, 0.04f, 0.97f));
         UIFactory.SetBox(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(pw, ph));
         var border = panel.gameObject.AddComponent<Outline>();
@@ -300,6 +313,16 @@ public class PauseController : MonoBehaviour
         restartBtn.onClick.AddListener(RestartSongFromPause);
         restartBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
         restartLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        y -= btnH + 12f;
+
+        // Same exit Fight's own pause menu already offers (FightController's MainMenuButton) —
+        // Runner had no equivalent way out mid-run before this.
+        var mainMenuBtn = UIFactory.CreateButton("MainMenuButton", content, Loc.Get("Pause.MainMenu"), out var mainMenuLabel);
+        UIFactory.SetBox(mainMenuBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, y), new Vector2(btnW, btnH));
+        mainMenuBtn.onClick.AddListener(OnMainMenuClicked);
+        mainMenuBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        mainMenuLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         RefreshVisibility();
     }

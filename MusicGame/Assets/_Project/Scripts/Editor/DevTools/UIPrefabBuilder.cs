@@ -6,13 +6,13 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// One-shot Editor tool: builds all nine runtime UI screens — the three gameplay prefabs (LiveHud,
-/// EndScreen, PauseMenu) and the six Frontend/Fight screens (IntroScreen, MainMenu, SongSelection,
-/// AnalyzingScreen, CountdownScreen, FightHud) — using the exact same UIFactory calls each screen's
-/// own controller used to run at PLAY time (with the same ThemeColorReceiver/ThemeTextReceiver
-/// wiring, so the saved prefabs come out theme-ready too), saves them as real .prefab assets under
-/// Assets/_Project/Prefabs/UI/, leaves connected instances in the currently open scene, and wires a
-/// UIRegistry component to them.
+/// One-shot Editor tool: builds all ten runtime UI screens — the three gameplay prefabs (LiveHud,
+/// EndScreen, PauseMenu) and the seven Frontend/Fight screens (IntroScreen, MainMenu, SongSelection,
+/// AnalyzingScreen, CountdownScreen, FinishBanner, FightHud) — using the exact same UIFactory calls
+/// each screen's own controller used to run at PLAY time (with the same ThemeColorReceiver/
+/// ThemeTextReceiver wiring, so the saved prefabs come out theme-ready too), saves them as real
+/// .prefab assets under Assets/_Project/Prefabs/UI/, leaves connected instances in the currently
+/// open scene, and wires a UIRegistry component to them.
 ///
 /// Run it ONCE via Tools > MusicGame > Build UI Prefabs. After that, every screen controller finds
 /// the UIRegistry at startup and just READS the matching prefab instance instead of building
@@ -21,7 +21,7 @@ using UnityEngine.UI;
 /// component still point at the right children. Song Selection is the one partial exception: only
 /// its static chrome is baked — the catalog rows stay dynamic runtime population either way.
 ///
-/// Safe to re-run: it rebuilds all nine prefabs + the scene instances + UIRegistry from scratch
+/// Safe to re-run: it rebuilds all ten prefabs + the scene instances + UIRegistry from scratch
 /// each time (so hand-made edits to the PREFAB ASSETS themselves are NOT preserved by re-running
 /// this — it's meant to be run once to get a starting point you then hand-tune).
 /// </summary>
@@ -61,6 +61,7 @@ public static class UIPrefabBuilder
         var songSelection   = BuildSongSelection(canvasRect);
         var analyzingScreen = BuildAnalyzingScreen(canvasRect);
         var countdownScreen = BuildCountdownScreen(canvasRect);
+        var finishBanner    = BuildFinishBanner(canvasRect);
         var fightHud        = BuildFightHud(canvasRect);
 
         // IMPORTANT: SaveAsPrefabAssetAndConnect returns the PREFAB ASSET (disk-only, never
@@ -78,6 +79,7 @@ public static class UIPrefabBuilder
         SaveAndConnect(songSelection,   "SongSelection.prefab");
         SaveAndConnect(analyzingScreen, "AnalyzingScreen.prefab");
         SaveAndConnect(countdownScreen, "CountdownScreen.prefab");
+        SaveAndConnect(finishBanner,    "FinishBanner.prefab");
         SaveAndConnect(fightHud,        "FightHud.prefab");
 
         WireRegistry(
@@ -89,6 +91,7 @@ public static class UIPrefabBuilder
             songSelection.GetComponent<SongSelectionView>(),
             analyzingScreen.GetComponent<AnalyzingScreenView>(),
             countdownScreen.GetComponent<CountdownScreenView>(),
+            finishBanner.GetComponent<FinishBannerView>(),
             fightHud.GetComponent<FightHudView>());
 
         // These screens are ALWAYS-ACTIVE at runtime until their own Show()/Hide() toggles them
@@ -100,10 +103,11 @@ public static class UIPrefabBuilder
         songSelection.SetActive(false);
         analyzingScreen.SetActive(false);
         countdownScreen.SetActive(false);
+        finishBanner.SetActive(false);
         fightHud.SetActive(false);
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-        Debug.Log("[UIPrefabBuilder] Done — 9 UI prefabs saved under " +
+        Debug.Log("[UIPrefabBuilder] Done — 10 UI prefabs saved under " +
                   $"{FolderPath}, instances wired into UIRegistry in the scene. " +
                   "Remember to save the scene (Ctrl+S).");
     }
@@ -136,7 +140,8 @@ public static class UIPrefabBuilder
 
     private static void WireRegistry(LiveHudView liveHud, EndScreenView endScreen, PauseView pause,
         IntroScreenView introScreen, MainMenuView mainMenu, SongSelectionView songSelection,
-        AnalyzingScreenView analyzing, CountdownScreenView countdown, FightHudView fightHud)
+        AnalyzingScreenView analyzing, CountdownScreenView countdown, FinishBannerView finishBanner,
+        FightHudView fightHud)
     {
         var registryGO = GameObject.Find("[UI Registry]");
         if (registryGO == null) registryGO = new GameObject("[UI Registry]");
@@ -151,6 +156,7 @@ public static class UIPrefabBuilder
         so.FindProperty("songSelection").objectReferenceValue = songSelection;
         so.FindProperty("analyzing").objectReferenceValue     = analyzing;
         so.FindProperty("countdown").objectReferenceValue     = countdown;
+        so.FindProperty("finishBanner").objectReferenceValue  = finishBanner;
         so.FindProperty("fightHud").objectReferenceValue      = fightHud;
         so.ApplyModifiedPropertiesWithoutUndo();
     }
@@ -228,15 +234,6 @@ public static class UIPrefabBuilder
         tagOther.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         tagsStrip.gameObject.SetActive(false);
-
-        // Song-finished banner — big, centered, well below the top bar so it never overlaps it;
-        // hidden until GameplayHUD activates it on SongFinishedEvent, and auto-hidden along with
-        // the rest of this root once SetGameEnded(true) swaps in the end screen.
-        var timeUpText = UIFactory.CreateText("TimeUpBanner", root, Loc.Get("HUD.TimeUp"), 48, Color.white, TextAlignmentOptions.Center);
-        UIFactory.SetBox(timeUpText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 80f), new Vector2(600f, 80f));
-        timeUpText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
-        timeUpText.gameObject.SetActive(false);
-        view.timeUpText = timeUpText;
 
         return root.gameObject;
     }
@@ -352,7 +349,7 @@ public static class UIPrefabBuilder
         UIFactory.Stretch(dim.rectTransform);
         dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
-        float pw = 240f, ph = 170f;
+        float pw = 240f, ph = 216f; // +46 over the original 2-button height, room for MainMenu below Restart
         var panel = UIFactory.CreatePanel("Panel", overlay, new Color(0.04f, 0.04f, 0.04f, 0.97f));
         UIFactory.SetBox(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(pw, ph));
         var border = panel.gameObject.AddComponent<Outline>();
@@ -386,6 +383,15 @@ public static class UIPrefabBuilder
         view.restartButtonLabel = restartLabel;
         restartBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
         restartLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        y -= btnH + 12f;
+
+        var mainMenuBtn = UIFactory.CreateButton("MainMenuButton", content, Loc.Get("Pause.MainMenu"), out var mainMenuLabel);
+        UIFactory.SetBox(mainMenuBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, y), new Vector2(btnW, btnH));
+        view.mainMenuButton      = mainMenuBtn;
+        view.mainMenuButtonLabel = mainMenuLabel;
+        mainMenuBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        mainMenuLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         return root.gameObject;
     }
@@ -640,6 +646,24 @@ public static class UIPrefabBuilder
             Vector2.zero, new Vector2(400f, 200f));
         numberText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
         view.numberText = numberText;
+
+        return root.gameObject;
+    }
+
+    // ── Finish banner ─────────────────────────────────────────────────────────
+
+    private static GameObject BuildFinishBanner(RectTransform canvas)
+    {
+        var root = UIFactory.CreateRect("FinishBanner", canvas);
+        UIFactory.Stretch(root);
+        var view = root.gameObject.AddComponent<FinishBannerView>();
+        view.root = root.gameObject;
+
+        var text = UIFactory.CreateText("Text", root, Loc.Get("Countdown.Finish"), 96, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(text.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            Vector2.zero, new Vector2(700f, 200f));
+        text.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
+        view.text = text;
 
         return root.gameObject;
     }

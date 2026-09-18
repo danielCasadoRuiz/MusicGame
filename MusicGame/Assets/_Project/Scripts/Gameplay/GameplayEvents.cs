@@ -20,8 +20,9 @@ public struct GameEndedEvent
 }
 // Fired once, exactly when the song's fade-out finishes (SongPlayEnd reached) — the song has
 // genuinely ended, but the run keeps going through the silent/flat farewell stretch (see
-// GameplayManager's own ending sequence) until GameEndedEvent actually replaces the live HUD with
-// the end screen. GameplayHUD's "TIME!" banner covers exactly that in-between window.
+// GameplayManager's own ending sequence's real elapsed-time countdown, _farewellElapsed) until
+// GameEndedEvent actually replaces the live HUD with the end screen. FinishBannerController's
+// "FINISH!" banner reacts to this directly.
 public struct SongFinishedEvent { }
 public struct LevelGeneratedEvent   { public int RingCount; }
 public struct RingCollectedEvent
