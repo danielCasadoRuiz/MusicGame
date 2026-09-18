@@ -39,4 +39,7 @@ public class LiveHudView : MonoBehaviour
     public TextMeshProUGUI tagStyle;
     public TextMeshProUGUI tagVibe;
     public TextMeshProUGUI tagOther;
+
+    [Header("Song-finished banner (shown from SongFinishedEvent through the farewell stretch)")]
+    public TextMeshProUGUI timeUpText;
 }

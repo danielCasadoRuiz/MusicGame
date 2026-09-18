@@ -78,6 +78,7 @@ public static class LocalizationSetup
         ("HUD.TagStyle", "STYLE",  "ESTIL"),
         ("HUD.TagVibe",  "VIBE",   "VIBE"),
         ("HUD.TagOther", "OTHER",  "ALTRES"),
+        ("HUD.TimeUp",   "TIME!",  "TEMPS!"),
 
         // ── End screen ───────────────────────────────────────────────────────────
         ("EndScreen.Title",          "─── RESULTS ───",   "─── RESULTATS ───"),

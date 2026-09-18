@@ -76,4 +76,21 @@ public class MusicRunnerCoreConfig : ScriptableObject
     [Tooltip("Seconds into the song where the played window ends. Clamped to the song's actual " +
              "length — a value of 0 (or beyond the song's length) means 'to the end'.")]
     public float manualPlayRangeEndSeconds   = 60f;
+
+    // ── Ending — fade out then farewell ──────────────────────────────────────────
+    // The played window always ENDS with these two back-to-back phases (see
+    // GameplayManager.GenerateAndStart/Update and MusicWorldManager.NormalizedBandValue's own
+    // fade multiplier): first the terrain flattens AND the music fades to silence together, over
+    // fadeOutSeconds, both finishing exactly at the played window's own end point; then the
+    // player keeps running for farewellSeconds MORE, on now-flat ground with the song already
+    // silent, before GameEndedEvent actually fires. Mirrors the countdown's own "run before you
+    // can hear anything" shape, but in reverse at the finish line, instead of an abrupt cut.
+    [Header("Ending (fade-out + farewell, before the end screen actually appears)")]
+    [Tooltip("How many seconds BEFORE the played window's end point both the terrain (flattening " +
+             "to 0 height) and the music (fading to silence) ramp down — finishing together " +
+             "exactly at that end point.")]
+    public float fadeOutSeconds  = 3f;
+    [Tooltip("How many extra seconds the player keeps running afterward — flat ground, silent " +
+             "(the song has already finished) — before the end screen actually appears.")]
+    public float farewellSeconds = 2f;
 }

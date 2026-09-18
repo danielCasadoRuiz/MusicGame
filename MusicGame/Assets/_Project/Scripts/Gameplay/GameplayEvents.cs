@@ -18,6 +18,11 @@ public struct GameEndedEvent
     // GamePerformance.cs. Built strictly from this song's actual playable timeline.
     public GamePerformance   Performance;
 }
+// Fired once, exactly when the song's fade-out finishes (SongPlayEnd reached) — the song has
+// genuinely ended, but the run keeps going through the silent/flat farewell stretch (see
+// GameplayManager's own ending sequence) until GameEndedEvent actually replaces the live HUD with
+// the end screen. GameplayHUD's "TIME!" banner covers exactly that in-between window.
+public struct SongFinishedEvent { }
 public struct LevelGeneratedEvent   { public int RingCount; }
 public struct RingCollectedEvent
 {

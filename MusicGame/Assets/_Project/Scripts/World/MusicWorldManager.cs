@@ -40,6 +40,11 @@ public class MusicWorldManager : MonoBehaviour
     private Material    _meshMaterial;
     private System.Action<SongProfileReadyEvent> _onProfile;
 
+    // The played window's own end (song-time seconds, same convention as GameplayManager.SongPlayEnd
+    // — see PlayRangeResolver) — 0 until BuildWorld resolves it. Used only by NormalizedBandValue's
+    // fade-to-flat near the end; the countdown's synthetic hill (time &lt; 0) needs no such state.
+    private float _playRangeEnd;
+
     // ── Debug/HUD-facing stats about the current window ─────────────────────────
     public int CrossSegments      { get; private set; }
     public int FrequencyBandsUsed { get; private set; }
@@ -225,7 +230,7 @@ public class MusicWorldManager : MonoBehaviour
             _freqPixels = new Color32[numBands];
         }
 
-        float time = _config.core.playerSpeed > 0f ? Mathf.Max(0f, musicDistance / _config.core.playerSpeed) : 0f;
+        float time = DistanceToSongTime(musicDistance);
         for (int b = 0; b < numBands; b++)
             _freqPixels[b] = VuColor(NormalizedBandValue(b, time));
 
@@ -256,6 +261,7 @@ public class MusicWorldManager : MonoBehaviour
         _profile = profile;
         _bandReference = ComputeBandReferences(profile, _config.levelGeneration.frequencyColorReferencePercentile);
         FrequencyBandsUsed = profile.VisualBandCount;
+        _playRangeEnd = PlayRangeResolver.Resolve(_config.core, profile.duration).End;
 
         if (_meshMaterial != null) Destroy(_meshMaterial);
         _meshMaterial = VertexColorMaterial();
@@ -284,10 +290,41 @@ public class MusicWorldManager : MonoBehaviour
     /// </summary>
     public float NormalizedBandValue(int b, float time)
     {
+        // Countdown pre-roll (time < 0 — the song hasn't actually started playing yet, see
+        // DistanceToSongTime's own doc): there's no real analysis to show here, so every band
+        // returns the SAME synthetic value instead of a per-frequency shape — a hill spanning the
+        // full width of the path, not a left-to-right spectrum silhouette.
+        if (time < 0f) return SyntheticCountdownValue(time);
+
         if (_bandReference == null || b < 0 || b >= _bandReference.Length || _profile == null) return 0f;
         float norm = _bandReference[b] > 0.0001f ? _profile.GetVisualBandEnergyAtSmooth(b, time) / _bandReference[b] : 0f;
         norm = Mathf.Clamp01(norm);
-        return Mathf.Pow(norm, Mathf.Max(0.01f, _config.levelGeneration.frequencyContrastGamma));
+        norm = Mathf.Pow(norm, Mathf.Max(0.01f, _config.levelGeneration.frequencyContrastGamma));
+        return norm * EndingFadeMultiplier(time);
+    }
+
+    // One hill per second of countdown, peaking at exactly the half-second mark and back to 0 at
+    // the second boundary — "as if" a steady, evenly-paced countdown beat had been analyzed.
+    // Mathf.Floor-based fractional part is correct for negative `time` without special-casing
+    // (e.g. time=-2.3 → floor=-3 → fraction=0.7, exactly 0.7s into that countdown second).
+    // Peaks at 0.5 — HALF of NormalizedBandValue's own real max of 1.0 — never full height.
+    private static float SyntheticCountdownValue(float time)
+    {
+        float fractionOfSecond = time - Mathf.Floor(time);
+        return Mathf.Sin(fractionOfSecond * Mathf.PI) * 0.5f;
+    }
+
+    // Ramps 1 → 0 over the LAST fadeOutSeconds of the played window, finishing exactly at its end
+    // point (_playRangeEnd) — and stays clamped at 0 for any time beyond that (the farewell
+    // stretch, plus whatever of the underlying clip's own content happens to extend past it —
+    // see GameplayManager's own ending sequence, which fades the AUDIO out over this identical
+    // window so the terrain and the music go silent/flat together).
+    private float EndingFadeMultiplier(float time)
+    {
+        if (_playRangeEnd <= 0f || _config.core.fadeOutSeconds <= 0f) return 1f;
+        float fadeStart = _playRangeEnd - _config.core.fadeOutSeconds;
+        if (time < fadeStart) return 1f;
+        return Mathf.Clamp01(1f - (time - fadeStart) / _config.core.fadeOutSeconds);
     }
 
     // Raw analytic surface height (0..1 normalized), with NO smoothing/slope-clamp — used for
@@ -297,9 +334,19 @@ public class MusicWorldManager : MonoBehaviour
     // reproducible from either side of a chunk boundary, which is what keeps normals seam-free.
     private float HeightAt(float distance, float lateralFrac, int numBands)
     {
-        float time = _config.core.playerSpeed > 0f ? Mathf.Max(0f, distance / _config.core.playerSpeed) : 0f;
+        float time = DistanceToSongTime(distance);
         return numBands > 0 ? BlendedNormalized(lateralFrac, time, numBands) : 0f;
     }
+
+    // Distance → song-TIME, in the SAME convention CameraFollow already uses for its own
+    // profile lookups (clock.SongTime - warmupTime) — MusicDistance = SongTime * UnitsPerSecond,
+    // so distance/speed IS SongTime, and subtracting warmupTime here converts it to real,
+    // audio-relative song time. Genuinely negative during the countdown (before the song has
+    // actually started playing) — NormalizedBandValue treats that as its own case (a synthetic
+    // hill), never a clamp to frame 0, which is what the un-corrected formula used to do (and
+    // what left the terrain permanently warmupTime seconds ahead of the audible audio).
+    private float DistanceToSongTime(float distance) =>
+        _config.core.playerSpeed > 0f ? distance / _config.core.playerSpeed - _config.core.warmupTime : 0f;
 
     // Smoothly blends the two nearest bands so the terrain rolls continuously across the
     // width instead of stepping — each band's own "purity" peaks at its centre column. This is
@@ -359,7 +406,7 @@ public class MusicWorldManager : MonoBehaviour
         var grid = new float[rows, cols];
         for (int r = 0; r < rows; r++)
         {
-            float time = _config.core.playerSpeed > 0f ? Mathf.Max(0f, rowDistance[r] / _config.core.playerSpeed) : 0f;
+            float time = DistanceToSongTime(rowDistance[r]);
             for (int c = 0; c < cols; c++)
             {
                 float lateralFrac = cols > 1 ? (float)c / (cols - 1) : 0.5f;
@@ -674,7 +721,7 @@ public class MusicWorldManager : MonoBehaviour
         int numBands = _profile?.VisualBandCount ?? 0;
         if (_profile == null || _bandReference == null || numBands == 0) { normalized = 0f; return 0f; }
 
-        float time = _config.core.playerSpeed > 0f ? Mathf.Max(0f, distance / _config.core.playerSpeed) : 0f;
+        float time = DistanceToSongTime(distance);
         int   b0   = Mathf.Clamp(Mathf.FloorToInt(Mathf.Clamp01(lateralFrac) * numBands - 0.5f), 0, numBands - 1);
         float raw  = _bandReference[b0] > 0.0001f ? _profile.GetVisualBandEnergyAt(b0, time) / _bandReference[b0] : 0f;
 

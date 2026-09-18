@@ -29,14 +29,31 @@ public class GameplayManager : MonoBehaviour
     // The song is always analyzed in full (SongProfile/GameplayTimeline cover the WHOLE clip) —
     // only PLAYBACK is limited to [SongPlayStart, SongPlayEnd]: audioSource starts there instead
     // of at 0, the player spawns at the path distance that position corresponds to (not path
-    // distance 0), and the song is stopped early once it's reached (Update() below), which
-    // triggers the exact same end-of-song path a natural clip end would. Nothing about
-    // MusicClock/GameplayTimeline/checkpoints needs to know a range is even active — they all key
-    // off SongTime/audioSource.time, which already reflects the correct absolute position within
-    // the fully-analyzed song regardless of where playback started.
+    // distance 0). Nothing about MusicClock/GameplayTimeline/checkpoints needs to know a range is
+    // even active — they all key off SongTime/audioSource.time, which already reflects the
+    // correct absolute position within the fully-analyzed song regardless of where playback
+    // started.
+    //
+    // The end isn't an abrupt cut: over the LAST MusicRunnerCoreConfig.fadeOutSeconds before
+    // SongPlayEnd, the music fades to silence AND the terrain flattens to 0 height together (see
+    // MusicWorldManager.EndingFadeMultiplier, driven by this same SongPlayEnd/fadeOutSeconds) —
+    // then the player keeps running, silently, on flat ground for farewellSeconds more before
+    // GameEndedEvent actually fires (see Update()'s ending-sequence block and _songEndTime below).
     public float SongPlayStart { get; private set; }
     public float SongPlayEnd   { get; private set; }
-    private float _songEndTime = -1f; // -1 = no manual cutoff; natural clip end applies
+    // Where the AudioSource actually stops — SongPlayEnd + farewellSeconds, clamped to the clip's
+    // real length (see GenerateAndStart's own doc on why it's never Stop()'d any earlier: MusicClock
+    // must stay in its "audio still playing" formula through the whole fade+farewell stretch).
+    private float _songEndTime = -1f;
+
+    // The song's own logical end point (SongPlayEnd), in SongTime/distance terms — NOT
+    // _songEndTime above (which is pushed further out by farewellSeconds). Nothing musical
+    // (bonus spawns/reveals/pulses/macro events, see the activation loops in Update()) should
+    // still be triggering past this point — the song has genuinely finished by here, even though
+    // the farewell stretch (silent, flat) continues a little longer before the run actually ends.
+    private float _songEndSongTime; // warmupTime + SongPlayEnd
+    private float _songEndDistance; // _songEndSongTime * playerSpeed — same threshold, distance terms
+    private bool  _songFinishedAnnounced; // one-shot guard for SongFinishedEvent, see Update()
 
     // ── Per-type performance tracking ─────────────────────────────────────────
     // "Available"/per-type max are the actual PLAYABLE timeline for this song (computed once at
@@ -104,6 +121,12 @@ public class GameplayManager : MonoBehaviour
     // Prevents the song-end check from firing when audio is Paused for respawn.
     public bool SuppressSongEnd { get; set; }
 
+    // Captured ONCE, before anything ever fades it — see the ending sequence in Update()/
+    // GenerateAndStart. FallRespawnSystem's manual-restart fade-in reads THIS (not audioSource's
+    // own, possibly still-faded-to-0 volume) as its target, so restarting after a run that ended
+    // (and faded out) doesn't silently restart the music at zero volume.
+    public float OriginalVolume { get; private set; }
+
     // ── Subscriptions ─────────────────────────────────────────────────────────
     private Action<SongProfileReadyEvent>  _onProfile;
     private Action<RingCollectedEvent>     _onRing;
@@ -111,6 +134,7 @@ public class GameplayManager : MonoBehaviour
 
     private void Awake()
     {
+        OriginalVolume = audioSource.volume;
         _stats      = new CollectionStats();
         _clock      = MusicClock.GetOrCreate(gameObject);
         _poolParent = new GameObject("[Pools]").transform;
@@ -223,7 +247,21 @@ public class GameplayManager : MonoBehaviour
         _checkpoints.Initialize(profile, config.core, path, _timeline);
 
         (SongPlayStart, SongPlayEnd) = ResolvePlayRange(profile.duration);
-        _songEndTime = SongPlayEnd < profile.duration ? SongPlayEnd : -1f;
+        _songEndSongTime       = config.core.warmupTime + SongPlayEnd;
+        _songEndDistance       = _songEndSongTime * config.core.playerSpeed;
+        _songFinishedAnnounced = false;
+
+        // The actual AudioSource stop point is pushed PAST SongPlayEnd by farewellSeconds — the
+        // AudioSource keeps silently "playing" through that extra stretch (never Stop()'d until
+        // here) specifically so MusicClock stays in its smooth "during playback" formula the
+        // whole time (see MusicClock's own doc — its wall-clock fallback is only sane for the
+        // brief initial warmup gap, not an arbitrary later point; falling back to it here would
+        // make SongTime jump to the session's total elapsed real time). Clamped to the clip's own
+        // real length — there's only real farewell room when the played range ends before the
+        // clip's actual end (the common case: a manual range, or a catalog pick shorter than the
+        // full song); a song played all the way to its natural end has no spare content to
+        // silently draw on, so it ends the instant the clip itself stops, same as before.
+        _songEndTime = Mathf.Min(SongPlayEnd + config.core.farewellSeconds, profile.duration);
 
         // Place the player at the path distance SongPlayStart corresponds to — NOT path distance
         // 0 — since MusicDistance = SongTime * UnitsPerSecond and SongTime = warmupTime +
@@ -252,6 +290,15 @@ public class GameplayManager : MonoBehaviour
         EventBus.Publish(new GameStartedEvent { WarmupTime = config.core.warmupTime });
 
         yield return new WaitForSeconds(config.core.warmupTime);
+
+        // Safety net — the clip's actual PCM decode was already kicked off way back when the
+        // song was first selected (see AddressableSongSource.Load's own LoadAudioData call), so
+        // this should already be Loaded by now; only actually blocks (a few more frames, never
+        // the whole warmup) if a huge/slow file genuinely hasn't finished yet, trading a hair of
+        // extra countdown time for guaranteeing Play() below never hitches.
+        if (audioSource.clip != null)
+            yield return new WaitUntil(() => audioSource.clip.loadState != AudioDataLoadState.Loading);
+
         audioSource.time = SongPlayStart;
         audioSource.Play();
         _clock.ForceUpdate();
@@ -264,13 +311,8 @@ public class GameplayManager : MonoBehaviour
     // manual range doesn't apply.
     private (float start, float end) ResolvePlayRange(float duration)
     {
-        if (!config.core.useManualPlayRange) return (0f, duration);
-
-        float start = Mathf.Clamp(config.core.manualPlayRangeStartSeconds, 0f, duration);
-        float end   = config.core.manualPlayRangeEndSeconds > 0f
-            ? Mathf.Clamp(config.core.manualPlayRangeEndSeconds, start + 1f, duration)
-            : duration;
-        return (start, end);
+        var range = PlayRangeResolver.Resolve(config.core, duration);
+        return (range.Start, range.End);
     }
 
     // ── Main loop ─────────────────────────────────────────────────────────────
@@ -279,17 +321,28 @@ public class GameplayManager : MonoBehaviour
     {
         if (!_running || _timeline == null) return;
 
-        // The player's ACTUAL distance (CanonicalDistance + surge) — single source of truth,
-        // read from PlayerController rather than re-deriving MusicDistance + ForwardOffset here.
-        // Spawn/despawn windows are measured from here, so a surging player doesn't outrun
-        // collectibles that haven't spawned yet or lose ones still ahead of them.
+        // CanonicalDistance (== MusicClock.MusicDistance, purely SongTime * speed) — NEVER
+        // includes the surge's forwardOffset. Spawn/reveal timing must track "has the song
+        // actually reached this moment yet", not "where is the player standing right now": a
+        // surging player (W/↑) getting physically ahead of the beat must never pull a bonus into
+        // existence early just because they're now spatially closer to it. Everything on the
+        // song's own fixed schedule (activation lookahead, reveal) reads from this.
+        float canonicalDist = playerController.CanonicalDistance;
+        float lookAheadD    = canonicalDist + config.collectibles.spawnLookAhead * config.core.playerSpeed;
+
+        // The player's ACTUAL distance (CanonicalDistance + surge) — only for things that
+        // legitimately care where the player really is in space (recycling something once it's
+        // genuinely behind them), never for anything gated on the song's own progress.
         float playerDist    = playerController.ActualDistance;
-        float lookAheadD    = playerDist + config.collectibles.spawnLookAhead * config.core.playerSpeed;
 
         // Activate upcoming events — this only makes them visible/spawned ahead of time so the
-        // player can see them coming; it is NOT the synced moment.
+        // player can see them coming; it is NOT the synced moment. Never past _songEndDistance
+        // (the played window's own end, see GenerateAndStart) — once the song has actually
+        // finished, no more bonuses should spawn onto what is, by then, flat/silent farewell
+        // ground; the ones already active just recycle normally as the player passes them.
         while (_nextEventIdx < _timeline.Events.Length &&
-               _timeline.Events[_nextEventIdx].eventDistance <= lookAheadD)
+               _timeline.Events[_nextEventIdx].eventDistance <= lookAheadD &&
+               _timeline.Events[_nextEventIdx].eventDistance < _songEndDistance)
         {
             ActivateEvent(_timeline.Events[_nextEventIdx], _nextEventIdx);
             _nextEventIdx++;
@@ -307,7 +360,8 @@ public class GameplayManager : MonoBehaviour
             ? CameraFollow.Instance.EffectiveBonusVisualActivationDistance
             : config.collectibles.bonusVisualActivationDistanceThirdPerson;
         while (_nextRevealIdx < _timeline.Events.Length &&
-               _timeline.Events[_nextRevealIdx].eventDistance - playerDist <= revealDistance)
+               _timeline.Events[_nextRevealIdx].eventDistance - canonicalDist <= revealDistance &&
+               _timeline.Events[_nextRevealIdx].eventDistance < _songEndDistance)
         {
             RevealEvent(_nextRevealIdx);
             _nextRevealIdx++;
@@ -318,7 +372,8 @@ public class GameplayManager : MonoBehaviour
         // time it's perceived — a small lead keeps the pulse visibly ahead of/reachable by
         // the player while still landing close enough to feel tied to the music.
         while (_nextPulseIdx < _timeline.Events.Length &&
-               _clock.SongTime >= _timeline.Events[_nextPulseIdx].eventTime - config.collectibles.pulseLeadTime)
+               _clock.SongTime >= _timeline.Events[_nextPulseIdx].eventTime - config.collectibles.pulseLeadTime &&
+               _timeline.Events[_nextPulseIdx].eventTime < _songEndSongTime)
         {
             FirePulse(_nextPulseIdx);
             _nextPulseIdx++;
@@ -327,10 +382,13 @@ public class GameplayManager : MonoBehaviour
         // Fire Macro moments (Impact/Drop/BuildupStart/Peak) exactly at their eventTime —
         // independent of whether the moment also spawned a collectible. Consumed by things
         // like MusicEnvironmentController without those systems needing to know about pooling.
+        // Same _songEndSongTime cutoff as the loops above — nothing "musical" should still be
+        // reacting once the song itself has finished.
         if (_timeline.MacroEvents != null)
         {
             while (_nextMacroIdx < _timeline.MacroEvents.Length &&
-                   _clock.SongTime >= _timeline.MacroEvents[_nextMacroIdx].eventTime)
+                   _clock.SongTime >= _timeline.MacroEvents[_nextMacroIdx].eventTime &&
+                   _timeline.MacroEvents[_nextMacroIdx].eventTime < _songEndSongTime)
             {
                 var m = _timeline.MacroEvents[_nextMacroIdx];
                 EventBus.Publish(new MacroEventOccurredEvent { Type = m.type, Strength = m.strength, IsClimax = m.isClimax });
@@ -359,11 +417,31 @@ public class GameplayManager : MonoBehaviour
         // Checkpoint tracking
         _checkpoints.UpdateCurrent(_clock.SongTime);
 
-        // Manual play range's early cutoff (see ResolvePlayRange) — stopping here feeds directly
+        // Ending sequence — see GenerateAndStart's own doc on why _songEndTime already includes
+        // farewellSeconds. Volume fades to silence over the LAST fadeOutSeconds before
+        // SongPlayEnd (terrain does the matching visual fade — see MusicWorldManager's own
+        // EndingFadeMultiplier, driven by the SAME SongPlayEnd/fadeOutSeconds), then holds at 0
+        // through the farewell stretch, then the AudioSource actually stops — feeding directly
         // into the exact same "song end" detection right below, same as the clip just naturally
         // running out.
+        if (_audioPlaying && audioSource.isPlaying && SongPlayEnd > 0f && config.core.fadeOutSeconds > 0f)
+        {
+            float fadeStart = SongPlayEnd - config.core.fadeOutSeconds;
+            if (audioSource.time >= fadeStart)
+                audioSource.volume = Mathf.Lerp(OriginalVolume, 0f, Mathf.Clamp01((audioSource.time - fadeStart) / config.core.fadeOutSeconds));
+        }
         if (_songEndTime > 0f && _audioPlaying && audioSource.isPlaying && audioSource.time >= _songEndTime)
             audioSource.Stop();
+
+        // Announced exactly once, right as the fade-out finishes (the song has genuinely ended —
+        // this is also when the activation loops above stop spawning anything new) — GameplayHUD's
+        // "TIME!" banner listens for this to cover the farewell stretch, right up until
+        // GameEndedEvent actually replaces it with the end screen.
+        if (!_songFinishedAnnounced && _audioPlaying && SongPlayEnd > 0f && audioSource.time >= SongPlayEnd)
+        {
+            _songFinishedAnnounced = true;
+            EventBus.Publish(new SongFinishedEvent());
+        }
 
         // Song end — skip if FallRespawnSystem has paused audio for a respawn
         if (_audioPlaying && !audioSource.isPlaying)
@@ -383,6 +461,17 @@ public class GameplayManager : MonoBehaviour
             }
             _loggedSongEndSuppressed = false;
 
+            // Safety net — normally already true by now (see the check above), but AudioSource.time
+            // resets to 0 the instant Stop() is called, so a very short/zero farewellSeconds could
+            // skip that check's exact >= comparison on the very frame Stop() itself fires. Never
+            // let the "TIME!" banner simply not happen.
+            if (!_songFinishedAnnounced)
+            {
+                _songFinishedAnnounced = true;
+                EventBus.Publish(new SongFinishedEvent());
+            }
+
+            audioSource.volume = OriginalVolume; // undo the ending sequence's fade — see its own doc
             _audioPlaying = false;
             _running      = false;
             _clock.Stop();
@@ -605,6 +694,7 @@ public class GameplayManager : MonoBehaviour
         _stats.Reset();
         _fallCount = 0;
         _pickupHistory.Clear();
+        _songFinishedAnnounced = false; // so the "TIME!" banner correctly re-announces on this fresh run
 
         // _availableByType/_maxScoreByType are NOT cleared here — they describe the timeline
         // itself (unchanged by a restart), not this run's performance.
@@ -618,17 +708,27 @@ public class GameplayManager : MonoBehaviour
 
     /// <summary>
     /// Re-arms the pieces a natural song-end stopped (main Update() loop, PlayerController,
-    /// FallRespawnSystem) — called by FallRespawnSystem.RestartSong() itself, right after it
-    /// replays the audio, so restarting from the END SCREEN doesn't leave gameplay frozen with
-    /// _running still false. Harmless to call when already running.
+    /// FallRespawnSystem) — called by FallRespawnSystem.RestartSong() itself, right at the start
+    /// of a manual restart (before its own countdown wait), so restarting from the END SCREEN
+    /// doesn't leave gameplay frozen with _running still false. Harmless to call when already
+    /// running.
+    ///
+    /// audioAlreadyPlaying should be false when the caller still has a warmup/countdown wait
+    /// ahead of it (RestartSong's own countdown — see MarkAudioPlaying, called once the audio
+    /// actually starts): setting _audioPlaying true here while audioSource.isPlaying is still
+    /// false would make the very next Update() think the song had already ended.
     /// </summary>
-    public void ResumeRunning()
+    public void ResumeRunning(bool audioAlreadyPlaying = true)
     {
         _running      = true;
-        _audioPlaying = true;
+        _audioPlaying = audioAlreadyPlaying;
         playerController.StartRunning();
         _fallRespawn.Activate();
     }
+
+    /// <summary>Called by FallRespawnSystem.RestartSong() the instant it actually calls
+    /// audioSource.Play(), once its countdown wait finishes — see ResumeRunning's own doc.</summary>
+    public void MarkAudioPlaying() => _audioPlaying = true;
 
     // ── Session (persists across Restart/Continue within this play session) ──────────────────
 

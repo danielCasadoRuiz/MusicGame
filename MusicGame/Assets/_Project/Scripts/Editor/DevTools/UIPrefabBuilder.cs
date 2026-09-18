@@ -228,6 +228,16 @@ public static class UIPrefabBuilder
         tagOther.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         tagsStrip.gameObject.SetActive(false);
+
+        // Song-finished banner — big, centered, well below the top bar so it never overlaps it;
+        // hidden until GameplayHUD activates it on SongFinishedEvent, and auto-hidden along with
+        // the rest of this root once SetGameEnded(true) swaps in the end screen.
+        var timeUpText = UIFactory.CreateText("TimeUpBanner", root, Loc.Get("HUD.TimeUp"), 48, Color.white, TextAlignmentOptions.Center);
+        UIFactory.SetBox(timeUpText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 80f), new Vector2(600f, 80f));
+        timeUpText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
+        timeUpText.gameObject.SetActive(false);
+        view.timeUpText = timeUpText;
+
         return root.gameObject;
     }
 

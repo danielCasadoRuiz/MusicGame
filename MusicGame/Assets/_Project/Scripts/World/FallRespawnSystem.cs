@@ -79,9 +79,11 @@ public class FallRespawnSystem : MonoBehaviour
 
         if (_manager != null) _manager.SuppressSongEnd = true;
 
-        // Not mid-fall-fade, so the AudioSource is still at its normal volume — use that as
-        // the fade-in target instead of the fall path's captured pre-fade-out volume.
-        float targetVol = _audio.volume;
+        // GameplayManager.OriginalVolume, NOT _audio.volume directly — a run that reached its own
+        // natural end fades the AudioSource to 0 as part of the ending sequence (see
+        // GameplayManager's own Update()), so reading the AudioSource's CURRENT volume here could
+        // capture 0 and silently restart the music at zero volume instead of its real level.
+        float targetVol = _manager != null ? _manager.OriginalVolume : _audio.volume;
 
         // try/finally: guarantees _processing (and SuppressSongEnd) can never get stuck true —
         // a single uncaught exception here used to brick every future Restart click silently,
@@ -228,49 +230,61 @@ public class FallRespawnSystem : MonoBehaviour
         Debug.Log("[RESPAWN] RestartSong (full restart — end screen / pause menu)");
 
         _audio.Stop();
-        _audio.time = 0f;
 
         _manager.ReturnAllActiveToPool();
         _manager.SetNextEventIndex(0);
         _manager.ResyncMacroIndex(0f);
         CheckpointSystem.Instance?.ResetToStart();
-        // 0 warmup — a manual restart plays back immediately (the player already knows the
-        // game; this isn't the first-ever level generation, which is the only place the normal
-        // config.warmupTime count-in lead-in makes sense). Passing the real warmupTime here
-        // would make SongTime hard-snap to that offset the instant audio plays below, ahead of
-        // where the player was just teleported (distance 0) — see ReinitializeClock's doc.
-        _manager.ReinitializeClock(0f);
+
+        // Real warmupTime this time (NOT 0) — a Restart should feel exactly like a genuine fresh
+        // start: the same GameStartedEvent/CountdownController "3, 2, 1, GO" sequence, the player
+        // already running over the synthetic pre-song terrain hill (MusicWorldManager's own
+        // negative-time branch — see NormalizedBandValue), and the song only actually starting
+        // once that countdown finishes. SongTime starts at 0 here (Initialize's own first Tick())
+        // same as it does for the very first GenerateAndStart.
+        _manager.ReinitializeClock(_config.warmupTime);
 
         if (MusicWorldManager.Instance?.Path != null)
         {
             MusicWorldManager.Instance.RebuildNow(0f);
             // Single authority for "where the player belongs" — MusicClock.MusicDistance is
-            // already 0 here (ReinitializeClock(0f) above), so this places the player at the
-            // path start exactly like before, without duplicating the sample/surface logic.
+            // already 0 here (ReinitializeClock above), so this places the player at the path
+            // start exactly like before, without duplicating the sample/surface logic.
             _player.SnapToCanonicalPosition();
             CameraFollow.Instance?.SnapToPlayer();
             Debug.Log($"[PLAYER RESET] forwardOffset={_player.ForwardOffset:F2}  lateralOffset={_player.LateralOffset:F2}  " +
                       $"verticalVelocity={_player.VerticalVelocity:F2}");
         }
 
-        // No wait here anymore — a manual restart (end screen / pause menu) must go the instant
-        // it's clicked, not after a hidden countdown where nothing visibly happens (that dead
-        // time was what made Restart look like it needed a second click: the first click's
-        // effect only became visible ~warmupTime later, right as an impatient second click
-        // landed). Audio plays back immediately at distance 0.
+        // Re-arms the main Update() loop/PlayerController/fall-detection right away (so the
+        // player visibly runs through the countdown, same as a fresh start) — but audioPlaying
+        // stays false until the audio actually starts below, or the very next Update() would see
+        // audioSource.isPlaying==false and think the song had already ended.
+        _manager?.ResumeRunning(audioAlreadyPlaying: false);
+        // Drives CountdownController exactly like a fresh GenerateAndStart — and, unlike before,
+        // fires BEFORE the wait below so the end-screen/pause overlay clears immediately (see
+        // GameplayHUD/PauseController's own PlayerRespawnedEvent(0) handlers) instead of staying
+        // up throughout the countdown.
+        EventBus.Publish(new GameStartedEvent { WarmupTime = _config.warmupTime });
+        EventBus.Publish(new PlayerRespawnedEvent { CheckpointIndex = 0 });
+
+        yield return new WaitForSeconds(_config.warmupTime);
+
+        // Safety net — same as GenerateAndStart's own (see AddressableSongSource.Load's
+        // LoadAudioData call): the clip should already be fully loaded long before a restart is
+        // even possible, this only actually blocks if it somehow isn't.
+        if (_audio.clip != null)
+            yield return new WaitUntil(() => _audio.clip.loadState != AudioDataLoadState.Loading);
+
+        // Plays back from the song's own configured start (SongPlayStart), same as a fresh
+        // start — not always 0 (see MusicRunnerCoreConfig's manual play range).
+        _audio.time   = _manager.SongPlayStart;
+        _audio.volume = targetVol;
         _audio.Play();
         MusicClock.Instance?.ForceUpdate();
+        _manager.MarkAudioPlaying();
 
-        // Re-arms the main Update() loop/PlayerController/fall-detection — a no-op if the game
-        // was already running (the old automatic no-checkpoint-fall path), but ESSENTIAL when
-        // this restart was requested from the END SCREEN, where the song already naturally
-        // ended and stopped all three of these.
-        _manager?.ResumeRunning();
-
-        yield return StartCoroutine(FadeIn(targetVol, _config.checkpointMusicFadeInDuration));
-
-        Debug.Log("[RESTART] RestartSong complete, publishing PlayerRespawnedEvent(0)");
-        EventBus.Publish(new PlayerRespawnedEvent { CheckpointIndex = 0 });
+        Debug.Log("[RESTART] RestartSong complete — countdown finished, song now playing");
     }
 
     /// <summary>

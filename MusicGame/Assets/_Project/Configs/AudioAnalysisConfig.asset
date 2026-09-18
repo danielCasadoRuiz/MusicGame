@@ -75,6 +75,10 @@ MonoBehaviour:
   advancedSimilarity: 0
   similaritySegmentSize: 4
   similarityThreshold: 0.82
+  advancedSemanticTagging: 1
+  semanticTagTopN: 8
+  semanticTagMinScore: 0.05
+  semanticTagDebugUI: 0
   visualBandCount: 24
   enableVisualizer: 1
   showFrequencyBarDuringGameplay: 1
