@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Minimal uGUI construction helpers. Everything is built at RUNTIME, in code — no prefabs, no
@@ -12,6 +13,10 @@ using UnityEngine.InputSystem.UI;
 /// UnityEngine.EventSystems + the new Input System's InputSystemUIInputModule (this project's
 /// Active Input Handling is New-Input-System-only — see ProjectSettings — so the legacy
 /// StandaloneInputModule would never receive clicks at all).
+///
+/// The root Canvas/EventSystem are explicitly homed in the always-loaded "UI" Scene (see
+/// MoveToUiSceneIfLoaded) regardless of which script/scene calls RootCanvas() first — required
+/// since the multi-scene refactor, where the "active" scene shifts as Mode Scenes load/unload.
 /// </summary>
 public static class UIFactory
 {
@@ -35,6 +40,7 @@ public static class UIFactory
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.matchWidthOrHeight  = 0.5f;
 
+            MoveToUiSceneIfLoaded(go);
             EnsureEventSystem();
         }
         return _canvasInstance.GetComponent<RectTransform>();
@@ -43,7 +49,25 @@ public static class UIFactory
     private static void EnsureEventSystem()
     {
         if (EventSystem.current != null) return;
-        new GameObject("[EventSystem]", typeof(EventSystem), typeof(InputSystemUIInputModule));
+        var go = new GameObject("[EventSystem]", typeof(EventSystem), typeof(InputSystemUIInputModule));
+        MoveToUiSceneIfLoaded(go);
+    }
+
+    // Everything UIFactory builds is meant to live in the always-loaded "UI" Scene (see the
+    // multi-scene refactor plan), not whatever scene happens to be SceneManager.GetActiveScene() at
+    // creation time — the active scene shifts to whichever Mode Scene SceneFlowController.LoadMode
+    // last activated, so without this a UI root built while a Mode Scene is active would be
+    // destroyed the instant that Mode Scene unloads. Only the two ROOT objects (Canvas, EventSystem)
+    // need this — everything else UIFactory creates gets SetParent'd under the Canvas, and Unity
+    // automatically moves a reparented object into its new parent's scene.
+    private static void MoveToUiSceneIfLoaded(GameObject go)
+    {
+        var uiScene = SceneManager.GetSceneByName("UI");
+        if (uiScene.IsValid() && uiScene.isLoaded)
+            SceneManager.MoveGameObjectToScene(go, uiScene);
+        else
+            Debug.LogWarning($"[UIFactory] 'UI' scene not loaded yet — '{go.name}' will live in " +
+                              "whatever scene is currently active instead.");
     }
 
     // ── Primitives ──────────────────────────────────────────────────────────
@@ -115,6 +139,37 @@ public static class UIFactory
         fillImage.fillOrigin  = (int)Image.OriginHorizontal.Left;
         Stretch(fillRt);
         return back;
+    }
+
+    /// <summary>Real, draggable uGUI Slider (0..1 by default) — background + fill + handle, wired
+    /// via Unity's own Slider component (it manages the fill's anchorMax.x itself).</summary>
+    public static Slider CreateSlider(string name, RectTransform parent, float value, Color fillColor)
+    {
+        var bg = CreatePanel(name + "Bg", parent, new Color(1f, 1f, 1f, 0.12f));
+
+        var fillArea = CreateRect(name + "FillArea", bg.rectTransform);
+        Stretch(fillArea);
+        var fillRt = CreateRect(name + "Fill", fillArea);
+        var fillImage = fillRt.gameObject.AddComponent<Image>();
+        fillImage.color = fillColor;
+        Stretch(fillRt);
+
+        var handleArea = CreateRect(name + "HandleArea", bg.rectTransform);
+        Stretch(handleArea);
+        var handleRt = CreateRect(name + "Handle", handleArea);
+        var handleImage = handleRt.gameObject.AddComponent<Image>();
+        handleImage.color = Color.white;
+        handleRt.sizeDelta = new Vector2(14f, 0f);
+
+        var slider = bg.gameObject.AddComponent<Slider>();
+        slider.fillRect      = fillRt;
+        slider.handleRect    = handleRt;
+        slider.targetGraphic = handleImage;
+        slider.direction     = Slider.Direction.LeftToRight;
+        slider.minValue      = 0f;
+        slider.maxValue      = 1f;
+        slider.value         = value;
+        return slider;
     }
 
     public static void Stretch(RectTransform rt)

@@ -21,7 +21,7 @@ public class SongSelectionService : MonoBehaviour
     /// <summary>
     /// Loads `source`, and on success writes GameSession.Instance.SelectedSong AND assigns the
     /// loaded clip onto `targetAudioSource` (the same AudioSource AudioSystemBootstrapper reads
-    /// from — see SceneBootstrap, which also re-applies GameSession.SelectedSong.Clip before
+    /// from — see RunnerSceneBootstrap, which also re-applies GameSession.SelectedSong.Clip before
     /// starting analysis, so a song picked before a scene even reloads still gets used correctly).
     /// `onComplete(true)` on success, `onComplete(false)` if the source produced nothing
     /// (cancelled picker, failed load) — never throws for that case.

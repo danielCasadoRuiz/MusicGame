@@ -6,8 +6,8 @@ using UnityEngine;
 /// SongCache/analyzer pipeline (none of that is rewritten, only WHEN it starts changes). Analysis
 /// used to start unconditionally from Awake() the instant this GameObject existed; it now waits
 /// for an explicit BeginAnalysis() call, so Gameplay no longer implicitly depends on this scene
-/// loading, and a future SceneBootstrap can trigger it precisely when GameFlowState.SongAnalysis
-/// is entered (see SceneBootstrap.cs) instead of it just happening on scene load.
+/// loading, and RunnerSceneBootstrap triggers it precisely when GameFlowState.SongAnalysis
+/// is entered (see RunnerSceneBootstrap.cs) instead of it just happening on scene load.
 /// </summary>
 public class AudioSystemBootstrapper : MonoBehaviour
 {
@@ -16,7 +16,7 @@ public class AudioSystemBootstrapper : MonoBehaviour
     [SerializeField] private bool autoPlayAfterAnalysis = true;
 
     public AudioAnalysisConfig Config      => config;
-    // Exposed so SceneBootstrap can apply a Song-Selection-picked clip before BeginAnalysis() —
+    // Exposed so RunnerSceneBootstrap can apply a Song-Selection-picked clip before BeginAnalysis() —
     // see SongSelectionService/GameSession.SelectedSong.
     public AudioSource         AudioSource => audioSource;
 
@@ -28,9 +28,9 @@ public class AudioSystemBootstrapper : MonoBehaviour
         var sampler     = gameObject.AddComponent<AudioSampler>();
         var analyzer    = gameObject.AddComponent<AudioAnalyzer>();
         _preAnalyzer    = gameObject.AddComponent<AudioPreAnalyzer>();
-        // Shows itself only between PreAnalysisStartedEvent and SongProfileReadyEvent (never on a
-        // cache hit, which skips straight to SongProfileReadyEvent) — see its own class doc.
-        gameObject.AddComponent<AnalyzingScreenController>();
+        // AnalyzingScreenController is now owned by UIFlowController (UI Scene) — it only ever
+        // talked to EventBus/ThemeManager.Instance, never to anything scene-local here, so moving it
+        // to a different loaded scene changes nothing about how it's triggered/shown.
 
         _contextProvider = new AudioContextProvider();
         _contextProvider.Initialize(audioSource);

@@ -1,11 +1,15 @@
 /// <summary>
-/// Fired by ThemeManager right BEFORE it starts swapping to a new resolved theme (new content
-/// already loaded, about to become current) — a future ThemeTransitionController can use this to
-/// kick off a fade-out/crossfade start. Currently nothing subscribes to this (no real visual
-/// transition exists yet — nothing in the game consumes ResolvedTheme for rendering as of this
-/// phase), but the event exists now so that later work doesn't need to touch ThemeManager again.
+/// Fired by ThemeManager right as it starts swapping to a new resolved theme — carries BOTH the
+/// theme being left (Old, null on the very first-ever resolve at boot) and the one being swapped to
+/// (New, never null) so a receiver can interpolate between them (Section 4 of the multi-scene
+/// refactor plan: "ThemeChanging(old, new) → receivers transition → ThemeChanged(new)"). See
+/// ThemeReceiverBehaviour — every screen already gets this transition for free through it.
 /// </summary>
-public struct ThemeChangingEvent { }
+public struct ThemeChangingEvent
+{
+    public ResolvedTheme Old;
+    public ResolvedTheme New;
+}
 
 /// <summary>
 /// Fired by ThemeManager right after CurrentTheme has been swapped to a newly resolved theme —

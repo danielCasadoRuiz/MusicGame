@@ -14,4 +14,8 @@ public class ThemeSystemConfigSO : ScriptableObject
     public MusicStyleRegistrySO    musicStyleRegistry;
     public EventThemeRegistrySO    eventThemeRegistry;
     public FrontendVisualRegistrySO frontendVisualRegistry;
+
+    [Tooltip("How long ThemeReceiverBehaviour's color interpolation takes when CurrentTheme changes " +
+             "— see ThemeTransitionController. 0 = instant snap.")]
+    public float themeTransitionDuration = 0.4f;
 }

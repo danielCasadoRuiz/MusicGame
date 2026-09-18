@@ -6,13 +6,12 @@ using UnityEngine;
 /// read AppFlowController.Instance.CurrentState (or AppBootstrap.Context.AppFlow) or subscribe to
 /// GameFlowStateChangedEvent; nothing else decides this.
 ///
-/// PHASE 1 NOTE: this only tracks/publishes state — it does not yet load/unload scenes or gate
-/// GameplayManager/AudioSystemBootstrapper (that begins once Song Analysis is actually extracted
-/// from Gameplay's current auto-start). For now CurrentState starts at Boot and is immediately
-/// advanced to FlowConfigSO.initialState (Gameplay, by default) in Start(), so the existing
-/// single-scene prototype keeps working exactly as before while this scaffolding is introduced. A
-/// later phase replaces that with real transitions driven by actual Intro/MainMenu/SongSelection/
-/// SongAnalysis screens.
+/// This class only tracks/publishes state — it never loads/unloads scenes itself (SceneFlowController
+/// reacts to GameFlowStateChangedEvent for that) and never gates GameplayManager/
+/// AudioSystemBootstrapper directly (they react to the same event/notifications independently).
+/// CurrentState starts at Boot and is immediately advanced to FlowConfigSO.initialState in Start() —
+/// currently Intro, the app's real entry point now that Intro/MainMenu exist (see
+/// IntroScreenController/MainMenuController).
 /// </summary>
 public class AppFlowController : MonoBehaviour, IAppModule, IConfigurableModule<FlowConfigSO>
 {

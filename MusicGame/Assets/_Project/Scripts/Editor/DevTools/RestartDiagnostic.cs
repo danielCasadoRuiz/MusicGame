@@ -5,7 +5,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>
-/// Dev-only tool (Editor folder — never ships): plays SampleScene in batchmode for real, waits
+/// Dev-only tool (Editor folder — never ships): plays the Runner scene in batchmode for real, waits
 /// for the song to end NATURALLY (polls GameplayHUD's own _gameEnded field via reflection — see
 /// note below on why NOT an EventBus subscription), then calls
 /// GameplayManager.RequestRestartSong() — the EXACT same call GameplayHUD's end-screen "RESTART"
@@ -41,7 +41,7 @@ public static class RestartDiagnostic
 
         EditorApplication.update += Tick;
 
-        EditorSceneManager.OpenScene("Assets/_Project/Scenes/SampleScene.unity");
+        EditorSceneManager.OpenScene("Assets/_Project/Scenes/Runner.unity");
         EditorApplication.isPlaying = true;
         // Deliberately NOT using EditorApplication.playModeStateChanged to set up an
         // EventBus.Subscribe here — that callback (and any subscription made from it) is

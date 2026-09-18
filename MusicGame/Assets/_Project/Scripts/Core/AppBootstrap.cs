@@ -21,9 +21,10 @@ using UnityEngine;
 /// Frontend/Gameplay/Fight scene split each accidentally included one.
 ///
 /// Only genuinely persistent, cross-scene services belong here (GameSession, AppFlowController,
-/// ThemeAssetLoader, ThemeManager so far — see later phases for a possible future Audio Analysis
-/// service). Anything scene-local (GameplayManager, AudioSystemBootstrapper, HorizonWorld, etc.)
-/// stays exactly where it is; this does not replace or wrap them — a later phase adds small
+/// ThemeAssetLoader, ThemeManager, SceneFlowController so far — see later phases for a possible
+/// future Audio Analysis service). Anything scene-local (GameplayManager, AudioSystemBootstrapper,
+/// HorizonWorld, etc.) stays exactly where it is; this does not replace or wrap them — a later
+/// phase adds small
 /// SceneBootstrapper components that connect THOSE to this Context, instead of them each reaching
 /// for a global directly.
 /// </summary>
@@ -37,7 +38,19 @@ public static class AppBootstrap
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Initialize()
     {
-        if (Context != null) return; // already booted
+        // Context is a plain C# object, so it never becomes null on its own — but if "Enter Play
+        // Mode Options" has domain reload disabled, it (and everything it references) survives,
+        // STALE, from a previous Play session that already stopped: exiting Play mode destroys every
+        // GameObject (DontDestroyOnLoad included), but does NOT clear static fields without a domain
+        // reload. `Context.AppFlow != null` uses Unity's own destroyed-object check (unlike a plain
+        // C# null check on Context itself), so a stale Context from a dead session is correctly
+        // treated as "not actually booted" and rebuilt fresh, instead of silently doing nothing —
+        // which otherwise looks exactly like "the game is stuck on a black screen" (no fresh
+        // AppFlowController.Start() ever fires, so GameFlowState never leaves whatever it was frozen
+        // at when the previous session died).
+        if (Context != null && Context.AppFlow != null) return; // already booted, and still alive
+        Application.quitting -= Shutdown; // drop any stale subscription before Shutdown() re-adds one
+        Context = null;
 
         var appConfig = Resources.Load<AppConfigSO>("AppConfig");
         if (appConfig == null)
@@ -48,26 +61,30 @@ public static class AppBootstrap
         Object.DontDestroyOnLoad(go);
 
         // 1. construct
-        var gameSession = go.AddComponent<GameSession>();
-        var appFlow     = go.AddComponent<AppFlowController>();
-        var themeAssets = go.AddComponent<ThemeAssetLoader>();
+        var gameSession  = go.AddComponent<GameSession>();
+        var appFlow      = go.AddComponent<AppFlowController>();
+        var themeAssets  = go.AddComponent<ThemeAssetLoader>();
         var themeManager = go.AddComponent<ThemeManager>();
+        var sceneFlow    = go.AddComponent<SceneFlowController>();
 
         // 2. configure (only modules that actually have config)
         appFlow.Configure(appConfig != null ? appConfig.flow : null);
         themeManager.Configure(appConfig != null ? appConfig.theme : null);
 
         // 3. compose context
-        Context = new AppContext(gameSession, appFlow, themeAssets, themeManager);
+        Context = new AppContext(gameSession, appFlow, themeAssets, themeManager, sceneFlow);
 
         // 4. initialize (cross-module wiring) — ThemeManager's Initialize immediately resolves a
         // BaseTheme-only CurrentTheme and kicks off loading a random frontend visual, so it must
         // run AFTER ThemeAssetLoader is already constructed above (it is — see the two-phase
-        // sequence in this class's own doc).
+        // sequence in this class's own doc). SceneFlowController's Initialize kicks off loading the
+        // always-on UI Scene additively — order relative to the others doesn't matter, it has no
+        // dependency on any of them yet.
         ((IAppModule)gameSession).Initialize(Context);
         ((IAppModule)appFlow).Initialize(Context);
         ((IAppModule)themeAssets).Initialize(Context);
         ((IAppModule)themeManager).Initialize(Context);
+        ((IAppModule)sceneFlow).Initialize(Context);
 
         Application.quitting += Shutdown;
     }
@@ -79,6 +96,7 @@ public static class AppBootstrap
         ((IAppModule)Context.AppFlow).Shutdown();
         ((IAppModule)Context.Theme).Shutdown();
         ((IAppModule)Context.ThemeAssets).Shutdown();
+        ((IAppModule)Context.SceneFlow).Shutdown();
         Context = null;
         Application.quitting -= Shutdown;
     }

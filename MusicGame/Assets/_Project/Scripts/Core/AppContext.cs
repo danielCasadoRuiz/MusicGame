@@ -10,16 +10,19 @@
 /// </summary>
 public class AppContext
 {
-    public GameSession       GameSession { get; }
-    public AppFlowController AppFlow     { get; }
-    public ThemeAssetLoader  ThemeAssets { get; }
-    public ThemeManager      Theme       { get; }
+    public GameSession        GameSession { get; }
+    public AppFlowController  AppFlow     { get; }
+    public ThemeAssetLoader   ThemeAssets { get; }
+    public ThemeManager       Theme       { get; }
+    public SceneFlowController SceneFlow  { get; }
 
-    public AppContext(GameSession gameSession, AppFlowController appFlow, ThemeAssetLoader themeAssets, ThemeManager theme)
+    public AppContext(GameSession gameSession, AppFlowController appFlow, ThemeAssetLoader themeAssets,
+        ThemeManager theme, SceneFlowController sceneFlow)
     {
         GameSession = gameSession;
         AppFlow     = appFlow;
         ThemeAssets = themeAssets;
         Theme       = theme;
+        SceneFlow   = sceneFlow;
     }
 }

@@ -1,35 +1,45 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
-/// Architectural SHELL for the Fight step of the app flow — deliberately NOT a real fighting game.
-/// Its only job is to prove the wiring: entering GameFlowState.Fight gives this component
-/// everything a real Fight system will eventually need (GameSession's SelectedSong/Profile/
-/// RunnerResults/DetectedMusicStyleId, and CurrentTheme), and it uses that data to show a
-/// placeholder screen and spawn two placeholder actors (player vs. AI enemy).
+/// Fight HUD — a Street-Fighter-style top bar (player name+health on the left, a countdown timer
+/// in the middle, opponent name+health on the right, a pause button at the far right) plus a pause
+/// menu (Resume / Main Menu), reachable from the pause button OR the Esc key. Shown on top of
+/// whatever's rendering underneath while GameFlowState is Fight. Lives in the always-loaded UI
+/// Scene (added by UIFlowController): it only ever talks to GameSession.Instance/
+/// ThemeManager.Instance/AppBootstrap.Context/EventBus, never to anything scene-local, so it stays
+/// correct regardless of which Mode Scene is currently active underneath it.
 ///
-/// Scene-local (added next to SceneBootstrap on the same GameObject), not persistent — Fight is
-/// entered from within the single existing scene rather than a real scene load (see SceneBootstrap's
-/// own doc on why this project doesn't split scenes yet). Reached via the app's existing Continue
-/// button: GameplayHUD.OnContinueClicked -> ContinuePressedEvent -> SceneBootstrap ->
-/// GameFlowState.Fight -> this component.
+/// PLACEHOLDER, not real fight mechanics: health bars start full and never change (no damage system
+/// exists yet), the timer counts down but nothing happens at zero yet, and the opponent is just a
+/// themed name derived from GameSession.DetectedMusicStyleId — this only proves the HUD shell and
+/// its data wiring (Section 18 of the multi-scene refactor plan), matching FightSceneBootstrap's own
+/// "architectural shell" scope for the 3D placeholders.
 ///
-/// Extension points for a REAL fight system later: SpawnPlayerPlaceholder/SpawnEnemyPlaceholder are
-/// the two seams to replace with actual character loading/AI once that system gets designed — kept
-/// as small, isolated methods rather than inlined, so that swap is a two-method change, not an
-/// archaeology dig through this whole class. The underlying Gameplay scene/world is left completely
-/// untouched (no pausing/hiding) — this is only an overlay on top of it, matching "shell, not a real
-/// mode" for this phase.
+/// The 3D placeholder content (arena, player/enemy placeholders, camera) is NOT here — that lives in
+/// FightSceneBootstrap, in the real Fight Mode Scene (Fight.unity), loaded/unloaded by
+/// SceneFlowController the instant GameFlowState enters/leaves Fight. This class only owns the
+/// 2D overlay; it doesn't know Fight.unity exists.
 /// </summary>
 public class FightController : MonoBehaviour
 {
-    private RectTransform _root;
-    private Text _infoText;
+    private const float MatchDuration = 60f; // no real FightConfig yet — a single tunable value
+                                              // doesn't earn one; promote this if Fight grows more.
 
-    private GameObject _playerPlaceholder;
-    private GameObject _enemyPlaceholder;
+    private RectTransform _root;
+    private Text _timerText;
+    private Text _playerNameText, _opponentNameText;
+    private Image _playerHealthFill, _opponentHealthFill;
+
+    private RectTransform _pausePanel;
+    private bool _paused;
+    private bool _active;
+    private float _timeRemaining;
 
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
+
+    private void Awake() => Build();
 
     private void OnEnable()
     {
@@ -47,101 +57,155 @@ public class FightController : MonoBehaviour
         ExitFight();
     }
 
+    private void Update()
+    {
+        if (!_active) return;
+
+        var kb = Keyboard.current;
+        if (kb != null && kb.escapeKey.wasPressedThisFrame)
+            SetPaused(!_paused);
+
+        if (_paused) return;
+
+        _timeRemaining = Mathf.Max(0f, _timeRemaining - Time.deltaTime);
+        UpdateTimerText();
+        // TODO: real match-end logic (win/lose/draw) once actual fight mechanics exist — the timer
+        // just holds at 0:00 for now.
+    }
+
     private void EnterFight()
     {
-        BuildUiIfNeeded();
         PopulateInfo();
+        _timeRemaining = MatchDuration;
+        UpdateTimerText();
+        SetPaused(false);
+        _active = true;
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
-
-        SpawnPlayerPlaceholder();
-        SpawnEnemyPlaceholder();
     }
 
     private void ExitFight()
     {
+        _active = false;
         if (_root != null) _root.gameObject.SetActive(false);
-        if (_playerPlaceholder != null) { Destroy(_playerPlaceholder); _playerPlaceholder = null; }
-        if (_enemyPlaceholder  != null) { Destroy(_enemyPlaceholder);  _enemyPlaceholder  = null; }
     }
 
     // ── UI shell (built at runtime via UIFactory, same pattern as AnalyzingScreenController) ─────
 
-    private void BuildUiIfNeeded()
+    private void Build()
     {
-        if (_root != null) return;
-
         var canvas = UIFactory.RootCanvas();
         _root = UIFactory.CreateRect("FightScreen", canvas);
         UIFactory.Stretch(_root);
 
-        var dim = UIFactory.CreatePanel("Dim", _root, new Color(0.02f, 0.02f, 0.05f, 0.85f));
-        UIFactory.Stretch(dim.rectTransform);
-
-        var title = UIFactory.CreateText("Title", _root, Loc.Get("Fight.Title"), 30, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold);
-        UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0f, 80f), new Vector2(900f, 50f));
-
-        _infoText = UIFactory.CreateText("Info", _root, "", 16, new Color(0.8f, 0.8f, 0.85f), TextAnchor.MiddleCenter);
-        UIFactory.SetBox(_infoText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0f, 10f), new Vector2(900f, 60f));
-
-        var backBtn = UIFactory.CreateButton("BackButton", _root, Loc.Get("Fight.Back"), out _);
-        UIFactory.SetBox(backBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0f, -90f), new Vector2(200f, 44f));
-        backBtn.onClick.AddListener(OnBackClicked);
+        BuildTopBar();
+        BuildPauseMenu();
 
         _root.gameObject.SetActive(false);
+    }
+
+    private void BuildTopBar()
+    {
+        var topBar = UIFactory.CreatePanel("TopBar", _root, new Color(0.02f, 0.02f, 0.05f, 0.55f));
+        UIFactory.SetBox(topBar.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
+            Vector2.zero, new Vector2(0f, 90f));
+
+        // Player — left.
+        _playerNameText = UIFactory.CreateText("PlayerName", topBar.rectTransform, "PLAYER", 18, Color.white, TextAnchor.UpperLeft, FontStyle.Bold);
+        UIFactory.SetBox(_playerNameText.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+            new Vector2(20f, -12f), new Vector2(320f, 24f));
+
+        var playerHealthBg = UIFactory.CreateFillBar("PlayerHealth", topBar.rectTransform, new Color(0.12f, 0.12f, 0.12f), new Color(0.3f, 0.85f, 0.3f), out _playerHealthFill);
+        UIFactory.SetBox(playerHealthBg.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+            new Vector2(20f, -42f), new Vector2(320f, 18f));
+        _playerHealthFill.fillAmount = 1f;
+
+        // Opponent — right (leaves room for the pause button at the far right).
+        _opponentNameText = UIFactory.CreateText("OpponentName", topBar.rectTransform, "RIVAL", 18, Color.white, TextAnchor.UpperRight, FontStyle.Bold);
+        UIFactory.SetBox(_opponentNameText.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+            new Vector2(-90f, -12f), new Vector2(320f, 24f));
+
+        var opponentHealthBg = UIFactory.CreateFillBar("OpponentHealth", topBar.rectTransform, new Color(0.12f, 0.12f, 0.12f), new Color(0.9f, 0.3f, 0.25f), out _opponentHealthFill);
+        UIFactory.SetBox(opponentHealthBg.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+            new Vector2(-90f, -42f), new Vector2(320f, 18f));
+        _opponentHealthFill.fillAmount = 1f;
+        // Health bars fill from the LEFT by default (UIFactory.CreateFillBar) — mirror the
+        // opponent's so it visibly drains toward its own name, like the player's does.
+        _opponentHealthFill.fillOrigin = (int)Image.OriginHorizontal.Right;
+
+        // Timer — center.
+        _timerText = UIFactory.CreateText("Timer", topBar.rectTransform, "", 28, Color.white, TextAnchor.UpperCenter, FontStyle.Bold);
+        UIFactory.SetBox(_timerText.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, -12f), new Vector2(140f, 36f));
+
+        // Pause — far right.
+        var pauseBtn = UIFactory.CreateButton("PauseButton", topBar.rectTransform, Loc.Get("Fight.Pause"), out var pauseLabel);
+        pauseLabel.fontSize = 12;
+        UIFactory.SetBox(pauseBtn.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+            new Vector2(-15f, -15f), new Vector2(60f, 60f));
+        pauseBtn.onClick.AddListener(() => SetPaused(!_paused));
+    }
+
+    private void BuildPauseMenu()
+    {
+        _pausePanel = UIFactory.CreateRect("PauseMenu", _root);
+        UIFactory.Stretch(_pausePanel);
+
+        var dim = UIFactory.CreatePanel("Dim", _pausePanel, new Color(0f, 0f, 0f, 0.75f));
+        UIFactory.Stretch(dim.rectTransform);
+
+        var title = UIFactory.CreateText("Title", _pausePanel, Loc.Get("Fight.Paused"), 30, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold);
+        UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 60f), new Vector2(400f, 50f));
+
+        var resumeBtn = UIFactory.CreateButton("ResumeButton", _pausePanel, Loc.Get("Fight.Resume"), out _);
+        UIFactory.SetBox(resumeBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -10f), new Vector2(220f, 48f));
+        resumeBtn.onClick.AddListener(() => SetPaused(false));
+
+        // The equivalent of the old top-level "Back" button — moved into the pause menu, since it's
+        // an exit action, not something that belongs permanently on-screen during a match.
+        var mainMenuBtn = UIFactory.CreateButton("MainMenuButton", _pausePanel, Loc.Get("Fight.MainMenu"), out _);
+        UIFactory.SetBox(mainMenuBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -70f), new Vector2(220f, 48f));
+        mainMenuBtn.onClick.AddListener(OnMainMenuClicked);
+
+        _pausePanel.gameObject.SetActive(false);
+    }
+
+    private void SetPaused(bool paused)
+    {
+        _paused = paused;
+        _pausePanel.gameObject.SetActive(paused);
     }
 
     private void PopulateInfo()
     {
         var session = GameSession.Instance;
-        string style = session != null ? session.DetectedMusicStyleId.ToString() : MusicStyleId.Unknown.ToString();
-        int score = session?.RunnerResults?.Stats?.Score ?? 0;
+        var style = session != null ? session.DetectedMusicStyleId : MusicStyleId.Unknown;
+        _opponentNameText.text = style == MusicStyleId.Unknown
+            ? Loc.Get("Fight.RivalUnknown")
+            : Loc.Get("Fight.RivalNamed", style.ToString().ToUpperInvariant());
 
-        _infoText.text = Loc.Get("Fight.Info", style, score.ToString());
+        _playerHealthFill.fillAmount   = 1f;
+        _opponentHealthFill.fillAmount = 1f;
     }
 
-    private void OnBackClicked()
+    private void UpdateTimerText()
     {
-        AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.Results);
+        int totalSeconds = Mathf.CeilToInt(_timeRemaining);
+        _timerText.text = $"{totalSeconds / 60:00}:{totalSeconds % 60:00}";
     }
 
-    // ── Placeholder actors ──────────────────────────────────────────────────────────────────────
-
-    private void SpawnPlayerPlaceholder()
+    private void OnMainMenuClicked()
     {
-        Color color = ThemeManager.Instance != null && ThemeManager.Instance.CurrentTheme != null && ThemeManager.Instance.CurrentTheme.UI != null
-            ? ThemeManager.Instance.CurrentTheme.UI.accentColor
-            : new Color(0.2f, 0.6f, 1f);
-        _playerPlaceholder = SpawnCapsule("FightPlayerPlaceholder", SpawnAnchor() - SpawnRight() * 1.5f, color);
-    }
-
-    private void SpawnEnemyPlaceholder()
-    {
-        _enemyPlaceholder = SpawnCapsule("FightEnemyPlaceholder", SpawnAnchor() + SpawnRight() * 1.5f, new Color(0.9f, 0.25f, 0.2f));
-    }
-
-    private GameObject SpawnCapsule(string name, Vector3 position, Color color)
-    {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        go.name = name;
-        go.transform.position = position;
-        var rend = go.GetComponent<Renderer>();
-        if (rend != null) rend.material.color = color;
-        return go;
-    }
-
-    private Vector3 SpawnAnchor()
-    {
-        var cam = Camera.main;
-        return cam != null ? cam.transform.position + cam.transform.forward * 5f : Vector3.zero;
-    }
-
-    private Vector3 SpawnRight()
-    {
-        var cam = Camera.main;
-        return cam != null ? cam.transform.right : Vector3.right;
+        // NOT GameFlowState.Results: Runner already fully unloaded the instant Fight replaced it
+        // (see SceneFlowController) — its GameplayManager/GameplayHUD (which owned the results end-
+        // screen) are gone. Requesting Results would just reload a completely FRESH Runner (a new
+        // run starting from scratch), not bring back the run that just ended. MainMenu is the
+        // correct, honest "you're done" destination until a real Results screen exists in the UI
+        // Scene that reads GameSession.RunnerResults directly instead of depending on Runner being
+        // alive.
+        AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu);
     }
 }

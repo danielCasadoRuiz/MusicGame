@@ -5,7 +5,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>
-/// Dev-only tool (Editor folder — never ships): enters Play mode on SampleScene in batchmode,
+/// Dev-only tool (Editor folder — never ships): enters Play mode on the Runner scene in batchmode,
 /// waits for the song/world to actually spin up, renders Camera.main to an offscreen
 /// RenderTexture, and saves a PNG — so visual changes (e.g. the Horizon World) can be
 /// screenshotted and compared without a human at the keyboard.
@@ -53,7 +53,7 @@ public static class CaptureGameView
 
         EditorApplication.update += EditorTick;
 
-        EditorSceneManager.OpenScene("Assets/_Project/Scenes/SampleScene.unity");
+        EditorSceneManager.OpenScene("Assets/_Project/Scenes/Runner.unity");
         EditorApplication.isPlaying = true;
     }
 

@@ -78,7 +78,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: RESTART
+  m_Text: EndScreen.Restart
 --- !u!1 &747496201131487051
 GameObject:
   m_ObjectHideFlags: 0
@@ -456,7 +456,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2500\u2500\u2500 RESULTS \u2500\u2500\u2500"
+  m_Text: EndScreen.Title
 --- !u!1 &5858114473278337614
 GameObject:
   m_ObjectHideFlags: 0
@@ -725,7 +725,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: CONTINUE
+  m_Text: EndScreen.Continue
 --- !u!1 &6605842842625002118
 GameObject:
   m_ObjectHideFlags: 0

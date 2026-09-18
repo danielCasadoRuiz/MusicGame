@@ -150,8 +150,16 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateForwardOffset()
     {
-        var kb = Keyboard.current;
-        bool surging = kb != null && (kb.wKey.isPressed || kb.upArrowKey.isPressed);
+        bool surging;
+        if (PlatformService.IsMobile)
+        {
+            surging = TouchInputState.Surging;
+        }
+        else
+        {
+            var kb = Keyboard.current;
+            surging = kb != null && (kb.wKey.isPressed || kb.upArrowKey.isPressed);
+        }
 
         _forwardOffset = surging
             ? Mathf.MoveTowards(_forwardOffset, config.maxSurge, config.surgeSpeed * Time.deltaTime)
@@ -177,12 +185,20 @@ public class PlayerController : MonoBehaviour
         // applying unchanged (no decay, no new player-driven direction change) until landing.
         if (grounded || config.allowAirControl)
         {
-            var kb = Keyboard.current;
-            float dir = 0f;
-            if (kb != null)
+            float dir;
+            if (PlatformService.IsMobile)
             {
-                if (kb.aKey.isPressed || kb.leftArrowKey.isPressed)  dir -= 1f;
-                if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) dir += 1f;
+                dir = Mathf.Clamp(TouchInputState.Lateral, -1f, 1f);
+            }
+            else
+            {
+                var kb = Keyboard.current;
+                dir = 0f;
+                if (kb != null)
+                {
+                    if (kb.aKey.isPressed || kb.leftArrowKey.isPressed)  dir -= 1f;
+                    if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) dir += 1f;
+                }
             }
             _lateralVelocity = dir * config.strafeSpeed;
         }
@@ -199,10 +215,21 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateVertical()
     {
-        var kb       = Keyboard.current;
         bool grounded = _cc.isGrounded;
 
-        if (grounded && kb != null && kb.spaceKey.wasPressedThisFrame)
+        bool jumpPressed;
+        if (PlatformService.IsMobile)
+        {
+            jumpPressed = TouchInputState.JumpRequested;
+            TouchInputState.JumpRequested = false; // edge-triggered — consume it the same frame
+        }
+        else
+        {
+            var kb = Keyboard.current;
+            jumpPressed = kb != null && kb.spaceKey.wasPressedThisFrame;
+        }
+
+        if (grounded && jumpPressed)
             _verticalVelocity = config.jumpForce;
 
         _verticalVelocity += config.gravity * Time.deltaTime;

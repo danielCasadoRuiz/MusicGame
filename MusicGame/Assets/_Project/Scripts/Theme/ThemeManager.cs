@@ -16,11 +16,11 @@ using UnityEngine.AddressableAssets;
 /// ThemeResolver already treats a null event override as "no event override" correctly.
 ///
 /// TRANSITIONS: load the new content, apply it (Rebuild), THEN release the old content — never the
-/// reverse (Section 17 of the plan). There is no real crossfade/interpolation yet — nothing in the
-/// game actually reads ResolvedTheme for rendering as of this phase, so building fake visual
-/// transition logic with nothing to visually transition would just be ceremony. A
-/// ThemeTransitionController slots in here later, once a real consumer (UI, most likely) exists to
-/// animate between two ResolvedThemes; for now this is an instant swap.
+/// reverse (Section 17 of the plan). Rebuild() publishes ThemeChangingEvent with BOTH the old and
+/// new resolved theme before committing CurrentTheme — every UI screen (ThemeReceiverBehaviour)
+/// picks that up and interpolates its own colors over ThemeTransitionController's configurable
+/// duration; this class itself stays completely unaware of that (it just publishes the two events,
+/// same as always).
 /// </summary>
 public class ThemeManager : MonoBehaviour, IAppModule, IConfigurableModule<ThemeSystemConfigSO>
 {
@@ -123,8 +123,6 @@ public class ThemeManager : MonoBehaviour, IAppModule, IConfigurableModule<Theme
 
     private void SwapStyleLayer(VisualOverrideLayer newLayer, AssetReferenceT<MusicStyleVisualSO> styleRef, AssetReferenceT<FrontendVisualPresetSO> frontendRef)
     {
-        EventBus.Publish(new ThemeChangingEvent());
-
         var oldFrontendRef = _loadedFrontendRef;
         var oldStyleRef     = _loadedStyleRef;
 
@@ -144,6 +142,12 @@ public class ThemeManager : MonoBehaviour, IAppModule, IConfigurableModule<Theme
     {
         var resolved = ThemeResolver.Resolve(_config != null ? _config.baseTheme : null, _currentStyleLayer, _currentEventTheme);
         if (resolved == null) return; // ThemeResolver already logged why (missing BaseTheme)
+
+        // Published BEFORE committing CurrentTheme, with the OLD value still readable, so receivers
+        // (ThemeReceiverBehaviour) know exactly what to interpolate FROM and TO (Section 4 of the
+        // plan) — Old is null on the very first-ever resolve at boot, which receivers treat as
+        // "nothing to transition from, just snap".
+        EventBus.Publish(new ThemeChangingEvent { Old = CurrentTheme, New = resolved });
 
         CurrentTheme = resolved;
         EventBus.Publish(new ThemeChangedEvent { Theme = CurrentTheme });

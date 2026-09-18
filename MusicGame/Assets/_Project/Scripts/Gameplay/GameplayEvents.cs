@@ -1,6 +1,10 @@
 using UnityEngine;
 
-public struct GameStartedEvent      { }
+// WarmupTime lets a countdown UI (CountdownController) show exactly as many "3, 2, 1, GO"-style
+// ticks as config.core.warmupTime actually calls for, instead of assuming a hardcoded duration —
+// GameplayManager publishes this right before its own WaitForSeconds(warmupTime) before playing
+// the song, so the countdown and the real warmup are driven by the same single config value.
+public struct GameStartedEvent      { public float WarmupTime; }
 public struct GameEndedEvent
 {
     public CollectionStats Stats;

@@ -1,6 +1,7 @@
 /// <summary>
 /// Contract for "this UI element knows how to restyle itself from a UIStyleSO" — see
-/// ThemeReceiverBehaviour for the base class that actually wires this to ThemeChangedEvent. Kept
+/// ThemeReceiverBehaviour for the base class that actually wires this to ThemeChangingEvent (with
+/// a real color transition, not an instant snap — see that class's own doc). Kept
 /// as a separate interface (rather than only the base class) so a screen that can't inherit
 /// ThemeReceiverBehaviour for some reason (already extends something else) can still implement
 /// this directly.

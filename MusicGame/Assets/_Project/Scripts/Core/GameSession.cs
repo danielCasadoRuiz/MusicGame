@@ -37,7 +37,7 @@ public class GameSession : MonoBehaviour, IAppModule
     /// existing subscribers are left untouched; this only adds one more, authoritative copy.</summary>
     public SongProfile Profile { get; private set; }
 
-    /// <summary>Written by SceneBootstrap right after IMusicStyleClassifier resolves this song's
+    /// <summary>Written by RunnerSceneBootstrap right after IMusicStyleClassifier resolves this song's
     /// style (see MusicStyleDetectedEvent) — MUSIC information, not Theme (see MusicStyleId's own
     /// doc on why those are kept separate). Unknown until Song Analysis actually classifies a
     /// song.</summary>

@@ -12,4 +12,9 @@ public class AppConfigSO : ScriptableObject
     public FlowConfigSO        flow;
     public ThemeSystemConfigSO theme;
     public SongSystemConfigSO  song;
+
+    [Tooltip("EDITOR ONLY (see PlatformService) — forces mobile/touch UI and input while testing in " +
+             "the Editor, where Application.isMobilePlatform is always false. Ignored in real builds, " +
+             "which always use the real platform.")]
+    public PlatformMode editorPlatformSimulation = PlatformMode.Desktop;
 }

@@ -225,7 +225,7 @@ public class GameplayManager : MonoBehaviour
         _running = true;
         playerController.StartRunning();
         _fallRespawn.Activate();
-        EventBus.Publish(new GameStartedEvent());
+        EventBus.Publish(new GameStartedEvent { WarmupTime = config.core.warmupTime });
 
         yield return new WaitForSeconds(config.core.warmupTime);
         audioSource.Play();
