@@ -5,13 +5,12 @@ using UnityEngine;
 /// DontDestroyOnLoad). Deliberately a plain MonoBehaviour singleton (same Instance pattern as
 /// MusicClock/CameraFollow/etc. elsewhere in this project) holding plain data, NOT a
 /// ScriptableObject — runtime session state must never risk being accidentally serialized back
-/// into a project asset. Has no real configuration of its own, so it implements IAppModule only
-/// (not IConfigurableModule) — it's pure runtime data, not a system with editable settings.
+/// into a project asset.
 ///
 /// OWNERSHIP (who WRITES each field, per the app-flow/Theme refactor plan):
 ///   Song Selection    → SelectedSong
 ///   Song Analysis     → Profile
-///   Gameplay (end of run) → RunnerResults
+///   Gameplay (end of run) → RunnerResults, RunnerFightResources, FighterStats, FightResources
 /// Everything else only ever READS these fields. This is the single place that data lives — no
 /// parallel copies of "the current song" scattered across other systems.
 ///
@@ -19,11 +18,11 @@ using UnityEngine;
 /// (e.g. DetectedMusicStyleId) to reconstruct/re-request a session, never a duplicate copy of
 /// another module's own runtime state.
 ///
-/// Fields for concepts that don't exist yet (future Fight-specific data, beyond what RunnerResults
-/// already carries) are added here as their own phases actually land, rather than stubbing out
-/// placeholder types before their real shape is designed.
+/// Implements IConfigurableModule&lt;FightStatsConfig&gt; ONLY for that one config — see
+/// RunnerFightResourceBuilder/FighterStatsBuilder's own doc for why the Runner→Fight translation
+/// lives here rather than as a new parallel system.
 /// </summary>
-public class GameSession : MonoBehaviour, IAppModule
+public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightStatsConfig>
 {
     public static GameSession Instance { get; private set; }
 
@@ -50,6 +49,30 @@ public class GameSession : MonoBehaviour, IAppModule
     /// ends.</summary>
     public RunnerResults RunnerResults { get; private set; }
 
+    /// <summary>The normalized (0..1) combat potential this run earned, one entry per FightStatId
+    /// — see RunnerFightResourceBuilder/RunnerFightResources' own doc. Built right alongside
+    /// RunnerResults (same GameEndedEvent handler), NOT deferred to when the player presses
+    /// Continue — it's a consequence of the run's performance, not of a UI navigation action, and
+    /// this timing is also what would let a future Results-screen preview show it before Fight
+    /// even loads. Null until a run ends, or if no FightStatsConfig was ever configured (see
+    /// Configure).</summary>
+    public RunnerFightResources RunnerFightResources { get; private set; }
+
+    /// <summary>The Fighter's final combat numbers for this run — built from RunnerFightResources
+    /// via FighterStatsBuilder, same moment as RunnerFightResources above. Null under the same
+    /// conditions.</summary>
+    public FighterStats FighterStats { get; private set; }
+
+    /// <summary>Consumable/special combat resources (extra lives, revives, shields...) —
+    /// deliberately NOT derived from RunnerFightResources/FighterStats/RunnerResults at all (see
+    /// FightResources' own doc). Lazily created once (never overwritten by a later run) so a
+    /// future source can populate/accumulate it across runs without this class fighting that
+    /// design once it exists.</summary>
+    public FightResources FightResources { get; private set; }
+
+    private FightStatsConfig _fightStatsConfig;
+    private bool             _loggedMissingFightStatsConfig;
+
     private System.Action<SongProfileReadyEvent> _onProfileReady;
     private System.Action<GameEndedEvent>        _onGameEnded;
 
@@ -60,19 +83,41 @@ public class GameSession : MonoBehaviour, IAppModule
         DontDestroyOnLoad(gameObject);
     }
 
+    public void Configure(FightStatsConfig config) => _fightStatsConfig = config;
+
     void IAppModule.Initialize(AppContext context) { /* no cross-module wiring needed yet */ }
     void IAppModule.Shutdown() { }
 
     private void OnEnable()
     {
         _onProfileReady = e => Profile = e.Profile;
-        _onGameEnded = e => RunnerResults = new RunnerResults
+        _onGameEnded = e =>
         {
-            Stats            = e.Stats,
-            FallCount        = e.FallCount,
-            NormalizedScore  = e.NormalizedScore,
-            MaxPossibleScore = e.MaxPossibleScore,
-            Performance      = e.Performance,
+            RunnerResults = new RunnerResults
+            {
+                Stats            = e.Stats,
+                FallCount        = e.FallCount,
+                NormalizedScore  = e.NormalizedScore,
+                MaxPossibleScore = e.MaxPossibleScore,
+                Performance      = e.Performance,
+            };
+
+            if (_fightStatsConfig != null)
+            {
+                RunnerFightResources = RunnerFightResourceBuilder.Build(RunnerResults, _fightStatsConfig);
+                FighterStats         = FighterStatsBuilder.Build(RunnerFightResources, _fightStatsConfig);
+            }
+            else if (!_loggedMissingFightStatsConfig)
+            {
+                _loggedMissingFightStatsConfig = true;
+                Debug.LogWarning("[GameSession] No FightStatsConfig (AppConfig.fightStats) configured — " +
+                                  "RunnerFightResources/FighterStats will stay null after every run.");
+            }
+
+            // Never overwritten once created — see FightResources' own doc on why these are
+            // independent of run performance (accumulation-across-runs is a future decision, not
+            // one this makes for you by resetting it here).
+            FightResources ??= new FightResources();
         };
         EventBus.Subscribe(_onProfileReady);
         EventBus.Subscribe(_onGameEnded);

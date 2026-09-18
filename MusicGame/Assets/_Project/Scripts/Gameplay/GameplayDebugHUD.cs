@@ -97,6 +97,7 @@ public class GameplayDebugHUD : MonoBehaviour
         y = DrawSection(X, y, W, "MUSIC ENVIRONMENT",      DrawEnvironment);
         y = DrawSection(X, y, W, "GAMEPLAY EVENTS", DrawEventStats);
         y = DrawSection(X, y, W, "PERFORMANCE BY TYPE", DrawPerformance);
+        y = DrawSection(X, y, W, "FIGHT STATS (preview)", DrawFightStats);
         y = DrawSection(X, y, W, "SYNC AUDIT",     DrawSyncAudit);
         y = DrawSection(X, y, W, "POOLS",         DrawPools);
         y = DrawSection(X, y, W, "CHECKPOINT",    DrawCheckpoint);
@@ -312,6 +313,30 @@ public class GameplayDebugHUD : MonoBehaviour
                 $"{rt,-7} {tp.Collected,3}/{tp.Available,-3} rate={tp.CollectionRate:F2}  " +
                 $"score={tp.EarnedScore}/{tp.MaxPossibleScore} norm={tp.NormalizedScore:F2}  " +
                 $"timing={tp.TimingAccuracy:F2} (err={tp.AverageTimingError * 1000f:F0}ms)");
+        }
+    }
+
+    // Populated by GameSession.RunnerFightResources/FighterStats — both null until a run actually
+    // ends (GameEndedEvent), so this reads "not computed yet" throughout live gameplay and only
+    // shows real numbers once the End Screen is up.
+    private void DrawFightStats(float x, ref float y, float w)
+    {
+        var session = GameSession.Instance;
+        var resources = session?.RunnerFightResources;
+        var stats     = session?.FighterStats;
+        if (resources == null || stats == null)
+        {
+            Row(x, ref y, w, "(not computed yet — finish a run; needs AppConfig.fightStats configured)");
+            return;
+        }
+
+        foreach (var entry in resources.All)
+        {
+            string src = entry.Source.HasValue ? entry.Source.Value.ToString() : "transversal";
+            string neutralFlag = entry.HadSource ? "" : " (neutral input — song had none of this type)";
+            Row(x, ref y, w,
+                $"{entry.StatId,-13} src={src,-8} resource={entry.Value:F2}{neutralFlag}  " +
+                $"-> stat={stats.Get(entry.StatId):F1}");
         }
     }
 

@@ -52,14 +52,23 @@ public class FightSceneBootstrap : MonoBehaviour
 
     private void LogIncomingData()
     {
-        var session     = GameSession.Instance;
-        bool hasProfile = session?.Profile != null;
-        bool hasResults = session?.RunnerResults != null;
-        var style       = session != null ? session.DetectedMusicStyleId : MusicStyleId.Unknown;
-        bool hasTheme   = ThemeManager.Instance != null && ThemeManager.Instance.CurrentTheme != null;
+        var session      = GameSession.Instance;
+        bool hasProfile  = session?.Profile != null;
+        bool hasResults  = session?.RunnerResults != null;
+        bool hasFightStats = session?.FighterStats != null;
+        var style        = session != null ? session.DetectedMusicStyleId : MusicStyleId.Unknown;
+        bool hasTheme    = ThemeManager.Instance != null && ThemeManager.Instance.CurrentTheme != null;
 
         Debug.Log($"[FightSceneBootstrap] Entering Fight — Profile:{hasProfile} RunnerResults:{hasResults} " +
-                  $"Style:{style} CurrentTheme:{hasTheme}");
+                  $"FighterStats:{hasFightStats} Style:{style} CurrentTheme:{hasTheme}");
+
+        if (hasFightStats)
+        {
+            var sb = new System.Text.StringBuilder("[FightSceneBootstrap] FighterStats: ");
+            foreach (var kv in session.FighterStats.Values)
+                sb.Append($"{kv.Key}={kv.Value:F1} ");
+            Debug.Log(sb.ToString());
+        }
 
         if (!hasProfile || !hasResults)
             Debug.LogWarning("[FightSceneBootstrap] Missing Profile/RunnerResults — Fight was reached " +
