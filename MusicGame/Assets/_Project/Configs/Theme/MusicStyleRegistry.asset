@@ -1,0 +1,167 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb72a904a4a43f1a18eb4030473fbfe, type: 3}
+  m_Name: MusicStyleRegistry
+  m_EditorClassIdentifier: 
+  entries:
+  - style: 9
+    displayName: Funk
+    visual:
+      m_AssetGUID: 4c97cca8af4647789e370f17c50331c3
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 1
+    displayName: Rock
+    visual:
+      m_AssetGUID: 3c626acd139ada34ea1a22d1e5729670
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 2
+    displayName: Pop
+    visual:
+      m_AssetGUID: 9ee852dbbab079943adcabdbd6a5f34d
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 3
+    displayName: Electronic
+    visual:
+      m_AssetGUID: fef82a17aea46c245a1a9dd5864b46ad
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 4
+    displayName: House
+    visual:
+      m_AssetGUID: b3904ce3d1ed2dc479debdfbf3086024
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 5
+    displayName: Techno
+    visual:
+      m_AssetGUID: 06d7fd15e5c9e2a4f903689fba1af331
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 6
+    displayName: Jazz
+    visual:
+      m_AssetGUID: 6c7a8cd2298cb784aa016786b799d386
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 7
+    displayName: Metal
+    visual:
+      m_AssetGUID: a251f468e65630b4dab8332804f11311
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 8
+    displayName: Soul
+    visual:
+      m_AssetGUID: 427a5c596645d684797b8a42a0cd11dd
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 10
+    displayName: Disco
+    visual:
+      m_AssetGUID: df08da9804c922742b7d6456f70f09ed
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 11
+    displayName: HipHop
+    visual:
+      m_AssetGUID: a59ab8234ee5bcc4fb16845a5317abd6
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 12
+    displayName: RnB
+    visual:
+      m_AssetGUID: 4d9a2ab38d8ac994e8ba5ef78fe17d95
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 13
+    displayName: Folk
+    visual:
+      m_AssetGUID: 11a4820d7c9dc0841b9233f41cd4cef8
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 14
+    displayName: Country
+    visual:
+      m_AssetGUID: 276b129ddd325954e9bff19ffa5ead7d
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 15
+    displayName: Punk
+    visual:
+      m_AssetGUID: 76eb5eeeb201dc9408394744e8349791
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 16
+    displayName: Blues
+    visual:
+      m_AssetGUID: dcdf77bf5997d8a488ee04da34769961
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 17
+    displayName: Ambient
+    visual:
+      m_AssetGUID: fdb5695eb67628347a11ba7dc65db4a8
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 18
+    displayName: Acoustic
+    visual:
+      m_AssetGUID: 3ba085e70e2d9b748a1911baff6a7383
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+  - style: 19
+    displayName: Experimental
+    visual:
+      m_AssetGUID: 28913981d054df04bb50d83f6787a57a
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0

@@ -320,10 +320,38 @@ public class PlayerController : MonoBehaviour
         _cc.skinWidth   = 0.04f;
     }
 
+    // Player Visual Theme (see the app-flow/Theme refactor's "Player Theme" phase): everything
+    // above this point is gameplay logic and never changes per-Theme. The VISUAL alone is
+    // swappable — a themed prefab (PlayerStyleSO.playerVisualPrefab) is instantiated under a
+    // dedicated VisualAnchor child instead of PlayerController's own transform directly, so a
+    // future real avatar never needs its own copy of PlayerController (per the plan's explicit
+    // "no PlayerController duplicat dins de cada avatar"). No theme content authored yet (see
+    // PlayerStyle_Base.asset) falls straight through to the exact same hardcoded placeholder
+    // capsule this already used — zero behavior change today.
+    private Transform _visualAnchor;
+
     private void BuildVisual()
     {
+        var anchorGO = new GameObject("VisualAnchor");
+        anchorGO.transform.SetParent(transform, false);
+        _visualAnchor = anchorGO.transform;
+
+        var themedPrefab = ThemeManager.Instance != null ? ThemeManager.Instance.CurrentTheme?.Player?.playerVisualPrefab : null;
+        if (themedPrefab != null)
+            Instantiate(themedPrefab, _visualAnchor, false);
+        else
+            BuildPlaceholderCapsuleVisual();
+
+        VisualRenderers = GetComponentsInChildren<Renderer>(true);
+    }
+
+    // The ORIGINAL, unthemed placeholder — untouched behavior, just parented under _visualAnchor
+    // instead of directly under the player root so a themed prefab can slot into the exact same
+    // spot.
+    private void BuildPlaceholderCapsuleVisual()
+    {
         var cap = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        cap.transform.SetParent(transform);
+        cap.transform.SetParent(_visualAnchor, false);
         cap.transform.localPosition = new Vector3(0f, 0.75f, 0f);
         cap.transform.localScale    = new Vector3(0.7f, 0.75f, 0.7f);
         Destroy(cap.GetComponent<CapsuleCollider>());
@@ -332,7 +360,5 @@ public class PlayerController : MonoBehaviour
             { color = new Color(0.25f, 0.65f, 1f) };
         cap.GetComponent<MeshRenderer>().material = mat;
         cap.name = "Visual";
-
-        VisualRenderers = GetComponentsInChildren<Renderer>(true);
     }
 }

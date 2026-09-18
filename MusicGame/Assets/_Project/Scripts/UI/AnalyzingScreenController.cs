@@ -16,8 +16,15 @@ using UnityEngine.UI;
 ///
 /// All shown text is looked up via Loc.Get (see its own doc) — nothing user-facing is hardcoded
 /// here, so adding a language later is a translation-only change in the "UIText" table.
+///
+/// First real ThemeReceiverBehaviour consumer (see that class's own doc) — a low-risk, self-
+/// contained proof that the Theme system's UIStyleSO actually reaches a real screen: the dim
+/// overlay, title/tip text and progress fill colors all now come from CurrentTheme.UI instead of
+/// hardcoded constants. Colors chosen for BaseTheme's defaults happen to look nearly identical to
+/// the old hardcoded ones EXCEPT the progress fill (cyan → BaseTheme's default accent, yellow) —
+/// a deliberately visible signal that this is genuinely theme-driven now, not a no-op change.
 /// </summary>
-public class AnalyzingScreenController : MonoBehaviour
+public class AnalyzingScreenController : ThemeReceiverBehaviour
 {
     private const string TitleKey = "Analyzing.Title";
 
@@ -33,6 +40,7 @@ public class AnalyzingScreenController : MonoBehaviour
     [SerializeField] private float maxTipInterval = 2f;
 
     private RectTransform _root;
+    private Image _dim;
     private Text  _titleText;
     private Text  _tipText;
     private Image _progressFill;
@@ -46,8 +54,9 @@ public class AnalyzingScreenController : MonoBehaviour
 
     private void Awake() => Build();
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
         _onStarted  = _ => Show();
         _onProgress = e => { if (_progressFill != null) _progressFill.fillAmount = Mathf.Clamp01(e.Progress); };
         _onReady    = _ => Hide();
@@ -56,11 +65,21 @@ public class AnalyzingScreenController : MonoBehaviour
         EventBus.Subscribe(_onReady);
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();
         EventBus.Unsubscribe(_onStarted);
         EventBus.Unsubscribe(_onProgress);
         EventBus.Unsubscribe(_onReady);
+    }
+
+    public override void ApplyUITheme(UIStyleSO ui)
+    {
+        if (ui == null) return;
+        if (_dim != null) _dim.color = ui.backgroundColor;
+        if (_titleText != null) _titleText.color = ui.primaryColor;
+        if (_tipText != null) _tipText.color = ui.secondaryColor;
+        if (_progressFill != null) _progressFill.color = ui.accentColor;
     }
 
     // ── Build (runtime-only, no prefab) ────────────────────────────────────────
@@ -72,8 +91,8 @@ public class AnalyzingScreenController : MonoBehaviour
         UIFactory.Stretch(_root);
         _root.SetAsLastSibling(); // always drawn above whatever other UI exists so far
 
-        var dim = UIFactory.CreatePanel("Dim", _root, new Color(0.02f, 0.02f, 0.02f, 0.96f));
-        UIFactory.Stretch(dim.rectTransform);
+        _dim = UIFactory.CreatePanel("Dim", _root, new Color(0.02f, 0.02f, 0.02f, 0.96f));
+        UIFactory.Stretch(_dim.rectTransform);
 
         _titleText = UIFactory.CreateText("Title", _root, "", 26, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold);
         UIFactory.SetBox(_titleText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),

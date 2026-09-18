@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd4ab2b204e54cdfa9d1cd30295fc623, type: 3}
+  m_Name: UIStyle_Blues
+  m_EditorClassIdentifier: Assembly-CSharp::UIStyleSO
+  primaryColor: {r: 1, g: 1, b: 1, a: 1}
+  secondaryColor: {r: 0.72039473, g: 0.6375, b: 0.75, a: 1}
+  accentColor: {r: 0.76250005, g: 0.2375, b: 0.95, a: 1}
+  backgroundColor: {r: 0.06842105, g: 0.036, b: 0.08, a: 1}
+  panelSprite: {fileID: 0}
+  buttonSprite: {fileID: 0}
+  font: {fileID: 0}

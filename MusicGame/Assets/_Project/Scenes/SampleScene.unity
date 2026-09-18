@@ -365,9 +365,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a2fc67e9e7f80f40a20475ad5c22a3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIRegistry
-  liveHud: {fileID: 3612190803790927404}
-  endScreen: {fileID: 7486165474089520064}
-  pause: {fileID: 7953057303927972317}
+  liveHud: {fileID: 0}
+  endScreen: {fileID: 0}
+  pause: {fileID: 0}
 --- !u!4 &368113231
 Transform:
   m_ObjectHideFlags: 0
@@ -674,6 +674,8 @@ GameObject:
   - component: {fileID: 1335528686}
   - component: {fileID: 1335528685}
   - component: {fileID: 3300000001}
+  - component: {fileID: 3300000002}
+  - component: {fileID: 3300000003}
   m_Layer: 0
   m_Name: Scripts
   m_TagString: Untagged
@@ -739,7 +741,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: fb1811ea1ad54ea4c88edbb86169cf0f, type: 3}
+  m_Resource: {fileID: 8300000, guid: ec648927c793d124d89874b72b401b32, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -901,6 +903,31 @@ MonoBehaviour:
   audioSource: {fileID: 1989522755}
   config: {fileID: 11400000, guid: c797592768f344c4b43bf7b0cc29d8b8, type: 2}
   playerController: {fileID: 3100000004}
+--- !u!114 &3300000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1335528684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78315ae84ca745fda5b4fd57ea6d966d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSystem: {fileID: 1335528685}
+--- !u!114 &3300000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1335528684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9447e2c622e24f75b02eda8b9d8b228a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3400000001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1063,17 +1090,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1609309853356869847, guid: e59b994a4543c554b93865eedc1c8003, type: 3}
   m_PrefabInstance: {fileID: 3612190803790927402}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3612190803790927404 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 511749882797157141, guid: e59b994a4543c554b93865eedc1c8003, type: 3}
-  m_PrefabInstance: {fileID: 3612190803790927402}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5185e77ab2c43ce40b3ea4e4b3c79882, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LiveHudView
 --- !u!1001 &7486165474089520062
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1176,17 +1192,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2877092509637129076, guid: ae027c9909d16964a95bee0d6a5e4b38, type: 3}
   m_PrefabInstance: {fileID: 7486165474089520062}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7486165474089520064 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2779348370640668286, guid: ae027c9909d16964a95bee0d6a5e4b38, type: 3}
-  m_PrefabInstance: {fileID: 7486165474089520062}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78f1355ccf5ca104db8339779e7cb1a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EndScreenView
 --- !u!1001 &7953057303927972316
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1284,17 +1289,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 060c8cb2baf9fe94aace67f71821c1f3, type: 3}
---- !u!114 &7953057303927972317 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7636434427359910832, guid: 060c8cb2baf9fe94aace67f71821c1f3, type: 3}
-  m_PrefabInstance: {fileID: 7953057303927972316}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40ea745dd56d92441a99d15e56a2405d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PauseView
 --- !u!224 &7953057303927972318 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3662799236293953161, guid: 060c8cb2baf9fe94aace67f71821c1f3, type: 3}

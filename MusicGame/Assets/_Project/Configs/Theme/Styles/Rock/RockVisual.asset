@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 357015db625f4f87ac415271ed55f5a4, type: 3}
+  m_Name: RockVisual
+  m_EditorClassIdentifier: Assembly-CSharp::MusicStyleVisualSO
+  ui: {fileID: 11400000, guid: 09737c69f72b744499b9989d0e79c898, type: 2}
+  world: {fileID: 0}
+  track: {fileID: 0}
+  player: {fileID: 0}
+  collectibles: {fileID: 0}
+  vfx: {fileID: 0}
+  style: 1

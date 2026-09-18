@@ -104,7 +104,7 @@ public class GameplayManager : MonoBehaviour
         // MusicWorldManager must be created before GameplayManager subscribes to SongProfileReadyEvent
         // so its OnEnable() fires first and its subscription runs first (path ready before GameplayManager's coroutine checks it)
         var world = MusicWorldManager.GetOrCreate(gameObject);
-        world.Initialize(config);
+        world.Initialize(config, ResolveTrackMaterial());
 
         _checkpoints = GetComponent<CheckpointSystem>()  ?? gameObject.AddComponent<CheckpointSystem>();
 
@@ -129,8 +129,26 @@ public class GameplayManager : MonoBehaviour
         fog.Initialize(config.environment);
 
         var horizonWorld = HorizonWorld.GetOrCreate(gameObject);
-        horizonWorld.Initialize(config.environment.horizon);
+        horizonWorld.Initialize(ResolveWorldHorizonConfig());
     }
+
+    // ── Theme resolution (World/Track — see the app-flow/Theme refactor's "World Theme"/"Track
+    // Visual Theme" phases) ─────────────────────────────────────────────────────────────────────
+    // Theme-first, with a graceful fallback to the gameplay config's own reference — the game must
+    // keep working even if ThemeManager hasn't resolved anything yet (or its World/Track category
+    // is still null, e.g. before the first Addressable content is ever authored). Never a
+    // NullReferenceException: every step here is null-conditional on purpose.
+
+    private HorizonConfig ResolveWorldHorizonConfig()
+    {
+        var themed = ThemeManager.Instance != null ? ThemeManager.Instance.CurrentTheme?.World?.horizon : null;
+        return themed != null ? themed : config.environment.horizon;
+    }
+
+    // Null is a legitimate, already-handled result — MusicWorldManager.Initialize falls back to
+    // its own default shader/material when pathMaterial is null, so no further fallback needed here.
+    private Material ResolveTrackMaterial() =>
+        ThemeManager.Instance != null ? ThemeManager.Instance.CurrentTheme?.Track?.trackMaterial : null;
 
     private void OnEnable()
     {
@@ -748,7 +766,9 @@ public class GameplayManager : MonoBehaviour
         foreach (RingType rt in System.Enum.GetValues(typeof(RingType)))
         {
             var captured = rt;
-            var prefab   = config.collectibles.ResolvePrefab(captured);
+            var prefab   = TryGetThemedRingVisual(captured, out var themedPrefabVisual) && themedPrefabVisual.prefab != null
+                ? themedPrefabVisual.prefab
+                : config.collectibles.ResolvePrefab(captured);
             _ringPools[captured] = new ObjectPool(
                 captured.ToString(),
                 () => BuildPoolObject(captured, prefab),
@@ -799,21 +819,49 @@ public class GameplayManager : MonoBehaviour
     {
         if (_materials.TryGetValue(type, out var mat)) return mat;
 
-        Color ringColor = config.collectibles.RingColor(type);
+        // Collectible Theme (see the app-flow/Theme refactor's "Collectible Theme" phase) —
+        // Theme-first, falling back to MusicRunnerCollectiblesConfig's own resolution exactly like
+        // before when no themed entry exists for this RingType (BaseTheme's Collectibles category
+        // ships empty — see CollectibleStyle_Base.asset — so this is a zero-behavior-change
+        // fallback today).
+        bool  hasThemed          = TryGetThemedRingVisual(type, out var themedVisual);
+        Color ringColor          = hasThemed ? themedVisual.color : config.collectibles.RingColor(type);
+        bool  emissionEnabled    = hasThemed ? themedVisual.emissionEnabled : config.collectibles.ringEmissionEnabled;
+        float emissionIntensity  = hasThemed ? themedVisual.emissionIntensity : config.collectibles.ringEmissionIntensity;
+
         mat = new Material(Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard"))
             { color = ringColor };
 
         // Deliberately independent/OFF-by-default emission — see MusicRunnerCollectiblesConfig's
         // own doc on why rings don't automatically bloom just for being colored.
-        if (config.collectibles.ringEmissionEnabled)
+        if (emissionEnabled)
         {
             mat.EnableKeyword("_EMISSION");
             mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
-            mat.SetColor("_EmissionColor", ringColor * Mathf.Max(0f, config.collectibles.ringEmissionIntensity));
+            mat.SetColor("_EmissionColor", ringColor * Mathf.Max(0f, emissionIntensity));
         }
 
         _materials[type] = mat;
         return mat;
+    }
+
+    // Looks up CollectibleStyleSO.rings (see CurrentTheme.Collectibles) for an entry matching
+    // `type` — used by both the prefab resolution above and the material resolution below, so
+    // "does this RingType have a themed override" is answered in exactly one place.
+    private bool TryGetThemedRingVisual(RingType type, out CollectibleStyleSO.RingVisual visual)
+    {
+        var rings = ThemeManager.Instance != null ? ThemeManager.Instance.CurrentTheme?.Collectibles?.rings : null;
+        if (rings != null)
+        {
+            foreach (var r in rings)
+            {
+                if (r.type != type) continue;
+                visual = r;
+                return true;
+            }
+        }
+        visual = default;
+        return false;
     }
 
     private void OnDestroy()
