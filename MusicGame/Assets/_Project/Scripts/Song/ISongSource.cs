@@ -3,10 +3,11 @@ using System.Collections;
 
 /// <summary>
 /// Abstraction over "get me a playable song" — Song Selection depends only on this, never on
-/// AudioClip-loading details. Concrete sources today: SongCatalogSource (a song from SongCatalogSO)
-/// and LocalFileSongSource (a user-picked WAV/MP3). Future sources (Spotify, YouTube
-/// Music, Amazon Music...) implement the exact same interface — nothing downstream (GameSession,
-/// Song Analysis) needs to know or care which kind of source actually produced a song.
+/// AudioClip-loading details. Concrete sources today: AddressableSongSource (a song from the "Song"
+/// Addressables label — see SongAddressablesSetup) and LocalFileSongSource (a user-picked WAV/MP3).
+/// Future sources (Spotify, YouTube Music, Amazon Music...) implement the exact same interface —
+/// nothing downstream (GameSession, Song Analysis) needs to know or care which kind of source
+/// actually produced a song.
 ///
 /// Coroutine-based (not a plain synchronous call) since loading genuinely takes time — a local
 /// file needs decoding, a predefined song is already an AudioClip reference but stays consistent

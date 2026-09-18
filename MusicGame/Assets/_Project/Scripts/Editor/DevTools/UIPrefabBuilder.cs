@@ -1,24 +1,29 @@
 #if UNITY_EDITOR
+using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// One-shot Editor tool: builds the three gameplay UI prefabs (LiveHud, EndScreen, PauseMenu)
-/// using the exact same UIFactory calls GameplayHUD/PauseController used to run at PLAY time,
-/// saves them as real .prefab assets under Assets/_Project/Prefabs/UI/, leaves connected
-/// instances in the currently open scene, and wires a UIRegistry component to them.
+/// One-shot Editor tool: builds all nine runtime UI screens — the three gameplay prefabs (LiveHud,
+/// EndScreen, PauseMenu) and the six Frontend/Fight screens (IntroScreen, MainMenu, SongSelection,
+/// AnalyzingScreen, CountdownScreen, FightHud) — using the exact same UIFactory calls each screen's
+/// own controller used to run at PLAY time (with the same ThemeColorReceiver/ThemeTextReceiver
+/// wiring, so the saved prefabs come out theme-ready too), saves them as real .prefab assets under
+/// Assets/_Project/Prefabs/UI/, leaves connected instances in the currently open scene, and wires a
+/// UIRegistry component to them.
 ///
-/// Run it ONCE via Tools > MusicGame > Build UI Prefabs. After that, GameplayHUD/PauseController
-/// find the UIRegistry at startup and just READ these prefab instances instead of building
-/// anything themselves — open the .prefab assets in the Prefab editor any time afterward to
-/// retouch colors/fonts/layout by hand; the game keeps working as long as the wired fields on
-/// LiveHudView/EndScreenView/PauseView still point at the right children.
+/// Run it ONCE via Tools > MusicGame > Build UI Prefabs. After that, every screen controller finds
+/// the UIRegistry at startup and just READS the matching prefab instance instead of building
+/// anything itself — open the .prefab assets in the Prefab editor any time afterward to retouch
+/// colors/fonts/layout by hand; the game keeps working as long as the wired fields on each *View
+/// component still point at the right children. Song Selection is the one partial exception: only
+/// its static chrome is baked — the catalog rows stay dynamic runtime population either way.
 ///
-/// Safe to re-run: it deletes and rebuilds all three prefabs + the scene instances + UIRegistry
-/// from scratch each time (so hand-made edits to the PREFAB ASSETS themselves are NOT preserved
-/// by re-running this — it's meant to be run once to get a starting point you then hand-tune).
+/// Safe to re-run: it rebuilds all nine prefabs + the scene instances + UIRegistry from scratch
+/// each time (so hand-made edits to the PREFAB ASSETS themselves are NOT preserved by re-running
+/// this — it's meant to be run once to get a starting point you then hand-tune).
 /// </summary>
 public static class UIPrefabBuilder
 {
@@ -51,25 +56,55 @@ public static class UIPrefabBuilder
         var endScreen = BuildEndScreen(canvasRect);
         var pauseMenu = BuildPauseMenu(canvasRect);
 
+        var introScreen     = BuildIntroScreen(canvasRect);
+        var mainMenu        = BuildMainMenu(canvasRect);
+        var songSelection   = BuildSongSelection(canvasRect);
+        var analyzingScreen = BuildAnalyzingScreen(canvasRect);
+        var countdownScreen = BuildCountdownScreen(canvasRect);
+        var fightHud        = BuildFightHud(canvasRect);
+
         // IMPORTANT: SaveAsPrefabAssetAndConnect returns the PREFAB ASSET (disk-only, never
         // instantiated into the running scene) — it also CONVERTS the passed scene GameObject
         // into a connected prefab instance, but that instance is a DIFFERENT object than the
-        // returned one. UIRegistry must be wired to the ORIGINAL scene variables (liveHud/
-        // endScreen/pauseMenu) below, NOT to the return value of SaveAndConnect — wiring to the
-        // asset silently does nothing at runtime (no exception, the component just isn't part of
-        // any live scene, so Update()/onClick never reach it).
+        // returned one. UIRegistry must be wired to the ORIGINAL scene variables below, NOT to the
+        // return value of SaveAndConnect — wiring to the asset silently does nothing at runtime (no
+        // exception, the component just isn't part of any live scene, so Update()/onClick never
+        // reach it).
         SaveAndConnect(liveHud,   "LiveHud.prefab");
         SaveAndConnect(endScreen, "EndScreen.prefab");
         SaveAndConnect(pauseMenu, "PauseMenu.prefab");
+        SaveAndConnect(introScreen,     "IntroScreen.prefab");
+        SaveAndConnect(mainMenu,        "MainMenu.prefab");
+        SaveAndConnect(songSelection,   "SongSelection.prefab");
+        SaveAndConnect(analyzingScreen, "AnalyzingScreen.prefab");
+        SaveAndConnect(countdownScreen, "CountdownScreen.prefab");
+        SaveAndConnect(fightHud,        "FightHud.prefab");
 
         WireRegistry(
             liveHud.GetComponent<LiveHudView>(),
             endScreen.GetComponent<EndScreenView>(),
-            pauseMenu.GetComponent<PauseView>());
+            pauseMenu.GetComponent<PauseView>(),
+            introScreen.GetComponent<IntroScreenView>(),
+            mainMenu.GetComponent<MainMenuView>(),
+            songSelection.GetComponent<SongSelectionView>(),
+            analyzingScreen.GetComponent<AnalyzingScreenView>(),
+            countdownScreen.GetComponent<CountdownScreenView>(),
+            fightHud.GetComponent<FightHudView>());
+
+        // These screens are ALWAYS-ACTIVE at runtime until their own Show()/Hide() toggles them
+        // (Awake() flips them off) — but starting hidden in the EDITED scene, saved into the
+        // prefab as its default state, keeps the Editor's Scene view uncluttered and matches how
+        // they'll actually look the instant Play begins.
+        introScreen.SetActive(false);
+        mainMenu.SetActive(false);
+        songSelection.SetActive(false);
+        analyzingScreen.SetActive(false);
+        countdownScreen.SetActive(false);
+        fightHud.SetActive(false);
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-        Debug.Log("[UIPrefabBuilder] Done — LiveHud.prefab / EndScreen.prefab / PauseMenu.prefab " +
-                  $"saved under {FolderPath}, instances wired into UIRegistry in the scene. " +
+        Debug.Log("[UIPrefabBuilder] Done — 9 UI prefabs saved under " +
+                  $"{FolderPath}, instances wired into UIRegistry in the scene. " +
                   "Remember to save the scene (Ctrl+S).");
     }
 
@@ -99,7 +134,9 @@ public static class UIPrefabBuilder
         return prefab;
     }
 
-    private static void WireRegistry(LiveHudView liveHud, EndScreenView endScreen, PauseView pause)
+    private static void WireRegistry(LiveHudView liveHud, EndScreenView endScreen, PauseView pause,
+        IntroScreenView introScreen, MainMenuView mainMenu, SongSelectionView songSelection,
+        AnalyzingScreenView analyzing, CountdownScreenView countdown, FightHudView fightHud)
     {
         var registryGO = GameObject.Find("[UI Registry]");
         if (registryGO == null) registryGO = new GameObject("[UI Registry]");
@@ -109,6 +146,12 @@ public static class UIPrefabBuilder
         so.FindProperty("liveHud").objectReferenceValue   = liveHud;
         so.FindProperty("endScreen").objectReferenceValue = endScreen;
         so.FindProperty("pause").objectReferenceValue      = pause;
+        so.FindProperty("introScreen").objectReferenceValue   = introScreen;
+        so.FindProperty("mainMenu").objectReferenceValue      = mainMenu;
+        so.FindProperty("songSelection").objectReferenceValue = songSelection;
+        so.FindProperty("analyzing").objectReferenceValue     = analyzing;
+        so.FindProperty("countdown").objectReferenceValue     = countdown;
+        so.FindProperty("fightHud").objectReferenceValue      = fightHud;
         so.ApplyModifiedPropertiesWithoutUndo();
     }
 
@@ -120,7 +163,7 @@ public static class UIPrefabBuilder
         UIFactory.SetBox(root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, new Vector2(0f, 100f));
         var view = root.gameObject.AddComponent<LiveHudView>();
 
-        var cells = new (string labelKey, RingType? type, System.Action<Text> assignValue, System.Action<Text> assignLabel)[]
+        var cells = new (string labelKey, RingType? type, System.Action<TextMeshProUGUI> assignValue, System.Action<TextMeshProUGUI> assignLabel)[]
         {
             ("HUD.Kick",   RingType.Kick,   t => view.kickValue   = t, t => view.kickLabel   = t),
             ("HUD.Snare",  RingType.Snare,  t => view.snareValue  = t, t => view.snareLabel  = t),
@@ -134,6 +177,7 @@ public static class UIPrefabBuilder
 
         var topBar = UIFactory.CreatePanel("TopBar", root, new Color(0.03f, 0.03f, 0.03f, 0.88f));
         UIFactory.SetBox(topBar.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, new Vector2(0f, 44f));
+        topBar.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
 
         for (int i = 0; i < cells.Length; i++)
         {
@@ -142,12 +186,17 @@ public static class UIPrefabBuilder
             UIFactory.SetBox(cell, new Vector2(xMin, 0f), new Vector2(xMax, 1f), new Vector2(0f, 1f), new Vector2(6f, 0f), new Vector2(-6f, 0f));
 
             Color labelColor = cells[i].type.HasValue && config != null ? config.RingColor(cells[i].type.Value) : Color.white;
-            var label = UIFactory.CreateText("Label", cell, Loc.Get(cells[i].labelKey), 12, labelColor, TextAnchor.UpperLeft);
+            var label = UIFactory.CreateText("Label", cell, Loc.Get(cells[i].labelKey), 12, labelColor, TextAlignmentOptions.TopLeft);
             UIFactory.SetBox(label.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -3f), new Vector2(0f, 20f));
             cells[i].assignLabel(label);
 
-            var value = UIFactory.CreateText("Value", cell, "0", 14, Color.white, TextAnchor.UpperLeft);
+            var value = UIFactory.CreateText("Value", cell, "0", 14, Color.white, TextAlignmentOptions.TopLeft);
             UIFactory.SetBox(value.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -22f), new Vector2(0f, 20f));
+
+            // Score/Total (type == null) are Theme-driven text; the per-RingType cells are colored
+            // from MusicRunnerCollectiblesConfig instead — a separate, non-Theme color system.
+            if (!cells[i].type.HasValue)
+                value.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
             cells[i].assignValue(value);
         }
@@ -155,23 +204,28 @@ public static class UIPrefabBuilder
         var progressBg = UIFactory.CreateFillBar("SongProgress", root, new Color(0.10f, 0.10f, 0.10f), new Color(0.18f, 0.75f, 0.95f), out var progressFill);
         UIFactory.SetBox(progressBg.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -45f), new Vector2(0f, 4f));
         view.progressFill = progressFill;
+        progressFill.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Accent);
 
         var tagsStrip = UIFactory.CreateRect("TagsStrip", root);
         UIFactory.SetBox(tagsStrip, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -50f), new Vector2(0f, 54f));
         tagsStrip.gameObject.AddComponent<Image>().color = new Color(0.03f, 0.03f, 0.03f, 0.75f);
         view.tagsStrip = tagsStrip.gameObject;
+        tagsStrip.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
 
-        var tagStyle = UIFactory.CreateText("Style", tagsStrip, "", 11, new Color(0.55f, 0.8f, 1f), TextAnchor.UpperLeft);
+        // Style tag keeps its own hardcoded tint — a data-category indicator, not UI chrome.
+        var tagStyle = UIFactory.CreateText("Style", tagsStrip, "", 11, new Color(0.55f, 0.8f, 1f), TextAlignmentOptions.TopLeft);
         UIFactory.SetBox(tagStyle.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(8f, -3f), new Vector2(-8f, 16f));
         view.tagStyle = tagStyle;
 
-        var tagVibe = UIFactory.CreateText("Vibe", tagsStrip, "", 11, Color.white, TextAnchor.UpperLeft);
+        var tagVibe = UIFactory.CreateText("Vibe", tagsStrip, "", 11, Color.white, TextAlignmentOptions.TopLeft);
         UIFactory.SetBox(tagVibe.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(8f, -19f), new Vector2(-8f, 16f));
         view.tagVibe = tagVibe;
+        tagVibe.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
-        var tagOther = UIFactory.CreateText("Other", tagsStrip, "", 11, Color.white, TextAnchor.UpperLeft);
+        var tagOther = UIFactory.CreateText("Other", tagsStrip, "", 11, Color.white, TextAlignmentOptions.TopLeft);
         UIFactory.SetBox(tagOther.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(8f, -35f), new Vector2(-8f, 16f));
         view.tagOther = tagOther;
+        tagOther.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         tagsStrip.gameObject.SetActive(false);
         return root.gameObject;
@@ -187,6 +241,7 @@ public static class UIPrefabBuilder
 
         var dim = UIFactory.CreatePanel("Dim", root, new Color(0f, 0f, 0f, 0.55f));
         UIFactory.Stretch(dim.rectTransform);
+        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
         float pw = 420f, ph = 720f;
         var panel = UIFactory.CreatePanel("Panel", root, new Color(0.04f, 0.04f, 0.04f, 0.97f));
@@ -194,6 +249,7 @@ public static class UIPrefabBuilder
         var border = panel.gameObject.AddComponent<Outline>();
         border.effectColor    = new Color(0.2f, 0.2f, 0.2f, 1f);
         border.effectDistance = new Vector2(2f, -2f);
+        panel.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
 
         var content = panel.rectTransform;
         float y = -16f;
@@ -201,8 +257,11 @@ public static class UIPrefabBuilder
         var title = UIFactory.CreateText("Title", content, Loc.Get("EndScreen.Title"), 20, Color.white);
         UIFactory.StackTop(title.rectTransform, ref y, 30f);
         view.titleText = title;
+        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
 
-        var rating = UIFactory.CreateText("Rating", content, "", 22, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold);
+        // Rating label/bar are deliberately NOT theme receivers — PopulateEndScreen colors them
+        // from the SCORE (a red-to-green gradient), not from the Theme.
+        var rating = UIFactory.CreateText("Rating", content, "", 22, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
         UIFactory.StackTop(rating.rectTransform, ref y, 32f);
         view.ratingLabel = rating;
 
@@ -214,6 +273,7 @@ public static class UIPrefabBuilder
         var scoreSummary = UIFactory.CreateText("ScoreSummary", content, "", 12, new Color(0.6f, 0.6f, 0.6f));
         UIFactory.StackTop(scoreSummary.rectTransform, ref y, 20f);
         view.scoreSummary = scoreSummary;
+        scoreSummary.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
         y -= 6f;
 
         var rows = UIFactory.CreateRect("PerformanceRows", content);
@@ -224,14 +284,17 @@ public static class UIPrefabBuilder
         var falls = UIFactory.CreateText("Falls", content, "", 13, Color.white);
         UIFactory.StackTop(falls.rectTransform, ref y, 20f);
         view.fallsText = falls;
+        falls.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         var noFallBonus = UIFactory.CreateText("NoFallBonus", content, "", 13, new Color(1f, 0.85f, 0.2f));
         UIFactory.StackTop(noFallBonus.rectTransform, ref y, 20f);
         view.noFallBonusText = noFallBonus;
+        noFallBonus.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Positive, UIFontToken.Body);
 
         var session = UIFactory.CreateText("Session", content, "", 11, new Color(0.55f, 0.55f, 0.6f));
         UIFactory.StackTop(session.rectTransform, ref y, 22f);
         view.sessionText = session;
+        session.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
 
         y -= 10f;
         float btnW = 150f, btnH = 40f, gap = 16f;
@@ -240,12 +303,16 @@ public static class UIPrefabBuilder
             new Vector2(-(btnW + gap) / 2f, y), new Vector2(btnW, btnH));
         view.restartButton      = restartBtn;
         view.restartButtonLabel = restartLabel;
+        restartBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        restartLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         var continueBtn = UIFactory.CreateButton("ContinueButton", content, Loc.Get("EndScreen.Continue"), out var continueLabel);
         UIFactory.SetBox(continueBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2((btnW + gap) / 2f, y), new Vector2(btnW, btnH));
         view.continueButton      = continueBtn;
         view.continueButtonLabel = continueLabel;
+        continueBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
+        continueLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
 
         return root.gameObject;
     }
@@ -264,6 +331,8 @@ public static class UIPrefabBuilder
         view.pauseButtonRoot  = pauseBtn.gameObject;
         view.pauseButton      = pauseBtn;
         view.pauseButtonLabel = pauseLabel;
+        pauseBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        pauseLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         var overlay = UIFactory.CreateRect("PausedOverlay", root);
         UIFactory.Stretch(overlay);
@@ -271,6 +340,7 @@ public static class UIPrefabBuilder
 
         var dim = UIFactory.CreatePanel("Dim", overlay, new Color(0f, 0f, 0f, 0.6f));
         UIFactory.Stretch(dim.rectTransform);
+        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
         float pw = 240f, ph = 170f;
         var panel = UIFactory.CreatePanel("Panel", overlay, new Color(0.04f, 0.04f, 0.04f, 0.97f));
@@ -278,6 +348,7 @@ public static class UIPrefabBuilder
         var border = panel.gameObject.AddComponent<Outline>();
         border.effectColor    = new Color(0.15f, 0.15f, 0.15f, 1f);
         border.effectDistance = new Vector2(3f, -3f);
+        panel.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
 
         var content = panel.rectTransform;
         float y = -14f;
@@ -285,6 +356,7 @@ public static class UIPrefabBuilder
         var title = UIFactory.CreateText("Title", content, Loc.Get("Pause.Title"), 18, Color.white);
         UIFactory.StackTop(title.rectTransform, ref y, 28f, 0f);
         view.titleText = title;
+        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
 
         y = -60f;
         float btnW = pw - 40f, btnH = 34f;
@@ -293,6 +365,8 @@ public static class UIPrefabBuilder
             new Vector2(0f, y), new Vector2(btnW, btnH));
         view.resumeButton      = resumeBtn;
         view.resumeButtonLabel = resumeLabel;
+        resumeBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
+        resumeLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
         y -= btnH + 12f;
 
         var restartBtn = UIFactory.CreateButton("RestartButton", content, Loc.Get("Pause.RestartSong"), out var restartLabel);
@@ -300,7 +374,342 @@ public static class UIPrefabBuilder
             new Vector2(0f, y), new Vector2(btnW, btnH));
         view.restartButton      = restartBtn;
         view.restartButtonLabel = restartLabel;
+        restartBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        restartLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
+        return root.gameObject;
+    }
+
+    // ── Intro screen ──────────────────────────────────────────────────────────
+
+    private static GameObject BuildIntroScreen(RectTransform canvas)
+    {
+        var root = UIFactory.CreateRect("IntroScreen", canvas);
+        UIFactory.Stretch(root);
+        var view = root.gameObject.AddComponent<IntroScreenView>();
+        view.root = root.gameObject;
+
+        var canvasGroup = root.gameObject.AddComponent<CanvasGroup>();
+        canvasGroup.alpha = 0f;
+        view.canvasGroup = canvasGroup;
+
+        var dim = UIFactory.CreatePanel("Dim", root, new Color(0.02f, 0.02f, 0.02f, 1f));
+        UIFactory.Stretch(dim.rectTransform);
+        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
+
+        var skipButton = dim.gameObject.AddComponent<Button>();
+        skipButton.transition = Selectable.Transition.None;
+        view.skipButton = skipButton;
+
+        var title = UIFactory.CreateText("Title", root, Loc.Get("Intro.Title"), 42, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            Vector2.zero, new Vector2(1000f, 80f));
+        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
+        view.titleText = title;
+
+        return root.gameObject;
+    }
+
+    // ── Main menu ─────────────────────────────────────────────────────────────
+
+    private static GameObject BuildMainMenu(RectTransform canvas)
+    {
+        var root = UIFactory.CreateRect("MainMenuScreen", canvas);
+        UIFactory.Stretch(root);
+        var view = root.gameObject.AddComponent<MainMenuView>();
+        view.root = root.gameObject;
+
+        var dim = UIFactory.CreatePanel("Dim", root, new Color(0.02f, 0.02f, 0.02f, 1f));
+        UIFactory.Stretch(dim.rectTransform);
+        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
+
+        var title = UIFactory.CreateText("Title", root, Loc.Get("MainMenu.Title"), 36, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, -100f), new Vector2(900f, 60f));
+        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
+        view.titleText = title;
+
+        var profileIcon = UIFactory.CreatePanel("ProfileIcon", root, Color.gray);
+        UIFactory.SetBox(profileIcon.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+            new Vector2(-24f, -24f), new Vector2(48f, 48f));
+        profileIcon.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Secondary);
+
+        float btnW = 260f, btnH = 54f, gap = 18f;
+        float y = -20f;
+
+        var playBtn = UIFactory.CreateButton("PlayButton", root, Loc.Get("MainMenu.Play"), out var playLabel);
+        UIFactory.SetBox(playBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, y), new Vector2(btnW, btnH));
+        playBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
+        playLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
+        view.playButton      = playBtn;
+        view.playButtonLabel = playLabel;
+        y -= btnH + gap;
+
+        var settingsBtn = UIFactory.CreateButton("SettingsButton", root, Loc.Get("MainMenu.Settings"), out var settingsLabel);
+        UIFactory.SetBox(settingsBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, y), new Vector2(btnW, btnH));
+        settingsBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
+        settingsLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        view.settingsButton      = settingsBtn;
+        view.settingsButtonLabel = settingsLabel;
+        y -= btnH + gap;
+
+        var quitBtn = UIFactory.CreateButton("QuitButton", root, Loc.Get("MainMenu.Quit"), out var quitLabel);
+        UIFactory.SetBox(quitBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, y), new Vector2(btnW, btnH));
+        quitBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        quitLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
+        view.quitButton      = quitBtn;
+        view.quitButtonLabel = quitLabel;
+
+        var settingsPanel = UIFactory.CreateRect("SettingsPanel", root);
+        UIFactory.SetBox(settingsPanel, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            Vector2.zero, new Vector2(420f, 220f));
+        var panelBg = settingsPanel.gameObject.AddComponent<Image>();
+        panelBg.color = new Color(0.05f, 0.05f, 0.05f, 0.97f);
+        settingsPanel.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
+        view.settingsPanel = settingsPanel.gameObject;
+
+        var settingsTitle = UIFactory.CreateText("Title", settingsPanel, Loc.Get("Settings.Title"), 20, Color.white);
+        UIFactory.SetBox(settingsTitle.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, -16f), new Vector2(380f, 30f));
+        settingsTitle.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Display);
+        view.settingsTitleText = settingsTitle;
+
+        var volumeLabel = UIFactory.CreateText("VolumeLabel", settingsPanel, Loc.Get("Settings.Volume"), 14, new Color(0.8f, 0.8f, 0.8f), TextAlignmentOptions.Left);
+        UIFactory.SetBox(volumeLabel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 20f), new Vector2(360f, 24f));
+        volumeLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
+        view.volumeLabelText = volumeLabel;
+
+        var volumeSlider = UIFactory.CreateSlider("VolumeSlider", settingsPanel, 1f, new Color(0.18f, 0.75f, 0.95f));
+        UIFactory.SetBox(volumeSlider.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -15f), new Vector2(360f, 16f));
+        volumeSlider.fillRect.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Accent);
+        view.volumeSlider = volumeSlider;
+
+        var closeBtn = UIFactory.CreateButton("CloseButton", settingsPanel, Loc.Get("Settings.Close"), out var closeLabel);
+        UIFactory.SetBox(closeBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+            new Vector2(0f, 20f), new Vector2(140f, 40f));
+        closeBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        closeLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        view.closeButton      = closeBtn;
+        view.closeButtonLabel = closeLabel;
+
+        settingsPanel.gameObject.SetActive(false);
+        return root.gameObject;
+    }
+
+    // ── Song selection ────────────────────────────────────────────────────────
+
+    // Only the STATIC chrome is baked — catalog rows stay dynamic runtime population into the
+    // (empty) songListRoot container either way (Section 9 of the plan).
+    private static GameObject BuildSongSelection(RectTransform canvas)
+    {
+        var root = UIFactory.CreateRect("SongSelectionScreen", canvas);
+        UIFactory.Stretch(root);
+        var view = root.gameObject.AddComponent<SongSelectionView>();
+        view.root = root.gameObject;
+
+        var dim = UIFactory.CreatePanel("Dim", root, new Color(0.02f, 0.02f, 0.02f, 1f));
+        UIFactory.Stretch(dim.rectTransform);
+        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
+
+        var title = UIFactory.CreateText("Title", root, Loc.Get("SongSelection.Title"), 30, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, -50f), new Vector2(900f, 50f));
+        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
+        view.titleText = title;
+
+        var songListRoot = UIFactory.CreateRect("SongList", root);
+        UIFactory.SetBox(songListRoot, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, -120f), new Vector2(560f, 260f));
+        view.songListRoot = songListRoot;
+
+        var streamingRow = UIFactory.CreateRect("StreamingRow", root);
+        UIFactory.SetBox(streamingRow, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+            new Vector2(0f, 150f), new Vector2(560f, 44f));
+
+        string[] keys = { "SongSelection.Spotify", "SongSelection.YouTubeMusic", "SongSelection.AmazonMusic" };
+        float w = (560f - 2f * 10f) / 3f;
+        Button[] streamingButtons = new Button[3];
+        TextMeshProUGUI[] streamingLabels = new TextMeshProUGUI[3];
+        for (int i = 0; i < keys.Length; i++)
+        {
+            var btn = UIFactory.CreateButton("Streaming_" + keys[i], streamingRow, Loc.Get(keys[i]) + " (" + Loc.Get("SongSelection.ComingSoon") + ")", out var label);
+            label.fontSize = 11;
+            UIFactory.SetBox(btn.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 0.5f),
+                new Vector2(i * (w + 10f), 0f), new Vector2(w, 0f));
+            btn.interactable = false;
+            btn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+            label.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
+            streamingButtons[i] = btn;
+            streamingLabels[i]  = label;
+        }
+        view.spotifyButton = streamingButtons[0]; view.spotifyLabel = streamingLabels[0];
+        view.youtubeMusicButton = streamingButtons[1]; view.youtubeMusicLabel = streamingLabels[1];
+        view.amazonMusicButton = streamingButtons[2]; view.amazonMusicLabel = streamingLabels[2];
+
+        var backBtn = UIFactory.CreateButton("BackButton", root, Loc.Get("SongSelection.Back"), out var backLabel);
+        UIFactory.SetBox(backBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+            new Vector2(-150f, 40f), new Vector2(180f, 44f));
+        backBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        backLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        view.backButton = backBtn; view.backButtonLabel = backLabel;
+
+        var playBtn = UIFactory.CreateButton("PlayButton", root, Loc.Get("SongSelection.Play"), out var playLabel);
+        UIFactory.SetBox(playBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+            new Vector2(150f, 40f), new Vector2(180f, 44f));
+        playBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
+        playLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
+        view.playButton = playBtn; view.playButtonLabel = playLabel;
+
+        var statusText = UIFactory.CreateText("Status", root, "", 12, new Color(0.75f, 0.75f, 0.75f));
+        UIFactory.SetBox(statusText.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+            new Vector2(0f, 90f), new Vector2(500f, 24f));
+        view.statusText = statusText;
+
+        return root.gameObject;
+    }
+
+    // ── Analyzing screen ──────────────────────────────────────────────────────
+
+    private static GameObject BuildAnalyzingScreen(RectTransform canvas)
+    {
+        var root = UIFactory.CreateRect("AnalyzingScreen", canvas);
+        UIFactory.Stretch(root);
+        var view = root.gameObject.AddComponent<AnalyzingScreenView>();
+        view.root = root.gameObject;
+
+        var dim = UIFactory.CreatePanel("Dim", root, new Color(0.02f, 0.02f, 0.02f, 0.96f));
+        UIFactory.Stretch(dim.rectTransform);
+        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
+
+        var title = UIFactory.CreateText("Title", root, Loc.Get("Analyzing.Title"), 26, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 40f), new Vector2(900f, 40f));
+        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
+        view.titleText = title;
+
+        var tip = UIFactory.CreateText("Tip", root, "", 16, new Color(0.75f, 0.75f, 0.8f), TextAlignmentOptions.Center);
+        UIFactory.SetBox(tip.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -10f), new Vector2(900f, 30f));
+        tip.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Secondary, UIFontToken.Body);
+        view.tipText = tip;
+
+        var barBg = UIFactory.CreateFillBar("Progress", root, new Color(1f, 1f, 1f, 0.12f), new Color(0.18f, 0.75f, 0.95f), out var progressFill);
+        UIFactory.SetBox(barBg.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -60f), new Vector2(500f, 6f));
+        progressFill.fillAmount = 0f;
+        progressFill.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Accent);
+        view.progressFill = progressFill;
+
+        return root.gameObject;
+    }
+
+    // ── Countdown screen ──────────────────────────────────────────────────────
+
+    private static GameObject BuildCountdownScreen(RectTransform canvas)
+    {
+        var root = UIFactory.CreateRect("CountdownScreen", canvas);
+        UIFactory.Stretch(root);
+        var view = root.gameObject.AddComponent<CountdownScreenView>();
+        view.root = root.gameObject;
+
+        var numberText = UIFactory.CreateText("Number", root, "", 96, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(numberText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            Vector2.zero, new Vector2(400f, 200f));
+        numberText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
+        view.numberText = numberText;
+
+        return root.gameObject;
+    }
+
+    // ── Fight HUD ─────────────────────────────────────────────────────────────
+
+    private static GameObject BuildFightHud(RectTransform canvas)
+    {
+        var root = UIFactory.CreateRect("FightScreen", canvas);
+        UIFactory.Stretch(root);
+        var view = root.gameObject.AddComponent<FightHudView>();
+        view.root = root.gameObject;
+
+        var topBar = UIFactory.CreatePanel("TopBar", root, new Color(0.02f, 0.02f, 0.05f, 0.55f));
+        UIFactory.SetBox(topBar.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
+            Vector2.zero, new Vector2(0f, 90f));
+        topBar.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
+
+        var playerName = UIFactory.CreateText("PlayerName", topBar.rectTransform, Loc.Get("Fight.PlayerName"), 18, Color.white, TextAlignmentOptions.TopLeft, FontStyles.Bold);
+        UIFactory.SetBox(playerName.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+            new Vector2(20f, -12f), new Vector2(320f, 24f));
+        playerName.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Display);
+        view.playerNameText = playerName;
+
+        var playerHealthBg = UIFactory.CreateFillBar("PlayerHealth", topBar.rectTransform, new Color(0.12f, 0.12f, 0.12f), new Color(0.3f, 0.85f, 0.3f), out var playerHealthFill);
+        UIFactory.SetBox(playerHealthBg.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+            new Vector2(20f, -42f), new Vector2(320f, 18f));
+        playerHealthFill.fillAmount = 1f;
+        playerHealthFill.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Positive);
+        view.playerHealthFill = playerHealthFill;
+
+        var opponentName = UIFactory.CreateText("OpponentName", topBar.rectTransform, Loc.Get("Fight.RivalUnknown"), 18, Color.white, TextAlignmentOptions.TopRight, FontStyles.Bold);
+        UIFactory.SetBox(opponentName.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+            new Vector2(-90f, -12f), new Vector2(320f, 24f));
+        opponentName.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Display);
+        view.opponentNameText = opponentName;
+
+        var opponentHealthBg = UIFactory.CreateFillBar("OpponentHealth", topBar.rectTransform, new Color(0.12f, 0.12f, 0.12f), new Color(0.9f, 0.3f, 0.25f), out var opponentHealthFill);
+        UIFactory.SetBox(opponentHealthBg.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+            new Vector2(-90f, -42f), new Vector2(320f, 18f));
+        opponentHealthFill.fillAmount = 1f;
+        opponentHealthFill.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Negative);
+        opponentHealthFill.fillOrigin = (int)Image.OriginHorizontal.Right;
+        view.opponentHealthFill = opponentHealthFill;
+
+        var timer = UIFactory.CreateText("Timer", topBar.rectTransform, "", 28, Color.white, TextAlignmentOptions.Top, FontStyles.Bold);
+        UIFactory.SetBox(timer.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, -12f), new Vector2(140f, 36f));
+        timer.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
+        view.timerText = timer;
+
+        var pauseBtn = UIFactory.CreateButton("PauseButton", topBar.rectTransform, Loc.Get("Fight.Pause"), out var pauseLabel);
+        pauseLabel.fontSize = 12;
+        UIFactory.SetBox(pauseBtn.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+            new Vector2(-15f, -15f), new Vector2(60f, 60f));
+        pauseBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        pauseLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        view.pauseButton = pauseBtn; view.pauseButtonLabel = pauseLabel;
+
+        var pausePanel = UIFactory.CreateRect("PauseMenu", root);
+        UIFactory.Stretch(pausePanel);
+        view.pausePanel = pausePanel.gameObject;
+
+        var dim = UIFactory.CreatePanel("Dim", pausePanel, new Color(0f, 0f, 0f, 0.75f));
+        UIFactory.Stretch(dim.rectTransform);
+        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
+
+        var pauseTitle = UIFactory.CreateText("Title", pausePanel, Loc.Get("Fight.Paused"), 30, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(pauseTitle.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 60f), new Vector2(400f, 50f));
+        pauseTitle.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
+        view.pauseTitleText = pauseTitle;
+
+        var resumeBtn = UIFactory.CreateButton("ResumeButton", pausePanel, Loc.Get("Fight.Resume"), out var resumeLabel);
+        UIFactory.SetBox(resumeBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -10f), new Vector2(220f, 48f));
+        resumeBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
+        resumeLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
+        view.resumeButton = resumeBtn; view.resumeButtonLabel = resumeLabel;
+
+        var mainMenuBtn = UIFactory.CreateButton("MainMenuButton", pausePanel, Loc.Get("Fight.MainMenu"), out var mainMenuLabel);
+        UIFactory.SetBox(mainMenuBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -70f), new Vector2(220f, 48f));
+        mainMenuBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        mainMenuLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        view.mainMenuButton = mainMenuBtn; view.mainMenuButtonLabel = mainMenuLabel;
+
+        pausePanel.gameObject.SetActive(false);
         return root.gameObject;
     }
 }

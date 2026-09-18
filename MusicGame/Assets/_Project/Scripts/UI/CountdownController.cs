@@ -1,6 +1,6 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// Warmup countdown ("3, 2, 1, GO") — Section 15 of the multi-scene refactor plan. Shown for
@@ -11,41 +11,55 @@ using UnityEngine.UI;
 /// actually starts (GameplayManager plays the audio exactly warmupTime seconds after publishing
 /// GameStartedEvent — the same value this reads).
 ///
+/// Pure SCREEN CONTROLLER — the number text carries a ThemeTextReceiver(Accent/Display) directly;
+/// no theming logic lives in this class.
+///
+/// Prefers a real CountdownScreen.prefab instance (wired via UIRegistry, built once via
+/// Tools > MusicGame > Build UI Prefabs) — falls back to the old procedural build only if that
+/// hasn't been run yet, same pattern as GameplayHUD/PauseController.
+///
 /// Lives in the always-loaded UI Scene (added by UIFlowController) — reacts to GameStartedEvent
 /// directly; never touches the Runner scene's own GameplayManager/AudioSource.
 /// </summary>
-public class CountdownController : ThemeReceiverBehaviour
+public class CountdownController : MonoBehaviour
 {
     private const float GoHoldSeconds = 0.35f;
 
     private RectTransform _root;
-    private Text _numberText;
+    private TextMeshProUGUI _numberText;
 
     private Coroutine _sequence;
     private System.Action<GameStartedEvent> _onGameStarted;
 
-    private void Awake() => Build();
-
-    protected override void OnEnable()
+    private void Awake()
     {
-        base.OnEnable();
+        var registry = FindFirstObjectByType<UIRegistry>();
+        if (registry != null && registry.Countdown != null) WireUI(registry.Countdown);
+        else Build();
+    }
+
+    private void OnEnable()
+    {
         _onGameStarted = e => Show(e.WarmupTime);
         EventBus.Subscribe(_onGameStarted);
     }
 
-    protected override void OnDisable()
+    private void OnDisable()
     {
-        base.OnDisable();
         EventBus.Unsubscribe(_onGameStarted);
     }
 
-    public override void ApplyUITheme(UIStyleSO ui)
+    // ── Prefab path — see CountdownScreenView's own doc ──────────────────────────
+
+    private void WireUI(CountdownScreenView view)
     {
-        if (ui == null) return;
-        if (_numberText != null) _numberText.color = ui.accentColor;
+        _root       = view.root.GetComponent<RectTransform>();
+        _numberText = view.numberText;
+
+        _root.gameObject.SetActive(false);
     }
 
-    // ── Build (runtime-only, no prefab) ────────────────────────────────────────
+    // ── Build (procedural fallback — no UIRegistry in the scene yet) ─────────────
 
     private void Build()
     {
@@ -54,9 +68,10 @@ public class CountdownController : ThemeReceiverBehaviour
         UIFactory.Stretch(_root);
         _root.SetAsLastSibling();
 
-        _numberText = UIFactory.CreateText("Number", _root, "", 96, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold);
+        _numberText = UIFactory.CreateText("Number", _root, "", 96, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
         UIFactory.SetBox(_numberText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             Vector2.zero, new Vector2(400f, 200f));
+        _numberText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
 
         _root.gameObject.SetActive(false);
     }

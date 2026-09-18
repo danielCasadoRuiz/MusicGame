@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,21 +13,21 @@ public class PauseView : MonoBehaviour
     [Header("Pause button (shown during live gameplay)")]
     public GameObject pauseButtonRoot;
     public Button     pauseButton;
-    public Text       pauseButtonLabel;
+    public TextMeshProUGUI pauseButtonLabel;
 
     [Header("Paused overlay")]
     public GameObject overlayRoot;
-    public Text        titleText;
+    public TextMeshProUGUI titleText;
     public Button      resumeButton;
-    public Text        resumeButtonLabel;
+    public TextMeshProUGUI resumeButtonLabel;
     public Button      restartButton;
-    public Text        restartButtonLabel;
+    public TextMeshProUGUI restartButtonLabel;
 
     [Header("Camera view toggle (sits just below the Pause button, live gameplay only)")]
     public GameObject cameraToggleButtonRoot;
     public Button      cameraToggleButton;
     public Image       cameraToggleIcon;
-    public Text        cameraToggleLabel;
+    public TextMeshProUGUI cameraToggleLabel;
     [Tooltip("Optional — if left empty the icon Image is simply hidden and only the text switches.")]
     public Sprite      thirdPersonIcon;
     public Sprite      firstPersonIcon;

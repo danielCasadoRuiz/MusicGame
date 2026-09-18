@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,12 +9,22 @@ using UnityEngine.UI;
 /// of the multi-scene refactor plan's "possibilitat de skip/input"). No art final: a plain title
 /// string is the placeholder logo.
 ///
+/// Pure SCREEN CONTROLLER now (navigation/interaction only) — it does NOT implement theming itself.
+/// Each themed child gets a generic receiver instead (ThemeColorReceiver/ThemeTextReceiver — see
+/// the Theme/UI hybrid model): Dim uses ThemeColorReceiver(Background), Title uses
+/// ThemeTextReceiver(Primary/Display). This screen has no special visual behavior of its own, so it
+/// doesn't need a PrefabThemeController either — generic receivers are the whole story here.
+///
+/// Prefers a real IntroScreen.prefab instance (wired via UIRegistry, built once via
+/// Tools > MusicGame > Build UI Prefabs) — falls back to the old procedural build only if that
+/// hasn't been run yet, same pattern as GameplayHUD/PauseController.
+///
 /// Lives in the always-loaded UI Scene (added by UIFlowController) — reacts to
 /// GameFlowStateChangedEvent directly, same pattern as FightController, rather than a generic
 /// GameFlowState-to-screen registry (see UIFlowController's own doc on why that registry doesn't
 /// exist yet).
 /// </summary>
-public class IntroScreenController : ThemeReceiverBehaviour
+public class IntroScreenController : MonoBehaviour
 {
     private const float FadeInDuration  = 0.5f;
     private const float HoldDuration    = 1.5f;
@@ -21,19 +32,22 @@ public class IntroScreenController : ThemeReceiverBehaviour
 
     private RectTransform _root;
     private CanvasGroup   _canvasGroup;
-    private Text          _titleText;
-    private Image         _dim;
+    private TextMeshProUGUI _titleText;
 
     private Coroutine _sequence;
     private bool      _skipRequested;
 
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
 
-    private void Awake() => Build();
-
-    protected override void OnEnable()
+    private void Awake()
     {
-        base.OnEnable();
+        var registry = FindFirstObjectByType<UIRegistry>();
+        if (registry != null && registry.IntroScreen != null) WireUI(registry.IntroScreen);
+        else Build();
+    }
+
+    private void OnEnable()
+    {
         _onFlowStateChanged = e =>
         {
             if (e.Current == GameFlowState.Intro) Show();
@@ -49,20 +63,26 @@ public class IntroScreenController : ThemeReceiverBehaviour
             Show();
     }
 
-    protected override void OnDisable()
+    private void OnDisable()
     {
-        base.OnDisable();
         EventBus.Unsubscribe(_onFlowStateChanged);
     }
 
-    public override void ApplyUITheme(UIStyleSO ui)
+    // ── Prefab path — see IntroScreenView's own doc ──────────────────────────────
+
+    private void WireUI(IntroScreenView view)
     {
-        if (ui == null) return;
-        if (_dim != null) _dim.color = ui.backgroundColor;
-        if (_titleText != null) _titleText.color = ui.primaryColor;
+        _root        = view.root.GetComponent<RectTransform>();
+        _canvasGroup = view.canvasGroup;
+        _titleText   = view.titleText;
+        view.skipButton.onClick.AddListener(RequestSkip);
+
+        _titleText.text = Loc.Get("Intro.Title");
+        _canvasGroup.alpha = 0f;
+        _root.gameObject.SetActive(false);
     }
 
-    // ── Build (runtime-only, no prefab) ────────────────────────────────────────
+    // ── Build (procedural fallback — no UIRegistry in the scene yet) ─────────────
 
     private void Build()
     {
@@ -74,17 +94,19 @@ public class IntroScreenController : ThemeReceiverBehaviour
         _canvasGroup = _root.gameObject.AddComponent<CanvasGroup>();
         _canvasGroup.alpha = 0f;
 
-        _dim = UIFactory.CreatePanel("Dim", _root, new Color(0.02f, 0.02f, 0.02f, 1f));
-        UIFactory.Stretch(_dim.rectTransform);
+        var dim = UIFactory.CreatePanel("Dim", _root, new Color(0.02f, 0.02f, 0.02f, 1f));
+        UIFactory.Stretch(dim.rectTransform);
+        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
         // Full-screen invisible button so a click/tap anywhere skips the wait.
-        var skipButton = _dim.gameObject.AddComponent<Button>();
+        var skipButton = dim.gameObject.AddComponent<Button>();
         skipButton.transition = Selectable.Transition.None;
         skipButton.onClick.AddListener(RequestSkip);
 
-        _titleText = UIFactory.CreateText("Title", _root, Loc.Get("Intro.Title"), 42, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold);
+        _titleText = UIFactory.CreateText("Title", _root, Loc.Get("Intro.Title"), 42, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
         UIFactory.SetBox(_titleText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             Vector2.zero, new Vector2(1000f, 80f));
+        _titleText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
 
         _root.gameObject.SetActive(false);
     }

@@ -1,5 +1,5 @@
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// Runner's mobile in-game controls — a virtual joystick (bottom-left, drag) and a jump button
@@ -80,7 +80,7 @@ public class MobileControlsController : MonoBehaviour
         UIFactory.SetBox(button.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f),
             new Vector2(-40f, 40f), new Vector2(size, size));
 
-        var label = UIFactory.CreateText("Label", button.rectTransform, Loc.Get("Mobile.Jump"), 16, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold);
+        var label = UIFactory.CreateText("Label", button.rectTransform, Loc.Get("Mobile.Jump"), 16, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
         UIFactory.Stretch(label.rectTransform);
 
         button.gameObject.AddComponent<TouchJumpButton>();

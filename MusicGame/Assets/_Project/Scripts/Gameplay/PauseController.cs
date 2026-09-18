@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -59,7 +60,7 @@ public class PauseController : MonoBehaviour
     private RectTransform _overlayRoot;
     private RectTransform _cameraToggleButtonRoot;
     private Image         _cameraToggleIcon;
-    private Text          _cameraToggleLabel;
+    private TextMeshProUGUI _cameraToggleLabel;
     private Sprite        _thirdPersonIcon;
     private Sprite        _firstPersonIcon;
 
@@ -235,11 +236,13 @@ public class PauseController : MonoBehaviour
     {
         var canvas = UIFactory.RootCanvas();
 
-        var pauseBtn = UIFactory.CreateButton("PauseButton", canvas, Loc.Get("Pause.PauseButton"), out _);
+        var pauseBtn = UIFactory.CreateButton("PauseButton", canvas, Loc.Get("Pause.PauseButton"), out var pauseLabel);
         UIFactory.SetBox(pauseBtn.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
             new Vector2(-12f, -12f), new Vector2(84f, 28f));
         pauseBtn.onClick.AddListener(Pause);
         _pauseButtonRoot = pauseBtn.GetComponent<RectTransform>();
+        pauseBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        pauseLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         var cameraToggleBtn = UIFactory.CreateButton("CameraToggleButton", canvas, "", out _cameraToggleLabel);
         UIFactory.SetBox(cameraToggleBtn.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
@@ -247,12 +250,15 @@ public class PauseController : MonoBehaviour
         cameraToggleBtn.onClick.AddListener(() => CameraFollow.Instance?.ToggleView());
         _cameraToggleButtonRoot = cameraToggleBtn.GetComponent<RectTransform>();
         RefreshCameraToggleDisplay(CameraFollow.Instance != null ? CameraFollow.Instance.ViewMode : CameraViewMode.ThirdPerson);
+        cameraToggleBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        _cameraToggleLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         _overlayRoot = UIFactory.CreateRect("PausedOverlay", canvas);
         UIFactory.Stretch(_overlayRoot);
 
         var dim = UIFactory.CreatePanel("Dim", _overlayRoot, new Color(0f, 0f, 0f, 0.6f));
         UIFactory.Stretch(dim.rectTransform);
+        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
         float pw = 240f, ph = 170f;
         var panel = UIFactory.CreatePanel("Panel", _overlayRoot, new Color(0.04f, 0.04f, 0.04f, 0.97f));
@@ -260,25 +266,31 @@ public class PauseController : MonoBehaviour
         var border = panel.gameObject.AddComponent<Outline>();
         border.effectColor    = new Color(0.15f, 0.15f, 0.15f, 1f);
         border.effectDistance = new Vector2(3f, -3f);
+        panel.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
 
         var content = panel.rectTransform;
         float y = -14f;
 
         var title = UIFactory.CreateText("Title", content, Loc.Get("Pause.Title"), 18, Color.white);
         UIFactory.StackTop(title.rectTransform, ref y, 28f, 0f);
+        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
 
         y = -60f;
         float btnW = pw - 40f, btnH = 34f;
-        var resumeBtn = UIFactory.CreateButton("ResumeButton", content, Loc.Get("Pause.Resume"), out _);
+        var resumeBtn = UIFactory.CreateButton("ResumeButton", content, Loc.Get("Pause.Resume"), out var resumeLabel);
         UIFactory.SetBox(resumeBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, y), new Vector2(btnW, btnH));
         resumeBtn.onClick.AddListener(Resume);
+        resumeBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
+        resumeLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
         y -= btnH + 12f;
 
-        var restartBtn = UIFactory.CreateButton("RestartButton", content, Loc.Get("Pause.RestartSong"), out _);
+        var restartBtn = UIFactory.CreateButton("RestartButton", content, Loc.Get("Pause.RestartSong"), out var restartLabel);
         UIFactory.SetBox(restartBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, y), new Vector2(btnW, btnH));
         restartBtn.onClick.AddListener(RestartSongFromPause);
+        restartBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        restartLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         RefreshVisibility();
     }

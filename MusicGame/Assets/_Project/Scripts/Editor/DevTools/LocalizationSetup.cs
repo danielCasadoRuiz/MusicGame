@@ -48,6 +48,12 @@ public static class LocalizationSetup
         ("Analyzing.Tip11", "Teaching the track to run...",       "Ensenyant el circuit a córrer..."),
         ("Analyzing.Tip12", "Syncing the beat to the world...",   "Sincronitzant el ritme amb el món..."),
 
+        // Cache-hit fake sequence — fixed, in-order (see AnalyzingScreenController.CacheHitKeys),
+        // never randomized like the Tip pool above.
+        ("Analyzing.CacheHit01", "Song found in cache...", "Cançó trobada a la memòria cau..."),
+        ("Analyzing.CacheHit02", "Finalizing...",          "Finalitzant..."),
+        ("Analyzing.CacheHit03", "Changing theme...",      "Canviant l'estil..."),
+
         // ── Pause menu ──────────────────────────────────────────────────────────
         ("Pause.PauseButton", "Pause",           "Pausa"),
         ("Pause.Title",       "PAUSED",          "PAUSA"),
@@ -84,6 +90,50 @@ public static class LocalizationSetup
         ("EndScreen.NoFallBonus",    "NO FALL BONUS +{0}%",               "BONUS SENSE CAURE +{0}%"),
         ("EndScreen.SessionSingular","Session: {0} run · {1}% avg",       "Sessió: {0} partida · {1}% mitjana"),
         ("EndScreen.SessionPlural",  "Session: {0} runs · {1}% avg",      "Sessió: {0} partides · {1}% mitjana"),
+
+        // ── Intro screen ─────────────────────────────────────────────────────────
+        ("Intro.Title", "MUSIC RUNNER", "MUSIC RUNNER"),
+
+        // ── Main menu ────────────────────────────────────────────────────────────
+        ("MainMenu.Title",    "MUSIC RUNNER", "MUSIC RUNNER"),
+        ("MainMenu.Play",     "PLAY",         "JUGA"),
+        ("MainMenu.Settings", "SETTINGS",     "AJUSTOS"),
+        ("MainMenu.Quit",     "QUIT",         "SORTIR"),
+
+        // ── Settings panel (opened from Main Menu) ──────────────────────────────
+        ("Settings.Title",  "SETTINGS", "AJUSTOS"),
+        ("Settings.Volume", "Volume",   "Volum"),
+        ("Settings.Close",  "CLOSE",    "TANCA"),
+
+        // ── Song selection ───────────────────────────────────────────────────────
+        ("SongSelection.Title",               "CHOOSE YOUR SONG",                 "TRIA LA TEVA CANÇÓ"),
+        ("SongSelection.PlayYourSong",         "▶ PLAY YOUR SONG",                 "▶ PUNXA LA TEVA CANÇÓ"),
+        ("SongSelection.Spotify",              "Spotify",                          "Spotify"),
+        ("SongSelection.YouTubeMusic",         "YouTube Music",                    "YouTube Music"),
+        ("SongSelection.AmazonMusic",          "Amazon Music",                     "Amazon Music"),
+        ("SongSelection.ComingSoon",           "Coming Soon",                      "Properament"),
+        ("SongSelection.Back",                 "BACK",                             "ENRERE"),
+        ("SongSelection.Play",                 "PLAY",                             "JUGA"),
+        ("SongSelection.Loading",              "Loading song...",                  "Carregant la cançó..."),
+        ("SongSelection.LoadFailed",           "Couldn't load that song — try again.", "No s'ha pogut carregar la cançó — torna-ho a provar."),
+        ("SongSelection.LocalFileCancelled",   "File selection cancelled.",        "Selecció de fitxer cancel·lada."),
+        ("SongSelection.LocalFileSelected",    "Selected: {0}",                    "Seleccionat: {0}"),
+        ("SongSelection.LocalFileDefaultName", "Local File",                       "Fitxer local"),
+
+        // ── Countdown ────────────────────────────────────────────────────────────
+        ("Countdown.Go", "GO!", "JA!"),
+
+        // ── Mobile controls ──────────────────────────────────────────────────────
+        ("Mobile.Jump", "JUMP", "SALTA"),
+
+        // ── Fight HUD ────────────────────────────────────────────────────────────
+        ("Fight.PlayerName",   "PLAYER",     "JUGADOR"),
+        ("Fight.RivalUnknown", "RIVAL",      "RIVAL"),
+        ("Fight.RivalNamed",   "{0} RIVAL",  "RIVAL {0}"),
+        ("Fight.Paused",       "PAUSED",     "PAUSA"),
+        ("Fight.Pause",        "Pause",      "Pausa"),
+        ("Fight.Resume",       "RESUME",     "REPRÈN"),
+        ("Fight.MainMenu",     "MAIN MENU",  "MENÚ PRINCIPAL"),
     };
 
     [MenuItem("Tools/MusicGame/Setup Localization")]

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -66,22 +67,22 @@ public class GameplayHUD : MonoBehaviour
 
     // ── uGUI refs: live top bar ─────────────────────────────────────────────
     private RectTransform _liveRoot;
-    private readonly Dictionary<RingType, Text> _counterValues = new();
-    private Text  _scoreValueText;
-    private Text  _totalValueText;
+    private readonly Dictionary<RingType, TextMeshProUGUI> _counterValues = new();
+    private TextMeshProUGUI  _scoreValueText;
+    private TextMeshProUGUI  _totalValueText;
     private Image _progressFill;
     private RectTransform _tagsStrip;
-    private Text _tagStyleText, _tagVibeText, _tagOtherText;
+    private TextMeshProUGUI _tagStyleText, _tagVibeText, _tagOtherText;
 
     // ── uGUI refs: end screen ───────────────────────────────────────────────
     private RectTransform _endRoot;
-    private Text  _ratingLabelText;
+    private TextMeshProUGUI  _ratingLabelText;
     private Image _ratingBarFill;
-    private Text  _scoreSummaryText;
+    private TextMeshProUGUI  _scoreSummaryText;
     private RectTransform _performanceRows;
-    private Text  _fallsText;
-    private Text  _noFallBonusText;
-    private Text  _sessionText;
+    private TextMeshProUGUI  _fallsText;
+    private TextMeshProUGUI  _noFallBonusText;
+    private TextMeshProUGUI  _sessionText;
     private readonly List<GameObject> _rowObjects = new();
 
     // ── Lifecycle ────────────────────────────────────────────────────────────
@@ -200,6 +201,7 @@ public class GameplayHUD : MonoBehaviour
 
         var topBar = UIFactory.CreatePanel("TopBar", _liveRoot, new Color(0.03f, 0.03f, 0.03f, 0.88f));
         UIFactory.SetBox(topBar.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, new Vector2(0f, 44f));
+        topBar.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
 
         var cells = new (string labelKey, RingType? type)[]
         {
@@ -212,35 +214,55 @@ public class GameplayHUD : MonoBehaviour
             float xMin = i / 8f, xMax = (i + 1) / 8f;
             UIFactory.SetBox(cell, new Vector2(xMin, 0f), new Vector2(xMax, 1f), new Vector2(0f, 1f), new Vector2(6f, 0f), new Vector2(-6f, 0f));
 
-            var label = UIFactory.CreateText("Label", cell, Loc.Get(cells[i].labelKey), 12, RingColorOr(cells[i].type, Color.white), TextAnchor.UpperLeft);
+            var label = UIFactory.CreateText("Label", cell, Loc.Get(cells[i].labelKey), 12, RingColorOr(cells[i].type, Color.white), TextAlignmentOptions.TopLeft);
             UIFactory.SetBox(label.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -3f), new Vector2(0f, 20f));
 
-            var value = UIFactory.CreateText("Value", cell, "0", 14, Color.white, TextAnchor.UpperLeft);
+            var value = UIFactory.CreateText("Value", cell, "0", 14, Color.white, TextAlignmentOptions.TopLeft);
             UIFactory.SetBox(value.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -22f), new Vector2(0f, 20f));
 
-            if (cells[i].labelKey == "HUD.Score")      _scoreValueText = value;
-            else if (cells[i].labelKey == "HUD.Total") _totalValueText = value;
-            else                                       _counterValues[cells[i].type.Value] = value;
+            if (cells[i].labelKey == "HUD.Score")
+            {
+                _scoreValueText = value;
+                value.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+            }
+            else if (cells[i].labelKey == "HUD.Total")
+            {
+                _totalValueText = value;
+                value.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+            }
+            else
+            {
+                // Counter VALUES stay plain white (not ring-colored — only their LABEL above is,
+                // via RingColorOr/MusicRunnerCollectiblesConfig, a separate data-driven color system
+                // unrelated to the UI Theme tokens).
+                _counterValues[cells[i].type.Value] = value;
+            }
         }
 
         var progressBg = UIFactory.CreateFillBar("SongProgress", _liveRoot, new Color(0.10f, 0.10f, 0.10f), new Color(0.18f, 0.75f, 0.95f), out _progressFill);
         UIFactory.SetBox(progressBg.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -45f), new Vector2(0f, 4f));
         _progressFill.fillAmount = 0f;
+        _progressFill.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Accent);
 
         // Semantic tags strip (STYLE/VIBE/OTHER) — shown only when the song was tagged.
         _tagsStrip = UIFactory.CreateRect("TagsStrip", _liveRoot);
         UIFactory.SetBox(_tagsStrip, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -50f), new Vector2(0f, 54f));
         var tagsBg = _tagsStrip.gameObject.AddComponent<Image>();
         tagsBg.color = new Color(0.03f, 0.03f, 0.03f, 0.75f);
+        _tagsStrip.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
 
-        _tagStyleText = UIFactory.CreateText("Style", _tagsStrip, "", 11, new Color(0.55f, 0.8f, 1f), TextAnchor.UpperLeft);
+        // Style/Vibe/Other keep their own distinctive tint (a data-category indicator, not UI
+        // chrome) — left as-is rather than forced onto a token that doesn't really fit.
+        _tagStyleText = UIFactory.CreateText("Style", _tagsStrip, "", 11, new Color(0.55f, 0.8f, 1f), TextAlignmentOptions.TopLeft);
         UIFactory.SetBox(_tagStyleText.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(8f, -3f), new Vector2(-8f, 16f));
 
-        _tagVibeText = UIFactory.CreateText("Vibe", _tagsStrip, "", 11, Color.white, TextAnchor.UpperLeft);
+        _tagVibeText = UIFactory.CreateText("Vibe", _tagsStrip, "", 11, Color.white, TextAlignmentOptions.TopLeft);
         UIFactory.SetBox(_tagVibeText.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(8f, -19f), new Vector2(-8f, 16f));
+        _tagVibeText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
-        _tagOtherText = UIFactory.CreateText("Other", _tagsStrip, "", 11, Color.white, TextAnchor.UpperLeft);
+        _tagOtherText = UIFactory.CreateText("Other", _tagsStrip, "", 11, Color.white, TextAlignmentOptions.TopLeft);
         UIFactory.SetBox(_tagOtherText.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(8f, -35f), new Vector2(-8f, 16f));
+        _tagOtherText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         _tagsStrip.gameObject.SetActive(false);
     }
@@ -282,7 +304,7 @@ public class GameplayHUD : MonoBehaviour
         SetTagLine(_tagOtherText, Loc.Get("HUD.TagOther"), other);
     }
 
-    private void SetTagLine(Text text, string label, string content)
+    private void SetTagLine(TextMeshProUGUI text, string label, string content)
     {
         text.gameObject.SetActive(content != null);
         if (content != null) text.text = $"<b>{label}</b>  {content}";
@@ -304,7 +326,7 @@ public class GameplayHUD : MonoBehaviour
     // so there's exactly one place mapping RingType → text, never two that could drift apart.
     private static string RingTypeKey(RingType type) => $"HUD.{type}";
 
-    private static void SetLabel(Text text, RingType type)
+    private static void SetLabel(TextMeshProUGUI text, RingType type)
     {
         if (text != null) text.text = Loc.Get(RingTypeKey(type));
     }
@@ -342,6 +364,7 @@ public class GameplayHUD : MonoBehaviour
 
         var dim = UIFactory.CreatePanel("Dim", _endRoot, new Color(0f, 0f, 0f, 0.55f));
         UIFactory.Stretch(dim.rectTransform);
+        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
         float pw = 420f, ph = 720f;
         var panel = UIFactory.CreatePanel("Panel", _endRoot, new Color(0.04f, 0.04f, 0.04f, 0.97f));
@@ -349,14 +372,18 @@ public class GameplayHUD : MonoBehaviour
         var border = panel.gameObject.AddComponent<Outline>();
         border.effectColor    = new Color(0.2f, 0.2f, 0.2f, 1f);
         border.effectDistance = new Vector2(2f, -2f);
+        panel.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
 
         var content = panel.rectTransform;
         float y = -16f;
 
         var title = UIFactory.CreateText("Title", content, Loc.Get("EndScreen.Title"), 20, Color.white);
         UIFactory.StackTop(title.rectTransform, ref y, 30f);
+        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
 
-        _ratingLabelText = UIFactory.CreateText("Rating", content, "", 22, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold);
+        // Rating label/bar are deliberately NOT theme receivers — PopulateEndScreen colors them
+        // from the SCORE (a red-to-green gradient), not from the Theme.
+        _ratingLabelText = UIFactory.CreateText("Rating", content, "", 22, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
         UIFactory.StackTop(_ratingLabelText.rectTransform, ref y, 32f);
 
         var ratingBar = UIFactory.CreateFillBar("RatingBar", content, new Color(0.12f, 0.12f, 0.12f), Color.white, out _ratingBarFill);
@@ -365,6 +392,7 @@ public class GameplayHUD : MonoBehaviour
 
         _scoreSummaryText = UIFactory.CreateText("ScoreSummary", content, "", 12, new Color(0.6f, 0.6f, 0.6f));
         UIFactory.StackTop(_scoreSummaryText.rectTransform, ref y, 20f);
+        _scoreSummaryText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
         y -= 6f;
 
         _performanceRows = UIFactory.CreateRect("PerformanceRows", content);
@@ -373,24 +401,31 @@ public class GameplayHUD : MonoBehaviour
 
         _fallsText = UIFactory.CreateText("Falls", content, "", 13, Color.white);
         UIFactory.StackTop(_fallsText.rectTransform, ref y, 20f);
+        _fallsText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         _noFallBonusText = UIFactory.CreateText("NoFallBonus", content, "", 13, new Color(1f, 0.85f, 0.2f));
         UIFactory.StackTop(_noFallBonusText.rectTransform, ref y, 20f);
+        _noFallBonusText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Positive, UIFontToken.Body);
 
         _sessionText = UIFactory.CreateText("Session", content, "", 11, new Color(0.55f, 0.55f, 0.6f));
         UIFactory.StackTop(_sessionText.rectTransform, ref y, 22f);
+        _sessionText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
 
         y -= 10f;
         float btnW = 150f, btnH = 40f, gap = 16f;
-        var restartBtn = UIFactory.CreateButton("RestartButton", content, Loc.Get("EndScreen.Restart"), out _);
+        var restartBtn = UIFactory.CreateButton("RestartButton", content, Loc.Get("EndScreen.Restart"), out var restartLabel);
         UIFactory.SetBox(restartBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(-(btnW + gap) / 2f, y), new Vector2(btnW, btnH));
         restartBtn.onClick.AddListener(OnRestartClicked);
+        restartBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        restartLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
-        var continueBtn = UIFactory.CreateButton("ContinueButton", content, Loc.Get("EndScreen.Continue"), out _);
+        var continueBtn = UIFactory.CreateButton("ContinueButton", content, Loc.Get("EndScreen.Continue"), out var continueLabel);
         UIFactory.SetBox(continueBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2((btnW + gap) / 2f, y), new Vector2(btnW, btnH));
         continueBtn.onClick.AddListener(OnContinueClicked);
+        continueBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
+        continueLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
     }
 
     // _gameEnded is cleared HERE, synchronously on click — not left to wait for
@@ -471,14 +506,14 @@ public class GameplayHUD : MonoBehaviour
 
         Color color = config != null ? config.collectibles.RingColor(type) : Color.white;
 
-        var label = UIFactory.CreateText("Label", row, RowLabel(type), 12, color, TextAnchor.MiddleLeft);
+        var label = UIFactory.CreateText("Label", row, RowLabel(type), 12, color, TextAlignmentOptions.Left);
         UIFactory.SetBox(label.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 0.5f), new Vector2(0f, 0f), new Vector2(70f, 0f));
 
         var barBg = UIFactory.CreateFillBar("Bar", row, new Color(0.12f, 0.12f, 0.12f), color * 0.8f, out var barFill);
         UIFactory.SetBox(barBg.rectTransform, new Vector2(0f, 0.2f), new Vector2(1f, 0.8f), new Vector2(0f, 0.5f), new Vector2(74f, 0f), new Vector2(-150f, 0f));
         barFill.fillAmount = Mathf.Clamp01(tp.CollectionRate);
 
-        var info = UIFactory.CreateText("Info", row, $"{tp.CollectionRate * 100f:F0}%  {tp.Collected}/{tp.Available}", 10, Color.white, TextAnchor.MiddleRight);
+        var info = UIFactory.CreateText("Info", row, $"{tp.CollectionRate * 100f:F0}%  {tp.Collected}/{tp.Available}", 10, Color.white, TextAlignmentOptions.Right);
         UIFactory.SetBox(info.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(1f, 0.5f), new Vector2(0f, 0f), new Vector2(70f, 0f));
 
         return row.gameObject;

@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,24 +16,24 @@ using UnityEngine.UI;
 public class EndScreenView : MonoBehaviour
 {
     [Header("Title (localized — see Loc)")]
-    public Text titleText;
+    public TextMeshProUGUI titleText;
 
     [Header("Rating")]
-    public Text  ratingLabel;
+    public TextMeshProUGUI ratingLabel;
     public Image ratingBarFill;
-    public Text  scoreSummary;
+    public TextMeshProUGUI scoreSummary;
 
     [Header("Per-type performance (populated dynamically)")]
     public RectTransform performanceRowsContainer;
 
     [Header("Falls / bonus / session")]
-    public Text fallsText;
-    public Text noFallBonusText;
-    public Text sessionText;
+    public TextMeshProUGUI fallsText;
+    public TextMeshProUGUI noFallBonusText;
+    public TextMeshProUGUI sessionText;
 
     [Header("Buttons")]
     public Button restartButton;
-    public Text   restartButtonLabel;
+    public TextMeshProUGUI restartButtonLabel;
     public Button continueButton;
-    public Text   continueButtonLabel;
+    public TextMeshProUGUI continueButtonLabel;
 }

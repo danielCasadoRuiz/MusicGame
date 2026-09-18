@@ -1,6 +1,6 @@
 public struct AudioDataReadyEvent        { public AudioData Data; }
 public struct SongProfileReadyEvent      { public SongProfile Profile; }
-public struct PreAnalysisStartedEvent    { }
+public struct PreAnalysisStartedEvent    { public bool IsCacheHit; }
 public struct PreAnalysisProgressEvent   { public float Progress; }
 public struct EnergyUpdatedEvent         { public float Value; public float SmoothedValue; }
 public struct FrequencyBandsUpdatedEvent { public FrequencyBand[] Bands; }

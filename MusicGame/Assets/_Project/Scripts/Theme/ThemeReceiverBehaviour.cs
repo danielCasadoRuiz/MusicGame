@@ -89,13 +89,24 @@ public abstract class ThemeReceiverBehaviour : MonoBehaviour, IThemeReceiver
     /// screen has its own sprite/font content and wants an actual crossfade instead.</summary>
     protected virtual void ApplyBlendedTheme(UIStyleSO from, UIStyleSO to, float t)
     {
-        _blendScratch.primaryColor    = Color.Lerp(from.primaryColor,    to.primaryColor,    t);
-        _blendScratch.secondaryColor  = Color.Lerp(from.secondaryColor,  to.secondaryColor,  t);
-        _blendScratch.accentColor     = Color.Lerp(from.accentColor,     to.accentColor,     t);
-        _blendScratch.backgroundColor = Color.Lerp(from.backgroundColor, to.backgroundColor, t);
-        _blendScratch.panelSprite     = t < 0.5f ? from.panelSprite  : to.panelSprite;
-        _blendScratch.buttonSprite    = t < 0.5f ? from.buttonSprite : to.buttonSprite;
-        _blendScratch.font            = t < 0.5f ? from.font         : to.font;
+        _blendScratch.primaryColor          = Color.Lerp(from.primaryColor,          to.primaryColor,          t);
+        _blendScratch.secondaryColor        = Color.Lerp(from.secondaryColor,        to.secondaryColor,        t);
+        _blendScratch.accentColor           = Color.Lerp(from.accentColor,           to.accentColor,           t);
+        _blendScratch.backgroundColor       = Color.Lerp(from.backgroundColor,       to.backgroundColor,       t);
+        _blendScratch.surfaceColor          = Color.Lerp(from.surfaceColor,          to.surfaceColor,          t);
+        _blendScratch.surfaceSecondaryColor = Color.Lerp(from.surfaceSecondaryColor, to.surfaceSecondaryColor, t);
+        _blendScratch.textPrimaryColor      = Color.Lerp(from.textPrimaryColor,      to.textPrimaryColor,      t);
+        _blendScratch.textSecondaryColor    = Color.Lerp(from.textSecondaryColor,    to.textSecondaryColor,    t);
+        _blendScratch.buttonPrimaryColor    = Color.Lerp(from.buttonPrimaryColor,    to.buttonPrimaryColor,    t);
+        _blendScratch.buttonSecondaryColor  = Color.Lerp(from.buttonSecondaryColor,  to.buttonSecondaryColor,  t);
+        _blendScratch.positiveColor         = Color.Lerp(from.positiveColor,         to.positiveColor,         t);
+        _blendScratch.negativeColor         = Color.Lerp(from.negativeColor,         to.negativeColor,         t);
+        _blendScratch.panelSprite           = t < 0.5f ? from.panelSprite      : to.panelSprite;
+        _blendScratch.backgroundSprite      = t < 0.5f ? from.backgroundSprite : to.backgroundSprite;
+        _blendScratch.patternSprite         = t < 0.5f ? from.patternSprite    : to.patternSprite;
+        _blendScratch.displayFont           = t < 0.5f ? from.displayFont      : to.displayFont;
+        _blendScratch.bodyFont              = t < 0.5f ? from.bodyFont         : to.bodyFont;
+        _blendScratch.layoutVariant         = t < 0.5f ? from.layoutVariant    : to.layoutVariant;
         ApplyUITheme(_blendScratch);
     }
 

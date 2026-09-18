@@ -16,7 +16,7 @@ public class LocalFileSongSource : ISongSource
 
     public LocalFileSongSource(ILocalSongPicker picker) => _picker = picker;
 
-    public string DisplayName => _pickedPath != null ? Path.GetFileNameWithoutExtension(_pickedPath) : "Local File";
+    public string DisplayName => _pickedPath != null ? Path.GetFileNameWithoutExtension(_pickedPath) : Loc.Get("SongSelection.LocalFileDefaultName");
 
     public IEnumerator Load(Action<SelectedSongInfo?> onComplete)
     {

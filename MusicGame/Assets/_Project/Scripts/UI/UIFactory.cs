@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -5,14 +6,11 @@ using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Minimal uGUI construction helpers. Everything is built at RUNTIME, in code — no prefabs, no
-/// manual scene wiring — matching how every other system in this project bootstraps itself
-/// (GameplayManager.Awake() AddComponent-chaining MusicClock/FallRespawnSystem/etc.).
-///
-/// Replaces the old OnGUI-drawn menus/HUD: real Canvas + Button/Image/Text, driven by
-/// UnityEngine.EventSystems + the new Input System's InputSystemUIInputModule (this project's
-/// Active Input Handling is New-Input-System-only — see ProjectSettings — so the legacy
-/// StandaloneInputModule would never receive clicks at all).
+/// Minimal uGUI construction helpers — the one place that knows how to build a Text/Button/etc. at
+/// runtime, still used for screens that haven't been converted to real prefabs yet, and for
+/// dynamic, per-item content within a prefab-based screen (e.g. SongCard instances). Text is
+/// TextMeshProUGUI — this project's ONE UI text technology (Section 2 of the "UI unification"
+/// plan); nothing here builds legacy UnityEngine.UI.Text.
 ///
 /// The root Canvas/EventSystem are explicitly homed in the always-loaded "UI" Scene (see
 /// MoveToUiSceneIfLoaded) regardless of which script/scene calls RootCanvas() first — required
@@ -88,19 +86,18 @@ public static class UIFactory
         return img;
     }
 
-    public static Text CreateText(string name, RectTransform parent, string content, int fontSize,
-        Color color, TextAnchor anchor = TextAnchor.MiddleCenter, FontStyle style = FontStyle.Normal)
+    public static TextMeshProUGUI CreateText(string name, RectTransform parent, string content, int fontSize,
+        Color color, TextAlignmentOptions anchor = TextAlignmentOptions.Center, FontStyles style = FontStyles.Normal)
     {
         var rt  = CreateRect(name, parent);
-        var txt = rt.gameObject.AddComponent<Text>();
-        txt.font                = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        var txt = rt.gameObject.AddComponent<TextMeshProUGUI>();
         txt.text                = content;
         txt.fontSize             = fontSize;
         txt.color                = color;
         txt.alignment            = anchor;
         txt.fontStyle            = style;
-        txt.horizontalOverflow   = HorizontalWrapMode.Overflow;
-        txt.verticalOverflow     = VerticalWrapMode.Overflow;
+        txt.enableWordWrapping   = false;
+        txt.overflowMode         = TextOverflowModes.Overflow;
         return txt;
     }
 
@@ -108,7 +105,7 @@ public static class UIFactory
     /// not IMGUI's control-ID/hotControl bookkeeping (the source of the old double-click bug: a
     /// GUI.Button whose branch stops being drawn between MouseDown and MouseUp leaves
     /// GUIUtility.hotControl stuck, silently eating the next click).</summary>
-    public static Button CreateButton(string name, RectTransform parent, string label, out Text labelText)
+    public static Button CreateButton(string name, RectTransform parent, string label, out TextMeshProUGUI labelText)
     {
         var rt  = CreateRect(name, parent);
         var img = rt.gameObject.AddComponent<Image>();
@@ -122,7 +119,7 @@ public static class UIFactory
         colors.disabledColor    = new Color(1f, 1f, 1f, 0.05f);
         btn.colors = colors;
 
-        labelText = CreateText(name + "Label", rt, label, 15, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold);
+        labelText = CreateText(name + "Label", rt, label, 15, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
         Stretch(labelText.rectTransform);
         return btn;
     }

@@ -1,16 +1,36 @@
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.UI;
 
 /// <summary>
-/// Song Selection screen — lists SongCatalogSO's entries, "PLAY YOUR SONG" (local file, via the
-/// existing ILocalSongPicker abstraction), and three disabled placeholder streaming buttons
-/// (Spotify/YouTube Music/Amazon Music — Section 9 of the multi-scene refactor plan: no real APIs
-/// yet, just a clear "Coming Soon" seam for later).
+/// Song Selection screen — lists every audio clip tagged with the "Song" Addressables label (see
+/// SongAddressablesSetup — no hand-authored catalog ScriptableObject any more: dropping a new clip
+/// into Assets/_Project/Audio/Music and re-running that tool is the whole "add a song" workflow, and
+/// removing one is the same in reverse), "PLAY YOUR SONG" (local file, via the existing
+/// ILocalSongPicker abstraction), and three disabled placeholder streaming buttons (Spotify/YouTube
+/// Music/Amazon Music — Section 9 of the multi-scene refactor plan: no real APIs yet, just a clear
+/// "Coming Soon" seam for later).
 ///
 /// IMPORTANT (Section 9): selecting a row or picking a local file only records/highlights the
 /// selection — it never starts anything by itself. A separate PLAY button is what actually writes
 /// GameSession.SelectedSong and advances the flow to GameFlowState.SongAnalysis.
+///
+/// Mostly a pure SCREEN CONTROLLER — static children (title, dim, buttons) carry generic receivers
+/// (ThemeColorReceiver/ThemeTextReceiver). The one exception is the song-row SELECTION highlight:
+/// which row is tinted depends on INTERACTION state (which row is currently selected), not just the
+/// theme, so a generic receiver can't express it — this class keeps that one piece directly and
+/// re-applies it on ThemeChangedEvent too, so the highlight's accent color never goes stale after a
+/// Theme swap.
+///
+/// Prefers a real SongSelection.prefab instance (wired via UIRegistry, built once via
+/// Tools > MusicGame > Build UI Prefabs) for the STATIC chrome only — the catalog rows themselves
+/// stay dynamic runtime population into the prefab's (initially empty) songListRoot container either
+/// way, exactly as before. Falls back to the old fully-procedural build only if no prefab is wired.
 ///
 /// Lives in the always-loaded UI Scene (added by UIFlowController) — reacts to
 /// GameFlowStateChangedEvent directly, same pattern as the other Frontend screens. Never touches an
@@ -18,20 +38,20 @@ using UnityEngine.UI;
 /// its own local AudioSource right before starting analysis, so this screen only ever needs to set
 /// GameSession.SelectedSong — no cross-scene AudioSource reference required.
 /// </summary>
-public class SongSelectionController : ThemeReceiverBehaviour
+public class SongSelectionController : MonoBehaviour
 {
     private static readonly Color NeutralStatusColor = new(0.75f, 0.75f, 0.75f);
     private static readonly Color ErrorStatusColor   = new(0.85f, 0.35f, 0.3f);
 
     private RectTransform _root;
-    private Image _dim;
-    private Text  _titleText;
     private RectTransform _songListRoot;
-    private Text  _playButtonLabel;
+    private TextMeshProUGUI _playButtonLabel;
     private Button _playButton;
-    private Text  _statusText;
+    private TextMeshProUGUI _statusText;
 
-    private SongCatalogSO _catalog;
+    private const string SongLabel = "Song";
+
+    private readonly List<IResourceLocation> _entries = new();
     private SongSelectionService _service;
 
     private readonly List<Image> _rowBackgrounds = new();
@@ -40,19 +60,21 @@ public class SongSelectionController : ThemeReceiverBehaviour
     private bool _isLoading;
 
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
+    private System.Action<ThemeChangedEvent> _onThemeChanged;
 
     private void Awake()
     {
-        var appConfig = Resources.Load<AppConfigSO>("AppConfig");
-        _catalog = appConfig != null && appConfig.song != null ? appConfig.song.catalog : null;
         _service = gameObject.AddComponent<SongSelectionService>();
 
-        Build();
+        var registry = FindFirstObjectByType<UIRegistry>();
+        if (registry != null && registry.SongSelection != null) WireUI(registry.SongSelection);
+        else Build();
+
+        StartCoroutine(LoadCatalogAndPopulate());
     }
 
-    protected override void OnEnable()
+    private void OnEnable()
     {
-        base.OnEnable();
         _onFlowStateChanged = e =>
         {
             if (e.Current == GameFlowState.SongSelection) Show();
@@ -60,26 +82,55 @@ public class SongSelectionController : ThemeReceiverBehaviour
         };
         EventBus.Subscribe(_onFlowStateChanged);
 
+        // The row-selection highlight is interaction state, not pure theming, so it isn't a generic
+        // receiver — but its color IS a theme token, so it still needs to react when Theme changes
+        // (Section 15: never go stale) — a plain re-tint, no interpolation needed for this secondary
+        // highlight refresh.
+        _onThemeChanged = _ => RefreshRowHighlight(CurrentAccentColor());
+        EventBus.Subscribe(_onThemeChanged);
+
         // Same UI-Scene-loads-asynchronously race as the other Frontend screens.
         if (AppBootstrap.Context != null && AppBootstrap.Context.AppFlow.CurrentState == GameFlowState.SongSelection)
             Show();
     }
 
-    protected override void OnDisable()
+    private void OnDisable()
     {
-        base.OnDisable();
         EventBus.Unsubscribe(_onFlowStateChanged);
+        EventBus.Unsubscribe(_onThemeChanged);
     }
 
-    public override void ApplyUITheme(UIStyleSO ui)
+    // ── Prefab path — see SongSelectionView's own doc ────────────────────────────
+
+    private void WireUI(SongSelectionView view)
     {
-        if (ui == null) return;
-        if (_dim != null) _dim.color = ui.backgroundColor;
-        if (_titleText != null) _titleText.color = ui.primaryColor;
-        RefreshRowHighlight(ui.accentColor);
+        _root            = view.root.GetComponent<RectTransform>();
+        _songListRoot    = view.songListRoot;
+        _playButton      = view.playButton;
+        _playButtonLabel = view.playButtonLabel;
+        _statusText      = view.statusText;
+
+        view.backButton.onClick.AddListener(() => AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu));
+        view.playButton.onClick.AddListener(OnPlayClicked);
+
+        // Baked once at Editor-bake time — re-apply from the current locale here, same reasoning as
+        // GameplayHUD/PauseController's own labels.
+        view.titleText.text         = Loc.Get("SongSelection.Title");
+        view.backButtonLabel.text   = Loc.Get("SongSelection.Back");
+        view.playButtonLabel.text   = Loc.Get("SongSelection.Play");
+        view.spotifyLabel.text      = Loc.Get("SongSelection.Spotify") + " (" + Loc.Get("SongSelection.ComingSoon") + ")";
+        view.youtubeMusicLabel.text = Loc.Get("SongSelection.YouTubeMusic") + " (" + Loc.Get("SongSelection.ComingSoon") + ")";
+        view.amazonMusicLabel.text  = Loc.Get("SongSelection.AmazonMusic") + " (" + Loc.Get("SongSelection.ComingSoon") + ")";
+        _statusText.text = "";
+
+        // The catalog rows stay dynamic runtime population either way (Section 9 of the plan) — the
+        // prefab only supplies the empty container they get added into.
+        BuildSongList();
+
+        _root.gameObject.SetActive(false);
     }
 
-    // ── Build (runtime-only, no prefab) ────────────────────────────────────────
+    // ── Build (procedural fallback — no UIRegistry in the scene yet) ─────────────
 
     private void Build()
     {
@@ -88,12 +139,14 @@ public class SongSelectionController : ThemeReceiverBehaviour
         UIFactory.Stretch(_root);
         _root.SetAsLastSibling();
 
-        _dim = UIFactory.CreatePanel("Dim", _root, new Color(0.02f, 0.02f, 0.02f, 1f));
-        UIFactory.Stretch(_dim.rectTransform);
+        var dim = UIFactory.CreatePanel("Dim", _root, new Color(0.02f, 0.02f, 0.02f, 1f));
+        UIFactory.Stretch(dim.rectTransform);
+        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
-        _titleText = UIFactory.CreateText("Title", _root, Loc.Get("SongSelection.Title"), 30, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold);
-        UIFactory.SetBox(_titleText.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+        var title = UIFactory.CreateText("Title", _root, Loc.Get("SongSelection.Title"), 30, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, -50f), new Vector2(900f, 50f));
+        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
 
         BuildSongList();
         BuildStreamingRow();
@@ -102,40 +155,76 @@ public class SongSelectionController : ThemeReceiverBehaviour
         _root.gameObject.SetActive(false);
     }
 
+    // Ensures _songListRoot exists — dynamic runtime population either way (Section 9 of the plan),
+    // so this runs identically whether _songListRoot came from the prefab (WireUI) or needs
+    // creating here (procedural Build fallback). Row population itself happens later, once the
+    // Addressables catalog query resolves — see LoadCatalogAndPopulate/PopulateSongRows.
     private void BuildSongList()
     {
-        _songListRoot = UIFactory.CreateRect("SongList", _root);
-        UIFactory.SetBox(_songListRoot, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-            new Vector2(0f, -120f), new Vector2(560f, 260f));
+        if (_songListRoot == null)
+        {
+            _songListRoot = UIFactory.CreateRect("SongList", _root);
+            UIFactory.SetBox(_songListRoot, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(0f, -120f), new Vector2(560f, 260f));
+        }
+    }
 
+    // Queries every asset tagged with the "Song" Addressables label — this IS the catalog now,
+    // there is no hand-authored list to fall back to. Resolves near-instantly (it's a local catalog
+    // lookup, not a real download) — the screen is still hidden at this point in virtually every
+    // real case (reaching SongSelection requires the player to get through Intro/MainMenu first),
+    // so the brief async gap is never actually visible.
+    private IEnumerator LoadCatalogAndPopulate()
+    {
+        AsyncOperationHandle<IList<IResourceLocation>> handle =
+            Addressables.LoadResourceLocationsAsync(SongLabel, typeof(AudioClip));
+        yield return handle;
+
+        _entries.Clear();
+        if (handle.Status == AsyncOperationStatus.Succeeded)
+            _entries.AddRange(handle.Result);
+        else
+            Debug.LogWarning("[SongSelectionController] Failed to query the 'Song' Addressables label.");
+        Addressables.Release(handle);
+
+        PopulateSongRows();
+        RefreshPlayButtonInteractable();
+    }
+
+    // Builds one row per catalog entry, in the order Addressables returned them, followed by the
+    // always-present "PLAY YOUR SONG" row — never called more than once per screen lifetime (this
+    // controller doesn't support the catalog changing while the screen is already up).
+    private void PopulateSongRows()
+    {
         float rowH = 56f, gap = 10f, y = 0f;
 
-        if (_catalog != null)
+        for (int i = 0; i < _entries.Count; i++)
         {
-            for (int i = 0; i < _catalog.songs.Length; i++)
-            {
-                int index = i; // capture
-                var def = _catalog.songs[i];
+            int index = i; // capture
+            var location = _entries[i];
 
-                var row = UIFactory.CreateButton("SongRow_" + def.id, _songListRoot, "", out var label);
-                UIFactory.SetBox(row.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                    new Vector2(0f, y), new Vector2(560f, rowH));
-                label.text = $"{def.title}  —  {def.artist}";
-                label.alignment = TextAnchor.MiddleLeft;
-                UIFactory.SetBox(label.rectTransform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(-24f, 0f));
+            var row = UIFactory.CreateButton("SongRow_" + i, _songListRoot, "", out var label);
+            UIFactory.SetBox(row.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(0f, y), new Vector2(560f, rowH));
+            label.text = location.PrimaryKey; // the Addressable's own address — set once, in the Editor tool, to a friendly display name
+            label.alignment = TextAlignmentOptions.Left;
+            UIFactory.SetBox(label.rectTransform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(-24f, 0f));
+            label.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
-                var background = row.GetComponent<Image>();
-                _rowBackgrounds.Add(background);
-                row.onClick.AddListener(() => SelectCatalogSong(index));
+            // Row BACKGROUND is deliberately NOT a ThemeColorReceiver — its color depends on
+            // selection state (see RefreshRowHighlight), not just the theme.
+            var background = row.GetComponent<Image>();
+            _rowBackgrounds.Add(background);
+            row.onClick.AddListener(() => SelectCatalogSong(index));
 
-                y -= rowH + gap;
-            }
+            y -= rowH + gap;
         }
 
-        var playYourSongBtn = UIFactory.CreateButton("PlayYourSongButton", _songListRoot, Loc.Get("SongSelection.PlayYourSong"), out _);
+        var playYourSongBtn = UIFactory.CreateButton("PlayYourSongButton", _songListRoot, Loc.Get("SongSelection.PlayYourSong"), out var playYourSongLabel);
         UIFactory.SetBox(playYourSongBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, y), new Vector2(560f, rowH));
         playYourSongBtn.onClick.AddListener(OnPlayYourSongClicked);
+        playYourSongLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
         _rowBackgrounds.Add(playYourSongBtn.GetComponent<Image>());
     }
 
@@ -154,20 +243,26 @@ public class SongSelectionController : ThemeReceiverBehaviour
             UIFactory.SetBox(btn.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 0.5f),
                 new Vector2(i * (w + 10f), 0f), new Vector2(w, 0f));
             btn.interactable = false;
+            btn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+            label.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
         }
     }
 
     private void BuildBottomBar()
     {
-        var backBtn = UIFactory.CreateButton("BackButton", _root, Loc.Get("SongSelection.Back"), out _);
+        var backBtn = UIFactory.CreateButton("BackButton", _root, Loc.Get("SongSelection.Back"), out var backLabel);
         UIFactory.SetBox(backBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
             new Vector2(-150f, 40f), new Vector2(180f, 44f));
         backBtn.onClick.AddListener(() => AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu));
+        backBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        backLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         var playBtn = UIFactory.CreateButton("PlayButton", _root, Loc.Get("SongSelection.Play"), out _playButtonLabel);
         UIFactory.SetBox(playBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
             new Vector2(150f, 40f), new Vector2(180f, 44f));
         playBtn.onClick.AddListener(OnPlayClicked);
+        playBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
+        _playButtonLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
         _playButton = playBtn;
 
         _statusText = UIFactory.CreateText("Status", _root, "", 12, NeutralStatusColor);
@@ -221,7 +316,7 @@ public class SongSelectionController : ThemeReceiverBehaviour
     private void RefreshRowHighlight(Color accent)
     {
         // Local-file "row" is the last one in _rowBackgrounds (PlayYourSongButton); catalog rows
-        // come first, in the same order as _catalog.songs.
+        // come first, in the same order as _entries.
         for (int i = 0; i < _rowBackgrounds.Count; i++)
         {
             bool isLocalFileRow = i == _rowBackgrounds.Count - 1;
@@ -262,12 +357,12 @@ public class SongSelectionController : ThemeReceiverBehaviour
             return;
         }
 
-        var definition = _catalog.songs[_selectedCatalogIndex];
+        var location = _entries[_selectedCatalogIndex];
         _isLoading = true;
         RefreshPlayButtonInteractable();
         SetStatus(Loc.Get("SongSelection.Loading"));
 
-        StartCoroutine(_service.SelectSong(new SongCatalogSource(definition), null, success =>
+        StartCoroutine(_service.SelectSong(new AddressableSongSource(location), null, success =>
         {
             _isLoading = false;
             if (success)

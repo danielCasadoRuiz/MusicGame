@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,31 +12,31 @@ using UnityEngine.UI;
 public class LiveHudView : MonoBehaviour
 {
     [Header("Counters")]
-    public Text kickValue;
-    public Text snareValue;
-    public Text hiHatValue;
-    public Text beatValue;
-    public Text onsetValue;
-    public Text impactValue;
-    public Text scoreValue;
-    public Text totalValue;
+    public TextMeshProUGUI kickValue;
+    public TextMeshProUGUI snareValue;
+    public TextMeshProUGUI hiHatValue;
+    public TextMeshProUGUI beatValue;
+    public TextMeshProUGUI onsetValue;
+    public TextMeshProUGUI impactValue;
+    public TextMeshProUGUI scoreValue;
+    public TextMeshProUGUI totalValue;
 
     [Header("Counter labels (localized — see Loc)")]
-    public Text kickLabel;
-    public Text snareLabel;
-    public Text hiHatLabel;
-    public Text beatLabel;
-    public Text onsetLabel;
-    public Text impactLabel;
-    public Text scoreLabel;
-    public Text totalLabel;
+    public TextMeshProUGUI kickLabel;
+    public TextMeshProUGUI snareLabel;
+    public TextMeshProUGUI hiHatLabel;
+    public TextMeshProUGUI beatLabel;
+    public TextMeshProUGUI onsetLabel;
+    public TextMeshProUGUI impactLabel;
+    public TextMeshProUGUI scoreLabel;
+    public TextMeshProUGUI totalLabel;
 
     [Header("Progress")]
     public Image progressFill;
 
     [Header("Semantic tags strip")]
     public GameObject tagsStrip;
-    public Text tagStyle;
-    public Text tagVibe;
-    public Text tagOther;
+    public TextMeshProUGUI tagStyle;
+    public TextMeshProUGUI tagVibe;
+    public TextMeshProUGUI tagOther;
 }

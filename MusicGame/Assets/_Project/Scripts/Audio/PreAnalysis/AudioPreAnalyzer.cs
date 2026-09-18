@@ -4,6 +4,17 @@ using UnityEngine;
 
 public class AudioPreAnalyzer : MonoBehaviour
 {
+    // Purely cosmetic — a cache hit resolves in well under a frame, which would make the
+    // Analyzing screen flash on/off invisibly fast (or never even appear, since
+    // PreAnalysisStartedEvent used to not fire at all on a hit). Holding here for a beat gives
+    // the flow the same "something is happening" feel as a real analysis, and doubles as the
+    // moment ThemeManager actually swaps to the detected style's theme right afterward — so it's
+    // not entirely fake, just deliberately slowed down to be visible. AnalyzingScreenController
+    // runs its own fixed caption sequence ("Song cached" / "Finalizing" / "Changing theme...")
+    // over roughly this same window — see its own CacheHitFakeDelaySeconds — but the two aren't
+    // hard-synced: whichever finishes first just gets cut short by the other, which is fine.
+    private const float CacheHitFakeDelaySeconds = 2f;
+
     public IEnumerator Analyze(AudioClip clip, AudioAnalysisConfig config, System.Action<SongProfile> onComplete)
     {
         // Wait one frame so all OnEnable() subscriptions are registered before publishing any event
@@ -35,6 +46,9 @@ public class AudioPreAnalyzer : MonoBehaviour
                 yield return RunSemanticTagging(monoForTag, clip.frequency, cached, config);
                 SongCache.Save(clip, cached);
             }
+
+            EventBus.Publish(new PreAnalysisStartedEvent { IsCacheHit = true });
+            yield return new WaitForSeconds(CacheHitFakeDelaySeconds);
 
             EventBus.Publish(new SongProfileReadyEvent { Profile = cached });
             onComplete?.Invoke(cached);

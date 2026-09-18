@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Songs
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Songs
+  m_GUID: 871e1b78f0f5b9f4a892c23de91cdb5a
+  m_SerializeEntries:
+  - m_GUID: 130dff2d0a1683741b9faf90c9c51835
+    m_Address: "All But Water \u2014 Zero Nine"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1b7fc4e84c73b1f48b356a13717dc0d8
+    m_Address: Michele Beautiless  -  Tasmanian
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ccad945d423c2b4aaba38e81a1cb502
+    m_Address: Caribbean Machines - Milonga_Candidate
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2d2d0f97be867e14cab8a3d0a376dd70
+    m_Address: Gym Bros  - Dyin' Alive
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37244ff76c97f964b968c14f0cec13be
+    m_Address: "Glorious Trainer \u2014 I Feel So High"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 498754dcae0a78b40901e6cb1a5dba38
+    m_Address: "Synthy Looper \u2014 Chicks Are Out to Live It Up"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 63172a5d8c41f8d4fbf21c194da595e0
+    m_Address: hah  - Go for it
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a36bbcbca3a3b714fa1ef7435231e0a5
+    m_Address: "V\xC5\xC5V - Dancig Queer"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad19a3f4efa400c4d87026f1f6cc2b4d
+    m_Address: "Older New \u2014 Azure WeekStart"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b77b95693304e8f498a78c019f8bae10
+    m_Address: "DeepVoice Redhead \u2014 Still Holding On"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c15cf812251dc2a47a063878b2c5f3fd
+    m_Address: The Weeknd - Blinding Lights
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e0cf713220f5a614ab47cc747c57b598
+    m_Address: SuperBeliefs - Stevie Whatever
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e7f4f0fbf7fb75046b7717bd17620bef
+    m_Address: Michael Jackson - Billie Jean
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ec648927c793d124d89874b72b401b32
+    m_Address: Daft Punk - Around the World
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee3d843bedfd09546a884bab48d38243
+    m_Address: "Mikel Json \u2014 Really, Dean_"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fb1811ea1ad54ea4c88edbb86169cf0f
+    m_Address: Jamiroquai - Canned Heat
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a4cc0dfc618f344aaae658dde9bb725, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: e270aa9c9a8c6974d908ea62da14fb05, type: 2}
+    - {fileID: 11400000, guid: 0efe83bb41238bc44b4bc0da5029b460, type: 2}
