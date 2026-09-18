@@ -2,35 +2,36 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// The Song Analysis "module" — scene-local orchestration around the existing AudioPreAnalyzer/
-/// SongCache/analyzer pipeline (none of that is rewritten, only WHEN it starts changes). Analysis
-/// used to start unconditionally from Awake() the instant this GameObject existed; it now waits
-/// for an explicit BeginAnalysis() call, so Gameplay no longer implicitly depends on this scene
-/// loading, and RunnerSceneBootstrap triggers it precisely when GameFlowState.SongAnalysis
-/// is entered (see RunnerSceneBootstrap.cs) instead of it just happening on scene load.
+/// Scene-local, LIVE audio-reactive pipeline (Sampler → Analyzer → per-frame detectors — Onset/
+/// Beat/Kick/Snare/HiHat/Energy/Bands/Peak) around whatever AudioClip `audioSource` is currently
+/// playing — today only consumed by the optional AudioDebugVisualizer (see config.enableVisualizer),
+/// not by any production gameplay script (Gameplay itself is driven from the pre-computed
+/// SongProfile + MusicClock.SongTime, not live FFT), so it's safe to keep running unconditionally.
+///
+/// The OFFLINE, one-shot pre-analysis pass (AudioPreAnalyzer/SongCache) that used to live here moved
+/// to SongAnalysisController (always-loaded UI Scene) — it needs no AudioSource or scene-local
+/// dependency at all (AudioPreAnalyzer.Analyze operates purely on the raw clip data), so it now runs
+/// entirely BEFORE Runner even loads (see SceneFlowController.ModeFor(SongAnalysis) and
+/// SongAnalysisController's own doc for why). Each detector here still gets that already-resolved
+/// SongProfile the moment Runner loads — RunnerSceneBootstrap re-publishes SongProfileReadyEvent
+/// once this object's own SongProfileReadyEvent subscription (below) has had a chance to register.
 /// </summary>
 public class AudioSystemBootstrapper : MonoBehaviour
 {
     [SerializeField] private AudioSource         audioSource;
     [SerializeField] private AudioAnalysisConfig config;
-    [SerializeField] private bool autoPlayAfterAnalysis = true;
 
     public AudioAnalysisConfig Config      => config;
-    // Exposed so RunnerSceneBootstrap can apply a Song-Selection-picked clip before BeginAnalysis() —
-    // see SongSelectionService/GameSession.SelectedSong.
+    // Exposed so RunnerSceneBootstrap can apply the Song-Selection-picked clip onto the same
+    // AudioSource GameplayManager plays — see SongSelectionService/GameSession.SelectedSong.
     public AudioSource         AudioSource => audioSource;
 
-    private AudioPreAnalyzer     _preAnalyzer;
     private AudioContextProvider _contextProvider;
 
     private void Awake()
     {
         var sampler     = gameObject.AddComponent<AudioSampler>();
         var analyzer    = gameObject.AddComponent<AudioAnalyzer>();
-        _preAnalyzer    = gameObject.AddComponent<AudioPreAnalyzer>();
-        // AnalyzingScreenController is now owned by UIFlowController (UI Scene) — it only ever
-        // talked to EventBus/ThemeManager.Instance, never to anything scene-local here, so moving it
-        // to a different loaded scene changes nothing about how it's triggered/shown.
 
         _contextProvider = new AudioContextProvider();
         _contextProvider.Initialize(audioSource);
@@ -52,28 +53,6 @@ public class AudioSystemBootstrapper : MonoBehaviour
             var visualizer = gameObject.AddComponent<AudioDebugVisualizer>();
             visualizer.Initialize(config, audioSource);
         }
-    }
-
-    /// <summary>
-    /// COMMAND — call this to actually start analyzing whatever clip is on the AudioSource right
-    /// now (a future Song Selection phase will assign that clip beforehand). Safe to call once
-    /// per song; calling it again re-analyzes/re-checks-cache for whatever clip is currently
-    /// assigned. Publishes PreAnalysisStartedEvent/PreAnalysisProgressEvent/SongProfileReadyEvent
-    /// exactly as before (see AudioPreAnalyzer) — this method only decides WHEN that pipeline
-    /// starts, it doesn't change what it does.
-    /// </summary>
-    public void BeginAnalysis()
-    {
-        if (audioSource.clip != null)
-            StartCoroutine(_preAnalyzer.Analyze(audioSource.clip, config, OnProfileReady));
-        else
-            Debug.LogWarning("[AudioBootstrapper] No AudioClip assigned to AudioSource.");
-    }
-
-    private void OnProfileReady(SongProfile profile)
-    {
-        if (autoPlayAfterAnalysis && !audioSource.isPlaying)
-            audioSource.Play();
     }
 
     private void OnDestroy()

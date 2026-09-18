@@ -53,6 +53,7 @@ public class SongSelectionController : MonoBehaviour
 
     private readonly List<IResourceLocation> _entries = new();
     private SongSelectionService _service;
+    private AudioAnalysisConfig  _analysisConfig;
 
     private readonly List<Image> _rowBackgrounds = new();
     private int _selectedCatalogIndex = -1;
@@ -65,6 +66,9 @@ public class SongSelectionController : MonoBehaviour
     private void Awake()
     {
         _service = gameObject.AddComponent<SongSelectionService>();
+
+        var appConfig = Resources.Load<AppConfigSO>("AppConfig");
+        _analysisConfig = appConfig != null ? appConfig.audioAnalysis : null;
 
         var registry = FindFirstObjectByType<UIRegistry>();
         if (registry != null && registry.SongSelection != null) WireUI(registry.SongSelection);
@@ -155,17 +159,25 @@ public class SongSelectionController : MonoBehaviour
         _root.gameObject.SetActive(false);
     }
 
-    // Ensures _songListRoot exists — dynamic runtime population either way (Section 9 of the plan),
-    // so this runs identically whether _songListRoot came from the prefab (WireUI) or needs
-    // creating here (procedural Build fallback). Row population itself happens later, once the
-    // Addressables catalog query resolves — see LoadCatalogAndPopulate/PopulateSongRows.
+    private const float SongRowHeight = 56f;
+    private const float SongRowGap    = 10f;
+
+    // Ensures _songListRoot exists as a scrollable list's Content transform — dynamic runtime
+    // population either way (Section 9 of the plan), so this runs identically whether
+    // _songListRoot came from the prefab (WireUI) or needs creating here (procedural Build
+    // fallback). Rows now stretch/stack via a VerticalLayoutGroup on _songListRoot itself instead
+    // of manual anchored-position math — see UIFactory.CreateScrollRect — so the list scrolls once
+    // it has more rows than fit (Section: the catalog can hold arbitrarily many songs, and always
+    // will once real Addressables packs replace the current test set). Row population itself
+    // happens later, once the Addressables catalog query resolves — see
+    // LoadCatalogAndPopulate/PopulateSongRows.
     private void BuildSongList()
     {
         if (_songListRoot == null)
         {
-            _songListRoot = UIFactory.CreateRect("SongList", _root);
-            UIFactory.SetBox(_songListRoot, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(0f, -120f), new Vector2(560f, 260f));
+            var scrollRect = UIFactory.CreateScrollRect("SongList", _root, out _songListRoot, SongRowGap);
+            UIFactory.SetBox(scrollRect.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(0f, -120f), new Vector2(560f, 400f));
         }
     }
 
@@ -193,19 +205,18 @@ public class SongSelectionController : MonoBehaviour
 
     // Builds one row per catalog entry, in the order Addressables returned them, followed by the
     // always-present "PLAY YOUR SONG" row — never called more than once per screen lifetime (this
-    // controller doesn't support the catalog changing while the screen is already up).
+    // controller doesn't support the catalog changing while the screen is already up). _songListRoot
+    // is a VerticalLayoutGroup's Content transform (see UIFactory.CreateScrollRect) — rows just need
+    // their own height set; the layout group handles stacking/width/scrolling.
     private void PopulateSongRows()
     {
-        float rowH = 56f, gap = 10f, y = 0f;
-
         for (int i = 0; i < _entries.Count; i++)
         {
             int index = i; // capture
             var location = _entries[i];
 
             var row = UIFactory.CreateButton("SongRow_" + i, _songListRoot, "", out var label);
-            UIFactory.SetBox(row.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(0f, y), new Vector2(560f, rowH));
+            row.GetComponent<RectTransform>().sizeDelta = new Vector2(0f, SongRowHeight);
             label.text = location.PrimaryKey; // the Addressable's own address — set once, in the Editor tool, to a friendly display name
             label.alignment = TextAlignmentOptions.Left;
             UIFactory.SetBox(label.rectTransform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(-24f, 0f));
@@ -216,13 +227,10 @@ public class SongSelectionController : MonoBehaviour
             var background = row.GetComponent<Image>();
             _rowBackgrounds.Add(background);
             row.onClick.AddListener(() => SelectCatalogSong(index));
-
-            y -= rowH + gap;
         }
 
         var playYourSongBtn = UIFactory.CreateButton("PlayYourSongButton", _songListRoot, Loc.Get("SongSelection.PlayYourSong"), out var playYourSongLabel);
-        UIFactory.SetBox(playYourSongBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-            new Vector2(0f, y), new Vector2(560f, rowH));
+        playYourSongBtn.GetComponent<RectTransform>().sizeDelta = new Vector2(0f, SongRowHeight);
         playYourSongBtn.onClick.AddListener(OnPlayYourSongClicked);
         playYourSongLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
         _rowBackgrounds.Add(playYourSongBtn.GetComponent<Image>());
@@ -297,7 +305,7 @@ public class SongSelectionController : MonoBehaviour
 
     private void OnPlayYourSongClicked()
     {
-        var source = new LocalFileSongSource(LocalSongPickerFactory.Create());
+        var source = new LocalFileSongSource(LocalSongPickerFactory.Create(), _analysisConfig);
         StartCoroutine(source.Load(info =>
         {
             if (info == null)
@@ -357,20 +365,26 @@ public class SongSelectionController : MonoBehaviour
             return;
         }
 
-        var location = _entries[_selectedCatalogIndex];
+        // Advance to SongAnalysis IMMEDIATELY — the Analyzing screen must appear the instant Play
+        // is pressed (AnalyzingScreenController shows itself as soon as this state is entered, not
+        // only once PreAnalysisStartedEvent fires), not after the catalog clip has finished loading
+        // from Addressables. GameSession.SelectedSong.Clip is still null at this point for a
+        // moment — SongAnalysisController's own BeginAnalysis() waits for it to appear before
+        // actually starting the FFT pass, so the "loading the clip" and "analyzing it" steps both
+        // happen visibly on the Analyzing screen instead of stalling Song Selection beforehand.
         _isLoading = true;
         RefreshPlayButtonInteractable();
-        SetStatus(Loc.Get("SongSelection.Loading"));
+        AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongAnalysis);
 
+        var location = _entries[_selectedCatalogIndex];
         StartCoroutine(_service.SelectSong(new AddressableSongSource(location), null, success =>
         {
             _isLoading = false;
-            if (success)
+            if (!success)
             {
-                AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongAnalysis);
-            }
-            else
-            {
+                // Loading failed after we already left Song Selection — bounce back to it instead
+                // of leaving the Analyzing screen stuck with nothing to analyze.
+                AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongSelection);
                 RefreshPlayButtonInteractable();
                 SetStatus(Loc.Get("SongSelection.LoadFailed"), ErrorStatusColor);
             }

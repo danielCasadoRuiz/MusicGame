@@ -150,15 +150,15 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateForwardOffset()
     {
-        bool surging;
-        if (PlatformService.IsMobile)
-        {
-            surging = TouchInputState.Surging;
-        }
-        else
+        bool readTouch    = PlatformService.IsMobile || PlatformService.DualInputInEditor;
+        bool readKeyboard = !PlatformService.IsMobile || PlatformService.DualInputInEditor;
+
+        bool surging = false;
+        if (readTouch) surging |= TouchInputState.Surging;
+        if (readKeyboard)
         {
             var kb = Keyboard.current;
-            surging = kb != null && (kb.wKey.isPressed || kb.upArrowKey.isPressed);
+            surging |= kb != null && (kb.wKey.isPressed || kb.upArrowKey.isPressed);
         }
 
         _forwardOffset = surging
@@ -185,15 +185,16 @@ public class PlayerController : MonoBehaviour
         // applying unchanged (no decay, no new player-driven direction change) until landing.
         if (grounded || config.allowAirControl)
         {
-            float dir;
-            if (PlatformService.IsMobile)
-            {
-                dir = Mathf.Clamp(TouchInputState.Lateral, -1f, 1f);
-            }
-            else
+            bool readTouch    = PlatformService.IsMobile || PlatformService.DualInputInEditor;
+            bool readKeyboard = !PlatformService.IsMobile || PlatformService.DualInputInEditor;
+
+            float dir = 0f;
+            if (readTouch) dir = Mathf.Clamp(TouchInputState.Lateral, -1f, 1f);
+            // Keyboard only drives this when the joystick isn't actively doing so — combining both
+            // additively would double the effective speed while a developer holds both at once.
+            if (readKeyboard && Mathf.Approximately(dir, 0f))
             {
                 var kb = Keyboard.current;
-                dir = 0f;
                 if (kb != null)
                 {
                     if (kb.aKey.isPressed || kb.leftArrowKey.isPressed)  dir -= 1f;
@@ -217,16 +218,19 @@ public class PlayerController : MonoBehaviour
     {
         bool grounded = _cc.isGrounded;
 
-        bool jumpPressed;
-        if (PlatformService.IsMobile)
+        bool readTouch    = PlatformService.IsMobile || PlatformService.DualInputInEditor;
+        bool readKeyboard = !PlatformService.IsMobile || PlatformService.DualInputInEditor;
+
+        bool jumpPressed = false;
+        if (readTouch)
         {
             jumpPressed = TouchInputState.JumpRequested;
             TouchInputState.JumpRequested = false; // edge-triggered — consume it the same frame
         }
-        else
+        if (readKeyboard)
         {
             var kb = Keyboard.current;
-            jumpPressed = kb != null && kb.spaceKey.wasPressedThisFrame;
+            jumpPressed |= kb != null && kb.spaceKey.wasPressedThisFrame;
         }
 
         if (grounded && jumpPressed)

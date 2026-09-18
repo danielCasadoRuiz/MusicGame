@@ -63,15 +63,18 @@ public class SceneFlowController : MonoBehaviour, IAppModule
         EventBus.Unsubscribe(_onFlowStateChanged);
     }
 
-    // Boot/Intro/MainMenu/SongSelection live in Frontend; SongAnalysis/Gameplay/Results live in
-    // Runner (SongAnalysis is still triggered from within Runner today — see RunnerSceneBootstrap's
-    // own doc on why); Fight is its own Mode Scene.
+    // Boot/Intro/MainMenu/SongSelection/SongAnalysis all live in Frontend — SongAnalysis
+    // deliberately does NOT map to Runner: analysis now runs entirely in the always-loaded UI Scene
+    // (see SongAnalysisController), specifically so the Runner Mode Scene (and its 3D placeholder
+    // world) never flashes into view behind the Analyzing screen while a song is still being
+    // analyzed/its theme still transitioning. Runner only loads once GameFlowState actually reaches
+    // Gameplay — see SongAnalysisController's own doc on the analysis→theme-transition→Gameplay
+    // handoff. Fight is its own Mode Scene.
     private static GameMode? ModeFor(GameFlowState state) => state switch
     {
         GameFlowState.Boot or GameFlowState.Intro or GameFlowState.MainMenu or GameFlowState.SongSelection
-            => GameMode.Frontend,
-        GameFlowState.SongAnalysis or GameFlowState.Gameplay or GameFlowState.Results
-            => GameMode.Runner,
+            or GameFlowState.SongAnalysis => GameMode.Frontend,
+        GameFlowState.Gameplay or GameFlowState.Results => GameMode.Runner,
         GameFlowState.Fight => GameMode.Fight,
         _ => null,
     };

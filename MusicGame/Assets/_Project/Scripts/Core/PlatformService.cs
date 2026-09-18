@@ -25,4 +25,19 @@ public static class PlatformService
     }
 
     public static bool IsMobile => Current == PlatformMode.Mobile;
+
+    /// <summary>Editor-only: the keyboard must always be usable to test Gameplay, even while
+    /// PlatformService.IsMobile is true (simulated or real) — a developer shouldn't need a
+    /// touchscreen just because AppConfigSO.editorPlatformSimulation is set to Mobile. See
+    /// PlayerController's input-reading methods, which read the keyboard ADDITIONALLY (not
+    /// instead) whenever this is true. Deliberately NOT consulted by MobileControlsController —
+    /// the virtual joystick/jump button stay strictly platform-gated (see its own doc): this only
+    /// ever affects whether the keyboard also works, never what's shown on screen. Always false in
+    /// a real build: a Mobile build has no keyboard to fall back to anyway.</summary>
+    public static bool DualInputInEditor =>
+#if UNITY_EDITOR
+        true;
+#else
+        false;
+#endif
 }

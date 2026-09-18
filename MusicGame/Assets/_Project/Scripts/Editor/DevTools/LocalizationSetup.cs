@@ -48,11 +48,14 @@ public static class LocalizationSetup
         ("Analyzing.Tip11", "Teaching the track to run...",       "Ensenyant el circuit a córrer..."),
         ("Analyzing.Tip12", "Syncing the beat to the world...",   "Sincronitzant el ritme amb el món..."),
 
-        // Cache-hit fake sequence — fixed, in-order (see AnalyzingScreenController.CacheHitKeys),
-        // never randomized like the Tip pool above.
+        // Analyzing.CacheHit01-03 are currently unused (AnalyzingScreenController's progress-phase
+        // redesign replaced the old fixed cache-hit caption sequence with the more informative
+        // Analyzing.StyleDetected flash below) — left here rather than deleted in case a future
+        // pass wants them back for a dedicated "found in cache" moment.
         ("Analyzing.CacheHit01", "Song found in cache...", "Cançó trobada a la memòria cau..."),
         ("Analyzing.CacheHit02", "Finalizing...",          "Finalitzant..."),
         ("Analyzing.CacheHit03", "Changing theme...",      "Canviant l'estil..."),
+        ("Analyzing.StyleDetected", "Style detected: {0}!", "Estil detectat: {0}!"),
 
         // ── Pause menu ──────────────────────────────────────────────────────────
         ("Pause.PauseButton", "Pause",           "Pausa"),

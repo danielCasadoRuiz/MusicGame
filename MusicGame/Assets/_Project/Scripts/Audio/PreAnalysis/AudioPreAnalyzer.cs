@@ -7,15 +7,23 @@ public class AudioPreAnalyzer : MonoBehaviour
     // Purely cosmetic — a cache hit resolves in well under a frame, which would make the
     // Analyzing screen flash on/off invisibly fast (or never even appear, since
     // PreAnalysisStartedEvent used to not fire at all on a hit). Holding here for a beat gives
-    // the flow the same "something is happening" feel as a real analysis, and doubles as the
-    // moment ThemeManager actually swaps to the detected style's theme right afterward — so it's
-    // not entirely fake, just deliberately slowed down to be visible. AnalyzingScreenController
-    // runs its own fixed caption sequence ("Song cached" / "Finalizing" / "Changing theme...")
-    // over roughly this same window — see its own CacheHitFakeDelaySeconds — but the two aren't
-    // hard-synced: whichever finishes first just gets cut short by the other, which is fine.
+    // the flow the same "something is happening" feel as a real analysis. onTagsReady (and the
+    // MusicStyleDetectedEvent/theme swap it triggers, via SongAnalysisController) already fires
+    // BEFORE this wait even starts, so the theme is already changing while this plays out —
+    // AnalyzingScreenController's own progress-bar animation during this window is a self-paced
+    // simulation (there's no real per-frame signal for a cache hit), not hard-synced to this exact
+    // duration.
     private const float CacheHitFakeDelaySeconds = 2f;
 
-    public IEnumerator Analyze(AudioClip clip, AudioAnalysisConfig config, System.Action<SongProfile> onComplete)
+    // `onTagsReady` fires as soon as the semantic-tagging pass (genre/mood ML classification) knows
+    // this song's tags — genuinely BEFORE the per-frame FFT loop below even starts (cache miss), or
+    // essentially immediately (cache hit, tags already cached) — so SongAnalysisController can
+    // classify the music style and swap the theme early, while the rest of the (level-generation-
+    // critical) analysis keeps going in the background. Never fires if semantic tagging is
+    // disabled (config.advancedEnabled/advancedSemanticTagging) — callers must tolerate that and
+    // fall back to classifying from the final SongProfile instead (see SongAnalysisController).
+    public IEnumerator Analyze(AudioClip clip, AudioAnalysisConfig config, System.Action<SongProfile> onComplete,
+        System.Action<MusicTagScore[]> onTagsReady = null)
     {
         // Wait one frame so all OnEnable() subscriptions are registered before publishing any event
         yield return null;
@@ -47,7 +55,13 @@ public class AudioPreAnalyzer : MonoBehaviour
                 SongCache.Save(clip, cached);
             }
 
+            // IsCacheHit must be known to listeners (AnalyzingScreenController) BEFORE onTagsReady's
+            // MusicStyleDetectedEvent below — that's what tells them whether to expect real
+            // PreAnalysisProgressEvent ticks afterward (cache miss) or not (cache hit, none ever
+            // come).
             EventBus.Publish(new PreAnalysisStartedEvent { IsCacheHit = true });
+            onTagsReady?.Invoke(cached.musicTags);
+
             yield return new WaitForSeconds(CacheHitFakeDelaySeconds);
 
             EventBus.Publish(new SongProfileReadyEvent { Profile = cached });
@@ -63,6 +77,22 @@ public class AudioPreAnalyzer : MonoBehaviour
         float[] raw  = GetClipData(clip);
 
         float[] mono = MixToMono(raw, channels);
+
+        // Semantic tagging (genre/mood ML pass) runs FIRST — it only needs this raw mono buffer,
+        // nothing the per-frame FFT loop below produces — so style detection (and the theme swap
+        // it triggers, via SongAnalysisController's onTagsReady) happens as early as possible,
+        // with the detailed per-frame analysis (needed for level generation) continuing afterward
+        // instead of only ever becoming known once EVERYTHING else has also finished.
+        MusicTagScore[] earlyTags = null;
+        int             earlyTagModelVersion = 0;
+        if (config.advancedEnabled && config.advancedSemanticTagging)
+        {
+            var tagCarrier = new SongProfile();
+            yield return RunSemanticTagging(mono, sampleRate, tagCarrier, config);
+            earlyTags            = tagCarrier.musicTags;
+            earlyTagModelVersion = tagCarrier.musicTagModelVersion;
+        }
+        onTagsReady?.Invoke(earlyTags);
 
         int   windowSize     = Mathf.NextPowerOfTwo(config.spectrumSize);
         int   hopSize        = windowSize / 2;
@@ -199,12 +229,12 @@ public class AudioPreAnalyzer : MonoBehaviour
             chromaFlat        = chromaFlat,
             voiceProbability  = voiceProb,
             estimatedKey      = -1,
+            musicTags            = earlyTags,
+            musicTagModelVersion = earlyTagModelVersion,
         };
 
-        // Semantic tags (unlike loudness/dynamics/harmony/etc. below) ARE part of what gets
-        // cached — ML inference isn't "fast to recompute" — so this must run BEFORE the save.
-        if (config.advancedEnabled && config.advancedSemanticTagging)
-            yield return RunSemanticTagging(mono, sampleRate, profile, config);
+        // Semantic tagging already ran ABOVE, before the FFT loop (see earlyTags) — ML inference
+        // isn't "fast to recompute" so it's still only ever run once, just earlier than before.
 
         // Save BEFORE running derived analyzers: the cache stores raw per-frame arrays.
         // Derived features (loudness, dynamics, zones, harmony, etc.) are always

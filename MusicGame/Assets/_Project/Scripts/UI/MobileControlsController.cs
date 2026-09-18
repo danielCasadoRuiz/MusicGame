@@ -3,11 +3,16 @@ using UnityEngine;
 
 /// <summary>
 /// Runner's mobile in-game controls — a virtual joystick (bottom-left, drag) and a jump button
-/// (bottom-right, tap) feeding TouchInputState, which PlayerController reads instead of the
-/// keyboard when PlatformService.IsMobile. Shown ONLY while PlatformService.IsMobile AND
-/// GameFlowState is Gameplay — invisible/inert on desktop, and gone the instant the run ends
-/// (Results/Fight/back to menu), matching "sap què mostrar o no en un mode o altre" (Section on
-/// platform-aware UI).
+/// (bottom-right, tap) feeding TouchInputState. Shown ONLY while PlatformService.IsMobile AND
+/// GameFlowState is Gameplay — strictly platform-gated, including in the Editor (simulate Mobile
+/// via AppConfigSO.editorPlatformSimulation to see/test these) — invisible/inert otherwise, and
+/// gone the instant the run ends (Results/Fight/back to menu), matching "sap què mostrar o no en un
+/// mode o altre" (Section on platform-aware UI).
+///
+/// The keyboard, unlike this UI, is DELIBERATELY not platform-gated in the Editor — see
+/// PlatformService.DualInputInEditor's own doc: a developer must always be able to test with just a
+/// keyboard, with no touchscreen, regardless of which platform is currently simulated. That's
+/// PlayerController's concern, not this class's — it only ever gates its own visuals.
 ///
 /// No art final: plain translucent panels via UIFactory — VirtualJoystick/TouchJumpButton own the
 /// actual pointer-event logic, this class only builds the visuals and gates visibility.

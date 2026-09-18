@@ -280,9 +280,14 @@ public class GameplayHUD : MonoBehaviour
         float pct   = _totalRings > 0 ? (float)total / _totalRings * 100f : 0f;
         _totalValueText.text = $"{total}  {pct:F0}%";
 
-        _progressFill.fillAmount = (audioSource != null && audioSource.isPlaying && _songDuration > 0f)
-            ? Mathf.Clamp01(audioSource.time / _songDuration)
-            : 0f;
+        // _songDuration comes from SongProfileReadyEvent (see _onProfile) — falls back to the
+        // AudioSource's own clip length if that hasn't arrived for any reason, so the bar still
+        // fills correctly instead of silently sitting at 0% for the whole run.
+        float duration = _songDuration > 0f ? _songDuration
+            : (audioSource != null && audioSource.clip != null ? audioSource.clip.length : 0f);
+        _progressFill.fillAmount = (audioSource != null && audioSource.isPlaying && duration > 0f)
+            ? Mathf.Clamp01(audioSource.time / duration)
+            : _progressFill.fillAmount;
 
         UpdateSemanticTagsStrip();
     }

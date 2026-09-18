@@ -4,19 +4,43 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Full-screen opaque overlay shown while AudioPreAnalyzer runs its (multi-second, no-cache) FFT
-/// pass — PreAnalysisStartedEvent / PreAnalysisProgressEvent / SongProfileReadyEvent (all already
-/// published by AudioPreAnalyzer itself) are the only hooks this reads; nothing here duplicates
-/// analysis logic. A cache hit resolves in well under a frame, so instead of skipping this screen
-/// entirely it still shows for a short, deliberately fake beat (PreAnalysisStartedEvent.IsCacheHit —
-/// see AudioPreAnalyzer's own CacheHitFakeDelaySeconds): a fixed, in-order caption sequence
-/// ("Song cached" / "Finalizing" / "Changing theme...") plus a self-animated progress fill, instead
-/// of the real random tip pool + externally-driven progress used for an actual analysis.
+/// Full-screen opaque overlay — shows itself the INSTANT GameFlowState.SongAnalysis is entered
+/// (not only once PreAnalysisStartedEvent fires), since SongSelectionController now requests that
+/// state immediately on Play, before a catalog song's Addressables clip has necessarily finished
+/// loading (see SongAnalysisController) — the player must see "something is happening" the moment
+/// they press Play, not after that load quietly finishes in the background.
 ///
-/// Pure SCREEN CONTROLLER now — theming lives entirely on generic receivers attached to each
-/// themed child (Dim: ThemeColorReceiver(Background), Title: ThemeTextReceiver(Primary/Display),
-/// Tip: ThemeTextReceiver(Secondary/Body), Progress fill: ThemeColorReceiver(Accent)). No special
-/// visual behavior of its own, so no PrefabThemeController either.
+/// Three phases, always in this order, progress fill NEVER jumping backward or snapping to a fixed
+/// value mid-flow:
+///   1. DETECTING (0% .. ~28%) — from the instant this screen shows until MusicStyleDetectedEvent
+///      arrives. There's no real signal for "how close is style detection" (semantic tagging is one
+///      opaque ML call — see AudioPreAnalyzer's own doc on why it now runs BEFORE the rest of
+///      analysis), so this is a self-paced ease toward a soft ceiling that never quite reaches it —
+///      always visibly still creeping forward instead of stalling flat if tagging takes a while.
+///      Normal random Tip rotation plays underneath.
+///   2. STYLE DETECTED (pinned at 30%, ~StyleFlashSeconds) — MusicStyleDetectedEvent fires (this is
+///      also when ThemeManager, subscribed independently, starts swapping CurrentTheme) — a fixed
+///      "Style detected: X!" caption replaces whatever tip was showing, bar pinned at exactly 30%
+///      (never snapped further; there's real analysis work — or a cache-hit's own fake beat — still
+///      to account for in the remaining 70%).
+///   3. FINISHING (30% .. 100%) — for a cache MISS, PreAnalysisProgressEvent keeps arriving from
+///      AudioPreAnalyzer's still-running per-frame analysis (needed for level generation): REAL
+///      progress, remapped from this event's own 0..1 into 30%..100% of the bar, with normal Tip
+///      rotation resumed. For a cache HIT, no such event ever comes (the cache-hit branch skips the
+///      whole per-frame loop) — another self-paced ease from 30% toward ~97% instead, over roughly
+///      AudioPreAnalyzer's own CacheHitFakeDelaySeconds (not hard-synced to it — whichever finishes
+///      first, Hide() cuts the other short, which is fine).
+///
+/// GameFlowState only actually leaves SongAnalysis once SongAnalysisController's whole
+/// theme-transition wait is over (see its own FinishAnalysis) — that, not SongProfileReadyEvent
+/// (which fires the instant analysis itself is done, before that wait even starts), is this
+/// screen's only Hide() trigger; hiding on the earlier event would cut Phase 2/3 short and show
+/// nothing at all during the style reveal / theme transition.
+///
+/// Pure SCREEN CONTROLLER — theming lives entirely on generic receivers attached to each themed
+/// child (Dim: ThemeColorReceiver(Background), Title: ThemeTextReceiver(Primary/Display), Tip:
+/// ThemeTextReceiver(Secondary/Body), Progress fill: ThemeColorReceiver(Accent)). No special visual
+/// behavior of its own, so no PrefabThemeController either.
 ///
 /// Prefers a real AnalyzingScreen.prefab instance (wired via UIRegistry, built once via
 /// Tools > MusicGame > Build UI Prefabs) — falls back to the old procedural build only if that
@@ -36,20 +60,17 @@ public class AnalyzingScreenController : MonoBehaviour
         "Analyzing.Tip09", "Analyzing.Tip10", "Analyzing.Tip11", "Analyzing.Tip12",
     };
 
-    // Fixed, in-order sequence for the cache-hit fake beat — never randomized like TipKeys, since
-    // it's meant to read as real progress ("found it, wrapping up, applying the look") rather than
-    // trivia. Keep roughly in sync with AudioPreAnalyzer.CacheHitFakeDelaySeconds; not hard-synced
-    // (see that constant's own doc) — Hide() cuts this coroutine short the instant the real
-    // SongProfileReadyEvent arrives regardless of where it's at.
-    private static readonly string[] CacheHitKeys =
-    {
-        "Analyzing.CacheHit01", "Analyzing.CacheHit02", "Analyzing.CacheHit03",
-    };
-    private const float CacheHitFakeDelaySeconds = 2f;
-
     [Tooltip("Tip line changes every random(minTipInterval, maxTipInterval) seconds while shown.")]
     [SerializeField] private float minTipInterval = 1f;
     [SerializeField] private float maxTipInterval = 2f;
+
+    // ── Progress phase tuning ─────────────────────────────────────────────────
+    private const float PhaseOneCeiling      = 0.28f; // Phase 1 eases toward this, never quite reaching it
+    private const float PhaseOneEaseSpeed    = 1.2f;  // higher = faster approach to the ceiling
+    private const float StyleDetectedFill    = 0.30f; // pinned value for the whole Phase 2 flash
+    private const float StyleFlashSeconds    = 1.4f;
+    private const float CacheHitFinishSeconds = 1.6f; // Phase 3 duration when there's no real progress signal
+    private const float CacheHitFinishCeiling = 0.97f;
 
     private RectTransform _root;
     private TextMeshProUGUI _titleText;
@@ -57,11 +78,15 @@ public class AnalyzingScreenController : MonoBehaviour
     private Image _progressFill;
 
     private Coroutine _tipRoutine;
+    private Coroutine _progressRoutine;
     private int       _lastTipIndex = -1;
+    private bool      _isCacheHit;
+    private bool      _realProgressActive; // Phase 3, cache-miss only — _onProgress is allowed to drive the fill
 
-    private System.Action<PreAnalysisStartedEvent>  _onStarted;
-    private System.Action<PreAnalysisProgressEvent> _onProgress;
-    private System.Action<SongProfileReadyEvent>    _onReady;
+    private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
+    private System.Action<PreAnalysisStartedEvent>   _onStarted;
+    private System.Action<PreAnalysisProgressEvent>  _onProgress;
+    private System.Action<MusicStyleDetectedEvent>   _onStyleDetected;
 
     private void Awake()
     {
@@ -72,19 +97,36 @@ public class AnalyzingScreenController : MonoBehaviour
 
     private void OnEnable()
     {
-        _onStarted  = e => Show(e.IsCacheHit);
-        _onProgress = e => { if (_progressFill != null) _progressFill.fillAmount = Mathf.Clamp01(e.Progress); };
-        _onReady    = _ => Hide();
+        _onFlowStateChanged = e =>
+        {
+            if (e.Current == GameFlowState.SongAnalysis) Show();
+            else if (e.Previous == GameFlowState.SongAnalysis) Hide();
+        };
+        // Only recorded for Phase 3 to branch on later (see ShowStyleDetected) — Phase 1 already
+        // started the instant this screen showed, well before analysis itself necessarily has.
+        _onStarted  = e => _isCacheHit = e.IsCacheHit;
+        _onProgress = e =>
+        {
+            if (!_realProgressActive || _progressFill == null) return;
+            _progressFill.fillAmount = Mathf.Lerp(StyleDetectedFill, 1f, Mathf.Clamp01(e.Progress));
+        };
+        _onStyleDetected = e => ShowStyleDetected(e.Style);
+        EventBus.Subscribe(_onFlowStateChanged);
         EventBus.Subscribe(_onStarted);
         EventBus.Subscribe(_onProgress);
-        EventBus.Subscribe(_onReady);
+        EventBus.Subscribe(_onStyleDetected);
+
+        // Same UI-Scene-loads-asynchronously race as the other Frontend screens.
+        if (AppBootstrap.Context != null && AppBootstrap.Context.AppFlow.CurrentState == GameFlowState.SongAnalysis)
+            Show();
     }
 
     private void OnDisable()
     {
+        EventBus.Unsubscribe(_onFlowStateChanged);
         EventBus.Unsubscribe(_onStarted);
         EventBus.Unsubscribe(_onProgress);
-        EventBus.Unsubscribe(_onReady);
+        EventBus.Unsubscribe(_onStyleDetected);
     }
 
     // ── Prefab path — see AnalyzingScreenView's own doc ──────────────────────────
@@ -133,22 +175,62 @@ public class AnalyzingScreenController : MonoBehaviour
 
     // ── Show / hide ─────────────────────────────────────────────────────────────
 
-    private void Show(bool isCacheHit)
+    // Phase 1 start — see this class's own doc.
+    private void Show()
     {
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
-        if (_progressFill != null) _progressFill.fillAmount = 0f;
         _titleText.text = Loc.Get(TitleKey);
+        if (_progressFill != null) _progressFill.fillAmount = 0f;
 
+        _isCacheHit = false;
+        _realProgressActive = false;
+        StopPhaseRoutines();
         _lastTipIndex = -1;
-        if (_tipRoutine != null) StopCoroutine(_tipRoutine);
-        _tipRoutine = StartCoroutine(isCacheHit ? PlayCacheHitSequence() : RotateTips());
+        _tipRoutine      = StartCoroutine(RotateTips());
+        _progressRoutine = StartCoroutine(EaseFillToward(PhaseOneCeiling, PhaseOneEaseSpeed));
     }
 
     private void Hide()
     {
         if (_root != null) _root.gameObject.SetActive(false);
-        if (_tipRoutine != null) { StopCoroutine(_tipRoutine); _tipRoutine = null; }
+        _realProgressActive = false;
+        StopPhaseRoutines();
+    }
+
+    private void StopPhaseRoutines()
+    {
+        if (_tipRoutine != null)      { StopCoroutine(_tipRoutine);      _tipRoutine      = null; }
+        if (_progressRoutine != null) { StopCoroutine(_progressRoutine); _progressRoutine = null; }
+    }
+
+    // Phase 2 — see this class's own doc. Never snaps the bar past StyleDetectedFill; Phase 3
+    // (started from AfterStyleFlash) is what carries it the rest of the way.
+    private void ShowStyleDetected(MusicStyleId style)
+    {
+        _realProgressActive = false;
+        StopPhaseRoutines();
+        if (_progressFill != null) _progressFill.fillAmount = StyleDetectedFill;
+        if (_tipText != null) _tipText.text = Loc.Get("Analyzing.StyleDetected", style.ToString().ToUpperInvariant());
+
+        _progressRoutine = StartCoroutine(AfterStyleFlash());
+    }
+
+    // Phase 3 handoff — see this class's own doc.
+    private IEnumerator AfterStyleFlash()
+    {
+        yield return new WaitForSeconds(StyleFlashSeconds);
+
+        if (_isCacheHit)
+        {
+            _progressRoutine = StartCoroutine(EaseFillOverTime(StyleDetectedFill, CacheHitFinishCeiling, CacheHitFinishSeconds));
+        }
+        else
+        {
+            _realProgressActive = true; // _onProgress takes over the fill from here
+            _lastTipIndex = -1;
+            _tipRoutine = StartCoroutine(RotateTips());
+        }
     }
 
     private IEnumerator RotateTips()
@@ -169,23 +251,31 @@ public class AnalyzingScreenController : MonoBehaviour
         return TipKeys[idx];
     }
 
-    // Purely cosmetic (see this class's own doc + AudioPreAnalyzer.CacheHitFakeDelaySeconds) — a
-    // fixed caption per step plus a self-animated fill, since there's no real progress to report on
-    // a cache hit.
-    private IEnumerator PlayCacheHitSequence()
+    // Asymptotic ease — creeps toward `target` forever without fully reaching it, so it always
+    // reads as "still working" regardless of how long the real, unsignaled work behind it actually
+    // takes (semantic tagging is one opaque ML call — see this class's own doc). Runs until
+    // whichever phase started it stops it (StopPhaseRoutines) — never completes on its own.
+    private IEnumerator EaseFillToward(float target, float speed)
     {
-        float step = CacheHitFakeDelaySeconds / CacheHitKeys.Length;
-        for (int i = 0; i < CacheHitKeys.Length; i++)
+        while (true)
         {
-            _tipText.text = Loc.Get(CacheHitKeys[i]);
-            float t = 0f;
-            while (t < step)
-            {
-                t += Time.deltaTime;
-                if (_progressFill != null)
-                    _progressFill.fillAmount = (i + Mathf.Clamp01(t / step)) / CacheHitKeys.Length;
-                yield return null;
-            }
+            if (_progressFill != null)
+                _progressFill.fillAmount = Mathf.Lerp(_progressFill.fillAmount, target, Time.deltaTime * speed);
+            yield return null;
+        }
+    }
+
+    // Fixed-duration ease — used only where the window IS roughly known (Phase 3 of a cache hit,
+    // paced against AudioPreAnalyzer.CacheHitFakeDelaySeconds even though the two aren't hard-synced).
+    private IEnumerator EaseFillOverTime(float from, float to, float duration)
+    {
+        float t = 0f;
+        if (_progressFill != null) _progressFill.fillAmount = from;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            if (_progressFill != null) _progressFill.fillAmount = Mathf.Lerp(from, to, Mathf.Clamp01(t / duration));
+            yield return null;
         }
     }
 }

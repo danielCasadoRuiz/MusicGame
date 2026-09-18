@@ -2,12 +2,14 @@ using UnityEngine;
 
 /// <summary>
 /// Lives in the always-loaded UI Scene (scene-placed, see UI.unity) — the single composition point
-/// for UI screens that don't belong to any one Mode Scene. Owns creation of AnalyzingScreenController
-/// and FightController so nothing outside the UI Scene needs to AddComponent them itself
-/// (previously AudioSystemBootstrapper/the Runner scene's own "Scripts" GameObject did this directly
-/// — moved here since both screens have zero scene-local dependencies: they only ever talk to
-/// EventBus/GameSession.Instance/ThemeManager.Instance/AppBootstrap.Context, which work identically
-/// regardless of which loaded scene the component's GameObject lives in).
+/// for UI screens/services that don't belong to any one Mode Scene. Owns creation of
+/// AnalyzingScreenController, SongAnalysisController, and FightController so nothing outside the UI
+/// Scene needs to AddComponent them itself (previously AudioSystemBootstrapper/the Runner scene's
+/// own "Scripts" GameObject did this directly — moved here since none of them have any scene-local
+/// dependency: they only ever talk to EventBus/GameSession.Instance/ThemeManager.Instance/
+/// AppBootstrap.Context, which work identically regardless of which loaded scene the component's
+/// GameObject lives in — this is also exactly what lets SongAnalysisController run analysis with NO
+/// Mode Scene loaded at all, see its own doc).
 ///
 /// Each screen still manages its OWN precise show/hide trigger rather than a generic
 /// GameFlowState-to-screen mapping: AnalyzingScreenController reacts to PreAnalysisStarted/
@@ -29,6 +31,7 @@ public class UIFlowController : MonoBehaviour
         // missing entirely (indistinguishable from "the whole UI Scene failed to load"). Isolate
         // each screen so one broken screen never takes the others down with it.
         AddScreen<AnalyzingScreenController>();
+        AddScreen<SongAnalysisController>();
         AddScreen<FightController>();
         AddScreen<IntroScreenController>();
         AddScreen<MainMenuController>();

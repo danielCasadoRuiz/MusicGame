@@ -169,6 +169,50 @@ public static class UIFactory
         return slider;
     }
 
+    /// <summary>Scrollable vertical list — a clipped Viewport (RectMask2D) containing a Content
+    /// RectTransform driven by a VerticalLayoutGroup (childControlWidth=true so every row stretches
+    /// to the list's own width; childControlHeight=false so each row keeps whatever height its own
+    /// RectTransform.sizeDelta.y already says) + ContentSizeFitter so Content grows to fit however
+    /// many rows are actually added — callers just CreateButton/CreateText children directly under
+    /// the returned `content`, set each child's own sizeDelta.y, and the list lays them out and
+    /// scrolls automatically. No manual "y cursor" bookkeeping needed for content built this way.</summary>
+    public static ScrollRect CreateScrollRect(string name, RectTransform parent, out RectTransform content, float spacing = 0f)
+    {
+        var root = CreateRect(name, parent);
+
+        var viewport = CreateRect(name + "Viewport", root);
+        Stretch(viewport);
+        viewport.gameObject.AddComponent<RectMask2D>();
+
+        content = CreateRect(name + "Content", viewport);
+        content.anchorMin        = new Vector2(0f, 1f);
+        content.anchorMax        = new Vector2(1f, 1f);
+        content.pivot            = new Vector2(0.5f, 1f);
+        content.anchoredPosition = Vector2.zero;
+        content.sizeDelta        = new Vector2(0f, 0f);
+
+        var layout = content.gameObject.AddComponent<VerticalLayoutGroup>();
+        layout.childAlignment      = TextAnchor.UpperCenter;
+        layout.childForceExpandWidth  = true;
+        layout.childForceExpandHeight = false;
+        layout.childControlWidth   = true;
+        layout.childControlHeight  = false;
+        layout.spacing             = spacing;
+
+        var fitter = content.gameObject.AddComponent<ContentSizeFitter>();
+        fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        var scrollRect = root.gameObject.AddComponent<ScrollRect>();
+        scrollRect.content       = content;
+        scrollRect.viewport      = viewport;
+        scrollRect.horizontal    = false;
+        scrollRect.vertical      = true;
+        scrollRect.movementType  = ScrollRect.MovementType.Clamped;
+        scrollRect.scrollSensitivity = 24f;
+
+        return scrollRect;
+    }
+
     public static void Stretch(RectTransform rt)
     {
         rt.anchorMin = Vector2.zero;

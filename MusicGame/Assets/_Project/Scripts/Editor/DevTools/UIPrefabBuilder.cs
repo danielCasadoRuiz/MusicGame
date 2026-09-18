@@ -522,9 +522,9 @@ public static class UIPrefabBuilder
         title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
         view.titleText = title;
 
-        var songListRoot = UIFactory.CreateRect("SongList", root);
-        UIFactory.SetBox(songListRoot, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-            new Vector2(0f, -120f), new Vector2(560f, 260f));
+        var songListScroll = UIFactory.CreateScrollRect("SongList", root, out var songListRoot, 10f);
+        UIFactory.SetBox(songListScroll.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, -120f), new Vector2(560f, 400f));
         view.songListRoot = songListRoot;
 
         var streamingRow = UIFactory.CreateRect("StreamingRow", root);
