@@ -32,10 +32,29 @@ public class FightFlowConfig : ScriptableObject
     [Tooltip("How long \"FIGHT!\" is shown before the flow actually enters the Fighting state.")]
     public float fightBannerDuration = 1f;
 
-    [Header("Match rules (data only — no real combat logic reads these yet)")]
+    [Header("Match rules")]
     public float roundDuration = 60f;
+    [Tooltip("First side to win this many rounds wins the match — the only hard rule FightMatchController enforces.")]
     public int   roundsToWin   = 2;
+    [Tooltip("Informational only (e.g. FightHud's round-won pips) — see FightMatchController's own " +
+             "doc on why it is NOT a hard cap: an exactly-tied TimeOut round is normally resolved by " +
+             "accumulated point differential rather than repeated (see RoundResolution), so the " +
+             "match essentially never needs a 4th round in a Best of 3 — only the exceptional " +
+             "TrueDraw (tied health AND zero accumulated differential) still repeats a round.")]
     public int   maxRounds     = 3;
+
+    [Header("Round End")]
+    [Tooltip("How long the \"KO\" reason banner is shown before the round result text.")]
+    public float koBannerDuration = 1f;
+    [Tooltip("How long the \"TIME UP\" reason banner is shown before the round result text.")]
+    public float timeUpBannerDuration = 1f;
+    [Tooltip("How long the round result (\"X wins the round\" / \"DRAW\") is shown before " +
+             "FightMatchController decides what happens next — also used for the final \"X wins on " +
+             "points\" beat of a DrawResolvedByPoints round.")]
+    public float roundResultDuration = 1.5f;
+    [Tooltip("DrawResolvedByPoints only — the small pause between showing \"DRAW\" and revealing " +
+             "\"X wins on points\", so the draw itself reads as its own beat first.")]
+    public float drawPointsPauseDuration = 1f;
 
     [Header("Input / Combos")]
     [Tooltip("How far back FightInputBuffer keeps recent button presses — old ones are dropped " +

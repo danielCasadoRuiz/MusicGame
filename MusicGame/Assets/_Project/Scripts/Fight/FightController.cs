@@ -39,11 +39,11 @@ public class FightController : MonoBehaviour
     private TextMeshProUGUI _timerText;
     private TextMeshProUGUI _playerNameText, _opponentNameText;
     private Image _playerHealthFill, _opponentHealthFill;
+    private TextMeshProUGUI _playerRoundPipsText, _opponentRoundPipsText;
 
     private RectTransform _pausePanel;
     private bool _paused;
     private bool _active;
-    private float _timeRemaining;
 
     // Only ever READ here — see class doc: FightController presents combat data, never decides it.
     // Found once per Fighting-activation (Fight.unity's FighterActors don't exist yet at Awake
@@ -120,12 +120,8 @@ public class FightController : MonoBehaviour
         if (_paused) return;
 
         UpdateHealthBars();
-
-        _timeRemaining = Mathf.Max(0f, _timeRemaining - Time.deltaTime);
+        UpdateRoundPips();
         UpdateTimerText();
-        // TODO: real match-end logic (win/lose/draw) once actual fight mechanics exist — the timer
-        // just holds at 0:00 for now, and a KO'd fighter (see FighterHealth.IsKO) doesn't yet stop
-        // or resolve the match — see this phase's own scope note.
     }
 
     private void UpdateHealthBars()
@@ -147,11 +143,29 @@ public class FightController : MonoBehaviour
         }
     }
 
+    // Simple text "pips" (●●○) — see FightHudView's own doc. maxRounds is informational display
+    // only (see FightFlowConfig.maxRounds' own doc); the actual match-winning rule is roundsToWin.
+    private void UpdateRoundPips()
+    {
+        if (_playerRoundPipsText == null || _opponentRoundPipsText == null) return;
+        var match = FightMatchController.Instance;
+        if (match == null) return;
+
+        int slots = _flowConfig != null ? Mathf.Max(1, _flowConfig.maxRounds) : 3;
+        _playerRoundPipsText.text   = PipsText(match.PlayerRoundsWon, slots);
+        _opponentRoundPipsText.text = PipsText(match.OpponentRoundsWon, slots);
+    }
+
+    private static string PipsText(int won, int slots)
+    {
+        won = Mathf.Clamp(won, 0, slots);
+        return new string('●', won) + new string('○', slots - won); // ● / ○
+    }
+
     private void ActivateHud()
     {
         PopulateInfo();
         FindHealthRefs();
-        _timeRemaining = _flowConfig != null ? _flowConfig.roundDuration : 60f;
         UpdateTimerText();
         SetPaused(false);
         _active = true;
@@ -212,6 +226,8 @@ public class FightController : MonoBehaviour
         _opponentNameText   = view.opponentNameText;
         _playerHealthFill   = view.playerHealthFill;
         _opponentHealthFill = view.opponentHealthFill;
+        _playerRoundPipsText   = view.playerRoundPipsText;
+        _opponentRoundPipsText = view.opponentRoundPipsText;
         _timerText          = view.timerText;
         _pausePanel         = view.pausePanel.GetComponent<RectTransform>();
         _transitionOverlay  = view.transitionOverlay;
@@ -339,6 +355,11 @@ public class FightController : MonoBehaviour
         // green, the rival's drains red, in every Theme.
         _playerHealthFill.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Positive);
 
+        _playerRoundPipsText = UIFactory.CreateText("PlayerRoundPips", topBar.rectTransform, "", 16, Color.white, TextAlignmentOptions.TopLeft, FontStyles.Bold);
+        UIFactory.SetBox(_playerRoundPipsText.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+            new Vector2(20f, -64f), new Vector2(320f, 20f));
+        _playerRoundPipsText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+
         // Opponent — right (leaves room for the pause button at the far right). Same key as the
         // "unknown style" case in PopulateInfo() — this default is only ever visible for a moment
         // before the first PopulateInfo() call overwrites it, so it doesn't earn its own key.
@@ -355,6 +376,11 @@ public class FightController : MonoBehaviour
         // Health bars fill from the LEFT by default (UIFactory.CreateFillBar) — mirror the
         // opponent's so it visibly drains toward its own name, like the player's does.
         _opponentHealthFill.fillOrigin = (int)Image.OriginHorizontal.Right;
+
+        _opponentRoundPipsText = UIFactory.CreateText("OpponentRoundPips", topBar.rectTransform, "", 16, Color.white, TextAlignmentOptions.TopRight, FontStyles.Bold);
+        UIFactory.SetBox(_opponentRoundPipsText.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+            new Vector2(-90f, -64f), new Vector2(320f, 20f));
+        _opponentRoundPipsText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         // Timer — center.
         _timerText = UIFactory.CreateText("Timer", topBar.rectTransform, "", 28, Color.white, TextAlignmentOptions.Top, FontStyles.Bold);
@@ -423,9 +449,13 @@ public class FightController : MonoBehaviour
         _opponentHealthFill.fillAmount = 1f;
     }
 
+    // Reads FightMatchController's own timer — never maintains its own (see class doc: presents
+    // data, never decides/owns it).
     private void UpdateTimerText()
     {
-        int totalSeconds = Mathf.CeilToInt(_timeRemaining);
+        float remaining = FightMatchController.Instance != null ? FightMatchController.Instance.RoundTimeRemaining
+            : (_flowConfig != null ? _flowConfig.roundDuration : 60f);
+        int totalSeconds = Mathf.CeilToInt(remaining);
         _timerText.text = $"{totalSeconds / 60:00}:{totalSeconds % 60:00}";
     }
 

@@ -240,4 +240,28 @@ public class FighterMoveController : MonoBehaviour
         if (previousPhase != FighterMoveState.Idle)
             EventBus.Publish(new FightMovePhaseChangedEvent { Source = this, Previous = previousPhase, Current = FighterMoveState.Idle, Move = move });
     }
+
+    /// <summary>Explicit API for FightMatchController's between-rounds reset (via FighterActor.
+    /// ResetForRound) — a full, silent return to Idle: no queued move survives, IsHitStunned clears
+    /// (even a KO's permanent one — see FighterHealth's own doc), and the movement driver is
+    /// unlocked. Publishes FightMovePhaseChangedEvent if a move/hitbox was somehow still live (see
+    /// FighterAttack's own doc on why no stale Active window may survive into a new round) — a
+    /// harmless no-op the rest of the time, since a round never actually ends mid-Active in
+    /// practice (Fighting stops updating this state machine the instant it's no longer active).</summary>
+    public void ResetForRound()
+    {
+        var previousPhase = CurrentPhase;
+
+        CurrentMove = null;
+        QueuedMove = null;
+        CurrentPhase = FighterMoveState.Idle;
+        MoveElapsed = 0f;
+        PhaseElapsed = 0f;
+        IsHitStunned = false;
+        _timingScale = 1f;
+        _movementDriver.SetMovementLock(false, 1f);
+
+        if (previousPhase != FighterMoveState.Idle)
+            EventBus.Publish(new FightMovePhaseChangedEvent { Source = this, Previous = previousPhase, Current = FighterMoveState.Idle, Move = null });
+    }
 }

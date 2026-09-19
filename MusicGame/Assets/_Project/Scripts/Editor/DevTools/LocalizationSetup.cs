@@ -146,6 +146,16 @@ public static class LocalizationSetup
         ("Fight.Versus",            "VS",                   "VS"),
         ("Fight.RoundLabel",        "ROUND {0}",             "RONDA {0}"),
         ("Fight.Banner",            "FIGHT!",                "LLUITA!"),
+
+        // ── Fight flow (Round End / Match Result) ──────────────────────────────────
+        ("Fight.KO",          "KO!",           "KO!"),
+        ("Fight.TimeUp",      "TIME UP!",      "TEMPS ESGOTAT!"),
+        ("Fight.RoundWinner",    "{0} WINS THE ROUND", "{0} GUANYA LA RONDA"),
+        ("Fight.RoundDraw",      "DRAW",          "EMPAT"),
+        ("Fight.WinsOnPoints",   "{0} WINS ON POINTS", "{0} GUANYA ALS PUNTS"),
+        ("Fight.PointDifference","POINT DIFFERENCE: {0}", "DIFERÈNCIA DE PUNTS: {0}"),
+        ("Fight.YouWin",         "YOU WIN",       "HAS GUANYAT"),
+        ("Fight.YouLose",        "YOU LOSE",      "HAS PERDUT"),
     };
 
     [MenuItem("Tools/MusicGame/Setup Localization")]

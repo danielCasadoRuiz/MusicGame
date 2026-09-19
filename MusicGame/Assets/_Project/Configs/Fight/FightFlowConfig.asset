@@ -22,6 +22,10 @@ MonoBehaviour:
   roundDuration: 60
   roundsToWin: 2
   maxRounds: 3
+  koBannerDuration: 1
+  timeUpBannerDuration: 1
+  roundResultDuration: 1.5
+  drawPointsPauseDuration: 1
   inputBufferWindowSeconds: 1.5
   comboSet: {fileID: 11400000, guid: 48a71c2bc4d84331b78b79849572dd41, type: 2}
   defaultMoveSet: {fileID: 11400000, guid: b593a59054d84416b7d0b9f5e3c2a961, type: 2}

@@ -16,8 +16,10 @@ public class FightHudView : MonoBehaviour
     [Header("Top bar")]
     public TextMeshProUGUI playerNameText;
     public Image       playerHealthFill;
+    public TextMeshProUGUI playerRoundPipsText;
     public TextMeshProUGUI opponentNameText;
     public Image       opponentHealthFill;
+    public TextMeshProUGUI opponentRoundPipsText;
     public TextMeshProUGUI timerText;
     public Button       pauseButton;
     public TextMeshProUGUI pauseButtonLabel;

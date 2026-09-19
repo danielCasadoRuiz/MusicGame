@@ -44,6 +44,9 @@ public class UIFlowController : MonoBehaviour
         AddScreen<OpponentSelectionController>();
         AddScreen<VersusScreenController>();
         AddScreen<RoundIntroController>();
+        AddScreen<RoundEndController>();
+        AddScreen<MatchResultController>();
+        AddScreen<FightMatchController>();
         AddScreen<FighterInputController>();
         AddScreen<FighterMoveController>();
         AddScreen<FightDebugHUD>();

@@ -76,4 +76,14 @@ public class FighterHitReaction : MonoBehaviour
         if (_actor.Movement != null) _actor.Movement.SetLock(false, 1f);
         if (_actor.MoveController != null) _actor.MoveController.IsHitStunned = false;
     }
+
+    /// <summary>Explicit API for FightMatchController's between-rounds reset (via FighterActor.
+    /// ResetForRound) — clears even an INFINITE hit stun (see FighterHealth's own doc on reusing
+    /// this class for KO enforcement). Does not touch Movement/MoveController locks itself — each of
+    /// those clears its own lock via its own ResetForRound, called separately by FighterActor.</summary>
+    public void ResetForRound()
+    {
+        IsInHitStun = false;
+        _hitStunRemaining = 0f;
+    }
 }

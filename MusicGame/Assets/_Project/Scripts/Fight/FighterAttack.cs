@@ -29,11 +29,13 @@ public class FighterAttack : MonoBehaviour
     private FighterMoveController _moveController;
     private FightCombatBalanceConfig _balanceConfig;
 
+    private bool _active;
     private bool _hitboxActive;
     private FightMoveDefinition _activeMove;
     private readonly HashSet<FighterActor> _hitTargetsThisWindow = new();
 
     private System.Action<FightMovePhaseChangedEvent> _onPhaseChanged;
+    private System.Action<FightFlowStateChangedEvent> _onFlowChanged;
 
     public void Initialize(FighterActor actor, FighterActor opponent, FighterMoveController moveController, FightCombatBalanceConfig balanceConfig)
     {
@@ -61,14 +63,29 @@ public class FighterAttack : MonoBehaviour
                 _activeMove = null;
             }
         };
+        // Own FightFlowState gate — Fighting stops FighterMoveController from ever advancing its
+        // own phase again the instant it ends (see that class's own Update), which would otherwise
+        // leave a hitbox frozen ON (mid-Active) for the ENTIRE RoundEnd/RoundIntro/Countdown of the
+        // next round if a round happened to end while a move's Active window was live — see this
+        // phase's own scope note on why no stale Active window may survive into a new round.
+        _onFlowChanged = e =>
+        {
+            _active = e.Current == FightFlowState.Fighting;
+            if (!_active) _hitboxActive = false;
+        };
         EventBus.Subscribe(_onPhaseChanged);
+        EventBus.Subscribe(_onFlowChanged);
     }
 
-    private void OnDisable() => EventBus.Unsubscribe(_onPhaseChanged);
+    private void OnDisable()
+    {
+        EventBus.Unsubscribe(_onPhaseChanged);
+        EventBus.Unsubscribe(_onFlowChanged);
+    }
 
     private void Update()
     {
-        if (!_hitboxActive || _activeMove == null || _opponent == null) return;
+        if (!_active || !_hitboxActive || _activeMove == null || _opponent == null) return;
         if (_opponent.Health != null && _opponent.Health.IsKO) return;
         if (_hitTargetsThisWindow.Contains(_opponent)) return;
 
@@ -113,6 +130,17 @@ public class FighterAttack : MonoBehaviour
 
         Debug.Log($"[FighterAttack] Hit landed: {_activeMove.debugName} -> {result.FinalDamage:F1} dmg, " +
                   $"{result.FinalHitStun:F2}s stun, {result.FinalKnockback:F2} knockback");
+    }
+
+    /// <summary>Explicit API for FightMatchController's between-rounds reset (via FighterActor.
+    /// ResetForRound) — deterministically clears any lingering hitbox/target-history state (see
+    /// this phase's own scope note: "no hi ha un Active window antic que pugui impactar just quan
+    /// comença una nova ronda").</summary>
+    public void ResetForRound()
+    {
+        _hitboxActive = false;
+        _activeMove = null;
+        _hitTargetsThisWindow.Clear();
     }
 
     private void OnDrawGizmos()

@@ -203,6 +203,7 @@ public class FightSceneBootstrap : MonoBehaviour
 
             var attack = _playerActor.gameObject.AddComponent<FighterAttack>();
             attack.Initialize(_playerActor, _opponentActor, moveController, _combatBalanceConfig);
+            _playerActor.SetAttack(attack);
         }
         else
         {

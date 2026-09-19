@@ -88,11 +88,57 @@ public class FightDebugHUD : MonoBehaviour
         EventBus.Unsubscribe(_onHitLanded);
     }
 
+    // ── Debug commands (F2-F8) — only live while the F1 overlay is visible, so they can never be
+    // hit by accident during normal play. Every command goes through a REAL public API (FighterHealth.
+    // ApplyDamage, FightMatchController.DebugSetRoundTimeRemaining/DebugForceDraw/
+    // DebugSetAccumulatedDifferential) — none of them poke a private field, so the match flow they
+    // trigger is indistinguishable from a real one.
+    //   F1  Toggle this overlay
+    //   F2  Force Player KO
+    //   F3  Force Opponent KO
+    //   F4  Set round timer to 3s
+    //   F5  Force a health-tie (equalize health, timer -> 0) — outcome then depends on
+    //       MatchPointDifferential at that moment, same as a real tied TimeOut (see F6-F8 below)
+    //   F6  Set accumulated point differential to +0.50 (next F5 tie -> Player wins on points)
+    //   F7  Set accumulated point differential to -0.50 (next F5 tie -> Opponent wins on points)
+    //   F8  Set accumulated point differential to 0 (next F5 tie -> TrueDraw, round repeats)
     private void Update()
     {
         if (!InFight) return;
-        if (Keyboard.current != null && Keyboard.current.f1Key.wasPressedThisFrame)
-            _visible = !_visible;
+        var kb = Keyboard.current;
+        if (kb == null) return;
+
+        if (kb.f1Key.wasPressedThisFrame) _visible = !_visible;
+        if (!_visible) return;
+
+        if (kb.f2Key.wasPressedThisFrame) DebugForceKO(_player, "Player");
+        if (kb.f3Key.wasPressedThisFrame) DebugForceKO(_opponent, "Opponent");
+        if (kb.f4Key.wasPressedThisFrame)
+        {
+            FightMatchController.Instance?.DebugSetRoundTimeRemaining(3f);
+            AddLog("Debug: timer -> 3s");
+        }
+        if (kb.f5Key.wasPressedThisFrame)
+        {
+            FightMatchController.Instance?.DebugForceDraw();
+            AddLog("Debug: force health-tie");
+        }
+        if (kb.f6Key.wasPressedThisFrame) DebugSetDifferential(0.5f);
+        if (kb.f7Key.wasPressedThisFrame) DebugSetDifferential(-0.5f);
+        if (kb.f8Key.wasPressedThisFrame) DebugSetDifferential(0f);
+    }
+
+    private void DebugSetDifferential(float value)
+    {
+        FightMatchController.Instance?.DebugSetAccumulatedDifferential(value);
+        AddLog($"Debug: differential -> {value:+0.00;-0.00}");
+    }
+
+    private void DebugForceKO(FighterActor actor, string label)
+    {
+        if (actor?.Health == null) return;
+        actor.Health.ApplyDamage(actor.Health.CurrentHealth);
+        AddLog($"Debug: force {label} KO");
     }
 
     private static bool InFight =>
@@ -109,10 +155,10 @@ public class FightDebugHUD : MonoBehaviour
 
         const float x = 8f, w = 380f;
         float y = 8f;
-        float h = 26f + 18f * 3f + 18f + 16f * 8f + 18f + 16f * 10f + 18f + 16f * 8f + 18f + 16f * 5f + 18f + 16f * (MaxLogLines + 1);
+        float h = 26f + 18f * 3f + 18f + 16f * 8f + 18f + 16f * 10f + 18f + 16f * 7f + 18f + 16f * 8f + 18f + 16f * 5f + 18f + 16f * (MaxLogLines + 1);
 
         GUI.Box(new Rect(x, y, w, h), "", _boxStyle);
-        GUI.Label(new Rect(x + 6f, y + 2f, w - 12f, 16f), "FIGHT INPUT/COMBO DEBUG (F1)", _headerStyle);
+        GUI.Label(new Rect(x + 6f, y + 2f, w - 12f, 16f), "FIGHT DEBUG (F1 | F2/3 KO | F4 timer | F5 tie | F6/7/8 diff)", _headerStyle);
         y += 22f;
 
         string dir = _input != null ? $"{_input.CurrentHorizontal} / {_input.CurrentVertical}" : "(no FighterInputController)";
@@ -162,6 +208,23 @@ public class FightDebugHUD : MonoBehaviour
             {
                 Row(x, ref y, w, "  (no FighterMovement on Player)");
             }
+        }
+        y += 4f;
+
+        Row(x, ref y, w, "Match:");
+        var match = FightMatchController.Instance;
+        if (match == null)
+        {
+            Row(x, ref y, w, "  (no FightMatchController)");
+        }
+        else
+        {
+            Row(x, ref y, w, $"  Round {match.CurrentRound}   RoundActive: {match.RoundActive}   Timer: {match.RoundTimeRemaining:F1}s");
+            Row(x, ref y, w, $"  Rounds won — Player: {match.PlayerRoundsWon}   Opponent: {match.OpponentRoundsWon}");
+
+            string leader = match.MatchPointDifferential > 0f ? "Player" : match.MatchPointDifferential < 0f ? "Opponent" : "(even)";
+            Row(x, ref y, w, $"  Point differential — last round: {match.LastRoundDifferential:+0.00;-0.00}   accumulated: {match.MatchPointDifferential:+0.00;-0.00} ({leader})");
+            Row(x, ref y, w, $"  Last round resolution: {match.LastRoundResolution}");
         }
         y += 4f;
 

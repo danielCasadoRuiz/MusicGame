@@ -32,6 +32,8 @@ public class UIRegistry : MonoBehaviour
     [SerializeField] private OpponentSelectionView   opponentSelection;
     [SerializeField] private VersusScreenView        versusScreen;
     [SerializeField] private RoundIntroView          roundIntro;
+    [SerializeField] private RoundEndView            roundEnd;
+    [SerializeField] private MatchResultView         matchResult;
 
     public LiveHudView   LiveHud   => liveHud;
     public EndScreenView EndScreen => endScreen;
@@ -48,4 +50,6 @@ public class UIRegistry : MonoBehaviour
     public OpponentSelectionView OpponentSelection => opponentSelection;
     public VersusScreenView      VersusScreen      => versusScreen;
     public RoundIntroView        RoundIntro        => roundIntro;
+    public RoundEndView          RoundEnd          => roundEnd;
+    public MatchResultView       MatchResult       => matchResult;
 }

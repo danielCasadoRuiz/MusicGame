@@ -63,6 +63,17 @@ public class FighterMovement : MonoBehaviour
     /// does). Consumed (and clamped against bounds/separation) on the very next Update.</summary>
     public void QueueLunge(float distance) => _pendingLunge += distance;
 
+    /// <summary>Explicit API for FightMatchController's between-rounds reset (via FighterActor.
+    /// ResetForRound) — clears any lock (including a KO's permanent one — see FighterHealth's own
+    /// doc) and any pending knockback/lunge displacement left over from the previous round.</summary>
+    public void ResetForRound()
+    {
+        _locked = false;
+        _multiplier = 1f;
+        _pendingLunge = 0f;
+        LastLungeDistance = 0f;
+    }
+
     private void OnEnable()
     {
         _onFightFlowChanged = e => _active = e.Current == FightFlowState.Fighting;

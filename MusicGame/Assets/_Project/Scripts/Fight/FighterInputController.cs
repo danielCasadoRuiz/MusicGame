@@ -95,4 +95,16 @@ public class FighterInputController : MonoBehaviour
         _buffer.Add(new FightInputEvent(button, CurrentHorizontal, CurrentVertical, Time.time));
         _recognizer.OnNewInput();
     }
+
+    /// <summary>Explicit API for FightMatchController's between-rounds reset — rebuilds a fresh
+    /// buffer/recognizer (same construction as Awake) so no buffered press or pending combo from
+    /// the previous round can bleed into the next one. In practice the buffer's own time window
+    /// already prunes stale presses well before RoundEnd+RoundIntro+Countdown elapses, but this
+    /// makes the reset explicit and deterministic rather than relying on that timing coincidence.</summary>
+    public void ResetForRound()
+    {
+        float window = _config != null ? Mathf.Max(0.2f, _config.inputBufferWindowSeconds) : 1.5f;
+        _buffer = new FightInputBuffer(window);
+        _recognizer = new FightComboRecognizer(_config != null ? _config.comboSet : null, _buffer);
+    }
 }

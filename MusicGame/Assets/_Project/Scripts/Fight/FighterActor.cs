@@ -54,6 +54,8 @@ public class FighterActor : MonoBehaviour
     public FighterMoveController MoveController { get; private set; }
     /// <summary>Null for the Opponent this phase — see class doc.</summary>
     public FighterMovement Movement { get; private set; }
+    /// <summary>Null for the Opponent this phase — see class doc.</summary>
+    public FighterAttack Attack { get; private set; }
 
     /// <summary>Always present on BOTH sides — Player and Opponent share the exact same health/
     /// hit-reaction system (see FighterHealth/FighterHitReaction's own doc), unlike MoveController/
@@ -131,6 +133,7 @@ public class FighterActor : MonoBehaviour
     public void SetFacingProvider(IFightFacingProvider provider) => _facingProvider = provider;
     public void SetMoveController(FighterMoveController controller) => MoveController = controller;
     public void SetMovement(FighterMovement movement) => Movement = movement;
+    public void SetAttack(FighterAttack attack) => Attack = attack;
     public void SetStats(FighterStats stats) => Stats = stats;
     public void RegisterHurtbox(FighterHurtbox hurtbox)
     {
@@ -145,6 +148,32 @@ public class FighterActor : MonoBehaviour
         var reaction = gameObject.AddComponent<FighterHitReaction>();
         reaction.Initialize(this, _opponent, arenaConfig);
         HitReaction = reaction;
+    }
+
+    /// <summary>
+    /// The ONE explicit reset entry point FightMatchController calls between rounds — coordinates
+    /// every component's OWN reset (see each one's own ResetForRound doc) rather than reaching into
+    /// any of their private fields (task's own explicit "no accedeixis a camps privats" requirement).
+    /// Covers: position (spawn), facing (recomputed immediately, not left for next Update), health/
+    /// KO, hit stun, current/queued move, hitboxes + hit-target history, movement locks, and pending
+    /// knockback/lunge — see this phase's own scope note for the full checklist this satisfies.
+    /// Attack/MoveController/Movement are null-tolerant (Opponent has none this phase).
+    /// </summary>
+    public void ResetForRound(Vector3 spawnPosition)
+    {
+        transform.position = spawnPosition;
+
+        Health?.ResetForRound();
+        HitReaction?.ResetForRound();
+        Movement?.ResetForRound();
+        MoveController?.ResetForRound();
+        Attack?.ResetForRound();
+
+        if (_opponent != null && _facingProvider != null)
+        {
+            FacingRight = _facingProvider.FacingRight;
+            transform.rotation = Quaternion.LookRotation(FacingRight ? Vector3.right : Vector3.left, Vector3.up);
+        }
     }
 
     private void Update()

@@ -43,7 +43,26 @@ public class FighterHealth : MonoBehaviour
         {
             IsKO = true;
             Debug.Log($"[FighterHealth] {(_owner != null ? _owner.Side.ToString() : "Fighter")} is KO'd.");
+
+            // Reuses FighterHitReaction's own machinery (InterruptMove + IsHitStunned + movement
+            // lock) as the enforcement for "KO -> cannot move or attack" — an infinite hit stun IS
+            // exactly that, so no separate IsKO flag/plumbing was added to FighterMoveController/
+            // FighterMovement (see this phase's own scope note on movement/control-lock authority).
+            // Zero knockback: any real knockback from the killing blow itself is applied separately,
+            // right after this, by FighterAttack's own ApplyHit call.
+            _owner?.HitReaction?.ApplyHit(float.PositiveInfinity, 0f);
+
             EventBus.Publish(new FighterKOEvent { Fighter = _owner });
         }
+    }
+
+    /// <summary>Explicit API for FightMatchController's between-rounds reset — never touched from
+    /// anywhere else. IsKO deliberately does NOT need a HitReaction counterpart call here:
+    /// HitReaction.ResetForRound() (called separately by FighterActor.ResetForRound) already clears
+    /// the infinite hit stun ApplyDamage applied above.</summary>
+    public void ResetForRound()
+    {
+        CurrentHealth = MaxHealth;
+        IsKO = false;
     }
 }
