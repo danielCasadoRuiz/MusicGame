@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c35fb30bb91485c8b2256b243487e1d, type: 3}
+  m_Name: FightComboSet
+  m_EditorClassIdentifier: Assembly-CSharp::FightComboSetSO
+  combos:
+  - id: aaa_b
+    debugName: A-A-A-B
+    steps:
+    - button: 0
+      horizontal: 0
+      vertical: 0
+    - button: 0
+      horizontal: 0
+      vertical: 0
+    - button: 0
+      horizontal: 0
+      vertical: 0
+    - button: 1
+      horizontal: 0
+      vertical: 0
+    maxTimeBetweenInputs: 0.5
+    priority: 0
+    moveId: move_aaa_b
+  - id: bb
+    debugName: B-B
+    steps:
+    - button: 1
+      horizontal: 0
+      vertical: 0
+    - button: 1
+      horizontal: 0
+      vertical: 0
+    maxTimeBetweenInputs: 0.5
+    priority: 0
+    moveId: move_bb
+  - id: bbab
+    debugName: B-B-A-B
+    steps:
+    - button: 1
+      horizontal: 0
+      vertical: 0
+    - button: 1
+      horizontal: 0
+      vertical: 0
+    - button: 0
+      horizontal: 0
+      vertical: 0
+    - button: 1
+      horizontal: 0
+      vertical: 0
+    maxTimeBetweenInputs: 0.5
+    priority: 0
+    moveId: move_bbab
+  - id: forward_a
+    debugName: Forward + A
+    steps:
+    - button: 0
+      horizontal: 1
+      vertical: 0
+    maxTimeBetweenInputs: 0.5
+    priority: 0
+    moveId: move_forward_a
+  - id: down_b
+    debugName: Down + B
+    steps:
+    - button: 1
+      horizontal: 0
+      vertical: 2
+    maxTimeBetweenInputs: 0.5
+    priority: 0
+    moveId: move_down_b
+  - id: back_aab
+    debugName: Back + A-A-B
+    steps:
+    - button: 0
+      horizontal: 2
+      vertical: 0
+    - button: 0
+      horizontal: 0
+      vertical: 0
+    - button: 1
+      horizontal: 0
+      vertical: 0
+    maxTimeBetweenInputs: 0.5
+    priority: 0
+    moveId: move_back_aab

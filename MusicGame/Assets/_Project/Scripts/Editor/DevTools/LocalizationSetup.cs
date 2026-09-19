@@ -129,7 +129,9 @@ public static class LocalizationSetup
         ("Countdown.Finish", "FINISH!", "FINAL!"),
 
         // ── Mobile controls ──────────────────────────────────────────────────────
-        ("Mobile.Jump", "JUMP", "SALTA"),
+        ("Mobile.Jump",  "JUMP",  "SALTA"),
+        ("Mobile.Punch", "PUNCH", "COP"),
+        ("Mobile.Kick",  "KICK",  "PUNTADA"),
 
         // ── Fight HUD ────────────────────────────────────────────────────────────
         ("Fight.PlayerName",   "PLAYER",     "JUGADOR"),

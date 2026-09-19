@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5113f3db8c54387965085ce138f977d, type: 3}
+  m_Name: Move_ComboBackAab
+  m_EditorClassIdentifier: Assembly-CSharp::FightMoveDefinition
+  id: move_back_aab
+  debugName: 'Combo: Back+A-A-B'
+  moveType: 1
+  animationState: BackComboAAB
+  startupDuration: 0.12
+  activeDuration: 0.15
+  recoveryDuration: 0.3
+  cancelWindow: 0
+  movementLocked: 1
+  movementMultiplier: 0
+  lungeDistance: 0.3
+  lockFacingDuringMove: 1
+  damage: 0

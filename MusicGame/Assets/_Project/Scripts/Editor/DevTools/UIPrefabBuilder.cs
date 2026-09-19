@@ -772,6 +772,50 @@ public static class UIPrefabBuilder
 
         pausePanel.gameObject.SetActive(false);
 
+        // Joystick (movement) + Punch/Kick — visible ONLY during FightFlowState.Fighting, on
+        // real/simulated mobile (see FightController.ActivateHud). Reuses VirtualJoystick/a fresh
+        // TouchActionButton per instance, wired to FightTouchInputState — NOT Runner's own
+        // TouchInputState (see VirtualJoystick's own doc on why this is "reuse the component, wire
+        // a new instance" rather than duplicating the drag math or driving Runner's static from Fight).
+        var mobileControls = UIFactory.CreateRect("MobileControls", root);
+        UIFactory.Stretch(mobileControls);
+        view.mobileControlsRoot = mobileControls.gameObject;
+
+        const float joySize = 180f;
+        var joystickBg = UIFactory.CreatePanel("JoystickBackground", mobileControls, new Color(1f, 1f, 1f, 0.15f));
+        UIFactory.SetBox(joystickBg.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f),
+            new Vector2(40f, 40f), new Vector2(joySize, joySize));
+        var joystickHandle = UIFactory.CreatePanel("JoystickHandle", joystickBg.rectTransform, new Color(1f, 1f, 1f, 0.4f));
+        joystickHandle.rectTransform.sizeDelta        = new Vector2(joySize * 0.45f, joySize * 0.45f);
+        joystickHandle.rectTransform.anchoredPosition = Vector2.zero;
+        view.joystickBackground = joystickBg.rectTransform;
+        view.joystickHandle     = joystickHandle.rectTransform;
+        var joystick = joystickBg.gameObject.AddComponent<VirtualJoystick>();
+        joystick.Initialize(joystickBg.rectTransform, joystickHandle.rectTransform,
+            v => { FightTouchInputState.Horizontal = v.x; FightTouchInputState.Vertical = v.y; },
+            driveTouchInputState: false);
+
+        const float actionSize = 110f;
+        var punchBtn = UIFactory.CreatePanel("PunchButton", mobileControls, new Color(1f, 1f, 1f, 0.25f));
+        UIFactory.SetBox(punchBtn.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f),
+            new Vector2(-170f, 40f), new Vector2(actionSize, actionSize));
+        var punchLabel = UIFactory.CreateText("Label", punchBtn.rectTransform, Loc.Get("Mobile.Punch"), 16, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.Stretch(punchLabel.rectTransform);
+        punchBtn.gameObject.AddComponent<TouchActionButton>().Initialize(() => FightTouchInputState.PunchRequested = true);
+        view.punchButton = punchBtn.gameObject;
+        view.punchButtonLabel = punchLabel;
+
+        var kickBtn = UIFactory.CreatePanel("KickButton", mobileControls, new Color(1f, 1f, 1f, 0.25f));
+        UIFactory.SetBox(kickBtn.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f),
+            new Vector2(-40f, 40f), new Vector2(actionSize, actionSize));
+        var kickLabel = UIFactory.CreateText("Label", kickBtn.rectTransform, Loc.Get("Mobile.Kick"), 16, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.Stretch(kickLabel.rectTransform);
+        kickBtn.gameObject.AddComponent<TouchActionButton>().Initialize(() => FightTouchInputState.KickRequested = true);
+        view.kickButton = kickBtn.gameObject;
+        view.kickButtonLabel = kickLabel;
+
+        mobileControls.gameObject.SetActive(false);
+
         // Masks the hard cut between Runner's camera and Fight's static arena camera — see
         // FightController's own doc. Plain opaque black, not theme-driven: a scene-swap mask
         // should work identically regardless of which theme happens to be active.

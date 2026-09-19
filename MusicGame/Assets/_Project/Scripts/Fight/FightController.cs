@@ -45,6 +45,13 @@ public class FightController : MonoBehaviour
     private bool _active;
     private float _timeRemaining;
 
+    // Joystick (movement) + Punch/Kick — visible ONLY while _active (FightFlowState.Fighting) AND
+    // PlatformService.IsMobile, same platform-gating convention as Runner's own
+    // MobileControlsController, just baked into THIS prefab instead of built standalone (see
+    // FightHudView's own doc on why: Section 10 asked for "amplia el FightHud actual", not a
+    // second procedural-only UI class).
+    private RectTransform _mobileControlsRoot;
+
     // Masks whatever's left of the arena/camera the instant this HUD actually reveals itself —
     // by the time ActivateHud() runs (FightFlowState.Fighting, well after Opponent Selection/
     // Versus/Round Intro/Countdown have already been covering the screen for a while),
@@ -121,6 +128,9 @@ public class FightController : MonoBehaviour
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
 
+        if (_mobileControlsRoot != null)
+            _mobileControlsRoot.gameObject.SetActive(PlatformService.IsMobile);
+
         if (_transitionOverlay != null)
         {
             _transitionOverlay.gameObject.SetActive(true);
@@ -152,6 +162,7 @@ public class FightController : MonoBehaviour
     {
         _active = false;
         if (_root != null) _root.gameObject.SetActive(false);
+        if (_mobileControlsRoot != null) _mobileControlsRoot.gameObject.SetActive(false);
 
         if (_transitionRoutine != null) { StopCoroutine(_transitionRoutine); _transitionRoutine = null; }
         if (_transitionOverlay != null) _transitionOverlay.gameObject.SetActive(false);
@@ -186,8 +197,32 @@ public class FightController : MonoBehaviour
         view.resumeButtonLabel.text   = Loc.Get("Fight.Resume");
         view.mainMenuButtonLabel.text = Loc.Get("Fight.MainMenu");
 
+        _mobileControlsRoot = view.mobileControlsRoot.GetComponent<RectTransform>();
+        WireMobileControls(view.joystickBackground, view.joystickHandle, view.punchButton, view.kickButton);
+        if (view.punchButtonLabel != null) view.punchButtonLabel.text = Loc.Get("Mobile.Punch");
+        if (view.kickButtonLabel  != null) view.kickButtonLabel.text  = Loc.Get("Mobile.Kick");
+        _mobileControlsRoot.gameObject.SetActive(false);
+
         _pausePanel.gameObject.SetActive(false);
         _root.gameObject.SetActive(false);
+    }
+
+    // Wires an already-built joystick background/handle + Punch/Kick button pair to
+    // FightTouchInputState — shared by both the prefab path (WireUI, everything already built)
+    // and the procedural fallback (BuildMobileControls, built here first). Reuses VirtualJoystick/
+    // a fresh TouchActionButton per instance — see their own doc on why this is "reuse the
+    // component, wire a new instance" rather than either duplicating the drag math or driving
+    // Runner's own TouchInputState from Fight.
+    private static void WireMobileControls(RectTransform joystickBackground, RectTransform joystickHandle,
+        GameObject punchButton, GameObject kickButton)
+    {
+        var joystick = joystickBackground.gameObject.AddComponent<VirtualJoystick>();
+        joystick.Initialize(joystickBackground, joystickHandle,
+            v => { FightTouchInputState.Horizontal = v.x; FightTouchInputState.Vertical = v.y; },
+            driveTouchInputState: false);
+
+        punchButton.AddComponent<TouchActionButton>().Initialize(() => FightTouchInputState.PunchRequested = true);
+        kickButton.AddComponent<TouchActionButton>().Initialize(() => FightTouchInputState.KickRequested = true);
     }
 
     // ── UI shell (procedural fallback — no UIRegistry in the scene yet) ──────────
@@ -200,9 +235,44 @@ public class FightController : MonoBehaviour
 
         BuildTopBar();
         BuildPauseMenu();
+        BuildMobileControls();
         BuildTransitionOverlay();
 
         _root.gameObject.SetActive(false);
+    }
+
+    private void BuildMobileControls()
+    {
+        _mobileControlsRoot = UIFactory.CreateRect("MobileControls", _root);
+        UIFactory.Stretch(_mobileControlsRoot);
+
+        const float joySize = 180f;
+        var background = UIFactory.CreatePanel("JoystickBackground", _mobileControlsRoot, new Color(1f, 1f, 1f, 0.15f));
+        UIFactory.SetBox(background.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f),
+            new Vector2(40f, 40f), new Vector2(joySize, joySize));
+        var handle = UIFactory.CreatePanel("JoystickHandle", background.rectTransform, new Color(1f, 1f, 1f, 0.4f));
+        handle.rectTransform.sizeDelta        = new Vector2(joySize * 0.45f, joySize * 0.45f);
+        handle.rectTransform.anchoredPosition = Vector2.zero;
+
+        var punchGO = BuildActionButtonPanel("PunchButton", -170f, "Mobile.Punch");
+        var kickGO  = BuildActionButtonPanel("KickButton",  -40f,  "Mobile.Kick");
+
+        WireMobileControls(background.rectTransform, handle.rectTransform, punchGO, kickGO);
+
+        _mobileControlsRoot.gameObject.SetActive(false);
+    }
+
+    private GameObject BuildActionButtonPanel(string name, float xOffset, string locKey)
+    {
+        const float size = 110f;
+        var button = UIFactory.CreatePanel(name, _mobileControlsRoot, new Color(1f, 1f, 1f, 0.25f));
+        UIFactory.SetBox(button.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f),
+            new Vector2(xOffset, 40f), new Vector2(size, size));
+
+        var label = UIFactory.CreateText("Label", button.rectTransform, Loc.Get(locKey), 16, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.Stretch(label.rectTransform);
+
+        return button.gameObject;
     }
 
     private void BuildTransitionOverlay()

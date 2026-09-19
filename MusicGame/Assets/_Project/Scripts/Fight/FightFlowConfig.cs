@@ -36,4 +36,20 @@ public class FightFlowConfig : ScriptableObject
     public float roundDuration = 60f;
     public int   roundsToWin   = 2;
     public int   maxRounds     = 3;
+
+    [Header("Input / Combos")]
+    [Tooltip("How far back FightInputBuffer keeps recent button presses — old ones are dropped " +
+             "past this, so it never grows unbounded. Should comfortably fit the slowest combo's " +
+             "own total timing (sum of its maxTimeBetweenInputs gaps) in the set below.")]
+    public float inputBufferWindowSeconds = 1.5f;
+
+    [Tooltip("The data-driven combo list FightComboRecognizer checks input against. Empty/null is " +
+             "tolerated (normals still fire, just nothing ever completes as a combo).")]
+    public FightComboSetSO comboSet;
+
+    [Header("Moves")]
+    [Tooltip("Resolves normals (normalPunch/normalKick) and combo moveIds into real " +
+             "FightMoveDefinition data for FighterMoveController to execute. Null is tolerated " +
+             "(normals/combos still get recognized, they just never resolve into a running move).")]
+    public FightMoveSetSO defaultMoveSet;
 }

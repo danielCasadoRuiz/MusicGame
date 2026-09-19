@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cdc02cdbb754dcfa48c800495bf34b7, type: 3}
+  m_Name: FightMoveSet
+  m_EditorClassIdentifier: Assembly-CSharp::FightMoveSetSO
+  normalPunch: {fileID: 11400000, guid: fef0a3e5e6e34e05bf71e67f904a0884, type: 2}
+  normalKick: {fileID: 11400000, guid: 3b3d0633308644c39bfa66c8f1a978a1, type: 2}
+  moves:
+  - {fileID: 11400000, guid: d85b062d568549578953445933ef5eb1, type: 2}
+  - {fileID: 11400000, guid: fe054abf89044839854f61b3f7db3cfc, type: 2}
+  - {fileID: 11400000, guid: 3cce4ed0dedf4629b425784febe9304a, type: 2}
+  - {fileID: 11400000, guid: 7ad3de220b584758a20f65bdbfd3b9f9, type: 2}
+  - {fileID: 11400000, guid: e3413b06b1a74769888b789303bc1ee0, type: 2}
+  - {fileID: 11400000, guid: 0f5551d7ac8a474994fdd7cf728684bf, type: 2}
