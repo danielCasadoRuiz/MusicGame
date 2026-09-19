@@ -61,6 +61,13 @@ public class FightMatchController : MonoBehaviour
 
     public RoundResolution LastRoundResolution { get; private set; }
 
+    /// <summary>How the most recently completed round ended — KO or TimeOut. Cached alongside
+    /// LastRoundDifferential/LastRoundResolution purely for MatchEndedEvent's own small match-summary
+    /// payload (see its own doc) — never used for any decision.</summary>
+    public RoundEndReason LastRoundReason { get; private set; }
+    public float LastRoundPlayerHealthPercent { get; private set; }
+    public float LastRoundOpponentHealthPercent { get; private set; }
+
     private FightFlowConfig _config;
     private FightArenaConfig _arenaConfig;
 
@@ -131,6 +138,14 @@ public class FightMatchController : MonoBehaviour
         _player = null;
         _opponent = null;
 
+        // Set here — well before FightFlowState.RoundIntro is even requested (by
+        // VersusScreenController, after its own hold) — so FightController's HUD (visible from
+        // RoundIntro onward, see its own doc) shows the correct starting time throughout "ROUND
+        // n"/3-2-1/FIGHT! instead of a stale/zero value. RoundActive stays false the whole time, so
+        // Update() below never decrements it early; BeginRound() re-sets the exact same value, right
+        // as the timer actually starts counting down for real.
+        RoundTimeRemaining = _config != null ? Mathf.Max(1f, _config.roundDuration) : 60f;
+
         RoundIntroController.Instance?.SetRound(CurrentRound);
         ResetFightersForRound();
     }
@@ -191,6 +206,9 @@ public class FightMatchController : MonoBehaviour
         // TrueDraw (winner == null) awards nobody a round — see class doc.
 
         LastRoundDifferential = roundDifferential;
+        LastRoundReason = reason;
+        LastRoundPlayerHealthPercent = playerPct;
+        LastRoundOpponentHealthPercent = opponentPct;
         if (resolution != RoundResolution.TrueDraw)
             MatchPointDifferential += roundDifferential; // always 0 for DrawResolvedByPoints too — see doc
         LastRoundResolution = resolution;
@@ -229,12 +247,23 @@ public class FightMatchController : MonoBehaviour
 
         if (PlayerRoundsWon >= roundsToWin)
         {
-            EventBus.Publish(new MatchEndedEvent { Winner = FighterSide.Player, PlayerRoundsWon = PlayerRoundsWon, OpponentRoundsWon = OpponentRoundsWon });
+            // Level Up is decided HERE, deterministically, the instant the match is officially won —
+            // never deferred to Continue (task's own explicit "no esperis a Continue per decidir si
+            // ha pujat" requirement) — so MatchEndedEvent already carries the old/new level for
+            // MatchResultController to display.
+            int oldLevel = GameSession.Instance != null ? GameSession.Instance.PlayerLevel : 1;
+            int newLevel = GameSession.Instance != null ? GameSession.Instance.LevelUp() : oldLevel;
+
+            EventBus.Publish(BuildMatchEndedEvent(FighterSide.Player, oldLevel, newLevel));
             FightFlowController.Instance?.RequestState(FightFlowState.MatchWon);
         }
         else if (OpponentRoundsWon >= roundsToWin)
         {
-            EventBus.Publish(new MatchEndedEvent { Winner = FighterSide.Opponent, PlayerRoundsWon = PlayerRoundsWon, OpponentRoundsWon = OpponentRoundsWon });
+            // A loss never touches PlayerLevel — Old/New are the same, unchanged value (task's own
+            // explicit "si perds, no baixa, no puja" requirement).
+            int level = GameSession.Instance != null ? GameSession.Instance.PlayerLevel : 1;
+
+            EventBus.Publish(BuildMatchEndedEvent(FighterSide.Opponent, level, level));
             FightFlowController.Instance?.RequestState(FightFlowState.MatchLost);
         }
         else
@@ -243,9 +272,23 @@ public class FightMatchController : MonoBehaviour
         }
     }
 
+    private MatchEndedEvent BuildMatchEndedEvent(FighterSide winner, int oldLevel, int newLevel) => new MatchEndedEvent
+    {
+        Winner = winner,
+        PlayerRoundsWon = PlayerRoundsWon,
+        OpponentRoundsWon = OpponentRoundsWon,
+        LastRoundReason = LastRoundReason,
+        PlayerHealthPercent = LastRoundPlayerHealthPercent,
+        OpponentHealthPercent = LastRoundOpponentHealthPercent,
+        MatchPointDifferential = MatchPointDifferential,
+        OldPlayerLevel = oldLevel,
+        NewPlayerLevel = newLevel,
+    };
+
     private void StartNextRound()
     {
         CurrentRound++;
+        RoundTimeRemaining = _config != null ? Mathf.Max(1f, _config.roundDuration) : 60f; // see BeginMatch's own doc
         RoundIntroController.Instance?.SetRound(CurrentRound);
         ResetFightersForRound();
         FightFlowController.Instance?.RequestState(FightFlowState.RoundIntro);
@@ -255,6 +298,7 @@ public class FightMatchController : MonoBehaviour
     /// like a normal next round (task's own explicit "currentRound no avança" requirement).</summary>
     private void RepeatRound()
     {
+        RoundTimeRemaining = _config != null ? Mathf.Max(1f, _config.roundDuration) : 60f; // see BeginMatch's own doc
         RoundIntroController.Instance?.SetRound(CurrentRound);
         ResetFightersForRound();
         FightFlowController.Instance?.RequestState(FightFlowState.RoundIntro);
@@ -323,5 +367,28 @@ public class FightMatchController : MonoBehaviour
     {
         MatchPointDifferential = value;
         Debug.Log($"[FightMatchController] Debug: MatchPointDifferential -> {value:+0.00;-0.00}");
+    }
+
+    /// <summary>Debug only — jumps straight to a match conclusion (Win or Lose) without playing out
+    /// rounds, for quickly testing the post-Fight result flow (Level Up/Continue/Fight Again/Replay
+    /// Song — see FightDebugHUD's own doc). Publishes the exact same MatchEndedEvent and requests the
+    /// exact same FightFlowState.MatchWon/MatchLost a real match end would — MatchResultController
+    /// can't tell the difference.</summary>
+    public void DebugForceMatchResult(bool playerWins)
+    {
+        int roundsToWin = _config != null ? Mathf.Max(1, _config.roundsToWin) : 2;
+        RoundActive = false;
+        _roundEndProcessed = true;
+
+        if (playerWins) { PlayerRoundsWon = Mathf.Max(PlayerRoundsWon, roundsToWin); OpponentRoundsWon = Mathf.Min(OpponentRoundsWon, roundsToWin - 1); }
+        else            { OpponentRoundsWon = Mathf.Max(OpponentRoundsWon, roundsToWin); PlayerRoundsWon = Mathf.Min(PlayerRoundsWon, roundsToWin - 1); }
+
+        LastRoundReason = RoundEndReason.KO;
+        LastRoundResolution = RoundResolution.Decisive;
+        LastRoundPlayerHealthPercent = playerWins ? 1f : 0f;
+        LastRoundOpponentHealthPercent = playerWins ? 0f : 1f;
+
+        Debug.Log($"[FightMatchController] Debug: forcing match result -> {(playerWins ? "Player" : "Opponent")} wins.");
+        NotifyRoundEndDisplayComplete();
     }
 }

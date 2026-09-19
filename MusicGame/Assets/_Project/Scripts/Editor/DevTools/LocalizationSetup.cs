@@ -156,6 +156,21 @@ public static class LocalizationSetup
         ("Fight.PointDifference","POINT DIFFERENCE: {0}", "DIFERÈNCIA DE PUNTS: {0}"),
         ("Fight.YouWin",         "YOU WIN",       "HAS GUANYAT"),
         ("Fight.YouLose",        "YOU LOSE",      "HAS PERDUT"),
+
+        // ── Match Result (post-Fight flow: Continue / Fight Again / Replay Song / Rewarded Ad) ────
+        ("MatchResult.LevelUp",        "LEVEL {0} → LEVEL {1}",        "NIVELL {0} → NIVELL {1}"),
+        ("MatchResult.FinalHealth",    "Health — You: {0}%  Rival: {1}%", "Vida — Tu: {0}%  Rival: {1}%"),
+        ("MatchResult.Continue",       "CONTINUE",                          "CONTINUA"),
+        ("MatchResult.FightAgain",     "FIGHT AGAIN",                       "TORNA A LLUITAR"),
+        ("MatchResult.FightAgainCount","FIGHT AGAIN (x{0})",                "TORNA A LLUITAR (x{0})"),
+        ("MatchResult.ReplaySong",     "REPLAY SONG",                       "REPETEIX LA CANÇÓ"),
+        ("MatchResult.WatchAdTitle",   "GET ONE MORE LIFE?",                "VOLS UNA VIDA MÉS?"),
+        ("MatchResult.WatchAd",        "WATCH AD",                          "MIRA UN ANUNCI"),
+        ("MatchResult.Cancel",         "CANCEL",                            "CANCEL·LA"),
+
+        // ── Next Song transition cartela (Continue -> Song Analysis hand-off) ─────────────────────
+        ("NextSong.Header", "NEXT SONG",  "SEGÜENT CANÇÓ"),
+        ("NextSong.Level",  "LEVEL {0}",  "NIVELL {0}"),
     };
 
     [MenuItem("Tools/MusicGame/Setup Localization")]

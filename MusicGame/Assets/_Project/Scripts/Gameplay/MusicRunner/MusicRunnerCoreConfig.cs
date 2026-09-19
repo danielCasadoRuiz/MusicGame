@@ -92,5 +92,5 @@ public class MusicRunnerCoreConfig : ScriptableObject
     public float fadeOutSeconds  = 3f;
     [Tooltip("How many extra seconds the player keeps running afterward — flat ground, silent " +
              "(the song has already finished) — before the end screen actually appears.")]
-    public float farewellSeconds = 2f;
+    public float farewellSeconds = 5f;
 }

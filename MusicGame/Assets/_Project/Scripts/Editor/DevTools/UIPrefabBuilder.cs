@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// One-shot Editor tool: builds all fifteen runtime UI screens — the three gameplay prefabs
 /// (LiveHud, EndScreen, PauseMenu), the seven Frontend/Fight screens (IntroScreen, MainMenu,
 /// SongSelection, AnalyzingScreen, CountdownScreen, FinishBanner, FightHud), and the five Fight-flow
-/// screens (OpponentSelection, VersusScreen, RoundIntro, RoundEnd, MatchResult) — using the exact
+/// screens (OpponentSelection, VersusScreen, RoundIntro, RoundEnd, MatchResult, NextSongTransition) — using the exact
 /// same UIFactory calls each screen's own controller used to run at PLAY time (with the same
 /// ThemeColorReceiver/ThemeTextReceiver wiring, so the saved prefabs come out theme-ready too),
 /// saves them as real .prefab assets under Assets/_Project/Prefabs/UI/, leaves connected instances
@@ -71,6 +71,7 @@ public static class UIPrefabBuilder
         var roundIntro        = BuildRoundIntro(canvasRect);
         var roundEnd          = BuildRoundEnd(canvasRect);
         var matchResult       = BuildMatchResult(canvasRect);
+        var nextSongTransition = BuildNextSongTransition(canvasRect);
 
         // IMPORTANT: SaveAsPrefabAssetAndConnect returns the PREFAB ASSET (disk-only, never
         // instantiated into the running scene) — it also CONVERTS the passed scene GameObject
@@ -94,6 +95,7 @@ public static class UIPrefabBuilder
         SaveAndConnect(roundIntro,        "RoundIntro.prefab");
         SaveAndConnect(roundEnd,          "RoundEnd.prefab");
         SaveAndConnect(matchResult,       "MatchResult.prefab");
+        SaveAndConnect(nextSongTransition, "NextSongTransition.prefab");
 
         WireRegistry(
             liveHud.GetComponent<LiveHudView>(),
@@ -110,7 +112,8 @@ public static class UIPrefabBuilder
             versusScreen.GetComponent<VersusScreenView>(),
             roundIntro.GetComponent<RoundIntroView>(),
             roundEnd.GetComponent<RoundEndView>(),
-            matchResult.GetComponent<MatchResultView>());
+            matchResult.GetComponent<MatchResultView>(),
+            nextSongTransition.GetComponent<NextSongTransitionView>());
 
         // These screens are ALWAYS-ACTIVE at runtime until their own Show()/Hide() toggles them
         // (Awake() flips them off) — but starting hidden in the EDITED scene, saved into the
@@ -128,9 +131,10 @@ public static class UIPrefabBuilder
         roundIntro.SetActive(false);
         roundEnd.SetActive(false);
         matchResult.SetActive(false);
+        nextSongTransition.SetActive(false);
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-        Debug.Log("[UIPrefabBuilder] Done — 15 UI prefabs saved under " +
+        Debug.Log("[UIPrefabBuilder] Done — 16 UI prefabs saved under " +
                   $"{FolderPath}, instances wired into UIRegistry in the scene. " +
                   "Remember to save the scene (Ctrl+S).");
     }
@@ -165,7 +169,8 @@ public static class UIPrefabBuilder
         IntroScreenView introScreen, MainMenuView mainMenu, SongSelectionView songSelection,
         AnalyzingScreenView analyzing, CountdownScreenView countdown, FinishBannerView finishBanner,
         FightHudView fightHud, OpponentSelectionView opponentSelection, VersusScreenView versusScreen,
-        RoundIntroView roundIntro, RoundEndView roundEnd, MatchResultView matchResult)
+        RoundIntroView roundIntro, RoundEndView roundEnd, MatchResultView matchResult,
+        NextSongTransitionView nextSongTransition)
     {
         var registryGO = GameObject.Find("[UI Registry]");
         if (registryGO == null) registryGO = new GameObject("[UI Registry]");
@@ -187,6 +192,7 @@ public static class UIPrefabBuilder
         so.FindProperty("roundIntro").objectReferenceValue        = roundIntro;
         so.FindProperty("roundEnd").objectReferenceValue          = roundEnd;
         so.FindProperty("matchResult").objectReferenceValue       = matchResult;
+        so.FindProperty("nextSongTransition").objectReferenceValue = nextSongTransition;
         so.ApplyModifiedPropertiesWithoutUndo();
     }
 
@@ -838,14 +844,6 @@ public static class UIPrefabBuilder
 
         mobileControls.gameObject.SetActive(false);
 
-        // Masks the hard cut between Runner's camera and Fight's static arena camera — see
-        // FightController's own doc. Plain opaque black, not theme-driven: a scene-swap mask
-        // should work identically regardless of which theme happens to be active.
-        var transitionOverlay = UIFactory.CreatePanel("TransitionOverlay", root, new Color(0f, 0f, 0f, 1f));
-        UIFactory.Stretch(transitionOverlay.rectTransform);
-        transitionOverlay.gameObject.SetActive(false);
-        view.transitionOverlay = transitionOverlay;
-
         return root.gameObject;
     }
 
@@ -934,6 +932,14 @@ public static class UIPrefabBuilder
         var view = root.gameObject.AddComponent<RoundIntroView>();
         view.root = root.gameObject;
 
+        // The ONE dark curtain for the whole VS->RoundIntro->Countdown->Fighting reveal — see
+        // RoundIntroController's own doc (alpha driven at runtime from FightFlowConfig.
+        // countdownOverlayAlpha, starts transparent here). Not theme-driven: a readability dimmer
+        // over an already-visible arena+HUD should look the same regardless of which theme is active.
+        var overlay = UIFactory.CreatePanel("Overlay", root, new Color(0f, 0f, 0f, 0f));
+        UIFactory.Stretch(overlay.rectTransform);
+        view.overlay = overlay;
+
         var text = UIFactory.CreateText("Text", root, "", 96, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
         UIFactory.SetBox(text.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             Vector2.zero, new Vector2(700f, 200f));
@@ -970,23 +976,145 @@ public static class UIPrefabBuilder
         var view = root.gameObject.AddComponent<MatchResultView>();
         view.root = root.gameObject;
 
-        var dim = UIFactory.CreatePanel("Dim", root, new Color(0.02f, 0.02f, 0.02f, 0.85f));
+        var dim = UIFactory.CreatePanel("Dim", root, new Color(0.02f, 0.02f, 0.02f, 0.9f));
         UIFactory.Stretch(dim.rectTransform);
         dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
-        var text = UIFactory.CreateText("Text", root, "", 80, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
-        UIFactory.SetBox(text.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0f, 40f), new Vector2(800f, 200f));
-        text.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
-        view.text = text;
+        var title = UIFactory.CreateText("Title", root, "", 64, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 220f), new Vector2(800f, 90f));
+        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
+        view.titleText = title;
+
+        var rival = UIFactory.CreateText("Rival", root, "", 20, Color.white);
+        UIFactory.SetBox(rival.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 160f), new Vector2(700f, 30f));
+        rival.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
+        view.rivalText = rival;
+
+        var rounds = UIFactory.CreateText("Rounds", root, "", 40, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(rounds.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 110f), new Vector2(400f, 50f));
+        rounds.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Display);
+        view.roundsText = rounds;
+
+        var summary = UIFactory.CreateText("Summary", root, "", 16, Color.white);
+        UIFactory.SetBox(summary.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 55f), new Vector2(700f, 50f));
+        summary.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
+        view.summaryText = summary;
+
+        var level = UIFactory.CreateText("Level", root, "", 22, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(level.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 0f), new Vector2(500f, 34f));
+        level.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Positive, UIFontToken.Body);
+        view.levelText = level;
+
+        var continueBtn = UIFactory.CreateButton("ContinueButton", root, Loc.Get("MatchResult.Continue"), out var continueLabel);
+        UIFactory.SetBox(continueBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -60f), new Vector2(260f, 52f));
+        continueBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
+        continueLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
+        view.continueButton = continueBtn;
+        view.continueButtonLabel = continueLabel;
+
+        var fightAgainBtn = UIFactory.CreateButton("FightAgainButton", root, "", out var fightAgainLabel);
+        UIFactory.SetBox(fightAgainBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -60f), new Vector2(260f, 52f));
+        fightAgainBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
+        fightAgainLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
+        view.fightAgainButton = fightAgainBtn;
+        view.fightAgainButtonLabel = fightAgainLabel;
+
+        var replaySongBtn = UIFactory.CreateButton("ReplaySongButton", root, Loc.Get("MatchResult.ReplaySong"), out var replaySongLabel);
+        UIFactory.SetBox(replaySongBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -120f), new Vector2(260f, 52f));
+        replaySongBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        replaySongLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        view.replaySongButton = replaySongBtn;
+        view.replaySongButtonLabel = replaySongLabel;
 
         var mainMenuBtn = UIFactory.CreateButton("MainMenuButton", root, Loc.Get("Fight.MainMenu"), out var mainMenuLabel);
         UIFactory.SetBox(mainMenuBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0f, -80f), new Vector2(240f, 52f));
-        mainMenuBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
-        mainMenuLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
+            new Vector2(0f, -180f), new Vector2(260f, 52f));
+        mainMenuBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        mainMenuLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
         view.mainMenuButton = mainMenuBtn;
         view.mainMenuButtonLabel = mainMenuLabel;
+
+        BuildRewardAdModal(root, view);
+
+        return root.gameObject;
+    }
+
+    // Small confirmation sub-panel shown only when Fight Again is pressed with zero lives left —
+    // see MatchResultController's own doc on the Rewarded Ad flow.
+    private static void BuildRewardAdModal(RectTransform root, MatchResultView view)
+    {
+        var modal = UIFactory.CreateRect("RewardAdModal", root);
+        UIFactory.Stretch(modal);
+
+        var dim = UIFactory.CreatePanel("Dim", modal, new Color(0f, 0f, 0f, 0.75f));
+        UIFactory.Stretch(dim.rectTransform);
+
+        var panel = UIFactory.CreatePanel("Panel", modal, new Color(0.05f, 0.05f, 0.05f, 0.98f));
+        UIFactory.SetBox(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(420f, 220f));
+        panel.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
+
+        var title = UIFactory.CreateText("Title", panel.rectTransform, Loc.Get("MatchResult.WatchAdTitle"), 22, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(380f, 60f));
+        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Display);
+        view.rewardAdTitleText = title;
+
+        var watchAdBtn = UIFactory.CreateButton("WatchAdButton", panel.rectTransform, Loc.Get("MatchResult.WatchAd"), out var watchAdLabel);
+        UIFactory.SetBox(watchAdBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 70f), new Vector2(320f, 46f));
+        watchAdBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
+        watchAdLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
+        view.watchAdButton = watchAdBtn;
+        view.watchAdButtonLabel = watchAdLabel;
+
+        var cancelBtn = UIFactory.CreateButton("CancelButton", panel.rectTransform, Loc.Get("MatchResult.Cancel"), out var cancelLabel);
+        UIFactory.SetBox(cancelBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 16f), new Vector2(320f, 46f));
+        cancelBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        cancelLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        view.cancelButton = cancelBtn;
+        view.cancelButtonLabel = cancelLabel;
+
+        view.rewardAdModalRoot = modal.gameObject;
+        modal.gameObject.SetActive(false);
+    }
+
+    // ── Next Song Transition (post Match-Won Continue cartela) ──────────────
+
+    private static GameObject BuildNextSongTransition(RectTransform canvas)
+    {
+        var root = UIFactory.CreateRect("NextSongTransitionScreen", canvas);
+        UIFactory.Stretch(root);
+        var view = root.gameObject.AddComponent<NextSongTransitionView>();
+        view.root = root.gameObject;
+        view.canvasGroup = root.gameObject.AddComponent<CanvasGroup>();
+
+        var dim = UIFactory.CreatePanel("Dim", root, new Color(0.02f, 0.02f, 0.02f, 1f));
+        UIFactory.Stretch(dim.rectTransform);
+        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
+
+        var level = UIFactory.CreateText("Level", root, "", 26, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(level.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 70f), new Vector2(700f, 40f));
+        level.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Secondary, UIFontToken.Body);
+        view.levelText = level;
+
+        var header = UIFactory.CreateText("Header", root, Loc.Get("NextSong.Header"), 20, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(header.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 20f), new Vector2(700f, 34f));
+        header.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
+        view.headerText = header;
+
+        var songName = UIFactory.CreateText("SongName", root, "", 40, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(songName.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -40f), new Vector2(900f, 60f));
+        songName.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
+        view.songNameText = songName;
 
         return root.gameObject;
     }

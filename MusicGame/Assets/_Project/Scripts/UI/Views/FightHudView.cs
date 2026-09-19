@@ -32,9 +32,6 @@ public class FightHudView : MonoBehaviour
     public Button       mainMenuButton;
     public TextMeshProUGUI mainMenuButtonLabel;
 
-    [Header("Transition (masks the Runner→Fight camera cut)")]
-    public Image transitionOverlay;
-
     [Header("Mobile controls — visible ONLY during FightFlowState.Fighting, on real/simulated mobile")]
     public GameObject mobileControlsRoot;
     public RectTransform joystickBackground;

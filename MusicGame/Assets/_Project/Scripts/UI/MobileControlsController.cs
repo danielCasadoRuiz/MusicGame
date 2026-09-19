@@ -4,10 +4,15 @@ using UnityEngine;
 /// <summary>
 /// Runner's mobile in-game controls — a virtual joystick (bottom-left, drag) and a jump button
 /// (bottom-right, tap) feeding TouchInputState. Shown ONLY while PlatformService.IsMobile AND
-/// GameFlowState is Gameplay — strictly platform-gated, including in the Editor (simulate Mobile
-/// via AppConfigSO.editorPlatformSimulation to see/test these) — invisible/inert otherwise, and
-/// gone the instant the run ends (Results/Fight/back to menu), matching "sap què mostrar o no en un
-/// mode o altre" (Section on platform-aware UI).
+/// GameFlowState is Gameplay AND the song hasn't already finished — strictly platform-gated,
+/// including in the Editor (simulate Mobile via AppConfigSO.editorPlatformSimulation to see/test
+/// these) — invisible/inert otherwise, and gone the instant the run ends (Results/Fight/back to
+/// menu), matching "sap què mostrar o no en un mode o altre" (Section on platform-aware UI).
+///
+/// Also hides itself the instant SongFinishedEvent fires (farewell begins) — purely a visual/UX
+/// courtesy matching PlayerController.EnterFarewellMode's own doc: input from these buttons already
+/// has zero gameplay effect from that same instant, this just stops offering them at all so nothing
+/// on screen looks interactive when it no longer is.
 ///
 /// The keyboard, unlike this UI, is DELIBERATELY not platform-gated in the Editor — see
 /// PlatformService.DualInputInEditor's own doc: a developer must always be able to test with just a
@@ -23,27 +28,43 @@ using UnityEngine;
 public class MobileControlsController : MonoBehaviour
 {
     private RectTransform _root;
+    private GameFlowState _currentState;
+    private bool _songFinished;
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
+    private System.Action<SongFinishedEvent> _onSongFinished;
 
     private void Awake() => Build();
 
     private void OnEnable()
     {
-        _onFlowStateChanged = e => Refresh(e.Current);
+        _onFlowStateChanged = e =>
+        {
+            _currentState = e.Current;
+            // A fresh entry into Gameplay (new run) always starts with the song not yet finished —
+            // never carries a stale hide-state over from whatever run just ended.
+            if (e.Current == GameFlowState.Gameplay) _songFinished = false;
+            Refresh();
+        };
+        _onSongFinished = _ => { _songFinished = true; Refresh(); };
         EventBus.Subscribe(_onFlowStateChanged);
+        EventBus.Subscribe(_onSongFinished);
 
         if (AppBootstrap.Context != null)
-            Refresh(AppBootstrap.Context.AppFlow.CurrentState);
+        {
+            _currentState = AppBootstrap.Context.AppFlow.CurrentState;
+            Refresh();
+        }
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onFlowStateChanged);
+        EventBus.Unsubscribe(_onSongFinished);
     }
 
-    private void Refresh(GameFlowState state)
+    private void Refresh()
     {
-        bool show = PlatformService.IsMobile && state == GameFlowState.Gameplay;
+        bool show = PlatformService.IsMobile && _currentState == GameFlowState.Gameplay && !_songFinished;
         _root.gameObject.SetActive(show);
     }
 

@@ -44,6 +44,11 @@ public class AppFlowController : MonoBehaviour, IAppModule, IConfigurableModule<
         if (next == CurrentState) return;
         var previous = CurrentState;
         CurrentState = next;
+        // Same "log every real transition" convention FightFlowController already uses one level
+        // down — without this, "which code actually requested SongAnalysis" was unanswerable from
+        // the Console alone, which is exactly what made a report like "Replay Song still shows
+        // Analysis" impossible to confirm/deny from logs.
+        Debug.Log($"[AppFlowController] {previous} -> {next}");
         EventBus.Publish(new GameFlowStateChangedEvent { Previous = previous, Current = next });
     }
 }

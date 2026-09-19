@@ -29,8 +29,15 @@ public class FightFlowConfig : ScriptableObject
     public float roundIntroDuration = 1.5f;
     [Tooltip("How long each of \"3\", \"2\", \"1\" is shown.")]
     public float countdownStepDuration = 0.8f;
-    [Tooltip("How long \"FIGHT!\" is shown before the flow actually enters the Fighting state.")]
+    [Tooltip("How long \"FIGHT!\" is shown before the flow actually enters the Fighting state — the " +
+             "dark countdown overlay (see countdownOverlayAlpha) fades to 0 progressively over this " +
+             "exact same duration, so the reveal finishes the instant \"FIGHT!\" itself ends, with no " +
+             "separate fade afterward.")]
     public float fightBannerDuration = 1f;
+    [Range(0f, 1f)]
+    [Tooltip("How dark the arena+HUD are dimmed behind \"ROUND {n}\"/3-2-1/FIGHT! — the ONE curtain " +
+             "for the whole VS->Fighting reveal (see RoundIntroController's own doc). 0 = no dimming.")]
+    public float countdownOverlayAlpha = 0.55f;
 
     [Header("Match rules")]
     public float roundDuration = 60f;
@@ -55,6 +62,14 @@ public class FightFlowConfig : ScriptableObject
     [Tooltip("DrawResolvedByPoints only — the small pause between showing \"DRAW\" and revealing " +
              "\"X wins on points\", so the draw itself reads as its own beat first.")]
     public float drawPointsPauseDuration = 1f;
+
+    [Header("Next Song Transition (post Match-Won Continue)")]
+    [Tooltip("How long the \"LEVEL {n} / NEXT SONG / {name}\" cartela stays fully visible before " +
+             "fading into Song Analysis.")]
+    public float nextSongCardHoldDuration = 1.6f;
+    [Tooltip("Fade-out duration for the Next Song cartela right before it's fully replaced by the " +
+             "Analyzing screen underneath.")]
+    public float nextSongCardFadeDuration = 0.35f;
 
     [Header("Input / Combos")]
     [Tooltip("How far back FightInputBuffer keeps recent button presses — old ones are dropped " +

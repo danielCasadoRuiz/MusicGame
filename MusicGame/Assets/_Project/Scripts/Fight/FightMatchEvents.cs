@@ -57,10 +57,28 @@ public struct RoundEndedEvent
 }
 
 /// <summary>Fired by FightMatchController exactly once, the instant a side reaches
-/// FightFlowConfig.roundsToWin — see FightMatchController.NotifyRoundEndDisplayComplete's own doc.</summary>
+/// FightFlowConfig.roundsToWin — see FightMatchController.NotifyRoundEndDisplayComplete's own doc.
+/// Carries just enough already-available data (task's own explicit "no inventis un sistema enorme
+/// d'estadístiques" scope note) for MatchResultController to show a small match summary and, on a
+/// win, the Level Up line — nothing here is recomputed or re-derived downstream.</summary>
 public struct MatchEndedEvent
 {
     public FighterSide Winner;
     public int PlayerRoundsWon;
     public int OpponentRoundsWon;
+    /// <summary>How the FINAL round ended — KO or TimeOut.</summary>
+    public RoundEndReason LastRoundReason;
+    /// <summary>Final round's own health percentages (0..1) — same values RoundEndedEvent already
+    /// carried for that round.</summary>
+    public float PlayerHealthPercent;
+    public float OpponentHealthPercent;
+    public float MatchPointDifferential;
+    /// <summary>GameSession.PlayerLevel immediately BEFORE this match's outcome was applied. Equal
+    /// to NewPlayerLevel when Winner == Opponent (a loss never changes PlayerLevel — see
+    /// GameSession.LevelUp's own doc).</summary>
+    public int OldPlayerLevel;
+    /// <summary>GameSession.PlayerLevel immediately AFTER — already decided by the time this event
+    /// fires (see FightMatchController.NotifyRoundEndDisplayComplete's own doc on why the Level Up
+    /// decision itself never waits for Continue).</summary>
+    public int NewPlayerLevel;
 }

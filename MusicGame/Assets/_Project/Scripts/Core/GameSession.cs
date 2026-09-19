@@ -12,6 +12,7 @@ using UnityEngine;
 ///   Song Analysis       → Profile
 ///   Gameplay (end of run)     → RunnerResults, RunnerFightResources, FighterStats, FightResources
 ///   Opponent Selection roulette → SelectedOpponent, SelectedOpponentSong, SelectedOpponentLevelConfig
+///   FightMatchController (match won) → PlayerLevel (via LevelUp())
 /// Everything else only ever READS these fields. This is the single place that data lives — no
 /// parallel copies of "the current song" scattered across other systems.
 ///
@@ -94,6 +95,16 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
     /// SelectedOpponent.</summary>
     public OpponentLevelConfig SelectedOpponentLevelConfig { get; set; }
 
+    /// <summary>Session-only Player Level authority — starts at 1, increments exactly once per
+    /// match WIN, via LevelUp() below (called ONLY by FightMatchController.NotifyRoundEndDisplayComplete,
+    /// the instant a match is decisively won — see that method's own doc on why the decision happens
+    /// there, deterministically, never deferred to Continue). No persistence across app restarts yet
+    /// (see this phase's own explicit scope note — save/cloud progression is a future phase). This is
+    /// now the ONE source every OpponentDefinition.GetConfigForLevel call site reads (replacing the
+    /// old DebugPlayerLevel static, removed this phase — see DebugSetPlayerLevel below for its
+    /// Editor-only replacement).</summary>
+    public int PlayerLevel { get; private set; } = 1;
+
     private FightStatsConfig _fightStatsConfig;
     private bool             _loggedMissingFightStatsConfig;
 
@@ -108,6 +119,16 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
     }
 
     public void Configure(FightStatsConfig config) => _fightStatsConfig = config;
+
+    /// <summary>Called ONLY by FightMatchController the instant a match is decisively WON — never
+    /// from anywhere else (a loss never touches PlayerLevel at all, see this phase's own explicit
+    /// "PlayerLevel només puja quan GUANYES" requirement). Returns the new value.</summary>
+    public int LevelUp() => ++PlayerLevel;
+
+    /// <summary>Debug-only override — lets a FightDebugHUD command jump straight to testing a
+    /// specific level's Opponent content without actually winning that many matches first. Never
+    /// called by real gameplay code.</summary>
+    public void DebugSetPlayerLevel(int level) => PlayerLevel = Mathf.Max(1, level);
 
     void IAppModule.Initialize(AppContext context) { /* no cross-module wiring needed yet */ }
     void IAppModule.Shutdown() { }

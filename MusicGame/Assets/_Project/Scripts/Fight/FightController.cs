@@ -1,4 +1,3 @@
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,14 +6,24 @@ using UnityEngine.UI;
 /// <summary>
 /// Fight HUD — a Street-Fighter-style top bar (player name+health on the left, a countdown timer
 /// in the middle, opponent name+health on the right, a pause button at the far right) plus a pause
-/// menu (Resume / Main Menu), reachable from the pause button OR the Esc key. Only becomes ACTIVE
-/// once Fight's own internal sequence (see FightFlowController/FightFlowState) reaches Fighting —
-/// Opponent Selection/Versus/Round Intro/Countdown each render their own full-screen UI first (see
-/// OpponentSelectionController/VersusScreenController/RoundIntroController), so there's nothing for
-/// this HUD to show before then. Lives in the always-loaded UI Scene (added by UIFlowController):
-/// it only ever talks to GameSession.Instance/ThemeManager.Instance/AppBootstrap.Context/EventBus,
-/// never to anything scene-local, so it stays correct regardless of which Mode Scene is currently
-/// active underneath it.
+/// menu (Resume / Main Menu), reachable from the pause button OR the Esc key.
+///
+/// SHOWS ITSELF the instant FightFlowState.RoundIntro begins (right as the VS cartela ends) and stays
+/// visible, unchanged, all the way through Countdown and into Fighting — it is NOT a separate screen
+/// that pops in when Fighting starts. RoundIntroController's own "ROUND {n}"/3-2-1/FIGHT! sequence
+/// (plus its one dark overlay — see that class's own doc) renders ON TOP of this already-visible HUD
+/// for readability; when that sequence ends there is nothing left to reveal, so no second fade/reveal
+/// happens here (a previous version of this class owned its own redundant transition overlay — removed,
+/// see RoundIntroController's own doc on why there is now exactly ONE curtain for the whole reveal).
+///
+/// The interactive controls (mobile joystick/Punch/Kick) are the ONE part of this HUD that stays
+/// hidden/inactive until FightFlowState.Fighting actually begins — see ActivateControls(). Real
+/// keyboard/gamepad input is separately (and already correctly) gated to Fighting by
+/// FighterInputController itself; this class never duplicates that gate.
+///
+/// Lives in the always-loaded UI Scene (added by UIFlowController): it only ever talks to
+/// GameSession.Instance/ThemeManager.Instance/AppBootstrap.Context/EventBus, never to anything
+/// scene-local, so it stays correct regardless of which Mode Scene is currently active underneath it.
 ///
 /// PLACEHOLDER, not real fight mechanics: health bars start full and never change (no damage system
 /// exists yet), the timer counts down but nothing happens at zero yet — this only proves the HUD
@@ -59,18 +68,6 @@ public class FightController : MonoBehaviour
     // second procedural-only UI class).
     private RectTransform _mobileControlsRoot;
 
-    // Masks whatever's left of the arena/camera the instant this HUD actually reveals itself —
-    // by the time ActivateHud() runs (FightFlowState.Fighting, well after Opponent Selection/
-    // Versus/Round Intro/Countdown have already been covering the screen for a while),
-    // Fight.unity's own camera swap (FightSceneBootstrap) happened long ago with nothing left to
-    // glitch, but a brief fade-from-black still makes the "FIGHT!" -> live arena reveal itself
-    // read as a deliberate beat instead of a hard cut. Lives HERE (the always-loaded UI Scene),
-    // not inside Fight.unity itself, so it renders via the persistent UI Canvas regardless of
-    // Fight.unity's own load state.
-    private const float FightTransitionFadeSeconds = 0.4f;
-    private Image      _transitionOverlay;
-    private Coroutine  _transitionRoutine;
-
     private System.Action<GameFlowStateChangedEvent>  _onFlowStateChanged;
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
 
@@ -86,17 +83,17 @@ public class FightController : MonoBehaviour
 
     private void OnEnable()
     {
-        // Only cleanup happens directly on GameFlowState — the HUD itself only ever becomes
-        // active once Fight's OWN internal sequence (see FightFlowController/FightFlowState)
-        // actually reaches Fighting: Opponent Selection/Versus/Round Intro/Countdown all render
-        // as their own full-screen UI first, so there's nothing for this HUD to show before then.
+        // Only cleanup happens directly on GameFlowState.
         _onFlowStateChanged = e =>
         {
             if (e.Previous == GameFlowState.Fight) ExitFight();
         };
         _onFightFlowChanged = e =>
         {
-            if (e.Current == FightFlowState.Fighting) ActivateHud();
+            // The HUD itself (top bar, live-updating) shows the instant RoundIntro begins — see
+            // class doc. Only the interactive controls wait for the real Fighting state.
+            if (e.Current == FightFlowState.RoundIntro) ShowHud();
+            else if (e.Current == FightFlowState.Fighting) ActivateControls();
         };
         EventBus.Subscribe(_onFlowStateChanged);
         EventBus.Subscribe(_onFightFlowChanged);
@@ -162,44 +159,25 @@ public class FightController : MonoBehaviour
         return new string('●', won) + new string('○', slots - won); // ● / ○
     }
 
-    private void ActivateHud()
+    // Shows the top bar (health/timer/round pips) the instant RoundIntro begins — see class doc.
+    // Interactive controls stay hidden until ActivateControls() (real Fighting).
+    private void ShowHud()
     {
         PopulateInfo();
         FindHealthRefs();
         UpdateTimerText();
+        UpdateRoundPips();
         SetPaused(false);
         _active = true;
         _root.gameObject.SetActive(true);
-        _root.SetAsLastSibling();
-
-        if (_mobileControlsRoot != null)
-            _mobileControlsRoot.gameObject.SetActive(PlatformService.IsMobile);
-
-        if (_transitionOverlay != null)
-        {
-            _transitionOverlay.gameObject.SetActive(true);
-            _transitionOverlay.transform.SetAsLastSibling();
-            _transitionOverlay.color = new Color(0f, 0f, 0f, 1f);
-            if (_transitionRoutine != null) StopCoroutine(_transitionRoutine);
-            _transitionRoutine = StartCoroutine(FadeOutTransitionOverlay());
-        }
+        _root.SetAsLastSibling(); // RoundIntroController re-asserts its OWN root on top of this right after — see its own doc
     }
 
-    // Held fully opaque for one frame before fading — gives _root's own newly-activated content
-    // (top bar, health bars) one frame to actually lay out/render before it's revealed.
-    private IEnumerator FadeOutTransitionOverlay()
+    // The ONE thing that still waits for the real FightFlowState.Fighting — see class doc.
+    private void ActivateControls()
     {
-        yield return null;
-
-        float t = 0f;
-        while (t < FightTransitionFadeSeconds)
-        {
-            t += Time.deltaTime;
-            _transitionOverlay.color = new Color(0f, 0f, 0f, 1f - Mathf.Clamp01(t / FightTransitionFadeSeconds));
-            yield return null;
-        }
-        _transitionOverlay.gameObject.SetActive(false);
-        _transitionRoutine = null;
+        if (_mobileControlsRoot != null)
+            _mobileControlsRoot.gameObject.SetActive(PlatformService.IsMobile);
     }
 
     private void ExitFight()
@@ -207,9 +185,6 @@ public class FightController : MonoBehaviour
         _active = false;
         if (_root != null) _root.gameObject.SetActive(false);
         if (_mobileControlsRoot != null) _mobileControlsRoot.gameObject.SetActive(false);
-
-        if (_transitionRoutine != null) { StopCoroutine(_transitionRoutine); _transitionRoutine = null; }
-        if (_transitionOverlay != null) _transitionOverlay.gameObject.SetActive(false);
 
         // Fight.unity (and every FighterActor in it) unloads on exit — stale references would
         // otherwise survive into a fresh Fight entry until FindHealthRefs happens to be called again.
@@ -230,8 +205,6 @@ public class FightController : MonoBehaviour
         _opponentRoundPipsText = view.opponentRoundPipsText;
         _timerText          = view.timerText;
         _pausePanel         = view.pausePanel.GetComponent<RectTransform>();
-        _transitionOverlay  = view.transitionOverlay;
-        if (_transitionOverlay != null) _transitionOverlay.gameObject.SetActive(false);
 
         view.pauseButton.onClick.AddListener(() => SetPaused(!_paused));
         view.resumeButton.onClick.AddListener(() => SetPaused(false));
@@ -287,7 +260,6 @@ public class FightController : MonoBehaviour
         BuildTopBar();
         BuildPauseMenu();
         BuildMobileControls();
-        BuildTransitionOverlay();
 
         _root.gameObject.SetActive(false);
     }
@@ -324,14 +296,6 @@ public class FightController : MonoBehaviour
         UIFactory.Stretch(label.rectTransform);
 
         return button.gameObject;
-    }
-
-    private void BuildTransitionOverlay()
-    {
-        var overlay = UIFactory.CreatePanel("TransitionOverlay", _root, new Color(0f, 0f, 0f, 1f));
-        UIFactory.Stretch(overlay.rectTransform);
-        _transitionOverlay = overlay;
-        overlay.gameObject.SetActive(false);
     }
 
     private void BuildTopBar()

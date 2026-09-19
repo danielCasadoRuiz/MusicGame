@@ -34,6 +34,7 @@ public class UIRegistry : MonoBehaviour
     [SerializeField] private RoundIntroView          roundIntro;
     [SerializeField] private RoundEndView            roundEnd;
     [SerializeField] private MatchResultView         matchResult;
+    [SerializeField] private NextSongTransitionView  nextSongTransition;
 
     public LiveHudView   LiveHud   => liveHud;
     public EndScreenView EndScreen => endScreen;
@@ -52,4 +53,5 @@ public class UIRegistry : MonoBehaviour
     public RoundIntroView        RoundIntro        => roundIntro;
     public RoundEndView          RoundEnd          => roundEnd;
     public MatchResultView       MatchResult       => matchResult;
+    public NextSongTransitionView NextSongTransition => nextSongTransition;
 }

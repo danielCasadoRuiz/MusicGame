@@ -433,6 +433,15 @@ public class GameplayManager : MonoBehaviour
             // restarting the track during what's supposed to be a silent victory lap. Turning fall
             // detection off here removes that whole class of bug outright.
             _fallRespawn.Deactivate();
+            // Belt-and-suspenders alongside the line above: deactivating fall detection stops the
+            // automatic RESPONSE to a fall, but the player could still physically run/strafe off
+            // the edge or jump during farewell without it — which used to leave the run silently
+            // stuck (MusicClock/farewell timer still counting down toward GameEndedEvent while the
+            // player sat off-track with nothing left to catch or resync it). EnterFarewellMode
+            // removes the CAUSE instead: input stops steering the player at all from here on, and
+            // any lateral offset eases back to dead center every frame, so falling off becomes
+            // structurally impossible for the rest of the farewell.
+            playerController.EnterFarewellMode();
             EventBus.Publish(new SongFinishedEvent());
         }
 

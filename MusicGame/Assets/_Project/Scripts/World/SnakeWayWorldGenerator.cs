@@ -134,6 +134,38 @@ public class SnakeWayWorldGenerator : IMusicWorldGenerator
             widths.Add(w);
         }
 
+        // ── Farewell tail: flat, straight extension past the song's own natural end ────────────
+        // MusicPath.GetSample clamps to [0, TotalLength] — without real path here, the farewell
+        // stretch (GameplayManager keeps the player/camera/ground advancing via
+        // MusicClock.BeginManualAdvance even after the AudioSource stops — see its own doc) would
+        // sample a CLAMPED, frozen position the instant distance ran past the end of the musical
+        // section above, instead of a real one: Player/camera/ground all visibly stop dead while
+        // the farewell timer keeps counting internally. This only actually matters when the played
+        // window reaches (or nearly reaches) the song's own real end — a short manual play range
+        // already has plenty of already-generated path beyond it — but is always added
+        // unconditionally rather than conditionally sized to the resolved play range, since it's
+        // harmless surplus otherwise (no gameplay event ever spawns past _songEndDistance — see
+        // GameplayManager's own doc — so nothing ever reacts to this extra stretch existing).
+        // Flat (no turn, constant height, full width) matches the ground mesh's own end-of-song
+        // visual flattening (MusicWorldManager.EndingFadeMultiplier) — nothing musical should still
+        // be steering/bumping the path once the song has actually finished.
+        float farewellDistance = Mathf.Max(0f, config.core.farewellSeconds) * _speed;
+        if (farewellDistance > 0f)
+        {
+            int   tailCPs    = Mathf.Max(1, Mathf.CeilToInt((config.core.farewellSeconds + _cpInterval) / _cpInterval));
+            float stepTail   = (farewellDistance + _cpInterval * _speed) / tailCPs; // +1 extra interval of margin
+            float tailHeight = cps.Count > 0 ? cps[cps.Count - 1].y : _baseY;
+
+            for (int i = 0; i < tailCPs; i++)
+            {
+                pos.x += Mathf.Sin(theta) * stepTail;
+                pos.z += Mathf.Cos(theta) * stepTail;
+                pos.y  = tailHeight;
+                cps.Add(pos);
+                widths.Add(_maxWidth);
+            }
+        }
+
         return BuildPath(cps, widths);
     }
 

@@ -71,4 +71,14 @@ public class FightMusicController : MonoBehaviour
     {
         _locked = false;
     }
+
+    /// <summary>Call when leaving Fight for good — Continue (into the Next Song transition/Song
+    /// Analysis), Replay Song, or Main Menu — so the locked-in match song doesn't keep looping over
+    /// whatever comes next. Also clears the lock, same as Reset(), so a later Opponent Selection
+    /// roulette can play music again without a separate call.</summary>
+    public void Stop()
+    {
+        _locked = false;
+        _source.Stop();
+    }
 }

@@ -117,6 +117,13 @@ public class FightDebugHUD : MonoBehaviour
     //   F6  Set accumulated point differential to +0.50 (next F5 tie -> Player wins on points)
     //   F7  Set accumulated point differential to -0.50 (next F5 tie -> Opponent wins on points)
     //   F8  Set accumulated point differential to 0 (next F5 tie -> TrueDraw, round repeats)
+    //   F9  Force Match WIN  — jumps straight to Match Result (Win/Level Up/Continue) for testing
+    //   F10 Force Match LOSE — jumps straight to Match Result (Lose/Fight Again/Replay Song) for testing
+    //   F11 +1 Extra Life (GameSession.FightResources.ExtraLives) — so "Lose with a life" is testable
+    //       on demand; the real economy for how lives are earned isn't decided yet (see FightResources'
+    //       own doc), this is purely a test aid
+    //   F12 EDITOR ONLY — toggle "simulate a successful Rewarded Ad" (see NotImplementedRewardedAdService's
+    //       own doc); off by default, never available in a real build
     private void Update()
     {
         if (!InFight) return;
@@ -141,6 +148,31 @@ public class FightDebugHUD : MonoBehaviour
         if (kb.f6Key.wasPressedThisFrame) DebugSetDifferential(0.5f);
         if (kb.f7Key.wasPressedThisFrame) DebugSetDifferential(-0.5f);
         if (kb.f8Key.wasPressedThisFrame) DebugSetDifferential(0f);
+        if (kb.f9Key.wasPressedThisFrame)
+        {
+            FightMatchController.Instance?.DebugForceMatchResult(true);
+            AddLog("Debug: force Match WIN");
+        }
+        if (kb.f10Key.wasPressedThisFrame)
+        {
+            FightMatchController.Instance?.DebugForceMatchResult(false);
+            AddLog("Debug: force Match LOSE");
+        }
+        if (kb.f11Key.wasPressedThisFrame)
+        {
+            if (GameSession.Instance?.FightResources != null)
+            {
+                GameSession.Instance.FightResources.ExtraLives++;
+                AddLog($"Debug: +1 Extra Life (now {GameSession.Instance.FightResources.ExtraLives})");
+            }
+        }
+#if UNITY_EDITOR
+        if (kb.f12Key.wasPressedThisFrame)
+        {
+            NotImplementedRewardedAdService.DebugSimulateSuccess = !NotImplementedRewardedAdService.DebugSimulateSuccess;
+            AddLog($"Debug: Simulate Rewarded Ad Success -> {NotImplementedRewardedAdService.DebugSimulateSuccess}");
+        }
+#endif
     }
 
     private void DebugSetDifferential(float value)
@@ -171,7 +203,7 @@ public class FightDebugHUD : MonoBehaviour
         float h = 26f + 18f * 3f + 18f + 16f * 8f + 18f + 16f * 10f + 18f + 16f * 7f + 18f + 16f * 10f + 18f + 16f * 6f + 18f + 16f * 4f + 18f + 16f * 14f + 18f + 16f * (MaxLogLines + 1);
 
         GUI.Box(new Rect(x, y, w, h), "", _boxStyle);
-        GUI.Label(new Rect(x + 6f, y + 2f, w - 12f, 16f), "FIGHT DEBUG (F1 | F2/3 KO | F4 timer | F5 tie | F6/7/8 diff)", _headerStyle);
+        GUI.Label(new Rect(x + 6f, y + 2f, w - 12f, 16f), "FIGHT DEBUG (F1 | F2/3 KO | F4 timer | F5 tie | F6/7/8 diff | F9/10 win/lose | F11 +life | F12 ad)", _headerStyle);
         y += 22f;
 
         string dir = _input != null ? $"{_input.CurrentHorizontal} / {_input.CurrentVertical}" : "(no FighterInputController)";

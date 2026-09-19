@@ -42,10 +42,11 @@ public class OpponentSelectionController : MonoBehaviour
     private const float DefaultCellHeight = 220f;
     private const int   PreferredColumns  = 4;
 
-    // DebugPlayerLevel.Current (default 1) until the real global Player Level system exists — see
-    // its own doc. Every OpponentDefinition.GetConfigForLevel call in this class reads from there,
-    // so wiring a real value in later is a one-line change, never a reshape of this controller.
-    private static int CurrentPlayerLevel => DebugPlayerLevel.Current;
+    // GameSession.PlayerLevel is now the real, authoritative session-wide Player Level (see its own
+    // doc — increments once per match WIN; no persistence across app restarts yet). Every
+    // OpponentDefinition.GetConfigForLevel call in this class reads from there. Falls back to 1 only
+    // if GameSession somehow doesn't exist yet (shouldn't happen in the real flow).
+    private static int CurrentPlayerLevel => GameSession.Instance != null ? GameSession.Instance.PlayerLevel : 1;
 
     private RectTransform _root;
     private RectTransform _gridRoot;

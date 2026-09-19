@@ -53,6 +53,17 @@ public class PlayerController : MonoBehaviour
     private float _verticalVelocity; // real gravity-integrated vertical speed
     private bool  _running;
 
+    // Set once by GameplayManager the instant the farewell stretch begins (song already finished,
+    // fall detection already deactivated — see GameplayManager's own ending sequence) and never
+    // cleared except by a genuine new run (see ResetMotionState) — see EnterFarewellMode's own doc
+    // on why this exists: a fall mid-farewell used to leave the run in a silent, inconsistent state
+    // (MusicClock/farewell timer kept advancing toward GameEndedEvent while the player was stuck
+    // mid-fall-sequence or off in the void with nothing left to catch it — no discrete checkpoints/
+    // events remain to resync against that late). Structurally prevents that instead of reacting to
+    // it: input can no longer drive the player off the track or into a jump at all once farewell
+    // begins, and any residual lateral offset eases back to dead center every frame.
+    private bool _farewellMode;
+
     // ── Fall state ────────────────────────────────────────────────────────────
     private bool    _isFalling;
     private Vector3 _fallVelocity;
@@ -104,6 +115,16 @@ public class PlayerController : MonoBehaviour
     public void StartRunning() => _running = true;
     public void StopRunning()  => _running = false;
 
+    /// <summary>Called ONCE by GameplayManager the instant the farewell stretch begins (right
+    /// alongside FallRespawnSystem.Deactivate() — see this class's own doc on _farewellMode).
+    /// From this frame on: surge/lateral/jump input all stop being read entirely (forward motion
+    /// keeps coming from MusicClock's own manual advance — see MusicClock.BeginManualAdvance —
+    /// completely independent of surge), and lateral offset eases back to dead center every frame,
+    /// so the player visibly glides to the middle of the track and stays there, unable to run off
+    /// the edge or jump, for the rest of the farewell. Idempotent; only ResetMotionState (a genuine
+    /// new run) clears it.</summary>
+    public void EnterFarewellMode() => _farewellMode = true;
+
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     private void Awake()
@@ -150,16 +171,22 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateForwardOffset()
     {
-        bool readTouch    = PlatformService.IsMobile || PlatformService.DualInputInEditor;
-        bool readKeyboard = !PlatformService.IsMobile || PlatformService.DualInputInEditor;
-
         bool surging = false;
-        if (readTouch) surging |= TouchInputState.Surging;
-        if (readKeyboard)
+        if (!_farewellMode)
         {
-            var kb = Keyboard.current;
-            surging |= kb != null && (kb.wKey.isPressed || kb.upArrowKey.isPressed);
+            bool readTouch    = PlatformService.IsMobile || PlatformService.DualInputInEditor;
+            bool readKeyboard = !PlatformService.IsMobile || PlatformService.DualInputInEditor;
+
+            if (readTouch) surging |= TouchInputState.Surging;
+            if (readKeyboard)
+            {
+                var kb = Keyboard.current;
+                surging |= kb != null && (kb.wKey.isPressed || kb.upArrowKey.isPressed);
+            }
         }
+        // Farewell: no surge input at all — forward motion still comes entirely from
+        // MusicClock's own manual advance (see EnterFarewellMode's own doc), so the player keeps
+        // running at the base pace regardless; any surge already in flight simply eases back to 0.
 
         _forwardOffset = surging
             ? Mathf.MoveTowards(_forwardOffset, config.maxSurge, config.surgeSpeed * Time.deltaTime)
@@ -175,6 +202,19 @@ public class PlayerController : MonoBehaviour
         // Reference only — the real edge, no artificial extra margin. Does not clamp anything
         // below; see LateralLimit's own doc comment.
         LateralLimit = pathWidth * 0.5f;
+
+        if (_farewellMode)
+        {
+            // Ignore all lateral input and glide back to dead center at the same rate strafing
+            // itself would move — see EnterFarewellMode's own doc: this is what actually
+            // guarantees the player can never end up off the track (and always reads as visibly
+            // centered) for the rest of the farewell, regardless of where they happened to be
+            // standing the instant the song finished.
+            _lateralVelocity = 0f;
+            _lateralOffset = Mathf.MoveTowards(_lateralOffset, 0f, config.strafeSpeed * Time.deltaTime);
+            IsAtLateralLimit = Mathf.Abs(_lateralOffset) >= LateralLimit;
+            return;
+        }
 
         bool grounded = _cc.isGrounded;
 
@@ -224,14 +264,19 @@ public class PlayerController : MonoBehaviour
         bool jumpPressed = false;
         if (readTouch)
         {
-            jumpPressed = TouchInputState.JumpRequested;
-            TouchInputState.JumpRequested = false; // edge-triggered — consume it the same frame
+            bool touchJump = TouchInputState.JumpRequested;
+            // Edge-triggered — always consumed the same frame, even during farewell, so a press
+            // right as farewell begins can never leak into a later run's very first frame.
+            TouchInputState.JumpRequested = false;
+            if (!_farewellMode) jumpPressed = touchJump;
         }
-        if (readKeyboard)
+        if (readKeyboard && !_farewellMode)
         {
             var kb = Keyboard.current;
             jumpPressed |= kb != null && kb.spaceKey.wasPressedThisFrame;
         }
+        // Farewell: no jumping at all — gravity/grounding below still applies unchanged, so the
+        // player simply keeps running on the flat farewell ground (see EnterFarewellMode's own doc).
 
         if (grounded && jumpPressed)
             _verticalVelocity = config.jumpForce;
@@ -319,6 +364,11 @@ public class PlayerController : MonoBehaviour
 
     // Resets every piece of per-frame motion state so the frame right after a respawn/fall-exit
     // computes forwardOffset/lateralOffset/verticalVelocity fresh instead of chasing stale values.
+    // Also clears _farewellMode — a normal mid-song fall-respawn never has it set anyway (fall
+    // detection is deactivated for the whole farewell stretch — see GameplayManager's own doc), but
+    // a manual "Restart Song" triggered WHILE already in farewell (via FallRespawnSystem.RestartSong)
+    // goes through this exact path too, and that genuinely IS a fresh run that should get real
+    // input back.
     private void ResetMotionState()
     {
         _fallVelocity     = Vector3.zero;
@@ -329,6 +379,7 @@ public class PlayerController : MonoBehaviour
         LateralLimit         = 0f;
         IsAtLateralLimit     = false;
         IsBelowTrackSurface  = false;
+        _farewellMode        = false;
     }
 
     private void UpdateFall()
