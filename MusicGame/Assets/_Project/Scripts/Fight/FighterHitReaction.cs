@@ -3,9 +3,11 @@ using UnityEngine;
 /// <summary>
 /// Player and Opponent share this EXACT component too — whichever fighter gets hit reacts the same
 /// way regardless of side, matching FighterHealth's own "no separate system per side" rule. Owns
-/// the hit-stun timer and the one-shot knockback displacement; FighterActor exposes IsInHitStun so
-/// its own facing-lock (see FighterActor.Update) freezes during a reaction without any per-move
-/// special-casing (task's own explicit ask).
+/// BOTH reaction timers — hit stun (ApplyHit) and block stun (ApplyBlockedHit, see FighterGuard/
+/// FightHitDispatcher's own doc on how a hit becomes one or the other) — plus the one-shot knockback
+/// displacement shared by both. FighterActor exposes IsInHitStun/IsInBlockStun so its own facing-lock
+/// (see FighterActor.Update) freezes during either without any per-move special-casing (task's own
+/// explicit ask).
 ///
 /// KNOCKBACK is an immediate, deterministic one-shot displacement — exactly like a move's own lunge
 /// (see FightMoveDefinition.lungeDistance) — reusing FightMovementUtility's arena-bounds/minimum-
@@ -14,7 +16,9 @@ using UnityEngine;
 ///
 /// INTERRUPTING THE MOVE that was running when the hit landed goes through FighterMoveController's
 /// own explicit InterruptMove() API — this class never reaches into FighterMoveController's private
-/// state.
+/// state. Both ApplyHit and ApplyBlockedHit reuse MoveController.IsHitStunned as the single "cannot
+/// start a new move" gate — a block also stops you from acting, so there is no separate
+/// "IsBlockStunned" gate on FighterMoveController.
 /// </summary>
 public class FighterHitReaction : MonoBehaviour
 {
@@ -25,6 +29,9 @@ public class FighterHitReaction : MonoBehaviour
     public bool IsInHitStun { get; private set; }
     private float _hitStunRemaining;
 
+    public bool IsInBlockStun { get; private set; }
+    private float _blockStunRemaining;
+
     public void Initialize(FighterActor actor, FighterActor opponent, FightArenaConfig arenaConfig)
     {
         _actor       = actor;
@@ -32,21 +39,38 @@ public class FighterHitReaction : MonoBehaviour
         _arenaConfig = arenaConfig;
     }
 
-    /// <summary>Called by whatever lands the hit (see FighterAttack) — never damage; FighterHealth
-    /// owns that separately (see class doc on responsibility separation).</summary>
+    /// <summary>Called by whatever lands an UNBLOCKED hit (see FightHitDispatcher) — never damage;
+    /// FighterHealth owns that separately (see class doc on responsibility separation).</summary>
     public void ApplyHit(float hitStunDuration, float knockbackDistance)
     {
-        _actor.MoveController?.InterruptMove();
-        if (_actor.MoveController != null) _actor.MoveController.IsHitStunned = true;
+        BeginActionLock();
 
         // A fresh, stronger hit extends the reaction; a weaker one landing mid-stun never shortens
         // it — simple and safe for V1 (no combo/stun-scaling rules exist yet).
         _hitStunRemaining = Mathf.Max(_hitStunRemaining, hitStunDuration);
         IsInHitStun = true;
 
-        if (_actor.Movement != null) _actor.Movement.SetLock(true, 0f);
+        ApplyKnockback(knockbackDistance);
+    }
+
+    /// <summary>Called by whatever lands a BLOCKED hit (see FightHitDispatcher) — same shape as
+    /// ApplyHit, distinct timer/flag so FightDebugHUD and future animation can always tell "hit" and
+    /// "blocked" apart.</summary>
+    public void ApplyBlockedHit(float blockStunDuration, float knockbackDistance)
+    {
+        BeginActionLock();
+
+        _blockStunRemaining = Mathf.Max(_blockStunRemaining, blockStunDuration);
+        IsInBlockStun = true;
 
         ApplyKnockback(knockbackDistance);
+    }
+
+    private void BeginActionLock()
+    {
+        _actor.MoveController?.InterruptMove();
+        if (_actor.MoveController != null) _actor.MoveController.IsHitStunned = true;
+        if (_actor.Movement != null) _actor.Movement.SetLock(true, 0f);
     }
 
     private void ApplyKnockback(float distance)
@@ -67,14 +91,28 @@ public class FighterHitReaction : MonoBehaviour
 
     private void Update()
     {
-        if (!IsInHitStun) return;
+        bool wasLocked = IsInHitStun || IsInBlockStun;
+        if (!wasLocked) return;
 
-        _hitStunRemaining -= Time.deltaTime;
-        if (_hitStunRemaining > 0f) return;
+        if (IsInHitStun)
+        {
+            _hitStunRemaining -= Time.deltaTime;
+            if (_hitStunRemaining <= 0f) IsInHitStun = false;
+        }
+        if (IsInBlockStun)
+        {
+            _blockStunRemaining -= Time.deltaTime;
+            if (_blockStunRemaining <= 0f) IsInBlockStun = false;
+        }
 
-        IsInHitStun = false;
-        if (_actor.Movement != null) _actor.Movement.SetLock(false, 1f);
-        if (_actor.MoveController != null) _actor.MoveController.IsHitStunned = false;
+        // Unlock exactly once, on the transition frame — never re-asserted every idle frame after,
+        // which would otherwise fight a move's OWN SetMovementLock(true, ...) call if this Update
+        // happened to run after FighterMoveController's in the same frame (see class doc).
+        if (!IsInHitStun && !IsInBlockStun)
+        {
+            if (_actor.Movement != null) _actor.Movement.SetLock(false, 1f);
+            if (_actor.MoveController != null) _actor.MoveController.IsHitStunned = false;
+        }
     }
 
     /// <summary>Explicit API for FightMatchController's between-rounds reset (via FighterActor.
@@ -85,5 +123,7 @@ public class FighterHitReaction : MonoBehaviour
     {
         IsInHitStun = false;
         _hitStunRemaining = 0f;
+        IsInBlockStun = false;
+        _blockStunRemaining = 0f;
     }
 }

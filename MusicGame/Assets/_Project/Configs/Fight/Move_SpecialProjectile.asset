@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5113f3db8c54387965085ce138f977d, type: 3}
+  m_Name: Move_SpecialProjectile
+  m_EditorClassIdentifier: Assembly-CSharp::FightMoveDefinition
+  id: move_special_fireball
+  debugName: 'Special: Fireball'
+  moveType: 2
+  animationState: Fireball
+  startupDuration: 0.25
+  activeDuration: 0.1
+  recoveryDuration: 0.35
+  cancelWindow: 0
+  movementLocked: 1
+  movementMultiplier: 0
+  lungeDistance: 0
+  lockFacingDuringMove: 1
+  allowedPostures: []
+  requiredMovementStates: []
+  attackDelivery: 1
+  hits: []
+  projectile:
+    visualPrefab: {fileID: 0}
+    speed: 6
+    maxLifetime: 2.5
+    maxDistance: 8
+    localSpawnOffset: {x: 0.9, y: 1, z: 0}
+    hitDefinition:
+      shape: 1
+      localOffset: {x: 0, y: 0, z: 0}
+      size: {x: 0.4, y: 0.4, z: 0.4}
+      baseDamage: 14
+      baseHitStun: 0.35
+      baseKnockback: 1.3
+      attackHeight: 1
+      guardType: 0
+      chipDamage: 1
+    destroyOnHit: 1
+  damage: 0

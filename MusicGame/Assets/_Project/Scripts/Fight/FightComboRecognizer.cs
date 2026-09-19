@@ -25,6 +25,7 @@ public class FightComboRecognizer
 {
     private readonly FightComboSetSO _comboSet;
     private readonly FightInputBuffer _buffer;
+    private readonly FighterInputController _owner;
 
     private FightComboDefinition _pendingCombo;
     private float _pendingFireTime;
@@ -32,10 +33,14 @@ public class FightComboRecognizer
     public FightComboDefinition LastDetected { get; private set; }
     public float LastDetectedTime { get; private set; } = -1f;
 
-    public FightComboRecognizer(FightComboSetSO comboSet, FightInputBuffer buffer)
+    /// <summary>`owner` is stamped onto every FightComboDetectedEvent this recognizer fires — see
+    /// that event's own doc on why (one recognizer instance per FighterInputController now that the
+    /// Opponent plays for real too).</summary>
+    public FightComboRecognizer(FightComboSetSO comboSet, FightInputBuffer buffer, FighterInputController owner)
     {
         _comboSet = comboSet;
         _buffer = buffer;
+        _owner = owner;
     }
 
     /// <summary>Call right after appending a new FightInputEvent to the buffer.</summary>
@@ -92,7 +97,7 @@ public class FightComboRecognizer
     {
         LastDetected = combo;
         LastDetectedTime = Time.time;
-        EventBus.Publish(new FightComboDetectedEvent { Combo = combo });
+        EventBus.Publish(new FightComboDetectedEvent { Source = _owner, Combo = combo });
     }
 
     private static bool MatchesTail(FightComboDefinition combo, System.Collections.Generic.IReadOnlyList<FightInputEvent> events)

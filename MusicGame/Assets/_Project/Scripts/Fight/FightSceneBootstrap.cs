@@ -11,6 +11,12 @@ using UnityEngine;
 /// re-resolves a style, or re-resolves an opponent-per-level itself, only reads what's already
 /// there and cached.
 ///
+/// BOTH fighters now get the EXACT SAME wiring (see WireFighter) — FighterInputController,
+/// FighterMovement, FighterMoveController, FighterAttack, FighterHitReaction, FighterGuard — the
+/// ONLY difference is which IFightInputSource drives each one's own FighterInputController
+/// (Player: HumanFightInputSource; Opponent: AIFightInputSource, driven by a FighterAI "brain" —
+/// see that class's own doc) and that only the Opponent gets a FighterAI at all.
+///
 /// The Fight HUD (top bar, timer, health bars, pause menu) is NOT here — that's FightController,
 /// living in the always-loaded UI Scene (see that class's own doc). This bootstrap only owns this
 /// scene's own 3D content (arena, fighters, camera).
@@ -65,7 +71,6 @@ public class FightSceneBootstrap : MonoBehaviour
 
         BuildArena();
         SpawnFighters();
-        WirePlayerControl();
         SetupCamera();
     }
 
@@ -127,8 +132,13 @@ public class FightSceneBootstrap : MonoBehaviour
 
         // The EXACT version the player already saw during Opponent Selection/Versus — never
         // re-resolved here (see class doc and GameSession.SelectedOpponentLevelConfig's own doc).
+        // This is ALSO where the Opponent's AIDifficultyProfile comes from (task's own explicit
+        // "no tornis a resoldre el rival per level" requirement) — never re-derived elsewhere.
         var opponentLevelConfig = GameSession.Instance != null ? GameSession.Instance.SelectedOpponentLevelConfig : null;
         GameObject opponentPrefab = opponentLevelConfig != null ? opponentLevelConfig.fighterPrefab : null;
+        AIDifficultyProfile aiProfile = opponentLevelConfig != null ? opponentLevelConfig.difficultyProfile : null;
+        if (aiProfile == null)
+            Debug.LogWarning("[FightSceneBootstrap] No AIDifficultyProfile (SelectedOpponentLevelConfig.difficultyProfile) configured — the Opponent will use flat 0.5-everywhere AI defaults this match.");
 
         _playerActor   = SpawnActor("FighterPlayer",   FighterSide.Player,   playerSpawn,   playerPrefab,   playerColor);
         _opponentActor = SpawnActor("FighterOpponent", FighterSide.Opponent, opponentSpawn, opponentPrefab, opponentColor);
@@ -136,15 +146,11 @@ public class FightSceneBootstrap : MonoBehaviour
         _playerActor.SetOpponent(_opponentActor);
         _opponentActor.SetOpponent(_playerActor);
 
-        // Universal on both sides — see FighterActor.HitReaction's own doc. Needs the opponent
-        // reference above, so it can't happen inside Initialize.
-        _playerActor.AttachHitReaction(_arenaConfig);
-        _opponentActor.AttachHitReaction(_arenaConfig);
-
         // Player: whatever the Runner actually produced (see GameSession.FighterStats' own doc);
         // Opponent: this level's hand-authored profile, or a flat 100-everywhere fallback (see
-        // OpponentLevelConfig.combatStats/FighterStats.Default's own doc) — deliberately NOT
-        // AIDifficultyProfile, a separate, still-unused concept this phase.
+        // OpponentLevelConfig.combatStats/FighterStats.Default's own doc). DELIBERATELY separate
+        // from aiProfile above — combat capability (FighterStats) and AI quality (AIDifficultyProfile)
+        // are independent axes (task's own explicit requirement).
         var playerStats = GameSession.Instance != null && GameSession.Instance.FighterStats != null
             ? GameSession.Instance.FighterStats
             : FighterStats.Default();
@@ -153,6 +159,9 @@ public class FightSceneBootstrap : MonoBehaviour
             : FighterStats.Default();
         _playerActor.SetStats(playerStats);
         _opponentActor.SetStats(opponentStats);
+
+        WireFighter(_playerActor, _opponentActor, isPlayer: true, aiProfile: null);
+        WireFighter(_opponentActor, _playerActor, isPlayer: false, aiProfile: aiProfile);
 
         Debug.Log($"[FightSceneBootstrap] Spawned fighters — Player visual:{(_playerActor.UsedFallbackCapsule ? "capsule fallback" : "prefab")} " +
                   $"Opponent visual:{(_opponentActor.UsedFallbackCapsule ? "capsule fallback" : "prefab")}");
@@ -167,48 +176,50 @@ public class FightSceneBootstrap : MonoBehaviour
         return actor;
     }
 
-    // Only the Player gets real locomotion/facing-into-input wiring this phase — the Opponent has
-    // no AIFightInputSource yet (see FighterActor/FighterMovement's own doc), so it simply stays
-    // put, still fully participating in facing/DistanceToOpponent/camera/lunge-target as a plain
-    // FighterActor with no Movement/MoveController attached.
-    private void WirePlayerControl()
+    /// <summary>
+    /// Gives `self` the FULL Fighter pipeline — FighterInputController (Human or AI-driven),
+    /// FighterMovement, FighterMoveController, FighterAttack, FighterHitReaction, FighterGuard —
+    /// identically for Player and Opponent (see class doc). The ONLY branch is which
+    /// IFightInputSource drives the input controller, and whether a FighterAI "brain" is attached
+    /// to actually decide what that AI input source should do.
+    /// </summary>
+    private void WireFighter(FighterActor self, FighterActor other, bool isPlayer, AIDifficultyProfile aiProfile)
     {
-        var inputController = FindFirstObjectByType<FighterInputController>();
-        var moveController  = FindFirstObjectByType<FighterMoveController>();
+        var facingProvider = new RealFightFacingProvider(self.transform, other.transform);
+        self.SetFacingProvider(facingProvider);
 
-        var playerFacing   = new RealFightFacingProvider(_playerActor.transform, _opponentActor.transform);
-        var opponentFacing = new RealFightFacingProvider(_opponentActor.transform, _playerActor.transform);
-        _playerActor.SetFacingProvider(playerFacing);
-        _opponentActor.SetFacingProvider(opponentFacing);
+        AIFightInputSource aiInputSource = isPlayer ? null : new AIFightInputSource();
+        IFightInputSource inputSource = isPlayer ? new HumanFightInputSource() : aiInputSource;
 
-        if (inputController != null)
+        var inputController = self.gameObject.AddComponent<FighterInputController>();
+        inputController.SetInputSource(inputSource);
+        inputController.SetFacingProvider(facingProvider);
+        self.SetInputController(inputController);
+
+        var movement = self.gameObject.AddComponent<FighterMovement>();
+        movement.Initialize(self, other, _arenaConfig, inputController);
+        self.SetMovement(movement);
+
+        var moveController = self.gameObject.AddComponent<FighterMoveController>();
+        moveController.SetInputController(inputController);
+        moveController.SetMovementDriver(new RealFighterMovementDriver(movement));
+        moveController.Stats = self.Stats;
+        moveController.SetActor(self);
+        self.SetMoveController(moveController);
+
+        var attack = self.gameObject.AddComponent<FighterAttack>();
+        attack.Initialize(self, other, moveController, _combatBalanceConfig);
+        self.SetAttack(attack);
+
+        // Universal on both sides — see FighterActor.HitReaction/Guard's own doc. Needs the real
+        // per-side FighterInputController above, so it can't happen any earlier.
+        self.AttachHitReaction(_arenaConfig, inputController);
+
+        if (!isPlayer)
         {
-            inputController.SetFacingProvider(playerFacing);
-        }
-        else
-        {
-            Debug.LogWarning("[FightSceneBootstrap] No FighterInputController found (UIFlowController didn't add one?) — " +
-                              "Player facing/movement won't respond to real input this session.");
-        }
-
-        var movement = _playerActor.gameObject.AddComponent<FighterMovement>();
-        movement.Initialize(_playerActor, _opponentActor, _arenaConfig, inputController);
-        _playerActor.SetMovement(movement);
-
-        if (moveController != null)
-        {
-            moveController.SetMovementDriver(new RealFighterMovementDriver(movement));
-            moveController.Stats = _playerActor.Stats;
-            _playerActor.SetMoveController(moveController);
-
-            var attack = _playerActor.gameObject.AddComponent<FighterAttack>();
-            attack.Initialize(_playerActor, _opponentActor, moveController, _combatBalanceConfig);
-            _playerActor.SetAttack(attack);
-        }
-        else
-        {
-            Debug.LogWarning("[FightSceneBootstrap] No FighterMoveController found (UIFlowController didn't add one?) — " +
-                              "Player moves won't execute this session.");
+            var ai = self.gameObject.AddComponent<FighterAI>();
+            ai.Initialize(self, other, aiInputSource, aiProfile, _arenaConfig);
+            self.SetAI(ai);
         }
     }
 

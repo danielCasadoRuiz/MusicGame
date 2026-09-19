@@ -9,6 +9,28 @@ public enum FightHitShape
 }
 
 /// <summary>
+/// Where a hit connects — the other half of the guard triangle alongside FighterGuardState (see
+/// FighterGuard.WouldBlock's own doc for the exact V1 rules). Mid is the safe default: it always
+/// connects against both Standing and Crouching, matching every existing move authored before this
+/// field existed (their hits[] default to Mid).
+/// </summary>
+public enum AttackHeight
+{
+    High,
+    Mid,
+    Low,
+}
+
+/// <summary>Whether guard (of any kind) can stop this hit at all — see FighterGuard.WouldBlock's own
+/// doc. Reserved for Specials/high-commitment moves later (see this phase's own scope note); nothing
+/// authored this phase actually uses Unblockable yet.</summary>
+public enum GuardType
+{
+    Blockable,
+    Unblockable,
+}
+
+/// <summary>
 /// One hitbox's offensive data — everything FighterAttack needs to place, size, and resolve a single
 /// hit. Plain [Serializable] class (not a ScriptableObject): it only ever exists embedded inside a
 /// FightMoveDefinition's `hits` array, never referenced independently.
@@ -39,4 +61,11 @@ public class FightHitDefinition
     public float baseDamage = 10f;
     public float baseHitStun = 0.3f;
     public float baseKnockback = 1f;
+
+    [Header("Guard — see FighterGuard/FightHitResolver's own doc")]
+    public AttackHeight attackHeight = AttackHeight.Mid;
+    public GuardType guardType = GuardType.Blockable;
+    [Tooltip("Flat damage still applied even when this hit IS blocked — 0 disables chip damage " +
+             "entirely for this hit (still scaled by the defender's Defense, same as normal damage).")]
+    public float chipDamage = 0f;
 }

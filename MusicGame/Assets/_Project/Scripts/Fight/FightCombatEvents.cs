@@ -1,22 +1,33 @@
 /// <summary>
 /// Fired the SAME frame Punch is pressed — never delayed to wait and see if a combo forms (see
-/// FighterInputController's own doc on why normals must be immediate). The future Move System is
-/// the natural consumer; for now, FightDebugHUD just logs it.
+/// FighterInputController's own doc on why normals must be immediate). Source identifies WHICH
+/// FighterInputController published this (Player's or Opponent's own — both exist as independent
+/// instances now that the Opponent plays for real, see FighterAI's own doc) — every listener
+/// (FighterMoveController, FighterMovement) filters on `e.Source == myOwnInputController` so a
+/// Player press never drives the Opponent's Fighter and vice versa.
 /// </summary>
-public struct FightNormalPunchEvent { }
+public struct FightNormalPunchEvent
+{
+    public FighterInputController Source;
+}
 
 /// <summary>Fired the SAME frame Kick is pressed — see FightNormalPunchEvent's own doc.</summary>
-public struct FightNormalKickEvent { }
+public struct FightNormalKickEvent
+{
+    public FighterInputController Source;
+}
 
 /// <summary>
 /// Fired by FightComboRecognizer once a combo is confirmed — either immediately (it can't extend
 /// into anything longer) or after a short grace window (it's a strict prefix of a longer combo
 /// that never actually completed in time — see FightComboRecognizer's own doc). Carries the full
 /// FightComboDefinition (id/debugName/moveId all on it) rather than just an id, so a listener never
-/// needs a separate lookup back into the FightComboSetSO.
+/// needs a separate lookup back into the FightComboSetSO. Source — see FightNormalPunchEvent's own
+/// doc on why this exists and who must filter on it.
 /// </summary>
 public struct FightComboDetectedEvent
 {
+    public FighterInputController Source;
     public FightComboDefinition Combo;
 }
 
@@ -27,6 +38,18 @@ public struct FightComboDetectedEvent
 /// tick (see this phase's own scope note on not overloading EventBus).
 /// </summary>
 public struct HitLandedEvent
+{
+    public FighterActor Attacker;
+    public FighterActor Defender;
+    public FightMoveDefinition Move;
+    public FightHitResult Result;
+}
+
+/// <summary>Fired by FightHitDispatcher instead of HitLandedEvent whenever the defender's guard
+/// actually stopped a hit — see FighterGuard.WouldBlock's own doc. Same shape/fields as
+/// HitLandedEvent (Result.IsBlocked is true here) so a listener can tell the two apart cleanly
+/// without inspecting Result first.</summary>
+public struct HitBlockedEvent
 {
     public FighterActor Attacker;
     public FighterActor Defender;

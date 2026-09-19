@@ -19,11 +19,15 @@ public class FightDebugHUD : MonoBehaviour
     private const int MaxLogLines = 6;
 
     private bool _visible;
-    private FighterInputController _input;
-    private FighterMoveController _moves;
     private FighterActor _player;
     private FighterActor _opponent;
     private FightCombatBalanceConfig _balanceConfig;
+
+    // Resolved lazily from _player/_opponent once they exist (see FindActors) — no longer
+    // FindFirstObjectByType singletons now that each fighter has its OWN FighterInputController/
+    // FighterMoveController instance (see those classes' own doc).
+    private FighterInputController _input => _player != null ? _player.InputController : null;
+    private FighterMoveController _moves => _player != null ? _player.MoveController : null;
 
     private readonly List<string> _log = new();
     private string _lastNormal = "(none)";
@@ -38,11 +42,10 @@ public class FightDebugHUD : MonoBehaviour
     private System.Action<FightNormalKickEvent>    _onKick;
     private System.Action<FightComboDetectedEvent> _onCombo;
     private System.Action<HitLandedEvent>          _onHitLanded;
+    private System.Action<HitBlockedEvent>         _onHitBlocked;
 
     private void Start()
     {
-        _input = FindFirstObjectByType<FighterInputController>();
-        _moves = FindFirstObjectByType<FighterMoveController>();
         _balanceConfig = Resources.Load<AppConfigSO>("AppConfig")?.combatBalance;
         FindActors();
     }
@@ -62,10 +65,15 @@ public class FightDebugHUD : MonoBehaviour
 
     private void OnEnable()
     {
-        _onPunch = _ => { _lastNormal = "Normal Punch"; AddLog("Normal Punch"); };
-        _onKick  = _ => { _lastNormal = "Normal Kick";  AddLog("Normal Kick"); };
+        // Filtered to the Player's own FighterInputController — both fighters publish these events
+        // now (see FightNormalPunchEvent's own Source doc), and this "Last normal/combo" readout is
+        // specifically about what the PLAYER just did (the Opponent's own actions surface in the AI
+        // section below instead).
+        _onPunch = e => { if (e.Source != _input) return; _lastNormal = "Normal Punch"; AddLog("Normal Punch"); };
+        _onKick  = e => { if (e.Source != _input) return; _lastNormal = "Normal Kick";  AddLog("Normal Kick"); };
         _onCombo = e =>
         {
+            if (e.Source != _input) return;
             _lastCombo = e.Combo != null && !string.IsNullOrEmpty(e.Combo.debugName) ? e.Combo.debugName : "(unnamed)";
             AddLog($"Combo: {_lastCombo}");
         };
@@ -74,10 +82,16 @@ public class FightDebugHUD : MonoBehaviour
             _lastHit = e.Result;
             AddLog($"Hit: {(e.Move != null ? e.Move.debugName : "?")} -> {e.Result.FinalDamage:F1} dmg");
         };
+        _onHitBlocked = e =>
+        {
+            _lastHit = e.Result;
+            AddLog($"Blocked: {(e.Move != null ? e.Move.debugName : "?")} -> {e.Result.FinalChipDamage:F1} chip");
+        };
         EventBus.Subscribe(_onPunch);
         EventBus.Subscribe(_onKick);
         EventBus.Subscribe(_onCombo);
         EventBus.Subscribe(_onHitLanded);
+        EventBus.Subscribe(_onHitBlocked);
     }
 
     private void OnDisable()
@@ -86,6 +100,7 @@ public class FightDebugHUD : MonoBehaviour
         EventBus.Unsubscribe(_onKick);
         EventBus.Unsubscribe(_onCombo);
         EventBus.Unsubscribe(_onHitLanded);
+        EventBus.Unsubscribe(_onHitBlocked);
     }
 
     // ── Debug commands (F2-F8) — only live while the F1 overlay is visible, so they can never be
@@ -148,14 +163,12 @@ public class FightDebugHUD : MonoBehaviour
     {
         if (!_visible || !InFight) return;
         EnsureStyles();
-        if (_input == null) _input = FindFirstObjectByType<FighterInputController>();
-        if (_moves == null) _moves = FindFirstObjectByType<FighterMoveController>();
         if (_balanceConfig == null) _balanceConfig = Resources.Load<AppConfigSO>("AppConfig")?.combatBalance;
         FindActors();
 
-        const float x = 8f, w = 380f;
+        const float x = 8f, w = 420f;
         float y = 8f;
-        float h = 26f + 18f * 3f + 18f + 16f * 8f + 18f + 16f * 10f + 18f + 16f * 7f + 18f + 16f * 8f + 18f + 16f * 5f + 18f + 16f * (MaxLogLines + 1);
+        float h = 26f + 18f * 3f + 18f + 16f * 8f + 18f + 16f * 10f + 18f + 16f * 7f + 18f + 16f * 10f + 18f + 16f * 6f + 18f + 16f * 4f + 18f + 16f * 14f + 18f + 16f * (MaxLogLines + 1);
 
         GUI.Box(new Rect(x, y, w, h), "", _boxStyle);
         GUI.Label(new Rect(x + 6f, y + 2f, w - 12f, 16f), "FIGHT DEBUG (F1 | F2/3 KO | F4 timer | F5 tie | F6/7/8 diff)", _headerStyle);
@@ -233,7 +246,7 @@ public class FightDebugHUD : MonoBehaviour
         DrawFighterSummary("Opponent", _opponent, x, ref y, w);
         y += 4f;
 
-        Row(x, ref y, w, "Last Hit:");
+        Row(x, ref y, w, "Last Attack:");
         if (_lastHit == null)
         {
             Row(x, ref y, w, "  (none yet)");
@@ -244,10 +257,84 @@ public class FightDebugHUD : MonoBehaviour
             string moveName     = hit.Move != null ? hit.Move.debugName : "(unknown move)";
             string attackerSide = hit.Attacker != null ? hit.Attacker.Side.ToString() : "?";
             string defenderSide = hit.Defender != null ? hit.Defender.Side.ToString() : "?";
-            Row(x, ref y, w, $"  Move: {moveName}  ({attackerSide} -> {defenderSide})");
-            Row(x, ref y, w, $"  Damage: {hit.BaseDamage:F1} x{hit.DamageModifier:F2}(str) x{hit.DefenseModifier:F2}(def) = {hit.FinalDamage:F1}");
-            Row(x, ref y, w, $"  HitStun: {hit.BaseHitStun:F2}s x{hit.HitStunResistanceModifier:F2}(bal) = {hit.FinalHitStun:F2}s");
-            Row(x, ref y, w, $"  Knockback: {hit.BaseKnockback:F2} x{hit.KnockbackModifier:F2}(knb) = {hit.FinalKnockback:F2}");
+            string delivery     = hit.Move != null ? hit.Move.attackDelivery.ToString() : "?";
+            string height        = hit.HitDef != null ? hit.HitDef.attackHeight.ToString() : "?";
+            string guardType    = hit.HitDef != null ? hit.HitDef.guardType.ToString() : "?";
+
+            Row(x, ref y, w, $"  Move: {moveName}  ({attackerSide} -> {defenderSide})  [{delivery}]");
+            Row(x, ref y, w, $"  Height: {height}   GuardType: {guardType}   Result: {(hit.IsBlocked ? "BLOCKED" : "HIT")}");
+            if (hit.IsBlocked)
+            {
+                Row(x, ref y, w, $"  ChipDamage: {hit.FinalChipDamage:F1}");
+                Row(x, ref y, w, $"  BlockStun: {hit.FinalBlockStun:F2}s   Knockback: {hit.FinalKnockback:F2}");
+            }
+            else
+            {
+                Row(x, ref y, w, $"  Damage: {hit.BaseDamage:F1} x{hit.DamageModifier:F2}(str) x{hit.DefenseModifier:F2}(def) = {hit.FinalDamage:F1}");
+                Row(x, ref y, w, $"  HitStun: {hit.BaseHitStun:F2}s x{hit.HitStunResistanceModifier:F2}(bal) = {hit.FinalHitStun:F2}s");
+                Row(x, ref y, w, $"  Knockback: {hit.BaseKnockback:F2} x{hit.KnockbackModifier:F2}(knb) = {hit.FinalKnockback:F2}");
+            }
+        }
+        y += 4f;
+
+        Row(x, ref y, w, "Projectiles:");
+        var projectiles = FindObjectsByType<FightProjectile>(FindObjectsSortMode.None);
+        if (projectiles.Length == 0)
+        {
+            Row(x, ref y, w, "  (none active)");
+        }
+        else
+        {
+            foreach (var proj in projectiles)
+                Row(x, ref y, w, $"  {(proj.Owner != null ? proj.Owner.Side.ToString() : "?")} projectile — lifetime left: {proj.LifetimeRemaining:F2}s");
+        }
+        y += 4f;
+
+        Row(x, ref y, w, "Opponent AI:");
+        var ai = _opponent != null ? _opponent.AI : null;
+        if (ai == null)
+        {
+            Row(x, ref y, w, "  (no FighterAI)");
+        }
+        else
+        {
+            var profile = ai.Profile;
+            Row(x, ref y, w, $"  Active: {ai.IsActive}   Profile: {(profile != null ? profile.name : "(none — flat defaults)")}");
+            Row(x, ref y, w, $"  Intention: {ai.CurrentIntention}   Reaction left: {ai.DecisionTimeRemaining:F2}s");
+
+            string topScores = "  Scores:";
+            int shown = 0;
+            foreach (var kv in SortedByScoreDesc(ai.LastScores))
+            {
+                if (shown >= 4) break;
+                topScores += $" {kv.Key}={kv.Value:F2}";
+                shown++;
+            }
+            Row(x, ref y, w, topScores);
+
+            Row(x, ref y, w, $"  Target spacing: {ai.TargetIdealDistance:F2}   DistanceToOpponent: {_opponent.DistanceToOpponent:F2}");
+
+            string selectedMove = _opponent.MoveController != null && _opponent.MoveController.CurrentMove != null
+                ? _opponent.MoveController.CurrentMove.debugName : "(none)";
+            Row(x, ref y, w, $"  Selected move: {selectedMove}");
+
+            string comboText = ai.LastSelectedCombo != null
+                ? $"{ai.LastSelectedCombo.debugName} (step {ai.LastComboStepIndex + 1}/{ai.LastSelectedCombo.steps.Length})"
+                : "(none)";
+            Row(x, ref y, w, $"  Selected combo: {comboText}");
+
+            bool projectileThreat = false;
+            foreach (var proj in FindObjectsByType<FightProjectile>(FindObjectsSortMode.None))
+                if (proj.Owner == _player) { projectileThreat = true; break; }
+            Row(x, ref y, w, $"  Defense response: {DescribeDefenseResponse(ai.CurrentIntention)}   Projectile threat: {projectileThreat}");
+
+            Row(x, ref y, w, $"  Last error: {ai.LastErrorNote ?? "(none)"}");
+
+            if (profile != null)
+            {
+                Row(x, ref y, w, $"  aggr {profile.aggression:F2}  def {profile.defenseProbability:F2}  punish {profile.punishSkill:F2}  combo {profile.comboSkill:F2}");
+                Row(x, ref y, w, $"  spacing {profile.spacingAccuracy:F2}  error {profile.errorRate:F2}  special {profile.specialUsage:F2}  reaction {profile.reactionTime:F2}s");
+            }
         }
         y += 4f;
 
@@ -264,6 +351,12 @@ public class FightDebugHUD : MonoBehaviour
             ? $"{actor.Health.CurrentHealth:F0}/{actor.Health.MaxHealth:F0}{(actor.Health.IsKO ? " [KO]" : "")}"
             : "(no FighterHealth)";
         Row(x, ref y, w, $"  {label} HP: {hpText}");
+        Row(x, ref y, w, $"    Posture: {actor.Posture}   Movement: {actor.MovementState}");
+
+        string guardText = "Not Guarding";
+        if (actor.HitReaction != null && actor.HitReaction.IsInBlockStun) guardText = "BlockStun";
+        else if (actor.Guard != null && actor.Guard.State != FighterGuardState.None) guardText = actor.Guard.State.ToString();
+        Row(x, ref y, w, $"    Defense: {guardText}");
 
         if (actor.Stats == null)
         {
@@ -283,6 +376,23 @@ public class FightDebugHUD : MonoBehaviour
                               $"knb x{mods.KnockbackDealtMultiplier:F2}  res x{mods.ResistanceMultiplier:F2}  timing x{mods.TimingScale:F2}");
         }
     }
+
+    private static List<KeyValuePair<FightAIIntention, float>> SortedByScoreDesc(IReadOnlyDictionary<FightAIIntention, float> scores)
+    {
+        var list = new List<KeyValuePair<FightAIIntention, float>>(scores);
+        list.Sort((a, b) => b.Value.CompareTo(a.Value));
+        return list;
+    }
+
+    private static string DescribeDefenseResponse(FightAIIntention intention) => intention switch
+    {
+        FightAIIntention.Guard       => "Standing Guard",
+        FightAIIntention.CrouchGuard => "Crouch Guard",
+        FightAIIntention.Crouch      => "Crouch (evade High)",
+        FightAIIntention.Jump        => "Jump (escape Unblockable)",
+        FightAIIntention.Retreat     => "Retreat",
+        _ => "(none)",
+    };
 
     private void AddLog(string line)
     {

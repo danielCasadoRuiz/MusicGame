@@ -94,3 +94,24 @@ MonoBehaviour:
     maxTimeBetweenInputs: 0.5
     priority: 0
     moveId: move_back_aab
+  - id: dash_forward
+    debugName: Forward-Forward Dash
+    steps:
+    - button: 2
+      horizontal: 1
+      vertical: 0
+    - button: 2
+      horizontal: 1
+      vertical: 0
+    maxTimeBetweenInputs: 0.35
+    priority: 0
+    moveId: move_dash_forward
+  - id: special_fireball
+    debugName: Down+Forward+A Special
+    steps:
+    - button: 0
+      horizontal: 1
+      vertical: 2
+    maxTimeBetweenInputs: 0.5
+    priority: 0
+    moveId: move_special_fireball

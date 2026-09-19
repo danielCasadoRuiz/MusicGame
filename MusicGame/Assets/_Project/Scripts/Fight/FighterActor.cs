@@ -3,11 +3,11 @@ using UnityEngine;
 
 /// <summary>
 /// Which side of the arena this actor represents — the ONLY structural difference between a Player
-/// and an Opponent FighterActor. Everything else (movement, facing, moves, visuals) is the exact
-/// same component set; what differs is configuration (FighterStats, someday), which prefab gets
-/// instantiated, and — this phase — whether a real IFightInputSource drives it at all (Player: yes,
-/// via the existing FighterInputController singleton; Opponent: no, so it simply never moves — see
-/// FightSceneBootstrap's own doc on why no AIFightInputSource exists yet).
+/// and an Opponent FighterActor. Everything else (movement, facing, moves, visuals, the FULL combat
+/// pipeline) is the exact same component set; what differs is configuration (FighterStats) and which
+/// IFightInputSource drives it: Player gets HumanFightInputSource, Opponent gets AIFightInputSource
+/// (see FighterAI's own doc) — both feed the exact same FighterInputController/Move System, so
+/// neither side has any special-cased gameplay path.
 /// </summary>
 public enum FighterSide
 {
@@ -50,18 +50,33 @@ public class FighterActor : MonoBehaviour
     public Transform VisualRoot { get; private set; }
     public bool UsedFallbackCapsule { get; private set; }
 
-    /// <summary>Null for the Opponent this phase — see class doc.</summary>
+    /// <summary>Present on BOTH sides now that the Opponent plays for real — see FighterAI's own
+    /// doc. Each fighter gets its OWN instance (never shared/found via FindFirstObjectByType).</summary>
     public FighterMoveController MoveController { get; private set; }
-    /// <summary>Null for the Opponent this phase — see class doc.</summary>
     public FighterMovement Movement { get; private set; }
-    /// <summary>Null for the Opponent this phase — see class doc.</summary>
     public FighterAttack Attack { get; private set; }
+    public FighterInputController InputController { get; private set; }
+    /// <summary>Null for the Player — the Opponent's Utility AI "brain" driving its own
+    /// AIFightInputSource. See FighterAI's own doc.</summary>
+    public FighterAI AI { get; private set; }
 
     /// <summary>Always present on BOTH sides — Player and Opponent share the exact same health/
-    /// hit-reaction system (see FighterHealth/FighterHitReaction's own doc), unlike MoveController/
-    /// Movement which stay Player-only until AI exists.</summary>
+    /// hit-reaction/guard system (see FighterHealth/FighterHitReaction/FighterGuard's own doc).</summary>
     public FighterHealth Health { get; private set; }
     public FighterHitReaction HitReaction { get; private set; }
+    public FighterGuard Guard { get; private set; }
+
+    /// <summary>The other FighterActor in the arena — set once via SetOpponent, right after both
+    /// exist. Public so FightProjectile (and future AI) can resolve "who do I actually target" the
+    /// same way DistanceToOpponent already does, instead of re-deriving it.</summary>
+    public FighterActor Opponent => _opponent;
+
+    /// <summary>This fighter's physical stance — see FighterPosture's own doc. Standing by default;
+    /// written exclusively by FighterMovement (Player this phase) via SetPosture.</summary>
+    public FighterPosture Posture { get; private set; } = FighterPosture.Standing;
+    /// <summary>This fighter's current locomotion gait — see FighterMovementState's own doc. Idle by
+    /// default; written exclusively by FighterMovement via SetMovementState.</summary>
+    public FighterMovementState MovementState { get; private set; } = FighterMovementState.Idle;
 
     /// <summary>This fighter's combat numbers — the Player's come from the Runner (GameSession.
     /// FighterStats), the Opponent's from OpponentLevelConfig.combatStats (or a flat 100-everywhere
@@ -134,20 +149,29 @@ public class FighterActor : MonoBehaviour
     public void SetMoveController(FighterMoveController controller) => MoveController = controller;
     public void SetMovement(FighterMovement movement) => Movement = movement;
     public void SetAttack(FighterAttack attack) => Attack = attack;
+    public void SetInputController(FighterInputController input) => InputController = input;
+    public void SetAI(FighterAI ai) => AI = ai;
     public void SetStats(FighterStats stats) => Stats = stats;
+    public void SetPosture(FighterPosture posture) => Posture = posture;
+    public void SetMovementState(FighterMovementState state) => MovementState = state;
     public void RegisterHurtbox(FighterHurtbox hurtbox)
     {
         if (!_hurtboxes.Contains(hurtbox)) _hurtboxes.Add(hurtbox);
     }
 
-    /// <summary>Creates and wires this actor's FighterHitReaction — separate from Initialize because
-    /// it needs the opponent reference, only available after BOTH actors exist and SetOpponent has
-    /// run (see FightSceneBootstrap's own call order).</summary>
-    public void AttachHitReaction(FightArenaConfig arenaConfig)
+    /// <summary>Creates and wires this actor's FighterHitReaction/FighterGuard — separate from
+    /// Initialize because both need the opponent reference (HitReaction for knockback direction,
+    /// Guard indirectly via MoveController/Posture), only available after BOTH actors exist and
+    /// SetOpponent has run (see FightSceneBootstrap's own call order).</summary>
+    public void AttachHitReaction(FightArenaConfig arenaConfig, FighterInputController input)
     {
         var reaction = gameObject.AddComponent<FighterHitReaction>();
         reaction.Initialize(this, _opponent, arenaConfig);
         HitReaction = reaction;
+
+        var guard = gameObject.AddComponent<FighterGuard>();
+        guard.Initialize(this, input);
+        Guard = guard;
     }
 
     /// <summary>
@@ -168,6 +192,10 @@ public class FighterActor : MonoBehaviour
         Movement?.ResetForRound();
         MoveController?.ResetForRound();
         Attack?.ResetForRound();
+        InputController?.ResetForRound();
+        AI?.ResetForRound();
+        Posture = FighterPosture.Standing;
+        MovementState = FighterMovementState.Idle;
 
         if (_opponent != null && _facingProvider != null)
         {
@@ -180,10 +208,10 @@ public class FighterActor : MonoBehaviour
     {
         if (_opponent == null || _facingProvider == null) return;
 
-        // Facing freezes during a locked move phase AND during hit stun — one shared mechanism,
-        // no per-move or per-hit special-casing (see this phase's own scope note).
+        // Facing freezes during a locked move phase, hit stun, AND block stun — one shared
+        // mechanism, no per-move or per-hit special-casing (see this phase's own scope note).
         bool locked = (MoveController != null && MoveController.IsFacingLocked) ||
-                      (HitReaction != null && HitReaction.IsInHitStun);
+                      (HitReaction != null && (HitReaction.IsInHitStun || HitReaction.IsInBlockStun));
         if (!locked) FacingRight = _facingProvider.FacingRight;
 
         transform.rotation = Quaternion.LookRotation(FacingRight ? Vector3.right : Vector3.left, Vector3.up);

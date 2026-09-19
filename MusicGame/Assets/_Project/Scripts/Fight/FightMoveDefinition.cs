@@ -1,11 +1,15 @@
 using UnityEngine;
 
-/// <summary>Purely a debug/categorization label today — nothing branches on this yet beyond
-/// FightDebugHUD's own display.</summary>
+/// <summary>Purely a debug/categorization label — nothing branches on Normal vs Combo vs Special
+/// itself (a Special is just a move like any other, reached via a combo/input like any other combo-
+/// triggered move — see this phase's own scope note: no meter/resource system exists yet, so
+/// Special carries no mechanical difference today beyond this label and whatever the move's own
+/// data — e.g. AttackDelivery.Projectile — actually does).</summary>
 public enum FightMoveType
 {
     Normal,
     Combo,
+    Special,
 }
 
 /// <summary>
@@ -61,11 +65,31 @@ public class FightMoveDefinition : ScriptableObject
              "recalculation exists to consult it, but the flag is real, authored data.")]
     public bool lockFacingDuringMove = true;
 
+    [Header("Context — see FighterMoveController.IsContextAllowed's own doc")]
+    [Tooltip("Which FighterPosture(s) this move can be STARTED from — empty/unset means " +
+             "unrestricted (works from any posture, matching every move authored before this field " +
+             "existed). Checked once, at the moment the move would begin (including when a queued " +
+             "move is about to dequeue) — never re-checked mid-move.")]
+    public FighterPosture[] allowedPostures = System.Array.Empty<FighterPosture>();
+    [Tooltip("Which FighterMovementState(s) this move REQUIRES to be started — empty/unset means " +
+             "unrestricted. E.g. a Running Punch would list Run here; FighterMoveController's " +
+             "dedicated runNormalPunch slot already gates the direct Punch-button case, so this " +
+             "field mainly matters for COMBO-triggered mobility-gated moves (see this phase's own " +
+             "\"Run + A\" scope note).")]
+    public FighterMovementState[] requiredMovementStates = System.Array.Empty<FighterMovementState>();
+
     [Header("Hitboxes — see FightHitDefinition/FighterAttack's own doc")]
+    [Tooltip("How this move's hit actually reaches the opponent — see AttackDelivery's own doc. " +
+             "Melee reads hits[] below exactly as before; Projectile reads `projectile` instead and " +
+             "hits[] is ignored.")]
+    public AttackDelivery attackDelivery = AttackDelivery.Melee;
     [Tooltip("All active for the ENTIRE Active phase (FighterMoveController remains the sole " +
              "authority on Startup/Active/Recovery timing — no per-hit sub-window exists yet). " +
-             "Empty is tolerated (a move with no offensive hitbox at all).")]
+             "Empty is tolerated (a move with no offensive hitbox at all). Ignored when " +
+             "attackDelivery is Projectile.")]
     public FightHitDefinition[] hits = new FightHitDefinition[] { new FightHitDefinition() };
+    [Tooltip("Only read when attackDelivery is Projectile — see FightProjectileData/FightProjectile's own doc.")]
+    public FightProjectileData projectile;
 
     [Header("Future — not read by anything this phase")]
     [Tooltip("Superseded by hits[].baseDamage — kept only so no existing reference to this field " +

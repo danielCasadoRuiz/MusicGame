@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5113f3db8c54387965085ce138f977d, type: 3}
+  m_Name: Move_RunningPunch
+  m_EditorClassIdentifier: Assembly-CSharp::FightMoveDefinition
+  id: move_running_punch
+  debugName: Running Punch
+  moveType: 0
+  animationState: RunPunch
+  startupDuration: 0.1
+  activeDuration: 0.1
+  recoveryDuration: 0.3
+  cancelWindow: 0
+  movementLocked: 1
+  movementMultiplier: 0
+  lungeDistance: 1.2
+  lockFacingDuringMove: 1
+  allowedPostures: []
+  requiredMovementStates:
+  - 3
+  attackDelivery: 0
+  hits:
+  - shape: 0
+    localOffset: {x: 0.8, y: 1, z: 0}
+    size: {x: 0.6, y: 0.6, z: 0.6}
+    baseDamage: 16
+    baseHitStun: 0.4
+    baseKnockback: 1.6
+    attackHeight: 1
+    guardType: 0
+    chipDamage: 0
+  damage: 0

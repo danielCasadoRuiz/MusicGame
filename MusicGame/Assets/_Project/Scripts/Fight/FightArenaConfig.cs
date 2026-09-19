@@ -29,6 +29,15 @@ public class FightArenaConfig : ScriptableObject
     [Header("Movement")]
     [Tooltip("Flat locomotion speed (units/second) — not yet scaled by FighterStats.Speed.")]
     public float baseMovementSpeed = 4f;
+    [Tooltip("Multiplies baseMovementSpeed while FighterMovementState is Run (see FighterMovement's " +
+             "own doc on how Forward-Forward + held Forward enters Run).")]
+    public float runSpeedMultiplier = 1.6f;
+
+    [Header("Jump — a simple velocity/gravity arc, not real physics (see FighterMovement's own doc)")]
+    public float jumpVelocity = 6f;
+    public float gravity = 20f;
+    [Tooltip("Horizontal movement multiplier while Airborne — 1 = full ground speed, 0 = no air control.")]
+    [Range(0f, 1f)] public float airControlMultiplier = 0.5f;
 
     [Header("Player visual")]
     [Tooltip("No Player avatar/progression system exists yet (see FighterActor's own doc) — null " +

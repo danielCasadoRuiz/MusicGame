@@ -16,8 +16,18 @@ public class FightMoveSetSO : ScriptableObject
     public FightMoveDefinition normalPunch;
     public FightMoveDefinition normalKick;
 
-    [Tooltip("Combo-triggered moves — looked up by id via GetByMoveId, matched against the " +
-             "detected FightComboDefinition's own moveId.")]
+    [Header("Context-specific normals — see FighterMoveController.ResolvePunch/ResolveKick's own doc")]
+    [Tooltip("Used instead of normalPunch/normalKick while FighterPosture is Airborne. Null = no " +
+             "air attack at all (the button press is simply ignored while airborne).")]
+    public FightMoveDefinition airNormalPunch;
+    public FightMoveDefinition airNormalKick;
+    [Tooltip("Used instead of normalPunch while FighterMovementState is Run. Null = the grounded " +
+             "normalPunch still fires while running.")]
+    public FightMoveDefinition runNormalPunch;
+
+    [Tooltip("Combo-triggered moves (including Dash/Specials — see this phase's own scope note) — " +
+             "looked up by id via GetByMoveId, matched against the detected FightComboDefinition's " +
+             "own moveId.")]
     public FightMoveDefinition[] moves = System.Array.Empty<FightMoveDefinition>();
 
     public FightMoveDefinition GetByMoveId(string moveId)

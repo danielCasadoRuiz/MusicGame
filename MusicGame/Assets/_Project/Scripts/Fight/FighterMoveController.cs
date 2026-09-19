@@ -79,6 +79,11 @@ public class FighterMoveController : MonoBehaviour
 
     private bool _active;
 
+    /// <summary>Set externally (FightSceneBootstrap) — the owning FighterActor, read for
+    /// Posture/MovementState context checks (IsContextAllowed) and posture-aware normal resolution
+    /// (ResolvePunch/ResolveKick). Null-tolerant everywhere it's read (treated as "no restriction").</summary>
+    private FighterActor _actor;
+
     private System.Action<FightNormalPunchEvent> _onPunch;
     private System.Action<FightNormalKickEvent> _onKick;
     private System.Action<FightComboDetectedEvent> _onCombo;
@@ -86,6 +91,13 @@ public class FighterMoveController : MonoBehaviour
 
     public void SetAnimationDriver(IFighterAnimationDriver driver) => _animationDriver = driver ?? new DebugFighterAnimationDriver();
     public void SetMovementDriver(IFighterMovementDriver driver) => _movementDriver = driver ?? new DebugFighterMovementDriver();
+    public void SetActor(FighterActor actor) => _actor = actor;
+    /// <summary>Set externally (FightSceneBootstrap) — THIS fighter's own FighterInputController.
+    /// Every FightNormalPunchEvent/FightNormalKickEvent/FightComboDetectedEvent is filtered against
+    /// this exact instance (e.Source == _input) so the Player's presses never drive the Opponent's
+    /// FighterMoveController and vice versa — see FightNormalPunchEvent's own doc. No longer
+    /// resolved via FindFirstObjectByType now that both fighters have their own instance.</summary>
+    public void SetInputController(FighterInputController input) => _input = input;
 
     private void Awake()
     {
@@ -95,15 +107,13 @@ public class FighterMoveController : MonoBehaviour
             Debug.LogWarning("[FighterMoveController] No FightMoveSetSO (AppConfig.fightFlow.defaultMoveSet) configured — normals/combos will be recognized but no move will ever execute.");
 
         _balanceConfig = appConfig != null ? appConfig.combatBalance : null;
-
-        _input = FindFirstObjectByType<FighterInputController>();
     }
 
     private void OnEnable()
     {
-        _onPunch = _ => TryStartMove(_moveSet != null ? _moveSet.normalPunch : null);
-        _onKick  = _ => TryStartMove(_moveSet != null ? _moveSet.normalKick  : null);
-        _onCombo = e => TryStartMove(_moveSet != null && e.Combo != null ? _moveSet.GetByMoveId(e.Combo.moveId) : null);
+        _onPunch = e => { if (e.Source == _input) TryStartMove(ResolvePunch()); };
+        _onKick  = e => { if (e.Source == _input) TryStartMove(ResolveKick()); };
+        _onCombo = e => { if (e.Source == _input) TryStartMove(_moveSet != null && e.Combo != null ? _moveSet.GetByMoveId(e.Combo.moveId) : null); };
         _onFightFlowChanged = e => _active = e.Current == FightFlowState.Fighting;
         EventBus.Subscribe(_onPunch);
         EventBus.Subscribe(_onKick);
@@ -129,7 +139,9 @@ public class FighterMoveController : MonoBehaviour
             {
                 var move = QueuedMove;
                 QueuedMove = null;
-                BeginMove(move);
+                // Re-validated at dequeue time too — posture/movement-state may have changed while
+                // this move sat queued (e.g. it landed a jump between queuing and now).
+                if (IsContextAllowed(move)) BeginMove(move);
             }
             else
             {
@@ -147,7 +159,7 @@ public class FighterMoveController : MonoBehaviour
 
     private void TryStartMove(FightMoveDefinition move)
     {
-        if (!_active || move == null || IsHitStunned) return;
+        if (!_active || move == null || IsHitStunned || !IsContextAllowed(move)) return;
 
         if (CurrentPhase == FighterMoveState.Idle || InCancelWindow())
         {
@@ -158,6 +170,52 @@ public class FighterMoveController : MonoBehaviour
             // Latest request wins — a single queue slot, see class doc on the policy.
             QueuedMove = move;
         }
+    }
+
+    /// <summary>Checked once, whenever a move would actually START (including a queued move about
+    /// to dequeue) — see FightMoveDefinition.allowedPostures/requiredMovementStates' own doc. Both
+    /// empty/unset (the default for every move authored before this existed) means unrestricted.</summary>
+    private bool IsContextAllowed(FightMoveDefinition move)
+    {
+        if (_actor == null) return true;
+
+        if (move.allowedPostures != null && move.allowedPostures.Length > 0)
+        {
+            bool postureOk = false;
+            foreach (var posture in move.allowedPostures)
+                if (posture == _actor.Posture) { postureOk = true; break; }
+            if (!postureOk) return false;
+        }
+
+        if (move.requiredMovementStates != null && move.requiredMovementStates.Length > 0)
+        {
+            bool stateOk = false;
+            foreach (var state in move.requiredMovementStates)
+                if (state == _actor.MovementState) { stateOk = true; break; }
+            if (!stateOk) return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>Airborne -> airNormalPunch (if assigned); Run -> runNormalPunch (if assigned);
+    /// otherwise the plain grounded normalPunch — see FightMoveSetSO's own doc. Airborne takes
+    /// priority over Run since the two are mutually exclusive in practice (Run requires Standing/
+    /// grounded Forward-holding — see FighterMovement's own doc) but airborne is checked first for
+    /// safety regardless.</summary>
+    private FightMoveDefinition ResolvePunch()
+    {
+        if (_moveSet == null) return null;
+        if (_actor != null && _actor.Posture == FighterPosture.Airborne && _moveSet.airNormalPunch != null) return _moveSet.airNormalPunch;
+        if (_actor != null && _actor.MovementState == FighterMovementState.Run && _moveSet.runNormalPunch != null) return _moveSet.runNormalPunch;
+        return _moveSet.normalPunch;
+    }
+
+    private FightMoveDefinition ResolveKick()
+    {
+        if (_moveSet == null) return null;
+        if (_actor != null && _actor.Posture == FighterPosture.Airborne && _moveSet.airNormalKick != null) return _moveSet.airNormalKick;
+        return _moveSet.normalKick;
     }
 
     private void BeginMove(FightMoveDefinition move)

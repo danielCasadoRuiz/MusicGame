@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FightMoveSetSO
   normalPunch: {fileID: 11400000, guid: fef0a3e5e6e34e05bf71e67f904a0884, type: 2}
   normalKick: {fileID: 11400000, guid: 3b3d0633308644c39bfa66c8f1a978a1, type: 2}
+  airNormalPunch: {fileID: 11400000, guid: b3d152909e894a3daa20bdd54d455c10, type: 2}
+  airNormalKick: {fileID: 11400000, guid: 939976e5b9614d3689005e40342b6008, type: 2}
+  runNormalPunch: {fileID: 11400000, guid: 7a513017614a4ab39f65b64b70978aae, type: 2}
   moves:
   - {fileID: 11400000, guid: d85b062d568549578953445933ef5eb1, type: 2}
   - {fileID: 11400000, guid: fe054abf89044839854f61b3f7db3cfc, type: 2}
@@ -21,3 +24,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7ad3de220b584758a20f65bdbfd3b9f9, type: 2}
   - {fileID: 11400000, guid: e3413b06b1a74769888b789303bc1ee0, type: 2}
   - {fileID: 11400000, guid: 0f5551d7ac8a474994fdd7cf728684bf, type: 2}
+  - {fileID: 11400000, guid: 6316824ae61747199bf2a5e095fa0e8a, type: 2}
+  - {fileID: 11400000, guid: 4ec2ba212361462db8a5d2ec96a14fe7, type: 2}

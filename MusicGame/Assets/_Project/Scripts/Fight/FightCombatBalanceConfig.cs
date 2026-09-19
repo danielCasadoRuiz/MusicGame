@@ -46,6 +46,12 @@ public class FightCombatBalanceConfig : ScriptableObject
     public float minTimingScale = 0.7f;
     public float maxTimingScale = 1.15f;
 
+    [Header("Block — see FighterGuard/FightHitResolver's own doc")]
+    [Tooltip("Applied on top of the defender's own Balance resistance when a hit is blocked.")]
+    public float blockStunMultiplier = 0.5f;
+    [Tooltip("Applied on top of the attacker's Knockback/defender's Balance when a hit is blocked.")]
+    public float blockKnockbackMultiplier = 0.5f;
+
     [Header("Inert this phase — evaluated for debug/future use only, never applied to gameplay (see class doc)")]
     public AnimationCurve agilityModifierPreview      = AnimationCurve.Linear(100f, 1f, 200f, 1f);
     public AnimationCurve comboModifierPreview        = AnimationCurve.Linear(100f, 1f, 200f, 1f);

@@ -18,6 +18,10 @@ MonoBehaviour:
   maxBoundX: 4
   minimumFighterSeparation: 1
   baseMovementSpeed: 4
+  runSpeedMultiplier: 1.6
+  jumpVelocity: 6
+  gravity: 20
+  airControlMultiplier: 0.5
   playerFighterPrefab: {fileID: 0}
   playerDebugColor: {r: 0.2, g: 0.6, b: 1, a: 1}
   opponentDebugColor: {r: 0.9, g: 0.25, b: 0.2, a: 1}

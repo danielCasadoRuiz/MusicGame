@@ -12,12 +12,33 @@ using UnityEngine;
 /// FightComboRecognizer's own doc for how it resolves "B-B" vs "B-B-A-B" without holding up either
 /// button press's own immediate normal.
 ///
-/// Only active while FightFlowState is Fighting (see OnFightFlowChanged) — input is captured and
-/// interpreted here, nothing about actual fighter movement/animation (that's a later phase, see
-/// this class's own doc header in the design notes).
+/// DIRECTION-ONLY TAPS (FightButton.None — see that enum's own doc): every EDGE transition into
+/// Forward/Back (horizontal) or Up/Down (vertical) is ALSO buffered/fed to the recognizer, exactly
+/// like a button press, just tagged Button.None — this is what lets a combo like "Forward, Forward"
+/// (a dash) be authored and recognized through the EXACT SAME FightInputBuffer/FightComboRecognizer
+/// pipeline as every button combo, with no separate detection system. Held levels (Down for Crouch,
+/// Back for Guard, etc.) are still read directly off CurrentHorizontal/CurrentVertical by whoever
+/// needs them (FighterMovement/FighterGuard) — only the EDGE is buffered, so holding a direction
+/// never repeatedly "re-completes" a tap-based combo every frame.
 ///
-/// Lives in the always-loaded UI Scene (added by UIFlowController), like every other Fight-flow
-/// controller — has no scene-local dependency (no real fighter GameObjects exist yet).
+/// DIRECTIONAL COMMAND PRIORITY: a plain button press (Neutral direction) always fires its normal
+/// immediately, as before. But if the CURRENT direction (at the exact instant the button is
+/// pressed) matches a SINGLE-STEP combo exactly (e.g. "Forward + A", "Down + B", "Down + Forward +
+/// A") that more specific command fires INSTEAD of the plain normal — never both, never a normal
+/// that gets superseded moments later. This only applies to single-step (steps.Length == 1) combos,
+/// which can be resolved synchronously at press-time with no waiting; multi-step SEQUENTIAL combos
+/// (A-A-A-B and friends) are unaffected — their first press still fires the plain normal
+/// immediately, exactly as before, since there is no way to know a sequence is coming until later
+/// presses actually arrive.
+///
+/// Only active while FightFlowState is Fighting (see OnFightFlowChanged) — input is captured and
+/// interpreted here; actual movement/posture/guard consequences live in FighterMovement/FighterGuard.
+///
+/// ONE INSTANCE PER FIGHTER — Player and Opponent (AIFightInputSource-driven, see FighterAI's own
+/// doc) each get their own, attached directly to their own FighterActor by FightSceneBootstrap (no
+/// longer a single UI-Scene-resident singleton). Every event this class publishes carries Source
+/// (=this) so FighterMoveController/FighterMovement can tell which fighter's press/combo it was —
+/// see FightNormalPunchEvent's own doc.
 /// </summary>
 public class FighterInputController : MonoBehaviour
 {
@@ -32,6 +53,9 @@ public class FighterInputController : MonoBehaviour
 
     public FightHorizontalDirection CurrentHorizontal { get; private set; }
     public FightVerticalDirection CurrentVertical { get; private set; }
+
+    private FightHorizontalDirection _previousHorizontal;
+    private FightVerticalDirection _previousVertical;
 
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
 
@@ -54,7 +78,7 @@ public class FighterInputController : MonoBehaviour
         var comboSet = _config != null ? _config.comboSet : null;
         if (comboSet == null)
             Debug.LogWarning("[FighterInputController] No FightComboSetSO (AppConfig.fightFlow.comboSet) configured — normals will still fire, but no combo will ever be detected.");
-        _recognizer = new FightComboRecognizer(comboSet, _buffer);
+        _recognizer = new FightComboRecognizer(comboSet, _buffer, this);
     }
 
     private void OnEnable()
@@ -80,19 +104,63 @@ public class FighterInputController : MonoBehaviour
         CurrentHorizontal = FightDirectionResolver.ResolveHorizontal(_inputSource.Horizontal, _facing.FacingRight);
         CurrentVertical    = FightDirectionResolver.ResolveVertical(_inputSource.Vertical);
 
+        if (CurrentHorizontal != _previousHorizontal && CurrentHorizontal != FightHorizontalDirection.Neutral)
+            BufferDirectionTap();
+        if (CurrentVertical != _previousVertical && CurrentVertical != FightVerticalDirection.Neutral)
+            BufferDirectionTap();
+        _previousHorizontal = CurrentHorizontal;
+        _previousVertical   = CurrentVertical;
+
         if (_inputSource.PunchPressed) HandlePress(FightButton.Punch);
         if (_inputSource.KickPressed)  HandlePress(FightButton.Kick);
 
+        // Every frame regardless — see FightComboRecognizer.Tick's own doc (fires a pending short
+        // combo once its grace window expires unextended, independent of any new input this frame).
         _recognizer.Tick();
     }
 
     private void HandlePress(FightButton button)
     {
-        // Immediate — published before the buffer/recognizer even see this press.
-        if (button == FightButton.Punch) EventBus.Publish(new FightNormalPunchEvent());
-        else                             EventBus.Publish(new FightNormalKickEvent());
+        // See class doc on DIRECTIONAL COMMAND PRIORITY — a more specific single-step command for
+        // THIS EXACT direction suppresses the plain normal entirely; otherwise the normal fires
+        // immediately, unchanged from before.
+        if (FindDirectionalCommand(button, CurrentHorizontal, CurrentVertical) == null)
+        {
+            if (button == FightButton.Punch) EventBus.Publish(new FightNormalPunchEvent { Source = this });
+            else                             EventBus.Publish(new FightNormalKickEvent { Source = this });
+        }
 
+        // Buffered/fed to the recognizer either way — a matched directional command fires through
+        // the SAME immediate, non-prefix path the recognizer already uses (see its own doc), so
+        // nothing else needs to change there.
         _buffer.Add(new FightInputEvent(button, CurrentHorizontal, CurrentVertical, Time.time));
+        _recognizer.OnNewInput();
+    }
+
+    // Single-step (steps.Length == 1) combos ONLY — resolvable synchronously, at press-time, unlike
+    // multi-step sequences which necessarily need to wait for later presses. Ties broken by
+    // priority, same convention as the recognizer's own longest-match tiebreak.
+    private FightComboDefinition FindDirectionalCommand(FightButton button, FightHorizontalDirection horizontal, FightVerticalDirection vertical)
+    {
+        var combos = _config != null && _config.comboSet != null ? _config.comboSet.combos : null;
+        if (combos == null) return null;
+
+        FightComboDefinition best = null;
+        foreach (var combo in combos)
+        {
+            if (combo == null || combo.steps == null || combo.steps.Length != 1) continue;
+            var step = combo.steps[0];
+            if (step.button != button || step.horizontal != horizontal || step.vertical != vertical) continue;
+            if (best == null || combo.priority > best.priority) best = combo;
+        }
+        return best;
+    }
+
+    // Edge-only (see class doc) — a bare direction tap (no button) buffered/fed to the recognizer
+    // exactly like a button press, just tagged FightButton.None. Never fires a normal event.
+    private void BufferDirectionTap()
+    {
+        _buffer.Add(new FightInputEvent(FightButton.None, CurrentHorizontal, CurrentVertical, Time.time));
         _recognizer.OnNewInput();
     }
 
@@ -105,6 +173,8 @@ public class FighterInputController : MonoBehaviour
     {
         float window = _config != null ? Mathf.Max(0.2f, _config.inputBufferWindowSeconds) : 1.5f;
         _buffer = new FightInputBuffer(window);
-        _recognizer = new FightComboRecognizer(_config != null ? _config.comboSet : null, _buffer);
+        _recognizer = new FightComboRecognizer(_config != null ? _config.comboSet : null, _buffer, this);
+        _previousHorizontal = FightHorizontalDirection.Neutral;
+        _previousVertical   = FightVerticalDirection.Neutral;
     }
 }

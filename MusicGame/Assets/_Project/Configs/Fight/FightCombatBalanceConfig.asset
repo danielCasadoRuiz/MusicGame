@@ -180,6 +180,8 @@ MonoBehaviour:
     m_RotationOrder: 4
   minTimingScale: 0.7
   maxTimingScale: 1.15
+  blockStunMultiplier: 0.5
+  blockKnockbackMultiplier: 0.5
   agilityModifierPreview:
     serializedVersion: 2
     m_Curve:

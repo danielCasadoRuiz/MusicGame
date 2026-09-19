@@ -2,25 +2,32 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Turns FighterMoveController's Active phase into real hitbox detection — Player-only this phase
-/// (only the Player has a MoveController/attacks at all, see FighterActor's own doc; the Opponent
-/// simply has nothing generating hits against it). Reacts to FightMovePhaseChangedEvent rather than
+/// Turns FighterMoveController's Active phase into real hit delivery — Player-only this phase (only
+/// the Player has a MoveController/attacks at all, see FighterActor's own doc; the Opponent simply
+/// has nothing generating hits against it). Reacts to FightMovePhaseChangedEvent rather than
 /// re-deriving Startup/Active/Recovery timing itself — FighterMoveController remains the sole
 /// authority (see that class's own doc).
 ///
+/// TWO DELIVERY MODES, both decided purely by the active move's own AttackDelivery (see
+/// FightMoveDefinition/FightProjectileData's own doc):
+///   - Melee (the original/default behavior): polls hits[] against the opponent's hurtboxes every
+///     frame while Active.
+///   - Projectile: spawns exactly ONE FightProjectile the instant Active begins — that projectile
+///     then owns its own travel/overlap loop independently (see its own doc); this class does
+///     nothing further for that move's Active window.
+///
 /// PIPELINE (see this phase's own scope note on keeping responsibilities separate):
 ///   detect overlap (FightCombatShapes, geometry only)
-///   -> resolve (FightHitResolver, pure function — reads FighterStats, never mutates anything)
-///   -> react (FighterHealth.ApplyDamage / FighterHitReaction.ApplyHit — each owns its own state)
-///   -> publish HitLandedEvent
-/// This class only ORCHESTRATES that sequence; it never itself does `defender.Health -= x` or
-/// reaches into a Transform/MoveController directly.
+///   -> resolve + apply (FightHitDispatcher — checks guard, calls FightHitResolver, dispatches to
+///      FighterHealth/FighterHitReaction, publishes HitLandedEvent/HitBlockedEvent)
+/// This class only ORCHESTRATES detection; it never itself does `defender.Health -= x`, checks guard
+/// itself, or reaches into a Transform/MoveController directly. FightProjectile calls the EXACT same
+/// FightHitDispatcher — see this phase's own explicit "no creïs un segon sistema de damage" requirement.
 ///
-/// MULTI-HIT GUARD: _hitTargetsThisWindow is cleared every time a NEW Active phase begins (a fresh
-/// execution of a move, whether the same move or a different one) and a target already in it is
-/// skipped for the rest of that window — a move deals damage to a given defender at most once per
-/// Active phase. Multi-hit moves (several distinct impacts within one Active window) are a future,
-/// explicit addition — not implemented here.
+/// MULTI-HIT GUARD (melee only — a projectile's own destroyOnHit/one-shot nature makes this moot for
+/// it): _hitTargetsThisWindow is cleared every time a NEW Active phase begins (a fresh execution of
+/// a move, whether the same move or a different one) and a target already in it is skipped for the
+/// rest of that window — a move deals damage to a given defender at most once per Active phase.
 /// </summary>
 public class FighterAttack : MonoBehaviour
 {
@@ -55,7 +62,16 @@ public class FighterAttack : MonoBehaviour
             {
                 _activeMove = e.Move;
                 _hitTargetsThisWindow.Clear();
-                _hitboxActive = _activeMove != null && _activeMove.hits != null && _activeMove.hits.Length > 0;
+
+                if (_activeMove != null && _activeMove.attackDelivery == AttackDelivery.Projectile)
+                {
+                    SpawnProjectile(_activeMove);
+                    _hitboxActive = false; // this move's Active window is owned by the projectile now, not melee polling
+                }
+                else
+                {
+                    _hitboxActive = _activeMove != null && _activeMove.hits != null && _activeMove.hits.Length > 0;
+                }
             }
             else if (_hitboxActive)
             {
@@ -96,9 +112,10 @@ public class FighterAttack : MonoBehaviour
             Vector3 hitCenter = ComputeWorldCenter(hitDef);
             if (!OverlapsAnyHurtbox(hitCenter, hitDef, _opponent)) continue;
 
-            var result = FightHitResolver.Resolve(_actor, _opponent, _activeMove, hitDef, _balanceConfig);
-            ApplyHit(result);
+            var result = FightHitDispatcher.ResolveAndApply(_actor, _opponent, _activeMove, hitDef, _balanceConfig);
             _hitTargetsThisWindow.Add(_opponent);
+            Debug.Log($"[FighterAttack] {(result.IsBlocked ? "Hit BLOCKED" : "Hit landed")}: {_activeMove.debugName} -> " +
+                      $"{(result.IsBlocked ? result.FinalChipDamage : result.FinalDamage):F1} dmg");
             break; // one resolved hit per target per Active window, even if several hitDefs would overlap this same frame
         }
     }
@@ -121,21 +138,49 @@ public class FighterAttack : MonoBehaviour
         return false;
     }
 
-    private void ApplyHit(FightHitResult result)
+    // ── Projectile delivery ───────────────────────────────────────────────────
+
+    private void SpawnProjectile(FightMoveDefinition move)
     {
-        EventBus.Publish(new HitLandedEvent { Attacker = _actor, Defender = _opponent, Move = _activeMove, Result = result });
+        var data = move.projectile;
+        if (data == null)
+        {
+            Debug.LogWarning($"[FighterAttack] '{move.debugName}' has AttackDelivery.Projectile but no projectile data assigned — nothing spawned.");
+            return;
+        }
 
-        _opponent.Health?.ApplyDamage(result.FinalDamage);
-        _opponent.HitReaction?.ApplyHit(result.FinalHitStun, result.FinalKnockback);
+        float sign = _actor.FacingRight ? 1f : -1f;
+        Vector3 spawnPos = _actor.transform.position + new Vector3(data.localSpawnOffset.x * sign, data.localSpawnOffset.y, data.localSpawnOffset.z);
+        Vector3 direction = new Vector3(sign, 0f, 0f);
 
-        Debug.Log($"[FighterAttack] Hit landed: {_activeMove.debugName} -> {result.FinalDamage:F1} dmg, " +
-                  $"{result.FinalHitStun:F2}s stun, {result.FinalKnockback:F2} knockback");
+        var root = new GameObject($"FightProjectile_{move.debugName}");
+        root.transform.position = spawnPos;
+
+        if (data.visualPrefab != null)
+        {
+            var visual = Instantiate(data.visualPrefab, root.transform);
+            visual.transform.localPosition = Vector3.zero;
+        }
+        else
+        {
+            var debugVisual = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            debugVisual.transform.SetParent(root.transform, false);
+            float diameter = Mathf.Max(0.2f, data.hitDefinition != null ? data.hitDefinition.size.x : 0.4f);
+            debugVisual.transform.localScale = Vector3.one * diameter;
+            var rend = debugVisual.GetComponent<Renderer>();
+            if (rend != null) rend.material.color = new Color(1f, 0.55f, 0.1f);
+            var col = debugVisual.GetComponent<Collider>();
+            if (col != null) Destroy(col); // no Unity physics used anywhere in combat — see FightCombatShapes' own doc
+        }
+
+        root.AddComponent<FightProjectile>().Initialize(_actor, _opponent, move, data, _balanceConfig, direction);
     }
 
     /// <summary>Explicit API for FightMatchController's between-rounds reset (via FighterActor.
     /// ResetForRound) — deterministically clears any lingering hitbox/target-history state (see
     /// this phase's own scope note: "no hi ha un Active window antic que pugui impactar just quan
-    /// comença una nova ronda").</summary>
+    /// comença una nova ronda"). Any already-spawned FightProjectile is left alone — it owns its own
+    /// lifetime independently and will simply expire/despawn on its own.</summary>
     public void ResetForRound()
     {
         _hitboxActive = false;

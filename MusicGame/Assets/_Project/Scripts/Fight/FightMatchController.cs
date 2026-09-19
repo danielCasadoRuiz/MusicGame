@@ -269,12 +269,10 @@ public class FightMatchController : MonoBehaviour
         Vector3 playerSpawn   = _arenaConfig != null ? _arenaConfig.playerSpawnPosition   : new Vector3(-1.5f, 1f, 0f);
         Vector3 opponentSpawn = _arenaConfig != null ? _arenaConfig.opponentSpawnPosition : new Vector3(1.5f, 1f, 0f);
 
+        // Each fighter now owns its own FighterInputController/FighterAI (see FighterAI's own doc)
+        // — FighterActor.ResetForRound already resets both, no separate global lookup needed here.
         _player?.ResetForRound(playerSpawn);
         _opponent?.ResetForRound(opponentSpawn);
-
-        // Global/shared, not per-actor (see FighterInputController's own doc) — reset directly here
-        // rather than through FighterActor.
-        FindFirstObjectByType<FighterInputController>()?.ResetForRound();
     }
 
     private void FindActors()
