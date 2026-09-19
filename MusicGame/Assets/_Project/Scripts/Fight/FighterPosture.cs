@@ -18,6 +18,12 @@ public enum FighterPosture
 /// Purely descriptive/debug + a gating input for FightMoveDefinition.requiredMovementStates (e.g. a
 /// "Run + Punch" running attack) — nothing here changes movement math itself; FighterMovement's own
 /// fields (speed multipliers, locks) still do that.
+///
+/// SideStep/SideWalk (see FighterMovement's own doc) are both movement ALONG the fighter's SideXZ
+/// axis rather than ForwardXZ — SideStep is the short, timed dodge; SideWalk is the continuous,
+/// held-input version reached via a double-tap. Dash covers BOTH the forward dash and the backdash
+/// (see FighterMovement.UpdateMovementState's own doc) — direction isn't encoded in the state itself,
+/// same as Walk never distinguishing Forward from Back.
 /// </summary>
 public enum FighterMovementState
 {
@@ -25,4 +31,6 @@ public enum FighterMovementState
     Walk,
     Dash,
     Run,
+    SideStep,
+    SideWalk,
 }

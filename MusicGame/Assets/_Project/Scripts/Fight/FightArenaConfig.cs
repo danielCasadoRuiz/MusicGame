@@ -2,14 +2,17 @@ using UnityEngine;
 
 /// <summary>
 /// Every physical/tunable fact about the Fight arena itself — spawn points, the main combat axis'
-/// bounds, minimum separation between fighters, the flat base locomotion speed (see
-/// FighterMovement's own doc on why no FighterStats.Speed scaling exists yet), and the Player's
+/// bounds, a small depth range, minimum separation between fighters, the flat base locomotion speed
+/// (see FighterMovement's own doc on why no FighterStats.Speed scaling exists yet), and the Player's
 /// configurable fighter prefab (no Player avatar/progression system exists yet — see FighterActor's
 /// own doc). Same "no numbers hardcoded in a controller" rule as every other Fight*Config —
 /// FightSceneBootstrap/FighterMovement only ever read these values, never invent their own.
 ///
-/// The main combat axis is always world X (matches the existing placeholder layout — player at
-/// negative X, opponent at positive X — and this phase's "single-axis, no sidestep" scope).
+/// The main combat axis is world X (matches the existing placeholder layout — player at negative X,
+/// opponent at positive X) with a SMALL, bounded depth range on Z (see minDepth/maxDepth) — a limited
+/// 3D combat plane, deliberately never free 8-way movement (see FighterMovement's own doc). Forward/
+/// Back/Side are all resolved RELATIVE to the live line between the two fighters (see
+/// RealFightFacingProvider/FighterActor.ForwardXZ/SideXZ) — never assumed to be world X/Z directly.
 /// </summary>
 [CreateAssetMenu(fileName = "FightArenaConfig", menuName = "MusicGame/Fight/Arena Config")]
 public class FightArenaConfig : ScriptableObject
@@ -22,9 +25,38 @@ public class FightArenaConfig : ScriptableObject
     public float minBoundX = -4f;
     public float maxBoundX = 4f;
 
-    [Tooltip("How close the two fighters can get before movement/lunges stop pushing them any " +
-             "closer — a simple, deterministic clamp (see FighterMovement's own doc), not physics.")]
+    [Header("Depth (world Z) — small on purpose, never free 3D roaming")]
+    [Tooltip("Kept small relative to minBoundX/maxBoundX (see class doc) — this is a limited combat " +
+             "plane, not a beat-'em-up arena.")]
+    public float minDepth = -1.5f;
+    public float maxDepth = 1.5f;
+
+    [Tooltip("How close the two fighters can get (on the XZ plane) before movement/lunges/sidesteps " +
+             "stop pushing them any closer — a simple, deterministic clamp (see FightMovementUtility's " +
+             "own doc), not physics. Sidestepping past each other in depth is still allowed; this only " +
+             "stops a straight-on overlap.")]
     public float minimumFighterSeparation = 1f;
+
+    [Header("Sidestep — a short perpendicular dodge (see FighterMovement's own doc), not a teleport")]
+    public float sidestepDistance = 1.2f;
+    [Tooltip("How long the dodge displacement itself takes to complete.")]
+    public float sidestepDuration = 0.18f;
+    [Tooltip("Extra time after sidestepDuration before another sidestep/sidewalk can start.")]
+    public float sidestepRecovery = 0.12f;
+
+    [Header("SideWalk — continuous lateral movement while held (see FighterMovement's own doc)")]
+    [Tooltip("Slower than baseMovementSpeed on purpose — a repositioning tool, not a second running speed.")]
+    public float sidewalkSpeed = 2.2f;
+
+    [Header("Tap vs Hold — Up/Down: Sidestep vs Jump/Crouch (see FighterMovement's own doc)")]
+    [Tooltip("How long Up/Down must be held before it resolves as Jump/Crouch instead of a Sidestep " +
+             "tap. Kept short — this is a fighting game, not a menu — see this phase's own explicit " +
+             "\"no vull que Jump/Crouch se sentin lents\" requirement.")]
+    public float directionHoldThreshold = 0.15f;
+    [Tooltip("Max seconds between releasing a Sidestep tap and pressing the SAME direction again for " +
+             "it to count as the second half of a SideWalk double-tap, instead of a fresh, unrelated " +
+             "tap.")]
+    public float doubleTapWindow = 0.3f;
 
     [Header("Movement")]
     [Tooltip("Flat locomotion speed (units/second) — not yet scaled by FighterStats.Speed.")]

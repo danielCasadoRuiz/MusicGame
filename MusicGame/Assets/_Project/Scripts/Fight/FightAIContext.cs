@@ -40,8 +40,12 @@ public class FightAIContext
 
     // ── Combat ────────────────────────────────────────────────────────────────
     public float Distance;
-    public bool SelfFacingRight;
-    /// <summary>Arena room between self and the bound in front of/behind self's OWN facing.</summary>
+    /// <summary>Arena room between self's CURRENT position and the arena boundary it would actually
+    /// reach walking straight along ForwardXZ (SpaceAhead) or -ForwardXZ (SpaceBehind) — the real
+    /// physical facing authority (see FighterActor.ForwardXZ's own doc), never assumed to be world
+    /// X: an analytical ray-vs-rectangle distance against BOTH the X and Z bounds (see
+    /// FightMovementUtility.RayDistanceToArenaBounds's own doc), correct whether the live line
+    /// between fighters happens to run along X, along Z, or anywhere in between.</summary>
     public float SpaceAhead;
     public float SpaceBehind;
     public float RoundTimeRemaining;
@@ -82,13 +86,11 @@ public class FightAIContext
         ctx.OpponentMovePhaseProgress01 = opponent.MoveController != null ? opponent.MoveController.PhaseProgress01 : 0f;
 
         ctx.Distance = self.DistanceToOpponent;
-        ctx.SelfFacingRight = self.FacingRight;
 
-        float minX = arenaConfig != null ? arenaConfig.minBoundX : -4f;
-        float maxX = arenaConfig != null ? arenaConfig.maxBoundX : 4f;
-        float selfX = self.transform.position.x;
-        ctx.SpaceAhead  = Mathf.Max(0f, ctx.SelfFacingRight ? maxX - selfX : selfX - minX);
-        ctx.SpaceBehind = Mathf.Max(0f, ctx.SelfFacingRight ? selfX - minX : maxX - selfX);
+        Vector2 selfPosXZ  = new Vector2(self.transform.position.x, self.transform.position.z);
+        Vector2 forwardXZ2 = new Vector2(self.ForwardXZ.x, self.ForwardXZ.z);
+        ctx.SpaceAhead  = FightMovementUtility.RayDistanceToArenaBounds(selfPosXZ,  forwardXZ2, arenaConfig);
+        ctx.SpaceBehind = FightMovementUtility.RayDistanceToArenaBounds(selfPosXZ, -forwardXZ2, arenaConfig);
 
         if (match != null)
         {
@@ -109,7 +111,12 @@ public class FightAIContext
         foreach (var projectile in Object.FindObjectsByType<FightProjectile>(FindObjectsSortMode.None))
         {
             if (projectile == null || projectile.Owner == self) continue; // only real incoming threats, never our own
-            float dist = Mathf.Abs(projectile.transform.position.x - self.transform.position.x);
+            // Real XZ distance — same convention as FighterActor.DistanceToOpponent (see its own
+            // doc) — a projectile can now travel along any ForwardXZ, not just world X, so an
+            // X-only difference could under/over-estimate how close it actually is.
+            float dist = Vector2.Distance(
+                new Vector2(projectile.transform.position.x, projectile.transform.position.z),
+                new Vector2(self.transform.position.x, self.transform.position.z));
             if (dist < best)
             {
                 best = dist;

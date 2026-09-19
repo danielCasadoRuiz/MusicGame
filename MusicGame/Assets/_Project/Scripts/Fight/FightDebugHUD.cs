@@ -112,11 +112,11 @@ public class FightDebugHUD : MonoBehaviour
     //   F2  Force Player KO
     //   F3  Force Opponent KO
     //   F4  Set round timer to 3s
-    //   F5  Force a health-tie (equalize health, timer -> 0) — outcome then depends on
-    //       MatchPointDifferential at that moment, same as a real tied TimeOut (see F6-F8 below)
-    //   F6  Set accumulated point differential to +0.50 (next F5 tie -> Player wins on points)
-    //   F7  Set accumulated point differential to -0.50 (next F5 tie -> Opponent wins on points)
-    //   F8  Set accumulated point differential to 0 (next F5 tie -> TrueDraw, round repeats)
+    //   F5  Force a round-level Draw (equalize health, timer -> 0) — NEVER awards a round win to
+    //       either side. Only matters as a MATCH tie-break trigger on the FINAL round (see F6-F8).
+    //   F6  Set accumulated point differential to +0.50 (tied match after final round -> Player wins on points)
+    //   F7  Set accumulated point differential to -0.50 (tied match after final round -> Opponent wins on points)
+    //   F8  Set accumulated point differential to 0 (tied match after final round -> exact-tie fallback)
     //   F9  Force Match WIN  — jumps straight to Match Result (Win/Level Up/Continue) for testing
     //   F10 Force Match LOSE — jumps straight to Match Result (Lose/Fight Again/Replay Song) for testing
     //   F11 +1 Extra Life (GameSession.FightResources.ExtraLives) — so "Lose with a life" is testable
@@ -143,7 +143,7 @@ public class FightDebugHUD : MonoBehaviour
         if (kb.f5Key.wasPressedThisFrame)
         {
             FightMatchController.Instance?.DebugForceDraw();
-            AddLog("Debug: force health-tie");
+            AddLog("Debug: force round-level Draw");
         }
         if (kb.f6Key.wasPressedThisFrame) DebugSetDifferential(0.5f);
         if (kb.f7Key.wasPressedThisFrame) DebugSetDifferential(-0.5f);
@@ -200,10 +200,10 @@ public class FightDebugHUD : MonoBehaviour
 
         const float x = 8f, w = 420f;
         float y = 8f;
-        float h = 26f + 18f * 3f + 18f + 16f * 8f + 18f + 16f * 10f + 18f + 16f * 7f + 18f + 16f * 10f + 18f + 16f * 6f + 18f + 16f * 4f + 18f + 16f * 14f + 18f + 16f * (MaxLogLines + 1);
+        float h = 26f + 18f * 3f + 18f + 16f * 8f + 18f + 16f * 12f + 18f + 16f * 8f + 18f + 16f * 10f + 18f + 16f * 6f + 18f + 16f * 4f + 18f + 16f * 14f + 18f + 16f * (MaxLogLines + 1);
 
         GUI.Box(new Rect(x, y, w, h), "", _boxStyle);
-        GUI.Label(new Rect(x + 6f, y + 2f, w - 12f, 16f), "FIGHT DEBUG (F1 | F2/3 KO | F4 timer | F5 tie | F6/7/8 diff | F9/10 win/lose | F11 +life | F12 ad)", _headerStyle);
+        GUI.Label(new Rect(x + 6f, y + 2f, w - 12f, 16f), "FIGHT DEBUG (F1 | F2/3 KO | F4 timer | F5 draw | F6/7/8 diff | F9/10 win/lose | F11 +life | F12 ad)", _headerStyle);
         y += 22f;
 
         string dir = _input != null ? $"{_input.CurrentHorizontal} / {_input.CurrentVertical}" : "(no FighterInputController)";
@@ -240,19 +240,13 @@ public class FightDebugHUD : MonoBehaviour
         {
             string playerVisual   = _player.UsedFallbackCapsule   ? "capsule" : "prefab";
             string opponentVisual = _opponent.UsedFallbackCapsule ? "capsule" : "prefab";
-            Row(x, ref y, w, $"  Player pos: {_player.transform.position:F2}  ({playerVisual})");
-            Row(x, ref y, w, $"  Opponent pos: {_opponent.transform.position:F2}  ({opponentVisual})");
-            Row(x, ref y, w, $"  DistanceToOpponent: {_player.DistanceToOpponent:F2}");
-            Row(x, ref y, w, $"  Player facing: {(_player.FacingRight ? "Right" : "Left")}   Opponent facing: {(_opponent.FacingRight ? "Right" : "Left")}");
-            if (_player.Movement != null)
-            {
-                Row(x, ref y, w, $"  Player movement locked: {_player.Movement.IsLocked}   multiplier: {_player.Movement.Multiplier:F2}");
-                Row(x, ref y, w, $"  Last lunge: {_player.Movement.LastLungeDistance:F2}");
-            }
-            else
-            {
-                Row(x, ref y, w, "  (no FighterMovement on Player)");
-            }
+            Row(x, ref y, w, $"  Player pos: {_player.transform.position:F2}  X={_player.transform.position.x:F2} Z(depth)={_player.transform.position.z:F2}  ({playerVisual})");
+            Row(x, ref y, w, $"  Opponent pos: {_opponent.transform.position:F2}  X={_opponent.transform.position.x:F2} Z(depth)={_opponent.transform.position.z:F2}  ({opponentVisual})");
+            Row(x, ref y, w, $"  Planar distance (XZ): {_player.DistanceToOpponent:F2}");
+            Row(x, ref y, w, $"  Player ForwardXZ: {_player.ForwardXZ:F2}   SideXZ: {_player.SideXZ:F2}");
+            Row(x, ref y, w, $"  Opponent ForwardXZ: {_opponent.ForwardXZ:F2}   SideXZ: {_opponent.SideXZ:F2}");
+            DrawMovementDebugRow("Player", _player, x, ref y, w);
+            DrawMovementDebugRow("Opponent", _opponent, x, ref y, w);
         }
         y += 4f;
 
@@ -264,12 +258,13 @@ public class FightDebugHUD : MonoBehaviour
         }
         else
         {
-            Row(x, ref y, w, $"  Round {match.CurrentRound}   RoundActive: {match.RoundActive}   Timer: {match.RoundTimeRemaining:F1}s");
+            Row(x, ref y, w, $"  Round {match.CurrentRound}/{match.MaxRounds}   RoundActive: {match.RoundActive}   Timer: {match.RoundTimeRemaining:F1}s");
             Row(x, ref y, w, $"  Rounds won — Player: {match.PlayerRoundsWon}   Opponent: {match.OpponentRoundsWon}");
 
             string leader = match.MatchPointDifferential > 0f ? "Player" : match.MatchPointDifferential < 0f ? "Opponent" : "(even)";
             Row(x, ref y, w, $"  Point differential — last round: {match.LastRoundDifferential:+0.00;-0.00}   accumulated: {match.MatchPointDifferential:+0.00;-0.00} ({leader})");
             Row(x, ref y, w, $"  Last round resolution: {match.LastRoundResolution}");
+            Row(x, ref y, w, $"  Match resolution: {(match.LastMatchResolution.HasValue ? match.LastMatchResolution.Value.ToString() : "(match not decided yet)")}");
         }
         y += 4f;
 
@@ -375,6 +370,16 @@ public class FightDebugHUD : MonoBehaviour
         foreach (var line in _log) Row(x, ref y, w, "  " + line);
     }
 
+    private void DrawMovementDebugRow(string label, FighterActor actor, float x, ref float y, float w)
+    {
+        var movement = actor.Movement;
+        if (movement == null) { Row(x, ref y, w, $"  ({label}: no FighterMovement)"); return; }
+
+        string sidestep = movement.SidestepDirection == 0 ? "-" : (movement.SidestepDirection > 0 ? "+Side" : "-Side");
+        Row(x, ref y, w, $"  {label} move: locked={movement.IsLocked} mult={movement.Multiplier:F2} lunge={movement.LastLungeDistance:F2} " +
+                          $"sidestep={sidestep} sidewalk={movement.IsSideWalking}");
+    }
+
     private void DrawFighterSummary(string label, FighterActor actor, float x, ref float y, float w)
     {
         if (actor == null) { Row(x, ref y, w, $"  {label}: (not found)"); return; }
@@ -418,11 +423,15 @@ public class FightDebugHUD : MonoBehaviour
 
     private static string DescribeDefenseResponse(FightAIIntention intention) => intention switch
     {
-        FightAIIntention.Guard       => "Standing Guard",
-        FightAIIntention.CrouchGuard => "Crouch Guard",
-        FightAIIntention.Crouch      => "Crouch (evade High)",
-        FightAIIntention.Jump        => "Jump (escape Unblockable)",
-        FightAIIntention.Retreat     => "Retreat",
+        FightAIIntention.Guard         => "Standing Guard",
+        FightAIIntention.CrouchGuard   => "Crouch Guard",
+        FightAIIntention.Crouch        => "Crouch (evade High)",
+        FightAIIntention.Jump          => "Jump (escape Unblockable)",
+        FightAIIntention.Retreat       => "Retreat",
+        FightAIIntention.BackDash      => "BackDash",
+        FightAIIntention.SideStepLeft  => "SideStep (dodge)",
+        FightAIIntention.SideStepRight => "SideStep (dodge)",
+        FightAIIntention.SideWalk      => "SideWalk (reposition)",
         _ => "(none)",
     };
 

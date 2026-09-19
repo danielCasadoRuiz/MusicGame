@@ -19,4 +19,11 @@ public class FightCameraConfig : ScriptableObject
     [Header("Smoothing")]
     public float positionSmoothTime = 0.15f;
     public float rotationSmoothSpeed = 6f;
+
+    [Tooltip("How quickly the camera's own orbit angle follows the live line between the two " +
+             "fighters (see FightCameraController's own doc) — a SEPARATE, typically slower knob " +
+             "than positionSmoothTime/rotationSmoothSpeed above, so a quick sidestep/backdash " +
+             "changing the fighters' relative depth doesn't visibly whip the camera around it; only " +
+             "a sustained change in the combat line's angle actually re-orbits the view.")]
+    public float orbitSmoothSpeed = 3f;
 }

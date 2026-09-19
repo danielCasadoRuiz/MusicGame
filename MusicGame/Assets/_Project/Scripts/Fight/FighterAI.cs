@@ -21,6 +21,10 @@ public enum FightAIIntention
     ComboAttack,
     SpecialAttack,
     Punish,
+    SideStepLeft,
+    SideStepRight,
+    SideWalk,
+    BackDash,
 }
 
 /// <summary>
@@ -186,7 +190,19 @@ public class FighterAI : MonoBehaviour
 
     private bool RollChance(double probability) => _random.NextDouble() < probability;
 
-    private float ApproachSign() => Mathf.Sign(_opponent.transform.position.x - _actor.transform.position.x);
+    /// <summary>The ABSOLUTE raw-axis value (see IFightInputSource.Horizontal's own -1..+1 contract)
+    /// that currently resolves to Forward for this fighter — i.e. exactly what to feed
+    /// AIFightInputSource.SetDirection to move towards the opponent (negate it for Back).
+    ///
+    /// Deliberately just mirrors _actor.FacingRight (+1 when true, -1 when false) instead of
+    /// independently recomputing a world-X sign: FacingRight is, BY DEFINITION, "a positive raw
+    /// axis value currently means Forward" (see RealFightFacingProvider.FacingRight's own doc — it's
+    /// now resolved against the actual Fight camera's own screen-right axis, not world X, since the
+    /// camera orbits the live fighters' line). Mirroring it here means this AI automatically stays
+    /// correct under that same camera-relative convention WITHOUT ever touching the camera itself —
+    /// no separate, parallel "which way is forward" computation exists to drift out of sync with
+    /// what FighterInputController will actually resolve this exact value against.</summary>
+    private float ApproachSign() => _actor.FacingRight ? 1f : -1f;
 
     // ── Decision ──────────────────────────────────────────────────────────────
 
@@ -240,6 +256,7 @@ public class FighterAI : MonoBehaviour
         float comboSkill    = _profile != null ? _profile.comboSkill : 0.5f;
         float specialUsage  = _profile != null ? _profile.specialUsage : 0.5f;
         float punishSkill   = _profile != null ? _profile.punishSkill : 0.5f;
+        float spacingAccuracy = _profile != null ? _profile.spacingAccuracy : 0.5f;
 
         float spacingNoise = SpacingNoise();
         float meleeRange = _meleeRange + spacingNoise;
@@ -315,6 +332,28 @@ public class FighterAI : MonoBehaviour
                              ctx.Distance <= meleeRange * 1.2f;
         scores[FightAIIntention.Punish] = punishWindow ? Mathf.Lerp(0.3f, 1.3f, punishSkill) : 0f;
 
+        // Sidestep — reacting to an incoming attack that's actually dodgeable this way (task's own
+        // explicit "especialment contra projectils lineals, moves amb poc tracking" — Homing is
+        // deliberately excluded here since a sidestep isn't meant to beat it, even though none are
+        // authored yet). Split evenly between Left/Right — either genuinely dodges a straight-line
+        // attack (see FighterAttack._activeAttackForward's own doc), so the actual side is
+        // arbitrary; still fully gated by defenseProbability like every other defensive choice.
+        bool incomingIsDodgeable = incoming.present && incoming.guardType != GuardType.Unblockable &&
+                                    incoming.tracking != FightHitTracking.Homing;
+        float sidestepBase = incomingIsDodgeable ? 0.55f : 0.03f;
+        scores[FightAIIntention.SideStepLeft]  = sidestepBase * defense * 0.5f;
+        scores[FightAIIntention.SideStepRight] = sidestepBase * defense * 0.5f;
+
+        // SideWalk — a puntual repositioning tool, never a constant circling (task's own explicit
+        // "no facis que doni voltes constants"): low baseline, only rises a little with
+        // spacingAccuracy, and only when nothing urgent (no incoming attack) is happening.
+        scores[FightAIIntention.SideWalk] = incoming.present ? 0f : 0.05f * spacingAccuracy;
+
+        // BackDash — an alternative, more decisive burst of separation than plain Retreat when the
+        // opponent is already too close AND actively attacking.
+        scores[FightAIIntention.BackDash] = (opponentAttacking && ctx.Distance < meleeRange * 1.1f)
+            ? Mathf.Lerp(0.1f, 0.5f, defense) : 0f;
+
         return scores;
     }
 
@@ -326,7 +365,7 @@ public class FighterAI : MonoBehaviour
         return (float)(_random.NextDouble() * 2.0 - 1.0) * error;
     }
 
-    private (AttackHeight height, GuardType guardType, bool present) DetectIncomingAttack(FightAIContext ctx)
+    private (AttackHeight height, GuardType guardType, FightHitTracking tracking, bool present) DetectIncomingAttack(FightAIContext ctx)
     {
         if (ctx.OpponentCurrentMove != null &&
             (ctx.OpponentMovePhase == FighterMoveState.Startup || ctx.OpponentMovePhase == FighterMoveState.Active))
@@ -335,13 +374,14 @@ public class FighterAI : MonoBehaviour
                 ctx.OpponentCurrentMove.hits != null && ctx.OpponentCurrentMove.hits.Length > 0)
             {
                 var hit = ctx.OpponentCurrentMove.hits[0];
-                return (hit.attackHeight, hit.guardType, true);
+                return (hit.attackHeight, hit.guardType, hit.tracking, true);
             }
         }
         if (ctx.IncomingProjectile != null && ctx.IncomingProjectile.HitDefinition != null)
-            return (ctx.IncomingProjectile.HitDefinition.attackHeight, ctx.IncomingProjectile.HitDefinition.guardType, true);
+            return (ctx.IncomingProjectile.HitDefinition.attackHeight, ctx.IncomingProjectile.HitDefinition.guardType,
+                    ctx.IncomingProjectile.HitDefinition.tracking, true);
 
-        return (AttackHeight.Mid, GuardType.Blockable, false);
+        return (AttackHeight.Mid, GuardType.Blockable, FightHitTracking.Linear, false);
     }
 
     // ── Range estimation (see class doc: "no vull que l'AI consulti overlap futur exacte") ───────
@@ -406,6 +446,13 @@ public class FighterAI : MonoBehaviour
             FightAIIntention.ComboAttack    => ComboRoutine(dirSign),
             FightAIIntention.SpecialAttack  => SpecialRoutine(dirSign),
             FightAIIntention.Punish         => (_profile != null && _profile.comboSkill > 0.5f && RollChance(0.5)) ? ComboRoutine(dirSign) : NormalAttackRoutine(),
+            // BackDash reuses DashRunRoutine verbatim with the sign negated (away from the
+            // opponent) — "Back,Back" is exactly "Forward,Forward" with the absolute direction
+            // flipped, never a second, parallel dash implementation (see FighterMovement's own doc).
+            FightAIIntention.BackDash       => DashRunRoutine(-dirSign, false),
+            FightAIIntention.SideStepLeft   => SidestepRoutine(-1),
+            FightAIIntention.SideStepRight  => SidestepRoutine(1),
+            FightAIIntention.SideWalk       => SideWalkRoutine(RollChance(0.5) ? -1 : 1),
             _ => null,
         };
 
@@ -435,9 +482,45 @@ public class FighterAI : MonoBehaviour
 
     private IEnumerator JumpRoutine()
     {
+        // Must clear FighterMovement's own tap/hold threshold to resolve as a real Jump instead of
+        // a Sidestep tap (see that class's own doc on Up/Down now being dual-purpose) — held for
+        // threshold + a small margin, exactly like a human's held-but-brief jump press.
+        float holdTime = (_arenaConfig != null ? _arenaConfig.directionHoldThreshold : 0.15f) + 0.05f;
         _inputSource.SetDirection(0f, 1f);
-        yield return null;
-        yield return null;
+        yield return new WaitForSeconds(holdTime);
+    }
+
+    private IEnumerator SidestepRoutine(int sideSign)
+    {
+        // A short tap — safely under FighterMovement's own directionHoldThreshold — real input
+        // through the exact same tap/hold pipeline a human uses (see class doc's own "no fer
+        // trampes" checklist), never a direct Sidestep trigger.
+        float threshold = _arenaConfig != null ? _arenaConfig.directionHoldThreshold : 0.15f;
+        float tapTime = Mathf.Min(0.06f, threshold * 0.4f);
+        _inputSource.SetDirection(0f, sideSign);
+        yield return new WaitForSeconds(tapTime);
+        _inputSource.SetDirection(0f, 0f);
+        yield return new WaitForSeconds(0.05f);
+    }
+
+    private IEnumerator SideWalkRoutine(int sideSign)
+    {
+        // Double-tap the SAME vertical direction, then HOLD the second press well past the
+        // threshold — exactly what FighterMovement's own double-tap+hold detection requires; a
+        // genuinely real input sequence, never a direct SideWalk trigger.
+        float threshold        = _arenaConfig != null ? _arenaConfig.directionHoldThreshold : 0.15f;
+        float doubleTapWindow  = _arenaConfig != null ? _arenaConfig.doubleTapWindow : 0.3f;
+        float tapTime = Mathf.Min(0.06f, threshold * 0.4f);
+        float gap     = Mathf.Min(0.05f, doubleTapWindow * 0.3f);
+
+        _inputSource.SetDirection(0f, sideSign);
+        yield return new WaitForSeconds(tapTime);
+        _inputSource.SetDirection(0f, 0f);
+        yield return new WaitForSeconds(gap);
+        _inputSource.SetDirection(0f, sideSign);
+        // Held well past the threshold — walks sideways for a bit, then releases like a human
+        // letting go, rather than sidewalking forever.
+        yield return new WaitForSeconds(threshold + 0.6f);
     }
 
     private IEnumerator DashRunRoutine(float dirSign, bool run)

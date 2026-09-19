@@ -89,14 +89,29 @@ public class FighterActor : MonoBehaviour
     /// FighterHurtbox children that self-register via RegisterHurtbox. See FighterHurtbox's own doc.</summary>
     public IReadOnlyList<FighterHurtbox> Hurtboxes => _hurtboxes;
 
-    /// <summary>True while this actor's gameplay-root Forward is world +X. Frozen (not recomputed)
-    /// while MoveController.IsFacingLocked OR HitReaction.IsInHitStun is true — see Update.</summary>
+    /// <summary>Coarse convenience only — see IFightFacingProvider's own doc. Frozen (not
+    /// recomputed) while MoveController.IsFacingLocked OR HitReaction.IsInHitStun/IsInBlockStun is
+    /// true — see Update.</summary>
     public bool FacingRight { get; private set; } = true;
 
-    /// <summary>Straight-line distance to the opponent along the arena's main axis (world X) — the
-    /// one place this is computed; see class doc.</summary>
+    /// <summary>Unit vector, world-space, XZ-plane — the REAL direction towards the opponent right
+    /// now (see IFightFacingProvider.ForwardXZ's own doc). The single thing movement/hitbox/
+    /// projectile/knockback placement should read for "which way is forward" — frozen alongside
+    /// FacingRight while locked (see Update).</summary>
+    public Vector3 ForwardXZ { get; private set; } = Vector3.right;
+
+    /// <summary>Unit vector, world-space, XZ-plane, perpendicular to ForwardXZ (Vector3.Cross(up,
+    /// ForwardXZ)) — this fighter's own "sideways" axis for sidestep/sidewalk/hitbox-offset
+    /// purposes. Naturally points in roughly opposite world directions for the two fighters when
+    /// they're facing each other, exactly like a real "step to MY right" does.</summary>
+    public Vector3 SideXZ { get; private set; } = Vector3.forward;
+
+    /// <summary>Straight-line distance to the opponent on the horizontal (XZ) combat plane — the
+    /// one place this is computed; see class doc. No longer a pure world-X difference now that
+    /// fighters can occupy a small depth range (see FightArenaConfig.minDepth/maxDepth).</summary>
     public float DistanceToOpponent => _opponent != null
-        ? Mathf.Abs(transform.position.x - _opponent.transform.position.x)
+        ? Vector2.Distance(new Vector2(transform.position.x, transform.position.z),
+                            new Vector2(_opponent.transform.position.x, _opponent.transform.position.z))
         : 0f;
 
     private FighterActor _opponent;
@@ -200,7 +215,9 @@ public class FighterActor : MonoBehaviour
         if (_opponent != null && _facingProvider != null)
         {
             FacingRight = _facingProvider.FacingRight;
-            transform.rotation = Quaternion.LookRotation(FacingRight ? Vector3.right : Vector3.left, Vector3.up);
+            ForwardXZ   = _facingProvider.ForwardXZ;
+            SideXZ      = Vector3.Cross(Vector3.up, ForwardXZ).normalized;
+            transform.rotation = Quaternion.LookRotation(ForwardXZ, Vector3.up);
         }
     }
 
@@ -212,8 +229,17 @@ public class FighterActor : MonoBehaviour
         // mechanism, no per-move or per-hit special-casing (see this phase's own scope note).
         bool locked = (MoveController != null && MoveController.IsFacingLocked) ||
                       (HitReaction != null && (HitReaction.IsInHitStun || HitReaction.IsInBlockStun));
-        if (!locked) FacingRight = _facingProvider.FacingRight;
+        if (!locked)
+        {
+            FacingRight = _facingProvider.FacingRight;
+            ForwardXZ   = _facingProvider.ForwardXZ;
+            SideXZ      = Vector3.Cross(Vector3.up, ForwardXZ).normalized;
+        }
 
-        transform.rotation = Quaternion.LookRotation(FacingRight ? Vector3.right : Vector3.left, Vector3.up);
+        // While locked, ForwardXZ/SideXZ simply hold their last value (frozen) — the visual
+        // rotation freezes with them, exactly matching lockFacingDuringMove's own "no gira a mig
+        // move" contract; the instant the lock clears, this naturally re-orients towards the
+        // opponent's CURRENT position again, cross-up included.
+        transform.rotation = Quaternion.LookRotation(ForwardXZ, Vector3.up);
     }
 }

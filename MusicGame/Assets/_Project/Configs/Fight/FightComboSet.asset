@@ -115,3 +115,15 @@ MonoBehaviour:
     maxTimeBetweenInputs: 0.5
     priority: 0
     moveId: move_special_fireball
+  - id: backdash
+    debugName: Back-Back Backdash
+    steps:
+    - button: 2
+      horizontal: 2
+      vertical: 0
+    - button: 2
+      horizontal: 2
+      vertical: 0
+    maxTimeBetweenInputs: 0.35
+    priority: 0
+    moveId: move_backdash

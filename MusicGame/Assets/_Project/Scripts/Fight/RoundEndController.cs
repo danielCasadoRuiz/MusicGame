@@ -9,11 +9,11 @@ using UnityEngine;
 /// itself decides a winner or whether the match continues (see FightMatchController's own doc on why
 /// that branch was moved out of every screen controller).
 ///
-/// TWO SEQUENCE SHAPES, both driven purely by RoundEndedEvent.Resolution:
-///   - Decisive / TrueDraw: reason ("KO!"/"TIME UP!") -> result ("X WINS THE ROUND" / "DRAW").
-///   - DrawResolvedByPoints: reason -> "DRAW" -> (a short configurable pause) -> "X WINS ON POINTS"
-///     (+ the point differential, when nonzero) — the extra beat exists so the draw itself still
-///     reads clearly before the tie-break reveal, per this phase's own explicit UI ask.
+/// ONE SEQUENCE SHAPE, always: reason ("KO!"/"TIME UP!") -> result ("X WINS THE ROUND" / "DRAW").
+/// A Draw round is ALWAYS shown at face value here — never "X WINS ON POINTS" — even for the very
+/// last round of the match: that phrasing belongs on the MATCH result screen instead (see
+/// MatchResultController's own doc on MatchResolution), never faked as a round win here (this
+/// format's own explicit "Round result != Match resolution" rule).
 ///
 /// When its own display sequence finishes, it calls FightMatchController.NotifyRoundEndDisplayComplete()
 /// — a pure "my animation is done" notification, exactly the kind of thing this phase's own
@@ -37,6 +37,7 @@ public class RoundEndController : MonoBehaviour
 
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
     private System.Action<RoundEndedEvent>             _onRoundEnded;
+    private System.Action<GameFlowStateChangedEvent>   _onGameFlowChanged;
 
     private void Awake()
     {
@@ -60,15 +61,28 @@ public class RoundEndController : MonoBehaviour
         {
             if (e.Current == FightFlowState.RoundEnd) BeginSequence();
         };
+        // Top-level safety net — see VersusScreenController.OnEnable's own doc on why this is needed
+        // (FightFlowStateChangedEvent alone freezes the instant Fight itself is exited — this
+        // sequence has no other way to know Fight ended mid-KO/TIME-UP/result display).
+        _onGameFlowChanged = e => { if (e.Previous == GameFlowState.Fight) ExitFight(); };
         EventBus.Subscribe(_onRoundEnded);
         EventBus.Subscribe(_onFightFlowChanged);
+        EventBus.Subscribe(_onGameFlowChanged);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onRoundEnded);
         EventBus.Unsubscribe(_onFightFlowChanged);
+        EventBus.Unsubscribe(_onGameFlowChanged);
         if (_routine != null) { StopCoroutine(_routine); _routine = null; }
+    }
+
+    private void ExitFight()
+    {
+        if (_routine != null) { StopCoroutine(_routine); _routine = null; }
+        if (_root != null) _root.gameObject.SetActive(false);
+        _pendingData = null;
     }
 
     // ── Prefab path — see RoundEndView's own doc ─────────────────────────────────
@@ -116,21 +130,8 @@ public class RoundEndController : MonoBehaviour
         _text.text = Loc.Get(isKO ? "Fight.KO" : "Fight.TimeUp");
         yield return new WaitForSeconds(reasonDuration);
 
-        if (data.Resolution == RoundResolution.DrawResolvedByPoints)
-        {
-            float pointsPause = _config != null ? Mathf.Max(0f, _config.drawPointsPauseDuration) : 1f;
-
-            _text.text = Loc.Get("Fight.RoundDraw");
-            yield return new WaitForSeconds(pointsPause);
-
-            _text.text = PointsWinnerText(data);
-            yield return new WaitForSeconds(resultDuration);
-        }
-        else
-        {
-            _text.text = ResultText(data);
-            yield return new WaitForSeconds(resultDuration);
-        }
+        _text.text = ResultText(data);
+        yield return new WaitForSeconds(resultDuration);
 
         _root.gameObject.SetActive(false);
         _routine = null;
@@ -141,24 +142,10 @@ public class RoundEndController : MonoBehaviour
 
     private static string ResultText(RoundEndedEvent data)
     {
-        if (data.Resolution == RoundResolution.TrueDraw) return Loc.Get("Fight.RoundDraw");
+        if (data.Resolution == RoundResolution.Draw) return Loc.Get("Fight.RoundDraw");
         if (data.Winner == FighterSide.Player)   return Loc.Get("Fight.RoundWinner", Loc.Get("Fight.PlayerName"));
         if (data.Winner == FighterSide.Opponent) return Loc.Get("Fight.RoundWinner", OpponentDisplayName());
         return Loc.Get("Fight.RoundDraw"); // safety net — shouldn't normally be reached
-    }
-
-    private static string PointsWinnerText(RoundEndedEvent data)
-    {
-        string name = data.Winner == FighterSide.Player ? Loc.Get("Fight.PlayerName") : OpponentDisplayName();
-        string headline = Loc.Get("Fight.WinsOnPoints", name);
-
-        // Rounded to whole "points" (0.50 -> 50) purely for a cleaner display — the underlying
-        // value stays a float everywhere else (FightMatchController.MatchPointDifferential).
-        int points = Mathf.RoundToInt(Mathf.Abs(data.AccumulatedPointDifferential) * 100f);
-        if (points == 0) return headline;
-
-        string sign = data.AccumulatedPointDifferential >= 0f ? "+" : "-";
-        return headline + "\n" + Loc.Get("Fight.PointDifference", sign + points);
     }
 
     private static string OpponentDisplayName() =>

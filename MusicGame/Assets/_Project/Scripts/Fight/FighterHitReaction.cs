@@ -77,16 +77,12 @@ public class FighterHitReaction : MonoBehaviour
     {
         if (Mathf.Approximately(distance, 0f) || _opponent == null) return;
 
-        float currentX  = _actor.transform.position.x;
-        float opponentX = _opponent.transform.position.x;
-        // Away from the opponent — in a 1v1 arena, whoever hit this fighter IS the opponent (see
-        // class doc: only one possible attacker/defender pair exists this phase).
-        float sign = currentX >= opponentX ? 1f : -1f;
-
-        float targetX = FightMovementUtility.ClampDeltaX(currentX, sign * distance, opponentX, _arenaConfig);
-        var pos = _actor.transform.position;
-        pos.x = targetX;
-        _actor.transform.position = pos;
+        // Away from the opponent, on the real horizontal combat plane — in a 1v1 arena, whoever hit
+        // this fighter IS the opponent (see class doc), and the OPPONENT's own ForwardXZ already
+        // points from them towards us, so it's exactly the "away from attacker" direction we need —
+        // never assumed to be ±world X (see FighterActor.ForwardXZ's own doc).
+        Vector3 delta = _opponent.ForwardXZ * distance;
+        _actor.transform.position = FightMovementUtility.ClampXZ(_actor.transform.position, delta, _opponent.transform.position, _arenaConfig);
     }
 
     private void Update()

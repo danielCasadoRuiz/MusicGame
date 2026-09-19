@@ -58,6 +58,7 @@ public class OpponentSelectionController : MonoBehaviour
 
     private Coroutine _rouletteRoutine;
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
+    private System.Action<GameFlowStateChangedEvent>  _onGameFlowChanged;
 
     private void Awake()
     {
@@ -82,12 +83,17 @@ public class OpponentSelectionController : MonoBehaviour
             if (e.Current == FightFlowState.OpponentSelection) Show();
             else if (e.Previous == FightFlowState.OpponentSelection) Hide();
         };
+        // Top-level safety net — see VersusScreenController.OnEnable's own doc on why this is needed
+        // (FightFlowStateChangedEvent alone freezes the instant Fight itself is exited).
+        _onGameFlowChanged = e => { if (e.Previous == GameFlowState.Fight) Hide(); };
         EventBus.Subscribe(_onFightFlowChanged);
+        EventBus.Subscribe(_onGameFlowChanged);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onFightFlowChanged);
+        EventBus.Unsubscribe(_onGameFlowChanged);
         StopRoulette();
     }
 

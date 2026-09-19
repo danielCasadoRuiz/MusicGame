@@ -58,6 +58,13 @@ public class MatchResultController : MonoBehaviour
     private MatchEndedEvent? _pendingMatchEnded;
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
     private System.Action<MatchEndedEvent> _onMatchEnded;
+    private System.Action<GameFlowStateChangedEvent> _onGameFlowChanged;
+
+    /// <summary>Set only while Replay Song is waiting for Runner to actually be ready — see
+    /// OnReplaySongClicked's own doc. Lets _onGameStarted below tell "a real Replay Song transition
+    /// finished" apart from GameStartedEvent firing for any unrelated reason.</summary>
+    private bool _awaitingReplaySongReady;
+    private System.Action<GameStartedEvent> _onGameStarted;
 
     private void Awake()
     {
@@ -79,17 +86,66 @@ public class MatchResultController : MonoBehaviour
             if (e.Current == FightFlowState.MatchWon) Show(true);
             else if (e.Current == FightFlowState.MatchLost) Show(false);
             // A fresh match starting over (see FightFlowController's own re-entry announcement) —
-            // hide so a stale result never lingers behind the next Opponent Selection.
-            else if (e.Current == FightFlowState.OpponentSelection) Hide();
+            // clean up so a stale result never lingers behind the next Opponent Selection.
+            else if (e.Current == FightFlowState.OpponentSelection) ExitFightUI();
+        };
+        // See OnReplaySongClicked's own doc — this is the REAL "Runner is fully ready" signal
+        // (GameplayManager only publishes it once the level is generated AND the player/camera are
+        // already placed), the exact same one AnalyzingScreenController already uses to hide its own
+        // full-screen cover after a scene transition into Gameplay. _awaitingReplaySongReady gates
+        // this so an unrelated GameStartedEvent (e.g. a later real Gameplay entry) never hides this
+        // screen by accident.
+        _onGameStarted = _ =>
+        {
+            if (!_awaitingReplaySongReady) return;
+            _awaitingReplaySongReady = false;
+            Hide();
+            SetReplaySongButtonsInteractable(true);
+        };
+        // Top-level safety net — every other Fight-exclusive screen gets the exact same one (see
+        // VersusScreenController.OnEnable's own doc): FightFlowStateChangedEvent alone freezes the
+        // instant top-level GameFlowState leaves Fight (FightFlowController stops publishing), so
+        // without this, a result screen left showing at MatchWon/MatchLost (e.g. Main Menu clicked)
+        // would stay active forever — exactly the reported "Match Result still up under Runner's
+        // countdown" bug. The ONE exception: while _awaitingReplaySongReady is true, this screen IS
+        // the intended cover for that specific transition (see OnReplaySongClicked's own doc) — the
+        // very same GameFlowStateChangedEvent that fires here (Previous == Fight, on the Replay Song
+        // click itself) is what starts that transition, so skipping cleanup in that one case is what
+        // keeps Replay Song's fix intact; _onGameStarted above still guarantees it gets cleaned up
+        // for real the moment Runner is actually ready.
+        _onGameFlowChanged = e =>
+        {
+            if (e.Previous != GameFlowState.Fight) return;
+            if (_awaitingReplaySongReady) return;
+            ExitFightUI();
         };
         EventBus.Subscribe(_onMatchEnded);
         EventBus.Subscribe(_onFightFlowChanged);
+        EventBus.Subscribe(_onGameStarted);
+        EventBus.Subscribe(_onGameFlowChanged);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onMatchEnded);
         EventBus.Unsubscribe(_onFightFlowChanged);
+        EventBus.Unsubscribe(_onGameStarted);
+        EventBus.Unsubscribe(_onGameFlowChanged);
+    }
+
+    /// <summary>The one real cleanup point for this screen when Fight itself is genuinely being left
+    /// behind (as opposed to mid-Replay-Song-transition — see OnEnable's own doc) — hides the root,
+    /// closes the reward-ad sub-panel, re-enables every button, and drops the cached match data so a
+    /// stale MatchEndedEvent can never leak into a later Show(). Also reachable via the normal
+    /// FightFlowState.OpponentSelection re-entry hide (a fresh match starting over within the SAME
+    /// Fight session) — this is the stronger, top-level version of that same idea.</summary>
+    private void ExitFightUI()
+    {
+        Hide();
+        HideRewardAdModal();
+        SetReplaySongButtonsInteractable(true);
+        _awaitingReplaySongReady = false;
+        _pendingMatchEnded = null;
     }
 
     // ── Prefab path — see MatchResultView's own doc ──────────────────────────────
@@ -239,6 +295,13 @@ public class MatchResultController : MonoBehaviour
     {
         var data = _pendingMatchEnded ?? default;
 
+        // A fresh result screen always starts from a clean slate — in particular this cancels any
+        // Replay Song wait left over from a PREVIOUS match's screen (should never happen in practice,
+        // since OpponentSelection already hides this screen first, but never leave buttons disabled
+        // or a stale subscription gate armed either way).
+        _awaitingReplaySongReady = false;
+        SetReplaySongButtonsInteractable(true);
+
         _titleText.text   = Loc.Get(playerWon ? "Fight.YouWin" : "Fight.YouLose");
         _rivalText.text   = OpponentDisplayName();
         _roundsText.text  = $"{data.PlayerRoundsWon} - {data.OpponentRoundsWon}";
@@ -259,6 +322,18 @@ public class MatchResultController : MonoBehaviour
 
     private void Hide() => _root.gameObject.SetActive(false);
 
+    /// <summary>Disables Fight Again/Replay Song/Main Menu the instant Replay Song is clicked (see
+    /// its own doc — prevents a double-click firing a second scene transition while the first is
+    /// still loading underneath this still-visible screen), re-enabled once it's actually hidden
+    /// again (either by GameStartedEvent completing the transition, or by Show() starting a fresh
+    /// result screen).</summary>
+    private void SetReplaySongButtonsInteractable(bool interactable)
+    {
+        if (_fightAgainButton != null) _fightAgainButton.interactable = interactable;
+        if (_replaySongButton != null) _replaySongButton.interactable = interactable;
+        if (_mainMenuButton != null) _mainMenuButton.interactable = interactable;
+    }
+
     private void RefreshFightAgainLabel()
     {
         int lives = ExtraLives;
@@ -277,7 +352,19 @@ public class MatchResultController : MonoBehaviour
         string reason    = Loc.Get(data.LastRoundReason == RoundEndReason.KO ? "Fight.KO" : "Fight.TimeUp");
         int playerHp     = Mathf.RoundToInt(data.PlayerHealthPercent * 100f);
         int opponentHp   = Mathf.RoundToInt(data.OpponentHealthPercent * 100f);
-        return reason + "\n" + Loc.Get("MatchResult.FinalHealth", playerHp.ToString(), opponentHp.ToString());
+        string summary   = reason + "\n" + Loc.Get("MatchResult.FinalHealth", playerHp.ToString(), opponentHp.ToString());
+
+        // The round scoreboard (_roundsText, e.g. "1-1") always stays honest about what actually
+        // happened round by round — this line is the ONLY place a points/fallback decision is ever
+        // surfaced, deliberately kept separate from that scoreboard (this format's own explicit
+        // "Round result != Match resolution" rule — never fake a Round 3 win to explain this).
+        if (data.Resolution == MatchResolution.PointsTiebreak || data.Resolution == MatchResolution.ExactTieFallback)
+        {
+            string winnerName = data.Winner == FighterSide.Player ? Loc.Get("Fight.PlayerName") : OpponentDisplayName();
+            summary += "\n" + Loc.Get("Fight.WinsOnPoints", winnerName);
+        }
+
+        return summary;
     }
 
     private static string OpponentDisplayName() =>
@@ -310,22 +397,35 @@ public class MatchResultController : MonoBehaviour
         FightFlowController.Instance?.RequestState(FightFlowState.VersusIntro);
     }
 
+    /// <summary>
+    /// Requests GameFlowState.Gameplay DIRECTLY — SongAnalysis is never requested here (unchanged;
+    /// see class doc). GameSession.SelectedSong/Profile already hold the exact song + analysis that
+    /// led to this Fight (nothing overwrites them during a Fight session), so SceneFlowController.
+    /// LoadMode(Runner) loads a completely FRESH Runner.unity, whose own RunnerSceneBootstrap.
+    /// OnEnable() re-applies GameSession.SelectedSong.Clip and re-publishes GameSession.Profile via
+    /// SongProfileReadyEvent — the EXACT same bootstrap a normal Song Selection -> Play entry uses,
+    /// never duplicated here. A genuinely new run of the same, already-analyzed song. Does NOT
+    /// consume a life.
+    ///
+    /// VISUAL: this path skips SongAnalysis/AnalyzingScreen — which is exactly what leaves it with no
+    /// full-screen cover of its own for the async Runner scene load, unlike a normal Play entry
+    /// (AnalyzingScreenController's own doc explains it stays up through that entire gap for THAT
+    /// path). Hiding this screen immediately here would expose several raw frames of the Fight arena/
+    /// stripped HUD/badly-placed camera underneath while Runner loads — so instead THIS screen stays
+    /// fully visible and becomes the cover for that gap: buttons are disabled (no double-click
+    /// firing a second transition) and Hide() is deferred to _onGameStarted, the same real "Runner is
+    /// fully ready" signal (GameStartedEvent — GameplayManager only publishes it once the level is
+    /// generated AND the player/camera are correctly placed) AnalyzingScreenController already
+    /// reuses for this exact purpose — never an arbitrary WaitForSeconds timer.
+    /// </summary>
     private void OnReplaySongClicked()
     {
-        Debug.Log("[MatchResultController] Replay Song clicked -> requesting GameFlowState.Gameplay directly (SongAnalysis is never requested here).");
-        Hide();
+        if (_awaitingReplaySongReady) return; // already in flight — ignore a stray extra click
+        Debug.Log("[MatchResultController] Replay Song clicked -> requesting GameFlowState.Gameplay directly (SongAnalysis is never requested here); this screen stays visible until GameStartedEvent.");
+
+        SetReplaySongButtonsInteractable(false);
+        _awaitingReplaySongReady = true;
         FightMusicController.Instance?.Stop();
-        // GameSession.SelectedSong/Profile already hold the exact song + analysis that led to this
-        // Fight — nothing overwrites them during a Fight session — so this goes STRAIGHT to
-        // GameFlowState.Gameplay, never through SongAnalysis/AnalyzingScreen (task's own explicit
-        // "no vull veure aquella pantalla en absolut" requirement, NOT satisfied merely by relying on
-        // a cache hit being fast — see class doc). SceneFlowController.LoadMode(Runner) then loads a
-        // completely FRESH Runner.unity, whose own RunnerSceneBootstrap.OnEnable() re-applies
-        // GameSession.SelectedSong.Clip and re-publishes GameSession.Profile via
-        // SongProfileReadyEvent — the EXACT same bootstrap a normal Song Selection -> Play entry
-        // uses, never duplicated here. Every run-scoped counter/timeline/player-position/MusicClock/
-        // HUD state is a brand new instance by construction (a full scene reload, not an in-place
-        // reset) — a genuinely new run of the same, already-analyzed song. Does NOT consume a life.
         AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.Gameplay);
     }
 

@@ -41,6 +41,15 @@ public class FighterAttack : MonoBehaviour
     private FightMoveDefinition _activeMove;
     private readonly HashSet<FighterActor> _hitTargetsThisWindow = new();
 
+    // Captured ONCE, the instant this move's Active phase begins — see FightHitTracking's own doc.
+    // Linear (the only behavior implemented this phase) keeps hitbox placement fixed to the
+    // attacker's facing AT THAT MOMENT for the whole Active window, which is what actually lets a
+    // sidestep dodge it (the attacker's LIVE facing is usually frozen anyway via
+    // lockFacingDuringMove, but capturing explicitly stays correct even for a move that isn't).
+    // Partial/Homing tracking would re-sample these mid-Active instead — not implemented this phase.
+    private Vector3 _activeAttackForward = Vector3.right;
+    private Vector3 _activeAttackSide = Vector3.forward;
+
     private System.Action<FightMovePhaseChangedEvent> _onPhaseChanged;
     private System.Action<FightFlowStateChangedEvent> _onFlowChanged;
 
@@ -62,6 +71,8 @@ public class FighterAttack : MonoBehaviour
             {
                 _activeMove = e.Move;
                 _hitTargetsThisWindow.Clear();
+                _activeAttackForward = _actor.ForwardXZ;
+                _activeAttackSide    = _actor.SideXZ;
 
                 if (_activeMove != null && _activeMove.attackDelivery == AttackDelivery.Projectile)
                 {
@@ -122,10 +133,16 @@ public class FighterAttack : MonoBehaviour
 
     private Vector3 ComputeWorldCenter(FightHitDefinition hitDef)
     {
-        // Authored as if FacingRight were true — mirror X when actually facing left. See
-        // FightHitDefinition.localOffset's own doc.
-        float sign = _actor.FacingRight ? 1f : -1f;
-        return _actor.transform.position + new Vector3(hitDef.localOffset.x * sign, hitDef.localOffset.y, hitDef.localOffset.z);
+        // Authored in the attacker's own local frame — localOffset.x = forward distance,
+        // localOffset.z = sideways offset, localOffset.y = height — transformed into world space
+        // via the CAPTURED attack-start forward/side basis (see _activeAttackForward's own doc),
+        // not the live one and never assumed to be world X/Z. Reduces to the old
+        // "mirror X, pass Z straight through" behavior exactly when forward/side happen to be
+        // world-axis-aligned, so every move authored before 3D depth existed keeps working verbatim.
+        Vector3 worldOffset = _activeAttackForward * hitDef.localOffset.x
+                             + _activeAttackSide    * hitDef.localOffset.z
+                             + Vector3.up           * hitDef.localOffset.y;
+        return _actor.transform.position + worldOffset;
     }
 
     private static bool OverlapsAnyHurtbox(Vector3 hitCenter, FightHitDefinition hitDef, FighterActor defender)
@@ -149,9 +166,14 @@ public class FighterAttack : MonoBehaviour
             return;
         }
 
-        float sign = _actor.FacingRight ? 1f : -1f;
-        Vector3 spawnPos = _actor.transform.position + new Vector3(data.localSpawnOffset.x * sign, data.localSpawnOffset.y, data.localSpawnOffset.z);
-        Vector3 direction = new Vector3(sign, 0f, 0f);
+        // Same captured attack-start basis ComputeWorldCenter uses (see its own doc) — the
+        // projectile then travels in a straight line along `direction` for its whole lifetime (see
+        // FightProjectile's own doc), so THIS is the one moment its trajectory is ever decided.
+        Vector3 spawnPos = _actor.transform.position
+                          + _activeAttackForward * data.localSpawnOffset.x
+                          + _activeAttackSide    * data.localSpawnOffset.z
+                          + Vector3.up           * data.localSpawnOffset.y;
+        Vector3 direction = _activeAttackForward;
 
         var root = new GameObject($"FightProjectile_{move.debugName}");
         root.transform.position = spawnPos;

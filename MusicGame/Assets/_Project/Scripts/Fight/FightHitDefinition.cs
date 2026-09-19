@@ -31,6 +31,26 @@ public enum GuardType
 }
 
 /// <summary>
+/// How much this hit's placement follows the defender once Active begins — see
+/// FighterAttack._activeAttackForward's own doc for what's actually implemented today.
+///   Linear  — the ONLY behavior implemented this phase: hitbox placement is fixed to the
+///             attacker's facing at the exact instant Active starts, for the whole Active window.
+///             A sidestep (or any lateral movement) can genuinely make this whiff, because the
+///             hitbox/hurtbox simply stop overlapping in 3D — never an artificial "if sidestepping,
+///             force a miss" rule.
+///   Partial — reserved: would let the model re-sample the attacker's facing/offset a limited
+///             amount during Startup. Not implemented — behaves identically to Linear today.
+///   Homing  — reserved for a future fully-tracking move. Not implemented — behaves identically to
+///             Linear today. Deliberately no moves are authored with this yet.
+/// </summary>
+public enum FightHitTracking
+{
+    Linear,
+    Partial,
+    Homing,
+}
+
+/// <summary>
 /// One hitbox's offensive data — everything FighterAttack needs to place, size, and resolve a single
 /// hit. Plain [Serializable] class (not a ScriptableObject): it only ever exists embedded inside a
 /// FightMoveDefinition's `hits` array, never referenced independently.
@@ -68,4 +88,8 @@ public class FightHitDefinition
     [Tooltip("Flat damage still applied even when this hit IS blocked — 0 disables chip damage " +
              "entirely for this hit (still scaled by the defender's Defense, same as normal damage).")]
     public float chipDamage = 0f;
+
+    [Tooltip("See FightHitTracking's own doc — only Linear is actually implemented this phase " +
+             "(Partial/Homing are reserved, behave identically to Linear today).")]
+    public FightHitTracking tracking = FightHitTracking.Linear;
 }

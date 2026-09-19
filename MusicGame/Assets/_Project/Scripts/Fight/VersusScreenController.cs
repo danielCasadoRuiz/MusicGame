@@ -19,7 +19,8 @@ using UnityEngine.UI;
 /// hasn't been run yet, same pattern as every other Fight-flow screen.
 ///
 /// Lives in the always-loaded UI Scene (added by UIFlowController) — reacts to
-/// FightFlowStateChangedEvent directly.
+/// FightFlowStateChangedEvent directly, plus a top-level GameFlowStateChangedEvent safety net that
+/// hides this screen the instant Fight itself is exited (see OnEnable's own doc).
 /// </summary>
 public class VersusScreenController : MonoBehaviour
 {
@@ -32,6 +33,7 @@ public class VersusScreenController : MonoBehaviour
     private FightFlowConfig _config;
     private Coroutine        _routine;
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
+    private System.Action<GameFlowStateChangedEvent>  _onGameFlowChanged;
 
     private void Awake()
     {
@@ -52,12 +54,21 @@ public class VersusScreenController : MonoBehaviour
             if (e.Current == FightFlowState.VersusIntro) Show();
             else if (e.Previous == FightFlowState.VersusIntro) Hide();
         };
+        // Fight-exclusive screens only ever react to FightFlowStateChangedEvent above, which freezes
+        // the instant GameFlowState leaves Fight entirely (FightFlowController's own state machine
+        // stops publishing) — so a screen mid-sequence when Fight is exited (e.g. Main Menu from the
+        // pause menu) would otherwise stay visible/running forever afterward. Same top-level safety
+        // net FightController (the Fight HUD) already uses for exactly this reason — see its own
+        // ExitFight/doc.
+        _onGameFlowChanged = e => { if (e.Previous == GameFlowState.Fight) Hide(); };
         EventBus.Subscribe(_onFightFlowChanged);
+        EventBus.Subscribe(_onGameFlowChanged);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onFightFlowChanged);
+        EventBus.Unsubscribe(_onGameFlowChanged);
         if (_routine != null) { StopCoroutine(_routine); _routine = null; }
     }
 

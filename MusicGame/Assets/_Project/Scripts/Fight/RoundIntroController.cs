@@ -46,6 +46,7 @@ public class RoundIntroController : MonoBehaviour
     private int              _round = 1;
     private Coroutine        _routine;
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
+    private System.Action<GameFlowStateChangedEvent>  _onGameFlowChanged;
 
     /// <summary>Call before RoundIntro fires again to show a round other than 1 — see this
     /// class's own doc.</summary>
@@ -77,13 +78,26 @@ public class RoundIntroController : MonoBehaviour
         {
             if (e.Current == FightFlowState.RoundIntro) BeginSequence();
         };
+        // Top-level safety net — see VersusScreenController.OnEnable's own doc on why this is needed
+        // (FightFlowStateChangedEvent alone freezes the instant Fight itself is exited — this
+        // sequence has no other way to know Fight ended mid-ROUND n/3-2-1/FIGHT!).
+        _onGameFlowChanged = e => { if (e.Previous == GameFlowState.Fight) ExitFight(); };
         EventBus.Subscribe(_onFightFlowChanged);
+        EventBus.Subscribe(_onGameFlowChanged);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onFightFlowChanged);
+        EventBus.Unsubscribe(_onGameFlowChanged);
         if (_routine != null) { StopCoroutine(_routine); _routine = null; }
+    }
+
+    private void ExitFight()
+    {
+        if (_routine != null) { StopCoroutine(_routine); _routine = null; }
+        if (_root != null) _root.gameObject.SetActive(false);
+        SetOverlayAlpha(0f); // never leave the dark curtain mid-fade for the next Fight entry
     }
 
     // ── Prefab path — see RoundIntroView's own doc ───────────────────────────────

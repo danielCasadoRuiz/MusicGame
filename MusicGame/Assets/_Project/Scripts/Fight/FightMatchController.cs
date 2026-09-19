@@ -27,15 +27,25 @@ using UnityEngine;
 /// individual component's own reset lives on that component itself (FighterHealth/FighterMoveController/
 /// etc.), never manipulated here as private fields (see FighterActor.ResetForRound's own doc).
 ///
-/// DRAW / TIE-BREAK POLICY (TimeOut only — a KO always has a real winner): compares CurrentHealth/
+/// BEST OF 3 — HARD RULE: at most FightFlowConfig.maxRounds (3) rounds are EVER played, no matter
+/// what. There is no repeat-a-round mechanism anywhere in this class (deleted along with
+/// RoundResolution.TrueDraw/DrawResolvedByPoints — see NotifyRoundEndDisplayComplete's own doc).
+///
+/// ROUND-LEVEL DRAW POLICY (TimeOut only — a KO always has a real winner): compares CurrentHealth/
 /// MaxHealth PERCENTAGE (never absolute values — the two sides could have different MaxHealth
-/// someday). Different percentages -> Decisive, straightforward winner, exactly like before.
-/// EXACTLY equal percentages is where this gets interesting — see EndRound's own doc for the full
-/// tie-break: it is resolved using MatchPointDifferential (accumulated from PREVIOUS rounds only)
-/// rather than simply repeating the round, specifically so a Best of 3 essentially never needs a
-/// 4th round. Only the truly exceptional case — tied health AND zero accumulated differential —
-/// still repeats the same round number (see RoundResolution.TrueDraw's own doc); this is a fallback,
-/// not sudden death.
+/// someday). Different percentages -> Decisive, straightforward winner. EXACTLY equal percentages ->
+/// RoundResolution.Draw, which awards NOBODY a round win — see EndRound's own doc. A round-level Draw
+/// is NEVER "resolved by points"; that would silently convert a legitimate draw into a fake round win,
+/// which this format explicitly forbids. MatchPointDifferential still accumulates that round's (often
+/// ~0) differential regardless — see MatchPointDifferential's own doc — but that accumulator is only
+/// ever CONSULTED once, after every round has been played (see NotifyRoundEndDisplayComplete).
+///
+/// MATCH-LEVEL RESOLUTION (see NotifyRoundEndDisplayComplete's own doc for the full decision tree):
+/// the match ends the instant a side reaches roundsToWin round wins (can happen before round 3), OR
+/// once round `maxRounds` has been played, whichever comes first — and at that second point, if
+/// nobody has strictly more round wins, MatchPointDifferential (summed across ALL rounds played,
+/// Draws included) breaks the tie, with a final deterministic fallback (ResolveTiedMatch) for the
+/// vanishingly rare case that's ALSO tied. Never a 4th round, ever.
 /// </summary>
 public class FightMatchController : MonoBehaviour
 {
@@ -47,16 +57,17 @@ public class FightMatchController : MonoBehaviour
     public bool RoundActive { get; private set; }
     public float RoundTimeRemaining { get; private set; }
 
-    /// <summary>Running total of playerHealthPercent - opponentHealthPercent across every DECISIVE
-    /// or DrawResolvedByPoints round completed so far this match (see EndRound's own doc) — reset to
-    /// 0 at the start of a new match (BeginMatch). Positive favors the Player, negative the Opponent.
-    /// This is the ONLY thing an exactly-tied TimeOut round consults to pick a winner instead of
-    /// repeating — see RoundResolution's own doc.</summary>
+    /// <summary>Running total of playerHealthPercent - opponentHealthPercent across EVERY round
+    /// completed so far this match — Decisive AND Draw rounds alike (see EndRound's own doc; a Draw's
+    /// own differential is typically ~0 but is still summed in, per this format's own explicit rule).
+    /// Reset to 0 at the start of a new match (BeginMatch). Positive favors the Player, negative the
+    /// Opponent. ONLY ever consulted once, by ResolveTiedMatch, after every round in maxRounds has
+    /// been played AND round wins are tied — never mid-match, never to resolve an individual round.</summary>
     public float MatchPointDifferential { get; private set; }
 
     /// <summary>The most recently completed round's OWN playerHealthPercent - opponentHealthPercent
     /// — debug/UI convenience, not itself used for any decision (MatchPointDifferential already
-    /// folds it in once the round is decisive).</summary>
+    /// folds it in).</summary>
     public float LastRoundDifferential { get; private set; }
 
     public RoundResolution LastRoundResolution { get; private set; }
@@ -67,6 +78,17 @@ public class FightMatchController : MonoBehaviour
     public RoundEndReason LastRoundReason { get; private set; }
     public float LastRoundPlayerHealthPercent { get; private set; }
     public float LastRoundOpponentHealthPercent { get; private set; }
+
+    /// <summary>How the MATCH was decided, once it actually is — null while a match is still in
+    /// progress (or before any match has ever ended this session). See MatchResolution's own doc and
+    /// NotifyRoundEndDisplayComplete for exactly when this gets set — debug/UI convenience
+    /// (FightDebugHUD), also carried on MatchEndedEvent for MatchResultController's own summary.</summary>
+    public MatchResolution? LastMatchResolution { get; private set; }
+
+    /// <summary>FightFlowConfig.maxRounds, resolved with the same fallback every other reader of that
+    /// config field uses — debug/UI convenience so FightDebugHUD can show "Round 2/3" without its own
+    /// separate config lookup.</summary>
+    public int MaxRounds => _config != null ? Mathf.Max(1, _config.maxRounds) : 3;
 
     private FightFlowConfig _config;
     private FightArenaConfig _arenaConfig;
@@ -126,13 +148,28 @@ public class FightMatchController : MonoBehaviour
 
     // ── Match / round lifecycle ───────────────────────────────────────────────
 
+    /// <summary>
+    /// Resets EVERY piece of round/match state to a neutral start — deliberately exhaustive (not just
+    /// the fields the old bug happened to touch) so a fresh match can NEVER inherit stale state from a
+    /// previous one. Runs for both a genuinely fresh Fight entry AND for MatchResultController's own
+    /// Fight Again (which requests FightFlowState.VersusIntro directly, same as a first entry, without
+    /// re-running Opponent Selection — see BeginFightAgain's own doc) — this is precisely the path a
+    /// "1-1 ends the match" symptom could otherwise be explained by carry-over rather than a logic
+    /// bug, so every field NotifyRoundEndDisplayComplete/EndRound ever reads or writes is reset here.
+    /// </summary>
     private void BeginMatch()
     {
         PlayerRoundsWon = 0;
         OpponentRoundsWon = 0;
         MatchPointDifferential = 0f;
         LastRoundDifferential = 0f;
+        LastRoundResolution = default;
+        LastRoundReason = default;
+        LastRoundPlayerHealthPercent = 0f;
+        LastRoundOpponentHealthPercent = 0f;
+        LastMatchResolution = null;
         CurrentRound = 1;
+        _roundEndProcessed = false;
         // Fight.unity (and every FighterActor in it) is freshly (re)loaded for a new Fight entry —
         // old references, if any, are already-destroyed Unity Objects by now; re-find them.
         _player = null;
@@ -162,14 +199,13 @@ public class FightMatchController : MonoBehaviour
     /// <summary>
     /// Only ever called once per round — guarded by _roundEndProcessed (task's own explicit "només
     /// ho processa UNA vegada" requirement). `explicitWinner` is the immediate, decisive winner for
-    /// a KO; pass null for TimeOut to let this method resolve it (including the tie-break below).
+    /// a KO; pass null for TimeOut to let this method resolve it.
     ///
-    /// TIE-BREAK (TimeOut, exactly equal health percentages only): consults MatchPointDifferential —
-    /// the accumulated differential from PREVIOUS rounds ONLY, never this round's own (which is
-    /// always exactly 0 in this branch, so including it would be a no-op anyway — see class doc on
-    /// why this is called out explicitly rather than left as an implicit coincidence). A nonzero
-    /// accumulator picks a winner (DrawResolvedByPoints); an exact zero is the one case that still
-    /// repeats the round (TrueDraw).
+    /// A TimeOut with exactly equal health percentages is ALWAYS a Draw — winner stays null, nobody
+    /// gets a round win, full stop. There is no round-level points tie-break (see class doc on why:
+    /// that would silently convert a legitimate draw into a fake round win). MatchPointDifferential
+    /// still accumulates this round's own differential either way (see its own doc) for
+    /// ResolveTiedMatch to consult later, once every round has actually been played.
     /// </summary>
     private void EndRound(RoundEndReason reason, FighterSide? explicitWinner)
     {
@@ -181,40 +217,39 @@ public class FightMatchController : MonoBehaviour
         float opponentPct = HealthPercent(_opponent);
         float roundDifferential = playerPct - opponentPct;
 
-        FighterSide? winner = explicitWinner;
-        var resolution = RoundResolution.Decisive;
+        FighterSide? winner;
+        RoundResolution resolution;
 
-        if (winner == null)
+        if (explicitWinner.HasValue)
         {
-            if (!Mathf.Approximately(playerPct, opponentPct))
-            {
-                winner = playerPct > opponentPct ? FighterSide.Player : FighterSide.Opponent;
-            }
-            else if (Mathf.Approximately(MatchPointDifferential, 0f))
-            {
-                resolution = RoundResolution.TrueDraw;
-            }
-            else
-            {
-                winner = MatchPointDifferential > 0f ? FighterSide.Player : FighterSide.Opponent;
-                resolution = RoundResolution.DrawResolvedByPoints;
-            }
+            winner = explicitWinner;
+            resolution = RoundResolution.Decisive;
+        }
+        else if (!Mathf.Approximately(playerPct, opponentPct))
+        {
+            winner = playerPct > opponentPct ? FighterSide.Player : FighterSide.Opponent;
+            resolution = RoundResolution.Decisive;
+        }
+        else
+        {
+            winner = null;
+            resolution = RoundResolution.Draw;
         }
 
         if (winner == FighterSide.Player) PlayerRoundsWon++;
         else if (winner == FighterSide.Opponent) OpponentRoundsWon++;
-        // TrueDraw (winner == null) awards nobody a round — see class doc.
+        // Draw (winner == null) awards nobody a round — see class doc.
 
         LastRoundDifferential = roundDifferential;
         LastRoundReason = reason;
         LastRoundPlayerHealthPercent = playerPct;
         LastRoundOpponentHealthPercent = opponentPct;
-        if (resolution != RoundResolution.TrueDraw)
-            MatchPointDifferential += roundDifferential; // always 0 for DrawResolvedByPoints too — see doc
+        // EVERY round contributes, Draws included — see MatchPointDifferential's own doc.
+        MatchPointDifferential += roundDifferential;
         LastRoundResolution = resolution;
 
         Debug.Log($"[FightMatchController] Round {CurrentRound} ended — reason:{reason} resolution:{resolution} " +
-                  $"winner:{(winner.HasValue ? winner.Value.ToString() : "TrueDraw")} differential:{roundDifferential:+0.00;-0.00} " +
+                  $"winner:{(winner.HasValue ? winner.Value.ToString() : "Draw")} differential:{roundDifferential:+0.00;-0.00} " +
                   $"accumulated:{MatchPointDifferential:+0.00;-0.00} (Player {PlayerRoundsWon} - {OpponentRoundsWon} Opponent)");
 
         EventBus.Publish(new RoundEndedEvent
@@ -232,20 +267,58 @@ public class FightMatchController : MonoBehaviour
         FightFlowController.Instance?.RequestState(FightFlowState.RoundEnd);
     }
 
-    /// <summary>Called by RoundEndController once its own KO/TIME-UP (+ DRAW / WINS ON POINTS, when
-    /// applicable) display has finished — the ONE real branch point in the whole flow (see class
-    /// doc). Never called from anywhere else.</summary>
+    /// <summary>
+    /// Called by RoundEndController once its own KO/TIME-UP + result display has finished — the ONE
+    /// real branch point in the whole flow (see class doc). Never called from anywhere else.
+    ///
+    /// DECISION TREE (see class doc's own "MATCH-LEVEL RESOLUTION" summary):
+    ///   1. If either side has already reached roundsToWin, the match is over right now — this can
+    ///      fire before maxRounds is reached (e.g. 2-0 after Round 2).
+    ///   2. Otherwise, if maxRounds has just been played and NOBODY reached roundsToWin, the match is
+    ///      STILL over right now (best-of-3 has a hard 3-round ceiling) — whoever has strictly more
+    ///      round wins takes the match outright (e.g. 1-0 after 3 rounds, the third a Draw — see
+    ///      class doc); if round wins are tied too, ResolveTiedMatch breaks the tie. Either way this
+    ///      is the ONLY place a match can end without reaching roundsToWin, and it is also the LAST
+    ///      possible round — there is no path from here back into another round, ever.
+    ///   3. Otherwise (nobody has won yet, rounds remain) — and ONLY otherwise — play the next round.
+    ///      A Draw round takes this same branch exactly like a Decisive one; a Draw never short-
+    ///      circuits into a tie-break of its own (see EndRound's own doc).
+    /// </summary>
     public void NotifyRoundEndDisplayComplete()
     {
-        if (LastRoundResolution == RoundResolution.TrueDraw)
+        int roundsToWin = _config != null ? Mathf.Max(1, _config.roundsToWin) : 2;
+        bool reachedWinThreshold = PlayerRoundsWon >= roundsToWin || OpponentRoundsWon >= roundsToWin;
+        bool allRoundsPlayed     = CurrentRound >= MaxRounds;
+
+        if (!reachedWinThreshold && !allRoundsPlayed)
         {
-            RepeatRound();
+            StartNextRound();
             return;
         }
 
-        int roundsToWin = _config != null ? Mathf.Max(1, _config.roundsToWin) : 2;
+        FighterSide winner;
+        MatchResolution resolution;
 
-        if (PlayerRoundsWon >= roundsToWin)
+        if (PlayerRoundsWon > OpponentRoundsWon)
+        {
+            winner = FighterSide.Player;
+            resolution = MatchResolution.DecisiveRounds;
+        }
+        else if (OpponentRoundsWon > PlayerRoundsWon)
+        {
+            winner = FighterSide.Opponent;
+            resolution = MatchResolution.DecisiveRounds;
+        }
+        else
+        {
+            // Round wins tied with every round played (the only way to reach this branch — reaching
+            // roundsToWin with equal counts is impossible) — see ResolveTiedMatch's own doc.
+            (winner, resolution) = ResolveTiedMatch();
+        }
+
+        LastMatchResolution = resolution;
+
+        if (winner == FighterSide.Player)
         {
             // Level Up is decided HERE, deterministically, the instant the match is officially won —
             // never deferred to Continue (task's own explicit "no esperis a Continue per decidir si
@@ -254,29 +327,59 @@ public class FightMatchController : MonoBehaviour
             int oldLevel = GameSession.Instance != null ? GameSession.Instance.PlayerLevel : 1;
             int newLevel = GameSession.Instance != null ? GameSession.Instance.LevelUp() : oldLevel;
 
-            EventBus.Publish(BuildMatchEndedEvent(FighterSide.Player, oldLevel, newLevel));
+            EventBus.Publish(BuildMatchEndedEvent(FighterSide.Player, resolution, oldLevel, newLevel));
             FightFlowController.Instance?.RequestState(FightFlowState.MatchWon);
         }
-        else if (OpponentRoundsWon >= roundsToWin)
+        else
         {
             // A loss never touches PlayerLevel — Old/New are the same, unchanged value (task's own
             // explicit "si perds, no baixa, no puja" requirement).
             int level = GameSession.Instance != null ? GameSession.Instance.PlayerLevel : 1;
 
-            EventBus.Publish(BuildMatchEndedEvent(FighterSide.Opponent, level, level));
+            EventBus.Publish(BuildMatchEndedEvent(FighterSide.Opponent, resolution, level, level));
             FightFlowController.Instance?.RequestState(FightFlowState.MatchLost);
-        }
-        else
-        {
-            StartNextRound();
         }
     }
 
-    private MatchEndedEvent BuildMatchEndedEvent(FighterSide winner, int oldLevel, int newLevel) => new MatchEndedEvent
+    /// <summary>
+    /// Called ONLY when round wins are tied after every round in maxRounds has been played. Breaks
+    /// the tie using MatchPointDifferential (summed across ALL rounds played, Draws included) against
+    /// a configurable epsilon — never a hardcoded magic number (see FightFlowConfig.matchPointsTiebreakEpsilon).
+    ///
+    /// EXACT PERFECT TIE fallback (round wins tied AND points tied within epsilon — vanishingly rare,
+    /// needs three rounds' worth of health percentages to sum to an exact wash): falls back to the
+    /// FINAL round's own health percentages (LastRoundPlayerHealthPercent/OpponentHealthPercent —
+    /// already-existing data, same "overall performance" philosophy the task asked for, no new stats
+    /// system invented). If even THAT is exactly tied, an explicit, deterministic, documented default
+    /// decides it (Player) — this is intentionally arbitrary at that point (every measurable signal is
+    /// genuinely identical) but NEVER unresolved and NEVER a 4th round.
+    /// </summary>
+    private (FighterSide winner, MatchResolution resolution) ResolveTiedMatch()
+    {
+        float epsilon = _config != null ? Mathf.Max(0.0001f, _config.matchPointsTiebreakEpsilon) : 0.01f;
+
+        if (MatchPointDifferential > epsilon)
+            return (FighterSide.Player, MatchResolution.PointsTiebreak);
+        if (MatchPointDifferential < -epsilon)
+            return (FighterSide.Opponent, MatchResolution.PointsTiebreak);
+
+        if (LastRoundPlayerHealthPercent > LastRoundOpponentHealthPercent)
+            return (FighterSide.Player, MatchResolution.ExactTieFallback);
+        if (LastRoundOpponentHealthPercent > LastRoundPlayerHealthPercent)
+            return (FighterSide.Opponent, MatchResolution.ExactTieFallback);
+
+        Debug.LogWarning("[FightMatchController] Match tied on rounds, MatchPointDifferential AND " +
+                          "final-round health% — every available metric is genuinely identical. " +
+                          "Falling back to the documented default (Player) — see ResolveTiedMatch's own doc.");
+        return (FighterSide.Player, MatchResolution.ExactTieFallback);
+    }
+
+    private MatchEndedEvent BuildMatchEndedEvent(FighterSide winner, MatchResolution resolution, int oldLevel, int newLevel) => new MatchEndedEvent
     {
         Winner = winner,
         PlayerRoundsWon = PlayerRoundsWon,
         OpponentRoundsWon = OpponentRoundsWon,
+        Resolution = resolution,
         LastRoundReason = LastRoundReason,
         PlayerHealthPercent = LastRoundPlayerHealthPercent,
         OpponentHealthPercent = LastRoundOpponentHealthPercent,
@@ -288,16 +391,6 @@ public class FightMatchController : MonoBehaviour
     private void StartNextRound()
     {
         CurrentRound++;
-        RoundTimeRemaining = _config != null ? Mathf.Max(1f, _config.roundDuration) : 60f; // see BeginMatch's own doc
-        RoundIntroController.Instance?.SetRound(CurrentRound);
-        ResetFightersForRound();
-        FightFlowController.Instance?.RequestState(FightFlowState.RoundIntro);
-    }
-
-    /// <summary>TrueDraw only — same round number, nobody scored, everything else resets exactly
-    /// like a normal next round (task's own explicit "currentRound no avança" requirement).</summary>
-    private void RepeatRound()
-    {
         RoundTimeRemaining = _config != null ? Mathf.Max(1f, _config.roundDuration) : 60f; // see BeginMatch's own doc
         RoundIntroController.Instance?.SetRound(CurrentRound);
         ResetFightersForRound();
@@ -345,10 +438,12 @@ public class FightMatchController : MonoBehaviour
     public void DebugSetRoundTimeRemaining(float seconds) => RoundTimeRemaining = Mathf.Max(0f, seconds);
 
     /// <summary>Forces both fighters to equal health percentages so the NEXT natural timeout resolves
-    /// as a health-tie (Decisive-or-not is then decided by MatchPointDifferential, same as a real
-    /// one — see EndRound's own doc) — debug only. Goes through the real FighterHealth.ApplyDamage
-    /// pipeline, never sets CurrentHealth directly. Combine with DebugSetAccumulatedDifferential to
-    /// deliberately test all three tie-break outcomes (see FightDebugHUD's own doc).</summary>
+    /// as a round-level Draw (see EndRound's own doc — this NEVER awards a round win to either side
+    /// regardless of MatchPointDifferential) — debug only. Goes through the real FighterHealth.
+    /// ApplyDamage pipeline, never sets CurrentHealth directly. Only actually matters as a MATCH
+    /// tie-break trigger when used on the FINAL round (CurrentRound == MaxRounds) — combine with
+    /// DebugSetAccumulatedDifferential to deliberately test the after-Round-3 tie-break outcomes (see
+    /// FightDebugHUD's own doc / this format's own test cases D-H).</summary>
     public void DebugForceDraw()
     {
         FindActors();
@@ -360,9 +455,11 @@ public class FightMatchController : MonoBehaviour
         DebugSetRoundTimeRemaining(0.05f);
     }
 
-    /// <summary>Temporarily overrides MatchPointDifferential — debug only, so the three tie-break
-    /// outcomes (points to Player, points to Opponent, TrueDraw) can each be tested on demand
-    /// instead of having to play out real rounds to reach a specific accumulated value.</summary>
+    /// <summary>Temporarily overrides MatchPointDifferential — debug only, so the after-Round-3
+    /// tie-break outcomes (points to Player, points to Opponent, exact tie) can each be tested on
+    /// demand instead of having to play out real rounds to reach a specific accumulated value. Only
+    /// actually decides anything once round wins are tied after the final round — see
+    /// ResolveTiedMatch's own doc.</summary>
     public void DebugSetAccumulatedDifferential(float value)
     {
         MatchPointDifferential = value;
