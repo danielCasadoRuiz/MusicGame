@@ -61,10 +61,15 @@ public class FightMoveDefinition : ScriptableObject
              "recalculation exists to consult it, but the flag is real, authored data.")]
     public bool lockFacingDuringMove = true;
 
+    [Header("Hitboxes — see FightHitDefinition/FighterAttack's own doc")]
+    [Tooltip("All active for the ENTIRE Active phase (FighterMoveController remains the sole " +
+             "authority on Startup/Active/Recovery timing — no per-hit sub-window exists yet). " +
+             "Empty is tolerated (a move with no offensive hitbox at all).")]
+    public FightHitDefinition[] hits = new FightHitDefinition[] { new FightHitDefinition() };
+
     [Header("Future — not read by anything this phase")]
-    [Tooltip("No damage/hitbox system exists yet — kept here so the eventual Move System pipeline " +
-             "doesn't need a new asset field added under time pressure later. Hit properties/VFX/" +
-             "SFX will join this same section once hitboxes actually exist.")]
+    [Tooltip("Superseded by hits[].baseDamage — kept only so no existing reference to this field " +
+             "breaks; not read anywhere.")]
     public int damage = 0;
 
     public float TotalDuration => startupDuration + activeDuration + recoveryDuration;

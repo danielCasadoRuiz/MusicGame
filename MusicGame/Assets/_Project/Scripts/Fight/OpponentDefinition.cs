@@ -75,6 +75,12 @@ public class OpponentLevelConfig
     [Tooltip("Not read by anything yet — no AI/combat system exists this phase. Safe to leave unassigned.")]
     public AIDifficultyProfile difficultyProfile;
 
+    [Tooltip("This level's physical combat capability (Strength/Speed/Defense/etc.) — deliberately " +
+             "SEPARATE from difficultyProfile above: a rival's raw stats and its AI skill are " +
+             "independent (a strong fighter can have weak AI, or the reverse). Null is tolerated — " +
+             "FightSceneBootstrap falls back to a flat 100-everywhere FighterStats.")]
+    public FighterStatsProfileSO combatStats;
+
     /// <summary>Null if songs is empty/all-null (expected for a freshly-created level entry) —
     /// callers must tolerate it, same as before.</summary>
     public AudioClip GetRandomSong()

@@ -48,27 +48,34 @@ public class FighterMoveController : MonoBehaviour
     public float PhaseElapsed { get; private set; }
     public string CurrentAnimationState => _animationDriver.CurrentState;
 
-    public bool CanAttack => CurrentPhase == FighterMoveState.Idle || InCancelWindow();
+    public bool CanAttack => !IsHitStunned && (CurrentPhase == FighterMoveState.Idle || InCancelWindow());
     /// <summary>See FightMoveDefinition.lockFacingDuringMove's own doc — has no real effect yet
     /// (no real facing recalculation exists to consult it), but is real, queryable state.</summary>
     public bool IsFacingLocked => CurrentMove != null && CurrentMove.lockFacingDuringMove && CurrentPhase != FighterMoveState.Recovery;
 
-    /// <summary>Duration of whichever phase is CURRENTLY running — 0 while Idle.</summary>
+    /// <summary>Duration of whichever phase is CURRENTLY running — 0 while Idle. Startup/Recovery
+    /// are scaled by Speed (see FightCombatBalanceConfig.speedToTimingScale's own doc); Active never is.</summary>
     public float CurrentPhaseDuration => CurrentMove == null ? 0f : CurrentPhase switch
     {
-        FighterMoveState.Startup  => CurrentMove.startupDuration,
+        FighterMoveState.Startup  => CurrentMove.startupDuration * _timingScale,
         FighterMoveState.Active   => CurrentMove.activeDuration,
-        FighterMoveState.Recovery => CurrentMove.recoveryDuration,
+        FighterMoveState.Recovery => CurrentMove.recoveryDuration * _timingScale,
         _ => 0f,
     };
     public float PhaseProgress01 => CurrentPhaseDuration > 0f ? Mathf.Clamp01(PhaseElapsed / CurrentPhaseDuration) : 1f;
 
-    /// <summary>Not read by anything yet — see FightStatsConfig's own doc on why real
-    /// Speed/Combo-driven scaling formulas wait until the whole combat pipeline exists. The seam
-    /// is here (Stats.Get(FightStatId.Speed) would scale startup/recovery, Combo would scale
-    /// something about combo behavior) so wiring it in later touches this one property's callers,
-    /// never the data schema.</summary>
+    /// <summary>Set externally (FightSceneBootstrap wires this to the owning FighterActor's own
+    /// Stats) — read by FightCombatBalanceConfig.speedToTimingScale via BeginMove, and by
+    /// FightHitResolver via FighterActor.Stats directly for damage/hit-stun/knockback (this
+    /// property and FighterActor.Stats point at the SAME instance for whichever fighter has both).</summary>
     public FighterStats Stats { get; set; }
+
+    /// <summary>Set by FighterHitReaction while this fighter is in hit stun — see that class's own
+    /// doc. Blocks CanAttack/TryStartMove entirely; never touched from anywhere else.</summary>
+    public bool IsHitStunned { get; set; }
+
+    private float _timingScale = 1f;
+    private FightCombatBalanceConfig _balanceConfig;
 
     private bool _active;
 
@@ -86,6 +93,8 @@ public class FighterMoveController : MonoBehaviour
         _moveSet = appConfig != null && appConfig.fightFlow != null ? appConfig.fightFlow.defaultMoveSet : null;
         if (_moveSet == null)
             Debug.LogWarning("[FighterMoveController] No FightMoveSetSO (AppConfig.fightFlow.defaultMoveSet) configured — normals/combos will be recognized but no move will ever execute.");
+
+        _balanceConfig = appConfig != null ? appConfig.combatBalance : null;
 
         _input = FindFirstObjectByType<FighterInputController>();
     }
@@ -138,7 +147,7 @@ public class FighterMoveController : MonoBehaviour
 
     private void TryStartMove(FightMoveDefinition move)
     {
-        if (!_active || move == null) return;
+        if (!_active || move == null || IsHitStunned) return;
 
         if (CurrentPhase == FighterMoveState.Idle || InCancelWindow())
         {
@@ -157,7 +166,10 @@ public class FighterMoveController : MonoBehaviour
         CurrentMove = move;
         MoveElapsed = 0f;
         PhaseElapsed = 0f;
-        CurrentPhase = FighterMoveState.Startup; // UpdatePhase() below corrects this immediately if startupDuration is 0
+        _timingScale = _balanceConfig != null ? _balanceConfig.ComputeModifiers(Stats).TimingScale : 1f;
+        // CurrentPhase is left as whatever it currently is (Idle, or the previous move's phase if
+        // this is a cancel-chain) — UpdatePhase() below is the ONLY place a phase transition (and
+        // its FightMovePhaseChangedEvent) is ever published, so it must own this one too.
 
         _movementDriver.SetMovementLock(move.movementLocked, move.movementMultiplier);
         if (!Mathf.Approximately(move.lungeDistance, 0f)) _movementDriver.ApplyLunge(move.lungeDistance);
@@ -165,15 +177,15 @@ public class FighterMoveController : MonoBehaviour
 
         Debug.Log($"[FighterMoveController] Move started: {move.debugName} ({move.moveType})");
 
-        UpdatePhase(); // handles a degenerate 0-duration phase falling straight through this same frame
+        UpdatePhase(); // transitions into Startup (or beyond, for a degenerate 0-duration phase) and publishes the event
     }
 
     private void UpdatePhase()
     {
         var move = CurrentMove;
-        float startupEnd  = move.startupDuration;
+        float startupEnd  = move.startupDuration * _timingScale;
         float activeEnd   = startupEnd + move.activeDuration;
-        float recoveryEnd = activeEnd + move.recoveryDuration;
+        float recoveryEnd = activeEnd + move.recoveryDuration * _timingScale;
 
         FighterMoveState newPhase =
             MoveElapsed < startupEnd  ? FighterMoveState.Startup  :
@@ -183,8 +195,11 @@ public class FighterMoveController : MonoBehaviour
 
         if (newPhase == CurrentPhase) return;
 
+        var previousPhase = CurrentPhase;
         CurrentPhase = newPhase;
         PhaseElapsed = 0f;
+
+        EventBus.Publish(new FightMovePhaseChangedEvent { Source = this, Previous = previousPhase, Current = newPhase, Move = move });
 
         if (newPhase == FighterMoveState.Idle)
         {
@@ -197,6 +212,32 @@ public class FighterMoveController : MonoBehaviour
     private bool InCancelWindow()
     {
         if (CurrentMove == null || CurrentMove.cancelWindow <= 0f) return false;
-        return MoveElapsed >= CurrentMove.TotalDuration - CurrentMove.cancelWindow;
+        float effectiveTotal = CurrentMove.startupDuration * _timingScale + CurrentMove.activeDuration + CurrentMove.recoveryDuration * _timingScale;
+        return MoveElapsed >= effectiveTotal - CurrentMove.cancelWindow;
+    }
+
+    /// <summary>Explicit external API to abnormally end whatever move is currently running — e.g.
+    /// FighterHitReaction calling this the instant a hit lands (see that class's own doc). Cleanly
+    /// resets to Idle (cancelling any movement lock via the driver) and clears any queued move too
+    /// (a queued follow-up shouldn't fire right into a hit reaction). Publishes
+    /// FightMovePhaseChangedEvent so anything reacting to Active (FighterAttack's own hitbox) turns
+    /// off correctly, same as a natural phase transition — no separate "interrupted" event exists.</summary>
+    public void InterruptMove()
+    {
+        if (CurrentMove == null) { QueuedMove = null; return; }
+
+        var previousPhase = CurrentPhase;
+        var move = CurrentMove;
+
+        Debug.Log($"[FighterMoveController] Move interrupted: {move.debugName}");
+        CurrentMove = null;
+        QueuedMove = null;
+        CurrentPhase = FighterMoveState.Idle;
+        PhaseElapsed = 0f;
+        MoveElapsed = 0f;
+        _movementDriver.SetMovementLock(false, 1f);
+
+        if (previousPhase != FighterMoveState.Idle)
+            EventBus.Publish(new FightMovePhaseChangedEvent { Source = this, Previous = previousPhase, Current = FighterMoveState.Idle, Move = move });
     }
 }

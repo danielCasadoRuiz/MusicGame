@@ -17,6 +17,7 @@ public class AppConfigSO : ScriptableObject
     public OpponentRosterSO    opponentRoster;
     public FightArenaConfig    arena;
     public FightCameraConfig   fightCamera;
+    public FightCombatBalanceConfig combatBalance;
 
     [Tooltip("EDITOR ONLY (see PlatformService) — forces mobile/touch UI and input while testing in " +
              "the Editor, where Application.isMobilePlatform is always false. Ignored in real builds, " +

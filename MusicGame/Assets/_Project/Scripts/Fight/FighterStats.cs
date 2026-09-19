@@ -18,4 +18,16 @@ public class FighterStats
     public float Get(FightStatId statId) => _values.TryGetValue(statId, out var v) ? v : 0f;
 
     public void Set(FightStatId statId, float value) => _values[statId] = value;
+
+    /// <summary>Flat 100-everywhere fallback — used whenever a fighter has no real source (no
+    /// completed Runner run, no OpponentLevelConfig.combatStats assigned) rather than leaving
+    /// Get() silently returning 0 (which would read as "worst possible stat" to every
+    /// FightCombatBalanceConfig curve, not "neutral/unset").</summary>
+    public static FighterStats Default()
+    {
+        var stats = new FighterStats();
+        foreach (FightStatId id in System.Enum.GetValues(typeof(FightStatId)))
+            stats.Set(id, 100f);
+        return stats;
+    }
 }

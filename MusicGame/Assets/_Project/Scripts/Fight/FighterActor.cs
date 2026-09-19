@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -54,8 +55,25 @@ public class FighterActor : MonoBehaviour
     /// <summary>Null for the Opponent this phase — see class doc.</summary>
     public FighterMovement Movement { get; private set; }
 
+    /// <summary>Always present on BOTH sides — Player and Opponent share the exact same health/
+    /// hit-reaction system (see FighterHealth/FighterHitReaction's own doc), unlike MoveController/
+    /// Movement which stay Player-only until AI exists.</summary>
+    public FighterHealth Health { get; private set; }
+    public FighterHitReaction HitReaction { get; private set; }
+
+    /// <summary>This fighter's combat numbers — the Player's come from the Runner (GameSession.
+    /// FighterStats), the Opponent's from OpponentLevelConfig.combatStats (or a flat 100-everywhere
+    /// default) — see FightSceneBootstrap's own wiring. Read by FightHitResolver/FightDebugHUD;
+    /// never mutated at runtime.</summary>
+    public FighterStats Stats { get; private set; }
+
+    /// <summary>One or more zones that can receive a hit — always at least the default one created
+    /// in Initialize; a future humanoid can add more (head/torso/legs/...) simply by having
+    /// FighterHurtbox children that self-register via RegisterHurtbox. See FighterHurtbox's own doc.</summary>
+    public IReadOnlyList<FighterHurtbox> Hurtboxes => _hurtboxes;
+
     /// <summary>True while this actor's gameplay-root Forward is world +X. Frozen (not recomputed)
-    /// while MoveController.IsFacingLocked is true.</summary>
+    /// while MoveController.IsFacingLocked OR HitReaction.IsInHitStun is true — see Update.</summary>
     public bool FacingRight { get; private set; } = true;
 
     /// <summary>Straight-line distance to the opponent along the arena's main axis (world X) — the
@@ -66,6 +84,7 @@ public class FighterActor : MonoBehaviour
 
     private FighterActor _opponent;
     private IFightFacingProvider _facingProvider;
+    private readonly List<FighterHurtbox> _hurtboxes = new();
 
     /// <summary>Builds VisualRoot and its content — visualPrefab's instance if assigned, otherwise a
     /// debug capsule tinted debugColor. Called once, right after this GameObject is created.</summary>
@@ -97,18 +116,45 @@ public class FighterActor : MonoBehaviour
         // Matches the default FacingRight = true above — set explicitly since a fresh Transform's
         // identity rotation faces world +Z, not the arena's +X "facing right" convention.
         transform.rotation = Quaternion.LookRotation(Vector3.right, Vector3.up);
+
+        // Universal on both sides — see Health/HitReaction's own doc. FighterHurtbox self-registers
+        // (see its own Awake), so no explicit RegisterHurtbox call is needed here.
+        Health = gameObject.AddComponent<FighterHealth>();
+        Health.SetOwner(this);
+
+        var hurtboxGO = new GameObject("HurtboxDefault");
+        hurtboxGO.transform.SetParent(transform, false);
+        hurtboxGO.AddComponent<FighterHurtbox>().Initialize(this, Vector3.zero, new Vector3(1f, 2f, 1f));
     }
 
     public void SetOpponent(FighterActor opponent) => _opponent = opponent;
     public void SetFacingProvider(IFightFacingProvider provider) => _facingProvider = provider;
     public void SetMoveController(FighterMoveController controller) => MoveController = controller;
     public void SetMovement(FighterMovement movement) => Movement = movement;
+    public void SetStats(FighterStats stats) => Stats = stats;
+    public void RegisterHurtbox(FighterHurtbox hurtbox)
+    {
+        if (!_hurtboxes.Contains(hurtbox)) _hurtboxes.Add(hurtbox);
+    }
+
+    /// <summary>Creates and wires this actor's FighterHitReaction — separate from Initialize because
+    /// it needs the opponent reference, only available after BOTH actors exist and SetOpponent has
+    /// run (see FightSceneBootstrap's own call order).</summary>
+    public void AttachHitReaction(FightArenaConfig arenaConfig)
+    {
+        var reaction = gameObject.AddComponent<FighterHitReaction>();
+        reaction.Initialize(this, _opponent, arenaConfig);
+        HitReaction = reaction;
+    }
 
     private void Update()
     {
         if (_opponent == null || _facingProvider == null) return;
 
-        bool locked = MoveController != null && MoveController.IsFacingLocked;
+        // Facing freezes during a locked move phase AND during hit stun — one shared mechanism,
+        // no per-move or per-hit special-casing (see this phase's own scope note).
+        bool locked = (MoveController != null && MoveController.IsFacingLocked) ||
+                      (HitReaction != null && HitReaction.IsInHitStun);
         if (!locked) FacingRight = _facingProvider.FacingRight;
 
         transform.rotation = Quaternion.LookRotation(FacingRight ? Vector3.right : Vector3.left, Vector3.up);

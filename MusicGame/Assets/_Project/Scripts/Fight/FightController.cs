@@ -45,6 +45,13 @@ public class FightController : MonoBehaviour
     private bool _active;
     private float _timeRemaining;
 
+    // Only ever READ here — see class doc: FightController presents combat data, never decides it.
+    // Found once per Fighting-activation (Fight.unity's FighterActors don't exist yet at Awake
+    // time, since that scene loads separately) via the same cross-scene FindObjectsByType pattern
+    // FightDebugHUD already uses.
+    private FighterHealth _playerHealth;
+    private FighterHealth _opponentHealth;
+
     // Joystick (movement) + Punch/Kick — visible ONLY while _active (FightFlowState.Fighting) AND
     // PlatformService.IsMobile, same platform-gating convention as Runner's own
     // MobileControlsController, just baked into THIS prefab instead of built standalone (see
@@ -112,15 +119,38 @@ public class FightController : MonoBehaviour
 
         if (_paused) return;
 
+        UpdateHealthBars();
+
         _timeRemaining = Mathf.Max(0f, _timeRemaining - Time.deltaTime);
         UpdateTimerText();
         // TODO: real match-end logic (win/lose/draw) once actual fight mechanics exist — the timer
-        // just holds at 0:00 for now.
+        // just holds at 0:00 for now, and a KO'd fighter (see FighterHealth.IsKO) doesn't yet stop
+        // or resolve the match — see this phase's own scope note.
+    }
+
+    private void UpdateHealthBars()
+    {
+        if (_playerHealth == null || _opponentHealth == null) FindHealthRefs();
+
+        if (_playerHealth != null)
+            _playerHealthFill.fillAmount = _playerHealth.MaxHealth > 0f ? _playerHealth.CurrentHealth / _playerHealth.MaxHealth : 0f;
+        if (_opponentHealth != null)
+            _opponentHealthFill.fillAmount = _opponentHealth.MaxHealth > 0f ? _opponentHealth.CurrentHealth / _opponentHealth.MaxHealth : 0f;
+    }
+
+    private void FindHealthRefs()
+    {
+        foreach (var actor in FindObjectsByType<FighterActor>(FindObjectsSortMode.None))
+        {
+            if (actor.Side == FighterSide.Player) _playerHealth = actor.Health;
+            else _opponentHealth = actor.Health;
+        }
     }
 
     private void ActivateHud()
     {
         PopulateInfo();
+        FindHealthRefs();
         _timeRemaining = _flowConfig != null ? _flowConfig.roundDuration : 60f;
         UpdateTimerText();
         SetPaused(false);
@@ -166,6 +196,11 @@ public class FightController : MonoBehaviour
 
         if (_transitionRoutine != null) { StopCoroutine(_transitionRoutine); _transitionRoutine = null; }
         if (_transitionOverlay != null) _transitionOverlay.gameObject.SetActive(false);
+
+        // Fight.unity (and every FighterActor in it) unloads on exit — stale references would
+        // otherwise survive into a fresh Fight entry until FindHealthRefs happens to be called again.
+        _playerHealth = null;
+        _opponentHealth = null;
     }
 
     // ── Prefab path — see FightHudView's own doc ─────────────────────────────────

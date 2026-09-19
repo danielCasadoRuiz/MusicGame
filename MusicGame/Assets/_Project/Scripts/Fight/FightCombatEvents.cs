@@ -19,3 +19,34 @@ public struct FightComboDetectedEvent
 {
     public FightComboDefinition Combo;
 }
+
+/// <summary>
+/// Fired by FighterAttack the instant a hit is resolved (before Health/HitReaction react to it) —
+/// carries the full FightHitResult so a listener (FightDebugHUD's "Last Hit" section, future VFX/
+/// SFX/AI) never needs a separate lookup. A significant, discrete combat event — never a per-frame
+/// tick (see this phase's own scope note on not overloading EventBus).
+/// </summary>
+public struct HitLandedEvent
+{
+    public FighterActor Attacker;
+    public FighterActor Defender;
+    public FightMoveDefinition Move;
+    public FightHitResult Result;
+}
+
+/// <summary>Fired by FighterHealth.ApplyDamage on every non-zero hit — RemainingHealth is the value
+/// AFTER this damage was applied.</summary>
+public struct DamageTakenEvent
+{
+    public FighterActor Fighter;
+    public float Amount;
+    public float RemainingHealth;
+}
+
+/// <summary>Fired by FighterHealth exactly once, the instant CurrentHealth first reaches 0 — no
+/// round/match resolution reacts to this yet (see this phase's own scope note); it exists purely as
+/// the decoupled hook a future MatchWon/MatchLost system will subscribe to.</summary>
+public struct FighterKOEvent
+{
+    public FighterActor Fighter;
+}

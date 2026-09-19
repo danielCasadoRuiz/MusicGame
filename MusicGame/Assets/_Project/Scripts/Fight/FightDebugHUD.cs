@@ -23,10 +23,12 @@ public class FightDebugHUD : MonoBehaviour
     private FighterMoveController _moves;
     private FighterActor _player;
     private FighterActor _opponent;
+    private FightCombatBalanceConfig _balanceConfig;
 
     private readonly List<string> _log = new();
     private string _lastNormal = "(none)";
     private string _lastCombo  = "(none)";
+    private FightHitResult? _lastHit;
 
     private GUIStyle _boxStyle;
     private GUIStyle _labelStyle;
@@ -35,11 +37,13 @@ public class FightDebugHUD : MonoBehaviour
     private System.Action<FightNormalPunchEvent>   _onPunch;
     private System.Action<FightNormalKickEvent>    _onKick;
     private System.Action<FightComboDetectedEvent> _onCombo;
+    private System.Action<HitLandedEvent>          _onHitLanded;
 
     private void Start()
     {
         _input = FindFirstObjectByType<FighterInputController>();
         _moves = FindFirstObjectByType<FighterMoveController>();
+        _balanceConfig = Resources.Load<AppConfigSO>("AppConfig")?.combatBalance;
         FindActors();
     }
 
@@ -65,9 +69,15 @@ public class FightDebugHUD : MonoBehaviour
             _lastCombo = e.Combo != null && !string.IsNullOrEmpty(e.Combo.debugName) ? e.Combo.debugName : "(unnamed)";
             AddLog($"Combo: {_lastCombo}");
         };
+        _onHitLanded = e =>
+        {
+            _lastHit = e.Result;
+            AddLog($"Hit: {(e.Move != null ? e.Move.debugName : "?")} -> {e.Result.FinalDamage:F1} dmg");
+        };
         EventBus.Subscribe(_onPunch);
         EventBus.Subscribe(_onKick);
         EventBus.Subscribe(_onCombo);
+        EventBus.Subscribe(_onHitLanded);
     }
 
     private void OnDisable()
@@ -75,6 +85,7 @@ public class FightDebugHUD : MonoBehaviour
         EventBus.Unsubscribe(_onPunch);
         EventBus.Unsubscribe(_onKick);
         EventBus.Unsubscribe(_onCombo);
+        EventBus.Unsubscribe(_onHitLanded);
     }
 
     private void Update()
@@ -93,11 +104,12 @@ public class FightDebugHUD : MonoBehaviour
         EnsureStyles();
         if (_input == null) _input = FindFirstObjectByType<FighterInputController>();
         if (_moves == null) _moves = FindFirstObjectByType<FighterMoveController>();
+        if (_balanceConfig == null) _balanceConfig = Resources.Load<AppConfigSO>("AppConfig")?.combatBalance;
         FindActors();
 
-        const float x = 8f, w = 340f;
+        const float x = 8f, w = 380f;
         float y = 8f;
-        float h = 26f + 18f * 3f + 18f + 16f * 7f + 18f + 16f * 10f + 18f + 16f * (MaxLogLines + 1);
+        float h = 26f + 18f * 3f + 18f + 16f * 8f + 18f + 16f * 10f + 18f + 16f * 8f + 18f + 16f * 5f + 18f + 16f * (MaxLogLines + 1);
 
         GUI.Box(new Rect(x, y, w, h), "", _boxStyle);
         GUI.Label(new Rect(x + 6f, y + 2f, w - 12f, 16f), "FIGHT INPUT/COMBO DEBUG (F1)", _headerStyle);
@@ -121,7 +133,7 @@ public class FightDebugHUD : MonoBehaviour
             Row(x, ref y, w, $"  Move: {moveName}");
             Row(x, ref y, w, $"  Phase: {_moves.CurrentPhase} ({_moves.PhaseElapsed:F2}s / {_moves.CurrentPhaseDuration:F2}s, {_moves.PhaseProgress01 * 100f:F0}%)");
             Row(x, ref y, w, $"  Queued: {queuedName}");
-            Row(x, ref y, w, $"  CanAttack: {_moves.CanAttack}");
+            Row(x, ref y, w, $"  CanAttack: {_moves.CanAttack}   IsHitStunned: {_moves.IsHitStunned}");
             Row(x, ref y, w, $"  Anim state: {_moves.CurrentAnimationState}");
         }
         y += 4f;
@@ -153,9 +165,60 @@ public class FightDebugHUD : MonoBehaviour
         }
         y += 4f;
 
+        Row(x, ref y, w, "Combatants:");
+        DrawFighterSummary("Player", _player, x, ref y, w);
+        DrawFighterSummary("Opponent", _opponent, x, ref y, w);
+        y += 4f;
+
+        Row(x, ref y, w, "Last Hit:");
+        if (_lastHit == null)
+        {
+            Row(x, ref y, w, "  (none yet)");
+        }
+        else
+        {
+            var hit = _lastHit.Value;
+            string moveName     = hit.Move != null ? hit.Move.debugName : "(unknown move)";
+            string attackerSide = hit.Attacker != null ? hit.Attacker.Side.ToString() : "?";
+            string defenderSide = hit.Defender != null ? hit.Defender.Side.ToString() : "?";
+            Row(x, ref y, w, $"  Move: {moveName}  ({attackerSide} -> {defenderSide})");
+            Row(x, ref y, w, $"  Damage: {hit.BaseDamage:F1} x{hit.DamageModifier:F2}(str) x{hit.DefenseModifier:F2}(def) = {hit.FinalDamage:F1}");
+            Row(x, ref y, w, $"  HitStun: {hit.BaseHitStun:F2}s x{hit.HitStunResistanceModifier:F2}(bal) = {hit.FinalHitStun:F2}s");
+            Row(x, ref y, w, $"  Knockback: {hit.BaseKnockback:F2} x{hit.KnockbackModifier:F2}(knb) = {hit.FinalKnockback:F2}");
+        }
+        y += 4f;
+
         Row(x, ref y, w, "Recent actions:");
         if (_log.Count == 0) Row(x, ref y, w, "  (none yet)");
         foreach (var line in _log) Row(x, ref y, w, "  " + line);
+    }
+
+    private void DrawFighterSummary(string label, FighterActor actor, float x, ref float y, float w)
+    {
+        if (actor == null) { Row(x, ref y, w, $"  {label}: (not found)"); return; }
+
+        string hpText = actor.Health != null
+            ? $"{actor.Health.CurrentHealth:F0}/{actor.Health.MaxHealth:F0}{(actor.Health.IsKO ? " [KO]" : "")}"
+            : "(no FighterHealth)";
+        Row(x, ref y, w, $"  {label} HP: {hpText}");
+
+        if (actor.Stats == null)
+        {
+            Row(x, ref y, w, "    (no Stats)");
+            return;
+        }
+
+        Row(x, ref y, w, $"    STR {actor.Stats.Get(FightStatId.Strength):F0}  SPD {actor.Stats.Get(FightStatId.Speed):F0}  " +
+                          $"AGI {actor.Stats.Get(FightStatId.Agility):F0}  DEF {actor.Stats.Get(FightStatId.Defense):F0}");
+        Row(x, ref y, w, $"    CMB {actor.Stats.Get(FightStatId.Combo):F0}  KNB {actor.Stats.Get(FightStatId.Knockback):F0}  " +
+                          $"SPC {actor.Stats.Get(FightStatId.SpecialPower):F0}  BAL {actor.Stats.Get(FightStatId.Balance):F0}");
+
+        if (_balanceConfig != null)
+        {
+            var mods = _balanceConfig.ComputeModifiers(actor.Stats);
+            Row(x, ref y, w, $"    dmgDealt x{mods.DamageDealtMultiplier:F2}  dmgTaken x{mods.DamageTakenMultiplier:F2}  " +
+                              $"knb x{mods.KnockbackDealtMultiplier:F2}  res x{mods.ResistanceMultiplier:F2}  timing x{mods.TimingScale:F2}");
+        }
     }
 
     private void AddLog(string line)

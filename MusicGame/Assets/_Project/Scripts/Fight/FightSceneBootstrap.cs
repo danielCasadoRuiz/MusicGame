@@ -31,6 +31,7 @@ public class FightSceneBootstrap : MonoBehaviour
     private Camera _previousMainCamera;
     private FightArenaConfig _arenaConfig;
     private FightCameraConfig _cameraConfig;
+    private FightCombatBalanceConfig _combatBalanceConfig;
 
     private FighterActor _playerActor;
     private FighterActor _opponentActor;
@@ -50,8 +51,9 @@ public class FightSceneBootstrap : MonoBehaviour
         LogIncomingData();
 
         var appConfig = Resources.Load<AppConfigSO>("AppConfig");
-        _arenaConfig  = appConfig != null ? appConfig.arena       : null;
-        _cameraConfig = appConfig != null ? appConfig.fightCamera : null;
+        _arenaConfig         = appConfig != null ? appConfig.arena         : null;
+        _cameraConfig        = appConfig != null ? appConfig.fightCamera   : null;
+        _combatBalanceConfig = appConfig != null ? appConfig.combatBalance : null;
         if (_arenaConfig == null)
             Debug.LogWarning("[FightSceneBootstrap] No FightArenaConfig (AppConfig.arena) configured — using hardcoded fallback spawn/bounds/speed values.");
 
@@ -134,6 +136,24 @@ public class FightSceneBootstrap : MonoBehaviour
         _playerActor.SetOpponent(_opponentActor);
         _opponentActor.SetOpponent(_playerActor);
 
+        // Universal on both sides — see FighterActor.HitReaction's own doc. Needs the opponent
+        // reference above, so it can't happen inside Initialize.
+        _playerActor.AttachHitReaction(_arenaConfig);
+        _opponentActor.AttachHitReaction(_arenaConfig);
+
+        // Player: whatever the Runner actually produced (see GameSession.FighterStats' own doc);
+        // Opponent: this level's hand-authored profile, or a flat 100-everywhere fallback (see
+        // OpponentLevelConfig.combatStats/FighterStats.Default's own doc) — deliberately NOT
+        // AIDifficultyProfile, a separate, still-unused concept this phase.
+        var playerStats = GameSession.Instance != null && GameSession.Instance.FighterStats != null
+            ? GameSession.Instance.FighterStats
+            : FighterStats.Default();
+        var opponentStats = opponentLevelConfig != null && opponentLevelConfig.combatStats != null
+            ? opponentLevelConfig.combatStats.Build()
+            : FighterStats.Default();
+        _playerActor.SetStats(playerStats);
+        _opponentActor.SetStats(opponentStats);
+
         Debug.Log($"[FightSceneBootstrap] Spawned fighters — Player visual:{(_playerActor.UsedFallbackCapsule ? "capsule fallback" : "prefab")} " +
                   $"Opponent visual:{(_opponentActor.UsedFallbackCapsule ? "capsule fallback" : "prefab")}");
     }
@@ -178,7 +198,11 @@ public class FightSceneBootstrap : MonoBehaviour
         if (moveController != null)
         {
             moveController.SetMovementDriver(new RealFighterMovementDriver(movement));
+            moveController.Stats = _playerActor.Stats;
             _playerActor.SetMoveController(moveController);
+
+            var attack = _playerActor.gameObject.AddComponent<FighterAttack>();
+            attack.Initialize(_playerActor, _opponentActor, moveController, _combatBalanceConfig);
         }
         else
         {

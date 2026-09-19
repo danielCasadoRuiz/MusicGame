@@ -1,0 +1,131 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+/// <summary>
+/// Turns FighterMoveController's Active phase into real hitbox detection — Player-only this phase
+/// (only the Player has a MoveController/attacks at all, see FighterActor's own doc; the Opponent
+/// simply has nothing generating hits against it). Reacts to FightMovePhaseChangedEvent rather than
+/// re-deriving Startup/Active/Recovery timing itself — FighterMoveController remains the sole
+/// authority (see that class's own doc).
+///
+/// PIPELINE (see this phase's own scope note on keeping responsibilities separate):
+///   detect overlap (FightCombatShapes, geometry only)
+///   -> resolve (FightHitResolver, pure function — reads FighterStats, never mutates anything)
+///   -> react (FighterHealth.ApplyDamage / FighterHitReaction.ApplyHit — each owns its own state)
+///   -> publish HitLandedEvent
+/// This class only ORCHESTRATES that sequence; it never itself does `defender.Health -= x` or
+/// reaches into a Transform/MoveController directly.
+///
+/// MULTI-HIT GUARD: _hitTargetsThisWindow is cleared every time a NEW Active phase begins (a fresh
+/// execution of a move, whether the same move or a different one) and a target already in it is
+/// skipped for the rest of that window — a move deals damage to a given defender at most once per
+/// Active phase. Multi-hit moves (several distinct impacts within one Active window) are a future,
+/// explicit addition — not implemented here.
+/// </summary>
+public class FighterAttack : MonoBehaviour
+{
+    private FighterActor _actor;
+    private FighterActor _opponent;
+    private FighterMoveController _moveController;
+    private FightCombatBalanceConfig _balanceConfig;
+
+    private bool _hitboxActive;
+    private FightMoveDefinition _activeMove;
+    private readonly HashSet<FighterActor> _hitTargetsThisWindow = new();
+
+    private System.Action<FightMovePhaseChangedEvent> _onPhaseChanged;
+
+    public void Initialize(FighterActor actor, FighterActor opponent, FighterMoveController moveController, FightCombatBalanceConfig balanceConfig)
+    {
+        _actor          = actor;
+        _opponent       = opponent;
+        _moveController = moveController;
+        _balanceConfig  = balanceConfig;
+    }
+
+    private void OnEnable()
+    {
+        _onPhaseChanged = e =>
+        {
+            if (_moveController == null || e.Source != _moveController) return;
+
+            if (e.Current == FighterMoveState.Active)
+            {
+                _activeMove = e.Move;
+                _hitTargetsThisWindow.Clear();
+                _hitboxActive = _activeMove != null && _activeMove.hits != null && _activeMove.hits.Length > 0;
+            }
+            else if (_hitboxActive)
+            {
+                _hitboxActive = false;
+                _activeMove = null;
+            }
+        };
+        EventBus.Subscribe(_onPhaseChanged);
+    }
+
+    private void OnDisable() => EventBus.Unsubscribe(_onPhaseChanged);
+
+    private void Update()
+    {
+        if (!_hitboxActive || _activeMove == null || _opponent == null) return;
+        if (_opponent.Health != null && _opponent.Health.IsKO) return;
+        if (_hitTargetsThisWindow.Contains(_opponent)) return;
+
+        foreach (var hitDef in _activeMove.hits)
+        {
+            if (hitDef == null) continue;
+
+            Vector3 hitCenter = ComputeWorldCenter(hitDef);
+            if (!OverlapsAnyHurtbox(hitCenter, hitDef, _opponent)) continue;
+
+            var result = FightHitResolver.Resolve(_actor, _opponent, _activeMove, hitDef, _balanceConfig);
+            ApplyHit(result);
+            _hitTargetsThisWindow.Add(_opponent);
+            break; // one resolved hit per target per Active window, even if several hitDefs would overlap this same frame
+        }
+    }
+
+    private Vector3 ComputeWorldCenter(FightHitDefinition hitDef)
+    {
+        // Authored as if FacingRight were true — mirror X when actually facing left. See
+        // FightHitDefinition.localOffset's own doc.
+        float sign = _actor.FacingRight ? 1f : -1f;
+        return _actor.transform.position + new Vector3(hitDef.localOffset.x * sign, hitDef.localOffset.y, hitDef.localOffset.z);
+    }
+
+    private static bool OverlapsAnyHurtbox(Vector3 hitCenter, FightHitDefinition hitDef, FighterActor defender)
+    {
+        foreach (var hurtbox in defender.Hurtboxes)
+        {
+            if (hurtbox != null && FightCombatShapes.Overlaps(hitCenter, hitDef, hurtbox.WorldCenter, hurtbox.Size))
+                return true;
+        }
+        return false;
+    }
+
+    private void ApplyHit(FightHitResult result)
+    {
+        EventBus.Publish(new HitLandedEvent { Attacker = _actor, Defender = _opponent, Move = _activeMove, Result = result });
+
+        _opponent.Health?.ApplyDamage(result.FinalDamage);
+        _opponent.HitReaction?.ApplyHit(result.FinalHitStun, result.FinalKnockback);
+
+        Debug.Log($"[FighterAttack] Hit landed: {_activeMove.debugName} -> {result.FinalDamage:F1} dmg, " +
+                  $"{result.FinalHitStun:F2}s stun, {result.FinalKnockback:F2} knockback");
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (!FightCombatDebugVisuals.Enabled || !_hitboxActive || _activeMove?.hits == null || _actor == null) return;
+
+        Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.6f);
+        foreach (var hitDef in _activeMove.hits)
+        {
+            if (hitDef == null) continue;
+            Vector3 center = ComputeWorldCenter(hitDef);
+            if (hitDef.shape == FightHitShape.Sphere) Gizmos.DrawWireSphere(center, hitDef.size.x);
+            else Gizmos.DrawWireCube(center, hitDef.size);
+        }
+    }
+}

@@ -24,4 +24,11 @@ MonoBehaviour:
   movementMultiplier: 0
   lungeDistance: 0.5
   lockFacingDuringMove: 1
+  hits:
+  - shape: 0
+    localOffset: {x: 0.9, y: 1, z: 0}
+    size: {x: 0.7, y: 0.7, z: 0.7}
+    baseDamage: 20
+    baseHitStun: 0.45
+    baseKnockback: 1.8
   damage: 0

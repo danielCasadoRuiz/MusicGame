@@ -107,21 +107,9 @@ public class FighterMovement : MonoBehaviour
 
     private void ApplyClampedDelta(float delta)
     {
-        float minX          = _config != null ? _config.minBoundX : -4f;
-        float maxX           = _config != null ? _config.maxBoundX : 4f;
-        float minSeparation = _config != null ? _config.minimumFighterSeparation : 1f;
-
-        float currentX = _actor.transform.position.x;
-        float targetX  = Mathf.Clamp(currentX + delta, minX, maxX);
-
-        if (_opponent != null)
-        {
-            float opponentX = _opponent.transform.position.x;
-            if (targetX > currentX && opponentX > currentX)
-                targetX = Mathf.Min(targetX, opponentX - minSeparation);
-            else if (targetX < currentX && opponentX < currentX)
-                targetX = Mathf.Max(targetX, opponentX + minSeparation);
-        }
+        float currentX  = _actor.transform.position.x;
+        float opponentX = _opponent != null ? _opponent.transform.position.x : currentX;
+        float targetX   = FightMovementUtility.ClampDeltaX(currentX, delta, opponentX, _config);
 
         var pos = _actor.transform.position;
         pos.x = targetX;
