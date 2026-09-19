@@ -38,3 +38,20 @@ public class DebugFighterMovementDriver : IFighterMovementDriver
         LastLungeDistance = distance;
     }
 }
+
+/// <summary>
+/// Real implementation, once a real FighterActor/FighterMovement exists (see FighterActor's own
+/// doc) — forwards FighterMoveController's calls straight into the Player's FighterMovement
+/// component. FighterMoveController itself never changes: it already only ever calls through the
+/// IFighterMovementDriver interface (see SetMovementDriver), so swapping DebugFighterMovementDriver
+/// for this one at FightSceneBootstrap's wiring time is the entire integration.
+/// </summary>
+public class RealFighterMovementDriver : IFighterMovementDriver
+{
+    private readonly FighterMovement _movement;
+
+    public RealFighterMovementDriver(FighterMovement movement) => _movement = movement;
+
+    public void SetMovementLock(bool locked, float multiplier) => _movement?.SetLock(locked, multiplier);
+    public void ApplyLunge(float distance) => _movement?.QueueLunge(distance);
+}

@@ -21,6 +21,8 @@ public class FightDebugHUD : MonoBehaviour
     private bool _visible;
     private FighterInputController _input;
     private FighterMoveController _moves;
+    private FighterActor _player;
+    private FighterActor _opponent;
 
     private readonly List<string> _log = new();
     private string _lastNormal = "(none)";
@@ -38,6 +40,20 @@ public class FightDebugHUD : MonoBehaviour
     {
         _input = FindFirstObjectByType<FighterInputController>();
         _moves = FindFirstObjectByType<FighterMoveController>();
+        FindActors();
+    }
+
+    // FighterActors live in Fight.unity (spawned by FightSceneBootstrap), loaded/unloaded well
+    // after this UI-Scene-resident class's own Start() — re-tried lazily from OnGUI (see below)
+    // until they actually exist, same tolerant pattern as _input/_moves above.
+    private void FindActors()
+    {
+        if (_player != null && _opponent != null) return;
+        foreach (var actor in FindObjectsByType<FighterActor>(FindObjectsSortMode.None))
+        {
+            if (actor.Side == FighterSide.Player) _player = actor;
+            else _opponent = actor;
+        }
     }
 
     private void OnEnable()
@@ -77,10 +93,11 @@ public class FightDebugHUD : MonoBehaviour
         EnsureStyles();
         if (_input == null) _input = FindFirstObjectByType<FighterInputController>();
         if (_moves == null) _moves = FindFirstObjectByType<FighterMoveController>();
+        FindActors();
 
         const float x = 8f, w = 340f;
         float y = 8f;
-        float h = 26f + 18f * 3f + 18f + 16f * 7f + 18f + 16f * (MaxLogLines + 1);
+        float h = 26f + 18f * 3f + 18f + 16f * 7f + 18f + 16f * 10f + 18f + 16f * (MaxLogLines + 1);
 
         GUI.Box(new Rect(x, y, w, h), "", _boxStyle);
         GUI.Label(new Rect(x + 6f, y + 2f, w - 12f, 16f), "FIGHT INPUT/COMBO DEBUG (F1)", _headerStyle);
@@ -106,6 +123,33 @@ public class FightDebugHUD : MonoBehaviour
             Row(x, ref y, w, $"  Queued: {queuedName}");
             Row(x, ref y, w, $"  CanAttack: {_moves.CanAttack}");
             Row(x, ref y, w, $"  Anim state: {_moves.CurrentAnimationState}");
+        }
+        y += 4f;
+
+        var flowState = FightFlowController.Instance != null ? FightFlowController.Instance.CurrentState.ToString() : "(no FightFlowController)";
+        Row(x, ref y, w, "Fighter Actors:");
+        Row(x, ref y, w, $"  FightFlowState: {flowState}");
+        if (_player == null || _opponent == null)
+        {
+            Row(x, ref y, w, "  (no FighterActors found yet)");
+        }
+        else
+        {
+            string playerVisual   = _player.UsedFallbackCapsule   ? "capsule" : "prefab";
+            string opponentVisual = _opponent.UsedFallbackCapsule ? "capsule" : "prefab";
+            Row(x, ref y, w, $"  Player pos: {_player.transform.position:F2}  ({playerVisual})");
+            Row(x, ref y, w, $"  Opponent pos: {_opponent.transform.position:F2}  ({opponentVisual})");
+            Row(x, ref y, w, $"  DistanceToOpponent: {_player.DistanceToOpponent:F2}");
+            Row(x, ref y, w, $"  Player facing: {(_player.FacingRight ? "Right" : "Left")}   Opponent facing: {(_opponent.FacingRight ? "Right" : "Left")}");
+            if (_player.Movement != null)
+            {
+                Row(x, ref y, w, $"  Player movement locked: {_player.Movement.IsLocked}   multiplier: {_player.Movement.Multiplier:F2}");
+                Row(x, ref y, w, $"  Last lunge: {_player.Movement.LastLungeDistance:F2}");
+            }
+            else
+            {
+                Row(x, ref y, w, "  (no FighterMovement on Player)");
+            }
         }
         y += 4f;
 

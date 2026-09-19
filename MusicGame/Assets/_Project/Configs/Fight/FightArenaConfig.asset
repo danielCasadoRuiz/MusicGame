@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 305e382fb6e24e04bbd06791139ba167, type: 3}
+  m_Name: FightArenaConfig
+  m_EditorClassIdentifier: Assembly-CSharp::FightArenaConfig
+  playerSpawnPosition: {x: -1.5, y: 1, z: 0}
+  opponentSpawnPosition: {x: 1.5, y: 1, z: 0}
+  minBoundX: -4
+  maxBoundX: 4
+  minimumFighterSeparation: 1
+  baseMovementSpeed: 4
+  playerFighterPrefab: {fileID: 0}
+  playerDebugColor: {r: 0.2, g: 0.6, b: 1, a: 1}
+  opponentDebugColor: {r: 0.9, g: 0.25, b: 0.2, a: 1}
