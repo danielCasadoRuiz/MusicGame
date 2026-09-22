@@ -159,6 +159,29 @@ public class FighterActor : MonoBehaviour
         hurtboxGO.AddComponent<FighterHurtbox>().Initialize(this, Vector3.zero, new Vector3(1f, 2f, 1f));
     }
 
+    /// <summary>
+    /// Swaps whatever is currently under VisualRoot (the fallback capsule/fighterPrefab from
+    /// Initialize) for `newContent` — the ONE integration point the Avatar module uses
+    /// (FightSceneBootstrap, once AvatarFactory.CreateAsync finishes) to hand this actor a real,
+    /// fully-assembled avatar. This class still knows NOTHING about morphs/clothes/Face/Addressables
+    /// (task's own explicit requirement) — it just takes a Transform and makes it the sole visible
+    /// content, exactly like Initialize's own fallback-vs-prefab choice already did.
+    ///
+    /// `newContent` is expected to already be parented under VisualRoot (AvatarFactory.CreateAsync is
+    /// called with VisualRoot as its own `parent` argument) — this only removes every OTHER child, it
+    /// never reparents `newContent` itself, so it's a no-op guard if called with something already
+    /// correctly placed.
+    /// </summary>
+    public void ReplaceVisual(Transform newContent)
+    {
+        for (int i = VisualRoot.childCount - 1; i >= 0; i--)
+        {
+            var child = VisualRoot.GetChild(i);
+            if (child != newContent) Destroy(child.gameObject);
+        }
+        UsedFallbackCapsule = false;
+    }
+
     public void SetOpponent(FighterActor opponent) => _opponent = opponent;
     public void SetFacingProvider(IFightFacingProvider provider) => _facingProvider = provider;
     public void SetMoveController(FighterMoveController controller) => MoveController = controller;

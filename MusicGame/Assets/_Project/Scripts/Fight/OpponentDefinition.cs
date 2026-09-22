@@ -65,8 +65,19 @@ public class OpponentLevelConfig
 
     public Sprite portrait;
 
-    [Tooltip("Avatar/visual variant for this level — unused until Fight actually renders a real fighter instead of a placeholder capsule.")]
+    [Tooltip("Avatar/visual variant for this level — used only as a fallback when avatarRecipe below " +
+             "is unassigned (see FightSceneBootstrap's own doc on the avatarRecipe-first, " +
+             "fighterPrefab/capsule-fallback order).")]
     public GameObject fighterPrefab;
+
+    [Tooltip("This level's fully-assembled avatar (body/face/hair/outfit) — when assigned, " +
+             "FightSceneBootstrap builds it via AvatarFactory and swaps it onto the Opponent's " +
+             "FighterActor.VisualRoot once ready, instead of fighterPrefab/the debug capsule. Null is " +
+             "tolerated (falls back to fighterPrefab/capsule exactly as before — task's own explicit " +
+             "'no OpponentDefinitions separats per level' note: a level's avatar simply evolves via " +
+             "its OWN AvatarRecipeSO, e.g. Rex Level 1/2/3 can each reference a different recipe built " +
+             "off the SAME Identity_Rex).")]
+    public AvatarRecipeSO avatarRecipe;
 
     [Tooltip("This level's available tracks — more than one is expected; one is picked at random " +
              "each time (a roulette snippet, and — once locked in — the match song itself).")]

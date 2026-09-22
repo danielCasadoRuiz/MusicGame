@@ -42,6 +42,12 @@ public class FightSceneBootstrap : MonoBehaviour
     private FighterActor _playerActor;
     private FighterActor _opponentActor;
 
+    /// <summary>Non-null only once the Opponent's real AvatarRecipeSO (if any — see
+    /// OpponentLevelConfig.avatarRecipe's own doc) has finished building. Disposed on OnDestroy so a
+    /// Fight scene unload never leaks the Avatar module's own Addressables handles/cloned meshes —
+    /// this bootstrap owns that lifecycle exactly the same way it owns the camera/arena's.</summary>
+    private AvatarInstance _opponentAvatarInstance;
+
     // Same "Mode Scene opened directly in the Editor" allowance RunnerSceneBootstrap already has
     // — lets a developer open Fight.unity and press Play directly (with FlowConfigSO.initialState
     // temporarily set to Fight) without SceneFlowController trying to also load it, which is
@@ -78,6 +84,9 @@ public class FightSceneBootstrap : MonoBehaviour
     {
         if (_previousMainCamera != null)
             _previousMainCamera.enabled = true;
+
+        _opponentAvatarInstance?.Dispose();
+        _opponentAvatarInstance = null;
     }
 
     private void LogIncomingData()
@@ -165,6 +174,48 @@ public class FightSceneBootstrap : MonoBehaviour
 
         Debug.Log($"[FightSceneBootstrap] Spawned fighters — Player visual:{(_playerActor.UsedFallbackCapsule ? "capsule fallback" : "prefab")} " +
                   $"Opponent visual:{(_opponentActor.UsedFallbackCapsule ? "capsule fallback" : "prefab")}");
+
+        // Fire-and-forget: the fallback capsule/fighterPrefab set up above is already visible this
+        // same frame, so there is never a blank Opponent while Addressables load — see
+        // TryBuildOpponentAvatar's own doc. FighterActor itself never learns this happened; it just
+        // sees ReplaceVisual called once, same as any other visual swap.
+        if (opponentLevelConfig != null && opponentLevelConfig.avatarRecipe != null)
+            _ = TryBuildOpponentAvatar(opponentLevelConfig.avatarRecipe, _opponentActor);
+    }
+
+    /// <summary>
+    /// Integrates the Avatar module MINIMALLY (task's own explicit scope note): if this level has no
+    /// avatarRecipe, this is never even called — the existing fighterPrefab/capsule fallback from
+    /// SpawnActor stands completely unchanged. When it IS called, it builds the recipe via
+    /// AvatarFactory directly under the Opponent's own FighterActor.VisualRoot, then swaps it in via
+    /// FighterActor.ReplaceVisual — the ONLY two Avatar-module symbols this bootstrap ever touches.
+    /// Never touches gameplay/hitboxes/AI (task's own explicit "no toquis" requirement) — this only
+    /// ever replaces what's under VisualRoot, exactly like the capsule-vs-prefab choice already did.
+    /// </summary>
+    private async System.Threading.Tasks.Task TryBuildOpponentAvatar(AvatarRecipeSO recipeSO, FighterActor opponentActor)
+    {
+        var runtimeRecipe = recipeSO.ToRuntime();
+        var instance = await AvatarFactory.CreateAsync(runtimeRecipe, opponentActor.VisualRoot);
+
+        // The scene/actor may already be gone by the time an Addressables load resolves (Fight
+        // exited mid-load — see the Fight-exit lifecycle hardening elsewhere in this project) —
+        // dispose the freshly-built avatar instead of touching a destroyed actor.
+        if (this == null || opponentActor == null)
+        {
+            instance.Dispose();
+            return;
+        }
+
+        if (instance.Root == null)
+        {
+            Debug.LogError($"[FightSceneBootstrap] Opponent avatarRecipe '{recipeSO.name}' failed to build — keeping the fighterPrefab/capsule fallback already in place.");
+            instance.Dispose();
+            return;
+        }
+
+        _opponentAvatarInstance = instance;
+        opponentActor.ReplaceVisual(instance.Root);
+        Debug.Log($"[FightSceneBootstrap] Opponent avatar '{recipeSO.name}' built and applied ({instance.EquippedItems.Count} item(s) equipped).");
     }
 
     private static FighterActor SpawnActor(string name, FighterSide side, Vector3 position, GameObject visualPrefab, Color debugColor)
