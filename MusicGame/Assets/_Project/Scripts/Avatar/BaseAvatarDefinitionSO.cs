@@ -3,18 +3,24 @@ using UnityEngine.AddressableAssets;
 
 /// <summary>
 /// The base geometry AvatarFactory builds everything else on top of — a SINGLE Addressable prefab
-/// (task's own explicit correction: Male/Female are NOT two different prefabs, they're two vertex-
-/// position PRESETS applied to the exact same shared skeleton/topology/bone-weights/UVs — see
-/// AvatarMeshBasePresetSO's own doc). Every avatar, regardless of BodyBaseType, instantiates this same
-/// baseAvatarPrefab; maleBase/femaleBase only ever change WHERE its vertices sit, applied by
-/// AvatarFactory right after cloning the mesh and before any Slim/Heavy/Muscle blendshape.
+/// with ONE skeleton, ONE set of bindposes/skin weights and ONE Humanoid Avatar, shared by every
+/// body: Male, Female and every continuous Gender/Weight/Muscle value in between.
+///
+/// The prefab's body mesh rests in the Gender-0 state (MaleBase) and carries the Gender blendshape
+/// (FemaleBase - MaleBase) plus the six Slim/Heavy/Muscle channels (see
+/// BodyMorphValues.GetMorphWeights for the exact formula). Both endpoints share the same canonical
+/// height, so Gender never changes height, grounding or the skeleton.
+///
+/// maleBase/femaleBase are the baked REFERENCE geometry of the two Gender endpoints (Gender 0 / 1).
+/// Runtime never writes them onto a mesh (body changes are blendshape weights only); they're the
+/// ground truth the validator/tests check the mesh against, and what future garment fitting bakes
+/// against.
 ///
 /// baseAvatarPrefab is expected to carry an AvatarVisualPart (see its own doc) exposing: rootBone (the
 /// skeleton AvatarSkeletonMapper builds its cache from and every equipped item remaps onto),
-/// skinnedRenderers (base-shape-swapped by maleBase/femaleBase, then morph-driven by
-/// AvatarBodyMorphController using this base's own gender-matched MorphChannels — resolved
-/// automatically from BodyMorphValues.BaseType), skinToneRenderers (tinted from FaceProfileSO.skinTone),
-/// an optional faceRenderer, and an optional regionMap (for WearableItemSO.hiddenBodyRegions to act on).
+/// skinnedRenderers (morph-driven by AvatarBodyMorphController), skinToneRenderers (tinted from
+/// FaceProfileSO.skinTone), an optional faceRenderer, and an optional regionMap (for
+/// WearableItemSO.hiddenBodyRegions to act on).
 /// </summary>
 [CreateAssetMenu(fileName = "BaseAvatarDefinition", menuName = "MusicGame/Avatar/Base Avatar Definition")]
 public class BaseAvatarDefinitionSO : ScriptableObject
@@ -24,7 +30,7 @@ public class BaseAvatarDefinitionSO : ScriptableObject
     [Header("Base geometry (Addressable) — ONE prefab, shared by both genders")]
     public AssetReferenceGameObject baseAvatarPrefab;
 
-    [Header("Base shape presets — vertex positions only, same topology/skeleton")]
+    [Header("Gender endpoint reference geometry (Gender 0 / Gender 1) — same topology/skeleton/height")]
     public AvatarMeshBasePresetSO maleBase;
     public AvatarMeshBasePresetSO femaleBase;
 

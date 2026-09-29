@@ -1,13 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// One named renderer's base vertex positions for ONE AvatarMeshBasePresetSO — MaleBase and FemaleBase
-/// each carry one of these per skinned renderer on the shared baseAvatarPrefab, matched by renderer
-/// GameObject NAME (the artist's own naming contract, same "exact name, no alternative mapping"
-/// philosophy as MorphChannel — see AvatarBodyMorphController's own doc). normals/tangents are
-/// optional: leave them empty when the mesh's own imported normals already read correctly after the
-/// vertex swap (task's own explicit "només si realment són necessaris" scope note) — AvatarFactory
-/// calls Mesh.RecalculateNormals/RecalculateTangents itself whenever they're omitted.
+/// One named renderer's vertex data for ONE AvatarMeshBasePresetSO — matched by renderer GameObject
+/// NAME on the shared baseAvatarPrefab (same "exact name, no alternative mapping" philosophy as
+/// MorphChannel). normals/tangents are optional.
 /// </summary>
 [System.Serializable]
 public class AvatarMeshBaseVertexData
@@ -16,24 +12,22 @@ public class AvatarMeshBaseVertexData
     public string rendererName;
 
     public Vector3[] vertices = System.Array.Empty<Vector3>();
-
-    [Tooltip("Optional — leave empty to let AvatarFactory call Mesh.RecalculateNormals() instead.")]
     public Vector3[] normals = System.Array.Empty<Vector3>();
-
-    [Tooltip("Optional — leave empty to let AvatarFactory call Mesh.RecalculateTangents() instead.")]
     public Vector4[] tangents = System.Array.Empty<Vector4>();
 }
 
 /// <summary>
-/// A base body SHAPE — MaleBase or FemaleBase (task's own explicit "recuperar la filosofia... vertex
-/// positions" request): both share the EXACT same baseAvatarPrefab (one skeleton, one topology, one
-/// set of bone weights/UVs — see BaseAvatarDefinitionSO's own doc), differing ONLY in where their
-/// vertices sit. AvatarFactory applies one of these to the freshly-cloned meshes BEFORE any
-/// Slim/Heavy/Muscle blendshape weight is set, since Unity blendshapes are deltas evaluated on top of
-/// whatever Mesh.vertices currently holds — swap the base first, then layer blendshapes on top.
+/// The baked reference geometry of one Gender ENDPOINT — MaleBase (Gender 0) or FemaleBase (Gender 1)
+/// — for the shared baseAvatarPrefab: same topology, same skeleton, same bindposes, same canonical
+/// height; only vertex positions (and their normals/tangents) differ.
 ///
-/// version/metadata exists purely so a future re-export of the same preset (e.g. a topology fix) has
-/// somewhere to record "this changed" for debugging — nothing reads it yet.
+/// Geometry only — there is deliberately NO skeleton data here any more: the avatar has one canonical
+/// skeleton for every body (see BaseAvatarDefinitionSO's own doc). Runtime never writes a preset onto a
+/// mesh; the body mesh's rest vertices equal MaleBase and its Gender blendshape reaches FemaleBase.
+/// These presets are the ground truth the validator/tests compare against, and what future garment
+/// fitting bakes against.
+///
+/// version is bumped on every rebake, purely for debugging "did this change".
 /// </summary>
 [CreateAssetMenu(fileName = "AvatarMeshBasePreset", menuName = "MusicGame/Avatar/Avatar Mesh Base Preset")]
 public class AvatarMeshBasePresetSO : ScriptableObject

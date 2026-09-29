@@ -10,14 +10,19 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BodyMorphProfile", menuName = "MusicGame/Avatar/Body Morph Profile")]
 public class BodyMorphProfileSO : ScriptableObject
 {
+    [Tooltip("Gender endpoint: Male = Gender 0, Female = Gender 1 (see BodyMorphValues.Gender).")]
     public BodyBaseType baseType;
     [Range(0f, 1f)] public float weight = 0.5f;
     [Range(0f, 1f)] public float muscle;
 
-    public BodyMorphValues ToValues() => new BodyMorphValues
+    [Tooltip("Optional — use a continuous Gender value instead of the baseType endpoint.")]
+    public bool overrideGender;
+    [Range(0f, 1f)] public float gender;
+
+    public BodyMorphValues ToValues()
     {
-        BaseType = baseType,
-        Weight   = weight,
-        Muscle   = muscle,
-    };
+        var values = BodyMorphValues.FromBaseType(baseType, weight, muscle);
+        if (overrideGender) values.Gender = gender;
+        return values;
+    }
 }

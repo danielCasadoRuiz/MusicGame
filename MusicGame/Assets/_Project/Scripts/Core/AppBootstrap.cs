@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// THE Composition Root of the application — the only place that constructs, configures and wires
@@ -49,6 +50,7 @@ public static class AppBootstrap
         // AppFlowController.Start() ever fires, so GameFlowState never leaves whatever it was frozen
         // at when the previous session died).
         if (Context != null && Context.AppFlow != null) return; // already booted, and still alive
+        if (IsStandaloneDebugScene(SceneManager.GetActiveScene())) return;
         Application.quitting -= Shutdown; // drop any stale subscription before Shutdown() re-adds one
         Context = null;
 
@@ -89,6 +91,13 @@ public static class AppBootstrap
 
         Application.quitting += Shutdown;
     }
+
+    /// <summary>Isolated tool scenes (Assets/_Project/Scenes/Debug/, e.g. AvatarDebug.unity) are
+    /// entered with Play directly and must NOT boot the whole app flow on top of themselves (UI Scene
+    /// + Frontend would load additively over the tool). They're never in Build Settings, so this only
+    /// ever affects Editor Play sessions started from one of them.</summary>
+    private static bool IsStandaloneDebugScene(Scene scene) =>
+        scene.IsValid() && scene.path.StartsWith("Assets/_Project/Scenes/Debug/", System.StringComparison.Ordinal);
 
     private static void Shutdown()
     {

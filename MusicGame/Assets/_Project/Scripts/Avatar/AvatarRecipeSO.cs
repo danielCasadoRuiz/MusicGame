@@ -13,6 +13,10 @@ public class BodyMorphOverride
 
     public bool overrideMuscle;
     [Range(0f, 1f)] public float muscle;
+
+    public bool overrideGender;
+    [Tooltip("0 = Male .. 1 = Female (continuous — see BodyMorphValues.Gender).")]
+    [Range(0f, 1f)] public float gender;
 }
 
 /// <summary>
@@ -60,6 +64,7 @@ public class AvatarRecipeSO : ScriptableObject
         {
             if (bodyOverride.overrideWeight) runtimeIdentity.Body.Weight = bodyOverride.weight;
             if (bodyOverride.overrideMuscle) runtimeIdentity.Body.Muscle = bodyOverride.muscle;
+            if (bodyOverride.overrideGender) runtimeIdentity.Body.Gender = bodyOverride.gender;
         }
         if (hairOverride != null) runtimeIdentity.Hair = hairOverride;
         if (faceOverride != null) runtimeIdentity.Face = faceOverride;

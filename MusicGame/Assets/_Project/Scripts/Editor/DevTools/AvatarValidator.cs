@@ -38,6 +38,7 @@ public static class AvatarValidator
     {
         MorphChannel.MaleSlim,   MorphChannel.MaleHeavy,   MorphChannel.MaleMuscle,
         MorphChannel.FemaleSlim, MorphChannel.FemaleHeavy, MorphChannel.FemaleMuscle,
+        MorphChannel.Gender,
     };
 
     private static int ValidateBaseAvatars()
@@ -95,13 +96,17 @@ public static class AvatarValidator
                 warnings++;
             }
 
+            warnings += ValidateSkinning(label, prefab, visualPart);
+            warnings += ValidateAddressable(label, baseAvatar.baseAvatarPrefab);
+            warnings += ValidateHumanoid(label, prefab);
+            warnings += ValidateGenderEndpoints(label, baseAvatar, visualPart);
+
             warnings += ValidateBasePresetVertexCounts(label, "MaleBase", baseAvatar.maleBase, visualPart);
             warnings += ValidateBasePresetVertexCounts(label, "FemaleBase", baseAvatar.femaleBase, visualPart);
             warnings += ValidateBasePresetTopologyMatch(label, baseAvatar.maleBase, baseAvatar.femaleBase);
 
-            // ONE shared prefab now drives BOTH genders (see BaseAvatarDefinitionSO's own doc) — its
-            // mesh must carry ALL SIX blendshapes, not just one gender's three, since the same mesh
-            // is reused for both with only its base vertex positions swapped.
+            // ONE shared prefab drives every body (see BaseAvatarDefinitionSO's own doc) — its mesh must
+            // carry Gender plus all six Slim/Heavy/Muscle blendshapes.
             warnings += WarnMissingBlendShapes(label, prefab.name, visualPart.skinnedRenderers, AllBodyChannels, isError: false);
         }
         return warnings;
@@ -130,6 +135,118 @@ public static class AvatarValidator
             {
                 Debug.LogError($"[AvatarValidator] {label}: {presetLabel} '{preset.name}' renderer '{smr.name}' " +
                                 $"has {data.vertices.Length} vertices but the mesh has {smr.sharedMesh.vertexCount} — topology mismatch.");
+                warnings++;
+            }
+        }
+        return warnings;
+    }
+
+    /// <summary>Every body SkinnedMeshRenderer must be a real, saved, correctly-skinned asset: a mesh
+    /// that isn't a persistent asset (e.g. generated in memory and never saved) would be silently lost
+    /// on reload; broken bones/bindposes render an exploded avatar. AvatarFactory clones every body mesh
+    /// before mutating it, so the prefab itself must always reference the shared ASSET, never a clone.</summary>
+    private static int ValidateSkinning(string label, GameObject prefab, AvatarVisualPart visualPart)
+    {
+        if (visualPart.skinnedRenderers == null) return 0;
+
+        int warnings = 0;
+        foreach (var smr in visualPart.skinnedRenderers)
+        {
+            if (smr == null) { Debug.LogError($"[AvatarValidator] {label} prefab '{prefab.name}' has a null entry in skinnedRenderers."); warnings++; continue; }
+            var mesh = smr.sharedMesh;
+            if (mesh == null) { Debug.LogError($"[AvatarValidator] {label} renderer '{smr.name}' has no mesh."); warnings++; continue; }
+            if (!AssetDatabase.Contains(mesh))
+            {
+                Debug.LogError($"[AvatarValidator] {label} renderer '{smr.name}' mesh '{mesh.name}' is not a saved asset — it will be lost on reload (rebake the avatar).");
+                warnings++;
+            }
+            if (smr.rootBone == null)
+            {
+                Debug.LogError($"[AvatarValidator] {label} renderer '{smr.name}' has no rootBone.");
+                warnings++;
+            }
+            var bones = smr.bones;
+            int nullBones = 0;
+            foreach (var bone in bones) if (bone == null) nullBones++;
+            if (bones.Length == 0 || nullBones > 0 || mesh.bindposeCount != bones.Length)
+            {
+                Debug.LogError($"[AvatarValidator] {label} renderer '{smr.name}' has an invalid skeleton binding " +
+                                $"({bones.Length} bones, {nullBones} null, {mesh.bindposeCount} bindposes).");
+                warnings++;
+            }
+            if (visualPart.rootBone != null && bones.Length > 0 && bones[0] != null && !bones[0].IsChildOf(visualPart.rootBone))
+            {
+                Debug.LogError($"[AvatarValidator] {label} renderer '{smr.name}' is skinned to bones outside AvatarVisualPart.rootBone '{visualPart.rootBone.name}'.");
+                warnings++;
+            }
+        }
+        return warnings;
+    }
+
+    private static int ValidateAddressable(string label, UnityEngine.AddressableAssets.AssetReferenceGameObject reference)
+    {
+        if (reference == null || string.IsNullOrEmpty(reference.AssetGUID)) return 0; // already reported as unassigned
+        var settings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
+        if (settings != null && settings.FindAssetEntry(reference.AssetGUID) != null) return 0;
+
+        Debug.LogError($"[AvatarValidator] {label} baseAvatarPrefab is not marked Addressable — AvatarFactory.CreateAsync will fail to load it.");
+        return 1;
+    }
+
+    private static int ValidateHumanoid(string label, GameObject prefab)
+    {
+        var animator = prefab.GetComponentInChildren<Animator>();
+        if (animator == null) return 0; // a non-animated base is legal
+        if (animator.avatar != null && animator.avatar.isValid && animator.avatar.isHuman) return 0;
+
+        Debug.LogError($"[AvatarValidator] {label} prefab '{prefab.name}' Animator has no valid Humanoid Avatar.");
+        return 1;
+    }
+
+    /// <summary>The continuous-Gender contract (see BaseAvatarDefinitionSO's own doc): every body mesh
+    /// rests EXACTLY in MaleBase and its Gender blendshape lands EXACTLY on FemaleBase — so Gender 0/1
+    /// reproduce the two endpoint presets. Also catches preset/mesh drift after a partial rebake.</summary>
+    private static int ValidateGenderEndpoints(string label, BaseAvatarDefinitionSO baseAvatar, AvatarVisualPart visualPart)
+    {
+        if (baseAvatar.maleBase == null || baseAvatar.femaleBase == null || visualPart.skinnedRenderers == null) return 0;
+
+        const float tolerance = 1e-4f;
+        int warnings = 0;
+        foreach (var smr in visualPart.skinnedRenderers)
+        {
+            if (smr == null || smr.sharedMesh == null) continue;
+            var mesh = smr.sharedMesh;
+            var male = baseAvatar.maleBase.FindRenderer(smr.name);
+            var female = baseAvatar.femaleBase.FindRenderer(smr.name);
+            if (male == null || female == null || male.vertices.Length != mesh.vertexCount || female.vertices.Length != mesh.vertexCount)
+                continue; // reported by the vertex-count/topology checks
+
+            int genderIndex = mesh.GetBlendShapeIndex(MorphChannel.Gender.ToString());
+            if (genderIndex < 0)
+            {
+                Debug.LogError($"[AvatarValidator] {label} renderer '{smr.name}' has no '{MorphChannel.Gender}' blendshape — Gender can't morph (rebake the avatar).");
+                warnings++;
+                continue;
+            }
+
+            var rest = mesh.vertices;
+            var delta = new Vector3[mesh.vertexCount];
+            mesh.GetBlendShapeFrameVertices(genderIndex, mesh.GetBlendShapeFrameCount(genderIndex) - 1, delta, null, null);
+
+            float maleError = 0f, femaleError = 0f;
+            for (int i = 0; i < rest.Length; i++)
+            {
+                maleError = Mathf.Max(maleError, (rest[i] - male.vertices[i]).magnitude);
+                femaleError = Mathf.Max(femaleError, (rest[i] + delta[i] - female.vertices[i]).magnitude);
+            }
+            if (maleError > tolerance)
+            {
+                Debug.LogError($"[AvatarValidator] {label} renderer '{smr.name}' rest vertices differ from MaleBase by up to {maleError * 1000f:0.00} mm — Gender 0 wouldn't be MaleBase.");
+                warnings++;
+            }
+            if (femaleError > tolerance)
+            {
+                Debug.LogError($"[AvatarValidator] {label} renderer '{smr.name}' Gender blendshape misses FemaleBase by up to {femaleError * 1000f:0.00} mm — Gender 1 wouldn't be FemaleBase.");
                 warnings++;
             }
         }

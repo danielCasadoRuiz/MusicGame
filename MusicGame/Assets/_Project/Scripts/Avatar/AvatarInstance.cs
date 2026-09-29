@@ -35,6 +35,7 @@ public class AvatarInstance
     public AvatarIdentity FinalIdentity;
     public BodyMorphValues BodyMorphValues;
     public AvatarBodyMorphController MorphController;
+    public AvatarSkeletonMapper SkeletonMapper;
     public readonly List<EquippedAvatarItem> EquippedItems = new();
     public AvatarRecipe Recipe;
 
@@ -42,13 +43,71 @@ public class AvatarInstance
     private readonly List<Mesh> _clonedMeshes = new();
     private bool _disposed;
 
+    // Body context captured by AvatarFactory. Empty for an instance whose build failed before the
+    // body existed.
+    private readonly List<SkinnedMeshRenderer> _bodyRenderers = new();
+    private (Transform bone, Vector3 position, Quaternion rotation)[] _restPose = System.Array.Empty<(Transform, Vector3, Quaternion)>();
+
+    /// <summary>AvatarFactory calls this once the base body exists — records which renderers are the
+    /// BODY and snapshots the skeleton's rest pose (see ResetToRestPose).</summary>
+    public void SetBodyContext(IEnumerable<SkinnedMeshRenderer> bodyRenderers)
+    {
+        _bodyRenderers.Clear();
+        foreach (var smr in bodyRenderers) if (smr != null) _bodyRenderers.Add(smr);
+
+        var bones = SkeletonRoot != null ? SkeletonRoot.GetComponentsInChildren<Transform>(true) : System.Array.Empty<Transform>();
+        _restPose = new (Transform, Vector3, Quaternion)[bones.Length];
+        for (int i = 0; i < bones.Length; i++) _restPose[i] = (bones[i], bones[i].localPosition, bones[i].localRotation);
+    }
+
+    /// <summary>
+    /// Runtime body edit — Gender / Weight / Muscle, all continuous — the SAME path AvatarFactory uses at
+    /// build time, the debug UI drives, and AvatarBodyTransition animates.
+    ///
+    /// Only blendshape WEIGHTS change (absolute values for every channel, see
+    /// BodyMorphValues.GetMorphWeights). Mesh vertices, the skeleton, bindposes and the Animator/its
+    /// Humanoid Avatar are never touched — so a body change can run every frame mid-animation without
+    /// resetting the animation state, and no sequence of changes can ever accumulate error.
+    ///
+    /// Equipped gender-specific Wearable variants are NOT re-resolved when the dominant gender flips
+    /// (see BodyMorphValues.BaseType) — rebuild via AvatarFactory for that; warns if it happens.
+    /// </summary>
+    public void ApplyBody(BodyMorphValues values)
+    {
+        if (_disposed || Root == null) return;
+
+        if (values.BaseType != BodyMorphValues.BaseType && EquippedItems.Count > 0)
+            Debug.LogWarning("[AvatarInstance] Dominant gender changed with wearables equipped — gender-specific variants are not " +
+                              "re-resolved; rebuild via AvatarFactory to swap them.");
+
+        BodyMorphValues = values;
+        if (FinalIdentity != null) FinalIdentity.Body = values;
+        MorphController?.Apply(values);
+    }
+
+    /// <summary>Puts every skeleton bone back to the prefab's rest pose (e.g. after stopping an
+    /// animation). Purely a pose reset — never part of a body change.</summary>
+    public void ResetToRestPose()
+    {
+        foreach (var (bone, position, rotation) in _restPose)
+        {
+            if (bone == null) continue;
+            bone.localPosition = position;
+            bone.localRotation = rotation;
+        }
+    }
+
+    /// <summary>Read-only view of the body renderers ApplyBody drives — for diagnostics/tests
+    /// (e.g. comparing two instances' meshes), never for mutating them directly.</summary>
+    public IReadOnlyList<SkinnedMeshRenderer> BodyRenderers => _bodyRenderers;
+
     /// <summary>AvatarFactory calls this for every Addressables handle it opens while building this
     /// instance (base body prefab, hair prefab, each equipped item prefab) — tracked here so Dispose
     /// releases every single one, never leaking a handle.</summary>
     public void TrackHandle(AsyncOperationHandle handle) => _addressableHandles.Add(handle);
 
-    /// <summary>AvatarFactory calls this for every Mesh it clones off a sharedMesh before mutating
-    /// blendshape weights (see AvatarBodyMorphController's own doc on why cloning is mandatory) — a
+    /// <summary>AvatarFactory calls this for every Mesh it clones off a sharedMesh (see
+    /// AvatarFactory.CloneMeshForMutation) — a
     /// cloned Mesh is a plain C# object Unity never garbage-collects on its own, so it must be
     /// explicitly Destroy()'d here.</summary>
     public void TrackClonedMesh(Mesh mesh) => _clonedMeshes.Add(mesh);
@@ -67,15 +126,25 @@ public class AvatarInstance
         _addressableHandles.Clear();
 
         foreach (var mesh in _clonedMeshes)
-            if (mesh != null) Object.Destroy(mesh);
+            if (mesh != null) DestroyObject(mesh);
         _clonedMeshes.Clear();
 
         EquippedItems.Clear();
+        _bodyRenderers.Clear();
+        _restPose = System.Array.Empty<(Transform, Vector3, Quaternion)>();
 
-        if (Root != null) Object.Destroy(Root.gameObject);
+        if (Root != null) DestroyObject(Root.gameObject);
         Root = null;
         VisualRoot = null;
         SkeletonRoot = null;
         Animator = null;
+    }
+
+    /// <summary>Destroy in Play Mode, DestroyImmediate in Edit Mode (editor tooling/tests build avatars
+    /// outside Play via AvatarFactory.AssembleBody — Object.Destroy is illegal there).</summary>
+    private static void DestroyObject(Object target)
+    {
+        if (Application.isPlaying) Object.Destroy(target);
+        else Object.DestroyImmediate(target);
     }
 }

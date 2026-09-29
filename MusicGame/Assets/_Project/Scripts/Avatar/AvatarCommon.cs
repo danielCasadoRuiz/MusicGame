@@ -1,10 +1,10 @@
 using UnityEngine;
 
 /// <summary>
-/// Which base geometry an avatar is built from — a CLOSED set (never "more genders later" — see
-/// BaseAvatarDefinitionSO's own doc on why Male/Female are two separate authored prefabs, not one
-/// prefab with a blend). Every morph channel in MorphChannel below is gender-specific and must never
-/// be applied across this boundary (see BodyMorphValues.GetMorphWeights's own doc).
+/// The two authored ENDPOINTS of the continuous Gender axis (BodyMorphValues.Gender: Male = 0,
+/// Female = 1) — what recipes/profiles serialize, and what gender-specific Wearable variants resolve
+/// against (the dominant side, see BodyMorphValues.BaseType). Both endpoints share ONE prefab, ONE
+/// skeleton and the same height — see BaseAvatarDefinitionSO's own doc.
 /// </summary>
 public enum BodyBaseType
 {
@@ -29,6 +29,11 @@ public enum MorphChannel
     FemaleSlim,
     FemaleHeavy,
     FemaleMuscle,
+
+    /// <summary>The continuous body-gender axis: FemaleBase - MaleBase on a mesh whose rest vertices
+    /// ARE MaleBase (see BodyMorphValues.GetMorphWeights for how it combines with the six channels
+    /// above). Appended last so existing serialized channel values keep their meaning.</summary>
+    Gender,
 }
 
 /// <summary>

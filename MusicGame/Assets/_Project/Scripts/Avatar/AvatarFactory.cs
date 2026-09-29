@@ -15,13 +15,13 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 /// entirely by that instance's own Dispose().
 ///
 /// Runs the pipeline from this phase's own spec, in this order: load+instantiate the SINGLE shared
-/// base body prefab -> find its skeleton/AvatarVisualPart -> clone its meshes -> apply MaleBase/
-/// FemaleBase vertex positions -> apply Weight/Muscle blendshapes -> apply Face/Skin -> hair ->
+/// base body prefab -> find its skeleton/AvatarVisualPart -> clone its meshes -> apply Gender/Weight/
+/// Muscle blendshapes -> apply Face/Skin -> hair ->
 /// resolve slot conflicts + load equipped items -> remap each item's skeleton -> apply morphs to
 /// compatible items -> body masking -> garment-vs-garment occlusion -> color overrides -> return.
 /// Never fitting/deforming geometry procedurally beyond that (task's own explicit "no facis fitting
 /// procedural automàtic" scope note) — masking/occlusion are pure renderer.enabled toggles, morphs are
-/// pure blendshape weights layered on top of whatever base vertex preset was applied.
+/// pure blendshape weights on top of the body's Gender-0 rest vertices.
 ///
 /// LIFECYCLE SAFETY (task's own explicit correction): `parent` is checked for validity (Unity's own
 /// destroyed-object equality) right after every `await` boundary — if the caller's build target
@@ -33,8 +33,12 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 /// </summary>
 public static class AvatarFactory
 {
-    private static readonly MorphChannel[] MaleChannels   = { MorphChannel.MaleSlim,   MorphChannel.MaleHeavy,   MorphChannel.MaleMuscle };
-    private static readonly MorphChannel[] FemaleChannels = { MorphChannel.FemaleSlim, MorphChannel.FemaleHeavy, MorphChannel.FemaleMuscle };
+    private static readonly MorphChannel[] AllBodyChannels =
+    {
+        MorphChannel.MaleSlim,   MorphChannel.MaleHeavy,   MorphChannel.MaleMuscle,
+        MorphChannel.FemaleSlim, MorphChannel.FemaleHeavy, MorphChannel.FemaleMuscle,
+        MorphChannel.Gender,
+    };
 
     public static async Task<AvatarInstance> CreateAsync(AvatarRecipe recipe, Transform parent)
     {
@@ -61,45 +65,11 @@ public static class AvatarFactory
             return instance;
         }
 
-        instance.Root = bodyGO.transform;
-        instance.VisualRoot = bodyGO.transform;
-        instance.Animator = bodyGO.GetComponentInChildren<Animator>();
-
-        // 3. Find skeleton — via the base body's own AvatarVisualPart contract (see its own doc).
-        var bodyPart = bodyGO.GetComponentInChildren<AvatarVisualPart>();
-        if (bodyPart == null)
-        {
-            Debug.LogError($"[AvatarFactory] Base avatar prefab '{bodyGO.name}' has no AvatarVisualPart — cannot resolve skeleton/regions/morphs. Returning an unfinished instance.");
-            return instance;
-        }
-
-        instance.SkeletonRoot = bodyPart.rootBone != null ? bodyPart.rootBone : bodyGO.transform;
-        var mapper = new AvatarSkeletonMapper(instance.SkeletonRoot);
-        var morphController = new AvatarBodyMorphController();
-        instance.MorphController = morphController;
-
-        // 4-6. Clone runtime meshes (never mutate sharedMesh) -> apply MaleBase/FemaleBase vertex
-        // positions -> register + apply Weight/Muscle blendshapes, using ONLY this base's own
-        // gender-matched channels (see class doc). Base preset MUST be applied before any blendshape
-        // weight is set — blendshapes are deltas evaluated on top of whatever Mesh.vertices currently
-        // holds (see AvatarMeshBasePresetSO's own doc).
-        var basePreset = recipe.BaseAvatar.GetBasePreset(recipe.Identity.Body.BaseType);
-        if (basePreset == null)
-            Debug.LogWarning($"[AvatarFactory] BaseAvatarDefinitionSO '{recipe.BaseAvatar.name}' has no " +
-                              $"{recipe.Identity.Body.BaseType}Base preset assigned — the base mesh keeps whatever shape it was imported with.");
-
-        var bodyMorphChannels = recipe.Identity.Body.BaseType == BodyBaseType.Male ? MaleChannels : FemaleChannels;
-        foreach (var smr in bodyPart.skinnedRenderers)
-        {
-            CloneMeshForMutation(smr, instance);
-            ApplyBasePreset(smr, basePreset, "BaseAvatar");
-            morphController.RegisterRenderer(smr, bodyMorphChannels, "BaseAvatar");
-        }
-        morphController.Apply(recipe.Identity.Body);
-
-        // 7. Face/Skin.
-        ApplySkinTone(bodyPart, recipe.BaseAvatar, recipe.Identity.Face);
-        ApplyFaceTexture(bodyPart, recipe.BaseAvatar, recipe.Identity.Face);
+        // 3-7. Skeleton, cloned meshes, base preset, morphs, face/skin — see AssembleBody.
+        var bodyPart = AssembleBody(instance, bodyGO, recipe);
+        if (bodyPart == null) return instance;
+        var mapper = instance.SkeletonMapper;
+        var morphController = instance.MorphController;
 
         // 8-11. Resolve slot conflicts BEFORE loading anything (never wastes an Addressables load on
         // a rejected item — see ResolveSlotConflicts' own doc), then load Hair + every accepted item,
@@ -130,6 +100,55 @@ public static class AvatarFactory
         ApplyColorOverrides(recipe, instance.EquippedItems);
 
         return instance;
+    }
+
+    /// <summary>
+    /// Steps 3-7 of the pipeline on an ALREADY-INSTANTIATED base body: resolve its AvatarVisualPart/
+    /// skeleton, clone every body mesh, register the Gender + six body channels, apply the recipe's
+    /// Gender/Weight/Muscle via AvatarInstance.ApplyBody, then skin tone/face.
+    /// Split out of CreateAsync (which only adds the Addressables load around it) so editor tooling
+    /// (MakeHumanBodyTests) can exercise the exact same body path on a plainly-instantiated prefab.
+    /// Returns null (instance left unfinished) if the body has no AvatarVisualPart.
+    /// </summary>
+    public static AvatarVisualPart AssembleBody(AvatarInstance instance, GameObject bodyGO, AvatarRecipe recipe)
+    {
+        instance.Root = bodyGO.transform;
+        instance.VisualRoot = bodyGO.transform;
+        instance.Animator = bodyGO.GetComponentInChildren<Animator>();
+
+        // 3. Find skeleton — via the base body's own AvatarVisualPart contract (see its own doc).
+        var bodyPart = bodyGO.GetComponentInChildren<AvatarVisualPart>();
+        if (bodyPart == null)
+        {
+            Debug.LogError($"[AvatarFactory] Base avatar prefab '{bodyGO.name}' has no AvatarVisualPart — cannot resolve skeleton/regions/morphs. Returning an unfinished instance.");
+            return null;
+        }
+
+        instance.SkeletonRoot = bodyPart.rootBone != null ? bodyPart.rootBone : bodyGO.transform;
+        var mapper = new AvatarSkeletonMapper(instance.SkeletonRoot);
+        instance.SkeletonMapper = mapper;
+        var morphController = new AvatarBodyMorphController();
+        instance.MorphController = morphController;
+
+        // 4-6. Clone runtime meshes (never share a mutable mesh between avatars) -> register the body
+        // channels -> apply Gender/Weight/Muscle. The body's rest vertices ARE the Gender-0 (MaleBase)
+        // state and every body change is expressed as blendshape weights (Gender + the six
+        // Slim/Heavy/Muscle channels — see BodyMorphValues.GetMorphWeights), so nothing here ever
+        // writes vertices, bindposes or the skeleton: one skeleton/Humanoid Avatar serves every body.
+        // ApplyBody is the exact same path runtime/debug body editing uses.
+        foreach (var smr in bodyPart.skinnedRenderers)
+        {
+            CloneMeshForMutation(smr, instance);
+            morphController.RegisterRenderer(smr, AllBodyChannels, "BaseAvatar");
+        }
+        instance.SetBodyContext(bodyPart.skinnedRenderers);
+        instance.ApplyBody(recipe.Identity.Body);
+
+        // 7. Face/Skin.
+        ApplySkinTone(bodyPart, recipe.BaseAvatar, recipe.Identity.Face);
+        ApplyFaceTexture(bodyPart, recipe.BaseAvatar, recipe.Identity.Face);
+
+        return bodyPart;
     }
 
     /// <summary>True (and disposes `instance`) the instant `parent` has become a destroyed Unity
@@ -404,45 +423,6 @@ public static class AvatarFactory
         var clone = Object.Instantiate(renderer.sharedMesh);
         renderer.sharedMesh = clone;
         instance.TrackClonedMesh(clone);
-    }
-
-    /// <summary>Overwrites `renderer`'s (already-cloned, never shared) mesh vertices with `preset`'s
-    /// own data for the matching renderer name — see AvatarMeshBasePresetSO's own doc on why this
-    /// MUST run before any blendshape weight is set. A renderer the preset has no entry for keeps its
-    /// original imported vertex positions (warning, not a crash); a vertex-count mismatch is a clear
-    /// topology-authoring error (error, skipped) rather than a corrupted mesh. normals/tangents are
-    /// applied from the preset when provided, otherwise recalculated — see AvatarMeshBaseVertexData's
-    /// own doc on why both are optional.</summary>
-    private static void ApplyBasePreset(SkinnedMeshRenderer renderer, AvatarMeshBasePresetSO preset, string label)
-    {
-        if (renderer == null || renderer.sharedMesh == null || preset == null) return;
-
-        var data = preset.FindRenderer(renderer.name);
-        if (data == null)
-        {
-            Debug.LogWarning($"[AvatarFactory] {label}: base preset '{preset.name}' has no vertex data for " +
-                              $"renderer '{renderer.name}' — keeping its original (imported) vertex positions.");
-            return;
-        }
-
-        var mesh = renderer.sharedMesh; // already this renderer's own cloned instance by this point
-        if (data.vertices.Length != mesh.vertexCount)
-        {
-            Debug.LogError($"[AvatarFactory] {label}: base preset '{preset.name}' renderer '{renderer.name}' " +
-                            $"has {data.vertices.Length} vertices but the mesh has {mesh.vertexCount} — " +
-                            "topology mismatch, skipped (mesh keeps its original vertex positions).");
-            return;
-        }
-
-        mesh.vertices = data.vertices;
-
-        if (data.normals.Length == mesh.vertexCount) mesh.normals = data.normals;
-        else mesh.RecalculateNormals();
-
-        if (data.tangents.Length == mesh.vertexCount) mesh.tangents = data.tangents;
-        else mesh.RecalculateTangents();
-
-        mesh.RecalculateBounds();
     }
 
     private static async Task<GameObject> InstantiateAsync(AssetReferenceGameObject reference, Transform parent, AvatarInstance instance, string label)

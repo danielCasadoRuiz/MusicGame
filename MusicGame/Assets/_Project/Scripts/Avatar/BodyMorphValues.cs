@@ -17,65 +17,83 @@ public readonly struct MorphWeight
 }
 
 /// <summary>
-/// The ONLY externally-visible morphology knobs (task's own explicit "externament només vull
-/// BodyBaseType/Weight/Muscle" scope note) — everything else (which actual blendshapes exist, how
-/// many there are) is resolved internally via GetMorphWeights, never exposed here. A plain
-/// [Serializable] struct so it can be authored directly in the Inspector (BodyMorphProfileSO) AND
-/// copied freely at runtime (AvatarIdentity, AvatarRecipeSO's body override) without ever aliasing a
-/// ScriptableObject's own serialized data (see AvatarIdentitySO.ToRuntime's own doc on why that
-/// matters).
+/// The ONLY externally-visible morphology knobs: Gender / Weight / Muscle — everything else (which
+/// actual blendshapes exist, how many there are) is resolved internally via GetMorphWeights, never
+/// exposed here. A plain [Serializable] struct copied freely at runtime (AvatarIdentity, recipe body
+/// overrides) without ever aliasing a ScriptableObject's own serialized data.
 ///
-/// Weight/Muscle are BOTH continuous (0..1) — BodyMorphProfileSO only exists to give a few common
-/// combinations a reusable, nameable preset; nothing in this struct or GetMorphWeights ever
-/// quantizes/snaps a value to one of those presets (task's own explicit "no limita el sistema" note).
+/// ALL THREE axes are continuous:
+///   Gender 0 = exact MaleBase .. 1 = exact FemaleBase (same height, same skeleton — see
+///          BaseAvatarDefinitionSO). Recipes/profiles still serialize the BodyBaseType endpoint;
+///          FromBaseType maps Male -> 0, Female -> 1.
+///   Weight 0 = thin, 0.5 = base, 1 = heavy.
+///   Muscle 0 = base, 1 = strong.
+/// A future Height axis would be a fourth, independent field — Gender deliberately carries no height.
 /// </summary>
 [System.Serializable]
 public struct BodyMorphValues
 {
-    public BodyBaseType BaseType;
+    [Range(0f, 1f)] public float Gender;
     [Range(0f, 1f)] public float Weight;
     [Range(0f, 1f)] public float Muscle;
 
-    public static BodyMorphValues Default(BodyBaseType baseType) => new BodyMorphValues
+    /// <summary>The DOMINANT endpoint (Gender &lt; 0.5 = Male) — only for discrete decisions such as
+    /// which gender-specific Wearable variant to load (AvatarItemSO.GetVariant). Never used for
+    /// geometry.</summary>
+    public BodyBaseType BaseType => Gender < 0.5f ? BodyBaseType.Male : BodyBaseType.Female;
+
+    public static float GenderOf(BodyBaseType baseType) => baseType == BodyBaseType.Female ? 1f : 0f;
+
+    public static BodyMorphValues FromBaseType(BodyBaseType baseType, float weight, float muscle) => new BodyMorphValues
     {
-        BaseType = baseType,
-        Weight   = 0.5f,
-        Muscle   = 0f,
+        Gender = GenderOf(baseType),
+        Weight = weight,
+        Muscle = muscle,
     };
 
+    public static BodyMorphValues Default(BodyBaseType baseType) => FromBaseType(baseType, 0.5f, 0f);
+
     /// <summary>
-    /// Resolves Weight/Muscle into the actual MorphChannels for THIS instance's own BaseType — never
-    /// Male channels for a Female body or vice versa (task's own explicit, repeated "mai aplicar
-    /// morphs Male sobre Female ni al revés" requirement).
+    /// Resolves Gender/Weight/Muscle into blendshape weights for a mesh whose REST vertices are
+    /// MaleBase, carrying:
+    ///   Gender       = FemaleBase - MaleBase
+    ///   MaleX        = MaleX   - MaleBase      (X = Slim / Heavy / Muscle)
+    ///   FemaleX      = FemaleX - FemaleBase
     ///
-    /// WEIGHT MAPPING (task's own explicit spec):
-    ///   Weight 0    -> Slim 100%
-    ///   Weight 0.5  -> Slim 0%   / Heavy 0%   (both channels silent — the "Normal" midpoint has no
-    ///                  blendshape of its own, it's simply the base mesh with neither applied)
-    ///   Weight 1    -> Heavy 100%
-    ///   Linear interpolation in between, on EITHER side of 0.5 independently (Slim only ever active
-    ///   below 0.5, Heavy only ever active above 0.5 — they never overlap).
+    /// With g = Gender, s/h/m = the Slim/Heavy/Muscle amounts below:
+    ///   V = MaleBase + g·(FemaleBase - MaleBase)
+    ///       + (1-g)·(s·dMaleSlim   + h·dMaleHeavy   + m·dMaleMuscle)
+    ///       +    g·(s·dFemaleSlim + h·dFemaleHeavy + m·dFemaleMuscle)
+    ///     = lerp(MaleBase + maleMorphs, FemaleBase + femaleMorphs, g)            — exactly.
+    /// So a Gender transition moves MaleHeavy straight toward FemaleHeavy (etc.) with Weight/Muscle held
+    /// constant — never through a neutralized body — and g = 0 / g = 1 reproduce each family exactly.
     ///
-    /// Muscle applies unconditionally via its own separate channel/value — entirely independent of
-    /// where Weight sits (task's own explicit "Muscle s'aplica després amb el canal corresponent").
+    /// WEIGHT MAPPING: Weight 0 -> Slim 100%; 0.5 -> neither (the base itself); 1 -> Heavy 100%;
+    /// linear on either side, Slim and Heavy never overlap. Muscle is its own independent amount.
     ///
-    /// `results` is cleared and refilled rather than allocating a new List every call — callers
-    /// (AvatarBodyMorphController.Apply) are expected to reuse one buffer.
+    /// Every channel is emitted as an ABSOLUTE weight on every call (inactive ones explicitly 0), so
+    /// the result never depends on what was applied before. `results` is cleared and refilled —
+    /// callers reuse one buffer.
     /// </summary>
     public void GetMorphWeights(List<MorphWeight> results)
     {
         results.Clear();
 
-        MorphChannel slimChannel   = BaseType == BodyBaseType.Male ? MorphChannel.MaleSlim   : MorphChannel.FemaleSlim;
-        MorphChannel heavyChannel  = BaseType == BodyBaseType.Male ? MorphChannel.MaleHeavy  : MorphChannel.FemaleHeavy;
-        MorphChannel muscleChannel = BaseType == BodyBaseType.Male ? MorphChannel.MaleMuscle : MorphChannel.FemaleMuscle;
+        float g = Mathf.Clamp01(Gender);
+        float maleFactor = 1f - g;
+        float femaleFactor = g;
 
         float w = Mathf.Clamp01(Weight);
-        float slimWeight  = w < 0.5f ? (0.5f - w) / 0.5f : 0f;
-        float heavyWeight = w > 0.5f ? (w - 0.5f) / 0.5f : 0f;
+        float slim   = w < 0.5f ? (0.5f - w) / 0.5f : 0f;
+        float heavy  = w > 0.5f ? (w - 0.5f) / 0.5f : 0f;
+        float muscle = Mathf.Clamp01(Muscle);
 
-        results.Add(new MorphWeight(slimChannel, slimWeight));
-        results.Add(new MorphWeight(heavyChannel, heavyWeight));
-        results.Add(new MorphWeight(muscleChannel, Mathf.Clamp01(Muscle)));
+        results.Add(new MorphWeight(MorphChannel.Gender,       g));
+        results.Add(new MorphWeight(MorphChannel.MaleSlim,     slim   * maleFactor));
+        results.Add(new MorphWeight(MorphChannel.MaleHeavy,    heavy  * maleFactor));
+        results.Add(new MorphWeight(MorphChannel.MaleMuscle,   muscle * maleFactor));
+        results.Add(new MorphWeight(MorphChannel.FemaleSlim,   slim   * femaleFactor));
+        results.Add(new MorphWeight(MorphChannel.FemaleHeavy,  heavy  * femaleFactor));
+        results.Add(new MorphWeight(MorphChannel.FemaleMuscle, muscle * femaleFactor));
     }
 }
