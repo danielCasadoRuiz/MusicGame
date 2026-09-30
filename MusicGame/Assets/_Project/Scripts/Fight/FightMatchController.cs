@@ -324,8 +324,10 @@ public class FightMatchController : MonoBehaviour
             // never deferred to Continue (task's own explicit "no esperis a Continue per decidir si
             // ha pujat" requirement) — so MatchEndedEvent already carries the old/new level for
             // MatchResultController to display.
+            // A won match completes one song cycle; the TIER (PlayerLevel) only changes every
+            // ProgressionConfigSO.songsPerTier completed songs.
             int oldLevel = GameSession.Instance != null ? GameSession.Instance.PlayerLevel : 1;
-            int newLevel = GameSession.Instance != null ? GameSession.Instance.LevelUp() : oldLevel;
+            int newLevel = GameSession.Instance != null ? GameSession.Instance.RegisterCompletedSong() : oldLevel;
 
             EventBus.Publish(BuildMatchEndedEvent(FighterSide.Player, resolution, oldLevel, newLevel));
             FightFlowController.Instance?.RequestState(FightFlowState.MatchWon);

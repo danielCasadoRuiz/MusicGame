@@ -175,6 +175,23 @@ public class FightDebugHUD : MonoBehaviour
 #endif
     }
 
+    // Read-only view of GameSession progression / opponent selection (forcing: Tools > MusicGame >
+    // Progression menu, or GameSession.DebugForce).
+    private void DrawProgression(float x, ref float y, float w)
+    {
+        var s = GameSession.Instance;
+        Row(x, ref y, w, "Progression / Opponent selection:");
+        if (s == null || s.Progression == null) { Row(x, ref y, w, "  (no GameSession)"); return; }
+        var p = s.ProgressionInfo;
+        Row(x, ref y, w, $"  Completed songs {p.CompletedSongs}   Tier {p.CurrentTier}   {p.CompletedSongsInCurrentTier}/{p.SongsRequiredForNextTier} ({p.SongsUntilNextTier} to next)");
+        string opp = s.SelectedOpponent != null ? s.SelectedOpponent.displayName : "(none)";
+        Row(x, ref y, w, $"  Opponent {opp}   config tier {s.SelectedOpponentTier}   (effective tier {s.EffectiveOpponentTier})");
+        Row(x, ref y, w, $"  Bag left: {string.Join(", ", s.OpponentBag.Remaining)}");
+        Row(x, ref y, w, $"  Recent: {string.Join(", ", s.OpponentBag.Recent)}");
+        if (!string.IsNullOrEmpty(s.DebugForcedOpponentId) || s.DebugForcedTier > 0)
+            Row(x, ref y, w, $"  DEBUG FORCE: {s.DebugForcedOpponentId ?? "(bag)"} tier {(s.DebugForcedTier > 0 ? s.DebugForcedTier.ToString() : "(real)")}");
+    }
+
     private void DebugSetDifferential(float value)
     {
         FightMatchController.Instance?.DebugSetAccumulatedDifferential(value);
@@ -200,7 +217,7 @@ public class FightDebugHUD : MonoBehaviour
 
         const float x = 8f, w = 420f;
         float y = 8f;
-        float h = 26f + 18f * 3f + 18f + 16f * 8f + 18f + 16f * 12f + 18f + 16f * 8f + 18f + 16f * 10f + 18f + 16f * 6f + 18f + 16f * 4f + 18f + 16f * 14f + 18f + 16f * (MaxLogLines + 1);
+        float h = 26f + 18f + 16f * 6f + 18f * 3f + 18f + 16f * 8f + 18f + 16f * 12f + 18f + 16f * 8f + 18f + 16f * 10f + 18f + 16f * 6f + 18f + 16f * 4f + 18f + 16f * 14f + 18f + 16f * (MaxLogLines + 1);
 
         GUI.Box(new Rect(x, y, w, h), "", _boxStyle);
         GUI.Label(new Rect(x + 6f, y + 2f, w - 12f, 16f), "FIGHT DEBUG (F1 | F2/3 KO | F4 timer | F5 draw | F6/7/8 diff | F9/10 win/lose | F11 +life | F12 ad)", _headerStyle);
@@ -230,6 +247,9 @@ public class FightDebugHUD : MonoBehaviour
         y += 4f;
 
         var flowState = FightFlowController.Instance != null ? FightFlowController.Instance.CurrentState.ToString() : "(no FightFlowController)";
+        DrawProgression(x, ref y, w);
+        y += 4f;
+
         Row(x, ref y, w, "Fighter Actors:");
         Row(x, ref y, w, $"  FightFlowState: {flowState}");
         if (_player == null || _opponent == null)

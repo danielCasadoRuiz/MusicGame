@@ -12,7 +12,7 @@ using UnityEngine.UI;
 /// reflows the same grid, no code change).
 ///
 /// Runs a roulette the instant this state begins (FightFlowState.OpponentSelection): the FINAL
-/// opponent is chosen up front (Random.Range), then a fixed number of intermediate highlight steps
+/// opponent is chosen up front (GameSession.PickNextOpponent — persistent shuffle bag), then a fixed number of intermediate highlight steps
 /// (pseudo-random, never repeating the immediately-previous one) visit other opponents — including,
 /// deliberately, possibly the eventual winner itself. Excluding the winner from every intermediate
 /// step would make it guessable before the reveal (the one opponent that never lit up has to be
@@ -23,7 +23,7 @@ using UnityEngine.UI;
 /// reports which opponent is highlighted and lets FightMusicController decide what to actually
 /// play.
 ///
-/// Every portrait/song comes from OpponentDefinition.GetConfigForLevel(CurrentPlayerLevel) — this
+/// Every portrait/song comes from OpponentDefinition.GetConfigForTier(CurrentTier) — this
 /// class has no idea HOW an opponent's content varies by level, only that it might; wiring in a
 /// real Player Level later is a one-line change (CurrentPlayerLevel's own doc).
 ///
@@ -42,11 +42,9 @@ public class OpponentSelectionController : MonoBehaviour
     private const float DefaultCellHeight = 220f;
     private const int   PreferredColumns  = 4;
 
-    // GameSession.PlayerLevel is now the real, authoritative session-wide Player Level (see its own
-    // doc — increments once per match WIN; no persistence across app restarts yet). Every
-    // OpponentDefinition.GetConfigForLevel call in this class reads from there. Falls back to 1 only
-    // if GameSession somehow doesn't exist yet (shouldn't happen in the real flow).
-    private static int CurrentPlayerLevel => GameSession.Instance != null ? GameSession.Instance.PlayerLevel : 1;
+    // The tier opponent content resolves at (GameSession.EffectiveOpponentTier: the real progression
+    // tier, or a debug-forced one). Falls back to 1 only if GameSession doesn't exist.
+    private static int CurrentTier => GameSession.Instance != null ? GameSession.Instance.EffectiveOpponentTier : 1;
 
     private RectTransform _root;
     private RectTransform _gridRoot;
@@ -220,7 +218,11 @@ public class OpponentSelectionController : MonoBehaviour
         float holdDuration   = _config != null ? Mathf.Max(0f, _config.finalOpponentHoldDuration)   : 1.5f;
         int   steps          = Mathf.Max(1, Mathf.RoundToInt(totalDuration / stepDuration));
 
-        int finalIndex = Random.Range(0, opponents.Length);
+        // The real pick comes from GameSession's persistent shuffle bag (no repeats, cross-bag
+        // cooldown) — the roulette steps below are only the visual build-up to it.
+        var picked     = GameSession.Instance != null ? GameSession.Instance.PickNextOpponent(_roster) : null;
+        int finalIndex = picked != null ? System.Array.IndexOf(opponents, picked) : -1;
+        if (finalIndex < 0) finalIndex = Random.Range(0, opponents.Length);
         int lastIndex  = -1;
 
         for (int step = 0; step < steps - 1; step++)
@@ -239,7 +241,8 @@ public class OpponentSelectionController : MonoBehaviour
         // was visited above.
         HighlightOnly(finalIndex);
         var finalOpponent    = opponents[finalIndex];
-        var finalLevelConfig = ResolveLevel(finalOpponent);
+        int resolvedTier     = 0;
+        var finalLevelConfig = finalOpponent != null ? finalOpponent.GetConfigForTier(CurrentTier, out resolvedTier) : null;
         var finalSong        = finalLevelConfig?.GetRandomSong();
         FightMusicController.Instance?.Lock(finalSong);
 
@@ -248,9 +251,10 @@ public class OpponentSelectionController : MonoBehaviour
             GameSession.Instance.SelectedOpponent            = finalOpponent;
             GameSession.Instance.SelectedOpponentSong        = finalSong;
             GameSession.Instance.SelectedOpponentLevelConfig = finalLevelConfig;
+            GameSession.Instance.SelectedOpponentTier        = resolvedTier;
         }
         Debug.Log($"[OpponentSelectionController] Final pick: " +
-                  $"{(finalOpponent != null ? finalOpponent.displayName : "(null)")} — " +
+                  $"{(finalOpponent != null ? finalOpponent.displayName : "(null)")} — tier {CurrentTier} (config tier {resolvedTier}) — " +
                   $"song: {(finalSong != null ? finalSong.name : "(none)")}");
 
         yield return new WaitForSeconds(holdDuration);
@@ -260,10 +264,9 @@ public class OpponentSelectionController : MonoBehaviour
     }
 
     // Single place this controller ever asks "what does this opponent look/sound like right now"
-    // — see OpponentDefinition.GetConfigForLevel's own doc on why it never reasons about
-    // levels[]'s ranges itself.
+    // — see OpponentDefinition.GetConfigForTier's own doc on how tiers resolve.
     private static OpponentLevelConfig ResolveLevel(OpponentDefinition opponent) =>
-        opponent != null ? opponent.GetConfigForLevel(CurrentPlayerLevel) : null;
+        opponent != null ? opponent.GetConfigForTier(CurrentTier) : null;
 
     // Avoids repeating the immediately-previous step's opponent — with 2+ opponents this always
     // terminates in a handful of iterations at worst.

@@ -15,6 +15,7 @@ public class AppConfigSO : ScriptableObject
     public FightStatsConfig    fightStats;
     public FightFlowConfig     fightFlow;
     public OpponentRosterSO    opponentRoster;
+    public ProgressionConfigSO progression;
     public FightArenaConfig    arena;
     public FightCameraConfig   fightCamera;
     public FightCombatBalanceConfig combatBalance;

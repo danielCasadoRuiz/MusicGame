@@ -11,8 +11,9 @@ using UnityEngine;
 ///   Song Selection      → SelectedSong
 ///   Song Analysis       → Profile
 ///   Gameplay (end of run)     → RunnerResults, RunnerFightResources, FighterStats, FightResources
-///   Opponent Selection roulette → SelectedOpponent, SelectedOpponentSong, SelectedOpponentLevelConfig
-///   FightMatchController (match won) → PlayerLevel (via LevelUp())
+///   Opponent Selection roulette → SelectedOpponent, SelectedOpponentSong, SelectedOpponentLevelConfig,
+///                                 SelectedOpponentTier (drawn via PickNextOpponent / OpponentBag)
+///   FightMatchController (match won) → Progression (via RegisterCompletedSong())
 /// Everything else only ever READS these fields. This is the single place that data lives — no
 /// parallel copies of "the current song" scattered across other systems.
 ///
@@ -24,7 +25,7 @@ using UnityEngine;
 /// RunnerFightResourceBuilder/FighterStatsBuilder's own doc for why the Runner→Fight translation
 /// lives here rather than as a new parallel system.
 /// </summary>
-public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightStatsConfig>
+public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightStatsConfig>, IConfigurableModule<ProgressionConfigSO>
 {
     public static GameSession Instance { get; private set; }
 
@@ -87,7 +88,7 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
     /// controller for it.</summary>
     public AudioClip SelectedOpponentSong { get; set; }
 
-    /// <summary>SelectedOpponent.GetConfigForLevel(playerLevel), resolved ONCE at the same moment
+    /// <summary>SelectedOpponent.GetConfigForTier(EffectiveOpponentTier), resolved ONCE at the same moment
     /// as SelectedOpponent/SelectedOpponentSong and cached here — so Fight's future avatar/arena
     /// spawning reads the exact same portrait/fighterPrefab/difficulty the player actually saw
     /// during Opponent Selection/Versus, rather than re-resolving against a Player Level that
@@ -95,17 +96,35 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
     /// SelectedOpponent.</summary>
     public OpponentLevelConfig SelectedOpponentLevelConfig { get; set; }
 
-    /// <summary>Session-only Player Level authority — starts at 1, increments exactly once per
-    /// match WIN, via LevelUp() below (called ONLY by FightMatchController.NotifyRoundEndDisplayComplete,
-    /// the instant a match is decisively won — see that method's own doc on why the decision happens
-    /// there, deterministically, never deferred to Continue). No persistence across app restarts yet
-    /// (see this phase's own explicit scope note — save/cloud progression is a future phase). This is
-    /// now the ONE source every OpponentDefinition.GetConfigForLevel call site reads (replacing the
-    /// old DebugPlayerLevel static, removed this phase — see DebugSetPlayerLevel below for its
-    /// Editor-only replacement).</summary>
-    public int PlayerLevel { get; private set; } = 1;
+    // ── Progression + opponent selection (persistent: this object is DontDestroyOnLoad, so the
+    //    Runner → Results → Fight → next song flow never resets them) ─────────────────────────
+
+    /// <summary>Completed songs (raw fact) — CurrentTier/progress are derived via ProgressionConfigSO.
+    /// A completed song = one match WON (RegisterCompletedSong, called ONLY by FightMatchController).
+    /// No persistence across app restarts yet; the state is [Serializable] for a future save game.</summary>
+    public GameProgression Progression { get; private set; }
+
+    public ProgressionSnapshot ProgressionInfo => Progression.Snapshot;
+
+    /// <summary>Legacy name kept for existing readers (MatchEndedEvent Old/NewPlayerLevel, Next Song
+    /// screen): it is the current PROGRESSION TIER, not a per-song level.</summary>
+    public int PlayerLevel => Progression.CurrentTier;
+
+    /// <summary>Shuffle bag + recent history of opponent ids — see OpponentShuffleBag.</summary>
+    public OpponentShuffleBag OpponentBag { get; } = new();
+
+    /// <summary>The tier SelectedOpponentLevelConfig was actually resolved from (after fallback).</summary>
+    public int SelectedOpponentTier { get; set; }
+
+    // ── Debug override (never touches progression, bag or history) ──
+    public string DebugForcedOpponentId { get; private set; }
+    public int    DebugForcedTier { get; private set; }
+
+    private ProgressionConfigSO _progressionConfig;
+    private readonly System.Random _selectionRng = new(System.Environment.TickCount);
 
     private FightStatsConfig _fightStatsConfig;
+    private readonly GameProgressionState _progressionState = new();
     private bool             _loggedMissingFightStatsConfig;
 
     private System.Action<SongProfileReadyEvent> _onProfileReady;
@@ -116,20 +135,52 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        Progression ??= new GameProgression(_progressionState, _progressionConfig);
     }
+
+    public void Configure(ProgressionConfigSO config)
+    {
+        _progressionConfig = config;
+        Progression ??= new GameProgression(_progressionState, config);
+        Progression.SetConfig(config);
+        if (config == null)
+            Debug.LogWarning("[GameSession] No ProgressionConfigSO (AppConfig.progression) — using songsPerTier 5 / cooldown 2 defaults.");
+    }
+
+    /// <summary>The tier opponent content is resolved at: the debug-forced tier if set, else the
+    /// real CurrentTier.</summary>
+    public int EffectiveOpponentTier => DebugForcedTier > 0 ? DebugForcedTier : Progression.CurrentTier;
+
+    /// <summary>Next opponent for a fight: the debug-forced one if set (bag/history untouched), else
+    /// the shuffle bag (see OpponentShuffleBag). Null only for an empty roster.</summary>
+    public OpponentDefinition PickNextOpponent(OpponentRosterSO roster)
+    {
+        if (roster == null || roster.opponents == null) return null;
+        if (!string.IsNullOrEmpty(DebugForcedOpponentId))
+            foreach (var o in roster.opponents)
+                if (o != null && o.id == DebugForcedOpponentId) return o;
+        int cooldown = _progressionConfig != null ? _progressionConfig.recentOpponentCooldown : 2;
+        return OpponentBag.Next(roster.opponents, cooldown, _selectionRng);
+    }
+
+    /// <summary>Called ONLY by FightMatchController the instant a match is decisively WON (one
+    /// properly completed Runner → Fight cycle). Returns the current tier afterwards.</summary>
+    public int RegisterCompletedSong() => Progression.RegisterCompletedSong();
+
+    /// <summary>DEBUG ONLY — force the next fights' opponent (by id, null = none) and/or the tier its
+    /// content resolves at (0 = real tier). Production progression/bag/history are untouched.</summary>
+    public void DebugForce(string opponentId, int tier)
+    {
+        DebugForcedOpponentId = string.IsNullOrEmpty(opponentId) ? null : opponentId;
+        DebugForcedTier       = Mathf.Max(0, tier);
+        Debug.Log($"[GameSession] Debug force: opponent {(DebugForcedOpponentId ?? "(bag)")}, tier {(DebugForcedTier > 0 ? DebugForcedTier.ToString() : "(real)")}");
+    }
+
+    public void DebugClearForce() => DebugForce(null, 0);
 
     public void Configure(FightStatsConfig config) => _fightStatsConfig = config;
 
 
-    /// <summary>Called ONLY by FightMatchController the instant a match is decisively WON — never
-    /// from anywhere else (a loss never touches PlayerLevel at all, see this phase's own explicit
-    /// "PlayerLevel només puja quan GUANYES" requirement). Returns the new value.</summary>
-    public int LevelUp() => ++PlayerLevel;
-
-    /// <summary>Debug-only override — lets a FightDebugHUD command jump straight to testing a
-    /// specific level's Opponent content without actually winning that many matches first. Never
-    /// called by real gameplay code.</summary>
-    public void DebugSetPlayerLevel(int level) => PlayerLevel = Mathf.Max(1, level);
 
     void IAppModule.Initialize(AppContext context) { /* no cross-module wiring needed yet */ }
     void IAppModule.Shutdown() { }

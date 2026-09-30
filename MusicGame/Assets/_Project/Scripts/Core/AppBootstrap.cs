@@ -73,6 +73,7 @@ public static class AppBootstrap
         appFlow.Configure(appConfig != null ? appConfig.flow : null);
         themeManager.Configure(appConfig != null ? appConfig.theme : null);
         gameSession.Configure(appConfig != null ? appConfig.fightStats : null);
+        gameSession.Configure(appConfig != null ? appConfig.progression : null);
 
         // 3. compose context
         Context = new AppContext(gameSession, appFlow, themeAssets, themeManager, sceneFlow);

@@ -43,7 +43,7 @@ public class MakeHumanBodyBuilder : EditorWindow
     public const string FemaleRecipePath = ContentFolder + "/Recipes/Avatar_MakeHuman_TestFemale.asset";
 
     public const string DebugScenePath = "Assets/_Project/Scenes/Debug/AvatarDebug.unity";
-    public const string TestOpponentPath = "Assets/_Project/Configs/Fight/Opponent_Rex.asset";
+    public const string TestOpponentPath = "Assets/_Project/Configs/Fight/Debug/Opponent_Rex.asset"; // placeholder (debug) opponent — see OpponentRosterSetup
 
     public const string AddressablesGroup = "Avatars";
     public const string PrefabAddress = "Avatar/MakeHumanBody";
