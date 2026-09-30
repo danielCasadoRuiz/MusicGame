@@ -203,6 +203,11 @@ public class GameplayTimeline
 
         events.Sort((a, b) => a.eventTime.CompareTo(b.eventTime));
 
+        // ── Combat RESOURCE pickups (Life / Special) — not musical, placed last so they can keep
+        // clear of every musical pickup already generated above.
+        EmitResourcePickups(profile, config, path, macroEvents, rng, vFloorDesign, vCeil, warmup, speed, events);
+        events.Sort((a, b) => a.eventTime.CompareTo(b.eventTime));
+
         var counts = new Dictionary<RingType, int>();
         foreach (var rt in RarityTypes) counts[rt] = 0;
         foreach (var e in events)
@@ -394,6 +399,104 @@ public class GameplayTimeline
             confidence     = 1f,
             contributors   = m.isClimax ? $"{type}+Peak" : type.ToString(),
         });
+    }
+
+    // ── Combat resource pickups (Life / Special) ────────────────────────────────────
+    // Only inside the actually-played window (PlayRangeResolver — the same window GameplayManager
+    // plays), so every generated resource pickup is really reachable. Life: spread evenly over the
+    // played window. Special: just after the strongest structural moments (climax-tagged first).
+    // Each one is nudged in time until it keeps resourcePickupMinGap from every other pickup.
+    private static void EmitResourcePickups(SongProfile profile, MusicRunnerGameplayConfig config, MusicPath path,
+                                            MacroEvent[] macroEvents, System.Random rng, float vFloorDesign, float vCeil,
+                                            float warmup, float speed, List<TimelineEvent> events)
+    {
+        var c = config.collectibles;
+        var range = PlayRangeResolver.Resolve(config.core, profile.duration);
+        float windowStart = warmup + range.Start;
+        float windowEnd   = warmup + range.End;
+        float playedMinutes = (range.End - range.Start) / 60f;
+
+        var taken = new List<float>(events.Count + 8);
+        foreach (var e in events) taken.Add(e.eventTime);
+
+        void Place(RingType type, float desiredTime, float lateral)
+        {
+            // Keep a margin from both ends (the fade-out / farewell starts right at windowEnd).
+            float lo = windowStart + 1.0f, hi = windowEnd - 1.5f;
+            if (hi <= lo) return;
+            float t = FindFreeTime(Mathf.Clamp(desiredTime, lo, hi), lo, hi, c.resourcePickupMinGap, taken);
+            if (t < 0f) return;
+            taken.Add(t);
+
+            float vFloor = CollectibleFloor(type, config, vFloorDesign, vCeil);
+            events.Add(new TimelineEvent
+            {
+                eventTime      = t,
+                eventDistance  = t * speed,
+                eventType      = EventType.Ring,
+                ringType       = type,
+                lateralOffset  = lateral,
+                verticalOffset = Mathf.Lerp(vFloor, vCeil, c.resourcePickupHeight),
+                floorClearance = vFloor,
+                strength       = 1f,
+                sourceFeature  = type.ToString(),
+                confidence     = 1f,
+                contributors   = type.ToString(),
+            });
+        }
+
+        if (c.spawnLife && c.maxLifePickups > 0 && c.lifePickupsPerMinute > 0f)
+        {
+            int count = Mathf.Min(c.maxLifePickups, Mathf.RoundToInt(playedMinutes * c.lifePickupsPerMinute));
+            for (int k = 0; k < count; k++)
+            {
+                float t    = Mathf.Lerp(windowStart, windowEnd, (k + 1f) / (count + 1f));
+                float half = LateralHalfRange(path, config, t * speed);
+                Place(RingType.Life, t, half > 0f ? (float)(rng.NextDouble() * 2.0 - 1.0) * half : 0f);
+            }
+        }
+
+        if (c.spawnSpecial && c.maxSpecialPickups > 0)
+        {
+            var anchors = new List<MacroEvent>();
+            foreach (var m in macroEvents)
+                if ((m.type == MacroEventType.Impact || m.type == MacroEventType.Drop) &&
+                    m.eventTime >= windowStart && m.eventTime < windowEnd)
+                    anchors.Add(m);
+            // Climax first, then strength — the song's biggest moments earn the super move.
+            anchors.Sort((a, b) => a.isClimax != b.isClimax ? (a.isClimax ? -1 : 1) : b.strength.CompareTo(a.strength));
+
+            int placed = 0;
+            foreach (var m in anchors)
+            {
+                if (placed >= c.maxSpecialPickups) break;
+                int before = events.Count;
+                Place(RingType.Special, m.eventTime + c.specialPickupDelay, 0f);
+                if (events.Count > before) placed++;
+            }
+            // A song with no structural moment in the window still offers one Special, mid-window.
+            if (placed == 0 && c.specialFallbackWhenNoMoment) Place(RingType.Special, Mathf.Lerp(windowStart, windowEnd, 0.6f), 0f);
+        }
+    }
+
+    // Nearest time to `desired` (searching outward in 0.05 s steps inside [lo, hi]) that keeps
+    // `gap` seconds from every time in `taken`; -1 if none within 6 s either way.
+    private static float FindFreeTime(float desired, float lo, float hi, float gap, List<float> taken)
+    {
+        for (int step = 0; step <= 120; step++)
+        {
+            for (int sign = 1; sign >= -1; sign -= 2)
+            {
+                float t = desired + sign * step * 0.05f;
+                if (t < lo || t > hi) continue;
+                bool free = true;
+                foreach (float o in taken)
+                    if (Mathf.Abs(o - t) < gap) { free = false; break; }
+                if (free) return t;
+                if (step == 0) break;
+            }
+        }
+        return -1f;
     }
 
     // ── Micro candidate collection ───────────────────────────────────────────────────

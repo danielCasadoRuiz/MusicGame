@@ -335,6 +335,7 @@ public class MakeHumanBodyBuilder : EditorWindow
         preview.spacing = 1.1f;
         preview.buildOnStart = true;
         preview.debugAnimatorController = controller;
+        preview.combatLibrary = AssetDatabase.LoadAssetAtPath<CombatAnimationLibrarySO>(CombatAnimationImporter.LibraryPath);
         previewGO.AddComponent<AvatarBodyDebugPanel>().preview = preview;
 
         EnsureFolder(Path.GetDirectoryName(DebugScenePath).Replace('\\', '/'));

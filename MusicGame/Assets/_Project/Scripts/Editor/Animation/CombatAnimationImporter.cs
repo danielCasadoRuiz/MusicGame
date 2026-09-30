@@ -29,8 +29,9 @@ using UnityEngine.Playables;
 ///        InPlace/&lt;Name&gt;_InPlace.anim — derived debug clip: root yaw and height baked into the pose,
 ///                                  XZ travel left to (discarded) root motion, facing +Z at frame 0 and the
 ///                                  lowest point of the body on y = 0 for the MakeHuman avatar.
-///      Finger curves are PRESERVED (Rokoko Smartgloves capture) — the CMU "relaxed rest hand" fix is
-///      only applied to an entry whose fingerMode is set to RelaxedRestHand by review.
+///      Captured finger curves are PRESERVED (Rokoko Smartgloves). Only a source WITHOUT finger capture
+///      (constant finger muscles, e.g. the Jacobus pack) — or an entry set to RelaxedRestHand by review —
+///      gets the CMU "relaxed rest hand" fix.
 ///   4. Library entry: category guessed from the file name (flagged as auto), loop, root-motion
 ///      recommendation from the measured travel/turn, finger capture detection, import warnings.
 ///      Review fields (review, notes, and — once reviewed — category / loop / fingerMode) survive re-imports.
@@ -169,7 +170,7 @@ public static class CombatAnimationImporter
             {
                 try
                 {
-                    ok &= ImportFbx(fbx, packTitle, processedFolder, prefix, previous, avatarGO, restMuscles, entries, report);
+                    ok &= ImportFbx(fbx, packTitle, processedFolder, prefix, previous, library.segments, avatarGO, restMuscles, entries, report);
                 }
                 catch (System.Exception e)
                 {
@@ -191,7 +192,7 @@ public static class CombatAnimationImporter
     }
 
     private static bool ImportFbx(string fbx, string packTitle, string processedFolder, string prefix,
-                                  Dictionary<string, CombatAnimationEntry> previous, GameObject avatarGO,
+                                  Dictionary<string, CombatAnimationEntry> previous, List<CombatSegmentDefinition> segments, GameObject avatarGO,
                                   Dictionary<string, float> restMuscles, List<CombatAnimationEntry> entries, List<string> report)
     {
         var importer = AssetImporter.GetAtPath(fbx) as ModelImporter;
@@ -216,8 +217,9 @@ public static class CombatAnimationImporter
         importer.humanDescription = description;
 
         var takes = importer.defaultClipAnimations;
-        if (takes.Length == 0) { report.Add($"ERROR    {fbx}: no animation take"); return false; }
-        string baseName = prefix + "_" + CleanName(Path.GetFileNameWithoutExtension(fbx));
+        if (takes.Length == 0) { report.Add($"SKIPPED  {fbx}: no animation take (mesh/face-only file)"); return true; }
+        string fileName = CleanName(Path.GetFileNameWithoutExtension(fbx));
+        string baseName = fileName.StartsWith(prefix + "_") ? fileName : prefix + "_" + fileName;
         var clipSettings = new ModelImporterClipAnimation[takes.Length];
         var names = new string[takes.Length];
         for (int i = 0; i < takes.Length; i++)
@@ -269,31 +271,68 @@ public static class CombatAnimationImporter
             importer.SaveAndReimport();
         }
 
-        report.Add($"IMPORTED {fbx}: {takes.Length} take(s); {mapping}; {tpose}");
+        // 2b. Segments: extra importer clips cut from a (trimmed) take, one per reviewed window.
+        var items = new List<(string name, int take, CombatSegmentDefinition segment)>();
+        for (int i = 0; i < takes.Length; i++) items.Add((names[i], i, null));
+        var allSettings = clipSettings.ToList();
+        foreach (var segment in segments ?? new List<CombatSegmentDefinition>())
+        {
+            int i = System.Array.IndexOf(names, segment.sourceEntry);
+            if (i < 0) continue;
+            var full = LoadClip(fbx, names[i]);
+            float fps = full != null ? full.frameRate : 30f;
+            var baseClip = clipSettings[i];
+            allSettings.Add(new ModelImporterClipAnimation
+            {
+                name = segment.EntryName,
+                takeName = baseClip.takeName,
+                firstFrame = baseClip.firstFrame + Mathf.Round(segment.start * fps),
+                lastFrame = Mathf.Min(baseClip.lastFrame, baseClip.firstFrame + Mathf.Round(segment.end * fps)),
+                loopTime = false,
+                lockRootRotation = false,
+                lockRootHeightY = false,
+                lockRootPositionXZ = false,
+                keepOriginalOrientation = true,
+                keepOriginalPositionY = true,
+                keepOriginalPositionXZ = true,
+                heightFromFeet = false,
+                maskType = ClipAnimationMaskType.None,
+            });
+            items.Add((segment.EntryName, i, segment));
+        }
+        if (allSettings.Count > clipSettings.Length)
+        {
+            importer.clipAnimations = allSettings.ToArray();
+            importer.SaveAndReimport();
+        }
+
+        report.Add($"IMPORTED {fbx}: {takes.Length} take(s), {items.Count - takes.Length} segment(s); {mapping}; {tpose}");
 
         // 3-4. Processed clips + library entries.
         EnsureFolder(processedFolder);
         EnsureFolder(processedFolder + "/InPlace");
-        for (int i = 0; i < takes.Length; i++)
+        foreach (var (itemName, i, segment) in items)
         {
-            var source = LoadClip(fbx, names[i]);
-            if (source == null || !source.isHumanMotion) { report.Add($"ERROR    {names[i]}: imported clip missing or not Humanoid"); continue; }
+            var source = LoadClip(fbx, itemName);
+            if (source == null || !source.isHumanMotion) { report.Add($"ERROR    {itemName}: imported clip missing or not Humanoid"); continue; }
 
-            previous.TryGetValue(names[i], out var old);
+            previous.TryGetValue(itemName, out var old);
             var entry = new CombatAnimationEntry
             {
-                name = names[i],
+                name = itemName,
                 sourcePack = packTitle,
                 sourceFbx = fbx,
                 sourceTake = takes[i].takeName,
                 duration = source.length,
                 frameRate = source.frameRate,
-                trimmedStartFrames = trims[i],
+                trimmedStartFrames = segment == null ? trims[i] : 0,
                 category = Categorize(Path.GetFileNameWithoutExtension(fbx) + " " + takes[i].takeName),
             };
             entry.loop = DefaultLoop(entry.category, entry.name);
             entry.fingerCapture = HasFingerCapture(source);
-            entry.fingerMode = CombatFingerMode.Preserve;
+            // Captured fingers are preserved. A source without finger capture still gets 40 constant finger
+            // muscles from Unity (0 = the "OK sign" on our hand), so those get the relaxed rest hand instead.
+            entry.fingerMode = entry.fingerCapture ? CombatFingerMode.Preserve : CombatFingerMode.RelaxedRestHand;
             if (old != null)
             {
                 entry.review = old.review;
@@ -309,15 +348,31 @@ public static class CombatAnimationImporter
                     entry.fingerMode = old.fingerMode;
                 }
             }
+            if (segment != null)
+            {
+                // The segment definition is the review: it wins over anything stored on the entry.
+                entry.segmentOf = segment.sourceEntry;
+                entry.segmentStart = segment.start;
+                entry.segmentEnd = segment.end;
+                entry.category = segment.category;
+                entry.categoryReviewed = true;
+                entry.loop = segment.loop;
+                entry.review = segment.review;
+                entry.notes = segment.notes;
+                entry.keepFacing = segment.keepFacing;
+            }
 
-            entry.clip = WriteCopy(source, $"{processedFolder}/{names[i]}.anim", null, null);
-            entry.inPlaceClip = WriteCopy(source, $"{processedFolder}/InPlace/{names[i]}_InPlace.anim",
+            string folder = segment != null ? processedFolder + "/Segments" : processedFolder;
+            EnsureFolder(folder);
+            EnsureFolder(folder + "/InPlace");
+            entry.clip = WriteCopy(source, $"{folder}/{itemName}.anim", null, null);
+            entry.inPlaceClip = WriteCopy(source, $"{folder}/InPlace/{itemName}_InPlace.anim",
                                           entry.fingerMode == CombatFingerMode.RelaxedRestHand ? restMuscles : null,
                                           settings =>
                                           {
                                               settings.loopTime = entry.loop;
                                               settings.loopBlend = entry.loop;
-                                              settings.loopBlendOrientation = true;  // bake root yaw into the pose
+                                              settings.loopBlendOrientation = !entry.keepFacing; // bake root yaw into the pose (or extract it: keeps facing)
                                               settings.keepOriginalOrientation = true;
                                               settings.loopBlendPositionY = true;    // bake root height into the pose
                                               settings.keepOriginalPositionY = true;
@@ -325,13 +380,14 @@ public static class CombatAnimationImporter
                                               settings.heightFromFeet = false;
                                               settings.level = 0f;
                                               settings.orientationOffsetY = 0f;
+                                              return settings;
                                           });
 
             // Root-motion clip keeps the importer's loop flag off; the library entry says how to play it.
             float humanScale = avatarGO.GetComponent<Animator>().humanScale;
             MeasureRoot(entry, source, humanScale > 0f ? humanScale : 1f);
             float yaw = CalibrateStartFacing(entry.inPlaceClip, avatarGO);
-            float level = MakeHumanAnimationTestSetup.CalibrateGround(entry.inPlaceClip, avatarGO);
+            float level = CalibrateGroundRobust(entry.inPlaceClip, avatarGO);
             entry.importWarnings = Warnings(source, entry);
             EditorUtility.SetDirty(entry.clip);
             EditorUtility.SetDirty(entry.inPlaceClip);
@@ -675,6 +731,82 @@ public static class CombatAnimationImporter
             ? CombatRootMotion.RootMotion : CombatRootMotion.InPlace;
     }
 
+    /// <summary>Samples per second for the ground calibration / grounded test (long takes need more than 60).</summary>
+    public static int GroundSamples(AnimationClip clip) => Mathf.Clamp(Mathf.RoundToInt(clip.length * 10f), 60, 600);
+
+    /// <summary>The body's lowest point per sampled frame (avatar root space), evaluated like the runtime
+    /// player (PlayableGraph + Foot IK).</summary>
+    public static float[] LowestPerFrame(AnimationClip clip, GameObject avatarGO, int samples)
+    {
+        var animator = avatarGO.GetComponent<Animator>();
+        animator.applyRootMotion = false;
+        var body = avatarGO.GetComponentInChildren<SkinnedMeshRenderer>();
+        var graph = PlayableGraph.Create("LowestPerFrame");
+        var output = AnimationPlayableOutput.Create(graph, "out", animator);
+        var playable = AnimationClipPlayable.Create(graph, clip);
+        playable.SetApplyFootIK(true);
+        output.SetSourcePlayable(playable);
+        var mesh = new Mesh();
+        var result = new float[samples];
+        for (int i = 0; i < samples; i++)
+        {
+            playable.SetTime(clip.length * i / (samples - 1));
+            graph.Evaluate(0f);
+            body.BakeMesh(mesh, true);
+            var toRoot = avatarGO.transform.worldToLocalMatrix * body.transform.localToWorldMatrix;
+            float lowest = float.MaxValue;
+            foreach (var v in mesh.vertices) lowest = Mathf.Min(lowest, toRoot.MultiplyPoint3x4(v).y);
+            result[i] = lowest;
+        }
+        graph.Destroy();
+        Object.DestroyImmediate(mesh);
+        return result;
+    }
+
+    /// <summary>Robust ground level of a clip. Mocap glitches (the body dropping 20+ cm for a few frames,
+    /// e.g. at the impact of KnockOut_Loser's fall) must not decide where the floor is, so samples that
+    /// jump more than 8 cm away from the median of their +-5 neighbours are discarded first; the ground is
+    /// then the 25th percentile of the remaining per-frame lowest points (a slow sinking glitch can still
+    /// cover a few % of a short segment: KnockOut_Loser__KnockedDown).</summary>
+    public static float GroundPercentile(float[] lowestPerFrame)
+    {
+        int n = lowestPerFrame.Length;
+        var kept = new List<float>();
+        for (int i = 0; i < n; i++)
+        {
+            var window = new List<float>();
+            for (int j = Mathf.Max(0, i - 5); j <= Mathf.Min(n - 1, i + 5); j++) window.Add(lowestPerFrame[j]);
+            window.Sort();
+            float median = window[window.Count / 2];
+            if (Mathf.Abs(lowestPerFrame[i] - median) <= 0.08f) kept.Add(lowestPerFrame[i]);
+        }
+        if (kept.Count == 0) kept.AddRange(lowestPerFrame);
+        kept.Sort();
+        return kept[Mathf.Clamp(Mathf.FloorToInt(kept.Count * 0.25f), 0, kept.Count - 1)];
+    }
+
+    /// <summary>Sets the in-place clip's `level` so its robust ground (GroundPercentile) sits on y = 0.
+    /// level -> height is linear, so two probes solve it.</summary>
+    private static float CalibrateGroundRobust(AnimationClip clip, GameObject avatarGO)
+    {
+        int samples = GroundSamples(clip);
+        float Ground(float level)
+        {
+            var settings = AnimationUtility.GetAnimationClipSettings(clip);
+            settings.level = level;
+            AnimationUtility.SetAnimationClipSettings(clip, settings);
+            return GroundPercentile(LowestPerFrame(clip, avatarGO, samples));
+        }
+        float at0 = Ground(0f);
+        float at1 = Ground(0.1f);
+        float slope = (at1 - at0) / 0.1f;
+        float solved = Mathf.Abs(slope) > 1e-4f ? -at0 / slope : 0f;
+        var final = AnimationUtility.GetAnimationClipSettings(clip);
+        final.level = solved;
+        AnimationUtility.SetAnimationClipSettings(clip, final);
+        return solved;
+    }
+
     private static float Yaw(Quaternion q)
     {
         var forward = q * Vector3.forward;
@@ -709,10 +841,12 @@ public static class CombatAnimationImporter
         var forward = Vector3.Cross(across, Vector3.up);
         graph.Destroy();
 
+        // Measured: a positive orientationOffsetY turns the body towards negative yaw here, so the offset
+        // that cancels a facing of `yaw` is +yaw (verified by the facing test on the real packs).
         float yaw = Mathf.Atan2(forward.x, forward.z) * Mathf.Rad2Deg;
-        settings.orientationOffsetY = -yaw;
+        settings.orientationOffsetY = yaw;
         AnimationUtility.SetAnimationClipSettings(clip, settings);
-        return -yaw;
+        return yaw;
     }
 
     // ── Categories ───────────────────────────────────────────────────────────────
@@ -728,8 +862,8 @@ public static class CombatAnimationImporter
         (CombatAnimationCategory.Victory, new[] { "victory", "win", "celebrat", "cheer", "triumph" }),
         (CombatAnimationCategory.Taunt, new[] { "taunt", "provoke", "mock", "showoff", "show off", "flex" }),
         (CombatAnimationCategory.AttackKick, new[] { "kick", "knee", "roundhouse", "sweep" }),
-        (CombatAnimationCategory.AttackPunch, new[] { "punch", "jab", "cross", "hook", "uppercut", "boxing" }),
-        (CombatAnimationCategory.AttackOther, new[] { "elbow", "headbutt", "slash", "sword", "stab", "attack", "strike", "combo", "throw", "grab", "smash", "slam" }),
+        (CombatAnimationCategory.AttackPunch, new[] { "punch", "jab", "hook", "uppercut", "boxing" }),
+        (CombatAnimationCategory.AttackOther, new[] { "elbow", "headbutt", "slash", "stab", "attack", "strike", "combo", "throw", "grab", "smash", "slam" }),
         (CombatAnimationCategory.Special, new[] { "super", "hero", "power", "fly", "flight", "hover", "laser", "beam", "charge", "energy", "blast", "landing", "land" }),
         (CombatAnimationCategory.IdleCombat, new[] { "idle", "stance", "guard", "ready", "fight pose" }),
         (CombatAnimationCategory.Movement, new[] { "walk", "run", "jog", "sprint", "strafe", "step", "jump", "shuffle", "move", "turn" }),

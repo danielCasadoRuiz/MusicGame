@@ -20,6 +20,8 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     public GameObject ringOnset;
     public GameObject ringPeak;
     public GameObject ringImpact;
+    public GameObject ringLife;
+    public GameObject ringSpecial;
 
     // ── Ring Colors ───────────────────────────────────────────────────────────
     // Single source of truth for a RingType's colour — consumed by BOTH the world (every
@@ -34,6 +36,8 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     public Color onsetColor  = new Color(0.10f, 0.90f, 0.50f);
     public Color peakColor   = new Color(1.00f, 0.92f, 0.55f);
     public Color impactColor = new Color(1.00f, 0.40f, 0.05f);
+    public Color lifeColor    = new Color(1.00f, 0.25f, 0.45f);
+    public Color specialColor = new Color(0.35f, 1.00f, 0.95f);
 
     // ── Ring Emission (Bloom) ────────────────────────────────────────────────
     // Deliberately independent of the Horizon World bars' own (much higher) emission — rings
@@ -60,6 +64,8 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
         RingType.Onset  => onsetColor,
         RingType.Peak   => peakColor,
         RingType.Impact => impactColor,
+        RingType.Life    => lifeColor,
+        RingType.Special => specialColor,
         _               => Color.white,
     };
 
@@ -102,8 +108,38 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
         RingType.Onset  => spawnOnset,
         RingType.Impact => spawnImpact,
         RingType.Peak   => spawnPeak,
+        RingType.Life    => spawnLife,
+        RingType.Special => spawnSpecial,
         _               => true,
     };
+
+    // ── Combat resource pickups (Life / Special) — NOT musical ─────────────────
+    // Combat resources carried into the Fight (see RingTypes). They never score, never count
+    // toward musical performance and never form pickup combos. Placed by GameplayTimeline inside
+    // the actually-played window only (PlayRangeResolver), clear of every musical pickup.
+    // Counts are pure balancing: 0 Life / 0 Special (spawnX off, or a 0 count) is a fully valid
+    // configuration — nothing downstream assumes a song contains either.
+    [Header("Combat Resource Pickups (Life / Special) — NOT musical")]
+    public bool spawnLife = true;
+    [Tooltip("Life pickups per minute of PLAYED song (rounded), spread evenly across it.")]
+    [Min(0f)] public float lifePickupsPerMinute = 1.5f;
+    [Min(0)] public int maxLifePickups = 3;
+    public bool spawnSpecial = true;
+    [Tooltip("Special pickups, placed right after the song's strongest structural moments " +
+             "(climax-tagged / strongest Impact or Drop inside the played window).")]
+    [Min(0)] public int maxSpecialPickups = 1;
+    [Tooltip("Seconds AFTER the chosen structural moment a Special appears (keeps it clear of the " +
+             "Impact pickup that sits exactly on that moment).")]
+    public float specialPickupDelay = 0.6f;
+    [Tooltip("When the played window has no Impact/Drop to anchor a Special to, still place ONE mid-window " +
+             "(only if maxSpecialPickups > 0). Off = such a song simply has no Special.")]
+    public bool specialFallbackWhenNoMoment = true;
+    [Tooltip("Minimum song-time gap between a resource pickup and any other pickup (musical timelines " +
+             "are dense — ~4 pickups/s — so keep this small or no free slot exists).")]
+    [Min(0f)] public float resourcePickupMinGap = 0.12f;
+    [Tooltip("Height of resource pickups inside the normal bonus band (0 = floor, 1 = ceiling) — " +
+             "high values make them a deliberate jump.")]
+    [Range(0f, 1f)] public float resourcePickupHeight = 0.75f;
 
     // ── Micro — Density & Confidence Thinning ─────────────────────────────────
     [Header("Micro — Density & Confidence Thinning")]
@@ -282,6 +318,8 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
         RingType.Onset  => ringOnset  ?? ringDefault,
         RingType.Peak   => ringPeak   ?? ringDefault,
         RingType.Impact => ringImpact ?? ringDefault,
+        RingType.Life    => ringLife    ?? ringDefault,
+        RingType.Special => ringSpecial ?? ringDefault,
         _               => ringDefault,
     };
 }

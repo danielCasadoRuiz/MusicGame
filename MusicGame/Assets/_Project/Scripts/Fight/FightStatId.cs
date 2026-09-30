@@ -15,4 +15,13 @@ public enum FightStatId
     Knockback,    // Impact
     SpecialPower, // Peak
     Balance,      // transversal — falls + overall precision
+
+    // ── Music build stats — the Runner's canonical combat-build output (MusicCombatBuild, read
+    // from RunnerResults.CombatBuild; see MusicCombatBuildConverter). Agility (above) is reused as
+    // the build's agility id; the build never writes FighterStats — the legacy values above are a
+    // separate, untouched pipeline. Appended so serialized ints of the values above never change.
+    PunchPower,
+    KickPower,
+    Resistance,
+    ImpactPower,
 }

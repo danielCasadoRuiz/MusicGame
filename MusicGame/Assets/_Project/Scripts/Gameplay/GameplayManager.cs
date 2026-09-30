@@ -11,6 +11,8 @@ public class GameplayManager : MonoBehaviour
 
     // ── Runtime state ─────────────────────────────────────────────────────────
     private CollectionStats  _stats;
+    // Combos + Life/Special — everything the run earns that is NOT score (see RunnerResourceTracker).
+    private RunnerResourceTracker _resources;
     private bool             _running;
     private bool             _audioPlaying;
     private MusicClock       _clock;
@@ -107,6 +109,9 @@ public class GameplayManager : MonoBehaviour
     public bool              IsRunning        => _running;
     public CollectionStats   Stats             => _stats;
     public int               MaxPossibleScore => _maxPossibleScore;
+    public RunnerResourceCounts ResourceCounts => _resources != null ? _resources.Counts : default;
+    /// <summary>Pickups of `type` the player can actually meet this run (inside the played window).</summary>
+    public int AvailableCount(RingType type) => _availableByType.TryGetValue(type, out int c) ? c : 0;
     // 0..1, earned/maxPossible for THIS song's actual generated timeline — see ComputeMaxPossibleScore.
     public float              NormalizedScore  => _maxPossibleScore > 0 ? Mathf.Clamp01((float)_stats.Score / _maxPossibleScore) : 0f;
 
@@ -131,6 +136,7 @@ public class GameplayManager : MonoBehaviour
     {
         OriginalVolume = audioSource.volume;
         _stats      = new CollectionStats();
+        _resources  = new RunnerResourceTracker(config.scoring);
         _clock      = MusicClock.GetOrCreate(gameObject);
         _poolParent = new GameObject("[Pools]").transform;
 
@@ -188,6 +194,13 @@ public class GameplayManager : MonoBehaviour
         _onProfile = e => StartCoroutine(GenerateAndStart(e.Profile));
         _onRing    = e =>
         {
+            // Life/Special are combat resources: no score, no musical counters, no combos.
+            if (RingTypes.IsResource(e.Type))
+            {
+                _resources.OnResourcePickup(e.Type);
+                return;
+            }
+
             int points = ScoreFor(e.Type, e.TimingError, e.IsOffTrack);
             _stats.Register(e.Type);
             _stats.AddScore(points);
@@ -203,6 +216,9 @@ public class GameplayManager : MonoBehaviour
             if (!_pickupHistory.TryGetValue(e.Type, out var list))
                 _pickupHistory[e.Type] = list = new List<ScoredPickup>();
             list.Add(new ScoredPickup { songTime = _clock.SongTime, points = points });
+
+            _resources.OnMusicalPickup(e.ActualTime);
+            PublishStatsChanged();
         };
         _onFall = e => ApplyFallPenalty(e.FallSongTime);
         EventBus.Subscribe(_onProfile);
@@ -229,6 +245,9 @@ public class GameplayManager : MonoBehaviour
 
         // Generate timeline (no startZ needed — eventDistance is path-relative)
         _timeline         = GameplayTimeline.Generate(profile, config, path);
+        // The played window must be known BEFORE counting what's available: pickups outside it
+        // (manual play range) can never be met, so they must not exist for scoring/performance.
+        (SongPlayStart, SongPlayEnd) = ResolvePlayRange(profile.duration);
         _maxPossibleScore = ComputePerTypePotential();
         _nextEventIdx  = 0;
         _nextPulseIdx  = 0;
@@ -241,7 +260,6 @@ public class GameplayManager : MonoBehaviour
         // Checkpoints
         _checkpoints.Initialize(profile, config.core, path, _timeline);
 
-        (SongPlayStart, SongPlayEnd) = ResolvePlayRange(profile.duration);
         _songEndSongTime       = config.core.warmupTime + SongPlayEnd;
         _songEndDistance       = _songEndSongTime * config.core.playerSpeed;
         _songFinishedAnnounced = false;
@@ -266,7 +284,11 @@ public class GameplayManager : MonoBehaviour
 
         _clock.Initialize(audioSource, config.core.warmupTime, config.core.playerSpeed);
 
-        EventBus.Publish(new LevelGeneratedEvent { RingCount = _timeline.Events.Length });
+        EventBus.Publish(new LevelGeneratedEvent
+        {
+            RingCount       = MusicalAvailableCount(), // musical pickups the player can meet — never Life/Special
+            AvailableByType = new Dictionary<RingType, int>(_availableByType),
+        });
 
         _running = true;
         playerController.StartRunning();
@@ -304,6 +326,9 @@ public class GameplayManager : MonoBehaviour
     private void Update()
     {
         if (!_running || _timeline == null) return;
+
+        // Closes a pending Triple once its window passes (a Quad closes on its own pickup).
+        _resources.Tick(_clock.SongTime);
 
         // CanonicalDistance (== MusicClock.MusicDistance, purely SongTime * speed) — NEVER
         // includes the surge's forwardOffset. Spawn/reveal timing must track "has the song
@@ -461,6 +486,8 @@ public class GameplayManager : MonoBehaviour
                 // once, here, right before publishing the final stats.
                 if (_fallCount == 0 && config.scoring.noFallScoreMultiplier > 1f)
                     _stats.MultiplyScore(config.scoring.noFallScoreMultiplier);
+                PublishStatsChanged();
+                _resources.Flush();
 
                 EventBus.Publish(new GameEndedEvent
                 {
@@ -469,6 +496,7 @@ public class GameplayManager : MonoBehaviour
                     NormalizedScore  = NormalizedScore,
                     MaxPossibleScore = _maxPossibleScore,
                     Performance      = BuildGamePerformance(),
+                    Resources        = _resources.Counts,
                 });
             }
         }
@@ -484,6 +512,7 @@ public class GameplayManager : MonoBehaviour
     /// </summary>
     private int ScoreFor(RingType type, float timingError, bool isOffTrack)
     {
+        if (RingTypes.IsResource(type)) return 0; // combat resources never score
         float timing = TimingMultiplier(timingError);
 
         float raw = type switch
@@ -527,6 +556,7 @@ public class GameplayManager : MonoBehaviour
         int sum = 0;
         foreach (var e in _timeline.Events)
         {
+            if (!IsInPlayedWindow(e)) continue; // never reachable this run — doesn't exist for scoring
             int perfectScore = ScoreFor(e.ringType, 0f, e.isOffTrack);
             sum += perfectScore;
 
@@ -535,6 +565,25 @@ public class GameplayManager : MonoBehaviour
         }
         return Mathf.RoundToInt(sum * Mathf.Max(1f, config.scoring.noFallScoreMultiplier));
     }
+
+    // The played window in SongTime (see ResolvePlayRange/MusicClock): activation stops at
+    // _songEndSongTime and the player spawns at warmup + SongPlayStart, so nothing outside it can
+    // ever be collected. Small tolerance so an event exactly on the boundary still counts.
+    private bool IsInPlayedWindow(in TimelineEvent e)
+    {
+        float start = config.core.warmupTime + SongPlayStart - 0.05f;
+        float end   = config.core.warmupTime + (SongPlayEnd > 0f ? SongPlayEnd : float.MaxValue / 4f);
+        return e.eventTime >= start && e.eventTime < end;
+    }
+
+    private int MusicalAvailableCount()
+    {
+        int n = 0;
+        foreach (var kv in _availableByType) if (RingTypes.IsMusical(kv.Key)) n += kv.Value;
+        return n;
+    }
+
+    private void PublishStatsChanged() => EventBus.Publish(new RunnerStatsChangedEvent { Stats = _stats });
 
     /// <summary>Builds the per-type performance profile — published in GameEndedEvent at song
     /// end, but safe to call anytime (e.g. live from the debug HUD) since it only reads
@@ -554,6 +603,7 @@ public class GameplayManager : MonoBehaviour
             var type      = kv.Key;
             int available = kv.Value;
             if (available <= 0) continue; // omit types this song never generated — see GamePerformance doc
+            if (RingTypes.IsResource(type)) continue; // Life/Special are resources, not musical performance
 
             _collectedByType.TryGetValue(type, out int collected);
             _earnedScoreByType.TryGetValue(type, out int earned);
@@ -624,6 +674,13 @@ public class GameplayManager : MonoBehaviour
     private void ApplyFallPenalty(float fallSongTime)
     {
         _fallCount++;
+        _resources.OnFall(config.scoring.fallCancelsCombo);
+        ApplyFallPenaltyToPickups(fallSongTime);
+        PublishStatsChanged();
+    }
+
+    private void ApplyFallPenaltyToPickups(float fallSongTime)
+    {
         if (_pickupHistory.Count == 0) return; // nothing collected yet — nothing at risk
 
         float fallProgress      = SongTimeToProgress(fallSongTime);
@@ -683,6 +740,9 @@ public class GameplayManager : MonoBehaviour
         _earnedScoreByType.Clear();
         _timingErrorSumByType.Clear();
         _timingMultSumByType.Clear();
+
+        _resources.Reset();
+        PublishStatsChanged();
     }
 
     public void RequestRestartSong() => _fallRespawn.RestartSongManually();
@@ -825,7 +885,10 @@ public class GameplayManager : MonoBehaviour
             pos = path != null ? path.GetSample(evt.eventDistance).position : default;
         }
 
-        EventBus.Publish(new BeatPulseEvent { Type = evt.ringType, Strength = evt.strength, Position = pos });
+        // Life/Special are combat resources, not musical moments — they pulse visually but never
+        // drive beat-synced world feedback.
+        if (RingTypes.IsMusical(evt.ringType))
+            EventBus.Publish(new BeatPulseEvent { Type = evt.ringType, Strength = evt.strength, Position = pos });
     }
 
     /// <summary>The currently-active RingController for a given timeline index, or null if it's

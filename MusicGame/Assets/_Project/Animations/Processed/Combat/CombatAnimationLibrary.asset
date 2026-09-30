@@ -1,0 +1,1649 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffef12ed4fcc8b447883fe2a8d77472f, type: 3}
+  m_Name: CombatAnimationLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::CombatAnimationLibrarySO
+  entries:
+  - name: Fight_BigFrontKick_mixamo
+    clip: {fileID: 7400000, guid: c7fd04d91889cbd4ab1e2af678600b8d, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: f477825b0ce12a546b851c9cf8983462, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/BigFrontKick_mixamo.fbx
+    sourceTake: clip
+    duration: 10.75
+    frameRate: 24
+    rootTravel: {x: 1.0834007, y: -0.008593616, z: 1.3576051}
+    rootYaw: -62.700035
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 3,88s, 4,00s, 4,08s, 8,75s, 8,79s; muscle beyond
+      limits (RightHand.Ring.Spread 3,36)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 1
+    notes: 'Reviewed 2026-10-01. 10.8 s: walks in, one front kick at ~3.85 s, walks
+      around.'
+  - name: Fight_BigFrontKick_mixamo__FrontKick
+    clip: {fileID: 7400000, guid: 53857127c1793554ea44b62f298fa354, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 1b4a626899bd57d4d8c5844099fc9b4f, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/BigFrontKick_mixamo.fbx
+    sourceTake: clip
+    duration: 1.2916667
+    frameRate: 24
+    rootTravel: {x: -0.18822189, y: 0.0064139515, z: 1.1046195}
+    rootYaw: -61.38248
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.Spread 2,54)
+    segmentOf: Fight_BigFrontKick_mixamo
+    segmentStart: 3.3
+    segmentEnd: 4.6
+    keepFacing: 1
+    review: 1
+    notes: Reviewed 2026-10-01 (frame-by-frame window render). Guard, knee chamber,
+      front kick (~3.85 s), recover. The kick is compact (not a high snap).
+  - name: Fight_Boxing_mixamo
+    clip: {fileID: 7400000, guid: ce31ac888f1903743bef3432681bab42, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: ca28d60918a2807448e6cd6e8d699506, type: 2}
+    category: 0
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/Boxing_mixamo.fbx
+    sourceTake: clip
+    duration: 17.833334
+    frameRate: 24
+    rootTravel: {x: 0.14102185, y: 0.068379216, z: 1.8755457}
+    rootYaw: -94.62342
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 3,64)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 1
+    notes: Reviewed 2026-10-01. 18 s boxing footwork in a tight guard with a few
+      punches (2.7, 5.9, 13.7 s); ends walking out.
+  - name: Fight_Boxing_mixamo__GuardIdle
+    clip: {fileID: 7400000, guid: ffae9db7e10dcd0479199f43b68fd373, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 5f65510b6a184eb48bd42af76bf82ef8, type: 2}
+    category: 0
+    categoryReviewed: 1
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/Boxing_mixamo.fbx
+    sourceTake: clip
+    duration: 2.2083335
+    frameRate: 24
+    rootTravel: {x: 0.4256967, y: -0.0134216575, z: 0.43783638}
+    rootYaw: 87.5089
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.Spread 2,01)
+    segmentOf: Fight_Boxing_mixamo
+    segmentStart: 7
+    segmentEnd: 9.2
+    keepFacing: 1
+    review: 1
+    notes: Reviewed 2026-10-01 (frame-by-frame window render). Tight boxing guard
+      with a light bounce; 7.0-9.2 s only (a jab follows at ~10 s). Looped (loop
+      pose on).
+  - name: Fight_FightingIdle_mixamo
+    clip: {fileID: 7400000, guid: 3fcc682547eadf145a55aaa6876c2667, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: dd45d08c8479d9249a51dc1ccc917e38, type: 2}
+    category: 0
+    categoryReviewed: 1
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/FightingIdle_mixamo.fbx
+    sourceTake: clip
+    duration: 52.375
+    frameRate: 24
+    rootTravel: {x: 0.16245262, y: 0.016504768, z: 0.31749704}
+    rootYaw: 45.58369
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 24,88s, 24,92s, 24,96s, 25,08s, 25,17s...; muscle
+      beyond limits (RightHand.Ring.Spread 2,78)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 1
+    notes: Reviewed 2026-10-01. 52 s relaxed fighting stance with LOW hands (not
+      a tight guard). Usable as a casual idle; Boxing__GuardIdle is the combat idle.
+  - name: Fight_KnifeFight_mixamo
+    clip: {fileID: 7400000, guid: 1d12179cebc01214e83cdcf7f5b56bf2, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: da582b675d942374eaa81e863dd88d63, type: 2}
+    category: 13
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/KnifeFight_mixamo.fbx
+    sourceTake: clip
+    duration: 22.833334
+    frameRate: 24
+    rootTravel: {x: 0.99889493, y: -0.010207274, z: 0.45855582}
+    rootYaw: -71.206894
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 4,13s, 4,25s, 13,67s, 13,71s, 13,92s...; muscle
+      beyond limits (RightHand.Ring.Spread 4,33)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Fight_KnockOut_Loser_mixamo
+    clip: {fileID: 7400000, guid: f9c13ff91e65c694b8e71030a88dd447, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 79fe3c29a6766b249a688ce66efa3316, type: 2}
+    category: 7
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/KnockOut_Loser_mixamo.fbx
+    sourceTake: clip
+    duration: 20.458334
+    frameRate: 24
+    rootTravel: {x: 0.066487156, y: -0.008482566, z: 0.34220865}
+    rootYaw: 60.598778
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 9,42s; muscle beyond limits (RightHand.Ring.Spread
+      5,80)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 1
+    notes: 'Reviewed 2026-10-01. 20.5 s: stands, is hit (~9 s), falls onto the back,
+      lies ~12-16 s, gets up (~16-20 s). Was floating 25 cm before the robust ground
+      fix.'
+  - name: Fight_KnockOut_Loser_mixamo__HeadSnap
+    clip: {fileID: 7400000, guid: f87e81a26edc7af4d8643cadbcb442f5, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 619a8f081da6e5f44aa42bfc7584b2c5, type: 2}
+    category: 6
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/KnockOut_Loser_mixamo.fbx
+    sourceTake: clip
+    duration: 1.500001
+    frameRate: 24
+    rootTravel: {x: 0.33147082, y: -0.23836386, z: -0.17942794}
+    rootYaw: 111.699326
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 5,80)
+    segmentOf: Fight_KnockOut_Loser_mixamo
+    segmentStart: 8.8
+    segmentEnd: 10.3
+    keepFacing: 1
+    review: 1
+    notes: 'Reviewed 2026-10-01 (frame-by-frame window render). Takes a hit: head
+      snaps back, body twists and staggers. Does NOT recover to guard (it continues
+      into the fall).'
+  - name: Fight_KnockOut_Loser_mixamo__KnockedDown
+    clip: {fileID: 7400000, guid: 63c3f89ceb2ae314d90d3bec9181cb14, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 192868d8e55f0764495afb68d7e7e74d, type: 2}
+    category: 7
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/KnockOut_Loser_mixamo.fbx
+    sourceTake: clip
+    duration: 3.791667
+    frameRate: 24
+    rootTravel: {x: 0.5076713, y: -0.7236534, z: 0.17273708}
+    rootYaw: 87.69399
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 5,80)
+    segmentOf: Fight_KnockOut_Loser_mixamo
+    segmentStart: 8.8
+    segmentEnd: 12.6
+    keepFacing: 1
+    review: 1
+    notes: 'Reviewed 2026-10-01 (frame-by-frame window render). Hit -> stagger ->
+      crouching collapse -> falls onto the back (lying from ~11.7 s). Lying body
+      grounded after the robust ground fix. Source glitch: at the floor impact (~11.8
+      s) the capture drops ~23 cm for ~0.3 s (reads as a hard slam); excluded from
+      the ground calibration.'
+  - name: Fight_KnockOut_Loser_mixamo__GetUp
+    clip: {fileID: 7400000, guid: e026fb7c49a178c44926c0ceebab84dc, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 970b59f2780a93f478e7a83952aac12b, type: 2}
+    category: 8
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/KnockOut_Loser_mixamo.fbx
+    sourceTake: clip
+    duration: 4.125
+    frameRate: 24
+    rootTravel: {x: 0.6709259, y: 0.77660173, z: -0.16521885}
+    rootYaw: -27.882965
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 2,13s; muscle beyond limits (RightHand.Ring.Spread
+      3,02)
+    segmentOf: Fight_KnockOut_Loser_mixamo
+    segmentStart: 16.3
+    segmentEnd: 20.4
+    keepFacing: 1
+    review: 1
+    notes: 'Reviewed 2026-10-01 (frame-by-frame window render). From lying on the
+      back: sits up, crouches, rises hunched to standing. Pairs with KnockedDown.'
+  - name: Fight_KnockOut_Winner_mixamo
+    clip: {fileID: 7400000, guid: 81a83617f0f3a4d49826cb5c585bc7d4, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 39e4e11904d567d42a1db747b8b59899, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/KnockOut_Winner_mixamo.fbx
+    sourceTake: clip
+    duration: 20.000002
+    frameRate: 24
+    rootTravel: {x: 0.34972712, y: 0.0032120903, z: 1.2781812}
+    rootYaw: -67.137146
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 4,08)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 1
+    notes: 'Reviewed 2026-10-01. 20 s: approaches, one finishing swing punch (~9.4
+      s, 10.5 m/s), then just stands. Not a victory celebration despite the name.'
+  - name: Fight_RoundHouseKick_mixamo
+    clip: {fileID: 7400000, guid: 382e9037679cb264a829dfa4a6a62aa3, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: f63a5458cb19a6344b2d1147dbe2c67b, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/RoundHouseKick_mixamo.fbx
+    sourceTake: clip
+    duration: 11.416667
+    frameRate: 24
+    rootTravel: {x: -2.4812608, y: -0.054369565, z: 1.8542024}
+    rootYaw: -383.1803
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Middle.Spread 4,45)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 1
+    notes: 'Reviewed 2026-10-01. 11.4 s: punches then a spinning roundhouse at ~7.8
+      s. Total yaw -383 deg (root motion recommended).'
+  - name: Fight_RoundHouseKick_mixamo__SpinningRoundhouse
+    clip: {fileID: 7400000, guid: b7227298c8ce70641823d1598ab98cf8, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 45cf17b2e2b91654990331a1f5a4967a, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/RoundHouseKick_mixamo.fbx
+    sourceTake: clip
+    duration: 1.5000005
+    frameRate: 24
+    rootTravel: {x: -0.026051585, y: -0.05833913, z: 1.8661458}
+    rootYaw: -492.58987
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Middle.Spread 4,45)
+    segmentOf: Fight_RoundHouseKick_mixamo
+    segmentStart: 6.9
+    segmentEnd: 8.4
+    keepFacing: 0
+    review: 1
+    notes: 'Reviewed 2026-10-01 (frame-by-frame window render). Spinning back roundhouse:
+      turns away, chambers, kicks (~7.8 s, 9 m/s foot peak). Ends facing ~away from
+      the start direction.'
+  - name: Fight_ShadowBoxing_mixamo
+    clip: {fileID: 7400000, guid: 449042a57081a1945a0ff4b268e19d0e, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 08cb01489b5705840b10cd9965cea45d, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/ShadowBoxing_mixamo.fbx
+    sourceTake: clip
+    duration: 31.041668
+    frameRate: 24
+    rootTravel: {x: 0.30318695, y: -0.0074548433, z: 1.625999}
+    rootYaw: -105.65145
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 23,67s; muscle beyond limits (Left Shoulder Front-Back
+      2,88)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 1
+    notes: 'Reviewed 2026-10-01. 31 s shadow boxing: guard, jabs, crosses, hooks,
+      cover-ups, weaves. Source of 4 segments.'
+  - name: Fight_ShadowBoxing_mixamo__JabCross
+    clip: {fileID: 7400000, guid: cd886a972bdeff642aaad2a97e67ca11, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 7fd4be878a3d4524f8d08ef754bb803d, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/ShadowBoxing_mixamo.fbx
+    sourceTake: clip
+    duration: 1.583333
+    frameRate: 24
+    rootTravel: {x: -0.030819433, y: 0.001499728, z: 0.053364024}
+    rootYaw: 9.476418
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.Spread 2,15)
+    segmentOf: Fight_ShadowBoxing_mixamo
+    segmentStart: 8
+    segmentEnd: 9.6
+    keepFacing: 1
+    review: 1
+    notes: Reviewed 2026-10-01 (frame-by-frame window render). Guard -> left jab
+      (extended at ~8.35 s) -> right cross (~8.7 s, 7 m/s hand peak) -> back to guard.
+  - name: Fight_ShadowBoxing_mixamo__JabHook
+    clip: {fileID: 7400000, guid: e3cbe0cfce3c87248aca486da32455e1, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 75951be4417833b4eb4d42d50a137fcd, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/ShadowBoxing_mixamo.fbx
+    sourceTake: clip
+    duration: 1.583334
+    frameRate: 24
+    rootTravel: {x: -0.11087171, y: 0.034210447, z: -0.10534323}
+    rootYaw: 11.088211
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.Spread 1,98)
+    segmentOf: Fight_ShadowBoxing_mixamo
+    segmentStart: 19.2
+    segmentEnd: 20.8
+    keepFacing: 1
+    review: 1
+    notes: Reviewed 2026-10-01 (frame-by-frame window render). Jab then a big rotating
+      right hook/overhand (~19.9 s, 6.5 m/s) with full body turn, recovers to guard.
+      Heavier than JabCross.
+  - name: Fight_ShadowBoxing_mixamo__CoverBlock
+    clip: {fileID: 7400000, guid: 4c704dd9a2661bf4b810318270155706, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 29920a750f64c0641b65666673566612, type: 2}
+    category: 4
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/ShadowBoxing_mixamo.fbx
+    sourceTake: clip
+    duration: 1.208334
+    frameRate: 24
+    rootTravel: {x: -0.033860516, y: -0.10187139, z: 0.17865957}
+    rootYaw: 4.5243835
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.Spread 1,94)
+    segmentOf: Fight_ShadowBoxing_mixamo
+    segmentStart: 12.8
+    segmentEnd: 14
+    keepFacing: 1
+    review: 1
+    notes: 'Reviewed 2026-10-01 (frame-by-frame window render). High cover-up: both
+      forearms tight in front of the face while shuffling. A body block, not a parry.'
+  - name: Fight_ShadowBoxing_mixamo__DuckWeave
+    clip: {fileID: 7400000, guid: 9079021c8b09fde468acc1b797ef00a7, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 2baa70db194ded84bb360c564db344db, type: 2}
+    category: 5
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/ShadowBoxing_mixamo.fbx
+    sourceTake: clip
+    duration: 1.291667
+    frameRate: 24
+    rootTravel: {x: -0.021889748, y: 0.09335109, z: -0.19828932}
+    rootYaw: -82.02378
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (Left Shoulder Front-Back 2,64)
+    segmentOf: Fight_ShadowBoxing_mixamo
+    segmentStart: 14
+    segmentEnd: 15.3
+    keepFacing: 1
+    review: 1
+    notes: Reviewed 2026-10-01 (frame-by-frame window render). Drops lower under
+      the cover and weaves, then rises. The best 'dodge' in the packs (no dedicated
+      dodge clip exists).
+  - name: Fight_SwordFight_mixamo
+    clip: {fileID: 7400000, guid: 2211d5f827f4fdc479b5035bd4830f45, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 3c59ef444faed024487dc672e8d57052, type: 2}
+    category: 13
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/SwordFight_mixamo.fbx
+    sourceTake: clip
+    duration: 29.583334
+    frameRate: 24
+    rootTravel: {x: 0.16044863, y: 0.009208357, z: 1.6076617}
+    rootYaw: -76.110214
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 2,88s, 16,25s, 16,42s, 16,46s, 16,50s...; muscle
+      beyond limits (RightHand.Ring.Spread 3,80)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Fight_SwordIdleLight_mixamo
+    clip: {fileID: 7400000, guid: 75f656daf52bc444e8258c451f5daa13, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 7c2a4e621a88c53489ddca7846a57322, type: 2}
+    category: 0
+    categoryReviewed: 0
+    loop: 1
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/SwordIdleLight_mixamo.fbx
+    sourceTake: clip
+    duration: 64.50001
+    frameRate: 24
+    rootTravel: {x: 0.09573539, y: -0.0048288642, z: 0.24166752}
+    rootYaw: -9.221344
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 43,96s, 44,00s, 62,92s, 62,96s, 63,08s...; muscle
+      beyond limits (RightHand.Middle.Spread 2,97)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Fight_SwordIdleMedium_mixamo
+    clip: {fileID: 7400000, guid: ccf17c9dc4cdada4eb04f84d730c2460, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: af6dc6b13782b7b468a770486741741e, type: 2}
+    category: 0
+    categoryReviewed: 0
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/SwordIdleMedium_mixamo.fbx
+    sourceTake: clip
+    duration: 56.333332
+    frameRate: 24
+    rootTravel: {x: 0.40527305, y: -0.001765565, z: 0.14700755}
+    rootYaw: 3.3897362
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 30,42s, 30,46s, 30,50s, 30,54s, 30,58s...; muscle
+      beyond limits (RightHand.Ring.Spread 3,25)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: MartialArts_BattleTaunts_WithSword_MIXAMO_769
+    clip: {fileID: 7400000, guid: d83b2bcb5bb31d841bb35211eabfab20, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 31ae5ba0b54347747a18a7603fb7fc21, type: 2}
+    category: 9
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 6 Free Martial Arts Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/MartialArts/BattleTaunts_WithSword_MIXAMO_769.fbx
+    sourceTake: clip
+    duration: 30.366669
+    frameRate: 30
+    rootTravel: {x: 0.056184012, y: -0.006451987, z: 0.16033287}
+    rootYaw: 32.510338
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 23,30s, 23,40s, 23,73s; muscle beyond limits (RightHand.Middle.Spread
+      2,59)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 1
+    notes: 'Reviewed 2026-09-30 (20 phases). 30 s sequence of taunts: fist raised,
+      beckoning, wide stances. The right hand holds an imaginary sword grip in parts.
+      Finger capture looks natural on our hand. Pops at 23.3-23.7 s. Needs sub-clipping.'
+  - name: MartialArts_BattleTaunts_WithSword_MIXAMO_769__FistRaised
+    clip: {fileID: 7400000, guid: 172e6520855606c4a94363be874a20b9, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 983d74d28327476409bc9e985c1c380c, type: 2}
+    category: 10
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 6 Free Martial Arts Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/MartialArts/BattleTaunts_WithSword_MIXAMO_769.fbx
+    sourceTake: clip
+    duration: 4.7000003
+    frameRate: 30
+    rootTravel: {x: -0.19056351, y: 0.017431436, z: 0.039812952}
+    rootYaw: 3.956761
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Middle.Spread 2,44)
+    segmentOf: MartialArts_BattleTaunts_WithSword_MIXAMO_769
+    segmentStart: 6.8
+    segmentEnd: 11.5
+    keepFacing: 1
+    review: 1
+    notes: Reviewed 2026-10-01 (frame-by-frame window render). Right fist raised
+      high and held (~7-11 s), then lowers. The clearest victory pose in the packs.
+  - name: MartialArts_GetUp_WipeBloodfromMouth_MIXAMO_769
+    clip: {fileID: 7400000, guid: 4f32f8075e96e1d43893c8f4b5d1fe09, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 697ada94268ba26409926ab844af340f, type: 2}
+    category: 8
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 6 Free Martial Arts Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/MartialArts/GetUp_WipeBloodfromMouth_MIXAMO_769.fbx
+    sourceTake: clip
+    duration: 21.7
+    frameRate: 30
+    rootTravel: {x: 0.008408242, y: -0.002434214, z: -0.009909421}
+    rootYaw: 6.6946526
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 10,03s, 10,07s, 16,90s, 19,47s, 19,67s; muscle
+      beyond limits (LeftHand.Middle.Spread 2,72)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 1
+    notes: 'Reviewed 2026-09-30 (contact sheet, 14 phases). 21.7 s take: falls from
+      standing (~2-5 s), lies on the floor (~5-10 s), gets up (~10-13 s), fighting
+      stance + wipes mouth (13-21 s). Clean retarget, grounded while lying. Needs
+      sub-clipping into Knockdown / GetUp. Import warns of pose pops at 10.0, 16.9,
+      19.5 s - check in the browser.'
+  - name: MartialArts_MartialArtsKata_MIXAMO_769
+    clip: {fileID: 7400000, guid: f18ec1463a1115f4e89bb7828fc5b654, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: f6968ebe322521c4cbe267ca345ec8d2, type: 2}
+    category: 3
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 6 Free Martial Arts Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/MartialArts/MartialArtsKata_MIXAMO_769.fbx
+    sourceTake: clip
+    duration: 25.333336
+    frameRate: 30
+    rootTravel: {x: 0.014361615, y: -0.007824146, z: -0.012144058}
+    rootYaw: -2.940174
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Middle.Spread 2,58)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 1
+    notes: 'Reviewed 2026-09-30 (17 phases). 25 s martial-arts kata: low horse stance,
+      crouches, open-hand strikes and blocks. Clean retarget, feet grounded. A form,
+      not single attacks: sub-clip strikes/blocks from it.'
+  - name: MartialArts_Samurai_DrawSword_MIXAMO_769
+    clip: {fileID: 7400000, guid: d1d2bf5191e697f4286f214f9182e13d, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 5743555d1a83c0b41adf3c642b6eae10, type: 2}
+    category: 3
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 6 Free Martial Arts Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/MartialArts/Samurai_DrawSword_MIXAMO_769.fbx
+    sourceTake: clip
+    duration: 34.300003
+    frameRate: 30
+    rootTravel: {x: 0.025508808, y: -0.0057886876, z: 0.024448534}
+    rootYaw: -11.64336
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 3,70s, 4,20s, 4,23s, 5,80s, 5,83s...; muscle beyond
+      limits (RightHand.Middle.Spread 2,53)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 2
+    notes: 'Reviewed 2026-09-30 (23 phases). REJECTED for unarmed combat: 34 s of
+      walking and standing with a mimed sword draw. Without a sword prop it reads
+      as random arm waving.'
+  - name: MartialArts_thaichitake_12_DEFAULT_QUP
+    clip: {fileID: 7400000, guid: 68d1c04bd34938a4497f5ea3772f5f15, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 5f57c69b79a4b3744aca5675392f3d57, type: 2}
+    category: 12
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 6 Free Martial Arts Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/MartialArts/thaichitake-12_DEFAULT_QUP.fbx
+    sourceTake: clip
+    duration: 32.120003
+    frameRate: 100
+    rootTravel: {x: -0.534768, y: 0.009661374, z: -0.30332783}
+    rootYaw: 1.6889486
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 2,40)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 1
+    notes: Reviewed 2026-09-30 (21 phases). 32 s slow tai chi form, very clean. Different
+      skeleton naming (Unity auto-mapped). Not an attack; usable as a calm 'focus/charge'
+      special or ambient idle.
+  - name: EricJacobus_20210714_s001_teaching_Guestures_tk01_ERJA_mvn001
+    clip: {fileID: 7400000, guid: e4f9359e7a651ef4e858d35761f6ef55, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 7fea4c11e6b08644989559d842704963, type: 2}
+    category: 13
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s001_teaching_Guestures_tk01_ERJA-mvn001.fbx
+    sourceTake: 20210714_s001_teaching_Guestures_tk01_ERJA-mvn001
+    duration: 75.99168
+    frameRate: 120
+    rootTravel: {x: -0.0022815336, y: -0.0063653933, z: 0.026177645}
+    rootYaw: -37.902145
+    trimmedStartFrames: 1
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: EricJacobus_20210714_s002_crossStage_Talk_tk01_ERJA_mvn222
+    clip: {fileID: 7400000, guid: b187400851502034296afb1e7968f60b, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: d16d53c1f415aa148a7fc79b9a46fc4f, type: 2}
+    category: 13
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s002_crossStage_Talk_tk01_ERJA-mvn222.fbx
+    sourceTake: 20210714_s002_crossStage_Talk_tk01_ERJA-mvn222
+    duration: 69.90001
+    frameRate: 120
+    rootTravel: {x: 0.49400938, y: -0.000984338, z: 0.9662673}
+    rootYaw: 13.220512
+    trimmedStartFrames: 1
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 2
+    notes: 'Reviewed 2026-09-30 (32 phases). REJECTED: not combat, a presenter walking
+      around a stage and talking with gestures (turns away from the camera most of
+      the time). No finger capture (relaxed rest hand applied).'
+  - name: EricJacobus_20210714_s003_fingerWave_atAudience_tk01_ERJA_mvn002
+    clip: {fileID: 7400000, guid: 42b3a1e22ee97bb46a09ea2739f0a89c, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: f2a584d94ad9c84469636ba38c7debd3, type: 2}
+    category: 13
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s003_fingerWave_atAudience_tk01_ERJA-mvn002.fbx
+    sourceTake: 20210714_s003_fingerWave_atAudience_tk01_ERJA-mvn002
+    duration: 85.466675
+    frameRate: 120
+    rootTravel: {x: -0.021858612, y: 0.0018320538, z: -0.06351026}
+    rootYaw: 8.634293
+    trimmedStartFrames: 1
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: EricJacobus_20210714_s004_walk_assaultRiffle_tk01_ERJA_mvn225
+    clip: {fileID: 7400000, guid: 2460969a6f30c514fbb6260510d1f458, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: cec92ccb4f52bc945bb809eda544f073, type: 2}
+    category: 11
+    categoryReviewed: 0
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s004_walk_assaultRiffle_tk01_ERJA-mvn225.fbx
+    sourceTake: 20210714_s004_walk_assaultRiffle_tk01_ERJA-mvn225
+    duration: 24.283335
+    frameRate: 120
+    rootTravel: {x: -4.617245, y: -0.015058419, z: 7.294144}
+    rootYaw: 157.00137
+    trimmedStartFrames: 1
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: EricJacobus_20210714_s005_runBackward_assultRiffle1_tk01_ERJA_mvn227
+    clip: {fileID: 7400000, guid: bb2d4c6d8110c2745b557fe68e19b4af, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 5b5fbe5838c8e794186dc81a480b0fbd, type: 2}
+    category: 11
+    categoryReviewed: 0
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s005_runBackward_assultRiffle1_tk01_ERJA-mvn227.fbx
+    sourceTake: 20210714_s005_runBackward_assultRiffle1_tk01_ERJA-mvn227
+    duration: 12.400001
+    frameRate: 120
+    rootTravel: {x: 3.9407818, y: 0.019244676, z: -3.1005118}
+    rootYaw: -46.762016
+    trimmedStartFrames: 1
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: EricJacobus_20210714_s006_runBackward_assultRiffle2_tk01_ERJA_mvn226
+    clip: {fileID: 7400000, guid: cabf5a53f35ade94eb8d1b27de98457c, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 3094fb39bb3edab41aba6b53a3446ffe, type: 2}
+    category: 11
+    categoryReviewed: 0
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s006_runBackward_assultRiffle2_tk01_ERJA-mvn226.fbx
+    sourceTake: 20210714_s006_runBackward_assultRiffle2_tk01_ERJA-mvn226
+    duration: 13.525001
+    frameRate: 120
+    rootTravel: {x: 5.6480327, y: 0.028331403, z: -0.9831658}
+    rootYaw: -69.5886
+    trimmedStartFrames: 1
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: EricJacobus_20210714_s007_runForward_assultRiffle_tk01_ERJA_mvn228
+    clip: {fileID: 7400000, guid: 46b9465b7b5f96a4b86babdf4e5f6e6e, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 68bd36f95a72de843b389bcdaf148bad, type: 2}
+    category: 11
+    categoryReviewed: 1
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s007_runForward_assultRiffle_tk01_ERJA-mvn228.fbx
+    sourceTake: 20210714_s007_runForward_assultRiffle_tk01_ERJA-mvn228
+    duration: 9.016667
+    frameRate: 120
+    rootTravel: {x: -6.0973134, y: 0.009400475, z: 8.266029}
+    rootYaw: 138.17386
+    trimmedStartFrames: 1
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 2
+    notes: 'Reviewed 2026-09-30 (8 phases). REJECTED: running with both arms holding
+      an (invisible) assault rifle - only meaningful with the prop. Feet slightly
+      off the floor in several phases (clip level calibrated on its lowest frame).'
+  - name: EricJacobus_20210714_s007_runForward_assultRiffle_tk02_ERJA_mvn229
+    clip: {fileID: 7400000, guid: 00af6b5f17118d24d8839e6c7233b118, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 07c24b4f85d09fe4391b9f53a706018d, type: 2}
+    category: 11
+    categoryReviewed: 0
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s007_runForward_assultRiffle_tk02_ERJA-mvn229.fbx
+    sourceTake: 20210714_s007_runForward_assultRiffle_tk02_ERJA-mvn229
+    duration: 10.991668
+    frameRate: 120
+    rootTravel: {x: -4.2510395, y: -0.020699961, z: 4.280394}
+    rootYaw: 131.7751
+    trimmedStartFrames: 1
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: EricJacobus_20210714_s008_sprintForward_assultRiffle_tk01_ERJA_mvn230
+    clip: {fileID: 7400000, guid: c75e526060a7d5e419d62feecb1b2cb2, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: cf563a8c7e3e8ed419d128bd16dcc155, type: 2}
+    category: 11
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s008_sprintForward_assultRiffle_tk01_ERJA-mvn230.fbx
+    sourceTake: 20210714_s008_sprintForward_assultRiffle_tk01_ERJA-mvn230
+    duration: 12.033334
+    frameRate: 120
+    rootTravel: {x: -9.22742, y: 0.009942613, z: 7.2612615}
+    rootYaw: 144.11784
+    trimmedStartFrames: 1
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: EricJacobus_20210714_s009_runToSprint_swordCarry_tk01_ERJA_mvn231
+    clip: {fileID: 7400000, guid: a7c0a5983047ad24cb4ef7dc95609ba8, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: d75d5f605bb91574281f6e7cf770d864, type: 2}
+    category: 11
+    categoryReviewed: 0
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s009_runToSprint_swordCarry_tk01_ERJA-mvn231.fbx
+    sourceTake: 20210714_s009_runToSprint_swordCarry_tk01_ERJA-mvn231
+    duration: 13.175001
+    frameRate: 120
+    rootTravel: {x: -5.751324, y: 0.0065074237, z: 7.702375}
+    rootYaw: -207.28912
+    trimmedStartFrames: 1
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: EricJacobus_20210714_s010_runJump_overObstacle_tk01_ERJA_mvn232
+    clip: {fileID: 7400000, guid: 278bb919a7a89b9418dbed5fe002f15f, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: a935884e6d7e26244a12bf661523a4cd, type: 2}
+    category: 11
+    categoryReviewed: 0
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s010_runJump_overObstacle_tk01_ERJA-mvn232.fbx
+    sourceTake: 20210714_s010_runJump_overObstacle_tk01_ERJA-mvn232
+    duration: 8.425
+    frameRate: 120
+    rootTravel: {x: -4.3016224, y: -0.0128660565, z: 8.954004}
+    rootYaw: 129.0862
+    trimmedStartFrames: 1
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: EricJacobus_20210714_s010_runJump_overObstacle_tk02_ERJA_mvn233
+    clip: {fileID: 7400000, guid: ed93f628386c20844943bd120bfda7ac, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 034718d0381093c42beff608e6a601c0, type: 2}
+    category: 11
+    categoryReviewed: 0
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s010_runJump_overObstacle_tk02_ERJA-mvn233.fbx
+    sourceTake: 20210714_s010_runJump_overObstacle_tk02_ERJA-mvn233
+    duration: 7.6250005
+    frameRate: 120
+    rootTravel: {x: -4.8497424, y: 0.0019377536, z: 10.263103}
+    rootYaw: 4.0529785
+    trimmedStartFrames: 1
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Superhero_Hawkeye_Archery_mixamo
+    clip: {fileID: 7400000, guid: 73fa5b7166d8cf44c8f8964bc37ab6f2, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: e09bf96f042c0a247bb6179106402308, type: 2}
+    category: 13
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 15 Free Superhero Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Superhero/Hawkeye_Archery_mixamo.fbx
+    sourceTake: clip
+    duration: 23.708334
+    frameRate: 24
+    rootTravel: {x: 0.68748283, y: -0.0037753922, z: 1.1882269}
+    rootYaw: -51.36549
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 6,50s, 6,54s, 7,38s, 7,42s, 8,42s...; muscle beyond
+      limits (RightHand.Ring.Spread 5,21)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Superhero_HulkTransformation_mixamo
+    clip: {fileID: 7400000, guid: 5a54a400fd78d744cb96a4cd87de1e64, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 09017e61bb7900843beedc89a9841035, type: 2}
+    category: 13
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 15 Free Superhero Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Superhero/HulkTransformation_mixamo.fbx
+    sourceTake: clip
+    duration: 29.000002
+    frameRate: 24
+    rootTravel: {x: 0.28051588, y: 0.006472445, z: 1.5663888}
+    rootYaw: -87.684494
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 20,92s, 21,79s; muscle beyond limits (RightHand.Ring.Spread
+      4,57)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Superhero_IronMan_Combat_mixamo
+    clip: {fileID: 7400000, guid: e0269d47f294a9348bd339b845aec9d9, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: ca50e1d1682f3e34b8cc5742f9106d2d, type: 2}
+    category: 12
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 15 Free Superhero Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Superhero/IronMan_Combat_mixamo.fbx
+    sourceTake: clip
+    duration: 43.083332
+    frameRate: 24
+    rootTravel: {x: 0.47157088, y: -0.011698419, z: 1.4754052}
+    rootYaw: -88.6023
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 25,25s, 25,29s, 25,38s, 25,42s, 26,42s...; muscle
+      beyond limits (RightHand.Ring.Spread 3,69)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 1
+    notes: Reviewed 2026-10-01. 43 s of power gestures and stances (repulsor-like
+      palm pushes). Special moves, not melee.
+  - name: Superhero_LaserEyes_mixamo
+    clip: {fileID: 7400000, guid: e1c9a5da021829f42a9d73f8a2c0574e, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: c375df21fe1451e46a76646da4e5fdde, type: 2}
+    category: 12
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 15 Free Superhero Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Superhero/LaserEyes_mixamo.fbx
+    sourceTake: clip
+    duration: 29.291668
+    frameRate: 24
+    rootTravel: {x: 0.31476197, y: -0.008719891, z: 1.4037696}
+    rootYaw: -89.7029
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 2,29s; muscle beyond limits (RightHand.Ring.Spread
+      3,53)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Superhero_MutantClaws_mixamo
+    clip: {fileID: 7400000, guid: b79ee9550dfd3ec4c9edf2ad37c3f863, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: d7b5bfa9f211db846b435bd062f562ed, type: 2}
+    category: 13
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 15 Free Superhero Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Superhero/MutantClaws_mixamo.fbx
+    sourceTake: clip
+    duration: 35.458332
+    frameRate: 24
+    rootTravel: {x: 0.61366504, y: -0.013420011, z: 1.1458954}
+    rootYaw: -38.030376
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 13,17s, 22,13s, 27,75s, 29,46s; muscle beyond
+      limits (RightHand.Ring.Spread 4,42)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Superhero_SuperHeroFlying_mixamo
+    clip: {fileID: 7400000, guid: 4b1d3ff643719e248b3c4b0e3c9ef2df, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: a8103ceaf0fc0ec409c071782c8f3ffe, type: 2}
+    category: 12
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 15 Free Superhero Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Superhero/SuperHeroFlying_mixamo.fbx
+    sourceTake: clip
+    duration: 33.041668
+    frameRate: 24
+    rootTravel: {x: 0.05389942, y: 0.11259612, z: 0.058413763}
+    rootYaw: -88.22771
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 4,96s, 5,25s, 5,29s, 5,33s, 29,25s; muscle beyond
+      limits (RightHand.Ring.Spread 2,88)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Superhero_SuperHeroLanding_Takeoff_mixamo
+    clip: {fileID: 7400000, guid: 1b6446d978beed349894a6fd6cc37285, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 7a83026aa7627cf42be73aecfeef2ad0, type: 2}
+    category: 12
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 15 Free Superhero Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Superhero/SuperHeroLanding_Takeoff_mixamo.fbx
+    sourceTake: clip
+    duration: 21.791668
+    frameRate: 24
+    rootTravel: {x: 0.8180763, y: -0.016847322, z: 1.8105012}
+    rootYaw: -66.64498
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 2,29s, 2,33s, 2,50s, 17,00s, 17,04s...; muscle
+      beyond limits (RightHand.Ring.Spread 3,43)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 1
+    notes: Reviewed 2026-10-01. Superhero landing crouch at ~3-5 s, jump take-off
+      at ~17 s. Good for a flashy entrance.
+  - name: Superhero_Telekenisis_mixamo
+    clip: {fileID: 7400000, guid: 3cd071af5f8d3734fbf529c3b12eb5cc, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 834ad5dccbf29df4fb16d60f7bcf1a26, type: 2}
+    category: 13
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 15 Free Superhero Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Superhero/Telekenisis_mixamo.fbx
+    sourceTake: clip
+    duration: 52.833332
+    frameRate: 24
+    rootTravel: {x: 0.23066133, y: -0.015463053, z: 1.1401142}
+    rootYaw: -80.37897
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 2,38s, 2,42s, 5,46s, 5,50s, 5,54s...; muscle beyond
+      limits (RightHand.Ring.Spread 6,40)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Superhero_WatchOverCity_mixamo
+    clip: {fileID: 7400000, guid: a48208a9256f97b49ab45d16128f6d85, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 70a075cf21a02364589069c79dd97472, type: 2}
+    category: 13
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 15 Free Superhero Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Superhero/WatchOverCity_mixamo.fbx
+    sourceTake: clip
+    duration: 25.708334
+    frameRate: 24
+    rootTravel: {x: -0.5687347, y: -0.016372085, z: 1.2246709}
+    rootYaw: -123.38232
+    trimmedStartFrames: 1
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 23,88s, 23,92s, 23,96s; muscle beyond limits (RightHand.Ring.Spread
+      3,13)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  segments:
+  - name: GuardIdle
+    sourceEntry: Fight_Boxing_mixamo
+    start: 7
+    end: 9.2
+    category: 0
+    loop: 1
+    keepFacing: 1
+    review: 1
+    notes: Reviewed 2026-10-01 (frame-by-frame window render). Tight boxing guard
+      with a light bounce; 7.0-9.2 s only (a jab follows at ~10 s). Looped (loop
+      pose on).
+  - name: JabCross
+    sourceEntry: Fight_ShadowBoxing_mixamo
+    start: 8
+    end: 9.6
+    category: 1
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: Reviewed 2026-10-01 (frame-by-frame window render). Guard -> left jab
+      (extended at ~8.35 s) -> right cross (~8.7 s, 7 m/s hand peak) -> back to guard.
+  - name: JabHook
+    sourceEntry: Fight_ShadowBoxing_mixamo
+    start: 19.2
+    end: 20.8
+    category: 1
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: Reviewed 2026-10-01 (frame-by-frame window render). Jab then a big rotating
+      right hook/overhand (~19.9 s, 6.5 m/s) with full body turn, recovers to guard.
+      Heavier than JabCross.
+  - name: FrontKick
+    sourceEntry: Fight_BigFrontKick_mixamo
+    start: 3.3
+    end: 4.6
+    category: 2
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: Reviewed 2026-10-01 (frame-by-frame window render). Guard, knee chamber,
+      front kick (~3.85 s), recover. The kick is compact (not a high snap).
+  - name: SpinningRoundhouse
+    sourceEntry: Fight_RoundHouseKick_mixamo
+    start: 6.9
+    end: 8.4
+    category: 2
+    loop: 0
+    keepFacing: 0
+    review: 1
+    notes: 'Reviewed 2026-10-01 (frame-by-frame window render). Spinning back roundhouse:
+      turns away, chambers, kicks (~7.8 s, 9 m/s foot peak). Ends facing ~away from
+      the start direction.'
+  - name: CoverBlock
+    sourceEntry: Fight_ShadowBoxing_mixamo
+    start: 12.8
+    end: 14
+    category: 4
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: 'Reviewed 2026-10-01 (frame-by-frame window render). High cover-up: both
+      forearms tight in front of the face while shuffling. A body block, not a parry.'
+  - name: DuckWeave
+    sourceEntry: Fight_ShadowBoxing_mixamo
+    start: 14
+    end: 15.3
+    category: 5
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: Reviewed 2026-10-01 (frame-by-frame window render). Drops lower under
+      the cover and weaves, then rises. The best 'dodge' in the packs (no dedicated
+      dodge clip exists).
+  - name: HeadSnap
+    sourceEntry: Fight_KnockOut_Loser_mixamo
+    start: 8.8
+    end: 10.3
+    category: 6
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: 'Reviewed 2026-10-01 (frame-by-frame window render). Takes a hit: head
+      snaps back, body twists and staggers. Does NOT recover to guard (it continues
+      into the fall).'
+  - name: KnockedDown
+    sourceEntry: Fight_KnockOut_Loser_mixamo
+    start: 8.8
+    end: 12.6
+    category: 7
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: 'Reviewed 2026-10-01 (frame-by-frame window render). Hit -> stagger ->
+      crouching collapse -> falls onto the back (lying from ~11.7 s). Lying body
+      grounded after the robust ground fix. Source glitch: at the floor impact (~11.8
+      s) the capture drops ~23 cm for ~0.3 s (reads as a hard slam); excluded from
+      the ground calibration.'
+  - name: GetUp
+    sourceEntry: Fight_KnockOut_Loser_mixamo
+    start: 16.3
+    end: 20.4
+    category: 8
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: 'Reviewed 2026-10-01 (frame-by-frame window render). From lying on the
+      back: sits up, crouches, rises hunched to standing. Pairs with KnockedDown.'
+  - name: FistRaised
+    sourceEntry: MartialArts_BattleTaunts_WithSword_MIXAMO_769
+    start: 6.8
+    end: 11.5
+    category: 10
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: Reviewed 2026-10-01 (frame-by-frame window render). Right fist raised
+      high and held (~7-11 s), then lowers. The clearest victory pose in the packs.
+  roles:
+  - role: 0
+    entryName: Fight_Boxing_mixamo__GuardIdle
+  - role: 1
+    entryName: Fight_ShadowBoxing_mixamo__JabCross
+  - role: 2
+    entryName: Fight_ShadowBoxing_mixamo__JabHook
+  - role: 3
+    entryName: Fight_BigFrontKick_mixamo__FrontKick
+  - role: 4
+    entryName: Fight_ShadowBoxing_mixamo__CoverBlock
+  - role: 5
+    entryName: Fight_ShadowBoxing_mixamo__DuckWeave
+  - role: 6
+    entryName: Fight_KnockOut_Loser_mixamo__HeadSnap
+  - role: 7
+    entryName: Fight_KnockOut_Loser_mixamo__KnockedDown
+  - role: 8
+    entryName: Fight_KnockOut_Loser_mixamo__GetUp
+  - role: 9
+    entryName: MartialArts_BattleTaunts_WithSword_MIXAMO_769
+  - role: 10
+    entryName: MartialArts_BattleTaunts_WithSword_MIXAMO_769__FistRaised
+  demoSequence:
+  - label: Guard
+    entryName: Fight_Boxing_mixamo__GuardIdle
+    partnerEntryName: 
+    partnerDelay: 0.4
+  - label: Punch
+    entryName: Fight_ShadowBoxing_mixamo__JabCross
+    partnerEntryName: Fight_KnockOut_Loser_mixamo__HeadSnap
+    partnerDelay: 0.35
+  - label: Punch
+    entryName: Fight_ShadowBoxing_mixamo__JabHook
+    partnerEntryName: Fight_KnockOut_Loser_mixamo__HeadSnap
+    partnerDelay: 0.35
+  - label: Kick
+    entryName: Fight_BigFrontKick_mixamo__FrontKick
+    partnerEntryName: Fight_KnockOut_Loser_mixamo__HeadSnap
+    partnerDelay: 0.4
+  - label: Dodge
+    entryName: Fight_ShadowBoxing_mixamo__DuckWeave
+    partnerEntryName: Fight_ShadowBoxing_mixamo__JabCross
+    partnerDelay: 0
+  - label: Hit Reaction
+    entryName: Fight_KnockOut_Loser_mixamo__HeadSnap
+    partnerEntryName: 
+    partnerDelay: 0.4
+  - label: Victory
+    entryName: MartialArts_BattleTaunts_WithSword_MIXAMO_769__FistRaised
+    partnerEntryName: Fight_KnockOut_Loser_mixamo__KnockedDown
+    partnerDelay: 0
+  canonicalFbxHash: 78E5195836D0CAAD41E5D2FE553CB33B13D23E01981D417664D1FEF21A38DC30
+  lastImportReport: "FOUND    Fight: 11 FBX file(s)\nFOUND    MartialArts: 6 FBX
+    file(s)\nFOUND    EricJacobus: 12 FBX file(s)\nFOUND    Superhero: 9 FBX file(s)\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/Fight/BigFrontKick_mixamo.fbx: 1 take(s),
+    1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_BigFrontKick_mixamo: AttackKick,
+    10,75 s, loop False, RootMotion (travel 1,74 m, yaw -63), fingers captured/Preserve,
+    trimmed 1, facing -11,3 deg, level +0,001; WARN pose pop(s) at 3,88s, 4,00s,
+    4,08s, 8,75s, 8,79s; muscle beyond limits (RightHand.Ring.Spread 3,36)\n   Fight_BigFrontKick_mixamo__FrontKick:
+    AttackKick, 1,29 s, loop False, RootMotion (travel 1,12 m, yaw -61), fingers
+    captured/Preserve, trimmed 0, facing +39,6 deg, level -0,001; WARN muscle beyond
+    limits (LeftHand.Thumb.Spread 2,54)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/Boxing_mixamo.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_Boxing_mixamo:
+    IdleCombat, 17,83 s, loop False, RootMotion (travel 1,88 m, yaw -95), fingers
+    captured/Preserve, trimmed 1, facing +19,8 deg, level -0,002; WARN muscle beyond
+    limits (RightHand.Ring.Spread 3,64)\n   Fight_Boxing_mixamo__GuardIdle: IdleCombat,
+    2,21 s, loop True, RootMotion (travel 0,61 m, yaw +88), fingers captured/Preserve,
+    trimmed 0, facing -6,9 deg, level -0,068; WARN muscle beyond limits (LeftHand.Thumb.Spread
+    2,01)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/FightingIdle_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_FightingIdle_mixamo:
+    IdleCombat, 52,38 s, loop True, RootMotion (travel 0,36 m, yaw +46), fingers
+    captured/Preserve, trimmed 1, facing -38,1 deg, level -0,001; WARN pose pop(s)
+    at 24,88s, 24,92s, 24,96s, 25,08s, 25,17s...; muscle beyond limits (RightHand.Ring.Spread
+    2,78)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/KnifeFight_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_KnifeFight_mixamo:
+    Unknown (auto), 22,83 s, loop False, RootMotion (travel 1,10 m, yaw -71), fingers
+    captured/Preserve, trimmed 1, facing -17,3 deg, level -0,001; WARN pose pop(s)
+    at 4,13s, 4,25s, 13,67s, 13,71s, 13,92s...; muscle beyond limits (RightHand.Ring.Spread
+    4,33)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/KnockOut_Loser_mixamo.fbx:
+    1 take(s), 3 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_KnockOut_Loser_mixamo:
+    Knockdown, 20,46 s, loop False, RootMotion (travel 0,35 m, yaw +61), fingers
+    captured/Preserve, trimmed 1, facing -109,8 deg, level -0,024; WARN pose pop(s)
+    at 9,42s; muscle beyond limits (RightHand.Ring.Spread 5,80)\n   Fight_KnockOut_Loser_mixamo__HeadSnap:
+    HitReaction, 1,50 s, loop False, RootMotion (travel 0,38 m, yaw +112), fingers
+    captured/Preserve, trimmed 0, facing -119,1 deg, level -0,002; WARN muscle beyond
+    limits (RightHand.Ring.Spread 5,80)\n   Fight_KnockOut_Loser_mixamo__KnockedDown:
+    Knockdown, 3,79 s, loop False, RootMotion (travel 0,54 m, yaw +88), fingers captured/Preserve,
+    trimmed 0, facing -119,1 deg, level -0,034; WARN muscle beyond limits (RightHand.Ring.Spread
+    5,80)\n   Fight_KnockOut_Loser_mixamo__GetUp: GetUp, 4,13 s, loop False, RootMotion
+    (travel 0,69 m, yaw -28), fingers captured/Preserve, trimmed 0, facing +46,0
+    deg, level -0,019; WARN pose pop(s) at 2,13s; muscle beyond limits (RightHand.Ring.Spread
+    3,02)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/KnockOut_Winner_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_KnockOut_Winner_mixamo:
+    AttackPunch, 20,00 s, loop False, RootMotion (travel 1,33 m, yaw -67), fingers
+    captured/Preserve, trimmed 1, facing +13,6 deg, level -0,002; WARN muscle beyond
+    limits (RightHand.Ring.Spread 4,08)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/RoundHouseKick_mixamo.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_RoundHouseKick_mixamo:
+    AttackKick, 11,42 s, loop False, RootMotion (travel 3,10 m, yaw -383), fingers
+    captured/Preserve, trimmed 1, facing +140,5 deg, level -0,002; WARN muscle beyond
+    limits (RightHand.Middle.Spread 4,45)\n   Fight_RoundHouseKick_mixamo__SpinningRoundhouse:
+    AttackKick, 1,50 s, loop False, RootMotion (travel 1,87 m, yaw -493), fingers
+    captured/Preserve, trimmed 0, facing +90,7 deg, level -0,016; WARN muscle beyond
+    limits (RightHand.Middle.Spread 4,45)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/ShadowBoxing_mixamo.fbx:
+    1 take(s), 4 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_ShadowBoxing_mixamo:
+    AttackPunch, 31,04 s, loop False, RootMotion (travel 1,65 m, yaw -106), fingers
+    captured/Preserve, trimmed 1, facing +28,5 deg, level -0,001; WARN pose pop(s)
+    at 23,67s; muscle beyond limits (Left Shoulder Front-Back 2,88)\n   Fight_ShadowBoxing_mixamo__JabCross:
+    AttackPunch, 1,58 s, loop False, InPlace (travel 0,06 m, yaw +9), fingers captured/Preserve,
+    trimmed 0, facing +82,2 deg, level -0,001; WARN muscle beyond limits (LeftHand.Thumb.Spread
+    2,15)\n   Fight_ShadowBoxing_mixamo__JabHook: AttackPunch, 1,58 s, loop False,
+    InPlace (travel 0,15 m, yaw +11), fingers captured/Preserve, trimmed 0, facing
+    +16,9 deg, level -0,002; WARN muscle beyond limits (LeftHand.Thumb.Spread 1,98)\n  
+    Fight_ShadowBoxing_mixamo__CoverBlock: Block, 1,21 s, loop False, InPlace (travel
+    0,18 m, yaw +5), fingers captured/Preserve, trimmed 0, facing +80,5 deg, level
+    -0,002; WARN muscle beyond limits (LeftHand.Thumb.Spread 1,94)\n   Fight_ShadowBoxing_mixamo__DuckWeave:
+    Dodge, 1,29 s, loop False, RootMotion (travel 0,20 m, yaw -82), fingers captured/Preserve,
+    trimmed 0, facing +92,5 deg, level +0,000; WARN muscle beyond limits (Left Shoulder
+    Front-Back 2,64)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/SwordFight_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_SwordFight_mixamo:
+    Unknown (auto), 29,58 s, loop False, RootMotion (travel 1,62 m, yaw -76), fingers
+    captured/Preserve, trimmed 1, facing -13,5 deg, level -0,001; WARN pose pop(s)
+    at 2,88s, 16,25s, 16,42s, 16,46s, 16,50s...; muscle beyond limits (RightHand.Ring.Spread
+    3,80)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/SwordIdleLight_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_SwordIdleLight_mixamo:
+    IdleCombat (auto), 64,50 s, loop True, InPlace (travel 0,26 m, yaw -9), fingers
+    captured/Preserve, trimmed 1, facing +2,1 deg, level +0,002; WARN pose pop(s)
+    at 43,96s, 44,00s, 62,92s, 62,96s, 63,08s...; muscle beyond limits (RightHand.Middle.Spread
+    2,97)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/SwordIdleMedium_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_SwordIdleMedium_mixamo:
+    IdleCombat (auto), 56,33 s, loop True, RootMotion (travel 0,43 m, yaw +3), fingers
+    captured/Preserve, trimmed 1, facing -25,1 deg, level +0,003; WARN pose pop(s)
+    at 30,42s, 30,46s, 30,50s, 30,54s, 30,58s...; muscle beyond limits (RightHand.Ring.Spread
+    3,25)\nSKIPPED  Assets/_Project/Animations/Source/Rokoko/MartialArts/BattleTaunts_WithSword_face_P_jgbZmX.fbx:
+    no animation take (mesh/face-only file)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/MartialArts/BattleTaunts_WithSword_MIXAMO_769.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   MartialArts_BattleTaunts_WithSword_MIXAMO_769:
+    Taunt, 30,37 s, loop False, InPlace (travel 0,17 m, yaw +33), fingers captured/Preserve,
+    trimmed 1, facing -8,2 deg, level -0,002; WARN pose pop(s) at 23,30s, 23,40s,
+    23,73s; muscle beyond limits (RightHand.Middle.Spread 2,59)\n   MartialArts_BattleTaunts_WithSword_MIXAMO_769__FistRaised:
+    Victory, 4,70 s, loop False, InPlace (travel 0,19 m, yaw +4), fingers captured/Preserve,
+    trimmed 0, facing -14,0 deg, level +0,000; WARN muscle beyond limits (RightHand.Middle.Spread
+    2,44)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/MartialArts/GetUp_WipeBloodfromMouth_MIXAMO_769.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   MartialArts_GetUp_WipeBloodfromMouth_MIXAMO_769:
+    GetUp, 21,70 s, loop False, InPlace (travel 0,01 m, yaw +7), fingers captured/Preserve,
+    trimmed 1, facing -43,4 deg, level -0,013; WARN pose pop(s) at 10,03s, 10,07s,
+    16,90s, 19,47s, 19,67s; muscle beyond limits (LeftHand.Middle.Spread 2,72)\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/MartialArts/MartialArtsKata_MIXAMO_769.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   MartialArts_MartialArtsKata_MIXAMO_769:
+    AttackOther, 25,33 s, loop False, InPlace (travel 0,02 m, yaw -3), fingers captured/Preserve,
+    trimmed 1, facing -35,2 deg, level -0,002; WARN muscle beyond limits (LeftHand.Middle.Spread
+    2,58)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/MartialArts/Samurai_DrawSword_MIXAMO_769.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   MartialArts_Samurai_DrawSword_MIXAMO_769:
+    AttackOther, 34,30 s, loop False, InPlace (travel 0,04 m, yaw -12), fingers captured/Preserve,
+    trimmed 1, facing -35,4 deg, level +0,000; WARN pose pop(s) at 3,70s, 4,20s,
+    4,23s, 5,80s, 5,83s...; muscle beyond limits (RightHand.Middle.Spread 2,53)\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/MartialArts/thaichitake-12_DEFAULT_QUP.fbx:
+    1 take(s), 0 segment(s); Mixamo names not found (Spine, LeftUpperLeg, LeftLowerLeg,
+    RightUpperLeg, RightLowerLeg) \u2014 kept Unity auto-mapping (52 bones); source
+    T-pose enforced (largest correction 0,1 deg at LeftLowerLeg)\n   MartialArts_thaichitake_12_DEFAULT_QUP:
+    Special, 32,12 s, loop False, RootMotion (travel 0,61 m, yaw +2), fingers captured/Preserve,
+    trimmed 1, facing -0,9 deg, level +0,000; WARN muscle beyond limits (RightHand.Ring.Spread
+    2,40)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s001_teaching_Guestures_tk01_ERJA-mvn001.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s001_teaching_Guestures_tk01_ERJA_mvn001:
+    Unknown (auto), 75,99 s, loop False, InPlace (travel 0,03 m, yaw -38), fingers
+    static/RelaxedRestHand, trimmed 1, facing +15,5 deg, level -0,001\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s002_crossStage_Talk_tk01_ERJA-mvn222.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s002_crossStage_Talk_tk01_ERJA_mvn222:
+    Unknown, 69,90 s, loop False, RootMotion (travel 1,09 m, yaw +13), fingers static/RelaxedRestHand,
+    trimmed 1, facing -71,8 deg, level -0,002\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s003_fingerWave_atAudience_tk01_ERJA-mvn002.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s003_fingerWave_atAudience_tk01_ERJA_mvn002:
+    Unknown (auto), 85,47 s, loop False, InPlace (travel 0,07 m, yaw +9), fingers
+    static/RelaxedRestHand, trimmed 1, facing +2,3 deg, level -0,001\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s004_walk_assaultRiffle_tk01_ERJA-mvn225.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s004_walk_assaultRiffle_tk01_ERJA_mvn225:
+    Movement (auto), 24,28 s, loop True, RootMotion (travel 8,63 m, yaw +157), fingers
+    static/RelaxedRestHand, trimmed 1, facing -148,8 deg, level +0,001\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s005_runBackward_assultRiffle1_tk01_ERJA-mvn227.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s005_runBackward_assultRiffle1_tk01_ERJA_mvn227:
+    Movement (auto), 12,40 s, loop True, RootMotion (travel 5,01 m, yaw -47), fingers
+    static/RelaxedRestHand, trimmed 1, facing +45,2 deg, level -0,004\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s006_runBackward_assultRiffle2_tk01_ERJA-mvn226.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s006_runBackward_assultRiffle2_tk01_ERJA_mvn226:
+    Movement (auto), 13,53 s, loop True, RootMotion (travel 5,73 m, yaw -70), fingers
+    static/RelaxedRestHand, trimmed 1, facing +42,0 deg, level -0,009\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s007_runForward_assultRiffle_tk01_ERJA-mvn228.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s007_runForward_assultRiffle_tk01_ERJA_mvn228:
+    Movement, 9,02 s, loop True, RootMotion (travel 10,27 m, yaw +138), fingers static/RelaxedRestHand,
+    trimmed 1, facing -142,6 deg, level -0,039\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s007_runForward_assultRiffle_tk02_ERJA-mvn229.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s007_runForward_assultRiffle_tk02_ERJA_mvn229:
+    Movement (auto), 10,99 s, loop True, RootMotion (travel 6,03 m, yaw +132), fingers
+    static/RelaxedRestHand, trimmed 1, facing -134,0 deg, level -0,011\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s008_sprintForward_assultRiffle_tk01_ERJA-mvn230.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s008_sprintForward_assultRiffle_tk01_ERJA_mvn230:
+    Movement (auto), 12,03 s, loop False, RootMotion (travel 11,74 m, yaw +144),
+    fingers static/RelaxedRestHand, trimmed 1, facing -137,8 deg, level -0,002\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s009_runToSprint_swordCarry_tk01_ERJA-mvn231.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s009_runToSprint_swordCarry_tk01_ERJA_mvn231:
+    Movement (auto), 13,18 s, loop True, RootMotion (travel 9,61 m, yaw -207), fingers
+    static/RelaxedRestHand, trimmed 1, facing -151,1 deg, level -0,006\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s010_runJump_overObstacle_tk01_ERJA-mvn232.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s010_runJump_overObstacle_tk01_ERJA_mvn232:
+    Movement (auto), 8,43 s, loop True, RootMotion (travel 9,93 m, yaw +129), fingers
+    static/RelaxedRestHand, trimmed 1, facing -156,1 deg, level +0,002\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s010_runJump_overObstacle_tk02_ERJA-mvn233.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s010_runJump_overObstacle_tk02_ERJA_mvn233:
+    Movement (auto), 7,63 s, loop True, RootMotion (travel 11,35 m, yaw +4), fingers
+    static/RelaxedRestHand, trimmed 1, facing -158,2 deg, level -0,001\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/Superhero/Hawkeye_Archery_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_Hawkeye_Archery_mixamo:
+    Unknown (auto), 23,71 s, loop False, RootMotion (travel 1,37 m, yaw -51), fingers
+    captured/Preserve, trimmed 1, facing +1,5 deg, level +0,000; WARN pose pop(s)
+    at 6,50s, 6,54s, 7,38s, 7,42s, 8,42s...; muscle beyond limits (RightHand.Ring.Spread
+    5,21)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Superhero/HulkTransformation_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_HulkTransformation_mixamo:
+    Unknown (auto), 29,00 s, loop False, RootMotion (travel 1,59 m, yaw -88), fingers
+    captured/Preserve, trimmed 1, facing +11,4 deg, level -0,028; WARN pose pop(s)
+    at 20,92s, 21,79s; muscle beyond limits (RightHand.Ring.Spread 4,57)\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/Superhero/IronMan_Combat_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_IronMan_Combat_mixamo:
+    Special, 43,08 s, loop False, RootMotion (travel 1,55 m, yaw -89), fingers captured/Preserve,
+    trimmed 1, facing +3,8 deg, level -0,001; WARN pose pop(s) at 25,25s, 25,29s,
+    25,38s, 25,42s, 26,42s...; muscle beyond limits (RightHand.Ring.Spread 3,69)\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/Superhero/LaserEyes_mixamo.fbx: 1 take(s),
+    0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_LaserEyes_mixamo:
+    Special (auto), 29,29 s, loop False, RootMotion (travel 1,44 m, yaw -90), fingers
+    captured/Preserve, trimmed 1, facing +11,7 deg, level -0,002; WARN pose pop(s)
+    at 2,29s; muscle beyond limits (RightHand.Ring.Spread 3,53)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Superhero/MutantClaws_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_MutantClaws_mixamo:
+    Unknown (auto), 35,46 s, loop False, RootMotion (travel 1,30 m, yaw -38), fingers
+    captured/Preserve, trimmed 1, facing +0,8 deg, level -0,002; WARN pose pop(s)
+    at 13,17s, 22,13s, 27,75s, 29,46s; muscle beyond limits (RightHand.Ring.Spread
+    4,42)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Superhero/SuperHeroFlying_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_SuperHeroFlying_mixamo:
+    Special (auto), 33,04 s, loop False, RootMotion (travel 0,08 m, yaw -88), fingers
+    captured/Preserve, trimmed 1, facing -82,5 deg, level +0,594; WARN pose pop(s)
+    at 4,96s, 5,25s, 5,29s, 5,33s, 29,25s; muscle beyond limits (RightHand.Ring.Spread
+    2,88)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Superhero/SuperHeroLanding_Takeoff_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_SuperHeroLanding_Takeoff_mixamo:
+    Special, 21,79 s, loop False, RootMotion (travel 1,99 m, yaw -67), fingers captured/Preserve,
+    trimmed 1, facing -7,6 deg, level +0,000; WARN pose pop(s) at 2,29s, 2,33s, 2,50s,
+    17,00s, 17,04s...; muscle beyond limits (RightHand.Ring.Spread 3,43)\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/Superhero/Telekenisis_mixamo.fbx: 1
+    take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_Telekenisis_mixamo:
+    Unknown (auto), 52,83 s, loop False, RootMotion (travel 1,16 m, yaw -80), fingers
+    captured/Preserve, trimmed 1, facing +12,5 deg, level -0,002; WARN pose pop(s)
+    at 2,38s, 2,42s, 5,46s, 5,50s, 5,54s...; muscle beyond limits (RightHand.Ring.Spread
+    6,40)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Superhero/WatchOverCity_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_WatchOverCity_mixamo:
+    Unknown (auto), 25,71 s, loop False, RootMotion (travel 1,35 m, yaw -123), fingers
+    captured/Preserve, trimmed 1, facing +45,2 deg, level -0,001; WARN pose pop(s)
+    at 23,88s, 23,92s, 23,96s; muscle beyond limits (RightHand.Ring.Spread 3,13)\nDEMO    
+    7 step(s): Guard -> Punch -> Punch -> Kick -> Dodge -> Hit Reaction -> Victory
+    (* = unreviewed auto candidate)"

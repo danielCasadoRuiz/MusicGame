@@ -67,9 +67,9 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
 
     /// <summary>Consumable/special combat resources (extra lives, revives, shields...) —
     /// deliberately NOT derived from RunnerFightResources/FighterStats/RunnerResults at all (see
-    /// FightResources' own doc). Lazily created once (never overwritten by a later run) so a
-    /// future source can populate/accumulate it across runs without this class fighting that
-    /// design once it exists.</summary>
+    /// FightResources' own doc). Lazily created once (never overwritten by a later run). The
+    /// Runner's own collected resources are NOT copied in here: their single canonical copy is
+    /// RunnerResults.Resources (the later Fight system decides how to consume them).</summary>
     public FightResources FightResources { get; private set; }
 
     /// <summary>The rival OpponentSelectionController's roulette settled on — written once, right
@@ -120,6 +120,7 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
 
     public void Configure(FightStatsConfig config) => _fightStatsConfig = config;
 
+
     /// <summary>Called ONLY by FightMatchController the instant a match is decisively WON — never
     /// from anywhere else (a loss never touches PlayerLevel at all, see this phase's own explicit
     /// "PlayerLevel només puja quan GUANYES" requirement). Returns the new value.</summary>
@@ -138,14 +139,7 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
         _onProfileReady = e => Profile = e.Profile;
         _onGameEnded = e =>
         {
-            RunnerResults = new RunnerResults
-            {
-                Stats            = e.Stats,
-                FallCount        = e.FallCount,
-                NormalizedScore  = e.NormalizedScore,
-                MaxPossibleScore = e.MaxPossibleScore,
-                Performance      = e.Performance,
-            };
+            RunnerResults = RunnerResultsBuilder.Build(e, _fightStatsConfig);
 
             if (_fightStatsConfig != null)
             {
@@ -163,6 +157,8 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
             // independent of run performance (accumulation-across-runs is a future decision, not
             // one this makes for you by resetting it here).
             FightResources ??= new FightResources();
+
+            EventBus.Publish(new RunnerResultsReadyEvent { Results = RunnerResults });
         };
         EventBus.Subscribe(_onProfileReady);
         EventBus.Subscribe(_onGameEnded);

@@ -249,6 +249,12 @@ MonoBehaviour:
     width: 360
     height: 780
   genderTransitionDuration: 0.75
+  libraryArea:
+    serializedVersion: 2
+    x: 380
+    y: 10
+    width: 420
+    height: 700
 --- !u!114 &978363716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,6 +274,8 @@ MonoBehaviour:
   buildOnStart: 1
   debugAnimatorController: {fileID: 9100000, guid: 9943ce8122123434d8a622d71dcf16a4, type: 2}
   animationCrossFade: 0.2
+  combatLibrary: {fileID: 11400000, guid: 58952dc308c88224984e2af77ce2c849, type: 2}
+  facingDistance: 1.1
 --- !u!4 &978363717
 Transform:
   m_ObjectHideFlags: 0

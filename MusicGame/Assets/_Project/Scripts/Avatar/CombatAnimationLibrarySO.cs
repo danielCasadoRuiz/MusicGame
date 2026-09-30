@@ -98,11 +98,37 @@ public class CombatAnimationEntry
     [Tooltip("Automatic warnings found at import (pops, extreme muscles, very short clip...).")]
     public string importWarnings;
 
+    [Tooltip("For a segment entry: the full-take entry it was cut from, and the window (s) inside it.")]
+    public string segmentOf;
+    public float segmentStart, segmentEnd;
+    [Tooltip("In-place clip keeps facing +Z: root yaw goes to (unapplied) root motion instead of into the pose.")]
+    public bool keepFacing;
+
     [Header("Review")]
     public CombatReviewStatus review;
     [TextArea] public string notes;
 
     public AnimationClip DebugClip => inPlaceClip != null ? inPlaceClip : clip;
+}
+
+/// <summary>A time window of a long take, imported as its own clip (e.g. one punch out of a 30 s
+/// shadow-boxing take). Defined after watching the take; the importer turns it into a library entry
+/// named "&lt;sourceEntry&gt;__&lt;name&gt;" with its own processed + in-place clips.</summary>
+[System.Serializable]
+public class CombatSegmentDefinition
+{
+    public string name;
+    public string sourceEntry;
+    public float start;
+    public float end;
+    public CombatAnimationCategory category;
+    public bool loop;
+    [Tooltip("In-place clip keeps facing forward (turning is extracted, not baked). Off for moves whose turn IS the move (spins).")]
+    public bool keepFacing = true;
+    public CombatReviewStatus review = CombatReviewStatus.Approved;
+    [TextArea] public string notes;
+
+    public string EntryName => sourceEntry + "__" + name;
 }
 
 [System.Serializable]
@@ -134,6 +160,9 @@ public class CombatDemoStep
 public class CombatAnimationLibrarySO : ScriptableObject
 {
     public List<CombatAnimationEntry> entries = new();
+
+    [Tooltip("Windows of long takes imported as their own clips (see CombatSegmentDefinition).")]
+    public List<CombatSegmentDefinition> segments = new();
 
     [Tooltip("Recommended clip per gameplay role — filled only after visual verification.")]
     public List<CombatRoleAssignment> roles = new();

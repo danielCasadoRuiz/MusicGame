@@ -206,6 +206,7 @@ public static class MakeHumanFbxPipeline
         importer.importVisibility = false;
         importer.materialImportMode = ModelImporterMaterialImportMode.None;
         importer.skinWeights = ModelImporterSkinWeights.Standard; // 4 bones, exactly what the bake authored
+        importer.optimizeGameObjects = false;         // bones must stay real Transforms: AvatarSkeletonMapper remaps wearables onto them
 
         // Round-trip through Generic so the importer re-reads the (possibly re-baked) rest skeleton instead
         // of a humanDescription.skeleton cached in the .meta from a previous bake.

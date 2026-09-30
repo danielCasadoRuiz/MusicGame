@@ -24,7 +24,7 @@ using UnityEngine.SceneManagement;
 ///              Animator, and the real Fight scene opponent path.
 /// </summary>
 [InitializeOnLoad]
-public static class MakeHumanBodyTests
+public static partial class MakeHumanBodyTests
 {
     private const float Tolerance = 1e-4f;       // 0.1 mm — rest skinning reproduces positions to float precision
     private const float HeightTolerance = 1e-4f; // baked states must hit the canonical height this closely
@@ -448,6 +448,12 @@ public static class MakeHumanBodyTests
             if (state != PlayModeStateChange.EnteredPlayMode || !SessionState.GetBool(PendingKey, false)) return;
             SessionState.SetBool(PendingKey, false);
             _ = RunPlayModeChecks();
+        };
+        EditorApplication.playModeStateChanged += state =>
+        {
+            if (state != PlayModeStateChange.EnteredPlayMode || !SessionState.GetBool(CombatPendingKey, false)) return;
+            SessionState.SetBool(CombatPendingKey, false);
+            _ = RunCombatPlayChecks();
         };
     }
 

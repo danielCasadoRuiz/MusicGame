@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffef12ed4fcc8b447883fe2a8d77472f, type: 3}
+  m_Name: PipelineFixtureLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::CombatAnimationLibrarySO
+  entries:
+  - name: Fixture_MixamoWalk
+    clip: {fileID: 7400000, guid: 406c4e2fef10e8b4e862ba737de48075, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: af75598929d2e9c4fae7ce31e386b678, type: 2}
+    category: 11
+    categoryReviewed: 0
+    loop: 1
+    rootMotion: 1
+    sourcePack: PipelineFixture (synthetic, not Rokoko)
+    sourceFbx: Assets/_Project/Animations/Debug/PipelineFixture/Fixture_MixamoWalk.fbx
+    sourceTake: Scene
+    duration: 1.0583291
+    frameRate: 120.00048
+    rootTravel: {x: -0.10306757, y: 0.0313375, z: 1.7020326}
+    rootYaw: 3.9454622
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Thumb.1 Stretched 4,13)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  segments: []
+  roles: []
+  demoSequence: []
+  canonicalFbxHash: 78E5195836D0CAAD41E5D2FE553CB33B13D23E01981D417664D1FEF21A38DC30
+  lastImportReport: 

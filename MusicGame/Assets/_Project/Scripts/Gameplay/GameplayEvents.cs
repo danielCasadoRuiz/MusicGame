@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 // WarmupTime lets a countdown UI (CountdownController) show exactly as many "3, 2, 1, GO"-style
@@ -17,6 +18,9 @@ public struct GameEndedEvent
     // Per-type breakdown (available/collected/collectionRate/normalizedScore/timing) — see
     // GamePerformance.cs. Built strictly from this song's actual playable timeline.
     public GamePerformance   Performance;
+    // Combat resources earned this run (Triple/Quad combos, Lives, Specials) — NOT score. See
+    // RunnerResourceTracker.
+    public RunnerResourceCounts Resources;
 }
 // Fired once, exactly when the song's fade-out finishes (SongPlayEnd reached) — the song has
 // genuinely ended, but the run keeps going through the silent/flat farewell stretch (see
@@ -24,7 +28,30 @@ public struct GameEndedEvent
 // GameEndedEvent actually replaces the live HUD with the end screen. FinishBannerController's
 // "FINISH!" banner reacts to this directly.
 public struct SongFinishedEvent { }
-public struct LevelGeneratedEvent   { public int RingCount; }
+/// <summary>RingCount = MUSICAL pickups the player can actually meet (played window; Life/Special
+/// excluded). AvailableByType = pickups of each type the
+/// player can ACTUALLY meet this run (inside the played window) — a type with no entry (or 0)
+/// does not exist in this song's gameplay (the HUD hides it; performance treats it as N/A).</summary>
+public struct LevelGeneratedEvent
+{
+    public int RingCount;
+    public IReadOnlyDictionary<RingType, int> AvailableByType;
+}
+
+/// <summary>Fired whenever TotalScore or the visible per-type collected counters change (pickup,
+/// fall penalty, no-fall bonus, restart) — the HUD refreshes from this instead of polling.</summary>
+public struct RunnerStatsChangedEvent { public CollectionStats Stats; }
+
+/// <summary>Fired whenever Triple/Quad combo counts, Lives or Specials change.</summary>
+public struct RunnerResourcesChangedEvent { public RunnerResourceCounts Counts; }
+
+/// <summary>Fired the moment a pickup sequence resolves to a Triple or Quad combo.</summary>
+public struct PickupComboEvent { public PickupComboTier Tier; public RunnerResourceCounts Counts; }
+
+/// <summary>Fired by GameSession right after it finalized RunnerResults (musical performance,
+/// resources, combat build) from GameEndedEvent — the results screen reads the conversion from
+/// here, never by recomputing it.</summary>
+public struct RunnerResultsReadyEvent { public RunnerResults Results; }
 public struct RingCollectedEvent
 {
     public RingType Type;

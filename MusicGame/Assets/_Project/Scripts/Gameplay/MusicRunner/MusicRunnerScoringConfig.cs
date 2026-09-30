@@ -85,4 +85,27 @@ public class MusicRunnerScoringConfig : ScriptableObject
              "(fallCount == 0). 1.20 = +20% for a perfectly clean run. Not applied at all if " +
              "even one fall occurred.")]
     public float noFallScoreMultiplier = 1.2f;
+
+    // ── Pickup combos — a collectible RESOURCE for the Fight, never a score multiplier ────────
+    [Header("Pickup Combos (Triple / Quad) — resources, NOT score multipliers")]
+    [Tooltip("A combo sequence is every MUSICAL pickup collected within this many seconds of the " +
+             "sequence's first pickup (song time). Life/Special pickups never count.")]
+    [Min(0.05f)] public float comboWindowSeconds = 1.15f;
+    [Tooltip("Pickups a sequence needs to be worth one Triple combo.")]
+    [Min(2)] public int tripleComboPickups = 3;
+    [Tooltip("Pickups a sequence needs to be worth one Quad combo. A sequence is resolved ONCE, to " +
+             "its highest tier: four pickups inside the window give one Quad, never Triple + Quad.")]
+    [Min(3)] public int quadComboPickups = 4;
+    [Tooltip("What happens once a sequence reaches the Quad count: CloseSequence (default) grants " +
+             "the Quad immediately and the next pickup starts a new sequence; KeepCollecting lets the " +
+             "window run out first (extra pickups in the same window add nothing).")]
+    public PickupComboQuadRule quadRule = PickupComboQuadRule.CloseSequence;
+    [Tooltip("A fall cancels the sequence in progress (it grants nothing).")]
+    public bool fallCancelsCombo = true;
+}
+
+public enum PickupComboQuadRule
+{
+    CloseSequence,
+    KeepCollecting,
 }
