@@ -64,6 +64,18 @@ public class TagBasedMusicStyleClassifier : IMusicStyleClassifier
         { "ambient",           MusicStyleId.Ambient },
         { "acoustic",          MusicStyleId.Acoustic },
         { "experimental",      MusicStyleId.Experimental },
+
+        { "latin",             MusicStyleId.Latin },
+        { "salsa",             MusicStyleId.Latin },
+        { "bachata",           MusicStyleId.Latin },
+        { "merengue",          MusicStyleId.Latin },
+        { "cumbia",            MusicStyleId.Latin },
+        { "reggaeton",         MusicStyleId.Latin },
+
+        { "classical",         MusicStyleId.Classical },
+        { "baroque",           MusicStyleId.Classical },
+        { "opera",             MusicStyleId.Classical },
+        { "orchestral",        MusicStyleId.Classical },
     };
 
     public MusicStyleId Classify(SongProfile profile)

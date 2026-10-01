@@ -36,4 +36,7 @@ public enum MusicStyleId
     Ambient,
     Acoustic,
     Experimental,
+    // Appended (serialized ints of the values above unchanged).
+    Latin,
+    Classical,
 }

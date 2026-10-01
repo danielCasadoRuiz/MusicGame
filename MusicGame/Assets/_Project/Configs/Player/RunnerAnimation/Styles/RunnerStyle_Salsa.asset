@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a471e689c084fff49a6ca2ff5f1661cb, type: 3}
+  m_Name: RunnerStyle_Salsa
+  m_EditorClassIdentifier: Assembly-CSharp::RunnerAnimationStyleSO
+  displayName: Salsa / Latin
+  idle: []
+  locomotion:
+  - clip: {fileID: 7400000, guid: adb12662c2a97bb4fb0033134a41bdbc, type: 2}
+    playbackSpeed: 0.95
+    upperBodyOnly: 1
+    provisional: 1
+    note: "PROVISIONAL: no salsa locomotion clip yet \u2014 generic run."
+  fastLocomotion:
+  - clip: {fileID: 7400000, guid: adb12662c2a97bb4fb0033134a41bdbc, type: 2}
+    playbackSpeed: 1.2
+    upperBodyOnly: 1
+    provisional: 1
+    note: 'PROVISIONAL: generic run, faster.'
+  jump:
+  - clip: {fileID: 7400000, guid: 77189b49a86b39b439e869facc837280, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 1
+    provisional: 1
+    note: 'PROVISIONAL: wants a playful small-turn jump.'
+  land:
+  - clip: {fileID: 7400000, guid: 4289f7f39fcf403408c39f68ba74ea7d, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 1
+    provisional: 1
+    note: PROVISIONAL hurdle landing.
+  autoReturn:
+  - clip: {fileID: 7400000, guid: 98b5f240809bac74983daeaf84c99f33, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 1
+    provisional: 1
+    note: PROVISIONAL dance-turn substitute (kick spin).
+  flourish:
+  - clip: {fileID: 7400000, guid: 2baa70db194ded84bb360c564db344db, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 1
+    provisional: 1
+    note: PROVISIONAL boxing weave as hip/shoulder sway.
+  - clip: {fileID: 7400000, guid: 5f796d1a608fdce47a90f9bbf045704b, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 1
+    provisional: 1
+    note: PROVISIONAL playful wave.
+  - clip: {fileID: 7400000, guid: e5575b62535026e4b9b3b5b1fabe5855, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 1
+    provisional: 1
+    note: PROVISIONAL arms up.
+  - clip: {fileID: 7400000, guid: 98b5f240809bac74983daeaf84c99f33, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 0
+    provisional: 1
+    note: PROVISIONAL full-body small spin.
+  fall: []
+  locomotionSpeedRange: {x: 0.85, y: 1.2}
+  fastLocomotionSpeedRange: {x: 0.9, y: 1.3}
+  actionSpeedRange: {x: 0.7, y: 1.6}
+  crossfade: 0.15
+  quickCrossfade: 0.08
+  upperBodyFade: 0.25
+  autoReturnMinAmount: 0.35
+  autoReturnCooldown: 1.5
+  flourishEnabled: 1
+  flourishChance: 0.55
+  flourishMinCooldown: 5
+  flourishMaxCooldown: 11

@@ -6,8 +6,7 @@ using UnityEngine;
 
 /// <summary>
 /// Content setup for the real avatar pipeline in BOTH presentation contexts (idempotent):
-///   - RunnerPlayer.controller: Humanoid Idle (default) ⇄ Run on bool "Running", reusing the
-///     MakeHuman rig-validation clips (Avatar/AnimationTests/Clips/Derived/Idle|Run.anim);
+///   - (the Runner controller + animation styles are set up by RunnerAnimationSetup);
 ///   - PlayerAvatarConfig.asset: the ONE provisional player recipe (the one Fight already used,
 ///     FightArenaConfig.playerAvatarRecipe) + the Runner controller, assigned to AppConfig.playerAvatar;
 ///   - validates that every production composer tier (and defaultConfig) resolves an AvatarRecipe,
@@ -18,10 +17,7 @@ using UnityEngine;
 public static class PlayerAvatarSetup
 {
     private const string Folder         = "Assets/_Project/Configs/Player";
-    private const string ControllerPath = Folder + "/RunnerPlayer.controller";
     private const string ConfigPath     = Folder + "/PlayerAvatarConfig.asset";
-    private const string IdleClipPath   = "Assets/_Project/Avatar/AnimationTests/Clips/Derived/Idle.anim";
-    private const string RunClipPath    = "Assets/_Project/Avatar/AnimationTests/Clips/Derived/Run.anim";
     private const string OpponentRecipePath = "Assets/_Project/Avatar/MakeHuman/Content/Recipes/Avatar_MakeHuman_TestMale.asset";
 
     [MenuItem("Tools/MusicGame/Avatar/Setup Player Avatar (Runner + Fight)")]
@@ -43,8 +39,6 @@ public static class PlayerAvatarSetup
         var appConfig = Resources.Load<AppConfigSO>("AppConfig");
         if (appConfig == null) return sb.AppendLine("ERROR: Resources/AppConfig not found").ToString();
 
-        var controller = BuildRunnerController(sb);
-
         var config = AssetDatabase.LoadAssetAtPath<PlayerAvatarConfigSO>(ConfigPath);
         if (config == null)
         {
@@ -52,58 +46,17 @@ public static class PlayerAvatarSetup
             AssetDatabase.CreateAsset(config, ConfigPath);
         }
         if (config.avatarRecipe == null && appConfig.arena != null) config.avatarRecipe = appConfig.arena.playerAvatarRecipe;
-        config.runnerAnimatorController = controller;
         EditorUtility.SetDirty(config);
         appConfig.playerAvatar = config;
         EditorUtility.SetDirty(appConfig);
         sb.AppendLine($"  {(config.avatarRecipe != null ? "PASS" : "ERROR")}  player recipe: {(config.avatarRecipe != null ? config.avatarRecipe.name : "(none)")} (shared Runner + Fight)");
-        sb.AppendLine($"  {(controller != null ? "PASS" : "ERROR")}  runner controller: {ControllerPath}");
+        // The Runner controller/styles are owned by RunnerAnimationSetup (shared RunnerHumanoid controller).
+        sb.AppendLine($"  runner controller: {(config.runnerAnimatorController != null ? config.runnerAnimatorController.name : "(none — run RunnerAnimationSetup)")}");
 
         ValidateOpponents(appConfig, sb);
 
         AssetDatabase.SaveAssets();
         return sb.ToString();
-    }
-
-    private static AnimatorController BuildRunnerController(StringBuilder sb)
-    {
-        var idle = AssetDatabase.LoadAssetAtPath<AnimationClip>(IdleClipPath);
-        var run  = AssetDatabase.LoadAssetAtPath<AnimationClip>(RunClipPath);
-        if (idle == null || run == null)
-        {
-            sb.AppendLine($"  ERROR  missing clip(s): Idle {idle != null}, Run {run != null}");
-            return null;
-        }
-
-        var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath)
-                         ?? AnimatorController.CreateAnimatorControllerAtPath(ControllerPath);
-        // Rebuild the graph from scratch every time (idempotent, no stale states).
-        foreach (var p in controller.parameters) controller.RemoveParameter(p);
-        controller.AddParameter(RunnerAvatarAnimator.RunningParameter, AnimatorControllerParameterType.Bool);
-
-        var sm = controller.layers[0].stateMachine;
-        foreach (var st in sm.states) sm.RemoveState(st.state);
-
-        var idleState = sm.AddState("Idle");
-        idleState.motion = idle;
-        idleState.iKOnFeet = true;
-        var runState = sm.AddState("Run");
-        runState.motion = run;
-        runState.iKOnFeet = true;
-        sm.defaultState = idleState;
-
-        var toRun = idleState.AddTransition(runState);
-        toRun.hasExitTime = false;
-        toRun.duration = 0.15f;
-        toRun.AddCondition(AnimatorConditionMode.If, 0f, RunnerAvatarAnimator.RunningParameter);
-        var toIdle = runState.AddTransition(idleState);
-        toIdle.hasExitTime = false;
-        toIdle.duration = 0.2f;
-        toIdle.AddCondition(AnimatorConditionMode.IfNot, 0f, RunnerAvatarAnimator.RunningParameter);
-
-        EditorUtility.SetDirty(controller);
-        sb.AppendLine($"  PASS  RunnerPlayer.controller: Idle ({idle.name}, loop {idle.isLooping}) ⇄ Run ({run.name}, loop {run.isLooping})");
-        return controller;
     }
 
     private static void ValidateOpponents(AppConfigSO appConfig, StringBuilder sb)

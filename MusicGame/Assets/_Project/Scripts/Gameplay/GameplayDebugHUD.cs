@@ -90,6 +90,7 @@ public class GameplayDebugHUD : MonoBehaviour
         y = DrawSection(X, y, W, "MUSIC CLOCK",  DrawClock);
         y = DrawSection(X, y, W, "PATH",          DrawPath);
         y = DrawSection(X, y, W, "PLAYER",        DrawPlayer);
+        y = DrawSection(X, y, W, "RUNNER ANIMATION", DrawRunnerAnimation);
         y = DrawSection(X, y, W, "CAMERA",        DrawCamera);
         y = DrawSection(X, y, W, "NEXT EVENT",    DrawNextEvent);
         y = DrawSection(X, y, W, "MICRO PICKUPS (recent)", DrawImpactLog);
@@ -149,6 +150,13 @@ public class GameplayDebugHUD : MonoBehaviour
         Row(x, ref y, w, $"TotalLength: {path.TotalLength:F1} u  Samples:{path.SampleCount}");
         Row(x, ref y, w, $"localPathWidth: {sample.width:F2} u  @ playerDistance");
         Row(x, ref y, w, $"PathPos:  {sample.position:F1}");
+    }
+
+    private void DrawRunnerAnimation(float x, ref float y, float w)
+    {
+        var anim = _player != null ? _player.GetComponent<RunnerAvatarAnimator>() : null;
+        if (anim == null) { Row(x, ref y, w, "No avatar animator (avatar still building / no recipe)"); return; }
+        foreach (var line in anim.DebugSummary.Split('\n')) Row(x, ref y, w, line);
     }
 
     private void DrawPlayer(float x, ref float y, float w)

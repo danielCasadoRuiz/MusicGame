@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a471e689c084fff49a6ca2ff5f1661cb, type: 3}
+  m_Name: RunnerStyle_Default
+  m_EditorClassIdentifier: Assembly-CSharp::RunnerAnimationStyleSO
+  displayName: Default
+  idle:
+  - clip: {fileID: 7400000, guid: 26f1ec1fdb26b384493118b5ab1c09d7, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 1
+    provisional: 0
+    note: CMU idle (rig-validation clip).
+  locomotion:
+  - clip: {fileID: 7400000, guid: adb12662c2a97bb4fb0033134a41bdbc, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 1
+    provisional: 0
+    note: "CMU run cycle \u2014 generic locomotion."
+  fastLocomotion:
+  - clip: {fileID: 7400000, guid: adb12662c2a97bb4fb0033134a41bdbc, type: 2}
+    playbackSpeed: 1.2
+    upperBodyOnly: 1
+    provisional: 1
+    note: 'PROVISIONAL: same run, faster cadence (no clean sprint clip).'
+  jump:
+  - clip: {fileID: 7400000, guid: 77189b49a86b39b439e869facc837280, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 1
+    provisional: 1
+    note: "PROVISIONAL generic hurdle jump \u2014 replace with a style-specific jump."
+  land:
+  - clip: {fileID: 7400000, guid: 4289f7f39fcf403408c39f68ba74ea7d, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 1
+    provisional: 1
+    note: PROVISIONAL hurdle landing.
+  autoReturn:
+  - clip: {fileID: 7400000, guid: 98b5f240809bac74983daeaf84c99f33, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 1
+    provisional: 1
+    note: PROVISIONAL spinning roundhouse as a 360 turn.
+  flourish:
+  - clip: {fileID: 7400000, guid: 5f796d1a608fdce47a90f9bbf045704b, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 1
+    provisional: 1
+    note: PROVISIONAL wave at the crowd.
+  - clip: {fileID: 7400000, guid: e5575b62535026e4b9b3b5b1fabe5855, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 1
+    provisional: 1
+    note: PROVISIONAL arms up.
+  fall: []
+  locomotionSpeedRange: {x: 0.85, y: 1.2}
+  fastLocomotionSpeedRange: {x: 0.9, y: 1.3}
+  actionSpeedRange: {x: 0.7, y: 1.6}
+  crossfade: 0.15
+  quickCrossfade: 0.08
+  upperBodyFade: 0.25
+  autoReturnMinAmount: 0.35
+  autoReturnCooldown: 1.5
+  flourishEnabled: 1
+  flourishChance: 0.3
+  flourishMinCooldown: 9
+  flourishMaxCooldown: 18

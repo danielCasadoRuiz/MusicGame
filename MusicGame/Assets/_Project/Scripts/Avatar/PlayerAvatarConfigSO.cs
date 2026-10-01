@@ -16,8 +16,12 @@ public class PlayerAvatarConfigSO : ScriptableObject
     [Tooltip("PROVISIONAL player avatar recipe, built via AvatarFactory in both Runner and Fight.")]
     public AvatarRecipeSO avatarRecipe;
 
-    [Tooltip("Runner presentation controller (Humanoid Idle/Run). Never the combat controller.")]
+    [Tooltip("Shared Runner presentation controller (RunnerHumanoid: one state family per " +
+             "RunnerAnimationRole). Never the combat controller.")]
     public RuntimeAnimatorController runnerAnimatorController;
+
+    [Tooltip("Music style → RunnerAnimationStyleSO (clips per role) used by RunnerAvatarAnimator.")]
+    public RunnerAnimationStyleLibrarySO runnerAnimationStyles;
 
     public static AvatarRecipeSO ResolveRecipe(AppConfigSO appConfig) =>
         appConfig != null && appConfig.playerAvatar != null ? appConfig.playerAvatar.avatarRecipe : null;

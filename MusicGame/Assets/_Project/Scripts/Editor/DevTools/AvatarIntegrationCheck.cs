@@ -134,15 +134,16 @@ public static class AvatarIntegrationCheck
         string rs = VisualSummary(anchor, out bool runnerCapsule, out var runnerAnim);
         Check("Runner: player avatar built from the shared recipe, no visible capsule",
               anchor.childCount == 1 && !runnerCapsule && runnerAnim != null && runnerAnim.isHuman, rs);
-        Check("Runner: uses RunnerPlayer.controller (not the combat controller)",
-              runnerAnim != null && runnerAnim.runtimeAnimatorController == appConfig.playerAvatar.runnerAnimatorController && !runnerAnim.applyRootMotion,
+        Check("Runner: uses the shared RunnerHumanoid controller via its own override (not the combat controller)",
+              runnerAnim != null && runnerAnim.runtimeAnimatorController is AnimatorOverrideController aoc &&
+              aoc.runtimeAnimatorController == appConfig.playerAvatar.runnerAnimatorController && !runnerAnim.applyRootMotion,
               runnerAnim?.runtimeAnimatorController?.name);
         Check("Runner: VisualRenderers exposes the avatar", pc.VisualRenderers.Length > 0 && pc.VisualRenderers.All(r => r != null && r.transform.IsChildOf(anchor)));
-        await WaitUntil(() => runnerAnim.GetCurrentAnimatorStateInfo(0).IsName("Idle"), 2f);
-        Check("Runner: Idle before running", runnerAnim.GetCurrentAnimatorStateInfo(0).IsName("Idle"));
+        await WaitUntil(() => runnerAnim.GetCurrentAnimatorStateInfo(0).IsName("Idle_0"), 2f);
+        Check("Runner: Idle before running", runnerAnim.GetCurrentAnimatorStateInfo(0).IsName("Idle_0"));
         pc.StartRunning();
-        bool running = await WaitUntil(() => runnerAnim.GetCurrentAnimatorStateInfo(0).IsName("Run") && !runnerAnim.IsInTransition(0), 3f);
-        Check("Runner: Run state once running", running);
+        bool running = await WaitUntil(() => runnerAnim.GetCurrentAnimatorStateInfo(0).IsName("Locomotion_0") && !runnerAnim.IsInTransition(0), 3f);
+        Check("Runner: Locomotion state once running", running);
         await Task.Delay(300);
         float runFeet = FootY(runnerAnim);
         Check("Runner: feet near the root (ground)", runFeet > -0.15f && runFeet < 0.25f, $"lowest foot y {runFeet:F2}");

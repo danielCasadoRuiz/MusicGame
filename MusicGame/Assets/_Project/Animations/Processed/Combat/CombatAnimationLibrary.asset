@@ -400,6 +400,31 @@ MonoBehaviour:
     notes: 'Reviewed 2026-10-01 (frame-by-frame window render). Spinning back roundhouse:
       turns away, chambers, kicks (~7.8 s, 9 m/s foot peak). Ends facing ~away from
       the start direction.'
+  - name: Fight_RoundHouseKick_mixamo__RunnerSpin360
+    clip: {fileID: 7400000, guid: 8df8db4e744776a4babd0a6aaed2d76a, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 98b5f240809bac74983daeaf84c99f33, type: 2}
+    category: 11
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/RoundHouseKick_mixamo.fbx
+    sourceTake: clip
+    duration: 0.916667
+    frameRate: 24
+    rootTravel: {x: -1.1406868, y: 0.3172195, z: 0.72585285}
+    rootYaw: -382.40692
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (Left Shoulder Front-Back 2,94)
+    segmentOf: Fight_RoundHouseKick_mixamo
+    segmentStart: 6.7
+    segmentEnd: 7.62
+    keepFacing: 0
+    review: 1
+    notes: "Runner segment (RunnerClipAnalysis 2026-10-01). Net \u2248 -360\xB0 spin
+      (ends facing its start) with a kick."
   - name: Fight_ShadowBoxing_mixamo
     clip: {fileID: 7400000, guid: 449042a57081a1945a0ff4b268e19d0e, type: 2}
     inPlaceClip: {fileID: 7400000, guid: 08cb01489b5705840b10cd9965cea45d, type: 2}
@@ -760,6 +785,30 @@ MonoBehaviour:
     notes: 'Reviewed 2026-09-30 (17 phases). 25 s martial-arts kata: low horse stance,
       crouches, open-hand strikes and blocks. Clean retarget, feet grounded. A form,
       not single attacks: sub-clip strikes/blocks from it.'
+  - name: MartialArts_MartialArtsKata_MIXAMO_769__RunnerKataStrikes
+    clip: {fileID: 7400000, guid: d15aed9abeebd6e4aa66c2a72319cfbb, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 37fd4279021699f4b9c663ebfafd793b, type: 2}
+    category: 11
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 6 Free Martial Arts Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/MartialArts/MartialArtsKata_MIXAMO_769.fbx
+    sourceTake: clip
+    duration: 2.000001
+    frameRate: 30
+    rootTravel: {x: 0.11612499, y: -0.0306986, z: 0.1403502}
+    rootYaw: -49.872173
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Middle.Spread 2,43)
+    segmentOf: MartialArts_MartialArtsKata_MIXAMO_769
+    segmentStart: 11.3
+    segmentEnd: 13.3
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Sharp kata strikes.
   - name: MartialArts_Samurai_DrawSword_MIXAMO_769
     clip: {fileID: 7400000, guid: d1d2bf5191e697f4286f214f9182e13d, type: 2}
     inPlaceClip: {fileID: 7400000, guid: 5743555d1a83c0b41adf3c642b6eae10, type: 2}
@@ -813,6 +862,30 @@ MonoBehaviour:
     notes: Reviewed 2026-09-30 (21 phases). 32 s slow tai chi form, very clean. Different
       skeleton naming (Unity auto-mapped). Not an attack; usable as a calm 'focus/charge'
       special or ambient idle.
+  - name: MartialArts_thaichitake_12_DEFAULT_QUP__RunnerTaiChiRaise
+    clip: {fileID: 7400000, guid: 6d65db710c2195e4986297ada9ee3182, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 96f3a2db076115c418ce8ee7c80b5b3a, type: 2}
+    category: 11
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 6 Free Martial Arts Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/MartialArts/thaichitake-12_DEFAULT_QUP.fbx
+    sourceTake: clip
+    duration: 5
+    frameRate: 100
+    rootTravel: {x: -0.0021811198, y: 0.007214461, z: 0.0034209846}
+    rootYaw: 0.8585207
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 2,40)
+    segmentOf: MartialArts_thaichitake_12_DEFAULT_QUP
+    segmentStart: 4.5
+    segmentEnd: 9.5
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Slow tai chi arm raise.
   - name: EricJacobus_20210714_s001_teaching_Guestures_tk01_ERJA_mvn001
     clip: {fileID: 7400000, guid: e4f9359e7a651ef4e858d35761f6ef55, type: 2}
     inPlaceClip: {fileID: 7400000, guid: 7fea4c11e6b08644989559d842704963, type: 2}
@@ -838,6 +911,31 @@ MonoBehaviour:
     keepFacing: 0
     review: 0
     notes: 
+  - name: EricJacobus_20210714_s001_teaching_Guestures_tk01_ERJA_mvn001__RunnerPresentGesture
+    clip: {fileID: 7400000, guid: 5904fcb481fe3e640a7980268eeea91d, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 8887d1d561bcb0944bb6f9c14cd37125, type: 2}
+    category: 11
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s001_teaching_Guestures_tk01_ERJA-mvn001.fbx
+    sourceTake: 20210714_s001_teaching_Guestures_tk01_ERJA-mvn001
+    duration: 3.0000038
+    frameRate: 120
+    rootTravel: {x: -0.26551777, y: 0.012899154, z: -0.013105313}
+    rootYaw: 6.6138916
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: EricJacobus_20210714_s001_teaching_Guestures_tk01_ERJA_mvn001
+    segmentStart: 38.6
+    segmentEnd: 41.6
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Open presenting arm gesture.
   - name: EricJacobus_20210714_s002_crossStage_Talk_tk01_ERJA_mvn222
     clip: {fileID: 7400000, guid: b187400851502034296afb1e7968f60b, type: 2}
     inPlaceClip: {fileID: 7400000, guid: d16d53c1f415aa148a7fc79b9a46fc4f, type: 2}
@@ -890,6 +988,57 @@ MonoBehaviour:
     keepFacing: 0
     review: 0
     notes: 
+  - name: EricJacobus_20210714_s003_fingerWave_atAudience_tk01_ERJA_mvn002__RunnerWaveCrowd
+    clip: {fileID: 7400000, guid: 165f958d0bdf46942b0e9b58fa55009a, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 5f796d1a608fdce47a90f9bbf045704b, type: 2}
+    category: 11
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s003_fingerWave_atAudience_tk01_ERJA-mvn002.fbx
+    sourceTake: 20210714_s003_fingerWave_atAudience_tk01_ERJA-mvn002
+    duration: 3.000001
+    frameRate: 120
+    rootTravel: {x: -0.14267777, y: 0.011743921, z: 0.065691024}
+    rootYaw: 9.623075
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: EricJacobus_20210714_s003_fingerWave_atAudience_tk01_ERJA_mvn002
+    segmentStart: 14.8
+    segmentEnd: 17.8
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Hands up waving at the
+      audience.
+  - name: EricJacobus_20210714_s003_fingerWave_atAudience_tk01_ERJA_mvn002__RunnerArmsUp
+    clip: {fileID: 7400000, guid: 1631a65506a5e9e49a3d8489d6795e3c, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: e5575b62535026e4b9b3b5b1fabe5855, type: 2}
+    category: 11
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s003_fingerWave_atAudience_tk01_ERJA-mvn002.fbx
+    sourceTake: 20210714_s003_fingerWave_atAudience_tk01_ERJA-mvn002
+    duration: 3.0000038
+    frameRate: 120
+    rootTravel: {x: -0.07074686, y: 0.015838882, z: 0.123134844}
+    rootYaw: -64.7002
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: EricJacobus_20210714_s003_fingerWave_atAudience_tk01_ERJA_mvn002
+    segmentStart: 54.6
+    segmentEnd: 57.6
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Both arms raised high.
   - name: EricJacobus_20210714_s004_walk_assaultRiffle_tk01_ERJA_mvn225
     clip: {fileID: 7400000, guid: 2460969a6f30c514fbb6260510d1f458, type: 2}
     inPlaceClip: {fileID: 7400000, guid: cec92ccb4f52bc945bb809eda544f073, type: 2}
@@ -992,6 +1141,32 @@ MonoBehaviour:
     notes: 'Reviewed 2026-09-30 (8 phases). REJECTED: running with both arms holding
       an (invisible) assault rifle - only meaningful with the prop. Feet slightly
       off the floor in several phases (clip level calibrated on its lowest frame).'
+  - name: EricJacobus_20210714_s007_runForward_assultRiffle_tk01_ERJA_mvn228__RunnerRifleRunLoop
+    clip: {fileID: 7400000, guid: 347244d83a9ca56469b8dae0508b82c6, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: e68085d1f13c68149ad1adadfbff0b0d, type: 2}
+    category: 11
+    categoryReviewed: 1
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s007_runForward_assultRiffle_tk01_ERJA-mvn228.fbx
+    sourceTake: 20210714_s007_runForward_assultRiffle_tk01_ERJA-mvn228
+    duration: 1.9000003
+    frameRate: 120
+    rootTravel: {x: -3.8428574, y: 0.025617067, z: 5.43255}
+    rootYaw: -7.0644226
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: EricJacobus_20210714_s007_runForward_assultRiffle_tk01_ERJA_mvn228
+    segmentStart: 2.2
+    segmentEnd: 4.1
+    keepFacing: 1
+    review: 1
+    notes: "Runner segment (RunnerClipAnalysis 2026-10-01). Straight stretch (yaw
+      \xB18\xB0), 3 cycles of ~0.63 s; rigid rifle-carry arms."
   - name: EricJacobus_20210714_s007_runForward_assultRiffle_tk02_ERJA_mvn229
     clip: {fileID: 7400000, guid: 00af6b5f17118d24d8839e6c7233b118, type: 2}
     inPlaceClip: {fileID: 7400000, guid: 07c24b4f85d09fe4391b9f53a706018d, type: 2}
@@ -1042,6 +1217,32 @@ MonoBehaviour:
     keepFacing: 0
     review: 0
     notes: 
+  - name: EricJacobus_20210714_s008_sprintForward_assultRiffle_tk01_ERJA_mvn230__RunnerRifleSprintLoop
+    clip: {fileID: 7400000, guid: 7e2f767bad5f0e4489fd40d7894849eb, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 96da16d95ee816b42a2650601e03bb13, type: 2}
+    category: 11
+    categoryReviewed: 1
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s008_sprintForward_assultRiffle_tk01_ERJA-mvn230.fbx
+    sourceTake: 20210714_s008_sprintForward_assultRiffle_tk01_ERJA-mvn230
+    duration: 1.5000002
+    frameRate: 120
+    rootTravel: {x: -4.9766684, y: 0.007776117, z: 6.0429277}
+    rootYaw: -8.1766205
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: EricJacobus_20210714_s008_sprintForward_assultRiffle_tk01_ERJA_mvn230
+    segmentStart: 2.6
+    segmentEnd: 4.1
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Straight sprint stretch,
+      3 cycles of ~0.5 s; rifle-carry arms.
   - name: EricJacobus_20210714_s009_runToSprint_swordCarry_tk01_ERJA_mvn231
     clip: {fileID: 7400000, guid: a7c0a5983047ad24cb4ef7dc95609ba8, type: 2}
     inPlaceClip: {fileID: 7400000, guid: d75d5f605bb91574281f6e7cf770d864, type: 2}
@@ -1092,6 +1293,58 @@ MonoBehaviour:
     keepFacing: 0
     review: 0
     notes: 
+  - name: EricJacobus_20210714_s010_runJump_overObstacle_tk01_ERJA_mvn232__RunnerJump
+    clip: {fileID: 7400000, guid: 366017c1b41aa854ebd2fb1acd30407b, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 77189b49a86b39b439e869facc837280, type: 2}
+    category: 11
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s010_runJump_overObstacle_tk01_ERJA-mvn232.fbx
+    sourceTake: 20210714_s010_runJump_overObstacle_tk01_ERJA-mvn232
+    duration: 0.9000001
+    frameRate: 120
+    rootTravel: {x: -0.22223482, y: 0.14985329, z: 2.4376338}
+    rootYaw: -6.1116943
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: EricJacobus_20210714_s010_runJump_overObstacle_tk01_ERJA_mvn232
+    segmentStart: 3.55
+    segmentEnd: 4.45
+    keepFacing: 1
+    review: 1
+    notes: "Runner segment (RunnerClipAnalysis 2026-10-01). Hurdle take-off \u2192
+      apex (4.1) \u2192 touchdown (4.5)."
+  - name: EricJacobus_20210714_s010_runJump_overObstacle_tk01_ERJA_mvn232__RunnerLand
+    clip: {fileID: 7400000, guid: ec53ccb0e4b226249a31b061e9c05749, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 4289f7f39fcf403408c39f68ba74ea7d, type: 2}
+    category: 11
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Motion Library - 10 free motion assets from Eric Jacobus (God
+      of War)
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s010_runJump_overObstacle_tk01_ERJA-mvn232.fbx
+    sourceTake: 20210714_s010_runJump_overObstacle_tk01_ERJA-mvn232
+    duration: 0.5500002
+    frameRate: 120
+    rootTravel: {x: 0.058933932, y: -0.14318778, z: 1.5767884}
+    rootYaw: -20.806763
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: EricJacobus_20210714_s010_runJump_overObstacle_tk01_ERJA_mvn232
+    segmentStart: 4.4
+    segmentEnd: 4.95
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Touchdown and running
+      recovery after the hurdle.
   - name: EricJacobus_20210714_s010_runJump_overObstacle_tk02_ERJA_mvn233
     clip: {fileID: 7400000, guid: ed93f628386c20844943bd120bfda7ac, type: 2}
     inPlaceClip: {fileID: 7400000, guid: 034718d0381093c42beff608e6a601c0, type: 2}
@@ -1503,6 +1756,102 @@ MonoBehaviour:
     review: 1
     notes: "Reviewed 2026-10-01 (window renders). Lying on the back (between the
       fall and the get-up) \u2014 Downed loop."
+  - name: RunnerJump
+    sourceEntry: EricJacobus_20210714_s010_runJump_overObstacle_tk01_ERJA_mvn232
+    start: 3.55
+    end: 4.45
+    category: 11
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: "Runner segment (RunnerClipAnalysis 2026-10-01). Hurdle take-off \u2192
+      apex (4.1) \u2192 touchdown (4.5)."
+  - name: RunnerLand
+    sourceEntry: EricJacobus_20210714_s010_runJump_overObstacle_tk01_ERJA_mvn232
+    start: 4.4
+    end: 4.95
+    category: 11
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Touchdown and running
+      recovery after the hurdle.
+  - name: RunnerRifleRunLoop
+    sourceEntry: EricJacobus_20210714_s007_runForward_assultRiffle_tk01_ERJA_mvn228
+    start: 2.2
+    end: 4.1
+    category: 11
+    loop: 1
+    keepFacing: 1
+    review: 1
+    notes: "Runner segment (RunnerClipAnalysis 2026-10-01). Straight stretch (yaw
+      \xB18\xB0), 3 cycles of ~0.63 s; rigid rifle-carry arms."
+  - name: RunnerRifleSprintLoop
+    sourceEntry: EricJacobus_20210714_s008_sprintForward_assultRiffle_tk01_ERJA_mvn230
+    start: 2.6
+    end: 4.1
+    category: 11
+    loop: 1
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Straight sprint stretch,
+      3 cycles of ~0.5 s; rifle-carry arms.
+  - name: RunnerSpin360
+    sourceEntry: Fight_RoundHouseKick_mixamo
+    start: 6.7
+    end: 7.62
+    category: 11
+    loop: 0
+    keepFacing: 0
+    review: 1
+    notes: "Runner segment (RunnerClipAnalysis 2026-10-01). Net \u2248 -360\xB0 spin
+      (ends facing its start) with a kick."
+  - name: RunnerWaveCrowd
+    sourceEntry: EricJacobus_20210714_s003_fingerWave_atAudience_tk01_ERJA_mvn002
+    start: 14.8
+    end: 17.8
+    category: 11
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Hands up waving at the
+      audience.
+  - name: RunnerArmsUp
+    sourceEntry: EricJacobus_20210714_s003_fingerWave_atAudience_tk01_ERJA_mvn002
+    start: 54.6
+    end: 57.6
+    category: 11
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Both arms raised high.
+  - name: RunnerPresentGesture
+    sourceEntry: EricJacobus_20210714_s001_teaching_Guestures_tk01_ERJA_mvn001
+    start: 38.6
+    end: 41.6
+    category: 11
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Open presenting arm gesture.
+  - name: RunnerTaiChiRaise
+    sourceEntry: MartialArts_thaichitake_12_DEFAULT_QUP
+    start: 4.5
+    end: 9.5
+    category: 11
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Slow tai chi arm raise.
+  - name: RunnerKataStrikes
+    sourceEntry: MartialArts_MartialArtsKata_MIXAMO_769
+    start: 11.3
+    end: 13.3
+    category: 11
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Sharp kata strikes.
   roles:
   - role: 0
     entryName: Fight_Boxing_mixamo__GuardIdle
@@ -1612,14 +1961,17 @@ MonoBehaviour:
     AttackPunch, 20,00 s, loop False, RootMotion (travel 1,33 m, yaw -67), fingers
     captured/Preserve, trimmed 1, facing +13,6 deg, level -0,002; WARN muscle beyond
     limits (RightHand.Ring.Spread 4,08)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/RoundHouseKick_mixamo.fbx:
-    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    1 take(s), 2 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_RoundHouseKick_mixamo:
     AttackKick, 11,42 s, loop False, RootMotion (travel 3,10 m, yaw -383), fingers
     captured/Preserve, trimmed 1, facing +140,5 deg, level -0,002; WARN muscle beyond
     limits (RightHand.Middle.Spread 4,45)\n   Fight_RoundHouseKick_mixamo__SpinningRoundhouse:
     AttackKick, 1,50 s, loop False, RootMotion (travel 1,87 m, yaw -493), fingers
     captured/Preserve, trimmed 0, facing +90,7 deg, level -0,016; WARN muscle beyond
-    limits (RightHand.Middle.Spread 4,45)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/ShadowBoxing_mixamo.fbx:
+    limits (RightHand.Middle.Spread 4,45)\n   Fight_RoundHouseKick_mixamo__RunnerSpin360:
+    Movement, 0,92 s, loop False, RootMotion (travel 1,35 m, yaw -382), fingers captured/Preserve,
+    trimmed 0, facing +136,7 deg, level -0,026; WARN muscle beyond limits (Left Shoulder
+    Front-Back 2,94)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/ShadowBoxing_mixamo.fbx:
     1 take(s), 6 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_ShadowBoxing_mixamo:
     AttackPunch, 31,04 s, loop False, RootMotion (travel 1,65 m, yaw -106), fingers
@@ -1675,35 +2027,47 @@ MonoBehaviour:
     trimmed 1, facing -43,4 deg, level -0,013; WARN pose pop(s) at 10,03s, 10,07s,
     16,90s, 19,47s, 19,67s; muscle beyond limits (LeftHand.Middle.Spread 2,72)\nIMPORTED
     Assets/_Project/Animations/Source/Rokoko/MartialArts/MartialArtsKata_MIXAMO_769.fbx:
-    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   MartialArts_MartialArtsKata_MIXAMO_769:
     AttackOther, 25,33 s, loop False, InPlace (travel 0,02 m, yaw -3), fingers captured/Preserve,
     trimmed 1, facing -35,2 deg, level -0,002; WARN muscle beyond limits (LeftHand.Middle.Spread
-    2,58)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/MartialArts/Samurai_DrawSword_MIXAMO_769.fbx:
+    2,58)\n   MartialArts_MartialArtsKata_MIXAMO_769__RunnerKataStrikes: Movement,
+    2,00 s, loop False, RootMotion (travel 0,18 m, yaw -50), fingers captured/Preserve,
+    trimmed 0, facing -2,9 deg, level -0,007; WARN muscle beyond limits (LeftHand.Middle.Spread
+    2,43)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/MartialArts/Samurai_DrawSword_MIXAMO_769.fbx:
     1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   MartialArts_Samurai_DrawSword_MIXAMO_769:
     AttackOther, 34,30 s, loop False, InPlace (travel 0,04 m, yaw -12), fingers captured/Preserve,
     trimmed 1, facing -35,4 deg, level +0,000; WARN pose pop(s) at 3,70s, 4,20s,
     4,23s, 5,80s, 5,83s...; muscle beyond limits (RightHand.Middle.Spread 2,53)\nIMPORTED
     Assets/_Project/Animations/Source/Rokoko/MartialArts/thaichitake-12_DEFAULT_QUP.fbx:
-    1 take(s), 0 segment(s); Mixamo names not found (Spine, LeftUpperLeg, LeftLowerLeg,
+    1 take(s), 1 segment(s); Mixamo names not found (Spine, LeftUpperLeg, LeftLowerLeg,
     RightUpperLeg, RightLowerLeg) \u2014 kept Unity auto-mapping (52 bones); source
     T-pose enforced (largest correction 0,1 deg at LeftLowerLeg)\n   MartialArts_thaichitake_12_DEFAULT_QUP:
     Special, 32,12 s, loop False, RootMotion (travel 0,61 m, yaw +2), fingers captured/Preserve,
     trimmed 1, facing -0,9 deg, level +0,000; WARN muscle beyond limits (RightHand.Ring.Spread
+    2,40)\n   MartialArts_thaichitake_12_DEFAULT_QUP__RunnerTaiChiRaise: Movement,
+    5,00 s, loop False, InPlace (travel 0,00 m, yaw +1), fingers captured/Preserve,
+    trimmed 0, facing -0,7 deg, level +0,001; WARN muscle beyond limits (RightHand.Ring.Spread
     2,40)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s001_teaching_Guestures_tk01_ERJA-mvn001.fbx:
-    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    1 take(s), 1 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s001_teaching_Guestures_tk01_ERJA_mvn001:
     Unknown (auto), 75,99 s, loop False, InPlace (travel 0,03 m, yaw -38), fingers
-    static/RelaxedRestHand, trimmed 1, facing +15,5 deg, level -0,001\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s002_crossStage_Talk_tk01_ERJA-mvn222.fbx:
+    static/RelaxedRestHand, trimmed 1, facing +15,5 deg, level -0,001\n   EricJacobus_20210714_s001_teaching_Guestures_tk01_ERJA_mvn001__RunnerPresentGesture:
+    Movement, 3,00 s, loop False, InPlace (travel 0,27 m, yaw +7), fingers static/RelaxedRestHand,
+    trimmed 0, facing +8,7 deg, level -0,001\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s002_crossStage_Talk_tk01_ERJA-mvn222.fbx:
     1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s002_crossStage_Talk_tk01_ERJA_mvn222:
     Unknown, 69,90 s, loop False, RootMotion (travel 1,09 m, yaw +13), fingers static/RelaxedRestHand,
     trimmed 1, facing -71,8 deg, level -0,002\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s003_fingerWave_atAudience_tk01_ERJA-mvn002.fbx:
-    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    1 take(s), 2 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s003_fingerWave_atAudience_tk01_ERJA_mvn002:
     Unknown (auto), 85,47 s, loop False, InPlace (travel 0,07 m, yaw +9), fingers
-    static/RelaxedRestHand, trimmed 1, facing +2,3 deg, level -0,001\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s004_walk_assaultRiffle_tk01_ERJA-mvn225.fbx:
+    static/RelaxedRestHand, trimmed 1, facing +2,3 deg, level -0,001\n   EricJacobus_20210714_s003_fingerWave_atAudience_tk01_ERJA_mvn002__RunnerWaveCrowd:
+    Movement, 3,00 s, loop False, InPlace (travel 0,16 m, yaw +10), fingers static/RelaxedRestHand,
+    trimmed 0, facing -21,1 deg, level -0,002\n   EricJacobus_20210714_s003_fingerWave_atAudience_tk01_ERJA_mvn002__RunnerArmsUp:
+    Movement, 3,00 s, loop False, RootMotion (travel 0,14 m, yaw -65), fingers static/RelaxedRestHand,
+    trimmed 0, facing +17,0 deg, level +0,000\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s004_walk_assaultRiffle_tk01_ERJA-mvn225.fbx:
     1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s004_walk_assaultRiffle_tk01_ERJA_mvn225:
     Movement (auto), 24,28 s, loop True, RootMotion (travel 8,63 m, yaw +157), fingers
@@ -1717,30 +2081,37 @@ MonoBehaviour:
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s006_runBackward_assultRiffle2_tk01_ERJA_mvn226:
     Movement (auto), 13,53 s, loop True, RootMotion (travel 5,73 m, yaw -70), fingers
     static/RelaxedRestHand, trimmed 1, facing +42,0 deg, level -0,009\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s007_runForward_assultRiffle_tk01_ERJA-mvn228.fbx:
-    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    1 take(s), 1 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s007_runForward_assultRiffle_tk01_ERJA_mvn228:
     Movement, 9,02 s, loop True, RootMotion (travel 10,27 m, yaw +138), fingers static/RelaxedRestHand,
-    trimmed 1, facing -142,6 deg, level -0,039\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s007_runForward_assultRiffle_tk02_ERJA-mvn229.fbx:
+    trimmed 1, facing -142,6 deg, level -0,039\n   EricJacobus_20210714_s007_runForward_assultRiffle_tk01_ERJA_mvn228__RunnerRifleRunLoop:
+    Movement, 1,90 s, loop True, RootMotion (travel 6,65 m, yaw -7), fingers static/RelaxedRestHand,
+    trimmed 0, facing -154,7 deg, level +0,027\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s007_runForward_assultRiffle_tk02_ERJA-mvn229.fbx:
     1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s007_runForward_assultRiffle_tk02_ERJA_mvn229:
     Movement (auto), 10,99 s, loop True, RootMotion (travel 6,03 m, yaw +132), fingers
     static/RelaxedRestHand, trimmed 1, facing -134,0 deg, level -0,011\nIMPORTED
     Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s008_sprintForward_assultRiffle_tk01_ERJA-mvn230.fbx:
-    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    1 take(s), 1 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s008_sprintForward_assultRiffle_tk01_ERJA_mvn230:
     Movement (auto), 12,03 s, loop False, RootMotion (travel 11,74 m, yaw +144),
-    fingers static/RelaxedRestHand, trimmed 1, facing -137,8 deg, level -0,002\nIMPORTED
-    Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s009_runToSprint_swordCarry_tk01_ERJA-mvn231.fbx:
+    fingers static/RelaxedRestHand, trimmed 1, facing -137,8 deg, level -0,002\n  
+    EricJacobus_20210714_s008_sprintForward_assultRiffle_tk01_ERJA_mvn230__RunnerRifleSprintLoop:
+    Movement, 1,50 s, loop True, RootMotion (travel 7,83 m, yaw -8), fingers static/RelaxedRestHand,
+    trimmed 0, facing -160,7 deg, level +0,036\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s009_runToSprint_swordCarry_tk01_ERJA-mvn231.fbx:
     1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s009_runToSprint_swordCarry_tk01_ERJA_mvn231:
     Movement (auto), 13,18 s, loop True, RootMotion (travel 9,61 m, yaw -207), fingers
     static/RelaxedRestHand, trimmed 1, facing -151,1 deg, level -0,006\nIMPORTED
     Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s010_runJump_overObstacle_tk01_ERJA-mvn232.fbx:
-    1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
+    1 take(s), 2 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s010_runJump_overObstacle_tk01_ERJA_mvn232:
     Movement (auto), 8,43 s, loop True, RootMotion (travel 9,93 m, yaw +129), fingers
-    static/RelaxedRestHand, trimmed 1, facing -156,1 deg, level +0,002\nIMPORTED
-    Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s010_runJump_overObstacle_tk02_ERJA-mvn233.fbx:
+    static/RelaxedRestHand, trimmed 1, facing -156,1 deg, level +0,002\n   EricJacobus_20210714_s010_runJump_overObstacle_tk01_ERJA_mvn232__RunnerJump:
+    Movement, 0,90 s, loop False, RootMotion (travel 2,45 m, yaw -6), fingers static/RelaxedRestHand,
+    trimmed 0, facing -166,0 deg, level +0,029\n   EricJacobus_20210714_s010_runJump_overObstacle_tk01_ERJA_mvn232__RunnerLand:
+    Movement, 0,55 s, loop False, RootMotion (travel 1,58 m, yaw -21), fingers static/RelaxedRestHand,
+    trimmed 0, facing +166,1 deg, level +0,002\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s010_runJump_overObstacle_tk02_ERJA-mvn233.fbx:
     1 take(s), 0 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   EricJacobus_20210714_s010_runJump_overObstacle_tk02_ERJA_mvn233:
     Movement (auto), 7,63 s, loop True, RootMotion (travel 11,35 m, yaw +4), fingers

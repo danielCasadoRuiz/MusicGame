@@ -42,6 +42,16 @@ using UnityEngine.InputSystem;
 /// fully reset forwardOffset/lateralOffset/verticalVelocity so the next frame doesn't fight its
 /// way back from stale state.
 /// </summary>
+/// <summary>Why the SYSTEM (not the player's input) is bringing the player back — see
+/// PlayerController.AutoReturnStarted.</summary>
+public enum RunnerAutoReturnKind
+{
+    /// <summary>Surge released: forwardOffset eases back to the music's canonical distance.</summary>
+    SurgeReturn,
+    /// <summary>Farewell: lateral offset glides back to the track centre.</summary>
+    Recenter,
+}
+
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private MusicRunnerCoreConfig config;
@@ -79,6 +89,18 @@ public class PlayerController : MonoBehaviour
     public float VerticalVelocity   => _verticalVelocity;
     public bool  IsGrounded         => _cc != null && _cc.isGrounded;
     public float MaxForwardDistance => config.maxSurge;
+
+    // ── Presentation signals (read by RunnerAvatarAnimator; never used by gameplay) ─────────
+    /// <summary>Surge input is being applied this frame (the boosted/fast state).</summary>
+    public bool IsSurging { get; private set; }
+    /// <summary>A jump impulse was applied this frame.</summary>
+    public event System.Action Jumped;
+    /// <summary>The system started returning the player (not a voluntary lane change). Args: kind,
+    /// amount (0..1 of the maximum displacement), expected duration in seconds.</summary>
+    public event System.Action<RunnerAutoReturnKind, float, float> AutoReturnStarted;
+    /// <summary>Air time of a full jump from flat ground: 2·jumpForce/|gravity|.</summary>
+    public float ExpectedJumpAirTime => config != null && config.gravity < 0f ? 2f * config.jumpForce / -config.gravity : 0.8f;
+    private bool _recenterAnnounced;
 
     /// <summary>Where the player belongs RIGHT NOW according to the music — single source of
     /// truth for "songTime/MusicDistance → longitudinal position". Nobody else should
@@ -192,6 +214,12 @@ public class PlayerController : MonoBehaviour
         // MusicClock's own manual advance (see EnterFarewellMode's own doc), so the player keeps
         // running at the base pace regardless; any surge already in flight simply eases back to 0.
 
+        // Surge released with an offset to give back → the system-driven return (presentation signal only).
+        if (IsSurging && !surging && _forwardOffset > 0.01f)
+            AutoReturnStarted?.Invoke(RunnerAutoReturnKind.SurgeReturn, _forwardOffset / Mathf.Max(0.01f, config.maxSurge),
+                                      _forwardOffset / Mathf.Max(0.01f, config.surgeDecay));
+        IsSurging = surging;
+
         _forwardOffset = surging
             ? Mathf.MoveTowards(_forwardOffset, config.maxSurge, config.surgeSpeed * Time.deltaTime)
             : Mathf.MoveTowards(_forwardOffset, 0f, config.surgeDecay * Time.deltaTime);
@@ -215,6 +243,13 @@ public class PlayerController : MonoBehaviour
             // centered) for the rest of the farewell, regardless of where they happened to be
             // standing the instant the song finished.
             _lateralVelocity = 0f;
+            if (!_recenterAnnounced)
+            {
+                _recenterAnnounced = true;
+                if (Mathf.Abs(_lateralOffset) > 0.05f)
+                    AutoReturnStarted?.Invoke(RunnerAutoReturnKind.Recenter, Mathf.Clamp01(Mathf.Abs(_lateralOffset) / Mathf.Max(0.01f, LateralLimit)),
+                                              Mathf.Abs(_lateralOffset) / Mathf.Max(0.01f, config.strafeSpeed));
+            }
             _lateralOffset = Mathf.MoveTowards(_lateralOffset, 0f, config.strafeSpeed * Time.deltaTime);
             IsAtLateralLimit = Mathf.Abs(_lateralOffset) >= LateralLimit;
             return;
@@ -283,7 +318,10 @@ public class PlayerController : MonoBehaviour
         // player simply keeps running on the flat farewell ground (see EnterFarewellMode's own doc).
 
         if (grounded && jumpPressed)
+        {
             _verticalVelocity = config.jumpForce;
+            Jumped?.Invoke();
+        }
 
         _verticalVelocity += config.gravity * Time.deltaTime;
 
@@ -384,6 +422,8 @@ public class PlayerController : MonoBehaviour
         IsAtLateralLimit     = false;
         IsBelowTrackSurface  = false;
         _farewellMode        = false;
+        _recenterAnnounced   = false;
+        IsSurging            = false;
     }
 
     private void UpdateFall()
@@ -471,7 +511,8 @@ public class PlayerController : MonoBehaviour
         instance.Root.localRotation = Quaternion.identity;
 
         var driver = gameObject.GetComponent<RunnerAvatarAnimator>() ?? gameObject.AddComponent<RunnerAvatarAnimator>();
-        driver.Bind(instance.Animator, avatarConfig.runnerAnimatorController, this);
+        var musicStyle = GameSession.Instance != null ? GameSession.Instance.DetectedMusicStyleId : MusicStyleId.Unknown;
+        driver.Bind(instance.Animator, avatarConfig.runnerAnimatorController, this, avatarConfig.runnerAnimationStyles, musicStyle);
         if (avatarConfig.runnerAnimatorController == null)
             Debug.LogWarning("[PlayerController] PlayerAvatarConfig has no runnerAnimatorController — the avatar will not animate.");
 
