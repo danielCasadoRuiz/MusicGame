@@ -12,6 +12,13 @@ using UnityEngine;
 /// whose blendshape name doesn't exist on that particular mesh is simply skipped (index -1, recorded
 /// as "not present") — never a crash, never a silent runtime search on every Apply call.
 ///
+/// GENERIC PROPAGATION: every registered renderer is probed for ALL canonical channel names
+/// (Gender, MaleSlim/Heavy/Muscle, FemaleSlim/Heavy/Muscle — MorphChannel's names, never renamed),
+/// not only the ones its item declares — so any garment/hair exported with matching shape keys
+/// follows the body automatically; a renderer missing a shape simply never moves that channel.
+/// A renderer registered AFTER values were applied (a wearable attached later) receives the
+/// current values immediately — no rebuild needed.
+///
 /// Only ever touches a renderer's OWN cloned mesh (see AvatarFactory's own doc on why AvatarFactory
 /// clones sharedMesh before handing a renderer to this class) — this class itself has no opinion about
 /// sharing; it just sets blend shape weights on whatever mesh the renderer currently has.
@@ -26,30 +33,58 @@ public class AvatarBodyMorphController
 
     private readonly List<RegisteredRenderer> _renderers = new();
     private readonly List<MorphWeight> _scratch = new();
+    private static readonly MorphChannel[] CanonicalChannels = (MorphChannel[])System.Enum.GetValues(typeof(MorphChannel));
+    private bool _hasValues;
+    private BodyMorphValues _current;
 
-    /// <summary>Caches blendshape indices for `channels` on `renderer` — call once per renderer right
-    /// after it's assigned a cloned (never shared) mesh. `itemLabel` is purely for warning text.</summary>
-    public void RegisterRenderer(SkinnedMeshRenderer renderer, IReadOnlyList<MorphChannel> channels, string itemLabel)
+    /// <summary>Last values applied (what a newly registered renderer is brought up to).</summary>
+    public BodyMorphValues CurrentValues => _current;
+
+    /// <summary>True when `renderer`'s mesh exposes at least one canonical morph blendshape.</summary>
+    public static bool HasAnyCanonicalBlendShape(SkinnedMeshRenderer renderer)
     {
-        if (renderer == null || renderer.sharedMesh == null) return;
+        var mesh = renderer != null ? renderer.sharedMesh : null;
+        if (mesh == null || mesh.blendShapeCount == 0) return false;
+        foreach (var channel in CanonicalChannels)
+            if (mesh.GetBlendShapeIndex(channel.ToString()) >= 0) return true;
+        return false;
+    }
+
+    /// <summary>Caches blendshape indices on `renderer` for every canonical channel its mesh exposes —
+    /// call once per renderer right after it's assigned a cloned (never shared) mesh. `declaredChannels`
+    /// (optional, e.g. a wearable variant's supportedMorphChannels) only adds a warning when a DECLARED
+    /// channel is missing; undeclared missing channels are ignored silently. If values were already
+    /// applied, the renderer is brought up to them immediately. Returns the number of channels found.</summary>
+    public int RegisterRenderer(SkinnedMeshRenderer renderer, IReadOnlyList<MorphChannel> declaredChannels, string itemLabel)
+    {
+        if (renderer == null || renderer.sharedMesh == null) return 0;
+        _renderers.RemoveAll(r => r.Renderer == renderer); // re-registration replaces, never duplicates
 
         var map = new Dictionary<MorphChannel, int>();
         var mesh = renderer.sharedMesh;
 
-        foreach (var channel in channels)
+        foreach (var channel in CanonicalChannels)
         {
             int index = mesh.GetBlendShapeIndex(channel.ToString());
-            if (index < 0)
-            {
+            if (index >= 0) { map[channel] = index; continue; }
+            if (declaredChannels != null && Contains(declaredChannels, channel))
                 Debug.LogWarning($"[AvatarBodyMorphController] '{itemLabel}' declares morph channel " +
                                   $"'{channel}' but its mesh '{mesh.name}' has no matching blendshape " +
                                   $"(expected name '{channel}') — that channel will simply never move on this renderer.");
-                continue;
-            }
-            map[channel] = index;
         }
 
-        _renderers.Add(new RegisteredRenderer { Renderer = renderer, ChannelToBlendShapeIndex = map });
+        var registered = new RegisteredRenderer { Renderer = renderer, ChannelToBlendShapeIndex = map };
+        _renderers.Add(registered);
+        if (_hasValues) ApplyTo(registered);
+        return map.Count;
+    }
+
+    public int RegisterRenderer(SkinnedMeshRenderer renderer, string itemLabel) => RegisterRenderer(renderer, null, itemLabel);
+
+    private static bool Contains(IReadOnlyList<MorphChannel> list, MorphChannel channel)
+    {
+        for (int i = 0; i < list.Count; i++) if (list[i] == channel) return true;
+        return false;
     }
 
     /// <summary>Drives every registered renderer's cached blendshape indices from `values` — renderers
@@ -57,17 +92,26 @@ public class AvatarBodyMorphController
     /// own doc on why that's already resolved, not re-checked per Apply call).</summary>
     public void Apply(BodyMorphValues values)
     {
+        _current = values;
+        _hasValues = true;
         values.GetMorphWeights(_scratch);
+        foreach (var registered in _renderers) ApplyWeights(registered);
+    }
 
-        foreach (var registered in _renderers)
+    private void ApplyTo(RegisteredRenderer registered)
+    {
+        _current.GetMorphWeights(_scratch);
+        ApplyWeights(registered);
+    }
+
+    // The SAME weights for every renderer (body, hair, garments) — computed once per Apply.
+    private void ApplyWeights(RegisteredRenderer registered)
+    {
+        if (registered.Renderer == null) return;
+        foreach (var morphWeight in _scratch)
         {
-            if (registered.Renderer == null) continue;
-
-            foreach (var morphWeight in _scratch)
-            {
-                if (!registered.ChannelToBlendShapeIndex.TryGetValue(morphWeight.Channel, out int index)) continue;
-                registered.Renderer.SetBlendShapeWeight(index, Mathf.Clamp01(morphWeight.Weight01) * 100f);
-            }
+            if (!registered.ChannelToBlendShapeIndex.TryGetValue(morphWeight.Channel, out int index)) continue;
+            registered.Renderer.SetBlendShapeWeight(index, Mathf.Clamp01(morphWeight.Weight01) * 100f);
         }
     }
 }

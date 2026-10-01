@@ -195,6 +195,16 @@ public class FighterActor : MonoBehaviour
         UsedFallbackCapsule = false;
     }
 
+    /// <summary>Shows/hides the renderers of whatever is under VisualRoot (the placeholder capsule /
+    /// fighterPrefab before an avatar replaces it). Renderers only — colliders, hurtboxes and every
+    /// gameplay component on the actor are untouched. Used to keep the capsule hidden while a real
+    /// avatar is building, and to show it again only as an explicit failure fallback.</summary>
+    public void SetPlaceholderVisible(bool visible)
+    {
+        if (VisualRoot == null) return;
+        foreach (var r in VisualRoot.GetComponentsInChildren<Renderer>(true)) r.enabled = visible;
+    }
+
     public void SetOpponent(FighterActor opponent) => _opponent = opponent;
     public void SetFacingProvider(IFightFacingProvider provider) => _facingProvider = provider;
     public void SetMoveController(FighterMoveController controller) => MoveController = controller;

@@ -112,6 +112,10 @@ public class PlayerController : MonoBehaviour
     // (capsule today, a real avatar later) is exposed here automatically, no GameObject.Find.
     public Renderer[] VisualRenderers { get; private set; } = System.Array.Empty<Renderer>();
 
+    /// <summary>Raised when the visual is swapped after Awake (the async player avatar finished
+    /// building) so readers of VisualRenderers (CameraFollow) can re-apply their state.</summary>
+    public event System.Action VisualChanged;
+
     public void StartRunning() => _running = true;
     public void StopRunning()  => _running = false;
 
@@ -410,7 +414,14 @@ public class PlayerController : MonoBehaviour
     // "no PlayerController duplicat dins de cada avatar"). No theme content authored yet (see
     // PlayerStyle_Base.asset) falls straight through to the exact same hardcoded placeholder
     // capsule this already used — zero behavior change today.
+    //
+    // REAL AVATAR: when AppConfig.playerAvatar has a recipe (the ONE player identity, shared with
+    // Fight — see PlayerAvatarConfigSO), it is built via AvatarFactory under VisualAnchor and replaces
+    // the placeholder, which stays hidden while the build runs and is only shown again (with an
+    // error) if the build fails. The avatar is visual only: root motion off, this class keeps
+    // driving the transform exactly as before; RunnerAvatarAnimator plays Idle/Run from its state.
     private Transform _visualAnchor;
+    private AvatarInstance _avatarInstance;
 
     private void BuildVisual()
     {
@@ -425,6 +436,60 @@ public class PlayerController : MonoBehaviour
             BuildPlaceholderCapsuleVisual();
 
         VisualRenderers = GetComponentsInChildren<Renderer>(true);
+
+        var avatarConfig = Resources.Load<AppConfigSO>("AppConfig")?.playerAvatar;
+        if (avatarConfig != null && avatarConfig.avatarRecipe != null)
+        {
+            SetVisualRenderersEnabled(false);
+            // Nothing exposed while building, so CameraFollow can't re-enable the hidden placeholder.
+            VisualRenderers = System.Array.Empty<Renderer>();
+            _ = BuildPlayerAvatar(avatarConfig);
+        }
+    }
+
+    private async System.Threading.Tasks.Task BuildPlayerAvatar(PlayerAvatarConfigSO avatarConfig)
+    {
+        var placeholder = new System.Collections.Generic.List<Transform>();
+        foreach (Transform child in _visualAnchor) placeholder.Add(child);
+
+        var instance = await AvatarFactory.CreateAsync(avatarConfig.avatarRecipe.ToRuntime(), _visualAnchor);
+        if (this == null || _visualAnchor == null) { instance.Dispose(); return; } // Runner unloaded mid-build
+        if (instance.Root == null)
+        {
+            Debug.LogError($"[PlayerController] Player AvatarRecipe '{avatarConfig.avatarRecipe.name}' failed to build — showing the placeholder capsule (NOT the production visual).");
+            instance.Dispose();
+            VisualRenderers = _visualAnchor.GetComponentsInChildren<Renderer>(true);
+            SetVisualRenderersEnabled(true);
+            VisualChanged?.Invoke();
+            return;
+        }
+
+        foreach (var t in placeholder) if (t != null) Destroy(t.gameObject);
+        _avatarInstance = instance;
+        // Root = feet (CharacterController bottom), facing the path tangent like this transform.
+        instance.Root.localPosition = Vector3.zero;
+        instance.Root.localRotation = Quaternion.identity;
+
+        var driver = gameObject.GetComponent<RunnerAvatarAnimator>() ?? gameObject.AddComponent<RunnerAvatarAnimator>();
+        driver.Bind(instance.Animator, avatarConfig.runnerAnimatorController, this);
+        if (avatarConfig.runnerAnimatorController == null)
+            Debug.LogWarning("[PlayerController] PlayerAvatarConfig has no runnerAnimatorController — the avatar will not animate.");
+
+        VisualRenderers = instance.Root.GetComponentsInChildren<Renderer>(true);
+        VisualChanged?.Invoke();
+        Debug.Log($"[PlayerController] Runner player avatar '{avatarConfig.avatarRecipe.name}' built — controller " +
+                  $"'{(avatarConfig.runnerAnimatorController != null ? avatarConfig.runnerAnimatorController.name : "(none)")}'.");
+    }
+
+    private void SetVisualRenderersEnabled(bool enabled)
+    {
+        foreach (var r in VisualRenderers) if (r != null) r.enabled = enabled;
+    }
+
+    private void OnDestroy()
+    {
+        _avatarInstance?.Dispose();
+        _avatarInstance = null;
     }
 
     // The ORIGINAL, unthemed placeholder — untouched behavior, just parented under _visualAnchor

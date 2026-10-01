@@ -226,11 +226,7 @@ public static class AvatarFactory
             foreach (var smr in visualPart.skinnedRenderers)
             {
                 mapper.Remap(smr, $"Hair({hair.stableId})");
-                if (variant.supportedMorphChannels.Length > 0)
-                {
-                    CloneMeshForMutation(smr, instance);
-                    instance.MorphController.RegisterRenderer(smr, variant.supportedMorphChannels, $"Hair({hair.stableId})");
-                }
+                RegisterMorphTarget(instance, smr, variant.supportedMorphChannels, $"Hair({hair.stableId})");
             }
         }
         else
@@ -280,11 +276,7 @@ public static class AvatarFactory
             foreach (var smr in visualPart.skinnedRenderers)
             {
                 mapper.Remap(smr, itemDef.displayName);
-                if (variant.supportedMorphChannels.Length > 0)
-                {
-                    CloneMeshForMutation(smr, instance);
-                    morphController.RegisterRenderer(smr, variant.supportedMorphChannels, itemDef.displayName);
-                }
+                RegisterMorphTarget(instance, smr, variant.supportedMorphChannels, itemDef.displayName);
             }
         }
         else if (visualPart.rootBone != null)
@@ -412,6 +404,22 @@ public static class AvatarFactory
     }
 
     // ── Shared helpers ────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Makes `renderer` follow the avatar's body morphs if its mesh exposes ANY canonical shape key
+    /// (Gender/MaleSlim/…/FemaleMuscle) or declares channels: clones its mesh (never mutate a shared
+    /// one) and registers it with the instance's AvatarBodyMorphController, which applies the CURRENT
+    /// body values immediately. Used for hair and wearables at build time, and by
+    /// AvatarInstance.RegisterMorphTargets for parts attached after the build.
+    /// </summary>
+    public static bool RegisterMorphTarget(AvatarInstance instance, SkinnedMeshRenderer renderer, IReadOnlyList<MorphChannel> declaredChannels, string label)
+    {
+        if (instance?.MorphController == null || renderer == null || renderer.sharedMesh == null) return false;
+        bool declared = declaredChannels != null && declaredChannels.Count > 0;
+        if (!declared && !AvatarBodyMorphController.HasAnyCanonicalBlendShape(renderer)) return false;
+        CloneMeshForMutation(renderer, instance);
+        return instance.MorphController.RegisterRenderer(renderer, declaredChannels, label) > 0;
+    }
 
     /// <summary>Clones sharedMesh onto its own Mesh instance before any blendshape weight is ever set
     /// on it — NEVER mutate sharedMesh directly (task's own explicit requirement: two renderers using

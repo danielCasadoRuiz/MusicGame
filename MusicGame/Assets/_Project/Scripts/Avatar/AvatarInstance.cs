@@ -85,6 +85,19 @@ public class AvatarInstance
         MorphController?.Apply(values);
     }
 
+    /// <summary>For a visual part attached AFTER the build (e.g. a wearable equipped at runtime):
+    /// every SkinnedMeshRenderer under `part` exposing canonical morph shape keys starts following
+    /// this avatar's body immediately (current Gender/Weight/Muscle applied on registration).
+    /// Returns how many renderers were registered.</summary>
+    public int RegisterMorphTargets(GameObject part, string label)
+    {
+        if (_disposed || part == null) return 0;
+        int count = 0;
+        foreach (var smr in part.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            if (AvatarFactory.RegisterMorphTarget(this, smr, null, label)) count++;
+        return count;
+    }
+
     /// <summary>Puts every skeleton bone back to the prefab's rest pose (e.g. after stopping an
     /// animation). Purely a pose reset — never part of a body change.</summary>
     public void ResetToRestPose()

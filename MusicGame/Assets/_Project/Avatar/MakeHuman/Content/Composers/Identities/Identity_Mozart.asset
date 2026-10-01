@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af2073f428e7c4b4d8e9769810514001, type: 3}
+  m_Name: Identity_Mozart
+  m_EditorClassIdentifier: Assembly-CSharp::AvatarIdentitySO
+  id: composer_mozart
+  bodyMorphProfile: {fileID: 11400000, guid: 83341dff9733b684cbb7083a610cf883, type: 2}
+  face: {fileID: 11400000, guid: cedccfaa7ae18054695f48b8550c4e3f, type: 2}
+  hair: {fileID: 0}

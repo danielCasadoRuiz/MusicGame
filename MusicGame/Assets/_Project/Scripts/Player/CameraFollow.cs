@@ -268,10 +268,13 @@ public class CameraFollow : MonoBehaviour
         EventBus.Subscribe(_onProfile);
         EventBus.Subscribe(_onStart);
         EventBus.Subscribe(_onPulse);
+        // The real avatar is built asynchronously, after the visibility above was applied.
+        if (playerController != null) playerController.VisualChanged += ApplyRendererVisibility;
     }
 
     private void OnDisable()
     {
+        if (playerController != null) playerController.VisualChanged -= ApplyRendererVisibility;
         EventBus.Unsubscribe(_onProfile);
         EventBus.Unsubscribe(_onStart);
         EventBus.Unsubscribe(_onPulse);

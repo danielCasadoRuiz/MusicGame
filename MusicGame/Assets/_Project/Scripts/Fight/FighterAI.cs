@@ -164,6 +164,10 @@ public class FighterAI : MonoBehaviour
     /// ResetForRound) — task's own explicit checklist: clears current decision, execution sequence,
     /// pending combo step, reaction timer, and held movement/guard intention, so nothing from the
     /// previous round bleeds into the next.</summary>
+    /// <summary>Swaps the difficulty profile — the opponent pick is committed after the fighters
+    /// spawn (see FightSceneBootstrap.ApplySelectedOpponent).</summary>
+    public void SetProfile(AIDifficultyProfile profile) => _profile = profile;
+
     public void ResetForRound()
     {
         StopExecuting();

@@ -50,6 +50,17 @@ public class FightSceneBootstrap : MonoBehaviour
     private AvatarInstance _opponentAvatarInstance;
     private AvatarInstance _playerAvatarInstance;
 
+    // The opponent is NOT known when this scene starts in the real flow: Fight.unity loads while
+    // FightFlowState is OpponentSelection and the roulette commits GameSession.SelectedOpponentLevelConfig
+    // seconds later (and again for every new match inside this same scene). So the opponent's visual,
+    // AI profile, stats and combat profile are applied when the selection is committed (VersusIntro)
+    // — see ApplySelectedOpponent. Spawn-time application only happens when no flow is running
+    // (direct scene play / tests that pre-set GameSession).
+    private OpponentLevelConfig _appliedOpponentConfig;
+    private int _opponentBuildToken;
+    private AppConfigSO _appConfig;
+    private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
+
     // Same "Mode Scene opened directly in the Editor" allowance RunnerSceneBootstrap already has
     // — lets a developer open Fight.unity and press Play directly (with FlowConfigSO.initialState
     // temporarily set to Fight) without SceneFlowController trying to also load it, which is
@@ -65,6 +76,7 @@ public class FightSceneBootstrap : MonoBehaviour
         LogIncomingData();
 
         var appConfig = Resources.Load<AppConfigSO>("AppConfig");
+        _appConfig = appConfig;
         _arenaConfig         = appConfig != null ? appConfig.arena         : null;
         _cameraConfig        = appConfig != null ? appConfig.fightCamera   : null;
         _combatBalanceConfig = appConfig != null ? appConfig.combatBalance : null;
@@ -81,6 +93,13 @@ public class FightSceneBootstrap : MonoBehaviour
         BuildArena();
         SpawnFighters();
         SetupCamera();
+
+        _onFightFlowChanged = e =>
+        {
+            if (e.Current == FightFlowState.VersusIntro)
+                ApplySelectedOpponent(GameSession.Instance != null ? GameSession.Instance.SelectedOpponentLevelConfig : null);
+        };
+        EventBus.Subscribe(_onFightFlowChanged);
     }
 
     private void OnDestroy()
@@ -88,6 +107,7 @@ public class FightSceneBootstrap : MonoBehaviour
         if (_previousMainCamera != null)
             _previousMainCamera.enabled = true;
 
+        if (_onFightFlowChanged != null) EventBus.Unsubscribe(_onFightFlowChanged);
         _opponentAvatarInstance?.Dispose();
         _opponentAvatarInstance = null;
         _playerAvatarInstance?.Dispose();
@@ -148,11 +168,12 @@ public class FightSceneBootstrap : MonoBehaviour
         // re-resolved here (see class doc and GameSession.SelectedOpponentLevelConfig's own doc).
         // This is ALSO where the Opponent's AIDifficultyProfile comes from (task's own explicit
         // "no tornis a resoldre el rival per level" requirement) — never re-derived elsewhere.
-        var opponentLevelConfig = GameSession.Instance != null ? GameSession.Instance.SelectedOpponentLevelConfig : null;
+        // While the roulette is still running, GameSession may hold the PREVIOUS match's pick — never
+        // use it then; ApplySelectedOpponent runs when the new pick is committed (VersusIntro).
+        bool selectionPending = FightFlowController.Instance != null && FightFlowController.Instance.CurrentState == FightFlowState.OpponentSelection;
+        var opponentLevelConfig = !selectionPending && GameSession.Instance != null ? GameSession.Instance.SelectedOpponentLevelConfig : null;
         GameObject opponentPrefab = opponentLevelConfig != null ? opponentLevelConfig.fighterPrefab : null;
         AIDifficultyProfile aiProfile = opponentLevelConfig != null ? opponentLevelConfig.difficultyProfile : null;
-        if (aiProfile == null)
-            Debug.LogWarning("[FightSceneBootstrap] No AIDifficultyProfile (SelectedOpponentLevelConfig.difficultyProfile) configured — the Opponent will use flat 0.5-everywhere AI defaults this match.");
 
         _playerActor   = SpawnActor("FighterPlayer",   FighterSide.Player,   playerSpawn,   playerPrefab,   playerColor);
         _opponentActor = SpawnActor("FighterOpponent", FighterSide.Opponent, opponentSpawn, opponentPrefab, opponentColor);
@@ -168,33 +189,83 @@ public class FightSceneBootstrap : MonoBehaviour
         var playerStats = GameSession.Instance != null && GameSession.Instance.FighterStats != null
             ? GameSession.Instance.FighterStats
             : FighterStats.Default();
-        var opponentStats = opponentLevelConfig != null && opponentLevelConfig.combatStats != null
-            ? opponentLevelConfig.combatStats.Build()
-            : FighterStats.Default();
         _playerActor.SetStats(playerStats);
-        _opponentActor.SetStats(opponentStats);
+        _opponentActor.SetStats(FighterStats.Default()); // real values: ApplySelectedOpponent
 
         WireFighter(_playerActor, _opponentActor, isPlayer: true, aiProfile: null);
         WireFighter(_opponentActor, _playerActor, isPlayer: false, aiProfile: aiProfile);
 
-        ApplyCombatSetup(opponentLevelConfig);
+        ApplyPlayerCombatSetup();
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         gameObject.AddComponent<FightDebugCombatInput>().Initialize(_playerActor, _opponentActor); // TEMPORARY debug keys 1-9
 #endif
 
-        Debug.Log($"[FightSceneBootstrap] Spawned fighters — Player visual:{(_playerActor.UsedFallbackCapsule ? "capsule fallback" : "prefab")} " +
-                  $"Opponent visual:{(_opponentActor.UsedFallbackCapsule ? "capsule fallback" : "prefab")}");
-
-        // Fire-and-forget: the fallback capsule/fighterPrefab set up above is already visible this
-        // same frame, so there is never a blank Opponent while Addressables load — see
-        // TryBuildOpponentAvatar's own doc. FighterActor itself never learns this happened; it just
-        // sees ReplaceVisual called once, same as any other visual swap.
-        if (opponentLevelConfig != null && opponentLevelConfig.avatarRecipe != null)
-            _ = TryBuildAvatar(opponentLevelConfig.avatarRecipe, _opponentActor, i => _opponentAvatarInstance = i);
-        var playerRecipe = _arenaConfig != null ? _arenaConfig.playerAvatarRecipe : null;
+        // Player: the ONE shared player identity (AppConfig.playerAvatar — the same recipe the Runner
+        // builds), legacy FightArenaConfig.playerAvatarRecipe as fallback. The placeholder capsule is
+        // hidden while the avatar builds and only shown again if the build fails.
+        var playerRecipe = PlayerAvatarConfigSO.ResolveRecipe(_appConfig);
+        if (playerRecipe == null && _arenaConfig != null) playerRecipe = _arenaConfig.playerAvatarRecipe;
         if (playerRecipe != null)
-            _ = TryBuildAvatar(playerRecipe, _playerActor, i => _playerAvatarInstance = i);
+        {
+            _playerActor.SetPlaceholderVisible(false);
+            _ = TryBuildAvatar(playerRecipe, _playerActor, "Player", i => { _playerAvatarInstance?.Dispose(); _playerAvatarInstance = i; return true; });
+        }
+
+        // Opponent: hidden until the committed selection gives it its avatar (no capsule flash
+        // behind the roulette/versus screens).
+        _opponentActor.SetPlaceholderVisible(false);
+        if (opponentLevelConfig != null) ApplySelectedOpponent(opponentLevelConfig);
+    }
+
+    /// <summary>
+    /// Applies the committed opponent pick (GameSession.SelectedOpponentLevelConfig — the resolved
+    /// TIER config) to the already-spawned opponent fighter: stats, AI profile, combat profile/build/
+    /// resources, and its visual built from the tier's AvatarRecipe through AvatarFactory. Generic for
+    /// every composer; re-applied for every new match in this scene; re-committing the same config is
+    /// a no-op. A production tier without a recipe is an ERROR (capsule shown only as a debug fallback).
+    /// </summary>
+    private void ApplySelectedOpponent(OpponentLevelConfig levelConfig)
+    {
+        if (_opponentActor == null) return;
+        if (levelConfig == null)
+        {
+            Debug.LogError("[FightSceneBootstrap] Opponent selection committed with no SelectedOpponentLevelConfig — opponent keeps placeholder data.");
+            _opponentActor.SetPlaceholderVisible(true);
+            return;
+        }
+        if (levelConfig == _appliedOpponentConfig) return;
+        _appliedOpponentConfig = levelConfig;
+
+        var session = GameSession.Instance;
+        string who = session != null && session.SelectedOpponent != null
+            ? $"Opponent {session.SelectedOpponent.displayName} tier {session.SelectedOpponentTier}"
+            : $"Opponent (level config {levelConfig.level})";
+
+        var stats = levelConfig.combatStats != null ? levelConfig.combatStats.Build() : FighterStats.Default();
+        _opponentActor.SetStats(stats);
+        if (_opponentActor.MoveController != null) _opponentActor.MoveController.Stats = stats;
+
+        if (levelConfig.difficultyProfile == null)
+            Debug.LogWarning($"[FightSceneBootstrap] {who}: no AIDifficultyProfile configured — the Opponent will use flat 0.5-everywhere AI defaults this match.");
+        _opponentActor.AI?.SetProfile(levelConfig.difficultyProfile);
+
+        ApplyOpponentCombatSetup(levelConfig);
+
+        int token = ++_opponentBuildToken;
+        if (levelConfig.avatarRecipe == null)
+        {
+            Debug.LogError($"[FightSceneBootstrap] {who}: no AvatarRecipe on the resolved tier config — production opponents must have one. Showing the debug capsule.");
+            _opponentActor.SetPlaceholderVisible(true);
+            return;
+        }
+        _ = TryBuildAvatar(levelConfig.avatarRecipe, _opponentActor, who, i =>
+        {
+            if (token != _opponentBuildToken) return false; // a newer pick superseded this build
+            _opponentAvatarInstance?.Dispose();
+            _opponentAvatarInstance = i;
+            return true;
+        });
     }
     /// <summary>
     /// Combat side of each fighter (never the avatar): its FighterCombatProfileSO, its five build stats
@@ -205,15 +276,22 @@ public class FightSceneBootstrap : MonoBehaviour
     ///   Opponent — the selected TIER config's combatProfile (fallback defaultOpponentCombatProfile),
     ///              build = its FighterStatsProfileSO.buildStats, resources = its tier's own counts.
     /// </summary>
-    private void ApplyCombatSetup(OpponentLevelConfig opponentLevelConfig)
+    private float NeutralBuildBudget => _combatBalanceConfig != null ? _combatBalanceConfig.neutralBuildBudget : 80f;
+
+    private void ApplyPlayerCombatSetup()
     {
-        float neutral = _combatBalanceConfig != null ? _combatBalanceConfig.neutralBuildBudget : 80f;
         var results = GameSession.Instance != null ? GameSession.Instance.RunnerResults : null;
 
-        _playerActor.SetBuildStats(results?.CombatBuild != null ? FighterBuildStats.FromCombatBuild(results.CombatBuild) : FighterBuildStats.Even(neutral));
+        _playerActor.SetBuildStats(results?.CombatBuild != null ? FighterBuildStats.FromCombatBuild(results.CombatBuild) : FighterBuildStats.Even(NeutralBuildBudget));
         _playerActor.SetCombatResources(results != null ? FighterCombatResources.FromRunner(results.Resources) : new FighterCombatResources(0, 0, 0));
         _playerActor.SetCombatProfile(_flowConfig != null ? _flowConfig.defaultPlayerCombatProfile : null);
+        // Until a pick is committed the opponent carries the default profile (Fighting only starts after VersusIntro).
+        _opponentActor.SetCombatProfile(_flowConfig != null ? _flowConfig.defaultOpponentCombatProfile : null);
+    }
 
+    private void ApplyOpponentCombatSetup(OpponentLevelConfig opponentLevelConfig)
+    {
+        float neutral = NeutralBuildBudget;
         _opponentActor.SetBuildStats(opponentLevelConfig?.combatStats != null ? opponentLevelConfig.combatStats.buildStats : FighterBuildStats.Even(neutral));
         _opponentActor.SetCombatResources(opponentLevelConfig != null
             ? new FighterCombatResources(opponentLevelConfig.tripleCombos, opponentLevelConfig.quadCombos, opponentLevelConfig.specials)
@@ -239,7 +317,7 @@ public class FightSceneBootstrap : MonoBehaviour
     /// Never touches gameplay/hitboxes/AI (task's own explicit "no toquis" requirement) — this only
     /// ever replaces what's under VisualRoot, exactly like the capsule-vs-prefab choice already did.
     /// </summary>
-    private async System.Threading.Tasks.Task TryBuildAvatar(AvatarRecipeSO recipeSO, FighterActor opponentActor, System.Action<AvatarInstance> keep)
+    private async System.Threading.Tasks.Task TryBuildAvatar(AvatarRecipeSO recipeSO, FighterActor opponentActor, string who, System.Func<AvatarInstance, bool> keep)
     {
         var runtimeRecipe = recipeSO.ToRuntime();
         var instance = await AvatarFactory.CreateAsync(runtimeRecipe, opponentActor.VisualRoot);
@@ -255,19 +333,20 @@ public class FightSceneBootstrap : MonoBehaviour
 
         if (instance.Root == null)
         {
-            Debug.LogError($"[FightSceneBootstrap] Opponent avatarRecipe '{recipeSO.name}' failed to build — keeping the fighterPrefab/capsule fallback already in place.");
+            Debug.LogError($"[FightSceneBootstrap] {who}: AvatarRecipe '{recipeSO.name}' failed to build — showing the debug capsule fallback (NOT a valid production visual).");
             instance.Dispose();
+            opponentActor.SetPlaceholderVisible(true);
             return;
         }
 
-        keep(instance);
+        if (!keep(instance)) { instance.Dispose(); return; }
         opponentActor.ReplaceVisual(instance.Root);
         // The actor's gameplay origin sits at spawn height (the capsule's centre); the avatar's feet
         // must be on the arena floor (y = 0).
         instance.Root.localPosition = new Vector3(0f, -opponentActor.transform.position.y, 0f);
         instance.Root.localRotation = Quaternion.identity;
         bool bound = opponentActor.BindAnimator(instance.Animator, _flowConfig != null ? _flowConfig.combatAnimatorController : null);
-        Debug.Log($"[FightSceneBootstrap] {opponentActor.Side} avatar '{recipeSO.name}' built and applied — combat animator {(bound ? "bound" : "NOT bound")}.");
+        Debug.Log($"[FightSceneBootstrap] {who} avatar '{recipeSO.name}' built and applied — combat animator {(bound ? "bound" : "NOT bound")}.");
     }
 
     private static FighterActor SpawnActor(string name, FighterSide side, Vector3 position, GameObject visualPrefab, Color debugColor)
