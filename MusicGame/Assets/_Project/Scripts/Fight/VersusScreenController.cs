@@ -161,6 +161,7 @@ public class VersusScreenController : MonoBehaviour
         // selection time (GameSession.SelectedOpponentLevelConfig), not a fresh GetConfigForLevel
         // call — guarantees the portrait shown here always matches what the roulette just showed.
         _opponentPortrait.sprite = GameSession.Instance?.SelectedOpponentLevelConfig?.portrait;
+        _opponentPortrait.preserveAspect = true; // portraits are tall cut-outs, the slot is square
         _opponentPortrait.color  = _opponentPortrait.sprite != null ? Color.white : PlaceholderPortraitColor;
     }
 }

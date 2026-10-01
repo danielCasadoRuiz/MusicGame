@@ -169,6 +169,7 @@ public class OpponentSelectionController : MonoBehaviour
         // No portrait art assigned yet on a fresh placeholder OpponentDefinition/level entry — a
         // plain dim box reads clearly as "no art yet" without any special-case handling downstream.
         portrait.sprite = ResolveLevel(opponent)?.portrait;
+        portrait.preserveAspect = true; // portraits are tall cut-outs, the cell is square
         portrait.color  = portrait.sprite != null ? Color.white : new Color(1f, 1f, 1f, 0.2f);
 
         var background = cellBtn.GetComponent<Image>();
