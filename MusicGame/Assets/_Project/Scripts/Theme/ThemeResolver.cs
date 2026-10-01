@@ -32,6 +32,10 @@ public static class ThemeResolver
             Player       = eventOverride?.player       ?? styleLayer?.player       ?? baseTheme.player,
             Collectibles = eventOverride?.collectibles ?? styleLayer?.collectibles ?? baseTheme.collectibles,
             VFX          = eventOverride?.vfx          ?? styleLayer?.vfx          ?? baseTheme.vfx,
+            // Per-slot Inherit/Override/Disabled is resolved by RunnerEnvironmentController, so both
+            // the base environment and the winning layer's decisions are carried through.
+            RunnerEnvironmentBase  = baseTheme.runnerEnvironment,
+            RunnerEnvironmentStyle = eventOverride?.runnerEnvironment ?? styleLayer?.runnerEnvironment,
         };
 
         WarnIfMissing(nameof(resolved.UI), resolved.UI);

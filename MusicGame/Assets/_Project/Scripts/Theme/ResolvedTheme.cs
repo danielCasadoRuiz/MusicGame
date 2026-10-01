@@ -16,4 +16,8 @@ public class ResolvedTheme
     public PlayerStyleSO      Player;
     public CollectibleStyleSO Collectibles;
     public VFXStyleSO         VFX;
+    /// <summary>Always the BaseTheme's environment (styles decide per slot below, never replace it).</summary>
+    public RunnerEnvironmentBaseSO  RunnerEnvironmentBase;
+    /// <summary>The winning layer's per-slot decisions (null = inherit everything).</summary>
+    public RunnerEnvironmentStyleSO RunnerEnvironmentStyle;
 }

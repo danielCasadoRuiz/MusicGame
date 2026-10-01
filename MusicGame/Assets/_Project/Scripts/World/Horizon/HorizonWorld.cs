@@ -4,8 +4,10 @@ using UnityEngine.Rendering.Universal;
 
 /// <summary>
 /// Thin composition root for the Horizon World — creates and wires HorizonCameraController,
-/// HorizonWater, SpectrumBars3D (which also owns the mirrored reflection bars — see its own
-/// doc), ProceduralSkyController and HorizonMountainLayers, and drives their per-frame Tick()
+/// HorizonWater, ProceduralSkyController and the RunnerEnvironmentController, which owns the
+/// swappable environment MODULES (Horizon slot: HorizonMountainLayers prefab; Music-Reactive slot:
+/// SpectrumBars3D prefab — resolved from the base Runner environment + the current style), and
+/// drives their per-frame Tick()
 /// calls IN A FIXED, DETERMINISTIC ORDER from ITS OWN LateUpdate() — never relying on Unity's
 /// ambiguous cross-script Update/LateUpdate ordering. Deliberately does none of the actual visual
 /// work itself (positions/meshes/shaders/camera stacking all live in their own single-
@@ -35,9 +37,8 @@ public class HorizonWorld : MonoBehaviour
     private HorizonConfig _config;
     private HorizonCameraController      _cameraController;
     private HorizonWater                 _water;
-    private SpectrumBars3D               _bars;
     private ProceduralSkyController      _sky;
-    private HorizonMountainLayers        _mountains;
+    private RunnerEnvironmentController  _environment;
 
     private void Awake()
     {
@@ -67,16 +68,33 @@ public class HorizonWorld : MonoBehaviour
         _water = gameObject.AddComponent<HorizonWater>();
         _water.Initialize(config, root);
 
-        _bars = gameObject.AddComponent<SpectrumBars3D>();
-        _bars.Initialize(config, root, _water);
-
         _sky = gameObject.AddComponent<ProceduralSkyController>();
         _sky.Initialize(config, _cameraController.HorizonCamera);
 
-        _mountains = gameObject.AddComponent<HorizonMountainLayers>();
-        _mountains.Initialize(config, root);
+        // Swappable modules (mountains, spectrum bars) — base + style resolved, built once per run.
+        _environment = GetComponent<RunnerEnvironmentController>() ?? gameObject.AddComponent<RunnerEnvironmentController>();
+        var baseEnvironment = ResolveEnvironmentBase();
+        _environment.Build(baseEnvironment, ResolveEnvironmentStyle(baseEnvironment), root, config, _water);
 
         EnsureBloom();
+    }
+
+    // Theme-first (ThemeManager.CurrentTheme), with the AppConfig BaseTheme as the safe fallback
+    // when the Runner scene runs without ThemeManager.
+    private static RunnerEnvironmentBaseSO ResolveEnvironmentBase()
+    {
+        var themed = ThemeManager.Instance != null ? ThemeManager.Instance.CurrentTheme?.RunnerEnvironmentBase : null;
+        if (themed != null) return themed;
+        var appConfig = Resources.Load<AppConfigSO>("AppConfig");
+        return appConfig != null && appConfig.theme != null && appConfig.theme.baseTheme != null ? appConfig.theme.baseTheme.runnerEnvironment : null;
+    }
+
+    private static RunnerEnvironmentStyleSO ResolveEnvironmentStyle(RunnerEnvironmentBaseSO baseEnvironment)
+    {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (baseEnvironment != null && baseEnvironment.testStyleOverride != null) return baseEnvironment.testStyleOverride;
+#endif
+        return ThemeManager.Instance != null ? ThemeManager.Instance.CurrentTheme?.RunnerEnvironmentStyle : null;
     }
 
     // Bloom is what turns the bars'/sun's HDR emission into an actual neon glow. Enabled on the
@@ -152,8 +170,8 @@ public class HorizonWorld : MonoBehaviour
         // depends on its CameraDelta being current this frame), everything else after.
         _cameraController.Tick();
         _water.Tick();
-        _bars.Tick(world, clock.SongTime);
+        _environment.Tick(RunnerEnvironmentSlot.MusicReactive, world, clock.SongTime);
         _sky.Tick();
-        _mountains.Tick();
+        _environment.Tick(RunnerEnvironmentSlot.Horizon, world, clock.SongTime);
     }
 }

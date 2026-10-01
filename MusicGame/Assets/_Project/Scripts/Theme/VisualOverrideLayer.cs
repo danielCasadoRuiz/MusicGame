@@ -17,4 +17,7 @@ public abstract class VisualOverrideLayer : ScriptableObject
     public PlayerStyleSO      player;
     public CollectibleStyleSO collectibles;
     public VFXStyleSO         vfx;
+    [Tooltip("Per-slot Inherit / Override / Disabled for the Runner environment modules. " +
+             "Empty = every slot inherits the base environment.")]
+    public RunnerEnvironmentStyleSO runnerEnvironment;
 }

@@ -61,8 +61,18 @@ using UnityEngine.Rendering;
 ///   amplitude -> horizonBarAmplitudeGradient.Evaluate(amplitude)  (color)
 /// Never the other way around (color is never derived from the final height).
 /// </summary>
-public class SpectrumBars3D : MonoBehaviour
+public class SpectrumBars3D : MonoBehaviour, IRunnerEnvironmentModule
 {
+    // ── Environment module (Runner Music-Reactive slot — see RunnerEnvironmentController) ──────
+    [Tooltip("Optional: this prefab's OWN HorizonConfig (bar layout/look/response). Empty = the " +
+             "Runner's resolved HorizonConfig, i.e. exactly the bars the Runner always had.")]
+    [SerializeField] private HorizonConfig settingsOverride;
+
+    public void InitializeModule(RunnerEnvironmentContext context) =>
+        Initialize(settingsOverride != null ? settingsOverride : context.Config, context.ModuleRoot, context.Water);
+
+    public void TickModule(RunnerEnvironmentContext context) => Tick(context.World, context.SongTime);
+
     private static readonly int PlasticColorID        = Shader.PropertyToID("_PlasticColor");
     private static readonly int PlasticTintStrengthID = Shader.PropertyToID("_PlasticTintStrength");
     private static readonly int SmoothnessID          = Shader.PropertyToID("_Smoothness");

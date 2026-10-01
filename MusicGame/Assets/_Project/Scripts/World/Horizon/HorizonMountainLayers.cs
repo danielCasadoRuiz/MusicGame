@@ -21,8 +21,26 @@ using UnityEngine.Rendering;
 /// silhouette, duplicated once for far (recolored blue/violet, lower contrast) and once for near
 /// (recolored near-black, higher contrast) — or two different drawings entirely.
 /// </summary>
-public class HorizonMountainLayers : MonoBehaviour
+public class HorizonMountainLayers : MonoBehaviour, IRunnerEnvironmentModule
 {
+    // ── Environment module (Runner Horizon slot — see RunnerEnvironmentController) ─────────────
+    [Tooltip("Optional: this prefab's OWN HorizonConfig (mountain textures/scale/placement/tint). " +
+             "Empty = the Runner's resolved HorizonConfig, i.e. exactly the mountains the Runner always had.")]
+    [SerializeField] private HorizonConfig settingsOverride;
+
+    public void InitializeModule(RunnerEnvironmentContext context) =>
+        Initialize(settingsOverride != null ? settingsOverride : context.Config, context.ModuleRoot);
+
+    public void TickModule(RunnerEnvironmentContext context) => Tick();
+
+    // Runtime materials are owned here and released with the module (the layer GameObjects are
+    // children of the module root and are destroyed with it).
+    private void OnDestroy()
+    {
+        if (_farMaterial != null) Destroy(_farMaterial);
+        if (_nearMaterial != null) Destroy(_nearMaterial);
+    }
+
     private static readonly int MainTexID = Shader.PropertyToID("_MainTex");
     private static readonly int TintID    = Shader.PropertyToID("_Tint");
     private static readonly int OpacityID = Shader.PropertyToID("_Opacity");

@@ -19,4 +19,6 @@ public class BaseThemeSO : ScriptableObject
     public PlayerStyleSO      player;
     public CollectibleStyleSO collectibles;
     public VFXStyleSO         vfx;
+    [Tooltip("Base Runner environment modules (Horizon, Music-Reactive …) — what every style inherits.")]
+    public RunnerEnvironmentBaseSO runnerEnvironment;
 }
