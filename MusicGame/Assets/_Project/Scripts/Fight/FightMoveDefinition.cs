@@ -30,11 +30,27 @@ public class FightMoveDefinition : ScriptableObject
     public string debugName;
     public FightMoveType moveType;
 
+    [Header("Combat role / scaling / cost — see FighterMoveController.TryExecuteMove")]
+    [Tooltip("Semantic role: what the move IS (LightAttack, Kick, Block, Dodge, Special...). Drives which " +
+             "animation plays (FighterAnimationSetSO) and how profiles/debug input find the move. " +
+             "CombatIdle = no specific move animation.")]
+    public CombatRole role = CombatRole.CombatIdle;
+    [Tooltip("Build stat that scales this move's damage (FightCombatBalanceConfig.buildStatToDamage). None = unscaled.")]
+    public FighterBuildStat scalingStat = FighterBuildStat.None;
+    [Tooltip("Resource this move costs; checked before it starts, consumed the instant it starts.")]
+    public CombatResourceType resourceCost = CombatResourceType.None;
+    [Min(0)] public int resourceAmount = 1;
+    [Tooltip("A landed hit of this move knocks the defender down (Knockdown -> Downed -> GetUp).")]
+    public bool knockdownOnHit;
+
+    [Header("Defensive windows (seconds from move start)")]
+    [Tooltip("Dodge: incoming hits are ignored while MoveElapsed is inside [invulnerableStart, invulnerableStart + invulnerableDuration]. 0 duration = none.")]
+    public float invulnerableStart;
+    public float invulnerableDuration;
+
     [Header("Animation — see IFighterAnimationDriver's own doc (no real Animator exists yet)")]
-    [Tooltip("A free-form debug/placeholder state name — DebugFighterAnimationDriver just tracks " +
-             "whatever string is set here for FightDebugHUD to display. Once real clips exist, " +
-             "this is the ONE value that needs to start meaning something real (e.g. an Animator " +
-             "trigger/state name) — nothing else about this asset or FighterMoveController changes.")]
+    [Tooltip("Debug label only (FightDebugHUD). The animation that actually plays is chosen by `role` " +
+             "through the fighter's FighterAnimationSetSO.")]
     public string animationState;
 
     [Header("Timing — Startup -> Active -> Recovery")]

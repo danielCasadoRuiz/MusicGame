@@ -38,6 +38,7 @@ public class FightSceneBootstrap : MonoBehaviour
     private FightArenaConfig _arenaConfig;
     private FightCameraConfig _cameraConfig;
     private FightCombatBalanceConfig _combatBalanceConfig;
+    private FightFlowConfig _flowConfig;
 
     private FighterActor _playerActor;
     private FighterActor _opponentActor;
@@ -47,6 +48,7 @@ public class FightSceneBootstrap : MonoBehaviour
     /// Fight scene unload never leaks the Avatar module's own Addressables handles/cloned meshes —
     /// this bootstrap owns that lifecycle exactly the same way it owns the camera/arena's.</summary>
     private AvatarInstance _opponentAvatarInstance;
+    private AvatarInstance _playerAvatarInstance;
 
     // Same "Mode Scene opened directly in the Editor" allowance RunnerSceneBootstrap already has
     // — lets a developer open Fight.unity and press Play directly (with FlowConfigSO.initialState
@@ -66,6 +68,7 @@ public class FightSceneBootstrap : MonoBehaviour
         _arenaConfig         = appConfig != null ? appConfig.arena         : null;
         _cameraConfig        = appConfig != null ? appConfig.fightCamera   : null;
         _combatBalanceConfig = appConfig != null ? appConfig.combatBalance : null;
+        _flowConfig          = appConfig != null ? appConfig.fightFlow     : null;
         if (_arenaConfig == null)
             Debug.LogWarning("[FightSceneBootstrap] No FightArenaConfig (AppConfig.arena) configured — using hardcoded fallback spawn/bounds/speed values.");
 
@@ -87,6 +90,8 @@ public class FightSceneBootstrap : MonoBehaviour
 
         _opponentAvatarInstance?.Dispose();
         _opponentAvatarInstance = null;
+        _playerAvatarInstance?.Dispose();
+        _playerAvatarInstance = null;
     }
 
     private void LogIncomingData()
@@ -172,6 +177,12 @@ public class FightSceneBootstrap : MonoBehaviour
         WireFighter(_playerActor, _opponentActor, isPlayer: true, aiProfile: null);
         WireFighter(_opponentActor, _playerActor, isPlayer: false, aiProfile: aiProfile);
 
+        ApplyCombatSetup(opponentLevelConfig);
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        gameObject.AddComponent<FightDebugCombatInput>().Initialize(_playerActor, _opponentActor); // TEMPORARY debug keys 1-9
+#endif
+
         Debug.Log($"[FightSceneBootstrap] Spawned fighters — Player visual:{(_playerActor.UsedFallbackCapsule ? "capsule fallback" : "prefab")} " +
                   $"Opponent visual:{(_opponentActor.UsedFallbackCapsule ? "capsule fallback" : "prefab")}");
 
@@ -180,8 +191,44 @@ public class FightSceneBootstrap : MonoBehaviour
         // TryBuildOpponentAvatar's own doc. FighterActor itself never learns this happened; it just
         // sees ReplaceVisual called once, same as any other visual swap.
         if (opponentLevelConfig != null && opponentLevelConfig.avatarRecipe != null)
-            _ = TryBuildOpponentAvatar(opponentLevelConfig.avatarRecipe, _opponentActor);
+            _ = TryBuildAvatar(opponentLevelConfig.avatarRecipe, _opponentActor, i => _opponentAvatarInstance = i);
+        var playerRecipe = _arenaConfig != null ? _arenaConfig.playerAvatarRecipe : null;
+        if (playerRecipe != null)
+            _ = TryBuildAvatar(playerRecipe, _playerActor, i => _playerAvatarInstance = i);
     }
+    /// <summary>
+    /// Combat side of each fighter (never the avatar): its FighterCombatProfileSO, its five build stats
+    /// and its spendable resources.
+    ///   Player   — FightFlowConfig.defaultPlayerCombatProfile (TEMPORARY), build = the Runner's
+    ///              RunnerResults.CombatBuild as-is, resources = RunnerResults.Resources (a per-match
+    ///              wallet; the Runner output itself is never modified).
+    ///   Opponent — the selected TIER config's combatProfile (fallback defaultOpponentCombatProfile),
+    ///              build = its FighterStatsProfileSO.buildStats, resources = its tier's own counts.
+    /// </summary>
+    private void ApplyCombatSetup(OpponentLevelConfig opponentLevelConfig)
+    {
+        float neutral = _combatBalanceConfig != null ? _combatBalanceConfig.neutralBuildBudget : 80f;
+        var results = GameSession.Instance != null ? GameSession.Instance.RunnerResults : null;
+
+        _playerActor.SetBuildStats(results?.CombatBuild != null ? FighterBuildStats.FromCombatBuild(results.CombatBuild) : FighterBuildStats.Even(neutral));
+        _playerActor.SetCombatResources(results != null ? FighterCombatResources.FromRunner(results.Resources) : new FighterCombatResources(0, 0, 0));
+        _playerActor.SetCombatProfile(_flowConfig != null ? _flowConfig.defaultPlayerCombatProfile : null);
+
+        _opponentActor.SetBuildStats(opponentLevelConfig?.combatStats != null ? opponentLevelConfig.combatStats.buildStats : FighterBuildStats.Even(neutral));
+        _opponentActor.SetCombatResources(opponentLevelConfig != null
+            ? new FighterCombatResources(opponentLevelConfig.tripleCombos, opponentLevelConfig.quadCombos, opponentLevelConfig.specials)
+            : new FighterCombatResources(0, 0, 0));
+        var opponentProfile = opponentLevelConfig != null && opponentLevelConfig.combatProfile != null
+            ? opponentLevelConfig.combatProfile
+            : (_flowConfig != null ? _flowConfig.defaultOpponentCombatProfile : null);
+        _opponentActor.SetCombatProfile(opponentProfile);
+
+        Debug.Log($"[FightSceneBootstrap] Combat — Player profile '{(_playerActor.CombatProfile != null ? _playerActor.CombatProfile.name : "(none)")}' " +
+                  $"build [{_playerActor.BuildStats}] resources [{_playerActor.CombatResources}] | Opponent profile " +
+                  $"'{(opponentProfile != null ? opponentProfile.name : "(none)")}' build [{_opponentActor.BuildStats}]");
+    }
+
+
 
     /// <summary>
     /// Integrates the Avatar module MINIMALLY (task's own explicit scope note): if this level has no
@@ -192,7 +239,7 @@ public class FightSceneBootstrap : MonoBehaviour
     /// Never touches gameplay/hitboxes/AI (task's own explicit "no toquis" requirement) — this only
     /// ever replaces what's under VisualRoot, exactly like the capsule-vs-prefab choice already did.
     /// </summary>
-    private async System.Threading.Tasks.Task TryBuildOpponentAvatar(AvatarRecipeSO recipeSO, FighterActor opponentActor)
+    private async System.Threading.Tasks.Task TryBuildAvatar(AvatarRecipeSO recipeSO, FighterActor opponentActor, System.Action<AvatarInstance> keep)
     {
         var runtimeRecipe = recipeSO.ToRuntime();
         var instance = await AvatarFactory.CreateAsync(runtimeRecipe, opponentActor.VisualRoot);
@@ -213,9 +260,14 @@ public class FightSceneBootstrap : MonoBehaviour
             return;
         }
 
-        _opponentAvatarInstance = instance;
+        keep(instance);
         opponentActor.ReplaceVisual(instance.Root);
-        Debug.Log($"[FightSceneBootstrap] Opponent avatar '{recipeSO.name}' built and applied ({instance.EquippedItems.Count} item(s) equipped).");
+        // The actor's gameplay origin sits at spawn height (the capsule's centre); the avatar's feet
+        // must be on the arena floor (y = 0).
+        instance.Root.localPosition = new Vector3(0f, -opponentActor.transform.position.y, 0f);
+        instance.Root.localRotation = Quaternion.identity;
+        bool bound = opponentActor.BindAnimator(instance.Animator, _flowConfig != null ? _flowConfig.combatAnimatorController : null);
+        Debug.Log($"[FightSceneBootstrap] {opponentActor.Side} avatar '{recipeSO.name}' built and applied — combat animator {(bound ? "bound" : "NOT bound")}.");
     }
 
     private static FighterActor SpawnActor(string name, FighterSide side, Vector3 position, GameObject visualPrefab, Color debugColor)

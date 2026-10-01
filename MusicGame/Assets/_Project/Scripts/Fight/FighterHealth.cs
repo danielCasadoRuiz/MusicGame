@@ -50,7 +50,8 @@ public class FighterHealth : MonoBehaviour
             // FighterMovement (see this phase's own scope note on movement/control-lock authority).
             // Zero knockback: any real knockback from the killing blow itself is applied separately,
             // right after this, by FighterAttack's own ApplyHit call.
-            _owner?.HitReaction?.ApplyHit(float.PositiveInfinity, 0f);
+            // KO = knocked down and staying down (FighterHitReaction's knockdown flow with stayDown).
+            _owner?.HitReaction?.ApplyKnockdown(0f, stayDown: true);
 
             EventBus.Publish(new FighterKOEvent { Fighter = _owner });
         }

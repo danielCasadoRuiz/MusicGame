@@ -52,6 +52,8 @@ public class FighterGuard : MonoBehaviour
 
     private FighterGuardState ComputeState()
     {
+        // A Block MOVE (CombatRole.Block) guards for its whole duration, standing.
+        if (IsBlockMoveActive) return FighterGuardState.StandingGuard;
         if (_input == null || !CanGuard()) return FighterGuardState.None;
         if (_input.CurrentHorizontal != FightHorizontalDirection.Back) return FighterGuardState.None;
         return _input.CurrentVertical == FightVerticalDirection.Down
@@ -61,6 +63,11 @@ public class FighterGuard : MonoBehaviour
 
     /// <summary>Public — a future AI needs to know its own (and read the opponent's) guard
     /// legality/state too (see this phase's own "future AI" scope note).</summary>
+    public bool IsBlockMoveActive =>
+        _actor != null && _actor.MoveController != null && _actor.MoveController.CurrentMove != null &&
+        _actor.MoveController.CurrentMove.role == CombatRole.Block &&
+        (_actor.HitReaction == null || !_actor.HitReaction.IsInKnockdownFlow);
+
     public bool CanGuard()
     {
         if (_actor == null) return false;

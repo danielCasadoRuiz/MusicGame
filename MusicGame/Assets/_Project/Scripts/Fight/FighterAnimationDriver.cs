@@ -12,8 +12,13 @@ public interface IFighterAnimationDriver
     /// (FightDebugHUD) until a real Animator exists to actually query.</summary>
     string CurrentState { get; }
 
-    /// <summary>Called once, the instant a move starts.</summary>
-    void PlayMoveAnimation(FightMoveDefinition move);
+    /// <summary>Called once, the instant a move starts. `gameplayDuration` = the move's authoritative
+    /// Startup+Active+Recovery length (after stat timing scale) — the animation adapts to it.</summary>
+    void PlayMoveAnimation(FightMoveDefinition move, float gameplayDuration);
+
+    /// <summary>Shows a non-move role (HitReaction, Knockdown, Downed, GetUp, Block, Victory...). `duration`
+    /// > 0 fits the clip to that many seconds (clamped); otherwise natural speed.</summary>
+    void PlayRole(CombatRole role, float duration = -1f);
 
     /// <summary>Called every frame while Idle (no move running) — locomotion-driven, not move-driven.</summary>
     void SetLocomotion(FightHorizontalDirection direction);
@@ -29,10 +34,12 @@ public class DebugFighterAnimationDriver : IFighterAnimationDriver
 {
     public string CurrentState { get; private set; } = "Idle";
 
-    public void PlayMoveAnimation(FightMoveDefinition move)
+    public void PlayMoveAnimation(FightMoveDefinition move, float gameplayDuration)
     {
         CurrentState = move != null && !string.IsNullOrEmpty(move.animationState) ? move.animationState : "(move, no animationState set)";
     }
+
+    public void PlayRole(CombatRole role, float duration = -1f) => CurrentState = role.ToString();
 
     public void SetLocomotion(FightHorizontalDirection direction)
     {

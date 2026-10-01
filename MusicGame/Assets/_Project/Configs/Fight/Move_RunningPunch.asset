@@ -15,6 +15,13 @@ MonoBehaviour:
   id: move_running_punch
   debugName: Running Punch
   moveType: 0
+  role: 2
+  scalingStat: 1
+  resourceCost: 0
+  resourceAmount: 1
+  knockdownOnHit: 0
+  invulnerableStart: 0
+  invulnerableDuration: 0
   animationState: RunPunch
   startupDuration: 0.1
   activeDuration: 0.1
@@ -24,9 +31,8 @@ MonoBehaviour:
   movementMultiplier: 0
   lungeDistance: 1.2
   lockFacingDuringMove: 1
-  allowedPostures: []
-  requiredMovementStates:
-  - 3
+  allowedPostures: 
+  requiredMovementStates: 03000000
   attackDelivery: 0
   hits:
   - shape: 0
@@ -38,4 +44,23 @@ MonoBehaviour:
     attackHeight: 1
     guardType: 0
     chipDamage: 0
+    tracking: 0
+  projectile:
+    visualPrefab: {fileID: 0}
+    speed: 8
+    maxLifetime: 3
+    maxDistance: 10
+    localSpawnOffset: {x: 0.8, y: 1, z: 0}
+    hitDefinition:
+      shape: 0
+      localOffset: {x: 0.8, y: 1, z: 0}
+      size: {x: 0.6, y: 0.6, z: 0.6}
+      baseDamage: 10
+      baseHitStun: 0.3
+      baseKnockback: 1
+      attackHeight: 1
+      guardType: 0
+      chipDamage: 0
+      tracking: 0
+    destroyOnHit: 1
   damage: 0

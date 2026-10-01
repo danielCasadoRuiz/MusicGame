@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83268485336c340489e852c06c20433e, type: 3}
+  m_Name: CombatProfile_Player_Temp
+  m_EditorClassIdentifier: Assembly-CSharp::FighterCombatProfileSO
+  moveSet: {fileID: 11400000, guid: b593a59054d84416b7d0b9f5e3c2a961, type: 2}
+  animationSet: {fileID: 11400000, guid: 17f1bc225726e5847908ec41beb57077, type: 2}

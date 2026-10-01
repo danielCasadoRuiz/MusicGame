@@ -75,6 +75,9 @@ public class FightArenaConfig : ScriptableObject
     [Tooltip("No Player avatar/progression system exists yet (see FighterActor's own doc) — null " +
              "is tolerated, FighterActor falls back to a debug capsule.")]
     public GameObject playerFighterPrefab;
+    [Tooltip("PROVISIONAL Player avatar (built via AvatarFactory like the opponent's) until the real " +
+             "Player avatar system exists. Null = playerFighterPrefab / capsule.")]
+    public AvatarRecipeSO playerAvatarRecipe;
 
     [Header("Debug visuals — used only for the capsule fallback")]
     public Color playerDebugColor = new Color(0.2f, 0.6f, 1f);

@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23d3b5a850e47a7429895956ce9d0adc, type: 3}
+  m_Name: Classical_Default_AnimationSet
+  m_EditorClassIdentifier: Assembly-CSharp::FighterAnimationSetSO
+  clips:
+  - role: 0
+    clip: {fileID: 7400000, guid: 5f65510b6a184eb48bd42af76bf82ef8, type: 2}
+    provisional: 0
+    note: Boxing guard, looped
+  - role: 1
+    clip: {fileID: 7400000, guid: 6ee51ed4ec150b44690b5a7e922918ce, type: 2}
+    provisional: 0
+    note: ShadowBoxing single jab
+  - role: 2
+    clip: {fileID: 7400000, guid: 305b142c1bcd1e241a5e634e39a623a9, type: 2}
+    provisional: 0
+    note: ShadowBoxing rotating hook
+  - role: 3
+    clip: {fileID: 7400000, guid: 1b4a626899bd57d4d8c5844099fc9b4f, type: 2}
+    provisional: 0
+    note: BigFrontKick front kick
+  - role: 4
+    clip: {fileID: 7400000, guid: 29920a750f64c0641b65666673566612, type: 2}
+    provisional: 0
+    note: ShadowBoxing high cover
+  - role: 5
+    clip: {fileID: 7400000, guid: 2baa70db194ded84bb360c564db344db, type: 2}
+    provisional: 1
+    note: "PROVISIONAL \u2014 covered bob/weave, no clean dodge exists in the packs"
+  - role: 6
+    clip: {fileID: 7400000, guid: fb9e060143a7eb64588b0f170eb9ae9f, type: 2}
+    provisional: 0
+    note: KnockOut_Loser head snap
+  - role: 7
+    clip: {fileID: 7400000, guid: 192868d8e55f0764495afb68d7e7e74d, type: 2}
+    provisional: 0
+    note: KnockOut_Loser fall (source ground glitch at impact)
+  - role: 13
+    clip: {fileID: 7400000, guid: 082b498b6f6a0474c88a06236cf1992a, type: 2}
+    provisional: 0
+    note: KnockOut_Loser lying on the back
+  - role: 8
+    clip: {fileID: 7400000, guid: 970b59f2780a93f478e7a83952aac12b, type: 2}
+    provisional: 0
+    note: KnockOut_Loser get up
+  - role: 11
+    clip: {fileID: 7400000, guid: 45cf17b2e2b91654990331a1f5a4967a, type: 2}
+    provisional: 1
+    note: "PROVISIONAL \u2014 spinning roundhouse stands in for a real special"
+  - role: 9
+    clip: {fileID: 7400000, guid: 31ae5ba0b54347747a18a7603fb7fc21, type: 2}
+    provisional: 1
+    note: "PROVISIONAL \u2014 full taunt take (start only plays)"
+  - role: 10
+    clip: {fileID: 7400000, guid: 983d74d28327476409bc9e985c1c380c, type: 2}
+    provisional: 0
+    note: Fist raised
+  - role: 12
+    clip: {fileID: 7400000, guid: 192868d8e55f0764495afb68d7e7e74d, type: 2}
+    provisional: 1
+    note: "PROVISIONAL \u2014 reuses the knockdown fall"
+  moveCrossfade: 0.08
+  reactionCrossfade: 0.05
+  knockdownCrossfade: 0.04
+  stateCrossfade: 0.15
+  moveSpeedRange: {x: 0.75, y: 1.6}

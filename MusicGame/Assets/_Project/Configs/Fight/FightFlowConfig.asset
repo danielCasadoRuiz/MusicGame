@@ -19,13 +19,19 @@ MonoBehaviour:
   roundIntroDuration: 1.5
   countdownStepDuration: 0.8
   fightBannerDuration: 1
+  countdownOverlayAlpha: 0.55
   roundDuration: 60
   roundsToWin: 2
   maxRounds: 3
+  matchPointsTiebreakEpsilon: 0.01
   koBannerDuration: 1
   timeUpBannerDuration: 1
   roundResultDuration: 1.5
-  drawPointsPauseDuration: 1
+  nextSongCardHoldDuration: 1.6
+  nextSongCardFadeDuration: 0.35
   inputBufferWindowSeconds: 1.5
   comboSet: {fileID: 11400000, guid: 48a71c2bc4d84331b78b79849572dd41, type: 2}
   defaultMoveSet: {fileID: 11400000, guid: b593a59054d84416b7d0b9f5e3c2a961, type: 2}
+  combatAnimatorController: {fileID: 9100000, guid: ede7de7018ca2c34dab9e2f0514b66e3, type: 2}
+  defaultPlayerCombatProfile: {fileID: 11400000, guid: e5963aa4d1784f34794f965db9496771, type: 2}
+  defaultOpponentCombatProfile: {fileID: 11400000, guid: c3c81cda0e47f894da30557f687c737e, type: 2}

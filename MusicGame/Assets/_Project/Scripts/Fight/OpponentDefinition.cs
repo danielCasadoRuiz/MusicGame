@@ -103,6 +103,15 @@ public class OpponentLevelConfig
              "FightSceneBootstrap falls back to a flat 100-everywhere FighterStats.")]
     public FighterStatsProfileSO combatStats;
 
+    [Header("Combat (how this tier FIGHTS — never on the avatar)")]
+    [Tooltip("Moves + animation style for this tier. Tiers may share one profile. Null = " +
+             "FightFlowConfig.defaultOpponentCombatProfile.")]
+    public FighterCombatProfileSO combatProfile;
+    [Tooltip("Resources this tier's opponent can spend in a match (its own rule — the Player's come from the Runner).")]
+    [Min(0)] public int specials = 1;
+    [Min(0)] public int tripleCombos;
+    [Min(0)] public int quadCombos;
+
     /// <summary>Null if songs is empty/all-null (expected for a freshly-created level entry) —
     /// callers must tolerate it, same as before.</summary>
     public AudioClip GetRandomSong()

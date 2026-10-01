@@ -84,6 +84,19 @@ public class FighterActor : MonoBehaviour
     /// never mutated at runtime.</summary>
     public FighterStats Stats { get; private set; }
 
+    // ── Combat architecture (see FighterCombatProfileSO / FighterMoveController) ──
+    /// <summary>How this fighter fights: moves + animation style.</summary>
+    public FighterCombatProfileSO CombatProfile { get; private set; }
+    /// <summary>The five build stats combat reads (Player: RunnerResults.CombatBuild).</summary>
+    public FighterBuildStats BuildStats { get; private set; }
+    /// <summary>Spendable Triple/Quad/Special for this match.</summary>
+    public FighterCombatResources CombatResources { get; private set; } = new(0, 0, 0);
+    /// <summary>Presentation: debug string driver until an Animator is bound (BindAnimator).</summary>
+    public IFighterAnimationDriver AnimationDriver { get; private set; } = new DebugFighterAnimationDriver();
+    /// <summary>Hits are ignored (Dodge invulnerability window, or the knockdown flow).</summary>
+    public bool IsInvulnerable => (MoveController != null && MoveController.IsInvulnerable) ||
+                                  (HitReaction != null && HitReaction.IsInvulnerable);
+
     /// <summary>One or more zones that can receive a hit — always at least the default one created
     /// in Initialize; a future humanoid can add more (head/torso/legs/...) simply by having
     /// FighterHurtbox children that self-register via RegisterHurtbox. See FighterHurtbox's own doc.</summary>
@@ -190,6 +203,31 @@ public class FighterActor : MonoBehaviour
     public void SetInputController(FighterInputController input) => InputController = input;
     public void SetAI(FighterAI ai) => AI = ai;
     public void SetStats(FighterStats stats) => Stats = stats;
+    public void SetBuildStats(FighterBuildStats stats) => BuildStats = stats;
+    public void SetCombatResources(FighterCombatResources resources) => CombatResources = resources ?? new FighterCombatResources(0, 0, 0);
+    public void SetCombatProfile(FighterCombatProfileSO profile)
+    {
+        CombatProfile = profile;
+        MoveController?.SetCombatProfile(profile);
+    }
+
+    /// <summary>Binds a Humanoid Animator (the built avatar) to the shared combat controller through this
+    /// fighter's OWN AnimatorOverrideController, filled from its profile's animation set. Returns false
+    /// (debug driver kept) if anything required is missing.</summary>
+    public bool BindAnimator(Animator animator, RuntimeAnimatorController sharedController)
+    {
+        if (animator == null || sharedController == null || CombatProfile == null || CombatProfile.animationSet == null)
+        {
+            Debug.LogWarning($"[FighterActor] {Side}: cannot bind animator (animator {animator != null}, controller {sharedController != null}, " +
+                             $"profile {CombatProfile != null}, animationSet {CombatProfile?.animationSet != null}).");
+            return false;
+        }
+        if (!animator.isHuman) Debug.LogWarning($"[FighterActor] {Side}: bound Animator is not Humanoid — the combat clips won't retarget.");
+        AnimationDriver = new AnimatorFighterAnimationDriver(animator, sharedController, CombatProfile.animationSet);
+        MoveController?.SetAnimationDriver(AnimationDriver);
+        AnimationDriver.PlayRole(CombatRole.CombatIdle);
+        return true;
+    }
     public void SetPosture(FighterPosture posture) => Posture = posture;
     public void SetMovementState(FighterMovementState state) => MovementState = state;
     public void RegisterHurtbox(FighterHurtbox hurtbox)
@@ -234,6 +272,7 @@ public class FighterActor : MonoBehaviour
         AI?.ResetForRound();
         Posture = FighterPosture.Standing;
         MovementState = FighterMovementState.Idle;
+        AnimationDriver?.PlayRole(CombatRole.CombatIdle);
 
         if (_opponent != null && _facingProvider != null)
         {

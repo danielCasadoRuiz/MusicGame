@@ -12,18 +12,23 @@ public struct FightHitResult
 
     public bool IsBlocked;
 
+    /// <summary>The defender was invulnerable (Dodge window / knockdown flow): nothing was applied.</summary>
+    public bool IsEvaded;
+    /// <summary>The landed hit knocks the defender down (move.knockdownOnHit).</summary>
+    public bool CausesKnockdown;
+
     public float BaseDamage;
-    public float DamageModifier;   // attacker Strength
-    public float DefenseModifier;  // defender Defense
+    public float DamageModifier;   // attacker build stat (move.scalingStat)
+    public float DefenseModifier;  // defender Resistance
     public float FinalDamage;      // 0 while IsBlocked — see FinalChipDamage instead
 
     public float BaseHitStun;
-    public float HitStunResistanceModifier; // defender Balance
+    public float HitStunResistanceModifier; // defender Resistance
     public float FinalHitStun;              // 0 while IsBlocked — see FinalBlockStun instead
 
     public float BaseKnockback;
-    public float KnockbackModifier; // attacker Knockback
-    public float FinalKnockback;    // also folds in defender Balance resistance; reduced further while IsBlocked
+    public float KnockbackModifier; // attacker ImpactPower
+    public float FinalKnockback;    // also folds in defender Resistance; reduced further while IsBlocked
 
     /// <summary>Only meaningful while IsBlocked — the flat chip damage still applied.</summary>
     public float FinalChipDamage;
@@ -44,8 +49,9 @@ public static class FightHitResolver
     public static FightHitResult Resolve(FighterActor attacker, FighterActor defender, FightMoveDefinition move,
         FightHitDefinition hitDef, FightCombatBalanceConfig config, bool isBlocked)
     {
-        var attackerMods = config != null ? config.ComputeModifiers(attacker != null ? attacker.Stats : null) : FightCombatModifiers.Identity;
-        var defenderMods = config != null ? config.ComputeModifiers(defender != null ? defender.Stats : null) : FightCombatModifiers.Identity;
+        var scaling      = move != null ? move.scalingStat : FighterBuildStat.None;
+        var attackerMods = config != null && attacker != null ? config.ComputeModifiers(attacker.BuildStats, scaling) : FightCombatModifiers.Identity;
+        var defenderMods = config != null && defender != null ? config.ComputeModifiers(defender.BuildStats) : FightCombatModifiers.Identity;
 
         var result = new FightHitResult
         {
@@ -68,7 +74,8 @@ public static class FightHitResolver
         else
         {
             result.FinalDamage    = UnityEngine.Mathf.Max(0f, hitDef.baseDamage * attackerMods.DamageDealtMultiplier * defenderMods.DamageTakenMultiplier);
-            result.FinalHitStun   = UnityEngine.Mathf.Max(0f, hitDef.baseHitStun * defenderMods.ResistanceMultiplier);
+            result.FinalHitStun   = UnityEngine.Mathf.Max(0f, hitDef.baseHitStun * attackerMods.KnockbackDealtMultiplier * defenderMods.ResistanceMultiplier);
+            result.CausesKnockdown = move != null && move.knockdownOnHit;
             result.FinalKnockback = UnityEngine.Mathf.Max(0f, hitDef.baseKnockback * attackerMods.KnockbackDealtMultiplier * defenderMods.ResistanceMultiplier);
         }
 
@@ -88,6 +95,14 @@ public static class FightHitDispatcher
     public static FightHitResult ResolveAndApply(FighterActor attacker, FighterActor defender, FightMoveDefinition move,
         FightHitDefinition hitDef, FightCombatBalanceConfig config)
     {
+        // Invulnerable (Dodge window, knockdown flow): the hit whiffs — nothing is applied.
+        if (defender != null && defender.IsInvulnerable)
+        {
+            var evaded = new FightHitResult { Attacker = attacker, Defender = defender, Move = move, HitDef = hitDef, IsEvaded = true };
+            EventBus.Publish(new HitEvadedEvent { Attacker = attacker, Defender = defender, Move = move });
+            return evaded;
+        }
+
         bool blocked = defender != null && defender.Guard != null && defender.Guard.WouldBlock(hitDef.attackHeight, hitDef.guardType);
         var result = FightHitResolver.Resolve(attacker, defender, move, hitDef, config, blocked);
 
@@ -101,7 +116,10 @@ public static class FightHitDispatcher
         {
             EventBus.Publish(new HitLandedEvent { Attacker = attacker, Defender = defender, Move = move, Result = result });
             defender?.Health?.ApplyDamage(result.FinalDamage);
-            defender?.HitReaction?.ApplyHit(result.FinalHitStun, result.FinalKnockback);
+            if (result.CausesKnockdown && defender?.Health != null && !defender.Health.IsKO)
+                defender.HitReaction?.ApplyKnockdown(result.FinalKnockback);
+            else
+                defender?.HitReaction?.ApplyHit(result.FinalHitStun, result.FinalKnockback);
         }
 
         return result;

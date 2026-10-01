@@ -377,6 +377,10 @@ public static class CombatAnimationImporter
                                               settings.loopBlendPositionY = true;    // bake root height into the pose
                                               settings.keepOriginalPositionY = true;
                                               settings.loopBlendPositionXZ = false;  // XZ travel -> root motion (not applied)
+                                              // Root XZ follows the body (centre of mass), not the capture volume's
+                                              // origin: otherwise the body plays offset by wherever the actor stood
+                                              // in the Rokoko take (metres away from the fighter's transform).
+                                              settings.keepOriginalPositionXZ = false;
                                               settings.heightFromFeet = false;
                                               settings.level = 0f;
                                               settings.orientationOffsetY = 0f;
@@ -902,24 +906,24 @@ public static class CombatAnimationImporter
 
     // ── Demo sequence ────────────────────────────────────────────────────────────
 
-    private static readonly Dictionary<CombatAnimationRole, CombatAnimationCategory> RoleCategory = new()
+    private static readonly Dictionary<CombatRole, CombatAnimationCategory> RoleCategory = new()
     {
-        [CombatAnimationRole.CombatIdle] = CombatAnimationCategory.IdleCombat,
-        [CombatAnimationRole.Punch] = CombatAnimationCategory.AttackPunch,
-        [CombatAnimationRole.HeavyPunch] = CombatAnimationCategory.AttackPunch,
-        [CombatAnimationRole.Kick] = CombatAnimationCategory.AttackKick,
-        [CombatAnimationRole.Block] = CombatAnimationCategory.Block,
-        [CombatAnimationRole.Dodge] = CombatAnimationCategory.Dodge,
-        [CombatAnimationRole.HitReaction] = CombatAnimationCategory.HitReaction,
-        [CombatAnimationRole.Knockdown] = CombatAnimationCategory.Knockdown,
-        [CombatAnimationRole.GetUp] = CombatAnimationCategory.GetUp,
-        [CombatAnimationRole.Taunt] = CombatAnimationCategory.Taunt,
-        [CombatAnimationRole.Victory] = CombatAnimationCategory.Victory,
+        [CombatRole.CombatIdle] = CombatAnimationCategory.IdleCombat,
+        [CombatRole.LightAttack] = CombatAnimationCategory.AttackPunch,
+        [CombatRole.HeavyAttack] = CombatAnimationCategory.AttackPunch,
+        [CombatRole.Kick] = CombatAnimationCategory.AttackKick,
+        [CombatRole.Block] = CombatAnimationCategory.Block,
+        [CombatRole.Dodge] = CombatAnimationCategory.Dodge,
+        [CombatRole.HitReaction] = CombatAnimationCategory.HitReaction,
+        [CombatRole.Knockdown] = CombatAnimationCategory.Knockdown,
+        [CombatRole.GetUp] = CombatAnimationCategory.GetUp,
+        [CombatRole.Taunt] = CombatAnimationCategory.Taunt,
+        [CombatRole.Victory] = CombatAnimationCategory.Victory,
     };
 
     /// <summary>The role's reviewed clip, or (marked "auto") the first non-rejected clip of the role's
     /// category — approved ones first — skipping `exclude`.</summary>
-    private static (CombatAnimationEntry entry, bool reviewed) Resolve(CombatAnimationLibrarySO library, CombatAnimationRole role, string exclude = null)
+    private static (CombatAnimationEntry entry, bool reviewed) Resolve(CombatAnimationLibrarySO library, CombatRole role, string exclude = null)
     {
         var assigned = library.ForRole(role);
         if (assigned != null && assigned.review != CombatReviewStatus.Rejected && assigned.name != exclude) return (assigned, true);
@@ -935,12 +939,12 @@ public static class CombatAnimationImporter
     public static void RebuildDemoSequence(CombatAnimationLibrarySO library, List<string> report)
     {
         var steps = new List<CombatDemoStep>();
-        var hit = Resolve(library, CombatAnimationRole.HitReaction).entry;
-        var punch = Resolve(library, CombatAnimationRole.Punch);
-        var heavy = Resolve(library, CombatAnimationRole.HeavyPunch, punch.entry?.name);
+        var hit = Resolve(library, CombatRole.HitReaction).entry;
+        var punch = Resolve(library, CombatRole.LightAttack);
+        var heavy = Resolve(library, CombatRole.HeavyAttack, punch.entry?.name);
         if (heavy.entry == null) heavy = punch;
-        var victory = Resolve(library, CombatAnimationRole.Victory);
-        if (victory.entry == null) victory = Resolve(library, CombatAnimationRole.Taunt);
+        var victory = Resolve(library, CombatRole.Victory);
+        if (victory.entry == null) victory = Resolve(library, CombatRole.Taunt);
 
         void Add(string label, (CombatAnimationEntry entry, bool reviewed) r, CombatAnimationEntry partner = null, float delay = 0.4f)
         {
@@ -954,13 +958,13 @@ public static class CombatAnimationImporter
             });
         }
 
-        Add("Guard", Resolve(library, CombatAnimationRole.CombatIdle));
+        Add("Guard", Resolve(library, CombatRole.CombatIdle));
         Add("Punch", punch, hit, 0.35f);
         Add("Punch", heavy, hit, 0.35f);
-        Add("Kick", Resolve(library, CombatAnimationRole.Kick), hit, 0.4f);
-        Add("Dodge", Resolve(library, CombatAnimationRole.Dodge), punch.entry, 0f);
-        Add("Hit Reaction", Resolve(library, CombatAnimationRole.HitReaction));
-        Add("Victory", victory, Resolve(library, CombatAnimationRole.Knockdown).entry, 0f);
+        Add("Kick", Resolve(library, CombatRole.Kick), hit, 0.4f);
+        Add("Dodge", Resolve(library, CombatRole.Dodge), punch.entry, 0f);
+        Add("Hit Reaction", Resolve(library, CombatRole.HitReaction));
+        Add("Victory", victory, Resolve(library, CombatRole.Knockdown).entry, 0f);
         library.demoSequence = steps;
         report?.Add($"DEMO     {steps.Count} step(s): {string.Join(" -> ", steps.Select(s => s.label))} (* = unreviewed auto candidate)");
     }

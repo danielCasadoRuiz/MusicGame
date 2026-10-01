@@ -1,16 +1,17 @@
 using UnityEngine;
 
 /// <summary>
-/// The single place every FighterStat's V1 combat effect is defined — no formulas scattered across
-/// FighterAttack/FightHitResolver/FighterMoveController. Each curve's X axis is the RAW FighterStats
-/// value (base ~100, see FighterStatsBuilder) — e.g. the default strengthToDamageDealt curve has
-/// keys at (100, 1.00), (150, 1.10), (200, 1.20), meaning "Strength 150 deals 10% more damage",
-/// exactly as authored here — 200 Strength is NOT assumed to mean 2x damage anywhere in this layer.
+/// The single place every combat-build stat's effect is defined — no formulas scattered across
+/// FighterAttack/FightHitResolver/FighterMoveController. Each curve's X axis is the RAW build stat in
+/// budget points (FighterBuildStats — the Runner's own scale: a 100-point budget split over five stats,
+/// ~16 each for a typical 80% run); Y is a multiplier where 1 = neutral. PLACEHOLDER balance values.
 ///
-/// Deliberately asymmetric coverage — see each field's own doc. Agility/Combo/SpecialPower stay
-/// INERT this phase (evaluated only for FightDebugHUD's own transparency/future-readiness, never
-/// multiplied into an actual gameplay number) rather than inventing an artificial mechanic just to
-/// "use" all eight stats — a worse combat feel is a worse outcome than a temporarily-inert stat.
+///   attacker <move.scalingStat> (PunchPower / KickPower / ...) → damage dealt
+///   defender Resistance                                          → damage taken + hit-stun resistance
+///   attacker ImpactPower                                         → knockback + hit stun dealt
+///   own Agility                                                  → Startup/Recovery timing scale
+///
+/// Legacy FighterStats (Strength/Defense/...) are no longer read by combat.
 /// </summary>
 [CreateAssetMenu(fileName = "FightCombatBalanceConfig", menuName = "MusicGame/Fight/Combat Balance Config")]
 public class FightCombatBalanceConfig : ScriptableObject
@@ -18,84 +19,66 @@ public class FightCombatBalanceConfig : ScriptableObject
     [Header("Health")]
     public float defaultMaxHealth = 100f;
 
-    [Header("Strength (attacker) -> damage DEALT multiplier")]
-    public AnimationCurve strengthToDamageDealt = new AnimationCurve(
-        new Keyframe(100f, 1.00f), new Keyframe(150f, 1.10f), new Keyframe(200f, 1.20f));
-
-    [Header("Defense (defender) -> damage TAKEN multiplier (lower = tankier)")]
-    public AnimationCurve defenseToDamageTaken = new AnimationCurve(
-        new Keyframe(100f, 1.00f), new Keyframe(150f, 0.90f), new Keyframe(200f, 0.80f));
-
-    [Header("Knockback (attacker) -> knockback DEALT multiplier")]
-    public AnimationCurve knockbackToKnockbackDealt = new AnimationCurve(
-        new Keyframe(100f, 1.00f), new Keyframe(150f, 1.15f), new Keyframe(200f, 1.30f));
-
-    [Tooltip("Reduces BOTH incoming hit stun duration AND incoming knockback distance — one shared " +
-             "dial rather than two, since 'resisting a hit' is one concept for V1.")]
-    [Header("Balance (defender) -> resistance multiplier (hit stun AND knockback)")]
-    public AnimationCurve balanceToResistance = new AnimationCurve(
-        new Keyframe(100f, 1.00f), new Keyframe(150f, 0.85f), new Keyframe(200f, 0.70f));
-
-    [Tooltip("Scales ONLY startupDuration/recoveryDuration (see FighterMoveController's own doc) — " +
-             "activeDuration is never touched, so hit timing/hurtbox windows stay predictable.")]
-    [Header("Speed -> move timing scale")]
-    public AnimationCurve speedToTimingScale = new AnimationCurve(
-        new Keyframe(100f, 1.00f), new Keyframe(150f, 0.92f), new Keyframe(200f, 0.85f));
-    [Tooltip("Hard clamp on speedToTimingScale's output — prevents a very high Speed (or a bad curve " +
-             "edit) from making moves absurdly instant.")]
+    [Header("Build stats → combat multipliers (X = stat points, Y = multiplier)")]
+    [Tooltip("Attacker's move.scalingStat → damage DEALT.")]
+    public AnimationCurve buildStatToDamage = new AnimationCurve(
+        new Keyframe(0f, 0.85f), new Keyframe(16f, 1.00f), new Keyframe(40f, 1.25f));
+    [Tooltip("Defender Resistance → damage TAKEN (lower = tankier).")]
+    public AnimationCurve resistanceToDamageTaken = new AnimationCurve(
+        new Keyframe(0f, 1.10f), new Keyframe(16f, 1.00f), new Keyframe(40f, 0.85f));
+    [Tooltip("Defender Resistance → incoming hit stun AND knockback (lower = shrugs hits off).")]
+    public AnimationCurve resistanceToStagger = new AnimationCurve(
+        new Keyframe(0f, 1.10f), new Keyframe(16f, 1.00f), new Keyframe(40f, 0.85f));
+    [Tooltip("Attacker ImpactPower → knockback and hit stun DEALT.")]
+    public AnimationCurve impactToStagger = new AnimationCurve(
+        new Keyframe(0f, 0.85f), new Keyframe(16f, 1.00f), new Keyframe(40f, 1.30f));
+    [Tooltip("Own Agility → Startup/Recovery duration scale (lower = faster). Active never scales.")]
+    public AnimationCurve agilityToTimingScale = new AnimationCurve(
+        new Keyframe(0f, 1.08f), new Keyframe(16f, 1.00f), new Keyframe(40f, 0.88f));
     public float minTimingScale = 0.7f;
     public float maxTimingScale = 1.15f;
 
+    [Tooltip("Build stats used for a fighter with no real source (no Runner run / no authored opponent build).")]
+    public float neutralBuildBudget = 80f;
+
     [Header("Block — see FighterGuard/FightHitResolver's own doc")]
-    [Tooltip("Applied on top of the defender's own Balance resistance when a hit is blocked.")]
+    [Tooltip("Applied on top of the defender's own resistance when a hit is blocked.")]
     public float blockStunMultiplier = 0.5f;
-    [Tooltip("Applied on top of the attacker's Knockback/defender's Balance when a hit is blocked.")]
+    [Tooltip("Applied on top of the attacker's impact / defender's resistance when a hit is blocked.")]
     public float blockKnockbackMultiplier = 0.5f;
 
-    [Header("Inert this phase — evaluated for debug/future use only, never applied to gameplay (see class doc)")]
-    public AnimationCurve agilityModifierPreview      = AnimationCurve.Linear(100f, 1f, 200f, 1f);
-    public AnimationCurve comboModifierPreview        = AnimationCurve.Linear(100f, 1f, 200f, 1f);
-    public AnimationCurve specialPowerModifierPreview = AnimationCurve.Linear(100f, 1f, 200f, 1f);
+    [Header("Knockdown flow — Knockdown → Downed → GetUp → CombatIdle (fighter invulnerable throughout)")]
+    [Min(0.05f)] public float knockdownDuration = 1.2f;
+    [Min(0f)] public float downedDuration = 0.8f;
+    [Min(0.05f)] public float getUpDuration = 1.6f;
 
-    /// <summary>Evaluates every curve above against one fighter's stats — the SAME computation both
-    /// FightHitResolver (real combat) and FightDebugHUD ("combat modifiers finals") use, so the HUD
-    /// can never drift from what an actual hit does.</summary>
-    public FightCombatModifiers ComputeModifiers(FighterStats stats)
+    /// <summary>Evaluates every curve against one fighter's build — the SAME computation FightHitResolver
+    /// (real combat), FighterMoveController (timing) and FightDebugHUD use, so they can never drift.</summary>
+    public FightCombatModifiers ComputeModifiers(FighterBuildStats stats, FighterBuildStat scalingStat = FighterBuildStat.None)
     {
-        float Get(FightStatId id) => stats != null ? stats.Get(id) : 100f;
-
         return new FightCombatModifiers
         {
-            DamageDealtMultiplier    = strengthToDamageDealt.Evaluate(Get(FightStatId.Strength)),
-            DamageTakenMultiplier    = defenseToDamageTaken.Evaluate(Get(FightStatId.Defense)),
-            KnockbackDealtMultiplier = knockbackToKnockbackDealt.Evaluate(Get(FightStatId.Knockback)),
-            ResistanceMultiplier     = balanceToResistance.Evaluate(Get(FightStatId.Balance)),
-            TimingScale              = Mathf.Clamp(speedToTimingScale.Evaluate(Get(FightStatId.Speed)), minTimingScale, maxTimingScale),
-            AgilityModifierPreview      = agilityModifierPreview.Evaluate(Get(FightStatId.Agility)),
-            ComboModifierPreview        = comboModifierPreview.Evaluate(Get(FightStatId.Combo)),
-            SpecialPowerModifierPreview = specialPowerModifierPreview.Evaluate(Get(FightStatId.SpecialPower)),
+            DamageDealtMultiplier    = scalingStat == FighterBuildStat.None ? 1f : buildStatToDamage.Evaluate(stats.Get(scalingStat)),
+            DamageTakenMultiplier    = resistanceToDamageTaken.Evaluate(stats.resistance),
+            KnockbackDealtMultiplier = impactToStagger.Evaluate(stats.impactPower),
+            ResistanceMultiplier     = resistanceToStagger.Evaluate(stats.resistance),
+            TimingScale              = Mathf.Clamp(agilityToTimingScale.Evaluate(stats.agility), minTimingScale, maxTimingScale),
         };
     }
 }
 
-/// <summary>One fighter's fully-evaluated V1 combat modifiers — see FightCombatBalanceConfig.ComputeModifiers.</summary>
+/// <summary>One fighter's fully-evaluated combat modifiers — see FightCombatBalanceConfig.ComputeModifiers.</summary>
 public struct FightCombatModifiers
 {
-    public float DamageDealtMultiplier;
-    public float DamageTakenMultiplier;
-    public float KnockbackDealtMultiplier;
-    public float ResistanceMultiplier;
-    public float TimingScale;
-
-    // Inert — see FightCombatBalanceConfig's own doc.
-    public float AgilityModifierPreview;
-    public float ComboModifierPreview;
-    public float SpecialPowerModifierPreview;
+    public float DamageDealtMultiplier;    // attacker, from the move's scaling stat
+    public float DamageTakenMultiplier;    // defender Resistance
+    public float KnockbackDealtMultiplier; // attacker ImpactPower (knockback + hit stun)
+    public float ResistanceMultiplier;     // defender Resistance (hit stun + knockback)
+    public float TimingScale;              // own Agility
 
     public static FightCombatModifiers Identity => new FightCombatModifiers
     {
         DamageDealtMultiplier = 1f, DamageTakenMultiplier = 1f, KnockbackDealtMultiplier = 1f,
         ResistanceMultiplier = 1f, TimingScale = 1f,
-        AgilityModifierPreview = 1f, ComboModifierPreview = 1f, SpecialPowerModifierPreview = 1f,
     };
 }

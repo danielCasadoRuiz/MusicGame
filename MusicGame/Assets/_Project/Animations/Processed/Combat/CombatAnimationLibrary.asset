@@ -273,6 +273,57 @@ MonoBehaviour:
     review: 1
     notes: 'Reviewed 2026-10-01 (frame-by-frame window render). From lying on the
       back: sits up, crouches, rises hunched to standing. Pairs with KnockedDown.'
+  - name: Fight_KnockOut_Loser_mixamo__HitSnap
+    clip: {fileID: 7400000, guid: 3646b2e0e872fa04fb205a7008a7b98c, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: fb9e060143a7eb64588b0f170eb9ae9f, type: 2}
+    category: 6
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/KnockOut_Loser_mixamo.fbx
+    sourceTake: clip
+    duration: 0.791667
+    frameRate: 24
+    rootTravel: {x: 0.1034762, y: -0.028694592, z: 0.12980366}
+    rootYaw: 15.084391
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 5,80)
+    segmentOf: Fight_KnockOut_Loser_mixamo
+    segmentStart: 9
+    segmentEnd: 9.8
+    keepFacing: 1
+    review: 1
+    notes: "Reviewed 2026-10-01 (window renders). Short head-snap reaction \u2014
+      HitReaction clip."
+  - name: Fight_KnockOut_Loser_mixamo__Downed
+    clip: {fileID: 7400000, guid: 04d891cba9fbc104c9184365592556f6, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 082b498b6f6a0474c88a06236cf1992a, type: 2}
+    category: 7
+    categoryReviewed: 1
+    loop: 1
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/KnockOut_Loser_mixamo.fbx
+    sourceTake: clip
+    duration: 3.000001
+    frameRate: 24
+    rootTravel: {x: 0.008073672, y: -0.010122091, z: -0.010398537}
+    rootYaw: 5.418419
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 2,92s, 2,96s; muscle beyond limits (RightHand.Ring.Spread
+      1,96)
+    segmentOf: Fight_KnockOut_Loser_mixamo
+    segmentStart: 13
+    segmentEnd: 16
+    keepFacing: 1
+    review: 1
+    notes: "Reviewed 2026-10-01 (window renders). Lying on the back (between the
+      fall and the get-up) \u2014 Downed loop."
   - name: Fight_KnockOut_Winner_mixamo
     clip: {fileID: 7400000, guid: 81a83617f0f3a4d49826cb5c585bc7d4, type: 2}
     inPlaceClip: {fileID: 7400000, guid: 39e4e11904d567d42a1db747b8b59899, type: 2}
@@ -477,6 +528,56 @@ MonoBehaviour:
     notes: Reviewed 2026-10-01 (frame-by-frame window render). Drops lower under
       the cover and weaves, then rises. The best 'dodge' in the packs (no dedicated
       dodge clip exists).
+  - name: Fight_ShadowBoxing_mixamo__Jab
+    clip: {fileID: 7400000, guid: cb0fc96ecf0c3994799c8c657bbd55a6, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 6ee51ed4ec150b44690b5a7e922918ce, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/ShadowBoxing_mixamo.fbx
+    sourceTake: clip
+    duration: 0.58333397
+    frameRate: 24
+    rootTravel: {x: -0.0984407, y: -0.061280563, z: 0.25352392}
+    rootYaw: -42.455338
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.Spread 2,15)
+    segmentOf: Fight_ShadowBoxing_mixamo
+    segmentStart: 8.15
+    segmentEnd: 8.75
+    keepFacing: 1
+    review: 1
+    notes: "Reviewed 2026-10-01 (window renders). Single left jab (extended ~0.2
+      s in) \u2014 LightAttack clip."
+  - name: Fight_ShadowBoxing_mixamo__Hook
+    clip: {fileID: 7400000, guid: 3fa88097ebcdcd647bb34623d56cf592, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 305b142c1bcd1e241a5e634e39a623a9, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/ShadowBoxing_mixamo.fbx
+    sourceTake: clip
+    duration: 1.0416679
+    frameRate: 24
+    rootTravel: {x: -0.094591536, y: 0.0385221, z: -0.16168135}
+    rootYaw: -13.5453
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.Spread 1,98)
+    segmentOf: Fight_ShadowBoxing_mixamo
+    segmentStart: 19.45
+    segmentEnd: 20.5
+    keepFacing: 1
+    review: 1
+    notes: "Reviewed 2026-10-01 (window renders). Rotating right hook (landing ~0.45
+      s in) \u2014 HeavyAttack clip."
   - name: Fight_SwordFight_mixamo
     clip: {fileID: 7400000, guid: 2211d5f827f4fdc479b5035bd4830f45, type: 2}
     inPlaceClip: {fileID: 7400000, guid: 3c59ef444faed024487dc672e8d57052, type: 2}
@@ -1362,6 +1463,46 @@ MonoBehaviour:
     review: 1
     notes: Reviewed 2026-10-01 (frame-by-frame window render). Right fist raised
       high and held (~7-11 s), then lowers. The clearest victory pose in the packs.
+  - name: Jab
+    sourceEntry: Fight_ShadowBoxing_mixamo
+    start: 8.15
+    end: 8.75
+    category: 1
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: "Reviewed 2026-10-01 (window renders). Single left jab (extended ~0.2
+      s in) \u2014 LightAttack clip."
+  - name: Hook
+    sourceEntry: Fight_ShadowBoxing_mixamo
+    start: 19.45
+    end: 20.5
+    category: 1
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: "Reviewed 2026-10-01 (window renders). Rotating right hook (landing ~0.45
+      s in) \u2014 HeavyAttack clip."
+  - name: HitSnap
+    sourceEntry: Fight_KnockOut_Loser_mixamo
+    start: 9
+    end: 9.8
+    category: 6
+    loop: 0
+    keepFacing: 1
+    review: 1
+    notes: "Reviewed 2026-10-01 (window renders). Short head-snap reaction \u2014
+      HitReaction clip."
+  - name: Downed
+    sourceEntry: Fight_KnockOut_Loser_mixamo
+    start: 13
+    end: 16
+    category: 7
+    loop: 1
+    keepFacing: 1
+    review: 1
+    notes: "Reviewed 2026-10-01 (window renders). Lying on the back (between the
+      fall and the get-up) \u2014 Downed loop."
   roles:
   - role: 0
     entryName: Fight_Boxing_mixamo__GuardIdle
@@ -1432,7 +1573,7 @@ MonoBehaviour:
     captured/Preserve, trimmed 1, facing +19,8 deg, level -0,002; WARN muscle beyond
     limits (RightHand.Ring.Spread 3,64)\n   Fight_Boxing_mixamo__GuardIdle: IdleCombat,
     2,21 s, loop True, RootMotion (travel 0,61 m, yaw +88), fingers captured/Preserve,
-    trimmed 0, facing -6,9 deg, level -0,068; WARN muscle beyond limits (LeftHand.Thumb.Spread
+    trimmed 0, facing -6,9 deg, level -0,030; WARN muscle beyond limits (LeftHand.Thumb.Spread
     2,01)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/FightingIdle_mixamo.fbx:
     1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_FightingIdle_mixamo:
@@ -1446,7 +1587,7 @@ MonoBehaviour:
     captured/Preserve, trimmed 1, facing -17,3 deg, level -0,001; WARN pose pop(s)
     at 4,13s, 4,25s, 13,67s, 13,71s, 13,92s...; muscle beyond limits (RightHand.Ring.Spread
     4,33)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/KnockOut_Loser_mixamo.fbx:
-    1 take(s), 3 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    1 take(s), 5 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_KnockOut_Loser_mixamo:
     Knockdown, 20,46 s, loop False, RootMotion (travel 0,35 m, yaw +61), fingers
     captured/Preserve, trimmed 1, facing -109,8 deg, level -0,024; WARN pose pop(s)
@@ -1459,7 +1600,13 @@ MonoBehaviour:
     5,80)\n   Fight_KnockOut_Loser_mixamo__GetUp: GetUp, 4,13 s, loop False, RootMotion
     (travel 0,69 m, yaw -28), fingers captured/Preserve, trimmed 0, facing +46,0
     deg, level -0,019; WARN pose pop(s) at 2,13s; muscle beyond limits (RightHand.Ring.Spread
-    3,02)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/KnockOut_Winner_mixamo.fbx:
+    3,02)\n   Fight_KnockOut_Loser_mixamo__HitSnap: HitReaction, 0,79 s, loop False,
+    InPlace (travel 0,17 m, yaw +15), fingers captured/Preserve, trimmed 0, facing
+    -54,1 deg, level -0,002; WARN muscle beyond limits (RightHand.Ring.Spread 5,80)\n  
+    Fight_KnockOut_Loser_mixamo__Downed: Knockdown, 3,00 s, loop True, InPlace (travel
+    0,01 m, yaw +5), fingers captured/Preserve, trimmed 0, facing +45,3 deg, level
+    -0,026; WARN pose pop(s) at 2,92s, 2,96s; muscle beyond limits (RightHand.Ring.Spread
+    1,96)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/KnockOut_Winner_mixamo.fbx:
     1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_KnockOut_Winner_mixamo:
     AttackPunch, 20,00 s, loop False, RootMotion (travel 1,33 m, yaw -67), fingers
@@ -1473,7 +1620,7 @@ MonoBehaviour:
     AttackKick, 1,50 s, loop False, RootMotion (travel 1,87 m, yaw -493), fingers
     captured/Preserve, trimmed 0, facing +90,7 deg, level -0,016; WARN muscle beyond
     limits (RightHand.Middle.Spread 4,45)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/ShadowBoxing_mixamo.fbx:
-    1 take(s), 4 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    1 take(s), 6 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_ShadowBoxing_mixamo:
     AttackPunch, 31,04 s, loop False, RootMotion (travel 1,65 m, yaw -106), fingers
     captured/Preserve, trimmed 1, facing +28,5 deg, level -0,001; WARN pose pop(s)
@@ -1488,15 +1635,21 @@ MonoBehaviour:
     -0,002; WARN muscle beyond limits (LeftHand.Thumb.Spread 1,94)\n   Fight_ShadowBoxing_mixamo__DuckWeave:
     Dodge, 1,29 s, loop False, RootMotion (travel 0,20 m, yaw -82), fingers captured/Preserve,
     trimmed 0, facing +92,5 deg, level +0,000; WARN muscle beyond limits (Left Shoulder
-    Front-Back 2,64)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/SwordFight_mixamo.fbx:
-    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
-    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_SwordFight_mixamo:
-    Unknown (auto), 29,58 s, loop False, RootMotion (travel 1,62 m, yaw -76), fingers
-    captured/Preserve, trimmed 1, facing -13,5 deg, level -0,001; WARN pose pop(s)
-    at 2,88s, 16,25s, 16,42s, 16,46s, 16,50s...; muscle beyond limits (RightHand.Ring.Spread
-    3,80)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/SwordIdleLight_mixamo.fbx:
-    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
-    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_SwordIdleLight_mixamo:
+    Front-Back 2,64)\n   Fight_ShadowBoxing_mixamo__Jab: AttackPunch, 0,58 s, loop
+    False, InPlace (travel 0,27 m, yaw -42), fingers captured/Preserve, trimmed 0,
+    facing +91,4 deg, level -0,001; WARN muscle beyond limits (LeftHand.Thumb.Spread
+    2,15)\n   Fight_ShadowBoxing_mixamo__Hook: AttackPunch, 1,04 s, loop False, InPlace
+    (travel 0,19 m, yaw -14), fingers captured/Preserve, trimmed 0, facing +44,1
+    deg, level +0,000; WARN muscle beyond limits (LeftHand.Thumb.Spread 1,98)\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/Fight/SwordFight_mixamo.fbx: 1 take(s),
+    0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_SwordFight_mixamo: Unknown
+    (auto), 29,58 s, loop False, RootMotion (travel 1,62 m, yaw -76), fingers captured/Preserve,
+    trimmed 1, facing -13,5 deg, level -0,001; WARN pose pop(s) at 2,88s, 16,25s,
+    16,42s, 16,46s, 16,50s...; muscle beyond limits (RightHand.Ring.Spread 3,80)\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/Fight/SwordIdleLight_mixamo.fbx: 1 take(s),
+    0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_SwordIdleLight_mixamo:
     IdleCombat (auto), 64,50 s, loop True, InPlace (travel 0,26 m, yaw -9), fingers
     captured/Preserve, trimmed 1, facing +2,1 deg, level +0,002; WARN pose pop(s)
     at 43,96s, 44,00s, 62,92s, 62,96s, 63,08s...; muscle beyond limits (RightHand.Middle.Spread

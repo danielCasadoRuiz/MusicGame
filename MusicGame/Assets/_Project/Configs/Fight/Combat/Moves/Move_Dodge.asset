@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5113f3db8c54387965085ce138f977d, type: 3}
+  m_Name: Move_Dodge
+  m_EditorClassIdentifier: Assembly-CSharp::FightMoveDefinition
+  id: dodge
+  debugName: Dodge (provisional anim)
+  moveType: 0
+  role: 5
+  scalingStat: 3
+  resourceCost: 0
+  resourceAmount: 0
+  knockdownOnHit: 0
+  invulnerableStart: 0.05
+  invulnerableDuration: 0.4
+  animationState: Dodge
+  startupDuration: 0.05
+  activeDuration: 0.4
+  recoveryDuration: 0.25
+  cancelWindow: 0
+  movementLocked: 1
+  movementMultiplier: 1
+  lungeDistance: 0
+  lockFacingDuringMove: 1
+  allowedPostures: 
+  requiredMovementStates: 
+  attackDelivery: 0
+  hits: []
+  projectile:
+    visualPrefab: {fileID: 0}
+    speed: 8
+    maxLifetime: 3
+    maxDistance: 10
+    localSpawnOffset: {x: 0.8, y: 1, z: 0}
+    hitDefinition:
+      shape: 0
+      localOffset: {x: 0.8, y: 1, z: 0}
+      size: {x: 0.6, y: 0.6, z: 0.6}
+      baseDamage: 10
+      baseHitStun: 0.3
+      baseKnockback: 1
+      attackHeight: 1
+      guardType: 0
+      chipDamage: 0
+      tracking: 0
+    destroyOnHit: 1
+  damage: 0

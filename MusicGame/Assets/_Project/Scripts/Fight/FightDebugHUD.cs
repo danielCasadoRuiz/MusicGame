@@ -217,7 +217,7 @@ public class FightDebugHUD : MonoBehaviour
 
         const float x = 8f, w = 420f;
         float y = 8f;
-        float h = 26f + 18f + 16f * 6f + 18f * 3f + 18f + 16f * 8f + 18f + 16f * 12f + 18f + 16f * 8f + 18f + 16f * 10f + 18f + 16f * 6f + 18f + 16f * 4f + 18f + 16f * 14f + 18f + 16f * (MaxLogLines + 1);
+        float h = 26f + 18f + 16f * 6f + 16f * 4f + 18f * 3f + 18f + 16f * 8f + 18f + 16f * 12f + 18f + 16f * 8f + 18f + 16f * 10f + 18f + 16f * 6f + 18f + 16f * 4f + 18f + 16f * 14f + 18f + 16f * (MaxLogLines + 1);
 
         GUI.Box(new Rect(x, y, w, h), "", _boxStyle);
         GUI.Label(new Rect(x + 6f, y + 2f, w - 12f, 16f), "FIGHT DEBUG (F1 | F2/3 KO | F4 timer | F5 draw | F6/7/8 diff | F9/10 win/lose | F11 +life | F12 ad)", _headerStyle);
@@ -415,22 +415,21 @@ public class FightDebugHUD : MonoBehaviour
         else if (actor.Guard != null && actor.Guard.State != FighterGuardState.None) guardText = actor.Guard.State.ToString();
         Row(x, ref y, w, $"    Defense: {guardText}");
 
-        if (actor.Stats == null)
-        {
-            Row(x, ref y, w, "    (no Stats)");
-            return;
-        }
-
-        Row(x, ref y, w, $"    STR {actor.Stats.Get(FightStatId.Strength):F0}  SPD {actor.Stats.Get(FightStatId.Speed):F0}  " +
-                          $"AGI {actor.Stats.Get(FightStatId.Agility):F0}  DEF {actor.Stats.Get(FightStatId.Defense):F0}");
-        Row(x, ref y, w, $"    CMB {actor.Stats.Get(FightStatId.Combo):F0}  KNB {actor.Stats.Get(FightStatId.Knockback):F0}  " +
-                          $"SPC {actor.Stats.Get(FightStatId.SpecialPower):F0}  BAL {actor.Stats.Get(FightStatId.Balance):F0}");
+        // Combat architecture: profile / reaction / move / phase / build / resources.
+        var mc = actor.MoveController;
+        string profile = actor.CombatProfile != null ? actor.CombatProfile.name : "(no profile)";
+        string reaction = actor.HitReaction != null ? actor.HitReaction.State.ToString() : "-";
+        Row(x, ref y, w, $"    Profile {profile}   Reaction {reaction}{(actor.IsInvulnerable ? " INVULN" : "")}{(mc != null && mc.IsMatchLocked ? " MATCH-LOCK" : "")}");
+        Row(x, ref y, w, $"    Move {(mc?.CurrentMove != null ? mc.CurrentMove.debugName : "-")} ({mc?.CurrentMove?.role})  Phase {mc?.CurrentPhase}  Anim {actor.AnimationDriver?.CurrentState}");
+        var b = actor.BuildStats;
+        Row(x, ref y, w, $"    Punch {b.punchPower:F1}  Kick {b.kickPower:F1}  Agi {b.agility:F1}  Res {b.resistance:F1}  Imp {b.impactPower:F1}");
+        Row(x, ref y, w, $"    Resources {actor.CombatResources}   last reject: {mc?.LastRejection}");
 
         if (_balanceConfig != null)
         {
-            var mods = _balanceConfig.ComputeModifiers(actor.Stats);
+            var mods = _balanceConfig.ComputeModifiers(actor.BuildStats, mc?.CurrentMove != null ? mc.CurrentMove.scalingStat : FighterBuildStat.None);
             Row(x, ref y, w, $"    dmgDealt x{mods.DamageDealtMultiplier:F2}  dmgTaken x{mods.DamageTakenMultiplier:F2}  " +
-                              $"knb x{mods.KnockbackDealtMultiplier:F2}  res x{mods.ResistanceMultiplier:F2}  timing x{mods.TimingScale:F2}");
+                              $"impact x{mods.KnockbackDealtMultiplier:F2}  res x{mods.ResistanceMultiplier:F2}  timing x{mods.TimingScale:F2}");
         }
     }
 

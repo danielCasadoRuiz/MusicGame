@@ -73,3 +73,11 @@ public struct FighterKOEvent
 {
     public FighterActor Fighter;
 }
+
+/// <summary>A hit reached a defender that was invulnerable (Dodge window / knockdown flow) — nothing applied.</summary>
+public struct HitEvadedEvent
+{
+    public FighterActor Attacker;
+    public FighterActor Defender;
+    public FightMoveDefinition Move;
+}

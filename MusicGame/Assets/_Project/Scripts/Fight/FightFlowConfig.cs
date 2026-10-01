@@ -89,4 +89,13 @@ public class FightFlowConfig : ScriptableObject
              "FightMoveDefinition data for FighterMoveController to execute. Null is tolerated " +
              "(normals/combos still get recognized, they just never resolve into a running move).")]
     public FightMoveSetSO defaultMoveSet;
+
+    [Header("Combat profiles / animation (see FighterCombatProfileSO, AnimatorFighterAnimationDriver)")]
+    [Tooltip("The ONE shared logical combat AnimatorController (one state per CombatRole, placeholder " +
+             "clips). Every fighter gets its own AnimatorOverrideController on top of it.")]
+    public RuntimeAnimatorController combatAnimatorController;
+    [Tooltip("TEMPORARY Player profile until the Player's music-style system exists.")]
+    public FighterCombatProfileSO defaultPlayerCombatProfile;
+    [Tooltip("Used for an opponent tier config with no combatProfile assigned.")]
+    public FighterCombatProfileSO defaultOpponentCombatProfile;
 }

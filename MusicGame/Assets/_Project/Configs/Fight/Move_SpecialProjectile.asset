@@ -15,6 +15,13 @@ MonoBehaviour:
   id: move_special_fireball
   debugName: 'Special: Fireball'
   moveType: 2
+  role: 2
+  scalingStat: 1
+  resourceCost: 0
+  resourceAmount: 1
+  knockdownOnHit: 0
+  invulnerableStart: 0
+  invulnerableDuration: 0
   animationState: Fireball
   startupDuration: 0.25
   activeDuration: 0.1
@@ -24,8 +31,8 @@ MonoBehaviour:
   movementMultiplier: 0
   lungeDistance: 0
   lockFacingDuringMove: 1
-  allowedPostures: []
-  requiredMovementStates: []
+  allowedPostures: 
+  requiredMovementStates: 
   attackDelivery: 1
   hits: []
   projectile:
@@ -44,5 +51,6 @@ MonoBehaviour:
       attackHeight: 1
       guardType: 0
       chipDamage: 1
+      tracking: 0
     destroyOnHit: 1
   damage: 0

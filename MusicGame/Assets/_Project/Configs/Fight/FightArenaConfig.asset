@@ -16,12 +16,21 @@ MonoBehaviour:
   opponentSpawnPosition: {x: 1.5, y: 1, z: 0}
   minBoundX: -4
   maxBoundX: 4
+  minDepth: -1.5
+  maxDepth: 1.5
   minimumFighterSeparation: 1
+  sidestepDistance: 1.2
+  sidestepDuration: 0.18
+  sidestepRecovery: 0.12
+  sidewalkSpeed: 2.2
+  directionHoldThreshold: 0.15
+  doubleTapWindow: 0.3
   baseMovementSpeed: 4
   runSpeedMultiplier: 1.6
   jumpVelocity: 6
   gravity: 20
   airControlMultiplier: 0.5
   playerFighterPrefab: {fileID: 0}
+  playerAvatarRecipe: {fileID: 11400000, guid: 583a5e11431603248aada55510f59c35, type: 2}
   playerDebugColor: {r: 0.2, g: 0.6, b: 1, a: 1}
   opponentDebugColor: {r: 0.9, g: 0.25, b: 0.2, a: 1}

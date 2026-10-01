@@ -19,20 +19,28 @@ public enum CombatAnimationCategory
     Unknown,
 }
 
-/// <summary>Gameplay roles the shortlist recommends a clip for (one clip per role, visually verified).</summary>
-public enum CombatAnimationRole
+/// <summary>
+/// THE canonical semantic combat role — shared by gameplay (FightMoveDefinition.role), animation
+/// (FighterAnimationSetSO / the shared FighterCombat controller) and the reviewed mocap shortlist
+/// (CombatAnimationLibrarySO.roles). Values are serialized as ints: never reorder, only append.
+/// CombatIdle doubles as "no specific move animation".
+/// </summary>
+public enum CombatRole
 {
-    CombatIdle,
-    Punch,
-    HeavyPunch,
-    Kick,
-    Block,
-    Dodge,
-    HitReaction,
-    Knockdown,
-    GetUp,
-    Taunt,
-    Victory,
+    CombatIdle  = 0,
+    LightAttack = 1,
+    HeavyAttack = 2,
+    Kick        = 3,
+    Block       = 4,
+    Dodge       = 5,
+    HitReaction = 6,
+    Knockdown   = 7,
+    GetUp       = 8,
+    Taunt       = 9,
+    Victory     = 10,
+    Special     = 11,
+    Defeat      = 12,
+    Downed      = 13,
 }
 
 public enum CombatRootMotion
@@ -134,7 +142,7 @@ public class CombatSegmentDefinition
 [System.Serializable]
 public class CombatRoleAssignment
 {
-    public CombatAnimationRole role;
+    public CombatRole role;
     public string entryName;
 }
 
@@ -182,7 +190,7 @@ public class CombatAnimationLibrarySO : ScriptableObject
         return null;
     }
 
-    public CombatAnimationEntry ForRole(CombatAnimationRole role)
+    public CombatAnimationEntry ForRole(CombatRole role)
     {
         foreach (var assignment in roles) if (assignment.role == role) return Find(assignment.entryName);
         return null;
