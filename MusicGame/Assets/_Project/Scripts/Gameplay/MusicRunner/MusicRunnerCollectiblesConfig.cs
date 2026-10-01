@@ -137,9 +137,16 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     [Tooltip("Minimum song-time gap between a resource pickup and any other pickup (musical timelines " +
              "are dense — ~4 pickups/s — so keep this small or no free slot exists).")]
     [Min(0f)] public float resourcePickupMinGap = 0.12f;
-    [Tooltip("Height of resource pickups inside the normal bonus band (0 = floor, 1 = ceiling) — " +
-             "high values make them a deliberate jump.")]
-    [Range(0f, 1f)] public float resourcePickupHeight = 0.75f;
+
+    // Life/Special are DIFFICULT optional pickups: like off-track score bonuses they sit beyond the
+    // track edge (never on the normal racing line), only harder — further out and higher, so taking
+    // one is a deliberate jump + air-control detour. Distances are relative to the track's REAL local
+    // edge (path width / 2) and are clamped to what the player can actually reach (see Difficult
+    // Pickup Reachability below), so no value here can produce an impossible pickup.
+    [Tooltip("Where Life pickups sit relative to the track edge, and how high (fraction of the full jump).")]
+    public PickupPlacementProfile lifePlacement = new() { minEdgeOffset = 1.0f, maxEdgeOffset = 2.2f, minJumpHeightFactor = 0.7f, maxJumpHeightFactor = 0.95f };
+    [Tooltip("Where Special pickups sit relative to the track edge, and how high — the hardest pickup.")]
+    public PickupPlacementProfile specialPlacement = new() { minEdgeOffset = 1.6f, maxEdgeOffset = 2.8f, minJumpHeightFactor = 0.85f, maxJumpHeightFactor = 1.0f };
 
     // ── Micro — Density & Confidence Thinning ─────────────────────────────────
     [Header("Micro — Density & Confidence Thinning")]
@@ -256,6 +263,33 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
              "directly. 1.0 = right at the theoretical peak of a full jump.")]
     [Range(0f, 1f)] public float offTrackBonusMaxJumpHeightFactor = 1.0f;
 
+    /// <summary>The ordinary off-track score bonus expressed as a placement profile (moderate:
+    /// just beyond the edge) — built from the fields above so its behaviour is unchanged.</summary>
+    public PickupPlacementProfile OffTrackBonusPlacement => new()
+    {
+        minEdgeOffset = collectibleRadius,
+        maxEdgeOffset = collectibleRadius + offTrackBonusMaxOffset,
+        minJumpHeightFactor = offTrackBonusMinJumpHeightFactor,
+        maxJumpHeightFactor = offTrackBonusMaxJumpHeightFactor,
+    };
+
+    // ── Difficult pickups (off-track bonuses, Life, Special) — reachability ────
+    // Every placement profile is clamped against the REAL movement limits (PlayerController:
+    // strafeSpeed, jump air time 2·jumpForce/|gravity|, allowAirControl) and the time a pickup is
+    // visible before it's reached (spawnLookAhead):
+    //   beyond the edge ≤ strafeSpeed · airTime/2 · difficultPickupAirReach  (out and back in one jump;
+    //                     without air control nothing is placed beyond the edge)
+    //   from the centre ≤ strafeSpeed · (spawnLookAhead − minReactionTime)
+    [Header("Difficult Pickup Reachability")]
+    [Tooltip("Seconds the player needs to notice a pickup before starting to move toward it.")]
+    [Min(0f)] public float minReactionTime = 0.35f;
+    [Tooltip("Fraction of the theoretical out-and-back air reach a pickup may use beyond the edge " +
+             "(1 = a perfect jump at full strafe speed; lower = more forgiving).")]
+    [Range(0.1f, 1f)] public float difficultPickupAirReach = 0.8f;
+    [Tooltip("Minimum song-time between two Life/Special pickups; within this window of a Life/Special, " +
+             "every off-track bonus must be on the SAME side (no contradictory detours back to back).")]
+    [Min(0f)] public float difficultPickupMinSpacing = 3f;
+
     // ── Object Pooling (ring-pool specific) ───────────────────────────────────
     [Header("Object Pooling")]
     public int   poolInitialSize = 8;
@@ -322,4 +356,20 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
         RingType.Special => ringSpecial ?? ringDefault,
         _               => ringDefault,
     };
+}
+
+/// <summary>
+/// How far outside the normal racing line a pickup type sits — a signed distance from the track's
+/// real local EDGE (metres; negative = inside the track, positive = beyond the edge, i.e. a jump with
+/// air control) plus its height band as a fraction of the full jump (jumpForce²/(2·|gravity|)).
+/// Shared by off-track score bonuses (moderate), Life (difficult) and Special (very difficult);
+/// GameplayTimeline clamps every value to what the player can physically reach.
+/// </summary>
+[System.Serializable]
+public class PickupPlacementProfile
+{
+    public float minEdgeOffset;
+    public float maxEdgeOffset;
+    [Range(0f, 1f)] public float minJumpHeightFactor;
+    [Range(0f, 1f)] public float maxJumpHeightFactor = 1f;
 }

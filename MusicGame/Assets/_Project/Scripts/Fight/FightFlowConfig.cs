@@ -80,6 +80,19 @@ public class FightFlowConfig : ScriptableObject
              "own total timing (sum of its maxTimeBetweenInputs gaps) in the set below.")]
     public float inputBufferWindowSeconds = 1.5f;
 
+    [Tooltip("While Down is held, a Punch or Kick press waits up to this many seconds for the OTHER " +
+             "button (Down + Punch + Kick = Power charge) before being processed normally. Only " +
+             "Down + button presses are ever delayed, and only by this much.")]
+    [Range(0f, 0.25f)] public float simultaneousPressWindow = 0.1f;
+
+    [Tooltip("After a combo has COMPLETED (and its move started), how long the next input may take to " +
+             "extend it into a longer registered combo (PPP → PPPK), which then cancels and replaces " +
+             "it. Also capped per step by the longer combo's own maxTimeBetweenInputs.")]
+    [Min(0.01f)] public float comboContinuationWindow = 0.5f;
+
+    [Tooltip("Hard cap on buffered inputs (on top of inputBufferWindowSeconds).")]
+    [Min(4)] public int inputBufferMaxEntries = 24;
+
     [Tooltip("The data-driven combo list FightComboRecognizer checks input against. Empty/null is " +
              "tolerated (normals still fire, just nothing ever completes as a combo).")]
     public FightComboSetSO comboSet;

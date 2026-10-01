@@ -41,9 +41,14 @@ public class FightProjectile : MonoBehaviour
     /// directly (see FighterAI's own "no fer trampes" doc).</summary>
     public FightHitDefinition HitDefinition => _data != null ? _data.hitDefinition : null;
 
+    // The spawning move's attack bonus (finisher / Signature / Power), frozen at spawn — the move
+    // itself may already be over by the time this lands.
+    private FightAttackBonus _bonus = FightAttackBonus.Identity;
+
     public void Initialize(FighterActor owner, FighterActor target, FightMoveDefinition move,
-        FightProjectileData data, FightCombatBalanceConfig balanceConfig, Vector3 direction)
+        FightProjectileData data, FightCombatBalanceConfig balanceConfig, Vector3 direction, FightAttackBonus bonus)
     {
+        _bonus = bonus;
         _owner = owner;
         _target = target;
         _move = move;
@@ -86,7 +91,7 @@ public class FightProjectile : MonoBehaviour
             if (hurtbox == null) continue;
             if (!FightCombatShapes.Overlaps(transform.position, _data.hitDefinition, hurtbox.WorldCenter, hurtbox.Size)) continue;
 
-            var result = FightHitDispatcher.ResolveAndApply(_owner, _target, _move, _data.hitDefinition, _balanceConfig);
+            var result = FightHitDispatcher.ResolveAndApply(_owner, _target, _move, _data.hitDefinition, _balanceConfig, _bonus);
             Debug.Log($"[FightProjectile] {(result.IsBlocked ? "Hit BLOCKED" : "Hit landed")}: {(_move != null ? _move.debugName : "?")} -> " +
                       $"{(result.IsBlocked ? result.FinalChipDamage : result.FinalDamage):F1} dmg");
 

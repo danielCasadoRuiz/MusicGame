@@ -29,6 +29,8 @@ MonoBehaviour:
       horizontal: 0
       vertical: 0
     maxTimeBetweenInputs: 0.5
+    maxTotalDuration: 0
+    attackBonus: 0
     priority: 0
     moveId: move_aaa_b
   - id: bb
@@ -41,6 +43,8 @@ MonoBehaviour:
       horizontal: 0
       vertical: 0
     maxTimeBetweenInputs: 0.5
+    maxTotalDuration: 0
+    attackBonus: 0
     priority: 0
     moveId: move_bb
   - id: bbab
@@ -59,6 +63,8 @@ MonoBehaviour:
       horizontal: 0
       vertical: 0
     maxTimeBetweenInputs: 0.5
+    maxTotalDuration: 0
+    attackBonus: 0
     priority: 0
     moveId: move_bbab
   - id: forward_a
@@ -68,6 +74,8 @@ MonoBehaviour:
       horizontal: 1
       vertical: 0
     maxTimeBetweenInputs: 0.5
+    maxTotalDuration: 0
+    attackBonus: 0
     priority: 0
     moveId: move_forward_a
   - id: down_b
@@ -77,6 +85,8 @@ MonoBehaviour:
       horizontal: 0
       vertical: 2
     maxTimeBetweenInputs: 0.5
+    maxTotalDuration: 0
+    attackBonus: 0
     priority: 0
     moveId: move_down_b
   - id: back_aab
@@ -92,6 +102,8 @@ MonoBehaviour:
       horizontal: 0
       vertical: 0
     maxTimeBetweenInputs: 0.5
+    maxTotalDuration: 0
+    attackBonus: 0
     priority: 0
     moveId: move_back_aab
   - id: dash_forward
@@ -104,6 +116,8 @@ MonoBehaviour:
       horizontal: 1
       vertical: 0
     maxTimeBetweenInputs: 0.35
+    maxTotalDuration: 0
+    attackBonus: 0
     priority: 0
     moveId: move_dash_forward
   - id: special_fireball
@@ -113,6 +127,8 @@ MonoBehaviour:
       horizontal: 1
       vertical: 2
     maxTimeBetweenInputs: 0.5
+    maxTotalDuration: 0
+    attackBonus: 0
     priority: 0
     moveId: move_special_fireball
   - id: backdash
@@ -125,5 +141,41 @@ MonoBehaviour:
       horizontal: 2
       vertical: 0
     maxTimeBetweenInputs: 0.35
+    maxTotalDuration: 0
+    attackBonus: 0
     priority: 0
     moveId: move_backdash
+  - id: punch_finisher
+    debugName: Punch Finisher
+    steps:
+    - button: 0
+      horizontal: 0
+      vertical: 0
+    - button: 0
+      horizontal: 0
+      vertical: 0
+    - button: 0
+      horizontal: 0
+      vertical: 0
+    maxTimeBetweenInputs: 0.6
+    maxTotalDuration: 0
+    attackBonus: 1
+    priority: 0
+    moveId: 
+  - id: kick_finisher
+    debugName: Kick Finisher
+    steps:
+    - button: 1
+      horizontal: 0
+      vertical: 0
+    - button: 1
+      horizontal: 0
+      vertical: 0
+    - button: 1
+      horizontal: 0
+      vertical: 0
+    maxTimeBetweenInputs: 0.6
+    maxTotalDuration: 0
+    attackBonus: 2
+    priority: 0
+    moveId: 

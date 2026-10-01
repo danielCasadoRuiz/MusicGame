@@ -17,6 +17,8 @@ public class AIFightInputSource : IFightInputSource
     public float Vertical { get; private set; }
     public bool PunchPressed { get; private set; }
     public bool KickPressed { get; private set; }
+    public bool PunchHeld => false; // the AI taps; it never charges the Power hold
+    public bool KickHeld => false;
 
     private float _desiredHorizontal;
     private float _desiredVertical;

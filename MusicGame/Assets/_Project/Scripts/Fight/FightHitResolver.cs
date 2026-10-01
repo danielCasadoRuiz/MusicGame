@@ -34,6 +34,9 @@ public struct FightHitResult
     public float FinalChipDamage;
     /// <summary>Only meaningful while IsBlocked — see FightCombatBalanceConfig.blockStunMultiplier.</summary>
     public float FinalBlockStun;
+
+    /// <summary>Per-attack multipliers that were applied (finisher / Signature / Power) — identity otherwise.</summary>
+    public FightAttackBonus Bonus;
 }
 
 /// <summary>
@@ -47,7 +50,13 @@ public struct FightHitResult
 public static class FightHitResolver
 {
     public static FightHitResult Resolve(FighterActor attacker, FighterActor defender, FightMoveDefinition move,
-        FightHitDefinition hitDef, FightCombatBalanceConfig config, bool isBlocked)
+        FightHitDefinition hitDef, FightCombatBalanceConfig config, bool isBlocked) =>
+        Resolve(attacker, defender, move, hitDef, config, isBlocked, FightAttackBonus.Identity);
+
+    /// <summary>`bonus` (finisher / Signature / Power — see FightAttackBonus) scales damage, hit/block
+    /// stun and knockback on top of every stat modifier, landed or blocked.</summary>
+    public static FightHitResult Resolve(FighterActor attacker, FighterActor defender, FightMoveDefinition move,
+        FightHitDefinition hitDef, FightCombatBalanceConfig config, bool isBlocked, FightAttackBonus bonus)
     {
         var scaling      = move != null ? move.scalingStat : FighterBuildStat.None;
         var attackerMods = config != null && attacker != null ? config.ComputeModifiers(attacker.BuildStats, scaling) : FightCombatModifiers.Identity;
@@ -59,6 +68,7 @@ public static class FightHitResolver
             BaseDamage = hitDef.baseDamage, DamageModifier = attackerMods.DamageDealtMultiplier, DefenseModifier = defenderMods.DamageTakenMultiplier,
             BaseHitStun = hitDef.baseHitStun, HitStunResistanceModifier = defenderMods.ResistanceMultiplier,
             BaseKnockback = hitDef.baseKnockback, KnockbackModifier = attackerMods.KnockbackDealtMultiplier,
+            Bonus = bonus,
         };
 
         if (isBlocked)
@@ -66,17 +76,17 @@ public static class FightHitResolver
             float blockStunMult      = config != null ? config.blockStunMultiplier      : 0.5f;
             float blockKnockbackMult = config != null ? config.blockKnockbackMultiplier : 0.5f;
 
-            result.FinalChipDamage = UnityEngine.Mathf.Max(0f, hitDef.chipDamage * defenderMods.DamageTakenMultiplier);
-            result.FinalBlockStun  = UnityEngine.Mathf.Max(0f, hitDef.baseHitStun * blockStunMult * defenderMods.ResistanceMultiplier);
-            result.FinalKnockback  = UnityEngine.Mathf.Max(0f, hitDef.baseKnockback * blockKnockbackMult * attackerMods.KnockbackDealtMultiplier * defenderMods.ResistanceMultiplier);
+            result.FinalChipDamage = UnityEngine.Mathf.Max(0f, hitDef.chipDamage * defenderMods.DamageTakenMultiplier * bonus.damage);
+            result.FinalBlockStun  = UnityEngine.Mathf.Max(0f, hitDef.baseHitStun * blockStunMult * defenderMods.ResistanceMultiplier * bonus.stagger);
+            result.FinalKnockback  = UnityEngine.Mathf.Max(0f, hitDef.baseKnockback * blockKnockbackMult * attackerMods.KnockbackDealtMultiplier * defenderMods.ResistanceMultiplier * bonus.knockback);
             // FinalDamage/FinalHitStun stay 0 — a blocked hit never applies normal damage/hit stun.
         }
         else
         {
-            result.FinalDamage    = UnityEngine.Mathf.Max(0f, hitDef.baseDamage * attackerMods.DamageDealtMultiplier * defenderMods.DamageTakenMultiplier);
-            result.FinalHitStun   = UnityEngine.Mathf.Max(0f, hitDef.baseHitStun * attackerMods.KnockbackDealtMultiplier * defenderMods.ResistanceMultiplier);
+            result.FinalDamage    = UnityEngine.Mathf.Max(0f, hitDef.baseDamage * attackerMods.DamageDealtMultiplier * defenderMods.DamageTakenMultiplier * bonus.damage);
+            result.FinalHitStun   = UnityEngine.Mathf.Max(0f, hitDef.baseHitStun * attackerMods.KnockbackDealtMultiplier * defenderMods.ResistanceMultiplier * bonus.stagger);
             result.CausesKnockdown = move != null && move.knockdownOnHit;
-            result.FinalKnockback = UnityEngine.Mathf.Max(0f, hitDef.baseKnockback * attackerMods.KnockbackDealtMultiplier * defenderMods.ResistanceMultiplier);
+            result.FinalKnockback = UnityEngine.Mathf.Max(0f, hitDef.baseKnockback * attackerMods.KnockbackDealtMultiplier * defenderMods.ResistanceMultiplier * bonus.knockback);
         }
 
         return result;
@@ -93,7 +103,11 @@ public static class FightHitResolver
 public static class FightHitDispatcher
 {
     public static FightHitResult ResolveAndApply(FighterActor attacker, FighterActor defender, FightMoveDefinition move,
-        FightHitDefinition hitDef, FightCombatBalanceConfig config)
+        FightHitDefinition hitDef, FightCombatBalanceConfig config) =>
+        ResolveAndApply(attacker, defender, move, hitDef, config, FightAttackBonus.Identity);
+
+    public static FightHitResult ResolveAndApply(FighterActor attacker, FighterActor defender, FightMoveDefinition move,
+        FightHitDefinition hitDef, FightCombatBalanceConfig config, FightAttackBonus bonus)
     {
         // Invulnerable (Dodge window, knockdown flow): the hit whiffs — nothing is applied.
         if (defender != null && defender.IsInvulnerable)
@@ -104,7 +118,7 @@ public static class FightHitDispatcher
         }
 
         bool blocked = defender != null && defender.Guard != null && defender.Guard.WouldBlock(hitDef.attackHeight, hitDef.guardType);
-        var result = FightHitResolver.Resolve(attacker, defender, move, hitDef, config, blocked);
+        var result = FightHitResolver.Resolve(attacker, defender, move, hitDef, config, blocked, bonus);
 
         if (blocked)
         {

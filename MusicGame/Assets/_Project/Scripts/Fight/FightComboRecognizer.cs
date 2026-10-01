@@ -1,131 +1,261 @@
+using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>What one input resolved to — exactly ONE action per physical press.</summary>
+public struct FightComboResolution
+{
+    /// <summary>The registered combo this input completed, or null → the press's own normal
+    /// (a direction press that completes nothing does nothing — movement handles it).</summary>
+    public FightComboDefinition Combo;
+    /// <summary>The combo-string this input belongs to (moves started from the same string share it).</summary>
+    public int StringId;
+    /// <summary>True when this input EXTENDS an already-completed combo of the same string
+    /// (PPP → PPPK): the shorter combo's move must be cancelled and replaced, never run alongside.</summary>
+    public bool ReplacesPrevious;
+    /// <summary>The completed combo being replaced (debug).</summary>
+    public FightComboDefinition Replaced;
+}
+
 /// <summary>
-/// Watches a FightInputBuffer against a FightComboSetSO and publishes FightComboDetectedEvent when
-/// a sequence matches — entirely separate from normals (FightNormalPunchEvent/Kick fire immediately
-/// elsewhere, the instant a button is pressed, regardless of anything below).
+/// EXTENDABLE COMBO STRINGS over ONE ordered stream of abstract inputs (FightInputBuffer): direction
+/// presses (Up/Down/Forward/Back, button None) and Punch/Kick presses (with the direction held at that
+/// moment) in their real chronological order, each with a timestamp and a unique press number. A
+/// combo may mix them freely (Down → Forward → Punch, Forward → Kick, P P P K …). Keyboard and touch
+/// feed the same abstract inputs.
 ///
-/// PREFIX POLICY (e.g. "B-B" vs "B-B-A-B", where the former is a strict prefix of the latter):
-///   1. On every new input, find the LONGEST combo whose steps match the buffer's tail exactly
-///      (timing included) — ties broken by `priority`.
-///   2. If that match is itself a strict prefix of some STRICTLY LONGER combo in the set (i.e. the
-///      player could still be mid-way through typing the longer one), DON'T fire yet — hold it as
-///      "pending" for exactly that combo's own maxTimeBetweenInputs.
-///        - If a later input completes the longer combo before the pending deadline, the longer
-///          combo becomes the new longest match, the pending short one is superseded (dropped, one
-///          pending slot only) and fires as usual — via case 3 below, since by definition nothing
-///          in this V1 set is longer than "B-B-A-B" itself.
-///        - If the deadline passes with no extension, the short combo fires as originally matched.
-///   3. If the match ISN'T a prefix of anything longer, fire it immediately — no delay at all.
-/// This means only genuinely AMBIGUOUS combos (short ones that are prefixes of a longer one) ever
-/// wait, and only for that combo's own configured window — everything else, including every
-/// single-step combo like "Forward + A", resolves the instant it's typed.
+/// Every input resolves IMMEDIATELY to exactly one action — never waiting for a longer combo:
+///   EXTENSION — the current string S grows by input I when S+I is a prefix of (or equals) some
+///     registered combo with its timing satisfied (each gap ≤ that combo's maxTimeBetweenInputs, the
+///     whole sequence ≤ its maxTotalDuration, and — if S is itself a completed combo — I within the
+///     comboContinuationWindow).
+///   FRESH — the longest contiguous suffix of the recent, UNCONSUMED stream ending at I that is a
+///     valid combo prefix (this is how Down → Forward → Punch starts while an older string exists).
+///   Choice: a COMPLETED combo beats a mere prefix; between two completed ones the longer wins (tie →
+///     the extension). Completing a combo whose string was already a completed combo is flagged
+///     ReplacesPrevious, so the move system cancels the shorter combo's move and starts the longer.
+///   A direction press that extends nothing and completes nothing is TRANSPARENT: it stays in the
+///     stream (a later fresh match may start from it) but does not end the current string — walking
+///     between punches never breaks P P P. A Punch/Kick that fits nothing ends the string and resolves
+///     to its plain normal.
+/// CONSUMPTION: the input that completes a combo consumes it and everything before it, so no press is
+/// ever reused to complete a second, independent combo; only extending the SAME string builds on it.
+/// Works to any depth (PPP → PPPK → PPPKP …).
 /// </summary>
 public class FightComboRecognizer
 {
     private readonly FightComboSetSO _comboSet;
     private readonly FightInputBuffer _buffer;
     private readonly FighterInputController _owner;
+    private readonly float _continuationWindow;
 
-    private FightComboDefinition _pendingCombo;
-    private float _pendingFireTime;
+    // The current string.
+    private readonly List<FightInputEvent> _steps = new();
+    private FightComboDefinition _completed;          // the combo the current string node IS (null = prefix only)
+    private bool _alive;
+    private int _stringId;
+    private int _consumedSequence = int.MinValue;     // inputs up to here belong to a completed combo
+    private int _nextStringId = 1;
+
+    private readonly List<FightInputEvent> _scratch = new();
+    private readonly List<FightInputEvent> _recent = new();
 
     public FightComboDefinition LastDetected { get; private set; }
     public float LastDetectedTime { get; private set; } = -1f;
+    /// <summary>Debug: last "short → long" extension, e.g. "Punch Finisher → Combo A-A-A-B".</summary>
+    public string LastExtension { get; private set; } = "";
+    public float LastExtensionTime { get; private set; } = -1f;
 
-    /// <summary>`owner` is stamped onto every FightComboDetectedEvent this recognizer fires — see
-    /// that event's own doc on why (one recognizer instance per FighterInputController now that the
-    /// Opponent plays for real too).</summary>
-    public FightComboRecognizer(FightComboSetSO comboSet, FightInputBuffer buffer, FighterInputController owner)
+    public FightComboRecognizer(FightComboSetSO comboSet, FightInputBuffer buffer, FighterInputController owner, float continuationWindow = 0.5f)
     {
         _comboSet = comboSet;
         _buffer = buffer;
         _owner = owner;
+        _continuationWindow = Mathf.Max(0.01f, continuationWindow);
     }
 
-    /// <summary>Call right after appending a new FightInputEvent to the buffer.</summary>
-    public void OnNewInput()
+    /// <summary>Resolve the input just appended to the buffer (see class doc).</summary>
+    public FightComboResolution OnNewInput(FightInputEvent input)
     {
-        var combos = _comboSet != null ? _comboSet.combos : null;
-        if (combos == null || combos.Length == 0) return;
+        bool isDirection = input.Button == FightButton.None;
+        if (_comboSet == null || _comboSet.combos == null || _comboSet.combos.Length == 0)
+            return isDirection ? new FightComboResolution { StringId = _stringId } : new FightComboResolution { StringId = BeginString() };
 
-        FightComboDefinition best = null;
-        for (int i = 0; i < combos.Length; i++)
+        // EXTENSION candidate.
+        bool extValid = false;
+        FightComboDefinition extCombo = null;
+        bool live = IsLiveAt(input.Time);
+        if (live)
         {
-            var candidate = combos[i];
-            if (!MatchesTail(candidate, _buffer.Events)) continue;
-            if (best == null || candidate.steps.Length > best.steps.Length ||
-                (candidate.steps.Length == best.steps.Length && candidate.priority > best.priority))
-                best = candidate;
+            _scratch.Clear();
+            _scratch.AddRange(_steps);
+            _scratch.Add(input);
+            extValid = IsNode(_scratch, out extCombo);
         }
 
-        if (best == null) return; // nothing complete yet — leave any existing pending timer alone
-
-        // Fresher information supersedes whatever was pending — there's only ever one pending slot.
-        _pendingCombo = null;
-
-        bool extendable = false;
-        for (int i = 0; i < combos.Length; i++)
+        // FRESH candidate: longest contiguous unconsumed suffix ending at this input.
+        CollectRecent(input);
+        int freshStart = -1, freshCompleteStart = -1;
+        FightComboDefinition freshCombo = null;
+        for (int start = 0; start < _recent.Count; start++)
         {
-            var candidate = combos[i];
-            if (candidate == best || candidate.steps.Length <= best.steps.Length) continue;
-            if (IsPrefixOf(best, candidate)) { extendable = true; break; }
+            _scratch.Clear();
+            for (int i = start; i < _recent.Count; i++) _scratch.Add(_recent[i]);
+            if (!IsNode(_scratch, out var completed)) continue;
+            if (freshStart < 0) freshStart = start;
+            if (completed != null && freshCompleteStart < 0) { freshCompleteStart = start; freshCombo = completed; }
         }
 
-        if (extendable)
+        // Choose (see class doc).
+        if (extCombo != null || freshCombo != null)
         {
-            _pendingCombo = best;
-            _pendingFireTime = Time.time + Mathf.Max(0.01f, best.maxTimeBetweenInputs);
+            bool useExt = extCombo != null && (freshCombo == null || extCombo.steps.Length >= freshCombo.steps.Length);
+            return useExt ? Extend(input, extCombo) : StartFrom(freshCompleteStart, freshCombo, input);
         }
-        else
-        {
-            Fire(best);
-        }
+        if (extValid) return Extend(input, null);
+        if (freshStart >= 0 && (!isDirection || !live)) return StartFrom(freshStart, null, input);
+        if (isDirection) return new FightComboResolution { StringId = _stringId }; // transparent
+
+        // A Punch/Kick that fits nothing: the string is over, plain normal.
+        return new FightComboResolution { StringId = BeginString() };
     }
 
-    /// <summary>Call once per frame regardless of new input — fires a pending short combo once its
-    /// grace window expires unextended.</summary>
-    public void Tick()
+    /// <summary>Ends the string (stun, knockdown, match end, round reset) — nothing typed so far may
+    /// continue or seed a new combo.</summary>
+    public void Reset()
     {
-        if (_pendingCombo == null || Time.time < _pendingFireTime) return;
-        var combo = _pendingCombo;
-        _pendingCombo = null;
-        Fire(combo);
+        int last = _buffer.Events.Count > 0 ? _buffer.Events[_buffer.Events.Count - 1].Sequence : int.MinValue;
+        if (!_alive && _steps.Count == 0 && _consumedSequence >= last) return; // already reset
+        _alive = false;
+        _completed = null;
+        _steps.Clear();
+        _consumedSequence = Mathf.Max(_consumedSequence, last);
     }
 
-    private void Fire(FightComboDefinition combo)
+    // ── Debug ───────────────────────────────────────────────────────────────────
+    public string CurrentStringText => _alive && _steps.Count > 0 ? string.Join(" → ", _steps.ConvertAll(s => s.ToString())) : "-";
+    public FightComboDefinition CurrentCombo => _alive ? _completed : null;
+    public bool HasContinuation => IsLiveAt(Time.time) && NextSteps().Count > 0;
+    /// <summary>"Kick | Punch" — the inputs that would continue the current string right now.</summary>
+    public string ContinuationText => IsLiveAt(Time.time) ? string.Join(" | ", NextSteps()) : "";
+    /// <summary>Seconds left to continue the current string (0 = no continuation possible).</summary>
+    public float ContinuationRemaining => HasContinuation ? Mathf.Max(0f, LastTime() + AllowedGap() - Time.time) : 0f;
+
+    // ── Internals ───────────────────────────────────────────────────────────────
+
+    private FightComboResolution Extend(FightInputEvent input, FightComboDefinition completed)
     {
-        LastDetected = combo;
+        var previous = _completed;
+        _steps.Add(input);
+        _completed = completed;
+        if (completed != null) Consume(input, completed);
+        bool replaces = completed != null && previous != null;
+        if (replaces)
+        {
+            LastExtension = $"{Name(previous)} → {Name(completed)}";
+            LastExtensionTime = Time.time;
+        }
+        return new FightComboResolution { Combo = completed, StringId = _stringId, ReplacesPrevious = replaces, Replaced = replaces ? previous : null };
+    }
+
+    private FightComboResolution StartFrom(int start, FightComboDefinition completed, FightInputEvent input)
+    {
+        BeginString();
+        for (int i = start; i < _recent.Count; i++) _steps.Add(_recent[i]);
+        _completed = completed;
+        _alive = true;
+        if (completed != null) Consume(input, completed);
+        return new FightComboResolution { Combo = completed, StringId = _stringId };
+    }
+
+    private int BeginString()
+    {
+        _steps.Clear();
+        _completed = null;
+        _alive = false;
+        _stringId = _nextStringId++;
+        return _stringId;
+    }
+
+    private void Consume(FightInputEvent input, FightComboDefinition completed)
+    {
+        _consumedSequence = input.Sequence;
+        LastDetected = completed;
         LastDetectedTime = Time.time;
-        EventBus.Publish(new FightComboDetectedEvent { Source = _owner, Combo = combo });
     }
 
-    private static bool MatchesTail(FightComboDefinition combo, System.Collections.Generic.IReadOnlyList<FightInputEvent> events)
+    // Recent unconsumed inputs in chronological (press) order, ending with `input`.
+    private void CollectRecent(FightInputEvent input)
     {
-        int n = combo.steps.Length;
-        if (n == 0 || events.Count < n) return false;
-
-        int offset = events.Count - n;
-        for (int i = 0; i < n; i++)
+        _recent.Clear();
+        var events = _buffer.Events;
+        for (int i = 0; i < events.Count; i++)
         {
-            var step = combo.steps[i];
-            var evt  = events[offset + i];
-            if (step.button != evt.Button || step.horizontal != evt.Horizontal || step.vertical != evt.Vertical)
-                return false;
-            if (i > 0 && evt.Time - events[offset + i - 1].Time > combo.maxTimeBetweenInputs)
-                return false;
+            var e = events[i];
+            if (e.Sequence > _consumedSequence && e.Sequence < input.Sequence) _recent.Add(e);
         }
+        _recent.Add(input);
+    }
+
+    // The string can still be continued by an input at `time`.
+    private bool IsLiveAt(float time) => _alive && time - LastTime() <= AllowedGap();
+
+    private float LastTime() => _steps.Count > 0 ? _steps[_steps.Count - 1].Time : float.NegativeInfinity;
+
+    // Longest gap any still-possible continuation allows; a completed node is also capped by the
+    // continuation window. No continuation at all → -1 (the string can't grow).
+    private float AllowedGap()
+    {
+        float gap = -1f;
+        foreach (var combo in _comboSet.combos)
+            if (combo != null && combo.steps.Length > _steps.Count && PrefixMatches(combo, _steps) && TimingHolds(combo, _steps))
+                gap = Mathf.Max(gap, combo.maxTimeBetweenInputs);
+        if (_completed != null) gap = Mathf.Min(gap, _continuationWindow);
+        return gap;
+    }
+
+    private List<string> NextSteps()
+    {
+        var next = new List<string>();
+        foreach (var combo in _comboSet.combos)
+        {
+            if (combo == null || combo.steps.Length <= _steps.Count || !PrefixMatches(combo, _steps) || !TimingHolds(combo, _steps)) continue;
+            string s = combo.steps[_steps.Count].ToString();
+            if (!next.Contains(s)) next.Add(s);
+        }
+        return next;
+    }
+
+    // `seq` is a valid node: a prefix of at least one registered combo with its timing satisfied.
+    // `completed` = the combo it equals exactly (higher priority wins ties), else null.
+    private bool IsNode(List<FightInputEvent> seq, out FightComboDefinition completed)
+    {
+        completed = null;
+        bool node = false;
+        foreach (var combo in _comboSet.combos)
+        {
+            if (combo == null || combo.steps.Length < seq.Count || !PrefixMatches(combo, seq) || !TimingHolds(combo, seq)) continue;
+            node = true;
+            if (combo.steps.Length == seq.Count && (completed == null || combo.priority > completed.priority))
+                completed = combo;
+        }
+        return node;
+    }
+
+    private static bool PrefixMatches(FightComboDefinition combo, List<FightInputEvent> seq)
+    {
+        if (combo.steps == null || combo.steps.Length < seq.Count) return false;
+        for (int i = 0; i < seq.Count; i++)
+            if (!combo.steps[i].Matches(seq[i])) return false;
         return true;
     }
 
-    private static bool IsPrefixOf(FightComboDefinition prefix, FightComboDefinition full)
+    private static bool TimingHolds(FightComboDefinition combo, List<FightInputEvent> seq)
     {
-        for (int i = 0; i < prefix.steps.Length; i++)
-        {
-            var a = prefix.steps[i];
-            var b = full.steps[i];
-            if (a.button != b.button || a.horizontal != b.horizontal || a.vertical != b.vertical) return false;
-        }
+        for (int i = 1; i < seq.Count; i++)
+            if (seq[i].Time - seq[i - 1].Time > combo.maxTimeBetweenInputs) return false;
+        if (combo.maxTotalDuration > 0f && seq.Count > 1 && seq[seq.Count - 1].Time - seq[0].Time > combo.maxTotalDuration) return false;
         return true;
     }
+
+    private static string Name(FightComboDefinition c) => c == null ? "-" : (!string.IsNullOrEmpty(c.debugName) ? c.debugName : c.id);
 }

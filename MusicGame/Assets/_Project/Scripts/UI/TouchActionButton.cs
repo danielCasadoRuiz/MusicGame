@@ -8,11 +8,19 @@ using UnityEngine.EventSystems;
 /// what Fight's Punch/Kick buttons use, and what any FUTURE single-action touch button should reach
 /// for instead of cloning another hardwired one-off.
 /// </summary>
-public class TouchActionButton : MonoBehaviour, IPointerDownHandler
+public class TouchActionButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     private System.Action _onPress;
+    private System.Action _onRelease;
 
-    public void Initialize(System.Action onPress) => _onPress = onPress;
+    /// <summary>`onRelease` (optional) fires on pointer up — for buttons whose HOLD matters.</summary>
+    public void Initialize(System.Action onPress, System.Action onRelease = null)
+    {
+        _onPress = onPress;
+        _onRelease = onRelease;
+    }
 
     public void OnPointerDown(PointerEventData eventData) => _onPress?.Invoke();
+    public void OnPointerUp(PointerEventData eventData) => _onRelease?.Invoke();
+    private void OnDisable() => _onRelease?.Invoke(); // never leave a button "held" when hidden
 }

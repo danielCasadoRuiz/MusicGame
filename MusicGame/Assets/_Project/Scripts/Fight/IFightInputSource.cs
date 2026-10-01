@@ -19,6 +19,11 @@ public interface IFightInputSource
     bool PunchPressed { get; }
     /// <summary>True only on the frame Kick was pressed — valid until the next Tick().</summary>
     bool KickPressed { get; }
+    /// <summary>Punch is currently held down (used by the Down + Punch + Kick Power hold). Sources
+    /// that can't hold (AI) report false — they simply never charge Power.</summary>
+    bool PunchHeld { get; }
+    /// <summary>Kick is currently held down — see PunchHeld.</summary>
+    bool KickHeld { get; }
 
     /// <summary>Call exactly once per frame, before reading the properties above — computes/caches
     /// this frame's values so multiple readers this frame (immediate-normal dispatch, buffer

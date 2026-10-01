@@ -403,9 +403,13 @@ public class GameplayTimeline
 
     // ── Combat resource pickups (Life / Special) ────────────────────────────────────
     // Only inside the actually-played window (PlayRangeResolver — the same window GameplayManager
-    // plays), so every generated resource pickup is really reachable. Life: spread evenly over the
-    // played window. Special: just after the strongest structural moments (climax-tagged first).
-    // Each one is nudged in time until it keeps resourcePickupMinGap from every other pickup.
+    // plays). WHEN: Life spread evenly over the played window; Special just after the strongest
+    // structural moments (climax-tagged first). WHERE: difficult optional pickups — beyond the track
+    // edge per their PickupPlacementProfile (Life difficult, Special very difficult), high in the
+    // jump band, clamped to real reach (DifficultLateral). Each is nudged in time to keep
+    // resourcePickupMinGap from every pickup AND difficultPickupMinSpacing from every other
+    // difficult one (off-track bonus / Life / Special); a difficult pickup still nearby shares its
+    // side, so two detours never demand opposite moves.
     private static void EmitResourcePickups(SongProfile profile, MusicRunnerGameplayConfig config, MusicPath path,
                                             MacroEvent[] macroEvents, System.Random rng, float vFloorDesign, float vCeil,
                                             float warmup, float speed, List<TimelineEvent> events)
@@ -417,18 +421,50 @@ public class GameplayTimeline
         float playedMinutes = (range.End - range.Start) / 60f;
 
         var taken = new List<float>(events.Count + 8);
-        foreach (var e in events) taken.Add(e.eventTime);
-
-        void Place(RingType type, float desiredTime, float lateral)
+        var offTrack = new List<(float time, float lateral)>(); // existing off-track score bonuses
+        var rare = new List<float>();                            // Life/Special already placed
+        foreach (var e in events)
         {
+            taken.Add(e.eventTime);
+            if (e.isOffTrack) offTrack.Add((e.eventTime, e.lateralOffset));
+        }
+        float maxJumpHeight = MaxJumpHeight(config);
+        float spacing = c.difficultPickupMinSpacing;
+
+        // Side every difficult pickup within ±spacing of t agrees on (0 = none nearby → free choice);
+        // NaN when they disagree or another Life/Special is that close → t is not usable.
+        float SideAt(float t)
+        {
+            foreach (float r in rare) if (Mathf.Abs(r - t) < spacing) return float.NaN;
+            float side = 0f;
+            foreach (var o in offTrack)
+            {
+                if (Mathf.Abs(o.time - t) >= spacing || Mathf.Abs(o.lateral) < 0.01f) continue;
+                float s = Mathf.Sign(o.lateral);
+                if (side != 0f && s != side) return float.NaN;
+                side = s;
+            }
+            return side;
+        }
+
+        void Place(RingType type, float desiredTime)
+        {
+            var profile = type == RingType.Special ? c.specialPlacement : c.lifePlacement;
             // Keep a margin from both ends (the fade-out / farewell starts right at windowEnd).
             float lo = windowStart + 1.0f, hi = windowEnd - 1.5f;
             if (hi <= lo) return;
-            float t = FindFreeTime(Mathf.Clamp(desiredTime, lo, hi), lo, hi, c.resourcePickupMinGap, taken);
+            float t = FindFreeTime(Mathf.Clamp(desiredTime, lo, hi), lo, hi, c.resourcePickupMinGap, taken,
+                                   candidate => !float.IsNaN(SideAt(candidate)));
             if (t < 0f) return;
-            taken.Add(t);
 
-            float vFloor = CollectibleFloor(type, config, vFloorDesign, vCeil);
+            // Same side as the off-track bonuses around it — never opposite detours back to back.
+            float lateral = DifficultLateral(profile, path, config, t * speed, rng, SideAt(t));
+            taken.Add(t);
+            rare.Add(t);
+            offTrack.Add((t, lateral));
+
+            float vCeilD  = maxJumpHeight * Mathf.Max(profile.minJumpHeightFactor, profile.maxJumpHeightFactor);
+            float vFloor  = CollectibleFloor(type, config, maxJumpHeight * Mathf.Min(profile.minJumpHeightFactor, profile.maxJumpHeightFactor), vCeilD);
             events.Add(new TimelineEvent
             {
                 eventTime      = t,
@@ -436,7 +472,7 @@ public class GameplayTimeline
                 eventType      = EventType.Ring,
                 ringType       = type,
                 lateralOffset  = lateral,
-                verticalOffset = Mathf.Lerp(vFloor, vCeil, c.resourcePickupHeight),
+                verticalOffset = vFloor + (float)rng.NextDouble() * Mathf.Max(0f, vCeilD - vFloor),
                 floorClearance = vFloor,
                 strength       = 1f,
                 sourceFeature  = type.ToString(),
@@ -450,9 +486,7 @@ public class GameplayTimeline
             int count = Mathf.Min(c.maxLifePickups, Mathf.RoundToInt(playedMinutes * c.lifePickupsPerMinute));
             for (int k = 0; k < count; k++)
             {
-                float t    = Mathf.Lerp(windowStart, windowEnd, (k + 1f) / (count + 1f));
-                float half = LateralHalfRange(path, config, t * speed);
-                Place(RingType.Life, t, half > 0f ? (float)(rng.NextDouble() * 2.0 - 1.0) * half : 0f);
+                Place(RingType.Life, Mathf.Lerp(windowStart, windowEnd, (k + 1f) / (count + 1f)));
             }
         }
 
@@ -471,17 +505,18 @@ public class GameplayTimeline
             {
                 if (placed >= c.maxSpecialPickups) break;
                 int before = events.Count;
-                Place(RingType.Special, m.eventTime + c.specialPickupDelay, 0f);
+                Place(RingType.Special, m.eventTime + c.specialPickupDelay);
                 if (events.Count > before) placed++;
             }
             // A song with no structural moment in the window still offers one Special, mid-window.
-            if (placed == 0 && c.specialFallbackWhenNoMoment) Place(RingType.Special, Mathf.Lerp(windowStart, windowEnd, 0.6f), 0f);
+            if (placed == 0 && c.specialFallbackWhenNoMoment) Place(RingType.Special, Mathf.Lerp(windowStart, windowEnd, 0.6f));
         }
     }
 
     // Nearest time to `desired` (searching outward in 0.05 s steps inside [lo, hi]) that keeps
-    // `gap` seconds from every time in `taken`; -1 if none within 6 s either way.
-    private static float FindFreeTime(float desired, float lo, float hi, float gap, List<float> taken)
+    // `gap` seconds from every time in `taken` and passes `accept`; -1 if none within 6 s either way.
+    private static float FindFreeTime(float desired, float lo, float hi, float gap, List<float> taken,
+                                      System.Func<float, bool> accept)
     {
         for (int step = 0; step <= 120; step++)
         {
@@ -492,6 +527,7 @@ public class GameplayTimeline
                 bool free = true;
                 foreach (float o in taken)
                     if (Mathf.Abs(o - t) < gap) { free = false; break; }
+                if (free && accept != null && !accept(t)) free = false;
                 if (free) return t;
                 if (step == 0) break;
             }
@@ -597,12 +633,9 @@ public class GameplayTimeline
         if (offTrack)
         {
             // Beyond the track's REAL local half-width (never a world X/Z constant) by a small,
-            // jump+air-control-reachable extra — same collectibleRadius clearance normal
-            // placement uses, plus up to offTrackBonusMaxOffset, randomized left/right.
-            float halfWidth = path.GetWidth(dist) * 0.5f;
-            float extra     = (float)rng.NextDouble() * config.collectibles.offTrackBonusMaxOffset;
-            float side      = rng.NextDouble() < 0.5 ? -1f : 1f;
-            lateral = side * (halfWidth + config.collectibles.collectibleRadius + extra);
+            // jump+air-control-reachable extra — the moderate OffTrackBonusPlacement profile
+            // (collectibleRadius .. + offTrackBonusMaxOffset), randomized left/right, clamped to reach.
+            lateral = DifficultLateral(config.collectibles.OffTrackBonusPlacement, path, config, dist, rng, 0f);
 
             // Its OWN range — offTrackBonusMinJumpHeightFactor..offTrackBonusMaxJumpHeightFactor
             // of maxJumpHeight DIRECTLY, decoupled from the normal-bonus ceiling (see Generate's
@@ -690,6 +723,38 @@ public class GameplayTimeline
             });
         }
     }
+
+    /// <summary>
+    /// Signed lateral offset for a pickup that must sit OUTSIDE the normal racing line: the track's
+    /// real local half-width + an edge offset rolled inside `profile` (the same roll order the
+    /// off-track bonus always used: offset, then side), clamped to what the player can reach —
+    /// beyond the edge at most strafeSpeed·airTime/2·difficultPickupAirReach (out and back in one
+    /// jump; none without air control), and from the centre at most
+    /// strafeSpeed·(spawnLookAhead − minReactionTime). `side` ±1 forces a side; 0 rolls it.
+    /// </summary>
+    private static float DifficultLateral(PickupPlacementProfile profile, MusicPath path, MusicRunnerGameplayConfig config,
+                                          float eventDistance, System.Random rng, float side)
+    {
+        var c = config.collectibles;
+        float halfWidth = path.GetWidth(eventDistance) * 0.5f;
+        float lo = Mathf.Min(profile.minEdgeOffset, profile.maxEdgeOffset);
+        float hi = Mathf.Max(profile.minEdgeOffset, profile.maxEdgeOffset);
+        float edgeOffset = lo + (float)rng.NextDouble() * (hi - lo);
+        float s = side != 0f ? Mathf.Sign(side) : (rng.NextDouble() < 0.5 ? -1f : 1f);
+
+        float airTime = config.core.gravity < 0f ? 2f * config.core.jumpForce / -config.core.gravity : 0f;
+        float maxBeyondEdge = config.core.allowAirControl
+            ? config.core.strafeSpeed * airTime * 0.5f * c.difficultPickupAirReach
+            : -c.collectibleRadius; // no air control: right at the edge, never beyond it
+        float maxFromCenter = config.core.strafeSpeed * Mathf.Max(0f, c.spawnLookAhead - c.minReactionTime);
+
+        float fromCenter = halfWidth + Mathf.Min(edgeOffset, maxBeyondEdge);
+        fromCenter = Mathf.Min(fromCenter, maxFromCenter);
+        return s * Mathf.Max(0f, fromCenter);
+    }
+
+    private static float MaxJumpHeight(MusicRunnerGameplayConfig config) =>
+        config.core.gravity < 0f ? (config.core.jumpForce * config.core.jumpForce) / (2f * -config.core.gravity) : 0f;
 
     private static float LateralHalfRange(MusicPath path, MusicRunnerGameplayConfig config, float eventDistance)
     {

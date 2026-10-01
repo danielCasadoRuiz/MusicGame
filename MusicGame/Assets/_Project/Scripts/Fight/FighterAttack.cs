@@ -123,7 +123,8 @@ public class FighterAttack : MonoBehaviour
             Vector3 hitCenter = ComputeWorldCenter(hitDef);
             if (!OverlapsAnyHurtbox(hitCenter, hitDef, _opponent)) continue;
 
-            var result = FightHitDispatcher.ResolveAndApply(_actor, _opponent, _activeMove, hitDef, _balanceConfig);
+            var result = FightHitDispatcher.ResolveAndApply(_actor, _opponent, _activeMove, hitDef, _balanceConfig,
+                                                            _moveController != null ? _moveController.CurrentAttackBonus : FightAttackBonus.Identity);
             _hitTargetsThisWindow.Add(_opponent);
             Debug.Log($"[FighterAttack] {(result.IsBlocked ? "Hit BLOCKED" : "Hit landed")}: {_activeMove.debugName} -> " +
                       $"{(result.IsBlocked ? result.FinalChipDamage : result.FinalDamage):F1} dmg");
@@ -195,7 +196,8 @@ public class FighterAttack : MonoBehaviour
             if (col != null) Destroy(col); // no Unity physics used anywhere in combat — see FightCombatShapes' own doc
         }
 
-        root.AddComponent<FightProjectile>().Initialize(_actor, _opponent, move, data, _balanceConfig, direction);
+        root.AddComponent<FightProjectile>().Initialize(_actor, _opponent, move, data, _balanceConfig, direction,
+                                                        _moveController != null ? _moveController.CurrentAttackBonus : FightAttackBonus.Identity);
     }
 
     /// <summary>Explicit API for FightMatchController's between-rounds reset (via FighterActor.

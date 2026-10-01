@@ -15,4 +15,7 @@ public static class FightTouchInputState
     public static float Vertical;
     public static bool PunchRequested;
     public static bool KickRequested;
+    /// <summary>Button currently held (pointer down → up) — for the Down + Punch + Kick Power hold.</summary>
+    public static bool PunchHeld;
+    public static bool KickHeld;
 }

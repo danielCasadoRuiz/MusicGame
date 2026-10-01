@@ -6,11 +6,13 @@ using UnityEngine;
 /// Nothing downstream (a future Move System, FightDebugHUD) needs any of those; it just listens for
 /// FightNormalPunchEvent/FightNormalKickEvent/FightComboDetectedEvent on EventBus.
 ///
-/// NORMALS ARE IMMEDIATE — pressing Punch publishes FightNormalPunchEvent the SAME frame,
-/// unconditionally, before the input is even handed to the combo recognizer. The recognizer runs
-/// in PARALLEL off the same buffered input, never blocking or delaying a normal — see
-/// FightComboRecognizer's own doc for how it resolves "B-B" vs "B-B-A-B" without holding up either
-/// button press's own immediate normal.
+/// ONE ACTION PER PRESS, IMMEDIATELY — every press is buffered (abstract FightInputEvent with a
+/// press number) and resolved by FightComboRecognizer the same frame into EITHER the combo it
+/// completes (FightComboDetectedEvent, possibly flagged ReplacesPrevious when it extends an already
+/// completed combo — PPP → PPPK) OR its own normal (FightNormalPunchEvent/Kick). Never both, never
+/// delayed to see whether something longer is coming — see FightComboRecognizer's class doc.
+/// Single-step directional commands ("Forward + A", "Down + B", the Signature) are just 1-step
+/// combos resolved the same way.
 ///
 /// DIRECTION-ONLY TAPS (FightButton.None — see that enum's own doc): every EDGE transition into
 /// Forward/Back (horizontal) or Up/Down (vertical) is ALSO buffered/fed to the recognizer, exactly
@@ -21,15 +23,14 @@ using UnityEngine;
 /// needs them (FighterMovement/FighterGuard) — only the EDGE is buffered, so holding a direction
 /// never repeatedly "re-completes" a tap-based combo every frame.
 ///
-/// DIRECTIONAL COMMAND PRIORITY: a plain button press (Neutral direction) always fires its normal
-/// immediately, as before. But if the CURRENT direction (at the exact instant the button is
-/// pressed) matches a SINGLE-STEP combo exactly (e.g. "Forward + A", "Down + B", "Down + Forward +
-/// A") that more specific command fires INSTEAD of the plain normal — never both, never a normal
-/// that gets superseded moments later. This only applies to single-step (steps.Length == 1) combos,
-/// which can be resolved synchronously at press-time with no waiting; multi-step SEQUENTIAL combos
-/// (A-A-A-B and friends) are unaffected — their first press still fires the plain normal
-/// immediately, exactly as before, since there is no way to know a sequence is coming until later
-/// presses actually arrive.
+/// POWER CHORD (Down + Punch + Kick, held): while Down is held, a Punch/Kick press is deferred for
+/// FightFlowConfig.simultaneousPressWindow (~0.1 s) to see whether the OTHER button joins it. If both
+/// buttons end up held with Down, the presses are swallowed (no normal, no buffered combo step) and a
+/// charge starts; holding all three for FightCombatBalanceConfig.powerActivationHoldTime publishes
+/// FightPowerRequestedEvent exactly ONCE — nothing more until all of them are released. Releasing
+/// early cancels silently. Every other press (no Down, or the other button never came) is processed
+/// exactly as before, with the direction it had when it was pressed — so Down + Kick, the Signature
+/// (Down + Forward + Punch) etc. still work, just up to that window later.
 ///
 /// Only active while FightFlowState is Fighting (see OnFightFlowChanged) — input is captured and
 /// interpreted here; actual movement/posture/guard consequences live in FighterMovement/FighterGuard.
@@ -59,6 +60,29 @@ public class FighterInputController : MonoBehaviour
 
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
 
+    // Power chord state (see class doc).
+    private float _powerHoldTime = 1f;
+    private bool _hasPendingPress;
+    // Direction presses that happen while a Punch/Kick is held back by the power-chord window are held
+    // too, so the ordered stream stays chronological (the press goes in first, then these).
+    private readonly System.Collections.Generic.List<FightInputEvent> _pendingDirections = new();
+    private FightButton _pendingButton;
+    private FightHorizontalDirection _pendingHorizontal;
+    private FightVerticalDirection _pendingVertical;
+    private float _pendingTime;
+    private bool _charging;
+    private bool _chargeFired;
+    private float _chargeStart;
+    private int _sequence; // per-fighter press number (FightInputEvent.Sequence)
+
+    /// <summary>Debug: the recognizer (combo strings) and the recent abstract input buffer.</summary>
+    public FightComboRecognizer Recognizer => _recognizer;
+    public System.Collections.Generic.IReadOnlyList<FightInputEvent> RecentInputs => _buffer?.Events;
+
+    /// <summary>Debug: 0..1 progress of a Power hold in progress (0 when not charging).</summary>
+    public float PowerChargeProgress => _charging ? Mathf.Clamp01((Time.time - _chargeStart) / Mathf.Max(0.01f, _powerHoldTime)) : 0f;
+    public bool IsChargingPower => _charging;
+
     /// <summary>Swap the input source — the seam a future AIFightInputSource plugs into. Never
     /// called yet (no AI exists this phase).</summary>
     public void SetInputSource(IFightInputSource source) => _inputSource = source ?? new HumanFightInputSource();
@@ -71,14 +95,11 @@ public class FighterInputController : MonoBehaviour
     {
         var appConfig = Resources.Load<AppConfigSO>("AppConfig");
         _config = appConfig != null ? appConfig.fightFlow : null;
+        _powerHoldTime = appConfig != null && appConfig.combatBalance != null ? appConfig.combatBalance.powerActivationHoldTime : 1f;
 
-        float window = _config != null ? Mathf.Max(0.2f, _config.inputBufferWindowSeconds) : 1.5f;
-        _buffer = new FightInputBuffer(window);
-
-        var comboSet = _config != null ? _config.comboSet : null;
-        if (comboSet == null)
+        if (_config == null || _config.comboSet == null)
             Debug.LogWarning("[FighterInputController] No FightComboSetSO (AppConfig.fightFlow.comboSet) configured — normals will still fire, but no combo will ever be detected.");
-        _recognizer = new FightComboRecognizer(comboSet, _buffer, this);
+        BuildBufferAndRecognizer();
     }
 
     private void OnEnable()
@@ -104,64 +125,121 @@ public class FighterInputController : MonoBehaviour
         CurrentHorizontal = FightDirectionResolver.ResolveHorizontal(_inputSource.Horizontal, _facing.FacingRight);
         CurrentVertical    = FightDirectionResolver.ResolveVertical(_inputSource.Vertical);
 
+        // A direction PRESS is the abstract action "that direction" (only the axis that changed), so
+        // rolling Down → Down+Forward records Down then Forward. Movement keeps reading the held
+        // directions itself (CurrentHorizontal/CurrentVertical) — recording never blocks it.
         if (CurrentHorizontal != _previousHorizontal && CurrentHorizontal != FightHorizontalDirection.Neutral)
-            BufferDirectionTap();
+            BufferDirectionTap(CurrentHorizontal, FightVerticalDirection.Neutral);
         if (CurrentVertical != _previousVertical && CurrentVertical != FightVerticalDirection.Neutral)
-            BufferDirectionTap();
+            BufferDirectionTap(FightHorizontalDirection.Neutral, CurrentVertical);
         _previousHorizontal = CurrentHorizontal;
         _previousVertical   = CurrentVertical;
 
-        if (_inputSource.PunchPressed) HandlePress(FightButton.Punch);
-        if (_inputSource.KickPressed)  HandlePress(FightButton.Kick);
-
-        // Every frame regardless — see FightComboRecognizer.Tick's own doc (fires a pending short
-        // combo once its grace window expires unextended, independent of any new input this frame).
-        _recognizer.Tick();
+        ProcessButtons(_inputSource.PunchPressed, _inputSource.KickPressed);
     }
 
-    private void HandlePress(FightButton button)
+    private void BuildBufferAndRecognizer()
     {
-        // See class doc on DIRECTIONAL COMMAND PRIORITY — a more specific single-step command for
-        // THIS EXACT direction suppresses the plain normal entirely; otherwise the normal fires
-        // immediately, unchanged from before.
-        if (FindDirectionalCommand(button, CurrentHorizontal, CurrentVertical) == null)
-        {
-            if (button == FightButton.Punch) EventBus.Publish(new FightNormalPunchEvent { Source = this });
-            else                             EventBus.Publish(new FightNormalKickEvent { Source = this });
-        }
-
-        // Buffered/fed to the recognizer either way — a matched directional command fires through
-        // the SAME immediate, non-prefix path the recognizer already uses (see its own doc), so
-        // nothing else needs to change there.
-        _buffer.Add(new FightInputEvent(button, CurrentHorizontal, CurrentVertical, Time.time));
-        _recognizer.OnNewInput();
+        float window = _config != null ? Mathf.Max(0.2f, _config.inputBufferWindowSeconds) : 1.5f;
+        _buffer = new FightInputBuffer(window, _config != null ? _config.inputBufferMaxEntries : 24);
+        _recognizer = new FightComboRecognizer(_config != null ? _config.comboSet : null, _buffer, this,
+                                               _config != null ? _config.comboContinuationWindow : 0.5f);
     }
 
-    // Single-step (steps.Length == 1) combos ONLY — resolvable synchronously, at press-time, unlike
-    // multi-step sequences which necessarily need to wait for later presses. Ties broken by
-    // priority, same convention as the recognizer's own longest-match tiebreak.
-    private FightComboDefinition FindDirectionalCommand(FightButton button, FightHorizontalDirection horizontal, FightVerticalDirection vertical)
-    {
-        var combos = _config != null && _config.comboSet != null ? _config.comboSet.combos : null;
-        if (combos == null) return null;
+    /// <summary>Ends the current combo string (FighterMoveController: hit stun, knockdown, match end) —
+    /// the next press starts a new one; nothing typed before can be reused.</summary>
+    public void ResetComboString() => _recognizer?.Reset();
 
-        FightComboDefinition best = null;
-        foreach (var combo in combos)
+    // POWER CHORD resolution (see class doc), then plain press handling.
+    private void ProcessButtons(bool punchPressed, bool kickPressed)
+    {
+        bool down = CurrentVertical == FightVerticalDirection.Down;
+        bool bothHeld = _inputSource.PunchHeld && _inputSource.KickHeld;
+
+        if (_charging)
         {
-            if (combo == null || combo.steps == null || combo.steps.Length != 1) continue;
-            var step = combo.steps[0];
-            if (step.button != button || step.horizontal != horizontal || step.vertical != vertical) continue;
-            if (best == null || combo.priority > best.priority) best = combo;
+            if (!down || !bothHeld) { _charging = false; return; } // released: cancel (or end of a fired hold)
+            if (!_chargeFired && Time.time - _chargeStart >= _powerHoldTime)
+            {
+                _chargeFired = true; // once per hold
+                EventBus.Publish(new FightPowerRequestedEvent { Source = this });
+            }
+            return; // presses during a charge never become normals or combo steps
         }
-        return best;
+
+        if (down && bothHeld && (punchPressed || kickPressed || _hasPendingPress))
+        {
+            _charging = true;
+            _chargeFired = false;
+            _chargeStart = _hasPendingPress ? _pendingTime : Time.time;
+            _hasPendingPress = false; // swallowed — the Punch/Kick of a Power hold never enter the stream
+            FlushPendingDirections();
+            return;
+        }
+
+        if (_hasPendingPress)
+        {
+            bool expired = Time.time - _pendingTime >= WindowSeconds || !down;
+            bool sameAgain = (_pendingButton == FightButton.Punch && punchPressed) || (_pendingButton == FightButton.Kick && kickPressed);
+            bool otherCame = (_pendingButton == FightButton.Punch && kickPressed) || (_pendingButton == FightButton.Kick && punchPressed);
+            if (expired || sameAgain || otherCame) FlushPending();
+        }
+
+        if (punchPressed) PressOrDefer(FightButton.Punch, down);
+        if (kickPressed)  PressOrDefer(FightButton.Kick, down);
+    }
+
+    private float WindowSeconds => _config != null ? _config.simultaneousPressWindow : 0.1f;
+
+    private void PressOrDefer(FightButton button, bool down)
+    {
+        if (down && WindowSeconds > 0f && !_hasPendingPress)
+        {
+            _hasPendingPress = true;
+            _pendingButton = button;
+            _pendingHorizontal = CurrentHorizontal;
+            _pendingVertical = CurrentVertical;
+            _pendingTime = Time.time;
+            return;
+        }
+        HandlePress(button, CurrentHorizontal, CurrentVertical, Time.time);
+    }
+
+    private void FlushPending()
+    {
+        _hasPendingPress = false;
+        HandlePress(_pendingButton, _pendingHorizontal, _pendingVertical, _pendingTime);
+        FlushPendingDirections();
+    }
+
+    private void FlushPendingDirections()
+    {
+        foreach (var d in _pendingDirections) HandlePress(FightButton.None, d.Horizontal, d.Vertical, d.Time);
+        _pendingDirections.Clear();
+    }
+
+    private void HandlePress(FightButton button, FightHorizontalDirection horizontal, FightVerticalDirection vertical, float pressTime)
+    {
+        // Press time (not "now") keeps combo timing exact for a press deferred by the power-chord window.
+        var input = new FightInputEvent(button, horizontal, vertical, pressTime, ++_sequence);
+        _buffer.Add(input);
+        var resolution = _recognizer.OnNewInput(input);
+
+        // Exactly one action for this press — see class doc.
+        if (resolution.Combo != null)
+            EventBus.Publish(new FightComboDetectedEvent { Source = this, Combo = resolution.Combo, StringId = resolution.StringId, ReplacesPrevious = resolution.ReplacesPrevious });
+        else if (button == FightButton.Punch)
+            EventBus.Publish(new FightNormalPunchEvent { Source = this, StringId = resolution.StringId });
+        else if (button == FightButton.Kick)
+            EventBus.Publish(new FightNormalKickEvent { Source = this, StringId = resolution.StringId });
     }
 
     // Edge-only (see class doc) — a bare direction tap (no button) buffered/fed to the recognizer
     // exactly like a button press, just tagged FightButton.None. Never fires a normal event.
-    private void BufferDirectionTap()
+    private void BufferDirectionTap(FightHorizontalDirection horizontal, FightVerticalDirection vertical)
     {
-        _buffer.Add(new FightInputEvent(FightButton.None, CurrentHorizontal, CurrentVertical, Time.time));
-        _recognizer.OnNewInput();
+        if (_hasPendingPress) { _pendingDirections.Add(new FightInputEvent(FightButton.None, horizontal, vertical, Time.time)); return; }
+        HandlePress(FightButton.None, horizontal, vertical, Time.time);
     }
 
     /// <summary>Explicit API for FightMatchController's between-rounds reset — rebuilds a fresh
@@ -171,10 +249,11 @@ public class FighterInputController : MonoBehaviour
     /// makes the reset explicit and deterministic rather than relying on that timing coincidence.</summary>
     public void ResetForRound()
     {
-        float window = _config != null ? Mathf.Max(0.2f, _config.inputBufferWindowSeconds) : 1.5f;
-        _buffer = new FightInputBuffer(window);
-        _recognizer = new FightComboRecognizer(_config != null ? _config.comboSet : null, _buffer, this);
+        BuildBufferAndRecognizer();
         _previousHorizontal = FightHorizontalDirection.Neutral;
         _previousVertical   = FightVerticalDirection.Neutral;
+        _hasPendingPress = false;
+        _pendingDirections.Clear();
+        _charging = false;
     }
 }

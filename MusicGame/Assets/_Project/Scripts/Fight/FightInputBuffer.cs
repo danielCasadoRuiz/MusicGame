@@ -10,8 +10,13 @@ public class FightInputBuffer
 {
     private readonly List<FightInputEvent> _events = new();
     private readonly float _windowSeconds;
+    private readonly int _maxEntries;
 
-    public FightInputBuffer(float windowSeconds) => _windowSeconds = Mathf.Max(0.1f, windowSeconds);
+    public FightInputBuffer(float windowSeconds, int maxEntries = 24)
+    {
+        _windowSeconds = Mathf.Max(0.1f, windowSeconds);
+        _maxEntries = Mathf.Max(4, maxEntries);
+    }
 
     public IReadOnlyList<FightInputEvent> Events => _events;
 
@@ -27,6 +32,7 @@ public class FightInputBuffer
         int removeCount = 0;
         while (removeCount < _events.Count && _events[removeCount].Time < cutoff)
             removeCount++;
+        removeCount = Mathf.Max(removeCount, _events.Count - _maxEntries); // bounded by count too
         if (removeCount > 0) _events.RemoveRange(0, removeCount);
     }
 }

@@ -1,3 +1,4 @@
+using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -87,9 +88,8 @@ public class MusicWorldManager : MonoBehaviour
     // rows are sampled directly from MusicPath.GetSample() at a fixed GLOBAL distance grid
     // (rowIndex * rowSpacing), not from MusicPath's internal sample array. That global grid is
     // what makes two consecutive window rebuilds line up exactly: row N always sits at the
-    // same world distance no matter where the window currently starts, so the continuity
-    // anchor below (matching the previous window's row at the same global index) is exact,
-    // not an approximation.
+    // same world distance no matter where the window currently starts, and its processed
+    // height comes from the one whole-path grid (see SEAMLESS WINDOWS below).
     //
     // Two smoothing/safety layers on HEIGHT (and, by sharing the same value, on terrain COLOR
     // too — see above):
@@ -104,15 +104,46 @@ public class MusicWorldManager : MonoBehaviour
     // against a completely unrelated moment of the song. Keeping only a slice near the
     // player's current distance makes that structurally impossible.
 
-    private GameObject  _groundGO;
-    private float       _groundWindowCenter = float.NaN;
+    //
+    // SEAMLESS WINDOWS: the processed height field (raw bands → smoothing → slope clamps →
+    // post-pass) is computed ONCE for the whole path at BuildWorld (_globalGrid, addressed by a
+    // global row index = distance / rowSpacing). Every window is an exact SLICE of it, so the
+    // terrain at a given distance is bit-identical in every window that contains it — a rebuild
+    // can never move/reshape anything the player or camera can see. (Previously each window
+    // smoothed and slope-clamped only its own rows; window-edge effects made the same distance
+    // differ by up to ~0.5 m between consecutive windows, visibly popping the terrain ahead and
+    // behind every 15 m.) One ground GameObject + one render mesh are reused in place; collision
+    // uses two alternating meshes baked on a worker thread (Physics.BakeMesh) and swapped in when
+    // ready — the overlap is identical, so the still-active previous collider is exact meanwhile.
+    private GameObject   _groundGO;
+    private MeshRenderer _groundMR;
+    private MeshCollider _groundMC;
+    private Mesh         _groundMesh;
+    private readonly Mesh[] _colliderMeshes = new Mesh[2];
+    private int          _colliderBuffer;
+    private JobHandle    _bakeHandle;
+    private Mesh         _pendingColliderMesh;
+    private float        _groundWindowCenter = float.NaN;
 
-    // Continuity anchor from the previous window build (see RebuildGroundWindow). Rows are
-    // addressed by a GLOBAL integer index (distance / rowSpacing), not by array position, so
-    // this lookup is exact rather than "close enough" — the last row of one window and the
-    // first matching row of the next always resolve to the identical normalized value.
-    private float[,] _prevGrid;
-    private int      _prevRowIndex0 = int.MinValue;
+    private float[,] _globalGrid;
+    private float    _rowSpacing;
+    private int      _globalRows;
+    private int      _gridCols;
+
+    // Reused mesh buffers (reallocated only when the window's row count changes — path start/end).
+    private Vector3[] _verts, _normals;
+    private Color32[] _colors;
+    private Vector2[] _uvs;
+    private int[]     _tris;
+    private int       _bufferRows = -1;
+    private int       _bufferRow0 = int.MinValue; // global row index held in buffer row 0
+
+    private struct BakeColliderJob : IJob
+    {
+        public int MeshId;
+        public MeshColliderCookingOptions Options;
+        public void Execute() => Physics.BakeMesh(MeshId, false, Options);
+    }
 
     private const float GroundWindowBehind = 20f;
     private const float GroundWindowAhead  = 60f;
@@ -167,7 +198,10 @@ public class MusicWorldManager : MonoBehaviour
     private void OnDestroy()
     {
         if (Instance == this) Instance = null;
+        _bakeHandle.Complete();
         if (_groundGO != null) Destroy(_groundGO);
+        if (_groundMesh != null) Destroy(_groundMesh);
+        foreach (var m in _colliderMeshes) if (m != null) Destroy(m);
         if (_meshMaterial != null) Destroy(_meshMaterial);
         if (_freqTex != null) Destroy(_freqTex);
     }
@@ -178,9 +212,11 @@ public class MusicWorldManager : MonoBehaviour
         var clock = MusicClock.Instance;
         if (clock == null) return;
 
+        if (_pendingColliderMesh != null && _bakeHandle.IsCompleted) ApplyPendingCollider();
+
         float dist = clock.MusicDistance;
         if (float.IsNaN(_groundWindowCenter) || Mathf.Abs(dist - _groundWindowCenter) > GroundRebuildStep)
-            RebuildGroundWindow(dist);
+            RebuildGroundWindow(dist, syncCollider: false);
 
         UpdatePlayheadGlobals(dist);
     }
@@ -267,9 +303,9 @@ public class MusicWorldManager : MonoBehaviour
         _meshMaterial = VertexColorMaterial();
 
         _groundWindowCenter = float.NaN;
-        _prevGrid           = null; // new path → old window's global row indices no longer apply
-        _prevRowIndex0       = int.MinValue;
-        RebuildGroundWindow(0f); // have real ground under the player before the first Update() tick
+        ComputeGlobalGrid(); // the whole path's terrain, once — windows are slices of it
+        _bufferRow0 = int.MinValue; // buffered rows belonged to the previous path
+        RebuildGroundWindow(0f, syncCollider: true); // real ground under the player before the first Update() tick
 
         EventBus.Publish(new MusicPathReadyEvent { Path = Path });
     }
@@ -354,13 +390,19 @@ public class MusicWorldManager : MonoBehaviour
     // real frequency bands without inventing new musical detail.
     private float BlendedNormalized(float lateralFrac, float time, int numBands)
     {
+        BandBlend(lateralFrac, numBands, out int b0, out int b1, out float smoothT);
+        return Mathf.Lerp(NormalizedBandValue(b0, time), NormalizedBandValue(b1, time), smoothT);
+    }
+
+    // Which two bands a lateral position blends, and how — shared by every sampling path.
+    private static void BandBlend(float lateralFrac, int numBands, out int b0, out int b1, out float smoothT)
+    {
         float bandPos  = Mathf.Clamp01(lateralFrac) * numBands;
         float centered = bandPos - 0.5f;
-        int   b0 = Mathf.Clamp(Mathf.FloorToInt(centered), 0, numBands - 1);
-        int   b1 = Mathf.Clamp(b0 + 1, 0, numBands - 1);
-        float t  = Mathf.Clamp01(centered - b0);
-        float smoothT = t * t * (3f - 2f * t); // smoothstep
-        return Mathf.Lerp(NormalizedBandValue(b0, time), NormalizedBandValue(b1, time), smoothT);
+        b0 = Mathf.Clamp(Mathf.FloorToInt(centered), 0, numBands - 1);
+        b1 = Mathf.Clamp(b0 + 1, 0, numBands - 1);
+        float t = Mathf.Clamp01(centered - b0);
+        smoothT = t * t * (3f - 2f * t); // smoothstep
     }
 
     /// <summary>
@@ -369,60 +411,55 @@ public class MusicWorldManager : MonoBehaviour
     /// already exists there the instant normal movement resumes, instead of waiting up to a
     /// frame for Update()'s own distance-drift check to notice and rebuild on its own.
     /// </summary>
-    public void RebuildNow(float distance) => RebuildGroundWindow(distance);
+    public void RebuildNow(float distance) => RebuildGroundWindow(distance, syncCollider: true);
 
-    private void RebuildGroundWindow(float centerDistance)
+    /// <summary>
+    /// The processed normalized height field for the WHOLE path (rows on the global distance grid,
+    /// cols across the width) — the exact pipeline windows used to run per window, now run once so
+    /// every window is a slice of the same result. Pure function of (profile, path, config).
+    /// </summary>
+    private void ComputeGlobalGrid()
     {
-        _groundWindowCenter = centerDistance;
-        if (_groundGO != null) Destroy(_groundGO);
-
-        float rowSpacing = 1f / Mathf.Max(_config.levelGeneration.longitudinalSegmentsPerMeter, 0.01f);
-        float total      = Path.TotalLength;
-        if (total < rowSpacing) return;
-
-        float lo = Mathf.Max(0f, centerDistance - GroundWindowBehind);
-        float hi = Mathf.Min(total, centerDistance + GroundWindowAhead);
-        if (hi - lo < rowSpacing) return;
-
-        int rowIndex0 = Mathf.FloorToInt(lo / rowSpacing);
-        int rowIndex1 = Mathf.CeilToInt(hi / rowSpacing);
-        int rows      = rowIndex1 - rowIndex0 + 1;
-        if (rows < 2) return;
-
-        int cols     = Mathf.Max(2, _config.levelGeneration.crossMeshSegments) + 1;
+        _rowSpacing = 1f / Mathf.Max(_config.levelGeneration.longitudinalSegmentsPerMeter, 0.01f);
+        float total = Path.TotalLength;
+        int rows = Mathf.Max(2, Mathf.CeilToInt(total / _rowSpacing) + 1);
+        int cols = Mathf.Max(2, _config.levelGeneration.crossMeshSegments) + 1;
         int numBands = _profile?.VisualBandCount ?? 0;
+        _globalRows = rows;
+        _gridCols = cols;
 
-        // Sample MusicPath directly on the GLOBAL distance grid — decoupled from MusicPath's
-        // own internal sample spacing, and exactly reproducible across window rebuilds.
         var rowDistance = new float[rows];
-        var rowSample   = new MusicPath.Sample[rows];
+        var rowWidth    = new float[rows];
         for (int r = 0; r < rows; r++)
         {
-            rowDistance[r] = Mathf.Min((rowIndex0 + r) * rowSpacing, total);
-            rowSample[r]   = Path.GetSample(rowDistance[r]);
+            rowDistance[r] = Mathf.Min(r * _rowSpacing, total);
+            rowWidth[r]    = Path.GetSample(rowDistance[r]).width;
         }
 
         // ── 1. Raw normalized height grid from the band spectrum ───────────────
+        // (each band evaluated once per row, then blended per column — same result as
+        // BlendedNormalized, far fewer energy lookups over a whole song)
         var grid = new float[rows, cols];
+        var bandValues = new float[Mathf.Max(1, numBands)];
         for (int r = 0; r < rows; r++)
         {
             float time = DistanceToSongTime(rowDistance[r]);
+            for (int b = 0; b < numBands; b++) bandValues[b] = NormalizedBandValue(b, time);
             for (int c = 0; c < cols; c++)
             {
-                float lateralFrac = cols > 1 ? (float)c / (cols - 1) : 0.5f;
-                grid[r, c] = numBands > 0 ? BlendedNormalized(lateralFrac, time, numBands) : 0f;
+                if (numBands <= 0) { grid[r, c] = 0f; continue; }
+                BandBlend(cols > 1 ? (float)c / (cols - 1) : 0.5f, numBands, out int b0, out int b1, out float smoothT);
+                grid[r, c] = Mathf.Lerp(bandValues[b0], bandValues[b1], smoothT);
             }
         }
 
         // ── 2/3. Smoothing — LONGITUDINAL (pathSmoothness, along travel) and LATERAL
-        // (crossSmoothness, across the width) are independent knobs — turning up one doesn't
-        // change the other's feel. Neither touches crossMeshSegments/vertex count: this is just
-        // more CPU box-blur passes over the SAME grid, at rebuild time (~every 1.5s of travel),
-        // not per-frame — cheap regardless of how high either is set.
+        // (crossSmoothness, across the width) are independent knobs. Neither touches
+        // crossMeshSegments/vertex count: just box-blur passes over the SAME grid, once per song.
         float smoothness         = Mathf.Clamp01(_config.levelGeneration.pathSmoothness);
         int   longitudinalPasses = Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(1f, 3f, smoothness)));
         float smoothingRadius    = Mathf.Lerp(1f, 3f, smoothness);
-        int   radiusZ            = Mathf.Max(1, Mathf.RoundToInt(smoothingRadius / Mathf.Max(rowSpacing, 0.01f)));
+        int   radiusZ            = Mathf.Max(1, Mathf.RoundToInt(smoothingRadius / Mathf.Max(_rowSpacing, 0.01f)));
 
         float crossSmoothness = Mathf.Clamp01(_config.levelGeneration.crossSmoothness);
         int   lateralPasses   = Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(1f, 3f, crossSmoothness)));
@@ -431,29 +468,12 @@ public class MusicWorldManager : MonoBehaviour
         BoxBlurLongitudinal(grid, rows, cols, radiusZ, longitudinalPasses);
         BoxBlurLateral(grid, rows, cols, radiusX, lateralPasses);
 
-        // ── 4. Continuity anchor — seed row 0 from the PREVIOUS window's already-clamped
-        // value at this same GLOBAL row index (when available). Without this, the slope-clamp
-        // pass below has no reference point and re-anchors to its own fresh row 0 every
-        // rebuild, so the surface at a fixed world distance could drift between rebuilds.
-        // Because rows are addressed by an absolute index on a fixed distance grid (not by
-        // position in a per-window array), this lookup is an exact match, not an approximation.
-        if (_prevGrid != null)
-        {
-            int offset   = rowIndex0 - _prevRowIndex0;
-            int prevRows = _prevGrid.GetLength(0);
-            if (offset >= 0 && offset < prevRows)
-                for (int c = 0; c < cols; c++)
-                    grid[0, c] = _prevGrid[offset, c];
-        }
-
-        // ── 5. Hard slope clamps (in NORMALIZED space, converted from world-space limits) —
+        // ── 4. Hard slope clamps (in NORMALIZED space, converted from world-space limits) —
         // guarantees CharacterController never treats this as a wall, REGARDLESS of
-        // maxFrequencyHeight, and — because clamping happens before colour is derived —
-        // colour always matches the geometry the player actually sees, even where a peak got
-        // clamped down. Limits are expressed relative to CharacterController.slopeLimit (45°,
-        // i.e. a max rise/run of 1.0) with headroom for the discretized/interpolated mesh —
-        // NOT arbitrary small constants — so raising maxFrequencyHeight for more dramatic
-        // relief doesn't require touching these.
+        // maxFrequencyHeight, and — because clamping happens before colour is derived — colour
+        // always matches the geometry. Limits are relative to CharacterController.slopeLimit (45°)
+        // with headroom for the discretized mesh. Run over the whole path from its start, so the
+        // sequential longitudinal clamp has one stable origin (no per-window re-anchoring).
         float scale = Mathf.Max(0.001f, _config.levelGeneration.maxFrequencyHeight);
         for (int c = 0; c < cols; c++)
         {
@@ -466,50 +486,63 @@ public class MusicWorldManager : MonoBehaviour
         }
         for (int r = 0; r < rows; r++)
         {
-            float colSpacing = cols > 1 ? rowSample[r].width / (cols - 1) : 1f;
+            float colSpacing = cols > 1 ? rowWidth[r] / (cols - 1) : 1f;
             float maxDeltaX  = (_config.levelGeneration.crossSlopeLimit * Mathf.Max(colSpacing, 0.001f)) / scale;
             for (int c = 1; c < cols; c++)
                 grid[r, c] = Mathf.Clamp(grid[r, c], grid[r, c - 1] - maxDeltaX, grid[r, c - 1] + maxDeltaX);
         }
 
-        // ── 6. Light post-clamp pass — the clamp above is a hard min/max box, which by
-        // construction can leave a slope DISCONTINUITY (a visible kink) exactly at the edge
-        // where it engages/releases, even though everything on either side is smooth. This is
-        // a small, FIXED, correctness-motivated pass (not part of the stylistic pathSmoothness/
-        // crossSmoothness knobs above) — just enough to round that specific seam, not a general
-        // smoother. BOTH axes were clamped above (longitudinal AND lateral slope limits), so both
-        // get this same tiny corrective pass — the lateral one was previously missing entirely,
-        // which is exactly what read as sharp/triangular peaks ACROSS the width: the lateral
-        // clamp's own kinks were never smoothed by anything.
+        // ── 5. Light post-clamp pass — rounds the kinks the hard min/max clamps leave exactly where
+        // they engage/release, on BOTH axes (a small fixed corrective pass, not a stylistic knob).
         BoxBlurLongitudinal(grid, rows, cols, radius: 1, passes: 1);
         BoxBlurLateral(grid, rows, cols, radius: 1, passes: 1);
 
-        _prevGrid      = grid;
-        _prevRowIndex0 = rowIndex0;
+        _globalGrid = grid;
+    }
 
-        BuildMesh(grid, rowSample, rowDistance, rows, cols, scale, rowSpacing, numBands);
+    private void RebuildGroundWindow(float centerDistance, bool syncCollider)
+    {
+        _groundWindowCenter = centerDistance;
+        if (_globalGrid == null) return;
 
-        CrossSegments       = cols - 1;
+        // Constant window length (slid inside [0, total] near the path's ends) → constant row count,
+        // so every rebuild reuses the buffers and only computes the newly exposed rows.
+        float total = Path.TotalLength;
+        float span = GroundWindowBehind + GroundWindowAhead;
+        float lo = Mathf.Clamp(centerDistance - GroundWindowBehind, 0f, Mathf.Max(0f, total - span));
+        float hi = Mathf.Min(total, lo + span);
+        if (hi - lo < _rowSpacing) return;
+
+        int rowIndex0 = Mathf.FloorToInt(lo / _rowSpacing);
+        int rowIndex1 = Mathf.Min(_globalRows - 1, Mathf.CeilToInt(hi / _rowSpacing));
+        int rows      = rowIndex1 - rowIndex0 + 1;
+        if (rows < 2) return;
+
+        BuildMesh(rowIndex0, rows, syncCollider);
+
+        CrossSegments       = _gridCols - 1;
         WindowRowCount      = rows;
-        WindowVertexCount   = rows * cols;
-        WindowTriangleCount = (rows - 1) * (cols - 1) * 2;
+        WindowVertexCount   = rows * _gridCols;
+        WindowTriangleCount = (rows - 1) * (_gridCols - 1) * 2;
     }
 
     // Box-blur along the travel direction (rows) — multi-pass approximates a near-Gaussian.
     private static void BoxBlurLongitudinal(float[,] grid, int rows, int cols, int radius, int passes)
     {
+        // Prefix sums (double) per column: same clamped-window average, O(1) per cell — this runs
+        // over the whole path once per song (ComputeGlobalGrid), not just one window.
+        var prefix = new double[rows + 1];
         for (int pass = 0; pass < passes; pass++)
         {
-            var src = (float[,])grid.Clone();
             for (int c = 0; c < cols; c++)
             {
+                prefix[0] = 0d;
+                for (int r = 0; r < rows; r++) prefix[r + 1] = prefix[r] + grid[r, c];
                 for (int r = 0; r < rows; r++)
                 {
                     int lo = Mathf.Max(0, r - radius);
                     int hi = Mathf.Min(rows - 1, r + radius);
-                    float sum = 0f;
-                    for (int j = lo; j <= hi; j++) sum += src[j, c];
-                    grid[r, c] = sum / (hi - lo + 1);
+                    grid[r, c] = (float)((prefix[hi + 1] - prefix[lo]) / (hi - lo + 1));
                 }
             }
         }
@@ -540,116 +573,156 @@ public class MusicWorldManager : MonoBehaviour
     // why; UVs exist only so the playhead scanline shader can locate itself, see MusicRunnerLevelConfig's
     // Playhead Scanline doc) ─────────────────────────────────────────────────────
 
-    private void BuildMesh(float[,] grid, MusicPath.Sample[] rowSample, float[] rowDistance,
-                           int rows, int cols, float scale, float rowSpacing, int numBands)
+    private void EnsureGround()
     {
-        var verts   = new Vector3[rows * cols];
-        var normals = new Vector3[rows * cols];
-        var colors  = new Color32[rows * cols];
-        var uvs     = new Vector2[rows * cols];
-
-        int VertIndex(int r, int c) => r * cols + c;
-        float LateralFrac(int c) => cols > 1 ? (float)c / (cols - 1) : 0.5f;
-
-        // Height in WORLD units at an arbitrary (row, col) neighbour, whether or not it exists
-        // in the current window's array — analytic fallback beyond the array edges is what
-        // keeps normals identical on both sides of a chunk seam (see HeightAt's doc).
-        float HeightWorld(int r, int c)
-        {
-            if (r >= 0 && r < rows && c >= 0 && c < cols) return grid[r, c] * scale;
-            float dist = rowDistance[Mathf.Clamp(r, 0, rows - 1)] + (r - Mathf.Clamp(r, 0, rows - 1)) * rowSpacing;
-            return HeightAt(dist, LateralFrac(Mathf.Clamp(c, 0, cols - 1)), numBands) * scale;
-        }
-
-        for (int r = 0; r < rows; r++)
-        {
-            var s  = rowSample[r];
-            float hw = s.width * 0.5f;
-
-            for (int c = 0; c < cols; c++)
-            {
-                float lateralFrac = LateralFrac(c);
-                float xOff = -hw + hw * 2f * lateralFrac;
-                float norm = Mathf.Clamp01(grid[r, c]);
-
-                verts[VertIndex(r, c)]  = s.position + s.right * xOff + s.up * (norm * scale);
-                // COLOR reads the SAME processed value as HEIGHT (norm = smoothed + slope-clamped)
-                // — a raw/un-smoothed color used to visually decorrelate from the geometry it was
-                // sitting on (physically-low zones painted red, ridges painted green), which read
-                // as incoherent rather than "reads the shape of the terrain". terrainColorRedThreshold
-                // is a pure COLOR remap (see TerrainVuColor) for "reach red sooner" without any of
-                // that — it never touches this shared `norm`/height value.
-                colors[VertIndex(r, c)] = TerrainVuColor(norm);
-                // x: 0=left..1=right across the track. y: 0=chunk start..1=chunk end, along
-                // travel — the playhead scanline (VertexColorLit.shader) is the only current
-                // consumer, matched exactly to rowDistance[0]/rowDistance[rows-1] below (the
-                // SAME two values pushed into the chunk's MaterialPropertyBlock), so a fragment's
-                // uv.y always means precisely "this fraction of the way from this chunk's own
-                // start distance to its own end distance".
-                uvs[VertIndex(r, c)] = new Vector2(lateralFrac, rows > 1 ? (float)r / (rows - 1) : 0f);
-
-                // Analytic normal from a central-difference height gradient — NOT
-                // Mesh.RecalculateNormals(), which only averages face normals WITHIN this one
-                // mesh and therefore computes a different result at a window's edge rows than
-                // the neighbouring window will for that same world position (fewer/asymmetric
-                // contributing faces) — a visible lighting seam every rebuild. Because
-                // HeightWorld() falls back to the same pure analytic function used by every
-                // window, the gradient — and thus the normal — matches exactly across a seam.
-                float colSpacing = cols > 1 ? s.width / (cols - 1) : 1f;
-                Vector3 tangentVec = (s.tangent * (2f * rowSpacing) + s.up * (HeightWorld(r + 1, c) - HeightWorld(r - 1, c))).normalized;
-                Vector3 rightVec   = (s.right   * (2f * colSpacing) + s.up * (HeightWorld(r, c + 1) - HeightWorld(r, c - 1))).normalized;
-                Vector3 normal = Vector3.Cross(tangentVec, rightVec).normalized;
-                if (Vector3.Dot(normal, s.up) < 0f) normal = -normal;
-                normals[VertIndex(r, c)] = normal;
-            }
-        }
-
-        var tris = new int[(rows - 1) * (cols - 1) * 6];
-        int ti = 0;
-        for (int r = 0; r < rows - 1; r++)
-        {
-            for (int c = 0; c < cols - 1; c++)
-            {
-                int v0 = VertIndex(r, c),     v1 = VertIndex(r, c + 1);
-                int v2 = VertIndex(r + 1, c), v3 = VertIndex(r + 1, c + 1);
-                tris[ti++] = v0; tris[ti++] = v2; tris[ti++] = v1;
-                tris[ti++] = v1; tris[ti++] = v2; tris[ti++] = v3;
-            }
-        }
-
-        var mesh = new Mesh { indexFormat = IndexFormat.UInt32, name = "MusicPath_Ground" };
-        mesh.vertices  = verts;
-        mesh.normals   = normals;
-        mesh.colors32  = colors;
-        mesh.uv        = uvs;
-        mesh.triangles = tris;
-        mesh.RecalculateBounds();
-
+        if (_groundGO != null) return;
         _groundGO = new GameObject("MusicPath_Ground") { layer = 0 };
         var mf = _groundGO.AddComponent<MeshFilter>();
-        var mr = _groundGO.AddComponent<MeshRenderer>();
-        var mc = _groundGO.AddComponent<MeshCollider>();
-        mf.mesh              = mesh;
-        mc.sharedMesh        = mesh;
-        mr.material          = _meshMaterial;
+        _groundMR = _groundGO.AddComponent<MeshRenderer>();
+        _groundMC = _groundGO.AddComponent<MeshCollider>();
+        _groundMesh = new Mesh { indexFormat = IndexFormat.UInt32, name = "MusicPath_Ground" };
+        _groundMesh.MarkDynamic();
+        mf.sharedMesh = _groundMesh;
+        _groundMR.material = _meshMaterial;
         // Receives player/collectible shadows (depth perception) AND casts its own relief's
         // shadows — see VertexColorLit shader, which keeps the musical vertex-colour gradient
         // readable (config.terrainAmbientFloor) instead of going to black under shadow.
-        mr.shadowCastingMode = ShadowCastingMode.On;
-        mr.receiveShadows    = true;
+        _groundMR.shadowCastingMode = ShadowCastingMode.On;
+        _groundMR.receiveShadows    = true;
+        ReceiveShadows = _groundMR.receiveShadows;
+        ShadowCasting  = _groundMR.shadowCastingMode;
+    }
 
-        // This chunk's own [start, end] music-distance range, via MaterialPropertyBlock — NOT a
-        // cloned Material (that would defeat sharing _meshMaterial across every rebuild). Exactly
-        // the same two distances the UV.y above was built from, so the shader's
+    private void BuildMesh(int rowIndex0, int rows, bool syncCollider)
+    {
+        EnsureGround();
+        if (_groundMR.sharedMaterial != _meshMaterial) _groundMR.sharedMaterial = _meshMaterial; // new song → new material
+
+        int cols = _gridCols;
+        float scale = Mathf.Max(0.001f, _config.levelGeneration.maxFrequencyHeight);
+        float total = Path.TotalLength;
+        bool resized = rows != _bufferRows;
+        if (resized)
+        {
+            int n = rows * cols;
+            _verts = new Vector3[n]; _normals = new Vector3[n]; _colors = new Color32[n]; _uvs = new Vector2[n];
+            _tris = new int[(rows - 1) * (cols - 1) * 6];
+            int ti = 0;
+            for (int r = 0; r < rows - 1; r++)
+                for (int c = 0; c < cols - 1; c++)
+                {
+                    int v0 = r * cols + c, v1 = v0 + 1, v2 = v0 + cols, v3 = v2 + 1;
+                    _tris[ti++] = v0; _tris[ti++] = v2; _tris[ti++] = v1;
+                    _tris[ti++] = v1; _tris[ti++] = v2; _tris[ti++] = v3;
+                }
+            _bufferRows = rows;
+        }
+
+        // Rows shared with the previous window are a pure function of their global index (one global
+        // grid) — shift them in the buffers and compute only the rows that are new to this window.
+        int shift = _bufferRow0 == int.MinValue ? -1 : rowIndex0 - _bufferRow0;
+        int keep = !resized && shift >= 0 && shift < rows ? rows - shift : 0;
+        if (keep > 0 && shift > 0)
+        {
+            System.Array.Copy(_verts,   shift * cols, _verts,   0, keep * cols);
+            System.Array.Copy(_normals, shift * cols, _normals, 0, keep * cols);
+            System.Array.Copy(_colors,  shift * cols, _colors,  0, keep * cols);
+        }
+        FillRows(rowIndex0, keep, rows, cols, scale, total);
+        _bufferRow0 = rowIndex0;
+
+        // UV.y is window-relative (0 = window start .. 1 = window end, see the MPB below).
+        for (int r = 0; r < rows; r++)
+        {
+            float v = rows > 1 ? (float)r / (rows - 1) : 0f;
+            for (int c = 0; c < cols; c++)
+                _uvs[r * cols + c] = new Vector2(cols > 1 ? (float)c / (cols - 1) : 0.5f, v);
+        }
+
+        float startDistance = Mathf.Min(rowIndex0 * _rowSpacing, total);
+        float endDistance   = Mathf.Min((rowIndex0 + rows - 1) * _rowSpacing, total);
+
+        // Render mesh: updated in place (no GameObject/Mesh churn).
+        if (resized) _groundMesh.Clear();
+        _groundMesh.SetVertices(_verts);
+        _groundMesh.SetNormals(_normals);
+        _groundMesh.SetColors(_colors);
+        _groundMesh.SetUVs(0, _uvs);
+        if (resized) _groundMesh.SetTriangles(_tris, 0);
+        _groundMesh.RecalculateBounds();
+
+        // Collision: fill the buffer NOT currently used by the collider, bake it off the main thread
+        // and swap it in when ready (sync for the first build / respawn, which need ground now).
+        if (_pendingColliderMesh != null) ApplyPendingCollider();
+        var colliderMesh = _colliderMeshes[_colliderBuffer] ??= new Mesh { indexFormat = IndexFormat.UInt32, name = "MusicPath_GroundCollider" };
+        _colliderBuffer ^= 1;
+        colliderMesh.Clear();
+        colliderMesh.SetVertices(_verts);
+        colliderMesh.SetTriangles(_tris, 0);
+        if (syncCollider)
+        {
+            _groundMC.sharedMesh = colliderMesh;
+        }
+        else
+        {
+            _pendingColliderMesh = colliderMesh;
+            _bakeHandle = new BakeColliderJob { MeshId = colliderMesh.GetInstanceID(), Options = _groundMC.cookingOptions }.Schedule();
+        }
+
+        // This window's own [start, end] music-distance range, via MaterialPropertyBlock — NOT a
+        // cloned Material. Exactly the distances UV.y was built from, so the shader's
         // playhead01 = (playheadDistance - start) / (end - start) lines up with UV.y perfectly.
         _groundMPB ??= new MaterialPropertyBlock();
         _groundMPB.Clear();
-        _groundMPB.SetFloat(StartMusicDistanceID, rowDistance[0]);
-        _groundMPB.SetFloat(EndMusicDistanceID, rowDistance[rows - 1]);
-        mr.SetPropertyBlock(_groundMPB);
+        _groundMPB.SetFloat(StartMusicDistanceID, startDistance);
+        _groundMPB.SetFloat(EndMusicDistanceID, endDistance);
+        _groundMR.SetPropertyBlock(_groundMPB);
+    }
 
-        ReceiveShadows = mr.receiveShadows;
-        ShadowCasting  = mr.shadowCastingMode;
+    // Vertex position / colour / normal for buffer rows [fromRow, toRow) of the window starting at
+    // global row rowIndex0 — everything comes from the global grid, so a row's data never depends
+    // on which window it is in.
+    private void FillRows(int rowIndex0, int fromRow, int toRow, int cols, float scale, float total)
+    {
+        float LateralFrac(int c) => cols > 1 ? (float)c / (cols - 1) : 0.5f;
+        float HeightWorld(int globalRow, int c) =>
+            _globalGrid[Mathf.Clamp(globalRow, 0, _globalRows - 1), Mathf.Clamp(c, 0, cols - 1)] * scale;
+
+        for (int r = fromRow; r < toRow; r++)
+        {
+            int g = rowIndex0 + r;
+            var s  = Path.GetSample(Mathf.Min(g * _rowSpacing, total));
+            float hw = s.width * 0.5f;
+            float colSpacing = cols > 1 ? s.width / (cols - 1) : 1f;
+
+            for (int c = 0; c < cols; c++)
+            {
+                int v = r * cols + c;
+                float lateralFrac = LateralFrac(c);
+                float xOff = -hw + hw * 2f * lateralFrac;
+                float norm = Mathf.Clamp01(_globalGrid[g, c]);
+
+                _verts[v]  = s.position + s.right * xOff + s.up * (norm * scale);
+                // COLOR reads the SAME processed value as HEIGHT (norm = smoothed + slope-clamped);
+                // terrainColorRedThreshold is a pure COLOR remap (see TerrainVuColor).
+                _colors[v] = TerrainVuColor(norm);
+
+                // Analytic central-difference normal (not RecalculateNormals, which would differ at
+                // window edges) — neighbours come from the global grid, so seams light identically.
+                Vector3 tangentVec = (s.tangent * (2f * _rowSpacing) + s.up * (HeightWorld(g + 1, c) - HeightWorld(g - 1, c))).normalized;
+                Vector3 rightVec   = (s.right   * (2f * colSpacing) + s.up * (HeightWorld(g, c + 1) - HeightWorld(g, c - 1))).normalized;
+                Vector3 normal = Vector3.Cross(tangentVec, rightVec).normalized;
+                if (Vector3.Dot(normal, s.up) < 0f) normal = -normal;
+                _normals[v] = normal;
+            }
+        }
+    }
+
+    private void ApplyPendingCollider()
+    {
+        _bakeHandle.Complete();
+        if (_groundMC != null && _pendingColliderMesh != null) _groundMC.sharedMesh = _pendingColliderMesh; // already baked → cheap
+        _pendingColliderMesh = null;
     }
 
     // Custom URP shader: main-light diffuse + shadows (cast AND receive) multiplied by the

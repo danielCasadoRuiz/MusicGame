@@ -54,6 +54,28 @@ public class FighterMoveController : MonoBehaviour
     public FighterMoveState CurrentPhase { get; private set; } = FighterMoveState.Idle;
     public FightMoveDefinition CurrentMove { get; private set; }
     public FightMoveDefinition QueuedMove { get; private set; }
+
+    // ── Attack context (finishers / Signature / Power) ─────────────────────────────
+    // Every request may carry a FightAttackBonus and a tag; the bonus that actually applies is
+    // captured when the move STARTS (× Power multipliers if Power is active then) and read by
+    // FighterAttack / the move's projectile at hit time.
+    public enum AttackTag { None, Combo, Finisher, Signature }
+    public FightAttackBonus CurrentAttackBonus { get; private set; } = FightAttackBonus.Identity;
+    public AttackTag CurrentTag { get; private set; }
+    private FightAttackBonus _queuedBonus = FightAttackBonus.Identity;
+    private AttackTag _queuedTag;
+
+    // COMBO STRINGS (FightComboRecognizer): every request carries the string it came from. A
+    // continuation flagged ReplacesPrevious (PPP → PPPK) cancels the move of the SAME string —
+    // through InterruptMove, the existing lifecycle — and starts the longer combo's move.
+    private int _currentStringId;
+    private int _queuedStringId;
+    /// <summary>Debug: the last "cancelled → replacement" transition, e.g. "Punch (Finisher) → Combo AaaB".</summary>
+    public string LastReplaceInfo { get; private set; } = "";
+    /// <summary>Debug: what the last Signature request resolved to.</summary>
+    public string LastSignatureInfo { get; private set; } = "";
+    /// <summary>Debug: the last combo move requested (e.g. "Punch Finisher (×1.5 dmg)").</summary>
+    public string LastComboInfo { get; private set; } = "";
     public float MoveElapsed { get; private set; }
     public float PhaseElapsed { get; private set; }
     public string CurrentAnimationState => _animationDriver.CurrentState;
@@ -108,6 +130,7 @@ public class FighterMoveController : MonoBehaviour
     private System.Action<FightNormalPunchEvent> _onPunch;
     private System.Action<FightNormalKickEvent> _onKick;
     private System.Action<FightComboDetectedEvent> _onCombo;
+    private System.Action<FightPowerRequestedEvent> _onPower;
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
     private System.Action<MatchEndedEvent> _onMatchEnded;
 
@@ -144,15 +167,18 @@ public class FighterMoveController : MonoBehaviour
 
     private void OnEnable()
     {
-        _onPunch = e => { if (e.Source == _input) TryStartMove(ResolvePunch()); };
-        _onKick  = e => { if (e.Source == _input) TryStartMove(ResolveKick()); };
-        _onCombo = e => { if (e.Source == _input) TryStartMove(_moveSet != null && e.Combo != null ? _moveSet.GetByMoveId(e.Combo.moveId) : null); };
+        _onPunch = e => { if (e.Source == _input) TryExecuteMove(ResolvePunch(), FightAttackBonus.Identity, AttackTag.None, e.StringId, false); };
+        _onKick  = e => { if (e.Source == _input) TryExecuteMove(ResolveKick(), FightAttackBonus.Identity, AttackTag.None, e.StringId, false); };
+        _onCombo = e => { if (e.Source == _input) OnCombo(e.Combo, e.StringId, e.ReplacesPrevious); };
+        _onPower = e => { if (e.Source == _input) TryActivatePower(); };
         _onFightFlowChanged = e => _active = e.Current == FightFlowState.Fighting;
         _onMatchEnded = e =>
         {
             if (_actor == null) return;
             IsMatchLocked = true;
             InterruptMove();
+            _input?.ResetComboString();
+            _actor.Power?.Clear(_actor);
             bool won = e.Winner == _actor.Side;
             // A KO'd loser stays down (FighterHitReaction's Downed); otherwise show the pose.
             if (won || _actor.HitReaction == null || !_actor.HitReaction.IsInKnockdownFlow)
@@ -162,6 +188,7 @@ public class FighterMoveController : MonoBehaviour
         EventBus.Subscribe(_onPunch);
         EventBus.Subscribe(_onKick);
         EventBus.Subscribe(_onCombo);
+        EventBus.Subscribe(_onPower);
         EventBus.Subscribe(_onFightFlowChanged);
     }
 
@@ -170,6 +197,7 @@ public class FighterMoveController : MonoBehaviour
         EventBus.Unsubscribe(_onPunch);
         EventBus.Unsubscribe(_onKick);
         EventBus.Unsubscribe(_onCombo);
+        EventBus.Unsubscribe(_onPower);
         EventBus.Unsubscribe(_onFightFlowChanged);
         EventBus.Unsubscribe(_onMatchEnded);
     }
@@ -178,15 +206,28 @@ public class FighterMoveController : MonoBehaviour
     {
         if (!_active) return;
 
+        _actor?.Power?.Tick(_actor, Time.deltaTime);
+        // A hit/knockdown or the match ending ends the combo string (nothing typed before continues).
+        if (IsHitStunned || IsMatchLocked) _input?.ResetComboString();
+
         if (CurrentPhase == FighterMoveState.Idle)
         {
             if (QueuedMove != null)
             {
                 var move = QueuedMove;
+                var bonus = _queuedBonus;
+                var tag = _queuedTag;
+                int stringId = _queuedStringId;
                 QueuedMove = null;
+                // A queued enhanced Signature that can no longer be paid for falls back to the basic one.
+                if (tag == AttackTag.Signature && !CanAfford(move) && _moveSet != null && _moveSet.signatureBasic != null)
+                {
+                    move = _moveSet.signatureBasic;
+                    bonus = _balanceConfig != null ? _balanceConfig.signatureBasic : FightAttackBonus.Identity;
+                }
                 // Re-validated at dequeue time too — posture/movement-state may have changed while
                 // this move sat queued, and the resource may no longer be affordable.
-                if (IsContextAllowed(move) && CanAfford(move)) BeginMove(move);
+                if (IsContextAllowed(move) && CanAfford(move)) BeginMove(move, bonus, tag, stringId);
             }
             else if (!IsHitStunned && !IsMatchLocked)
             {
@@ -211,6 +252,100 @@ public class FighterMoveController : MonoBehaviour
         UpdatePhase();
     }
 
+    /// <summary>
+    /// A recognized combo (FightComboRecognizer). Empty moveId = the last step's own normal (the
+    /// Punch/Kick finishers are PPP/KKK definitions with a finisher bonus); the Signature combo keeps
+    /// its basic/enhanced resolution. `replaces` = this extends an already-completed combo of the same
+    /// string: its move is cancelled and replaced (see TryExecuteMove).
+    /// </summary>
+    private void OnCombo(FightComboDefinition combo, int stringId, bool replaces)
+    {
+        if (combo == null || _moveSet == null) return;
+        if (_moveSet.signatureSpecial != null && combo.moveId == _moveSet.signatureSpecial.id)
+        {
+            TryExecuteSignature(stringId, replaces);
+            return;
+        }
+
+        FightMoveDefinition move;
+        if (string.IsNullOrEmpty(combo.moveId))
+        {
+            var last = combo.steps != null && combo.steps.Length > 0 ? combo.steps[combo.steps.Length - 1].button : FightButton.None;
+            move = last == FightButton.Kick ? ResolveKick() : last == FightButton.Punch ? ResolvePunch() : null;
+        }
+        else move = _moveSet.GetByMoveId(combo.moveId);
+
+        var bonus = ComboBonus(combo.attackBonus);
+        var tag = combo.attackBonus != FightComboBonus.None ? AttackTag.Finisher : AttackTag.Combo;
+        if (TryExecuteMove(move, bonus, tag, stringId, replaces))
+            LastComboInfo = $"{(string.IsNullOrEmpty(combo.debugName) ? combo.id : combo.debugName)} → {move.debugName}{(bonus.IsIdentity ? "" : $" ({bonus})")}";
+    }
+
+    private FightAttackBonus ComboBonus(FightComboBonus kind) => _balanceConfig == null ? FightAttackBonus.Identity : kind switch
+    {
+        FightComboBonus.PunchFinisher => _balanceConfig.punchFinisher,
+        FightComboBonus.KickFinisher  => _balanceConfig.kickFinisher,
+        _                             => FightAttackBonus.Identity,
+    };
+
+    /// <summary>
+    /// The Signature input: with a Special available → the ENHANCED move (signatureSpecial — the
+    /// projectile, costs 1 Special, signatureSpecial bonus); otherwise → the BASIC move
+    /// (signatureBasic, no projectile, signatureBasic bonus). The Special is consumed by BeginMove,
+    /// i.e. only when the move actually starts, exactly once per started move.
+    /// </summary>
+    public bool TryExecuteSignature() => TryExecuteSignature(0, false);
+
+    public bool TryExecuteSignature(int stringId, bool replaces)
+    {
+        if (_moveSet == null) return false;
+        var special = _moveSet.signatureSpecial;
+        bool enhanced = special != null && Wallet != null && CanAfford(special) && special.resourceCost != CombatResourceType.None;
+        var move = enhanced ? special : _moveSet.signatureBasic;
+        if (move == null) { LastRejection = "no signatureBasic move"; return false; }
+        var bonus = _balanceConfig == null ? FightAttackBonus.Identity
+                  : enhanced ? _balanceConfig.signatureSpecial : _balanceConfig.signatureBasic;
+        bool ok = TryExecuteMove(move, bonus, AttackTag.Signature, stringId, replaces);
+        LastSignatureInfo = ok ? $"{(enhanced ? "ENHANCED" : "basic")} requested" : $"rejected ({LastRejection})";
+        return ok;
+    }
+
+    /// <summary>Debug: result of the last Power attempt (activated + x4 consumed, or why it was rejected).</summary>
+    public string LastPowerInfo { get; private set; } = "";
+
+    /// <summary>
+    /// Hold Down + Punch + Kick completed (FightPowerRequestedEvent). Activates the Power State and
+    /// consumes exactly 1 x4 (CombatResourceType.QuadCombo, the Runner's x4 count in this fighter's
+    /// FighterCombatResources wallet) — but ONLY if every condition holds: fighting, not stunned or
+    /// knocked down, match not over, Power not already active (no refresh/extend/stack), and x4 ≥ 1.
+    /// Any rejection consumes nothing and does nothing else (the absorbed presses never replay).
+    /// </summary>
+    private void TryActivatePower()
+    {
+        if (_actor == null || _actor.Power == null) return;
+        string reject =
+            !_active || IsMatchLocked ? "not fighting / match over" :
+            IsHitStunned              ? "stunned / knocked down" :
+            _actor.Power.IsActive     ? "already active" :
+            Wallet == null || !Wallet.CanAfford(CombatResourceType.QuadCombo, 1) ? "no x4" : null;
+        if (reject != null)
+        {
+            LastPowerInfo = $"REJECTED ({reject}) — x4 {Wallet?.QuadCombos ?? 0}";
+            Debug.Log($"[FighterMoveController] {_actor.Side} Power rejected: {reject}");
+            return;
+        }
+
+        float duration = _balanceConfig != null ? _balanceConfig.powerDuration : 6f;
+        var mult = _balanceConfig != null ? _balanceConfig.PowerMultipliers : FightAttackBonus.Identity;
+        if (!Wallet.TryConsume(CombatResourceType.QuadCombo, 1) || !_actor.Power.TryActivate(_actor, duration, mult))
+        {
+            LastPowerInfo = "REJECTED (could not consume x4)";
+            return;
+        }
+        LastPowerInfo = $"ACTIVATED — 1 x4 consumed (x4 left {Wallet.QuadCombos})";
+        Debug.Log($"[FighterMoveController] {_actor.Side} POWER STATE ON for {duration:0.0}s ({mult}); 1 x4 consumed, {Wallet.QuadCombos} left");
+    }
+
     private void TryStartMove(FightMoveDefinition move) => TryExecuteMove(move);
 
     /// <summary>Executes (or queues, during a running move) the profile move for `role`.</summary>
@@ -227,7 +362,18 @@ public class FighterMoveController : MonoBehaviour
     /// its resource cost isn't affordable. Accepted: starts now (Idle / cancel window) — consuming
     /// the cost — or is queued (single slot, latest wins; cost consumed when it actually starts).
     /// </summary>
-    public bool TryExecuteMove(FightMoveDefinition move)
+    public bool TryExecuteMove(FightMoveDefinition move) => TryExecuteMove(move, FightAttackBonus.Identity, AttackTag.None, 0, false);
+
+    /// <summary>
+    /// `stringId` = the combo string the request came from (0 = none). `replaces` = it extends an
+    /// already-completed combo of that string: if that string's move is RUNNING it is cancelled through
+    /// InterruptMove (hitbox closed by the phase event, movement lock released, queue cleared, bonus/tag
+    /// reset) and this move begins at once; if it is still QUEUED, this request takes its slot.
+    /// Whatever that move already committed stays committed (a landed hit is never undone or repeated,
+    /// an already-spawned projectile keeps flying); a move cancelled in Startup committed nothing.
+    /// If the string's move isn't current any more (finished, interrupted by a hit) it is a plain request.
+    /// </summary>
+    public bool TryExecuteMove(FightMoveDefinition move, FightAttackBonus bonus, AttackTag tag, int stringId, bool replaces)
     {
         LastRejection = "";
         if (move == null)             { LastRejection = "no move"; return false; }
@@ -237,10 +383,28 @@ public class FighterMoveController : MonoBehaviour
         if (!IsContextAllowed(move))  { LastRejection = "context (posture/movement)"; return false; }
         if (!CanAfford(move))         { LastRejection = $"needs {move.resourceAmount} {move.resourceCost}"; return false; }
 
+        if (replaces && stringId != 0 && CurrentMove != null && _currentStringId == stringId)
+        {
+            var cancelled = CurrentMove;
+            var cancelledPhase = CurrentPhase;
+            InterruptMove();
+            BeginMove(move, bonus, tag, stringId);
+            LastReplaceInfo = $"{cancelled.debugName} ({cancelledPhase}) → {move.debugName}";
+            Debug.Log($"[FighterMoveController] Combo extended: cancelled {LastReplaceInfo}");
+            return true;
+        }
+        if (replaces && stringId != 0 && QueuedMove != null && _queuedStringId == stringId)
+            LastReplaceInfo = $"{QueuedMove.debugName} (queued) → {move.debugName}";
+
         if (CurrentPhase == FighterMoveState.Idle || InCancelWindow())
-            BeginMove(move);
+            BeginMove(move, bonus, tag, stringId);
         else
+        {
             QueuedMove = move; // latest request wins — a single queue slot, see class doc
+            _queuedBonus = bonus;
+            _queuedTag = tag;
+            _queuedStringId = stringId;
+        }
         return true;
     }
 
@@ -295,9 +459,12 @@ public class FighterMoveController : MonoBehaviour
         return _moveSet.normalKick;
     }
 
-    private void BeginMove(FightMoveDefinition move)
+    private void BeginMove(FightMoveDefinition move, FightAttackBonus bonus, AttackTag tag, int stringId)
     {
         QueuedMove = null; // this move supersedes whatever was queued, if anything
+        _queuedTag = AttackTag.None;
+        _queuedStringId = 0;
+        _currentStringId = stringId;
         CurrentMove = move;
         MoveElapsed = 0f;
         PhaseElapsed = 0f;
@@ -305,7 +472,22 @@ public class FighterMoveController : MonoBehaviour
         {
             LastRejection = $"needs {move.resourceAmount} {move.resourceCost}";
             CurrentMove = null;
+            CurrentAttackBonus = FightAttackBonus.Identity;
+            CurrentTag = AttackTag.None;
+            _currentStringId = 0;
             return;
+        }
+        // Power multiplies whatever this attack already carries (captured now, for this whole move).
+        bool power = _actor != null && _actor.Power != null && _actor.Power.IsActive;
+        CurrentAttackBonus = power ? bonus * _actor.Power.Multipliers : bonus;
+        CurrentTag = tag;
+        if (tag == AttackTag.Signature)
+        {
+            bool enhanced = move.resourceCost != CombatResourceType.None;
+            int left = Wallet != null ? Wallet.Specials : 0;
+            LastSignatureInfo = $"{(enhanced ? "ENHANCED (1 Special consumed)" : "basic")} — {move.debugName}, Specials left {left}";
+            Debug.Log($"[FighterMoveController] {(_actor != null ? _actor.Side.ToString() : "?")} SIGNATURE {LastSignatureInfo}; bonus {CurrentAttackBonus}");
+            EventBus.Publish(new SignatureExecutedEvent { Fighter = _actor, Move = move, Enhanced = enhanced, SpecialsLeft = left });
         }
         _timingScale = _balanceConfig != null && _actor != null ? _balanceConfig.ComputeModifiers(_actor.BuildStats).TimingScale : 1f;
         // CurrentPhase is left as whatever it currently is (Idle, or the previous move's phase if
@@ -380,7 +562,7 @@ public class FighterMoveController : MonoBehaviour
     /// off correctly, same as a natural phase transition — no separate "interrupted" event exists.</summary>
     public void InterruptMove()
     {
-        if (CurrentMove == null) { QueuedMove = null; return; }
+        if (CurrentMove == null) { QueuedMove = null; _queuedTag = AttackTag.None; _queuedStringId = 0; return; }
 
         var previousPhase = CurrentPhase;
         var move = CurrentMove;
@@ -388,6 +570,11 @@ public class FighterMoveController : MonoBehaviour
         Debug.Log($"[FighterMoveController] Move interrupted: {move.debugName}");
         CurrentMove = null;
         QueuedMove = null;
+        _queuedTag = AttackTag.None;
+        _queuedStringId = 0;
+        _currentStringId = 0;
+        CurrentAttackBonus = FightAttackBonus.Identity; // never leak into whatever starts next
+        CurrentTag = AttackTag.None;
         CurrentPhase = FighterMoveState.Idle;
         PhaseElapsed = 0f;
         MoveElapsed = 0f;
@@ -411,6 +598,13 @@ public class FighterMoveController : MonoBehaviour
 
         CurrentMove = null;
         QueuedMove = null;
+        _queuedTag = AttackTag.None;
+        _queuedStringId = 0;
+        _currentStringId = 0;
+        CurrentAttackBonus = FightAttackBonus.Identity;
+        CurrentTag = AttackTag.None;
+        _input?.ResetComboString();
+        _actor?.Power?.Clear(_actor);
         CurrentPhase = FighterMoveState.Idle;
         MoveElapsed = 0f;
         PhaseElapsed = 0f;

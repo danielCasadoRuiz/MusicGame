@@ -245,8 +245,12 @@ public class FightController : MonoBehaviour
             v => { FightTouchInputState.Horizontal = v.x; FightTouchInputState.Vertical = v.y; },
             driveTouchInputState: false);
 
-        punchButton.AddComponent<TouchActionButton>().Initialize(() => FightTouchInputState.PunchRequested = true);
-        kickButton.AddComponent<TouchActionButton>().Initialize(() => FightTouchInputState.KickRequested = true);
+        punchButton.AddComponent<TouchActionButton>().Initialize(
+            () => { FightTouchInputState.PunchRequested = true; FightTouchInputState.PunchHeld = true; },
+            () => FightTouchInputState.PunchHeld = false);
+        kickButton.AddComponent<TouchActionButton>().Initialize(
+            () => { FightTouchInputState.KickRequested = true; FightTouchInputState.KickHeld = true; },
+            () => FightTouchInputState.KickHeld = false);
     }
 
     // ── UI shell (procedural fallback — no UIRegistry in the scene yet) ──────────

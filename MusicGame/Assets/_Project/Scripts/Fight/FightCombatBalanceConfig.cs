@@ -52,6 +52,29 @@ public class FightCombatBalanceConfig : ScriptableObject
     [Min(0f)] public float downedDuration = 0.8f;
     [Min(0.05f)] public float getUpDuration = 1.6f;
 
+    [Header("Finishers (combo definitions with attackBonus = Punch/KickFinisher)")]
+    [Tooltip("Multipliers on the Punch Finisher (combo P P P). Its timing lives on the combo definition.")]
+    public FightAttackBonus punchFinisher = new(1.5f, 1.6f, 1.8f);
+    [Tooltip("Multipliers on the Kick Finisher (combo K K K).")]
+    public FightAttackBonus kickFinisher = new(1.5f, 1.6f, 2.0f);
+
+    [Header("Signature Move (FightMoveSetSO.signatureBasic / signatureSpecial)")]
+    [Tooltip("Multipliers on the BASIC Signature (no Special available) — keep below the Special version.")]
+    public FightAttackBonus signatureBasic = new(0.75f, 0.8f, 0.8f);
+    [Tooltip("Multipliers on the ENHANCED Signature (the projectile — costs 1 Special).")]
+    public FightAttackBonus signatureSpecial = new(1.8f, 1.6f, 1.8f);
+
+    [Header("Power State (hold Down + Punch + Kick)")]
+    [Tooltip("Seconds Down + Punch + Kick must be held together to activate the Power State.")]
+    [Min(0.1f)] public float powerActivationHoldTime = 1.0f;
+    [Tooltip("Seconds the Power State lasts once activated.")]
+    [Min(0.1f)] public float powerDuration = 6f;
+    [Min(0f)] public float powerDamageMultiplier = 1.3f;
+    [Min(0f)] public float powerStaggerMultiplier = 1.25f;
+    [Min(0f)] public float powerKnockbackMultiplier = 1.25f;
+
+    public FightAttackBonus PowerMultipliers => new(powerDamageMultiplier, powerStaggerMultiplier, powerKnockbackMultiplier);
+
     /// <summary>Evaluates every curve against one fighter's build — the SAME computation FightHitResolver
     /// (real combat), FighterMoveController (timing) and FightDebugHUD use, so they can never drift.</summary>
     public FightCombatModifiers ComputeModifiers(FighterBuildStats stats, FighterBuildStat scalingStat = FighterBuildStat.None)

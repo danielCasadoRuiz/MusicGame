@@ -829,7 +829,9 @@ public static class UIPrefabBuilder
             new Vector2(-170f, 40f), new Vector2(actionSize, actionSize));
         var punchLabel = UIFactory.CreateText("Label", punchBtn.rectTransform, Loc.Get("Mobile.Punch"), 16, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
         UIFactory.Stretch(punchLabel.rectTransform);
-        punchBtn.gameObject.AddComponent<TouchActionButton>().Initialize(() => FightTouchInputState.PunchRequested = true);
+        punchBtn.gameObject.AddComponent<TouchActionButton>().Initialize(
+            () => { FightTouchInputState.PunchRequested = true; FightTouchInputState.PunchHeld = true; },
+            () => FightTouchInputState.PunchHeld = false);
         view.punchButton = punchBtn.gameObject;
         view.punchButtonLabel = punchLabel;
 
@@ -838,7 +840,9 @@ public static class UIPrefabBuilder
             new Vector2(-40f, 40f), new Vector2(actionSize, actionSize));
         var kickLabel = UIFactory.CreateText("Label", kickBtn.rectTransform, Loc.Get("Mobile.Kick"), 16, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
         UIFactory.Stretch(kickLabel.rectTransform);
-        kickBtn.gameObject.AddComponent<TouchActionButton>().Initialize(() => FightTouchInputState.KickRequested = true);
+        kickBtn.gameObject.AddComponent<TouchActionButton>().Initialize(
+            () => { FightTouchInputState.KickRequested = true; FightTouchInputState.KickHeld = true; },
+            () => FightTouchInputState.KickHeld = false);
         view.kickButton = kickBtn.gameObject;
         view.kickButtonLabel = kickLabel;
 

@@ -30,6 +30,13 @@ public class FightMoveSetSO : ScriptableObject
              "own moveId.")]
     public FightMoveDefinition[] moves = System.Array.Empty<FightMoveDefinition>();
 
+    [Header("Signature Move")]
+    [Tooltip("ENHANCED Signature — the combo whose moveId names this move is the Signature input. " +
+             "Should cost 1 Special (resourceCost) — used only when the fighter can afford it.")]
+    public FightMoveDefinition signatureSpecial;
+    [Tooltip("BASIC Signature — what the same input does with no Special available (no projectile).")]
+    public FightMoveDefinition signatureBasic;
+
     public FightMoveDefinition GetByMoveId(string moveId)
     {
         if (string.IsNullOrEmpty(moveId) || moves == null) return null;

@@ -9,12 +9,15 @@
 public struct FightNormalPunchEvent
 {
     public FighterInputController Source;
+    /// <summary>Combo string this press belongs to (see FightComboRecognizer).</summary>
+    public int StringId;
 }
 
 /// <summary>Fired the SAME frame Kick is pressed — see FightNormalPunchEvent's own doc.</summary>
 public struct FightNormalKickEvent
 {
     public FighterInputController Source;
+    public int StringId;
 }
 
 /// <summary>
@@ -29,6 +32,11 @@ public struct FightComboDetectedEvent
 {
     public FighterInputController Source;
     public FightComboDefinition Combo;
+    /// <summary>Combo string it belongs to — moves from the same string share it.</summary>
+    public int StringId;
+    /// <summary>Extends an already-completed combo of the same string (PPP → PPPK): the move system
+    /// cancels that combo's move and starts this one instead of running both.</summary>
+    public bool ReplacesPrevious;
 }
 
 /// <summary>
@@ -80,4 +88,28 @@ public struct HitEvadedEvent
     public FighterActor Attacker;
     public FighterActor Defender;
     public FightMoveDefinition Move;
+}
+
+/// <summary>Fired once by FighterInputController when the Down + Punch + Kick hold completes
+/// (POWER CHORD) — FighterMoveController decides whether the Power State actually starts.</summary>
+public struct FightPowerRequestedEvent
+{
+    public FighterInputController Source;
+}
+
+/// <summary>Power State started / refreshed / ended (FighterPowerState) — the hook for future UI/VFX.</summary>
+public struct PowerStateChangedEvent
+{
+    public FighterActor Fighter;
+    public bool Active;
+    public float Duration;
+}
+
+/// <summary>A Signature Move actually STARTED — Enhanced = the Special version (1 Special consumed).</summary>
+public struct SignatureExecutedEvent
+{
+    public FighterActor Fighter;
+    public FightMoveDefinition Move;
+    public bool Enhanced;
+    public int SpecialsLeft;
 }

@@ -91,6 +91,8 @@ public class FighterActor : MonoBehaviour
     public FighterBuildStats BuildStats { get; private set; }
     /// <summary>Spendable Triple/Quad/Special for this match.</summary>
     public FighterCombatResources CombatResources { get; private set; } = new(0, 0, 0);
+    /// <summary>Temporary Power State (hold Down + Punch + Kick) — see FighterPowerState.</summary>
+    public FighterPowerState Power { get; } = new();
     /// <summary>Presentation: debug string driver until an Animator is bound (BindAnimator).</summary>
     public IFighterAnimationDriver AnimationDriver { get; private set; } = new DebugFighterAnimationDriver();
     /// <summary>Hits are ignored (Dodge invulnerability window, or the knockdown flow).</summary>

@@ -21,6 +21,8 @@ public class HumanFightInputSource : IFightInputSource
     public float Vertical { get; private set; }
     public bool PunchPressed { get; private set; }
     public bool KickPressed { get; private set; }
+    public bool PunchHeld { get; private set; }
+    public bool KickHeld { get; private set; }
 
     public void Tick()
     {
@@ -28,7 +30,7 @@ public class HumanFightInputSource : IFightInputSource
         bool readKeyboard = !PlatformService.IsMobile || PlatformService.DualInputInEditor;
 
         float h = 0f, v = 0f;
-        bool punch = false, kick = false;
+        bool punch = false, kick = false, punchHeld = false, kickHeld = false;
 
         if (readTouch)
         {
@@ -36,6 +38,8 @@ public class HumanFightInputSource : IFightInputSource
             v = FightTouchInputState.Vertical;
             if (FightTouchInputState.PunchRequested) { punch = true; FightTouchInputState.PunchRequested = false; }
             if (FightTouchInputState.KickRequested)  { kick  = true; FightTouchInputState.KickRequested  = false; }
+            punchHeld |= FightTouchInputState.PunchHeld;
+            kickHeld  |= FightTouchInputState.KickHeld;
         }
 
         if (readKeyboard)
@@ -59,6 +63,8 @@ public class HumanFightInputSource : IFightInputSource
 
                 punch |= kb.jKey.wasPressedThisFrame;
                 kick  |= kb.kKey.wasPressedThisFrame;
+                punchHeld |= kb.jKey.isPressed;
+                kickHeld  |= kb.kKey.isPressed;
             }
         }
 
@@ -66,5 +72,7 @@ public class HumanFightInputSource : IFightInputSource
         Vertical     = v;
         PunchPressed = punch;
         KickPressed  = kick;
+        PunchHeld    = punchHeld || punch;
+        KickHeld     = kickHeld || kick;
     }
 }

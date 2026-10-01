@@ -217,7 +217,7 @@ public class FightDebugHUD : MonoBehaviour
 
         const float x = 8f, w = 420f;
         float y = 8f;
-        float h = 26f + 18f + 16f * 6f + 16f * 4f + 18f * 3f + 18f + 16f * 8f + 18f + 16f * 12f + 18f + 16f * 8f + 18f + 16f * 10f + 18f + 16f * 6f + 18f + 16f * 4f + 18f + 16f * 14f + 18f + 16f * (MaxLogLines + 1);
+        float h = 26f + 18f + 16f * 6f + 16f * 4f + 18f * 3f + 18f + 16f * 8f + 18f + 16f * 12f + 18f + 16f * 8f + 18f + 16f * 10f + 18f + 16f * 6f + 18f + 16f * 4f + 18f + 16f * 26f + 18f + 16f * (MaxLogLines + 1);
 
         GUI.Box(new Rect(x, y, w, h), "", _boxStyle);
         GUI.Label(new Rect(x + 6f, y + 2f, w - 12f, 16f), "FIGHT DEBUG (F1 | F2/3 KO | F4 timer | F5 draw | F6/7/8 diff | F9/10 win/lose | F11 +life | F12 ad)", _headerStyle);
@@ -424,6 +424,31 @@ public class FightDebugHUD : MonoBehaviour
         var b = actor.BuildStats;
         Row(x, ref y, w, $"    Punch {b.punchPower:F1}  Kick {b.kickPower:F1}  Agi {b.agility:F1}  Res {b.resistance:F1}  Imp {b.impactPower:F1}");
         Row(x, ref y, w, $"    Resources {actor.CombatResources}   last reject: {mc?.LastRejection}");
+        if (mc != null)
+        {
+            // Repeat chains / Signature / Power (see FighterMoveController, FighterPowerState).
+            var input = actor.InputController;
+            string power = actor.Power != null && actor.Power.IsActive
+                ? $"POWER ON {actor.Power.Remaining:0.0}s"
+                : input != null && input.IsChargingPower ? $"charging {input.PowerChargeProgress * 100f:0}%" : "power off";
+            Row(x, ref y, w, $"    Power: {power}   x4 {actor.CombatResources.QuadCombos}   last attempt {(string.IsNullOrEmpty(mc.LastPowerInfo) ? "-" : mc.LastPowerInfo)}");
+            Row(x, ref y, w, $"    attack {mc.CurrentTag} {mc.CurrentAttackBonus}   last combo {(string.IsNullOrEmpty(mc.LastComboInfo) ? "-" : mc.LastComboInfo)}");
+            var rec = input != null ? input.Recognizer : null;
+            if (rec != null)
+            {
+                var recent = input.RecentInputs;
+                var sb = new System.Text.StringBuilder();
+                for (int i = recent != null ? System.Math.Max(0, recent.Count - 8) : 0; recent != null && i < recent.Count; i++)
+                    sb.Append(sb.Length > 0 ? " → " : "").Append(recent[i]);
+                Row(x, ref y, w, $"    Inputs: {(sb.Length > 0 ? sb.ToString() : "-")}");
+                var cur = rec.CurrentCombo;
+                Row(x, ref y, w, $"    String: {rec.CurrentStringText}   combo {(cur != null ? (string.IsNullOrEmpty(cur.debugName) ? cur.id : cur.debugName) : "-")}" +
+                                  $"   next {(rec.HasContinuation ? $"{rec.ContinuationText} ({rec.ContinuationRemaining:0.00}s)" : "-")}");
+                bool recentExt = rec.LastExtensionTime >= 0f && Time.time - rec.LastExtensionTime < 3f;
+                Row(x, ref y, w, $"    Extended: {(recentExt ? rec.LastExtension : "-")}   cancelled/replaced: {(string.IsNullOrEmpty(mc.LastReplaceInfo) ? "-" : mc.LastReplaceInfo)}");
+            }
+            Row(x, ref y, w, $"    Signature: {(string.IsNullOrEmpty(mc.LastSignatureInfo) ? "-" : mc.LastSignatureInfo)}   Specials {actor.CombatResources.Specials}");
+        }
 
         if (_balanceConfig != null)
         {
