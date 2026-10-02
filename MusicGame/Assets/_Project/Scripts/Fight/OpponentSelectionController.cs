@@ -249,11 +249,30 @@ public class OpponentSelectionController : MonoBehaviour
         Debug.Log($"[OpponentSelectionController] Final rival precomputed: {Name(opponents[finalIndex])} — fake sequence " +
                   $"({fakes.Count}/{fakeCount}): {string.Join(" -> ", fakes.ConvertAll(i => Name(opponents[i])))}");
 
-        foreach (int index in fakes)
+        // Songs are chosen UP FRONT (fakes + the final one) and loaded in the background BEFORE the
+        // first step — a step's timer never runs while its clip is still loading (that load used to
+        // stall the first Play of each track, so the roulette moved on before the music started).
+        var fakeClips = fakes.ConvertAll(i => opponents[i].GetConfigForTier(tier)?.GetRandomSong());
+        var finalOpponent    = opponents[finalIndex];
+        int resolvedTier     = 0;
+        var finalLevelConfig = finalOpponent != null ? finalOpponent.GetConfigForTier(tier, out resolvedTier) : null;
+        var finalSong        = GameSession.Instance != null
+            ? GameSession.Instance.PickOpponentSong(finalOpponent, finalLevelConfig)
+            : finalLevelConfig?.GetRandomSong();
+        var toLoad = new List<AudioClip>(fakeClips) { finalSong };
+        foreach (var c in toLoad) if (c != null && c.loadState == AudioDataLoadState.Unloaded) c.LoadAudioData();
+        float preloadTimeout = _config != null ? _config.songPreloadTimeout : 3f;
+        for (float t = 0f; t < preloadTimeout && !_skipRequested && toLoad.Exists(c => c != null && c.loadState == AudioDataLoadState.Loading); t += Time.unscaledDeltaTime)
+            yield return null;
+
+        bool radio = _config == null || _config.radioStaticEnabled;
+        for (int k = 0; k < fakes.Count; k++)
         {
             if (_skipRequested) break;
-            HighlightOnly(index);
-            var clip = opponents[index].GetConfigForTier(tier)?.GetRandomSong();
+            HighlightOnly(fakes[k]);
+            var clip = fakeClips[k];
+            if (radio && k > 0) FightMusicController.Instance?.PlayRadioStatic(_config != null ? _config.radioStaticDuration : 0.14f,
+                                                                                _config != null ? _config.radioStaticVolume : 0.12f);
             FightMusicController.Instance?.PlaySnippet(clip, SnippetStart(clip)); // from the song's preview region
             for (float t = 0f; t < stepDuration && !_skipRequested; t += Time.deltaTime) yield return null;
         }
@@ -261,13 +280,12 @@ public class OpponentSelectionController : MonoBehaviour
 
         // 3. The definitive pick — always the last step, the SAME rival computed in step 1.
         HighlightOnly(finalIndex);
-        var finalOpponent    = opponents[finalIndex];
-        int resolvedTier     = 0;
-        var finalLevelConfig = finalOpponent != null ? finalOpponent.GetConfigForTier(tier, out resolvedTier) : null;
-        var finalSong        = GameSession.Instance != null
-            ? GameSession.Instance.PickOpponentSong(finalOpponent, finalLevelConfig)
-            : finalLevelConfig?.GetRandomSong();
+        if (radio && fakes.Count > 0) FightMusicController.Instance?.PlayRadioStatic(_config != null ? _config.radioStaticDuration : 0.14f,
+                                                                                    _config != null ? _config.radioStaticVolume : 0.12f);
         FightMusicController.Instance?.Lock(finalSong, finalLevelConfig);
+        // The fakes' tracks are not needed any more — free their audio data (the final one keeps playing).
+        foreach (var c in fakeClips)
+            if (c != null && c != finalSong && c.loadState == AudioDataLoadState.Loaded) c.UnloadAudioData();
 
         if (GameSession.Instance != null)
         {

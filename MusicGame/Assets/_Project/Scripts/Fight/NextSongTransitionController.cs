@@ -132,7 +132,9 @@ public class NextSongTransitionController : MonoBehaviour
         // behind it while the next song resolves — the song name fills in a moment later, once
         // RunWinSequence's catalog query/load actually completes.
         _canvasGroup.alpha = 1f;
-        _levelText.text = Loc.Get("NextSong.Level", newPlayerLevel.ToString());
+        // The player's identity is the Musical Mastery rank name (newPlayerLevel = its 1-based number).
+        _levelText.text = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.MasteryRankName
+                                                                 : Loc.Get("NextSong.Level", newPlayerLevel.ToString());
         _songNameText.text = "";
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();

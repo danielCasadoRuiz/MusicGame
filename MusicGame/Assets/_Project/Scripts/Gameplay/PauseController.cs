@@ -240,6 +240,10 @@ public class PauseController : MonoBehaviour
         _firstPersonIcon        = view.firstPersonIcon;
         if (view.cameraToggleButton != null)
             view.cameraToggleButton.onClick.AddListener(() => CameraFollow.Instance?.ToggleView());
+        else
+            // The baked PauseMenu prefab lost its camera toggle (cameraToggleButton was never assigned),
+            // which is why First/Third Person disappeared from the Runner — rebuild it next to Pause.
+            BuildCameraToggle(_pauseButtonRoot.parent as RectTransform);
         RefreshCameraToggleDisplay(CameraFollow.Instance != null ? CameraFollow.Instance.ViewMode : CameraViewMode.ThirdPerson);
 
         // Same reasoning as GameplayHUD's own label re-set — baked once at Editor-bake time, so
@@ -266,14 +270,7 @@ public class PauseController : MonoBehaviour
         pauseBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
         pauseLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
-        var cameraToggleBtn = UIFactory.CreateButton("CameraToggleButton", canvas, "", out _cameraToggleLabel);
-        UIFactory.SetBox(cameraToggleBtn.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
-            new Vector2(-12f, -46f), new Vector2(120f, 28f));
-        cameraToggleBtn.onClick.AddListener(() => CameraFollow.Instance?.ToggleView());
-        _cameraToggleButtonRoot = cameraToggleBtn.GetComponent<RectTransform>();
-        RefreshCameraToggleDisplay(CameraFollow.Instance != null ? CameraFollow.Instance.ViewMode : CameraViewMode.ThirdPerson);
-        cameraToggleBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
-        _cameraToggleLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        BuildCameraToggle(canvas);
 
         _overlayRoot = UIFactory.CreateRect("PausedOverlay", canvas);
         UIFactory.Stretch(_overlayRoot);
@@ -334,6 +331,21 @@ public class PauseController : MonoBehaviour
         bool showPersistentButtons = !_ended && !_paused && _manager != null && _manager.IsRunning;
         _pauseButtonRoot.gameObject.SetActive(showPersistentButtons);
         if (_cameraToggleButtonRoot != null) _cameraToggleButtonRoot.gameObject.SetActive(showPersistentButtons);
+    }
+
+    // First/Third Person toggle, inside the Runner's top bar right end, just left of Pause
+    // (GameplayHUD keeps that end of the bar free for both buttons).
+    private void BuildCameraToggle(RectTransform parent)
+    {
+        var cameraToggleBtn = UIFactory.CreateButton("CameraToggleButton", parent, "", out _cameraToggleLabel);
+        _cameraToggleLabel.fontSize = 12;
+        UIFactory.SetBox(cameraToggleBtn.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+            new Vector2(-104f, -12f), new Vector2(124f, 28f));
+        cameraToggleBtn.onClick.AddListener(() => CameraFollow.Instance?.ToggleView());
+        _cameraToggleButtonRoot = cameraToggleBtn.GetComponent<RectTransform>();
+        RefreshCameraToggleDisplay(CameraFollow.Instance != null ? CameraFollow.Instance.ViewMode : CameraViewMode.ThirdPerson);
+        cameraToggleBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        _cameraToggleLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
     }
 
     /// <summary>Purely cosmetic — swaps the toggle button's icon/text to reflect the CURRENT

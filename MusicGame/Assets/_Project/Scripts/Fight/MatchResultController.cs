@@ -321,7 +321,7 @@ public class MatchResultController : MonoBehaviour
         _pendingUnlock = null; // shown once; a repeat victory over the same version never sets it
 
         _levelText.gameObject.SetActive(playerWon);
-        if (playerWon) _levelText.text = Loc.Get("MatchResult.LevelUp", data.OldPlayerLevel.ToString(), data.NewPlayerLevel.ToString());
+        if (playerWon) _levelText.text = MasteryLine(data);
 
         _continueButton.gameObject.SetActive(playerWon);
         _fightAgainButton.gameObject.SetActive(!playerWon);
@@ -376,6 +376,18 @@ public class MatchResultController : MonoBehaviour
         }
 
         return summary;
+    }
+
+    // Musical Mastery after this win: "RANK UP: A → B" when it changed, else "B · N victories".
+    private static string MasteryLine(MatchEndedEvent data)
+    {
+        var progress = PlayerProgressService.Instance;
+        var cfg = Resources.Load<AppConfigSO>("AppConfig")?.progression;
+        if (progress == null || cfg == null) return "";
+        string now = progress.MasteryRankName;
+        if (data.NewPlayerLevel != data.OldPlayerLevel)
+            return Loc.Get("MatchResult.MasteryUp", Loc.Get("Mastery." + cfg.MasteryRankId(data.OldPlayerLevel - 1)), now);
+        return Loc.Get("MatchResult.Mastery", now, progress.FightsWon.ToString());
     }
 
     private static string OpponentDisplayName() =>

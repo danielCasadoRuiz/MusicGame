@@ -186,7 +186,7 @@ public class MainMenuController : MonoBehaviour
     {
         _profileText = UIFactory.CreateText("ProfileText", parent, "", 18, Color.white, TextAlignmentOptions.Center);
         UIFactory.SetBox(_profileText.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-            new Vector2(0f, -165f), new Vector2(900f, 30f));
+            new Vector2(0f, -160f), new Vector2(900f, 70f));
         _profileText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
     }
 
@@ -198,8 +198,10 @@ public class MainMenuController : MonoBehaviour
         if (_profileText == null) return;
         _profileText.gameObject.SetActive(hasSave);
         if (!hasSave) return;
-        var (inLevel, needed) = progress.LevelProgress;
-        _profileText.text = Loc.Get("MainMenu.Profile", progress.Level.ToString(), inLevel.ToString(), needed.ToString(), progress.ExtraLives.ToString());
+        // Musical Mastery is the prominent identity; victories under it; XP / lives stay subtle.
+        _profileText.text = $"<size=150%><b>{progress.MasteryRankName}</b></size>\n" +
+                            Loc.Get("MainMenu.Victories", progress.FightsWon.ToString()) +
+                            $"<size=80%><alpha=#99>   ·   XP {progress.Xp}   ·   {Loc.Get("HUD.Life")} {progress.ExtraLives}</size>";
     }
 
     private void BuildSettingsPanel()

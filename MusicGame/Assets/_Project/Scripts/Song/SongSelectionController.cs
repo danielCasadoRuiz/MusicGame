@@ -130,7 +130,6 @@ public class SongSelectionController : MonoBehaviour
         // The catalog rows stay dynamic runtime population either way (Section 9 of the plan) — the
         // prefab only supplies the empty container they get added into.
         BuildSongList();
-        BuildPreviewButton();
 
         _root.gameObject.SetActive(false);
     }
@@ -157,7 +156,6 @@ public class SongSelectionController : MonoBehaviour
         BuildPlayYourSongButton();
         BuildStreamingRow();
         BuildBottomBar();
-        BuildPreviewButton();
 
         _root.gameObject.SetActive(false);
     }
@@ -247,7 +245,19 @@ public class SongSelectionController : MonoBehaviour
             var background = row.GetComponent<Image>();
             _rowBackgrounds.Add(background);
             row.onClick.AddListener(() => SelectCatalogSong(index));
+
+            // Play/Pause on the card itself — selects the song too (see OnCardPlayPause).
+            var play = UIFactory.CreateButton("PlayPause", row.GetComponent<RectTransform>(), Loc.Get("SongSelection.CardPlay"), out var playLabel);
+            UIFactory.SetBox(play.GetComponent<RectTransform>(), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
+                new Vector2(-8f, 0f), new Vector2(92f, SongRowHeight - 14f));
+            playLabel.fontSize = 13;
+            play.onClick.AddListener(() => OnCardPlayPause(index));
+            play.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+            playLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+            UIFactory.SetBox(label.rectTransform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), new Vector2(-50f, 0f), new Vector2(-124f, 0f));
+            _cardPlayLabels.Add(playLabel);
         }
+        RefreshPreviewButton();
     }
 
     private void BuildStreamingRow()
@@ -294,48 +304,41 @@ public class SongSelectionController : MonoBehaviour
 
     // ── Preview (SongPreviewPlayer — one preview at a time, per-song range in SongPreviewConfigSO) ──
 
-    private Button _previewButton;
-    private TMPro.TextMeshProUGUI _previewLabel;
+    // One authoritative state: the selected song (_selectedCatalogIndex) + SongPreviewPlayer's single
+    // playing preview. Cards only reflect it.
+    private readonly List<TMPro.TextMeshProUGUI> _cardPlayLabels = new();
 
-    private void BuildPreviewButton()
-    {
-        _previewButton = UIFactory.CreateButton("PreviewButton", _root, Loc.Get("SongSelection.Preview"), out _previewLabel);
-        UIFactory.SetBox(_previewButton.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-            new Vector2(0f, 40f), new Vector2(104f, 44f));
-        _previewLabel.fontSize = 13;
-        _previewButton.onClick.AddListener(OnPreviewClicked);
-        _previewButton.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
-        _previewLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-        RefreshPreviewButton();
-    }
-
-    private void OnPreviewClicked()
+    /// <summary>Card Play/Pause: PLAY selects that song (stopping any other preview) and starts its
+    /// preview; PAUSE on the playing card stops it. Only one song selected, one preview playing.</summary>
+    private void OnCardPlayPause(int index)
     {
         var player = SongPreviewPlayer.Instance;
-        if (player == null || _selectedCatalogIndex < 0 || _selectedCatalogIndex >= _entries.Count) return;
-        var location = _entries[_selectedCatalogIndex];
-        if (player.IsPlaying && player.PlayingId == location.PrimaryKey) player.Stop(); // same song again = stop
-        else player.Play(location);
+        if (player == null || index < 0 || index >= _entries.Count) return;
+        var location = _entries[index];
+        if (player.IsPlaying && player.PlayingId == location.PrimaryKey) { player.Stop(); return; }
+        SelectCatalogSong(index); // stops the previous preview when the selection changes
+        player.Play(location);
     }
 
     private void StopPreview() => SongPreviewPlayer.Instance?.Stop();
 
     private void RefreshPreviewButton()
     {
-        if (_previewButton == null) return;
         var player = SongPreviewPlayer.Instance;
-        bool catalogSelected = _selectedCatalogIndex >= 0 && _selectedCatalogIndex < _entries.Count;
-        bool playingThis = player != null && player.IsPlaying && catalogSelected && player.PlayingId == _entries[_selectedCatalogIndex].PrimaryKey;
-        _previewButton.interactable = catalogSelected && !_isLoading; // catalog songs only (local files: no preview)
-        _previewLabel.text = Loc.Get(playingThis ? "SongSelection.StopPreview" : "SongSelection.Preview");
+        string playingId = player != null && player.IsPlaying ? player.PlayingId : null;
+        for (int i = 0; i < _cardPlayLabels.Count && i < _entries.Count; i++)
+            if (_cardPlayLabels[i] != null)
+                _cardPlayLabels[i].text = Loc.Get(playingId == _entries[i].PrimaryKey ? "SongSelection.CardPause" : "SongSelection.CardPlay");
+
         // Lightweight range readout in the existing status line while a preview plays.
-        if (playingThis && player.PlayingRange.duration > 0f)
+        bool showing = playingId != null && player.PlayingRange.duration > 0f;
+        if (showing)
         {
             var (start, duration) = player.PlayingRange;
             SetStatus(Loc.Get("SongSelection.PreviewRange", Clock(start), Clock(start + duration)), NeutralStatusColor);
         }
         else if (_statusText != null && _previewRangeShown) SetStatus(null);
-        _previewRangeShown = playingThis;
+        _previewRangeShown = showing;
     }
 
     private bool _previewRangeShown;

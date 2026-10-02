@@ -47,10 +47,30 @@ public class FightCameraController : MonoBehaviour
     /// <summary>True while the player is currently shown on screen-right (crossed, not yet swapped back).</summary>
     public bool PlayerOnScreenRight { get; private set; }
 
+    /// <summary>Screen-right of the THIRD-PERSON framing, computed every frame whatever the camera
+    /// mode. Input facing (RealFightFacingProvider) reads this — never the live camera transform —
+    /// so switching to first person can never change which key means Forward.</summary>
+    public Vector3 ReferenceRightXZ { get; private set; } = Vector3.right;
+
+    private const string ViewPrefsKey = "MusicGame.FightCameraView";
+    /// <summary>Third person (framing both fighters) or first person (near the player's head).
+    /// Presentation only; persisted like the Runner's own toggle.</summary>
+    public CameraViewMode ViewMode { get; private set; } = CameraViewMode.ThirdPerson;
+    public event System.Action<CameraViewMode> ViewModeChanged;
+
+    public void ToggleView()
+    {
+        ViewMode = ViewMode == CameraViewMode.ThirdPerson ? CameraViewMode.FirstPerson : CameraViewMode.ThirdPerson;
+        PlayerPrefs.SetInt(ViewPrefsKey, (int)ViewMode);
+        PlayerPrefs.Save();
+        ViewModeChanged?.Invoke(ViewMode);
+    }
+
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(this); return; }
         Instance = this;
+        ViewMode = (CameraViewMode)PlayerPrefs.GetInt(ViewPrefsKey, (int)CameraViewMode.ThirdPerson);
     }
 
     private void OnDestroy()
@@ -114,6 +134,25 @@ public class FightCameraController : MonoBehaviour
         // offset.x slides ALONG the fighters' line (screen-right), meaningful at any orbit angle.
         Vector3 desiredPosition = midpoint + viewSide * backDistance + alongLine * offset.x + Vector3.up * offset.y;
         Quaternion desiredRotation = Quaternion.LookRotation((midpoint - desiredPosition).normalized, Vector3.up);
+        ReferenceRightXZ = alongLine;
+
+        if (ViewMode == CameraViewMode.FirstPerson)
+        {
+            // Near-head, slightly behind and beside the player, looking at the opponent's chest. The
+            // third-person yaw above keeps running, so switching back is seamless and facing is stable.
+            Vector3 toOpp = separation > 0.0001f ? lineXZ / separation : alongLine;
+            float fpHeight = _config != null ? _config.firstPersonHeight : 1.85f;
+            float fpBack   = _config != null ? _config.firstPersonBack : 0.9f;
+            float fpSide   = _config != null ? _config.firstPersonSide : 0.35f;
+            float fpLook   = _config != null ? _config.firstPersonLookHeight : 1.35f;
+            float fpSmooth = _config != null ? _config.firstPersonPositionSmoothTime : 0.08f;
+            Vector3 eye = _player.position + Vector3.up * fpHeight - toOpp * fpBack + alongLine * fpSide;
+            Vector3 look = _opponent.position + Vector3.up * fpLook;
+            transform.position = Vector3.SmoothDamp(transform.position, eye, ref _positionVelocity, fpSmooth);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation((look - transform.position).normalized, Vector3.up),
+                                                  rotSmoothSpeed * 1.5f * Time.deltaTime);
+            return;
+        }
 
         transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref _positionVelocity, posSmoothTime);
         transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, rotSmoothSpeed * Time.deltaTime);

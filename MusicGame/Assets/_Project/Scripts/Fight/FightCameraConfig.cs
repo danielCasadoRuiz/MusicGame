@@ -27,6 +27,18 @@ public class FightCameraConfig : ScriptableObject
              "a sustained change in the combat line's angle actually re-orbits the view.")]
     public float orbitSmoothSpeed = 3f;
 
+    [Header("First person (near-head, over the player's shoulder) — presentation only")]
+    [Tooltip("Camera height above the player's root.")]
+    public float firstPersonHeight = 1.85f;
+    [Tooltip("How far BEHIND the player's head (away from the opponent) — keeps the player's own body " +
+             "out of the lens while staying close.")]
+    public float firstPersonBack = 0.9f;
+    [Tooltip("Sideways shift (towards screen-right of the third-person view) — an over-the-shoulder look.")]
+    public float firstPersonSide = 0.35f;
+    [Tooltip("Height on the opponent the camera looks at.")]
+    public float firstPersonLookHeight = 1.35f;
+    public float firstPersonPositionSmoothTime = 0.08f;
+
     [Header("Side stability — fighters crossing never flips the view")]
     [Tooltip("The camera keeps watching from the SAME side of the fighters' line when they cross " +
              "(the player may briefly be on screen-right). Only after the player has stayed crossed " +

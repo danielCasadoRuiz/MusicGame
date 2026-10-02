@@ -122,8 +122,9 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     [Header("Combat Resource Pickups (Life / Special) — NOT musical")]
     public bool spawnLife = true;
     [Tooltip("Life pickups per minute of PLAYED song (rounded), spread evenly across it.")]
-    [Min(0f)] public float lifePickupsPerMinute = 1.5f;
-    [Min(0)] public int maxLifePickups = 3;
+    [Min(0f)] public float lifePickupsPerMinute = 1f;
+    [Tooltip("Cap per run (target: 1 LIFE per run).")]
+    [Min(0)] public int maxLifePickups = 1;
     public bool spawnSpecial = true;
     [Tooltip("Special pickups, placed right after the song's strongest structural moments " +
              "(climax-tagged / strongest Impact or Drop inside the played window).")]
@@ -272,32 +273,31 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     [Header("Pickup Height by Difficulty")]
     [Tooltip("Which height distribution the Runner uses (no difficulty selector exists yet — set it here).")]
     public RunnerDifficulty difficulty = RunnerDifficulty.Normal;
-    public PickupHeightDifficulty normalHeights = new() { elevatedChance = 0.08f, offTrackChance = 0.06f, patternElevatedChance = 0.15f };
-    public PickupHeightDifficulty hardHeights   = new() { elevatedChance = 0.40f, offTrackChance = 0.20f, patternElevatedChance = 0.60f };
+    public PickupHeightDifficulty normalHeights = new() { elevatedChance = 0.04f, offTrackChance = 0.04f, patternElevatedChance = 0.03f };
+    public PickupHeightDifficulty hardHeights   = new() { elevatedChance = 0.30f, offTrackChance = 0.15f, patternElevatedChance = 0.40f };
     [Tooltip("Highest pickup CENTRE height (m above the track surface) that ordinary running collects " +
              "without jumping. Non-elevated pickups never go above it; the height score bonus starts " +
              "above it (plus heightBonusDeadZone).")]
     [Min(0f)] public float normalCollectHeight = 1.0f;
-    [Tooltip("Top of the ELEVATED band, as a 0..1 fraction of maxJumpHeight (jumpForce²/(2·|gravity|)).")]
-    [Range(0f, 1f)] public float elevatedMaxJumpHeightFactor = 0.95f;
-    [Tooltip("Height above normalCollectHeight that still counts as ordinary (no bonus) — tiny Y " +
-             "differences are never rewarded.")]
-    [Min(0f)] public float heightBonusDeadZone = 0.15f;
-    [Tooltip("Score multiplier at the top of the elevated band (normalCollectHeight + dead zone → x1, " +
-             "elevatedMaxJumpHeightFactor·maxJumpHeight → this), smoothly in between.")]
+    [Tooltip("ELEVATED pickups start this far ABOVE the player's standing reach (capsule top + the " +
+             "pickup's half size) — so they really need a jump, never a lucky standing touch.")]
+    [Min(0f)] public float elevatedClearance = 0.2f;
+    [Tooltip("Top of the ELEVATED band: standing reach + this fraction of the full jump height. Below 1 " +
+             "keeps every elevated pickup comfortably reachable with an ordinary jump.")]
+    [Range(0.1f, 1f)] public float elevatedMaxJumpHeightFactor = 0.6f;
+    [Tooltip("Score multiplier at the top of the elevated band (x1 at its bottom), smoothly in between. " +
+             "Pickups in the running band (≤ normalCollectHeight) always score x1.")]
     [Min(1f)] public float heightBonusMaxMultiplier = 1.5f;
 
     public PickupHeightDifficulty Heights => difficulty == RunnerDifficulty.Hard ? hardHeights : normalHeights;
 
-    /// <summary>x1 at/below normalCollectHeight + heightBonusDeadZone, rising linearly to
-    /// heightBonusMaxMultiplier at the top of the elevated band. `heightAboveSurface` = the
-    /// pickup's TimelineEvent.verticalOffset.</summary>
-    public float HeightScoreMultiplier(float heightAboveSurface, float maxJumpHeight)
+    /// <summary>x1 up to the bottom of the elevated band, rising linearly to heightBonusMaxMultiplier
+    /// at its top (both from GameplayTimeline.ElevatedBand). `heightAboveSurface` = the pickup's
+    /// TimelineEvent.verticalOffset.</summary>
+    public float HeightScoreMultiplier(float heightAboveSurface, float bandBottom, float bandTop)
     {
-        float start = normalCollectHeight + heightBonusDeadZone;
-        float full  = Mathf.Max(start + 0.01f, maxJumpHeight * elevatedMaxJumpHeightFactor);
-        float t = Mathf.InverseLerp(start, full, heightAboveSurface);
-        return t <= 0f ? 1f : Mathf.Lerp(1f, heightBonusMaxMultiplier, t);
+        float t = Mathf.InverseLerp(bandBottom, Mathf.Max(bandBottom + 0.01f, bandTop), heightAboveSurface);
+        return heightAboveSurface < bandBottom ? 1f : Mathf.Lerp(1f, heightBonusMaxMultiplier, t);
     }
 
     // ── Resource pickups — TEST fallback ──────────────────────────────────────
@@ -305,7 +305,7 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     [Tooltip("Adds extra LIFE/SPECIAL pickups ON the racing line at running height, spread over the " +
              "played window, through the normal pickup pipeline (spawn → collision → effect), so both " +
              "can be collected in any normal test run. Off = only the regular difficult placements.")]
-    public bool resourcePickupTestFallback = true;
+    public bool resourcePickupTestFallback = false;
     [Min(0)] public int testLifePickups = 2;
     [Min(0)] public int testSpecialPickups = 2;
 

@@ -15,6 +15,13 @@ public class FightFlowConfig : ScriptableObject
              "the real, precomputed one. Never repeats a rival within one roulette, excludes the final " +
              "rival when enough others exist, and clamps to the unique candidates available.")]
     [Min(0)] public int fakeSelectionCount = 6;
+    [Tooltip("Max seconds the roulette waits for its songs (the fakes' + the final one) to finish loading " +
+             "before it starts — the step timer only runs once the songs are ready to play instantly.")]
+    [Min(0f)] public float songPreloadTimeout = 3f;
+    [Tooltip("A tiny radio-tuning / static burst between fake rivals' snippets. Purely cosmetic.")]
+    public bool radioStaticEnabled = true;
+    [Min(0.01f)] public float radioStaticDuration = 0.14f;
+    [Range(0f, 1f)] public float radioStaticVolume = 0.12f;
     [Tooltip("LEGACY — no longer read: the roulette length is fakeSelectionCount × selectionStepDuration.")]
     public float opponentSelectionDuration = 6f;
     [Tooltip("How long each intermediate highlight (and its music snippet) stays up before " +

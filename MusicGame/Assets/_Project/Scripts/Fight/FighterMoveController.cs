@@ -480,6 +480,9 @@ public class FighterMoveController : MonoBehaviour
             _currentStringId = 0;
             return;
         }
+        if (move.resourceCost != CombatResourceType.None)
+            EventBus.Publish(new FightResourceSpentEvent { Fighter = _actor, Move = move, Type = move.resourceCost, Amount = move.resourceAmount });
+
         // Power multiplies whatever this attack already carries (captured now, for this whole move).
         bool power = _actor != null && _actor.Power != null && _actor.Power.IsActive;
         CurrentAttackBonus = power ? bonus * _actor.Power.Multipliers : bonus;

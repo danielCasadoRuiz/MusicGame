@@ -168,7 +168,9 @@ public class RivalCollectionController : MonoBehaviour
             bool discovered = defeated.Length > 0;
             int shownLevel = discovered ? defeated.Max() : (defined.Length > 0 ? defined.Max() : 0);
             var cell = BuildCard(_grid, layout.cellSize, PortraitFor(rival, shownLevel), discovered,
-                                 discovered ? rival.displayName : "???", $"{defeated.Length} / {defined.Length}");
+                                 discovered ? rival.displayName : "???",
+                                 discovered ? $"{Loc.Get("Rivals.Level", shownLevel.ToString())}  ·  {defeated.Length} / {defined.Length}"
+                                            : $"{defeated.Length} / {defined.Length}");
             var r = rival;
             cell.onClick.AddListener(() => OpenDetail(r));
             _spawned.Add(cell.gameObject);

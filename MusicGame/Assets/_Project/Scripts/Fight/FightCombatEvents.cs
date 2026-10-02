@@ -125,3 +125,13 @@ public struct FightTackleEvent
     public float Momentum;  // 0..1 between tackleMinSpeed and full charge speed
     public FightHitResult Result;
 }
+
+/// <summary>A move started by spending a run resource (x3 TripleCombo, x4 QuadCombo, SPECIAL) — see
+/// FighterMoveController.BeginMove. (Power State's x4 is announced by PowerStateChangedEvent.)</summary>
+public struct FightResourceSpentEvent
+{
+    public FighterActor Fighter;
+    public FightMoveDefinition Move;
+    public CombatResourceType Type;
+    public int Amount;
+}

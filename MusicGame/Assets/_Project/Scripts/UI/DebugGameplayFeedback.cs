@@ -6,7 +6,9 @@ using UnityEngine;
 /// a small on-screen feed of what the combo / resource systems are doing, plus PLAYER / RIVAL labels
 /// over the fighters, so they can be verified in normal play without debug shortcuts.
 ///   Runner: pickup-combo sequence start / count / broken, Triple / Quad granted, LIFE / SPECIAL collected.
-///   Fight:  combo string progress / reset, combo detected, bonus hits, tackle, Signature (SPECIAL), Power.
+///   Fight (player AND rival, important mechanics only): real combos (2+ button steps, never the
+///           individual hits / movement double-taps), x3 / x4 resource techniques, Power (x4),
+///           Signature / SPECIAL, tackle. No normal punches, kicks, hits or damage.
 /// Pure listener (EventBus + read-only polling of the player's combo recognizer); replace with real
 /// VFX/UI later by deleting this one component (added by UIFlowController).
 /// </summary>
@@ -24,13 +26,12 @@ public class DebugGameplayFeedback : MonoBehaviour
     private readonly List<Toast> _toasts = new();
     private FighterActor _player, _opponent;
     private float _nextFindTime;
-    private string _lastComboString = "";
     private RunnerResourceCounts _lastCounts;
     private int _runnerSequence;
     private GUIStyle _style, _labelStyle;
 
     private System.Action<FightComboDetectedEvent> _onCombo;
-    private System.Action<HitLandedEvent> _onHit;
+    private System.Action<FightResourceSpentEvent> _onSpent;
     private System.Action<FightTackleEvent> _onTackle;
     private System.Action<SignatureExecutedEvent> _onSignature;
     private System.Action<PowerStateChangedEvent> _onPower;
@@ -42,21 +43,28 @@ public class DebugGameplayFeedback : MonoBehaviour
     {
         _onCombo = e =>
         {
-            if (e.Combo == null) return;
+            // Only REAL combos: at least two button presses (PPP, KKK, PPPK…). Movement double-taps
+            // (dash / backdash = button-less steps) and single presses never show.
+            if (e.Combo == null || e.Combo.steps == null) return;
+            int buttons = 0;
+            foreach (var st in e.Combo.steps) if (st.button != FightButton.None) buttons++;
+            if (buttons < 2) return;
             string who = Who(e.Source);
             string name = string.IsNullOrEmpty(e.Combo.debugName) ? e.Combo.id : e.Combo.debugName;
             Add($"{who} COMBO: {name}{(e.ReplacesPrevious ? "  (extended)" : "")}", FightColor);
         };
-        _onHit = e =>
+        _onSpent = e =>
         {
-            if (e.Result.Bonus.damage <= 1.01f) return; // only combo / bonus effects
-            Add($"{WhoActor(e.Attacker)} bonus hit x{e.Result.Bonus.damage:0.0#} → {e.Result.FinalDamage:0.#} dmg", FightColor);
+            if (e.Type == CombatResourceType.Special) return; // announced by the Signature event below
+            string what = e.Type == CombatResourceType.TripleCombo ? "x3" : e.Type == CombatResourceType.QuadCombo ? "x4" : e.Type.ToString();
+            string move = e.Move != null && !string.IsNullOrEmpty(e.Move.debugName) ? e.Move.debugName : "technique";
+            Add($"{WhoActor(e.Fighter)} {what} TECHNIQUE: {move}", ResourceColor);
         };
         _onTackle = e => Add($"{WhoActor(e.Attacker)} TACKLE {e.Speed:0.0} m/s → " +
                              (e.Result.IsEvaded ? "evaded" : e.Result.IsBlocked ? "blocked" :
                               $"{e.Result.FinalDamage:0.#} dmg{(e.Result.CausesKnockdown ? ", KNOCKDOWN" : "")}"), FightColor);
         _onSignature = e => Add($"{WhoActor(e.Fighter)} SIGNATURE {(e.Enhanced ? "ENHANCED (1 SPECIAL used)" : "basic")} — specials left {e.SpecialsLeft}", ResourceColor);
-        _onPower = e => Add($"{WhoActor(e.Fighter)} POWER {(e.Active ? $"ON ({e.Duration:0.#}s)" : "OFF")}", FightColor);
+        _onPower = e => { if (e.Active) Add($"{WhoActor(e.Fighter)} x4 POWER ON ({e.Duration:0.#}s)", ResourceColor); };
         _onPickupCombo = e => Add($"PICKUP COMBO: {e.Tier.ToString().ToUpperInvariant()}  (x3 {e.Counts.TripleCombos} / x4 {e.Counts.QuadCombos})", RunnerColor);
         _onPickupProgress = e =>
         {
@@ -72,7 +80,7 @@ public class DebugGameplayFeedback : MonoBehaviour
             _lastCounts = e.Counts;
         };
         EventBus.Subscribe(_onCombo);
-        EventBus.Subscribe(_onHit);
+        EventBus.Subscribe(_onSpent);
         EventBus.Subscribe(_onTackle);
         EventBus.Subscribe(_onSignature);
         EventBus.Subscribe(_onPower);
@@ -84,7 +92,7 @@ public class DebugGameplayFeedback : MonoBehaviour
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onCombo);
-        EventBus.Unsubscribe(_onHit);
+        EventBus.Unsubscribe(_onSpent);
         EventBus.Unsubscribe(_onTackle);
         EventBus.Unsubscribe(_onSignature);
         EventBus.Unsubscribe(_onPower);
@@ -103,15 +111,6 @@ public class DebugGameplayFeedback : MonoBehaviour
                 if (a.Side == FighterSide.Player) _player = a; else _opponent = a;
         }
 
-        // Player's combo string: progress while it grows, "reset" when it clears.
-        var rec = _player != null && _player.InputController != null ? _player.InputController.Recognizer : null;
-        string current = rec != null ? rec.CurrentStringText ?? "" : "";
-        if (current != _lastComboString)
-        {
-            if (current.Length > 0) Add($"combo string: {current}", FightColor);
-            else if (_lastComboString.Length > 0) Add("combo string reset", FightColor);
-            _lastComboString = current;
-        }
         _toasts.RemoveAll(t => Time.unscaledTime - t.Time > ToastSeconds);
     }
 

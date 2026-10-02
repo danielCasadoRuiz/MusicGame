@@ -328,21 +328,20 @@ public class FightMatchController : MonoBehaviour
             // ProgressionConfigSO.songsPerTier completed songs.
             // The opponent-difficulty TIER (completed songs) keeps its own rules; the PLAYER level shown
             // to the player is the persistent XP level (PlayerProgressService).
-            GameSession.Instance?.RegisterCompletedSong();
+            // 1. The EXACT rival version that was fought — captured from the roulette's committed pick
+            //    (cached config), BEFORE any progression changes this frame.
+            var session = GameSession.Instance;
+            var beatenOpponent = session != null ? session.SelectedOpponent : null;
+            int beatenLevel = session?.SelectedOpponentLevelConfig != null ? session.SelectedOpponentLevelConfig.level : 0;
+            // 2–6. collection unlock, +1 win, Musical Mastery, XP, one save, announcements.
             var progress = PlayerProgressService.Instance;
-            int oldLevel = progress != null ? progress.Level : 1;
-            if (progress != null)
-            {
-                var session = GameSession.Instance;
-                int beatenLevel = session?.SelectedOpponentLevelConfig != null ? session.SelectedOpponentLevelConfig.level : 0;
-                bool firstTime = progress.RegisterDefeat(session?.SelectedOpponent, beatenLevel);
-                var appCfg = Resources.Load<AppConfigSO>("AppConfig");
-                var cfg = appCfg != null ? appCfg.progression : null;
-                int xp = cfg != null ? cfg.xpPerFightWin + (firstTime ? cfg.xpFirstRivalVersion : 0) : 0;
-                progress.AddXp(xp, firstTime ? "fight win + first defeat of this rival version" : "fight win");
-                if (session != null) session.Run.XpEarned += xp;
-            }
-            int newLevel = progress != null ? progress.Level : oldLevel;
+            var victory = progress != null ? progress.RecordVictory(beatenOpponent, beatenLevel) : default;
+            if (session != null) session.Run.XpEarned += victory.Xp;
+            // The opponent-difficulty tier keeps its own rule (completed songs) — after the record above.
+            session?.RegisterCompletedSong();
+            // MatchEndedEvent's "player level" is the Musical Mastery rank (1-based).
+            int oldLevel = victory.OldRank + 1;
+            int newLevel = victory.NewRank + 1;
 
             EventBus.Publish(BuildMatchEndedEvent(FighterSide.Player, resolution, oldLevel, newLevel));
             FightFlowController.Instance?.RequestState(FightFlowState.MatchWon);
@@ -351,7 +350,7 @@ public class FightMatchController : MonoBehaviour
         {
             // A loss never touches PlayerLevel — Old/New are the same, unchanged value (task's own
             // explicit "si perds, no baixa, no puja" requirement).
-            int level = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.Level : 1;
+            int level = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.MasteryRank + 1 : 1;
 
             EventBus.Publish(BuildMatchEndedEvent(FighterSide.Opponent, resolution, level, level));
             FightFlowController.Instance?.RequestState(FightFlowState.MatchLost);

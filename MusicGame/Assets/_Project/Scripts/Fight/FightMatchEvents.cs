@@ -99,11 +99,11 @@ public struct MatchEndedEvent
     public float PlayerHealthPercent;
     public float OpponentHealthPercent;
     public float MatchPointDifferential;
-    /// <summary>PlayerProgressService.Level (persistent XP level) immediately BEFORE this match's outcome was applied. Equal
+    /// <summary>Musical Mastery rank (1-based, PlayerProgressService.MasteryRank + 1) immediately BEFORE this match's outcome was applied. Equal
     /// to NewPlayerLevel when Winner == Opponent (a loss never changes PlayerLevel — see
     /// GameSession.LevelUp's own doc).</summary>
     public int OldPlayerLevel;
-    /// <summary>PlayerProgressService.Level immediately AFTER — already decided by the time this event
+    /// <summary>Musical Mastery rank (1-based) immediately AFTER — already decided by the time this event
     /// fires (see FightMatchController.NotifyRoundEndDisplayComplete's own doc on why the Level Up
     /// decision itself never waits for Continue).</summary>
     public int NewPlayerLevel;

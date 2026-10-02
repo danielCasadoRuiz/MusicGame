@@ -79,6 +79,30 @@ public class FightController : MonoBehaviour
         var registry = FindFirstObjectByType<UIRegistry>();
         if (registry != null && registry.FightHud != null) WireUI(registry.FightHud);
         else Build();
+        BuildCameraToggle();
+    }
+
+    // ── Camera view toggle (presentation only — FightCameraController.ToggleView) ─────────────
+    private TMPro.TextMeshProUGUI _cameraToggleLabel;
+    private CameraViewMode? _shownCameraMode;
+
+    private void BuildCameraToggle()
+    {
+        var btn = UIFactory.CreateButton("CameraToggleButton", _root, "", out _cameraToggleLabel);
+        _cameraToggleLabel.fontSize = 12;
+        UIFactory.SetBox(btn.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+            new Vector2(-15f, -84f), new Vector2(130f, 30f)); // just below the pause button
+        btn.onClick.AddListener(() => FightCameraController.Instance?.ToggleView());
+        btn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        _cameraToggleLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+    }
+
+    private void RefreshCameraToggle()
+    {
+        var mode = FightCameraController.Instance != null ? FightCameraController.Instance.ViewMode : CameraViewMode.ThirdPerson;
+        if (_shownCameraMode == mode || _cameraToggleLabel == null) return;
+        _shownCameraMode = mode;
+        _cameraToggleLabel.text = Loc.Get(mode == CameraViewMode.ThirdPerson ? "Pause.ThirdPerson" : "Pause.FirstPerson");
     }
 
     private void OnEnable()
@@ -114,6 +138,7 @@ public class FightController : MonoBehaviour
         if (kb != null && kb.escapeKey.wasPressedThisFrame)
             SetPaused(!_paused);
 
+        RefreshCameraToggle();
         if (_paused) return;
 
         UpdateHealthBars();

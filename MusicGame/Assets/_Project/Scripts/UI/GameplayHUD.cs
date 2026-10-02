@@ -87,7 +87,7 @@ public class GameplayHUD : MonoBehaviour
 
     // LIFE / SPECIAL — read straight from the authoritative state (PlayerProgressService.ExtraLives,
     // GameSession.Run): the ints below only detect changes, they are never a second counter.
-    private TextMeshProUGUI _resourceHudText;
+    private TextMeshProUGUI _lifeValueText, _specialValueText;
     private TextMeshProUGUI _runSummaryText;
     private int _shownLives = -1, _shownSpecials = -1;
     private System.Action<PlayerProgressChangedEvent> _onProgressChanged;
@@ -98,14 +98,30 @@ public class GameplayHUD : MonoBehaviour
     // Extra elements both the prefab and the procedural HUD get (the prefabs predate them).
     private void BuildResourceElements()
     {
-        if (_resourceHudText == null && _liveRoot != null)
+        if (_lifeValueText == null && _scoreValueText != null)
         {
-            var bg = UIFactory.CreatePanel("ResourcesHud", _liveRoot, new Color(0.03f, 0.03f, 0.03f, 0.75f));
-            UIFactory.SetBox(bg.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-12f, -108f), new Vector2(270f, 30f));
-            bg.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
-            _resourceHudText = UIFactory.CreateText("Value", bg.rectTransform, "", 15, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
-            UIFactory.Stretch(_resourceHudText.rectTransform);
-            _resourceHudText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+            // The top bar's existing cells move into its left 70 %; LIFE and SPECIAL become two more
+            // cells of the SAME bar; the right end stays free for Pause + First/Third Person
+            // (PauseController). Works for both the prefab and the procedural HUD (same cell layout).
+            var cells = new List<RectTransform>();
+            foreach (var v in _counterValues.Values) if (v != null) cells.Add((RectTransform)v.rectTransform.parent);
+            cells.Add((RectTransform)_scoreValueText.rectTransform.parent);
+            if (_totalValueText != null) cells.Add((RectTransform)_totalValueText.rectTransform.parent);
+            cells.Sort((x, y) => x.anchorMin.x.CompareTo(y.anchorMin.x));
+            var bar = cells.Count > 0 ? cells[0].parent as RectTransform : null;
+            if (bar != null)
+            {
+                const float existingShare = 0.70f, resourceCell = 0.075f;
+                for (int i = 0; i < cells.Count; i++)
+                {
+                    cells[i].anchorMin = new Vector2(existingShare * i / cells.Count, cells[i].anchorMin.y);
+                    cells[i].anchorMax = new Vector2(existingShare * (i + 1) / cells.Count, cells[i].anchorMax.y);
+                }
+                var lifeColor    = config != null ? config.collectibles.lifeColor : Color.white;
+                var specialColor = config != null ? config.collectibles.specialColor : new Color(1f, 0.15f, 0.85f);
+                _lifeValueText    = BuildBarCell(bar, "Cell_Life", Loc.Get("HUD.Life"), lifeColor, existingShare, existingShare + resourceCell);
+                _specialValueText = BuildBarCell(bar, "Cell_Special", Loc.Get("HUD.Special"), specialColor, existingShare + resourceCell, existingShare + 2f * resourceCell);
+            }
         }
         if (_runSummaryText == null && _endRoot != null)
         {
@@ -119,15 +135,29 @@ public class GameplayHUD : MonoBehaviour
         }
     }
 
+    // Same Label/Value structure and offsets as the bar's existing cells (UIPrefabBuilder.BuildLiveHud).
+    private static TextMeshProUGUI BuildBarCell(RectTransform bar, string name, string labelText, Color labelColor, float xMin, float xMax)
+    {
+        var cell = UIFactory.CreateRect(name, bar);
+        UIFactory.SetBox(cell, new Vector2(xMin, 0f), new Vector2(xMax, 1f), new Vector2(0f, 1f), new Vector2(6f, 0f), new Vector2(-6f, 0f));
+        var label = UIFactory.CreateText("Label", cell, labelText, 12, labelColor, TextAlignmentOptions.TopLeft);
+        UIFactory.SetBox(label.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -3f), new Vector2(0f, 20f));
+        var value = UIFactory.CreateText("Value", cell, "0", 14, Color.white, TextAlignmentOptions.TopLeft);
+        UIFactory.SetBox(value.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -22f), new Vector2(0f, 20f));
+        value.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        return value;
+    }
+
     private void UpdateResourceHud()
     {
-        if (_resourceHudText == null) return;
+        if (_lifeValueText == null) return;
         int lives = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.ExtraLives : 0;
         int specials = GameSession.Instance != null ? GameSession.Instance.Run.Wallet.Specials : 0;
         if (lives == _shownLives && specials == _shownSpecials) return;
         _shownLives = lives;
         _shownSpecials = specials;
-        _resourceHudText.text = Loc.Get("HUD.Resources", lives.ToString(), specials.ToString());
+        _lifeValueText.text = lives.ToString();
+        _specialValueText.text = specials.ToString();
     }
 
     // Run statistics (this run) next to the persistent totals — see RunSession / PlayerProgressService.

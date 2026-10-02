@@ -119,10 +119,10 @@ public class RealFightFacingProvider : IFightFacingProvider
 
     private static Vector3 ResolveCameraRightXZ()
     {
-        var cameraTransform = FightCameraController.Instance != null ? FightCameraController.Instance.transform : null;
-        if (cameraTransform == null) return Vector3.right;
-
-        Vector3 right = cameraTransform.right;
+        // The third-person framing's stable right axis — never the live camera (first person must not
+        // change which key means Forward).
+        if (FightCameraController.Instance == null) return Vector3.right;
+        Vector3 right = FightCameraController.Instance.ReferenceRightXZ;
         right.y = 0f;
         return right.sqrMagnitude > 0.0001f ? right.normalized : Vector3.right;
     }

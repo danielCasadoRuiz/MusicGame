@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f6ca27e7061433bad005bb08d8a1c5d, type: 3}
   m_Name: FightCameraConfig
   m_EditorClassIdentifier: Assembly-CSharp::FightCameraConfig
-  offset: {x: 0, y: 2.2, z: -6}
-  minDistance: 4
-  maxDistance: 9
-  separationPadding: 0.6
+  offset: {x: 0, y: 2, z: -5.1}
+  minDistance: 3.4
+  maxDistance: 7.8
+  separationPadding: 0.55
   positionSmoothTime: 0.15
   rotationSmoothSpeed: 6

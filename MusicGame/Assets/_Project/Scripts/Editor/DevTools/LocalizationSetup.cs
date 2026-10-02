@@ -195,6 +195,21 @@ public static class LocalizationSetup
         ("SongSelection.StopPreview", "STOP", "ATURA"),
         ("OpponentSelection.Skip", "SKIP", "SALTA"),
         ("SongSelection.PreviewRange", "PREVIEW {0} – {1}", "ESCOLTA {0} – {1}"),
+        ("HUD.Life", "LIFE", "VIDA"),
+        ("HUD.Special", "SPECIAL", "ESPECIAL"),
+        ("SongSelection.CardPlay", "PLAY", "ESCOLTA"),
+        ("SongSelection.CardPause", "PAUSE", "PAUSA"),
+        ("Mastery.Arrhythmic", "ARRHYTHMIC", "ARRÍTMIC"),
+        ("Mastery.Apprentice", "APPRENTICE", "APRENENT"),
+        ("Mastery.RhythmKeeper", "RHYTHM KEEPER", "RÍTMIC"),
+        ("Mastery.Performer", "PERFORMER", "INTÈRPRET"),
+        ("Mastery.Harmonist", "HARMONIST", "HARMONISTA"),
+        ("Mastery.Virtuoso", "VIRTUOSO", "VIRTUÓS"),
+        ("Mastery.Maestro", "MAESTRO", "MESTRE"),
+        ("Mastery.Composer", "COMPOSER", "COMPOSITOR"),
+        ("MainMenu.Victories", "{0} victories", "{0} victòries"),
+        ("MatchResult.Mastery", "{0} · {1} victories", "{0} · {1} victòries"),
+        ("MatchResult.MasteryUp", "MASTERY UP: {0} → {1}", "MESTRIA: {0} → {1}"),
     };
 
     [MenuItem("Tools/MusicGame/Setup Localization")]

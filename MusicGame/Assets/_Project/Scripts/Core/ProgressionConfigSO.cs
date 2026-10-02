@@ -22,8 +22,44 @@ public class ProgressionConfigSO : ScriptableObject
              "(ceil(song catalog size / songsPerTier)). Runtime never reads it to cap anything.")]
     [Min(1)] public int seededContentTiers = 4;
 
-    // ── Player XP / Level (persistent — PlayerProgressService). XP is NOT the run score. ──────────
-    [Header("Player XP / Level (persistent; separate from the run score)")]
+    // ── Musical Mastery — the player's visible rank, earned ONLY by winning fights ──────────────
+    [System.Serializable]
+    public struct MasteryRank
+    {
+        [Tooltip("Localization key suffix: Mastery.<id> (e.g. Mastery.Virtuoso).")]
+        public string id;
+        [Tooltip("Total fights won needed to hold this rank.")]
+        [Min(0)] public int winsRequired;
+    }
+
+    [Header("Musical Mastery (rank from fights WON — never XP, score or opponent tier)")]
+    [Tooltip("Ascending by winsRequired; the first entry should need 0 wins. Provisional thresholds.")]
+    public MasteryRank[] masteryRanks =
+    {
+        new() { id = "Arrhythmic",   winsRequired = 0 },
+        new() { id = "Apprentice",   winsRequired = 1 },
+        new() { id = "RhythmKeeper", winsRequired = 3 },
+        new() { id = "Performer",    winsRequired = 6 },
+        new() { id = "Harmonist",    winsRequired = 10 },
+        new() { id = "Virtuoso",     winsRequired = 16 },
+        new() { id = "Maestro",      winsRequired = 25 },
+        new() { id = "Composer",     winsRequired = 40 },
+    };
+
+    /// <summary>0-based index into masteryRanks for a total of fights won.</summary>
+    public int MasteryRankForWins(int wins)
+    {
+        int rank = 0;
+        if (masteryRanks == null) return 0;
+        for (int i = 0; i < masteryRanks.Length; i++) if (wins >= masteryRanks[i].winsRequired) rank = i;
+        return rank;
+    }
+
+    public string MasteryRankId(int rank) =>
+        masteryRanks != null && masteryRanks.Length > 0 ? masteryRanks[Mathf.Clamp(rank, 0, masteryRanks.Length - 1)].id : "Arrhythmic";
+
+    // ── Player XP (persistent statistic — PlayerProgressService). NOT the run score, NOT the rank. ──
+    [Header("Player XP (persistent statistic; separate from the run score and from Mastery)")]
     [Tooltip("XP for finishing a Runner run, scaled by its normalized score (0..1 of the song's max).")]
     [Min(0)] public int xpPerRun = 100;
     [Tooltip("Minimum XP for any finished run, however it went.")]

@@ -27,7 +27,12 @@ public class PlayerProgressService : MonoBehaviour
     public bool HasSave { get; private set; }
 
     public int Xp => _data.xp;
+    /// <summary>XP-derived level — a secondary statistic now; the player's identity is MasteryRank.</summary>
     public int Level => _data.playerLevel;
+    /// <summary>Musical Mastery: 0-based rank from total fights won (ProgressionConfigSO.masteryRanks).</summary>
+    public int MasteryRank => _config != null ? _config.MasteryRankForWins(_data.fightsWon) : 0;
+    /// <summary>Localized Musical Mastery rank name (e.g. "VIRTUOSO").</summary>
+    public string MasteryRankName => Loc.Get("Mastery." + (_config != null ? _config.MasteryRankId(MasteryRank) : "Arrhythmic"));
     public int ExtraLives => _data.extraLives;
     public int FightsWon => _data.fightsWon;
     public GameProgressionState TierProgress => _data.tierProgress;
@@ -64,6 +69,9 @@ public class PlayerProgressService : MonoBehaviour
     public void Configure(ProgressionConfigSO config)
     {
         _config = config;
+        // Older saves: every completed song IS a won fight (GameSession.RegisterCompletedSong runs only
+        // on a win), so the victory count can be repaired safely. Rival versions cannot be — none invented.
+        if (_data.fightsWon < _data.tierProgress.completedSongs) _data.fightsWon = _data.tierProgress.completedSongs;
         if (_config != null) _data.playerLevel = _config.LevelForXp(_data.xp); // follow the current thresholds
     }
 
@@ -122,24 +130,47 @@ public class PlayerProgressService : MonoBehaviour
 
     // ── Rival collection (non-linear: each version independent) ─────────────
 
-    /// <summary>Records a won fight against `opponentId` at `level`. True only the FIRST time that
-    /// exact version is defeated (then RivalVersionUnlockedEvent is published).</summary>
-    public bool RegisterDefeat(OpponentDefinition opponent, int level)
-    {
-        _data.fightsWon++;
-        if (opponent == null || string.IsNullOrEmpty(opponent.id) || level <= 0) { Changed("win"); return false; }
+    public struct VictoryResult { public bool NewVersion; public int OldRank, NewRank, Xp; }
 
-        var record = _data.defeatedOpponents.Find(r => r.opponentId == opponent.id);
-        if (record == null) { record = new DefeatedOpponentRecord { opponentId = opponent.id }; _data.defeatedOpponents.Add(record); }
-        bool isNew = !record.levels.Contains(level);
-        if (isNew) { record.levels.Add(level); record.levels.Sort(); }
-        Changed(isNew ? "rival-unlock" : "win");
-        if (isNew)
+    /// <summary>A fight WON against the EXACT rival version that was fought (the caller passes the
+    /// cached OpponentDefinition + OpponentLevelConfig.level — never something re-derived from the
+    /// progression state). Safe order: 1 record the exact version, 2 +1 fight won, 3 recompute the
+    /// Mastery rank, 4 XP, 5 ONE save, 6 announce (unlock event, then the change event).</summary>
+    public VictoryResult RecordVictory(OpponentDefinition opponent, int level)
+    {
+        var result = new VictoryResult { OldRank = MasteryRank };
+
+        // 1. collection — exactly this composer + this version; never lower/higher ones
+        if (opponent != null && !string.IsNullOrEmpty(opponent.id) && level > 0)
         {
-            Debug.Log($"[PlayerProgress] NEW RIVAL VERSION defeated: {opponent.displayName} ({opponent.id}) level {level} (saved)");
-            EventBus.Publish(new RivalVersionUnlockedEvent { Opponent = opponent, Level = level });
+            var record = _data.defeatedOpponents.Find(r => r.opponentId == opponent.id);
+            if (record == null) { record = new DefeatedOpponentRecord { opponentId = opponent.id }; _data.defeatedOpponents.Add(record); }
+            result.NewVersion = !record.levels.Contains(level);
+            if (result.NewVersion) { record.levels.Add(level); record.levels.Sort(); }
         }
-        return isNew;
+        else Debug.LogWarning($"[PlayerProgress] Victory without a valid rival version (opponent {(opponent != null ? opponent.id : "null")}, level {level}) — nothing added to the collection.");
+
+        // 2–3. victories → Musical Mastery
+        _data.fightsWon++;
+        result.NewRank = MasteryRank;
+
+        // 4. XP (statistic)
+        if (_config != null)
+        {
+            result.Xp = _config.xpPerFightWin + (result.NewVersion ? _config.xpFirstRivalVersion : 0);
+            _data.xp += result.Xp;
+            _data.playerLevel = _config.LevelForXp(_data.xp);
+        }
+
+        // 5. persist once
+        Save();
+        Debug.Log($"[PlayerProgress] Victory vs {(opponent != null ? opponent.displayName : "?")} level {level}: " +
+                  $"{(result.NewVersion ? "NEW version unlocked, " : "")}{_data.fightsWon} wins, mastery {result.OldRank}→{result.NewRank}, +{result.Xp} XP (saved)");
+
+        // 6. announce
+        if (result.NewVersion) EventBus.Publish(new RivalVersionUnlockedEvent { Opponent = opponent, Level = level });
+        EventBus.Publish(new PlayerProgressChangedEvent { Reason = "victory" });
+        return result;
     }
 
     public bool IsDefeated(string opponentId, int level)

@@ -32,6 +32,10 @@ public class FightMusicController : MonoBehaviour
     private float       _fadeElapsed = -1f;  // < 0 = no cross-fade running
     private float       _fadeDuration;
     private Coroutine   _fadeOut;
+    private AudioSource _fx;            // roulette radio-static bursts only
+    private float       _fxStopAt = -1f;
+    private float       _fxVolume;
+    private static AudioClip s_staticClip; // generated ONCE, reused for every burst
     private float       _fadeOutSeconds = 1.5f;
 
     public AudioClip CurrentClip => _current != null ? _current.clip : null;
@@ -43,6 +47,9 @@ public class FightMusicController : MonoBehaviour
 
         _current  = gameObject.AddComponent<AudioSource>();
         _incoming = gameObject.AddComponent<AudioSource>();
+        _fx       = gameObject.AddComponent<AudioSource>();
+        _fx.playOnAwake = false;
+        _fx.loop = true;
         var flow = Resources.Load<AppConfigSO>("AppConfig")?.fightFlow;
         if (flow != null) _fadeOutSeconds = flow.combatMusicFadeOutSeconds;
         _current.loop = true; // a short snippet/song looping is the right default for "radio" music
@@ -141,8 +148,51 @@ public class FightMusicController : MonoBehaviour
         _current.volume = 1f;
     }
 
+    /// <summary>A very short, quiet radio-tuning burst (roulette between fake rivals). The noise clip
+    /// is procedural and built once; each burst just plays it from a random offset.</summary>
+    public void PlayRadioStatic(float duration, float volume)
+    {
+        if (duration <= 0f || volume <= 0f) return;
+        s_staticClip ??= BuildStaticClip();
+        _fx.clip = s_staticClip;
+        _fxVolume = volume;
+        _fx.volume = volume;
+        _fx.time = Random.Range(0f, s_staticClip.length * 0.8f);
+        _fx.Play();
+        _fxStopAt = Time.unscaledTime + duration;
+    }
+
+    // 1 s of band-limited noise with slow "tuning" sweeps and sparse crackles.
+    private static AudioClip BuildStaticClip()
+    {
+        const int rate = 44100;
+        var data = new float[rate];
+        var rng = new System.Random(4242);
+        float lp = 0f, hp = 0f, prev = 0f;
+        for (int i = 0; i < data.Length; i++)
+        {
+            float white = (float)(rng.NextDouble() * 2.0 - 1.0);
+            float sweep = 0.25f + 0.2f * Mathf.Sin(i * 0.00031f) * Mathf.Sin(i * 0.0021f);
+            lp += sweep * (white - lp);           // moving low-pass = the "tuning" wobble
+            hp = 0.97f * (hp + lp - prev);        // remove rumble
+            prev = lp;
+            float crackle = rng.NextDouble() < 0.0015 ? (float)(rng.NextDouble() * 2.0 - 1.0) : 0f;
+            data[i] = Mathf.Clamp(hp * 0.8f + crackle * 0.6f, -1f, 1f);
+        }
+        var clip = AudioClip.Create("RadioStatic", data.Length, 1, rate, false);
+        clip.SetData(data, 0);
+        return clip;
+    }
+
     private void Update()
     {
+        if (_fxStopAt >= 0f)
+        {
+            float left = _fxStopAt - Time.unscaledTime;
+            if (left <= 0f) { _fx.Stop(); _fxStopAt = -1f; }
+            else _fx.volume = _fxVolume * Mathf.Clamp01(left / 0.05f); // tiny tail, no click
+        }
+
         if (!_locked || _playlist == null || _current.clip == null) return;
 
         if (_fadeElapsed >= 0f)

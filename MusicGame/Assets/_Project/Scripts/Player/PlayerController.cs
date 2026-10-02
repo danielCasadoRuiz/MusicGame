@@ -436,12 +436,16 @@ public class PlayerController : MonoBehaviour
 
     // ── Setup ─────────────────────────────────────────────────────────────────
 
+    /// <summary>The player's collision capsule height (feet → top). Pickup generation uses it to
+    /// know what is collectable standing up vs. what needs a jump (GameplayTimeline).</summary>
+    public const float CapsuleHeight = 1.5f;
+
     private void BuildController()
     {
         _cc             = gameObject.AddComponent<CharacterController>();
-        _cc.center      = new Vector3(0f, 0.75f, 0f);
+        _cc.center      = new Vector3(0f, CapsuleHeight * 0.5f, 0f);
         _cc.radius      = 0.45f;
-        _cc.height      = 1.5f;
+        _cc.height      = CapsuleHeight;
         _cc.slopeLimit  = 45f;
         _cc.stepOffset  = 0.3f;
         _cc.skinWidth   = 0.04f;

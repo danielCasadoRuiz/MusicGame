@@ -468,13 +468,21 @@ public class GameplayTimeline
             if (t < 0f) return;
 
             // Same side as the off-track bonuses around it — never opposite detours back to back.
-            float lateral = DifficultLateral(profile, path, config, t * speed, rng, SideAt(t));
+            // ALWAYS off the route, above standing reach and reachable from the real edge with a jump;
+            // a few lateral rolls, else this slot is dropped (never a centre-lane fallback).
+            float lateral = 0f, height = float.NaN;
+            for (int attempt = 0; attempt < 4 && float.IsNaN(height); attempt++)
+            {
+                lateral = DifficultLateral(profile, path, config, t * speed, rng, SideAt(t));
+                float beyond = Mathf.Abs(lateral) - path.GetWidth(t * speed) * 0.5f;
+                height = beyond > 0.05f ? DifficultHeight(type, beyond, true, config, rng) : float.NaN;
+            }
+            if (float.IsNaN(height)) return;
             taken.Add(t);
             rare.Add(t);
             offTrack.Add((t, lateral));
 
-            float vCeilD  = maxJumpHeight * Mathf.Max(profile.minJumpHeightFactor, profile.maxJumpHeightFactor);
-            float vFloor  = CollectibleFloor(type, config, maxJumpHeight * Mathf.Min(profile.minJumpHeightFactor, profile.maxJumpHeightFactor), vCeilD);
+            float vFloor  = CollectibleFloor(type, config, 0f, height);
             events.Add(new TimelineEvent
             {
                 eventTime      = t,
@@ -482,7 +490,7 @@ public class GameplayTimeline
                 eventType      = EventType.Ring,
                 ringType       = type,
                 lateralOffset  = lateral,
-                verticalOffset = vFloor + (float)rng.NextDouble() * Mathf.Max(0f, vCeilD - vFloor),
+                verticalOffset = Mathf.Max(vFloor, height),
                 floorClearance = vFloor,
                 strength       = 1f,
                 sourceFeature  = type.ToString(),
@@ -681,27 +689,29 @@ public class GameplayTimeline
         var   heights   = config.collectibles.Heights;
         bool  offTrack  = rng.NextDouble() < heights.offTrackChance;
 
-        float lateral;
-        float vOff;
-        float floorClearance;
+        float lateral = 0f;
+        float vOff = 0f;
+        float floorClearance = 0f;
+        float reachable = float.NaN;
         if (offTrack)
         {
             // Beyond the track's REAL local half-width (never a world X/Z constant) by a small,
             // jump+air-control-reachable extra — the moderate OffTrackBonusPlacement profile
             // (collectibleRadius .. + offTrackBonusMaxOffset), randomized left/right, clamped to reach.
             lateral = DifficultLateral(config.collectibles.OffTrackBonusPlacement, path, config, dist, rng, 0f);
+            float beyond = Mathf.Abs(lateral) - path.GetWidth(dist) * 0.5f;
+            reachable = DifficultHeight(c.type, beyond, false, config, rng);
+            if (float.IsNaN(reachable)) offTrack = false; // no reachable spot out there — keep it ordinary
 
-            // Its OWN range — offTrackBonusMinJumpHeightFactor..offTrackBonusMaxJumpHeightFactor
-            // of maxJumpHeight DIRECTLY, decoupled from the normal-bonus ceiling (see Generate's
-            // own comment on offTrackFloorDesign/offTrackCeil). Uniform roll, bypassing
-            // verticalOffsetCurve (that shaping is about "how often should this need a jump";
-            // off-track bonuses always need one, and sit high on purpose: visually obvious as a
-            // jump target, naturally in-path during a jump's arc, never floating low with nothing
-            // beneath it). Still hard-floored per type for physical clearance, same as normal bonuses.
-            floorClearance = CollectibleFloor(c.type, config, offTrackFloorDesign, offTrackCeil);
-            vOff = floorClearance + (float)rng.NextDouble() * (offTrackCeil - floorClearance);
+            // Height relative to the REAL edge surface, inside the capsule of a player who jumped at the
+            // edge and steered out (DifficultHeight) — reachable by construction, never a global Y.
+            if (offTrack)
+            {
+                floorClearance = CollectibleFloor(c.type, config, offTrackFloorDesign, offTrackCeil);
+                vOff = Mathf.Max(floorClearance, reachable);
+            }
         }
-        else
+        if (!offTrack)
         {
             floorClearance = CollectibleFloor(c.type, config, vFloorDesign, vCeil);
             float half = LateralHalfRange(path, config, dist);
@@ -710,8 +720,7 @@ public class GameplayTimeline
             // (per difficulty) go up into the jump band — see Pickup Height by Difficulty.
             if (rng.NextDouble() < heights.elevatedChance)
             {
-                float lo = Mathf.Max(floorClearance, config.collectibles.normalCollectHeight);
-                float hi = Mathf.Max(lo, MaxJumpHeight(config) * config.collectibles.elevatedMaxJumpHeightFactor);
+                var (lo, hi) = ElevatedBand(c.type, config);
                 vOff = lo + (float)rng.NextDouble() * (hi - lo);
             }
             else vOff = RollVertical(config, rng, floorClearance, RunningCeiling(config, floorClearance, vCeil));
@@ -765,9 +774,7 @@ public class GameplayTimeline
             // Same compression curve as single collectibles (RollVertical) — a pattern's peak
             // can still reach vCeil (a rewarding "reach up" moment), but most of its shape stays
             // in the easy/no-jump band, consistent with ordinary collectibles.
-            float ceil = elevatedPattern
-                ? Mathf.Max(vCeil, MaxJumpHeight(config) * config.collectibles.elevatedMaxJumpHeightFactor)
-                : RunningCeiling(config, vFloor, vCeil);
+            float ceil = elevatedPattern ? ElevatedBand(c.type, config).top : RunningCeiling(config, vFloor, vCeil);
             float vOff = Mathf.Lerp(vFloor, ceil, Mathf.Clamp01(config.collectibles.verticalOffsetCurve.Evaluate(shapeT)));
 
             float half    = LateralHalfRange(path, config, dist);
@@ -832,7 +839,46 @@ public class GameplayTimeline
     {
         if (RingTypes.IsResource(e.ringType)) return 1f;
         if (e.isOffTrack) return Mathf.Max(1f, config.collectibles.offTrackBonusScoreMultiplier);
-        return config.collectibles.HeightScoreMultiplier(e.verticalOffset, maxJumpHeight);
+        var (lo, hi) = ElevatedBand(e.ringType, config);
+        return config.collectibles.HeightScoreMultiplier(e.verticalOffset, lo, hi);
+    }
+
+    // ── Reach model: the player's REAL capsule + jump (PlayerController.CapsuleHeight) ─────────
+
+    /// <summary>Highest pickup CENTRE the player collects standing (capsule top + the pickup's half size).</summary>
+    public static float StandingReach(RingType type, MusicRunnerGameplayConfig config) =>
+        PlayerController.CapsuleHeight + CollectibleMaxHalfHeight(type, config);
+
+    /// <summary>The elevated (jump-only) band for ordinary pickups: from just above standing reach to a
+    /// comfortable fraction of a full jump.</summary>
+    public static (float bottom, float top) ElevatedBand(RingType type, MusicRunnerGameplayConfig config)
+    {
+        var c = config.collectibles;
+        float bottom = StandingReach(type, config) + c.elevatedClearance;
+        float top = StandingReach(type, config) + MaxJumpHeight(config) * c.elevatedMaxJumpHeightFactor;
+        return (bottom, Mathf.Max(bottom, top));
+    }
+
+    /// <summary>Height (above the track-edge surface) for a pickup `beyondEdge` metres outside the
+    /// track, reachable by jumping AT the edge and steering straight out at EffectiveStrafeSpeed:
+    /// the capsule is then airborne at h(t) = v·t − g·t²/2 with t = beyondEdge / speed, and the pickup
+    /// sits inside that capsule's span. `mustBeAboveStanding` (LIFE/SPECIAL) also requires it to be
+    /// out of standing reach. NaN = no reachable height at that distance.</summary>
+    private static float DifficultHeight(RingType type, float beyondEdge, bool mustBeAboveStanding,
+                                         MusicRunnerGameplayConfig config, System.Random rng)
+    {
+        float g = -config.core.gravity, v = config.core.jumpForce, speed = config.core.EffectiveStrafeSpeed;
+        if (g <= 0f || speed <= 0f) return float.NaN;
+        float t = Mathf.Max(0f, beyondEdge) / speed;
+        float airTime = 2f * v / g;
+        if (t > airTime * 0.5f) return float.NaN;                 // must still be rising/at the peak — room to come back
+        float feet = v * t - 0.5f * g * t * t;
+        float half = CollectibleMaxHalfHeight(type, config);
+        float lo = feet + 0.35f;                                  // inside the airborne capsule, not at its feet
+        if (mustBeAboveStanding) lo = Mathf.Max(lo, StandingReach(type, config) + config.collectibles.elevatedClearance);
+        float hi = feet + PlayerController.CapsuleHeight + half - 0.15f;
+        if (lo > hi) return float.NaN;
+        return lo + (float)rng.NextDouble() * (hi - lo) * 0.6f;   // lower part of the window = forgiving
     }
 
     private static float LateralHalfRange(MusicPath path, MusicRunnerGameplayConfig config, float eventDistance)
