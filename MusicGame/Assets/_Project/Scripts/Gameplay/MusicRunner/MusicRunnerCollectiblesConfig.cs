@@ -273,7 +273,7 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     [Header("Pickup Height by Difficulty")]
     [Tooltip("Which height distribution the Runner uses (no difficulty selector exists yet — set it here).")]
     public RunnerDifficulty difficulty = RunnerDifficulty.Normal;
-    public PickupHeightDifficulty normalHeights = new() { elevatedChance = 0.04f, offTrackChance = 0.04f, patternElevatedChance = 0.03f };
+    public PickupHeightDifficulty normalHeights = new() { elevatedChance = 0.02f, offTrackChance = 0.04f, patternElevatedChance = 0.03f };
     public PickupHeightDifficulty hardHeights   = new() { elevatedChance = 0.30f, offTrackChance = 0.15f, patternElevatedChance = 0.40f };
     [Tooltip("Highest pickup CENTRE height (m above the track surface) that ordinary running collects " +
              "without jumping. Non-elevated pickups never go above it; the height score bonus starts " +

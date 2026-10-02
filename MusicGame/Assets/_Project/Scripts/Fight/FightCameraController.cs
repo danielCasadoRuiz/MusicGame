@@ -129,7 +129,10 @@ public class FightCameraController : MonoBehaviour
         Vector3 viewSide = YawToDir(_yaw);
         Vector3 alongLine = Vector3.Cross(viewSide, Vector3.up); // screen-right along the fighters' line
 
-        float backDistance = Mathf.Clamp(Mathf.Abs(offset.z) + separation * separationPadding, minDistance, maxDistance);
+        // minDistance..maxDistance = the REAL straight-line distance camera → fighters' midpoint (offset.y
+        // height included), so maxDistance is exactly the farthest the normal framing ever gets.
+        float viewDistance = Mathf.Clamp(Mathf.Abs(offset.z) + separation * separationPadding, minDistance, maxDistance);
+        float backDistance = Mathf.Sqrt(Mathf.Max(0.25f, viewDistance * viewDistance - offset.y * offset.y));
 
         // offset.x slides ALONG the fighters' line (screen-right), meaningful at any orbit angle.
         Vector3 desiredPosition = midpoint + viewSide * backDistance + alongLine * offset.x + Vector3.up * offset.y;

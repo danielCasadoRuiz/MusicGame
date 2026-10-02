@@ -73,12 +73,32 @@ public class HorizonCameraController : MonoBehaviour
         if (HorizonRoot != null) Destroy(HorizonRoot.gameObject);
     }
 
+    /// <summary>The Runner's OWN gameplay camera: the MainCamera-tagged camera in the same scene as the
+    /// Horizon World (the Runner scene). Never blindly Camera.main — with a second MainCamera alive
+    /// (e.g. a "Main Camera" left in the scene Play was started from) Camera.main returned THAT one,
+    /// the horizon stack was built on it, and the Runner camera kept clearing to solid blue over the
+    /// mountains/bars.</summary>
+    public static Camera ResolveGameplayCamera(GameObject owner)
+    {
+        var scene = owner != null ? owner.scene : default;
+        Camera sameScene = null;
+        foreach (var cam in FindObjectsByType<Camera>(FindObjectsSortMode.None))
+        {
+            if (!cam.isActiveAndEnabled || cam.targetTexture != null || cam.gameObject.scene != scene) continue;
+            if (cam.CompareTag("MainCamera")) return cam;
+            sameScene ??= cam;
+        }
+        if (sameScene != null) return sameScene;
+        if (Camera.main != null) Debug.LogWarning($"[HorizonCameraController] No camera in scene '{scene.name}' — falling back to Camera.main '{Camera.main.name}'.");
+        return Camera.main;
+    }
+
     public void Initialize(HorizonConfig config)
     {
         _config = config;
         if (!config.enableHorizonWorld) return;
 
-        _mainCamera = Camera.main;
+        _mainCamera = ResolveGameplayCamera(gameObject);
         if (_mainCamera == null)
         {
             Debug.LogWarning("[HorizonCameraController] No Main Camera found — Horizon World disabled.");

@@ -438,7 +438,7 @@ public class PlayerController : MonoBehaviour
 
     /// <summary>The player's collision capsule height (feet → top). Pickup generation uses it to
     /// know what is collectable standing up vs. what needs a jump (GameplayTimeline).</summary>
-    public const float CapsuleHeight = 1.5f;
+    public const float CapsuleHeight = 1.7f;
 
     private void BuildController()
     {
@@ -545,8 +545,8 @@ public class PlayerController : MonoBehaviour
     {
         var cap = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         cap.transform.SetParent(_visualAnchor, false);
-        cap.transform.localPosition = new Vector3(0f, 0.75f, 0f);
-        cap.transform.localScale    = new Vector3(0.7f, 0.75f, 0.7f);
+        cap.transform.localPosition = new Vector3(0f, CapsuleHeight * 0.5f, 0f);
+        cap.transform.localScale    = new Vector3(0.7f, CapsuleHeight * 0.5f, 0.7f);
         Destroy(cap.GetComponent<CapsuleCollider>());
 
         var mat = new Material(Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard"))

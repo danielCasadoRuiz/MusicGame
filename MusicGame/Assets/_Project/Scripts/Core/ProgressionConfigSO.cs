@@ -36,11 +36,11 @@ public class ProgressionConfigSO : ScriptableObject
     [Tooltip("Ascending by winsRequired; the first entry should need 0 wins. Provisional thresholds.")]
     public MasteryRank[] masteryRanks =
     {
-        new() { id = "Arrhythmic",   winsRequired = 0 },
-        new() { id = "Apprentice",   winsRequired = 1 },
-        new() { id = "RhythmKeeper", winsRequired = 3 },
-        new() { id = "Performer",    winsRequired = 6 },
-        new() { id = "Harmonist",    winsRequired = 10 },
+        new() { id = "ToneDeaf",     winsRequired = 0 },
+        new() { id = "Arrhythmic",   winsRequired = 1 },
+        new() { id = "OnBeat",       winsRequired = 3 },
+        new() { id = "Musician",     winsRequired = 6 },
+        new() { id = "SharpEar",     winsRequired = 10 },
         new() { id = "Virtuoso",     winsRequired = 16 },
         new() { id = "Maestro",      winsRequired = 25 },
         new() { id = "Composer",     winsRequired = 40 },
@@ -56,7 +56,7 @@ public class ProgressionConfigSO : ScriptableObject
     }
 
     public string MasteryRankId(int rank) =>
-        masteryRanks != null && masteryRanks.Length > 0 ? masteryRanks[Mathf.Clamp(rank, 0, masteryRanks.Length - 1)].id : "Arrhythmic";
+        masteryRanks != null && masteryRanks.Length > 0 ? masteryRanks[Mathf.Clamp(rank, 0, masteryRanks.Length - 1)].id : "ToneDeaf";
 
     // ── Player XP (persistent statistic — PlayerProgressService). NOT the run score, NOT the rank. ──
     [Header("Player XP (persistent statistic; separate from the run score and from Mastery)")]

@@ -56,7 +56,8 @@ public class SongAnalysisController : MonoBehaviour
     // for a moment after Gameplay has already begun loading underneath.
     private const float PostDetectionBufferSeconds = 0.15f;
 
-    private readonly IMusicStyleClassifier _musicStyleClassifier = new TagBasedMusicStyleClassifier();
+    private MusicStyleRulesSO _styleRules; // AppConfigSO.musicStyleRules (null = built-in defaults)
+    private MusicStyleResolution _lastStyle;
 
     private AudioPreAnalyzer     _preAnalyzer;
     private AudioAnalysisConfig  _config;
@@ -74,6 +75,7 @@ public class SongAnalysisController : MonoBehaviour
         _preAnalyzer = gameObject.AddComponent<AudioPreAnalyzer>();
 
         var appConfig = Resources.Load<AppConfigSO>("AppConfig");
+        _styleRules = appConfig != null ? appConfig.musicStyleRules : null;
         _config = appConfig != null ? appConfig.audioAnalysis : null;
     }
 
@@ -157,16 +159,41 @@ public class SongAnalysisController : MonoBehaviour
         // early-detection path existed.
         if (!_styleDetectedEarly)
             ClassifyAndPublish(profile);
+        else
+        {
+            // Refinement with the FULL profile (danceability, intensity, mode…): the game style is
+            // updated; the theme is only swapped again if its visual key actually changed.
+            var refined = MusicStyleResolver.Resolve(profile, _styleRules);
+            if (refined.Style != _lastStyle.Style)
+            {
+                Debug.Log($"[SongAnalysisController] Style refined with full analysis: {_lastStyle.Style} → {refined.Style} ({refined.Score:0.00})");
+                if (refined.ThemeStyle != _lastStyle.ThemeStyle) Publish(refined, profile);
+                else if (GameSession.Instance != null) GameSession.Instance.DetectedGameStyle = refined.Style;
+                _lastStyle = refined;
+            }
+        }
 
         yield return new WaitForSeconds(ThemeTransitionController.Duration + PostDetectionBufferSeconds);
 
         AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.Gameplay);
     }
 
+    // Raw tags/features → controlled GameMusicStyle (MusicStyleResolver); never the raw top tag.
     private void ClassifyAndPublish(SongProfile profileForClassification)
     {
-        var style = _musicStyleClassifier.Classify(profileForClassification);
-        if (GameSession.Instance != null) GameSession.Instance.DetectedMusicStyleId = style;
-        EventBus.Publish(new MusicStyleDetectedEvent { Style = style, Profile = profileForClassification });
+        _lastStyle = MusicStyleResolver.Resolve(profileForClassification, _styleRules);
+        Debug.Log($"[SongAnalysisController] Game style {_lastStyle.Style} (score {_lastStyle.Score:0.00}, theme {_lastStyle.ThemeStyle}, " +
+                  $"features {(_lastStyle.UsedFeatures ? "yes" : "tags only")})");
+        Publish(_lastStyle, profileForClassification);
+    }
+
+    private static void Publish(MusicStyleResolution res, SongProfile profile)
+    {
+        if (GameSession.Instance != null)
+        {
+            GameSession.Instance.DetectedMusicStyleId = res.ThemeStyle;
+            GameSession.Instance.DetectedGameStyle = res.Style;
+        }
+        EventBus.Publish(new MusicStyleDetectedEvent { Style = res.ThemeStyle, GameStyle = res.Style, Profile = profile });
     }
 }

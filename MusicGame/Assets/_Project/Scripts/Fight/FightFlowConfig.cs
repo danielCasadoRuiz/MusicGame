@@ -26,7 +26,7 @@ public class FightFlowConfig : ScriptableObject
     public float opponentSelectionDuration = 6f;
     [Tooltip("How long each intermediate highlight (and its music snippet) stays up before " +
              "moving to the next opponent — long enough to actually hear each fragment.")]
-    public float selectionStepDuration = 0.5f;
+    public float selectionStepDuration = 1.0f;
     [Tooltip("How long the FINAL opponent stays highlighted, clearly as the definitive pick, " +
              "before transitioning to the Versus screen.")]
     public float finalOpponentHoldDuration = 1.5f;

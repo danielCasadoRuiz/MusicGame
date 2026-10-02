@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OpponentDefinition
   id: wagner
   displayName: Wagner
+  heightMeters: 1.66
+  heightIsEstimate: 1
+  biographyKey: 
   levels:
   - level: 1
     portrait: {fileID: 21300000, guid: c5f446baa1ad2664ba76c7eb48a8a9de, type: 3}

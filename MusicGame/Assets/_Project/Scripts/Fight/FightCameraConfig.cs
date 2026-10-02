@@ -10,11 +10,14 @@ public class FightCameraConfig : ScriptableObject
     [Header("Framing")]
     [Tooltip("Offset from the fighters' midpoint — X/Y are sideways/height, Z's magnitude is the " +
              "base back-distance before separation padding is added.")]
-    public Vector3 offset = new Vector3(0f, 2.2f, -6f);
-    public float minDistance = 4f;
-    public float maxDistance = 9f;
-    [Tooltip("Extra back-distance added per unit of DistanceToOpponent, before clamping to min/max.")]
-    public float separationPadding = 0.6f;
+    public Vector3 offset = new Vector3(0f, 1.7f, -3.2f);
+    [Tooltip("Closest straight-line distance (m) from the camera to the fighters' midpoint.")]
+    public float minDistance = 2.6f;
+    [Tooltip("FARTHEST straight-line distance (m) from the camera to the fighters' midpoint — the normal " +
+             "third-person framing never goes beyond this (it comes closer when the fighters are close).")]
+    public float maxDistance = 4f;
+    [Tooltip("Extra distance added per metre of separation between the fighters, before clamping to min/max.")]
+    public float separationPadding = 0.35f;
 
     [Header("Smoothing")]
     public float positionSmoothTime = 0.15f;

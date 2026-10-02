@@ -32,7 +32,7 @@ public class PlayerProgressService : MonoBehaviour
     /// <summary>Musical Mastery: 0-based rank from total fights won (ProgressionConfigSO.masteryRanks).</summary>
     public int MasteryRank => _config != null ? _config.MasteryRankForWins(_data.fightsWon) : 0;
     /// <summary>Localized Musical Mastery rank name (e.g. "VIRTUOSO").</summary>
-    public string MasteryRankName => Loc.Get("Mastery." + (_config != null ? _config.MasteryRankId(MasteryRank) : "Arrhythmic"));
+    public string MasteryRankName => Loc.Get("Mastery." + (_config != null ? _config.MasteryRankId(MasteryRank) : "ToneDeaf"));
     public int ExtraLives => _data.extraLives;
     public int FightsWon => _data.fightsWon;
     public GameProgressionState TierProgress => _data.tierProgress;

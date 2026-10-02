@@ -324,7 +324,7 @@ public class CameraFollow : MonoBehaviour
                                + Vector3.up      * (heightAbovePath + extraHeight + _energyHeight + _kick);
 
         Vector3 playerLookPoint = playerController != null
-            ? playerController.transform.position + Vector3.up * 0.75f
+            ? playerController.transform.position + Vector3.up * (PlayerController.CapsuleHeight * 0.5f)
             : thirdPersonPos + Vector3.forward;
 
         if (!_initialized)

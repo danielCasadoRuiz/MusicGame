@@ -16,6 +16,19 @@ public class OpponentDefinition : ScriptableObject
     public string id;
     public string displayName;
 
+    // ── Composer identity — the SAME for every version/tier ─────────────────────────────────────
+    [Header("Composer identity (same for every version / tier)")]
+    [Tooltip("Real-world standing height in metres. Avatars are built at the canonical 1.75 m and " +
+             "uniformly scaled to this (visual only — hurtboxes / hit ranges stay identical for fairness).")]
+    [Range(1.4f, 2.1f)] public float heightMeters = 1.70f;
+    [Tooltip("True when no reliable historical record exists and heightMeters is an approximation.")]
+    public bool heightIsEstimate = true;
+    [Tooltip("Localization key of the short COLLECTION biography. Empty = \"Composer.<id>.Bio\".")]
+    public string biographyKey;
+
+    /// <summary>Localization key of this composer's biography (UIText table).</summary>
+    public string BiographyKey => string.IsNullOrEmpty(biographyKey) ? $"Composer.{id}.Bio" : biographyKey;
+
     [Tooltip("One entry per PROGRESSION TIER this opponent has content for (entry.level = tier, " +
              "1-based). Entries may share the same assets. Extensible from the Inspector — " +
              "deliberately NOT hardcoded tier1/tier2/... fields. Resolved by GetConfigForTier: the " +

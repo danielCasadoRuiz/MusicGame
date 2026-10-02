@@ -29,7 +29,7 @@ public class RivalCollectionController : MonoBehaviour
 
     private OpponentRosterSO _roster;
     private RectTransform _root, _grid, _detail, _detailRow;
-    private TextMeshProUGUI _summaryText, _detailTitle;
+    private TextMeshProUGUI _summaryText, _detailTitle, _detailBio;
     private readonly List<GameObject> _spawned = new();
     private readonly List<GameObject> _detailSpawned = new();
     private System.Action<GameFlowStateChangedEvent> _onFlow;
@@ -110,13 +110,18 @@ public class RivalCollectionController : MonoBehaviour
         var detailDim = UIFactory.CreatePanel("DetailDim", _detail, new Color(0f, 0f, 0f, 0.8f));
         UIFactory.Stretch(detailDim.rectTransform);
         var panel = UIFactory.CreatePanel("Panel", _detail, new Color(0.1f, 0.1f, 0.12f, 1f));
-        UIFactory.SetBox(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1100f, 520f));
+        UIFactory.SetBox(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1100f, 660f));
         panel.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
         _detailTitle = UIFactory.CreateText("DetailTitle", panel.rectTransform, "", 28, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
         UIFactory.SetBox(_detailTitle.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(1000f, 40f));
         _detailTitle.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
         _detailRow = UIFactory.CreateRect("Versions", panel.rectTransform);
-        UIFactory.SetBox(_detailRow, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 0f), new Vector2(1040f, 330f));
+        UIFactory.SetBox(_detailRow, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 75f), new Vector2(1040f, 300f));
+        // Composer biography — one per composer (OpponentDefinition.BiographyKey), never per version.
+        _detailBio = UIFactory.CreateText("Biography", panel.rectTransform, "", 17, Color.white, TextAlignmentOptions.TopLeft);
+        UIFactory.SetBox(_detailBio.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 1f), new Vector2(0f, -95f), new Vector2(980f, 140f));
+        _detailBio.textWrappingMode = TextWrappingModes.Normal;
+        _detailBio.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
         var row = _detailRow.gameObject.AddComponent<HorizontalLayoutGroup>();
         row.spacing = 18f;
         row.childAlignment = TextAnchor.MiddleCenter;
@@ -185,7 +190,11 @@ public class RivalCollectionController : MonoBehaviour
         var defined = DefinedLevels(rival);
         var defeated = DefeatedDefinedLevels(rival);
         _detailTitle.text = defeated.Length > 0 ? rival.displayName : "???";
-        var size = new Vector2(Mathf.Min(220f, (_detailRow.sizeDelta.x - 18f * (defined.Length - 1)) / Mathf.Max(1, defined.Length)), 320f);
+        string bio = Loc.Get(rival.BiographyKey);
+        // Revealed once ANY version was defeated (same text whatever the version); undiscovered keeps the mystery.
+        _detailBio.text = defeated.Length == 0 ? Loc.Get("Rivals.BioLocked")
+                        : bio == rival.BiographyKey ? "" : bio; // missing entry → no text, never the raw key
+        var size = new Vector2(Mathf.Min(220f, (_detailRow.sizeDelta.x - 18f * (defined.Length - 1)) / Mathf.Max(1, defined.Length)), 290f);
         foreach (int level in defined)
         {
             bool won = defeated.Contains(level);

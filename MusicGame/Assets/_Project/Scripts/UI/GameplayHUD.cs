@@ -263,7 +263,7 @@ public class GameplayHUD : MonoBehaviour
         _counterValues[RingType.Impact] = view.impactValue;
         _scoreValueText = view.scoreValue;
         _totalValueText = view.totalValue;
-        _progressFill   = view.progressFill;
+        _progressFill   = UIFactory.EnsureFillSprite(view.progressFill);
 
         // Static column-header labels are baked into the prefab at Editor-bake time (whatever
         // locale was active then) — re-set them here from the CURRENT locale so the prefab path
@@ -443,7 +443,7 @@ public class GameplayHUD : MonoBehaviour
     {
         _endRoot          = view.GetComponent<RectTransform>();
         _ratingLabelText  = view.ratingLabel;
-        _ratingBarFill    = view.ratingBarFill;
+        _ratingBarFill    = UIFactory.EnsureFillSprite(view.ratingBarFill);
         _scoreSummaryText = view.scoreSummary;
         _performanceRows  = view.performanceRowsContainer;
         _fallsText        = view.fallsText;

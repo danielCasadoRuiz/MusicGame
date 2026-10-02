@@ -82,6 +82,22 @@ public static class UIFactory
     // destroyed the instant that Mode Scene unloads. Only the two ROOT objects (Canvas, EventSystem)
     // need this — everything else UIFactory creates gets SetParent'd under the Canvas, and Unity
     // automatically moves a reparented object into its new parent's scene.
+    private static Sprite _whiteSprite;
+
+    /// <summary>Placeholder 4×4 white sprite (Texture2D.whiteTexture) for UI that has no art yet.
+    /// Image.Type.Filled ignores fillAmount without a sprite — that was why every progress / health bar
+    /// rendered as a static full block.</summary>
+    public static Sprite WhiteSprite =>
+        _whiteSprite != null ? _whiteSprite
+            : _whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, Texture2D.whiteTexture.width, Texture2D.whiteTexture.height), new Vector2(0.5f, 0.5f));
+
+    /// <summary>Gives a prefab-baked fill Image (no sprite) the placeholder sprite so its fill shows.</summary>
+    public static Image EnsureFillSprite(Image fill)
+    {
+        if (fill != null && fill.sprite == null) fill.sprite = WhiteSprite;
+        return fill;
+    }
+
     private static void MoveToUiSceneIfLoaded(GameObject go)
     {
         var uiScene = SceneManager.GetSceneByName("UI");
@@ -154,6 +170,7 @@ public static class UIFactory
         var back   = CreatePanel(name + "Bg", parent, bg);
         var fillRt = CreateRect(name + "Fill", back.rectTransform);
         fillImage             = fillRt.gameObject.AddComponent<Image>();
+        fillImage.sprite      = WhiteSprite; // a Filled Image needs a sprite, or fillAmount is ignored
         fillImage.color       = fill;
         fillImage.type        = Image.Type.Filled;
         fillImage.fillMethod  = Image.FillMethod.Horizontal;

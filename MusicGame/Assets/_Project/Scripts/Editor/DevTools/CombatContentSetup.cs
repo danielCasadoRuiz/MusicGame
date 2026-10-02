@@ -135,6 +135,8 @@ public static class CombatContentSetup
             Role(CombatRole.Victory,     Clip("MartialArts_BattleTaunts_WithSword_MIXAMO_769__FistRaised"), false, "Fist raised"),
             Role(CombatRole.Defeat,      Clip(Loser + "__KnockedDown"), true, "PROVISIONAL — reuses the knockdown fall"),
             Role(CombatRole.HitReactionAlt, Clip(Loser + "__HeadSnap"), false, "KnockOut_Loser head snap (second hit reaction, alternates with HitReaction)"),
+            Role(CombatRole.LightAttackAlt, Clip(Shadow + "__JabCross"), false, "ShadowBoxing jab-cross (alternates with the single jab)"),
+            Role(CombatRole.HeavyAttackAlt, Clip(Shadow + "__JabHook"), false, "ShadowBoxing jab-hook (alternates with the rotating hook)"),
             // Locomotion: no combat walk/run/jump exists in the packs — the Runner's generic clips stand in.
             Role(CombatRole.WalkForward, AssetDatabase.LoadAssetAtPath<AnimationClip>(WalkClipPath), true, "PROVISIONAL — generic CMU walk (no guard arms); no combat walk exists in the packs"),
             Role(CombatRole.WalkBack,    AssetDatabase.LoadAssetAtPath<AnimationClip>(WalkClipPath), true, "PROVISIONAL — the CMU walk played in reverse (WalkBack state speed -1) as a backpedal"),

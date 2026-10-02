@@ -54,6 +54,13 @@ public class FighterInputController : MonoBehaviour
 
     public FightHorizontalDirection CurrentHorizontal { get; private set; }
     public FightVerticalDirection CurrentVertical { get; private set; }
+    /// <summary>True while the HUMAN fighter plays in the first-person fight camera: input is then
+    /// view-relative — W/S = Forward/Back (towards / away from the opponent the view looks at),
+    /// A/D = sideways (CurrentSide), Space = jump, C/Ctrl = crouch. Third person keeps the classic
+    /// mapping. Only the INTERPRETATION of keys changes — moves, ranges and rules are identical.</summary>
+    public bool ViewRelative { get; private set; }
+    /// <summary>First-person sideways intent: −1 left, 0 none, +1 right (along the fighter's SideXZ).</summary>
+    public int CurrentSide { get; private set; }
 
     private FightHorizontalDirection _previousHorizontal;
     private FightVerticalDirection _previousVertical;
@@ -122,8 +129,25 @@ public class FighterInputController : MonoBehaviour
 
         _inputSource.Tick();
 
-        CurrentHorizontal = FightDirectionResolver.ResolveHorizontal(_inputSource.Horizontal, _facing.FacingRight);
-        CurrentVertical    = FightDirectionResolver.ResolveVertical(_inputSource.Vertical);
+        ViewRelative = _inputSource is HumanFightInputSource && FightCameraController.Instance != null &&
+                       FightCameraController.Instance.ViewMode == CameraViewMode.FirstPerson;
+        if (ViewRelative)
+        {
+            var forwardBack = FightDirectionResolver.ResolveVertical(_inputSource.Vertical); // W = up = forward
+            CurrentHorizontal = forwardBack == FightVerticalDirection.Up ? FightHorizontalDirection.Forward
+                              : forwardBack == FightVerticalDirection.Down ? FightHorizontalDirection.Back
+                              : FightHorizontalDirection.Neutral;
+            CurrentSide = _inputSource.Horizontal > 0.5f ? 1 : _inputSource.Horizontal < -0.5f ? -1 : 0;
+            CurrentVertical = _inputSource.JumpHeld ? FightVerticalDirection.Up
+                            : _inputSource.CrouchHeld ? FightVerticalDirection.Down
+                            : FightVerticalDirection.Neutral;
+        }
+        else
+        {
+            CurrentHorizontal = FightDirectionResolver.ResolveHorizontal(_inputSource.Horizontal, _facing.FacingRight);
+            CurrentVertical   = FightDirectionResolver.ResolveVertical(_inputSource.Vertical);
+            CurrentSide = 0;
+        }
 
         // A direction PRESS is the abstract action "that direction" (only the axis that changed), so
         // rolling Down → Down+Forward records Down then Forward. Movement keeps reading the held

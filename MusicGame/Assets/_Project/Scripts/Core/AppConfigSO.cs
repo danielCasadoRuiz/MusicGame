@@ -23,6 +23,9 @@ public class AppConfigSO : ScriptableObject
     public PlayerAvatarConfigSO playerAvatar;
     [Tooltip("Per-song preview ranges (Song Selection preview + rival roulette snippets).")]
     public SongPreviewConfigSO songPreview;
+    [Tooltip("Weights mapping raw music tags + analysis features to the game-facing GameMusicStyle " +
+             "(MusicStyleResolver). Optional — without an asset the built-in default rules apply.")]
+    public MusicStyleRulesSO musicStyleRules;
 
     [Tooltip("EDITOR ONLY (see PlatformService) — forces mobile/touch UI and input while testing in " +
              "the Editor, where Application.isMobilePlatform is always false. Ignored in real builds, " +

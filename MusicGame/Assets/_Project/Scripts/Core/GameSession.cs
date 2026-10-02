@@ -44,6 +44,9 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
     /// doc on why those are kept separate). Unknown until Song Analysis actually classifies a
     /// song.</summary>
     public MusicStyleId DetectedMusicStyleId { get; set; } = MusicStyleId.Unknown;
+    /// <summary>The game-facing style (MusicStyleResolver) — DetectedMusicStyleId above is only its
+    /// visual-theme key. The raw tags stay untouched on SongProfile.musicTags.</summary>
+    public GameMusicStyle DetectedGameStyle { get; set; } = GameMusicStyle.Unknown;
 
     /// <summary>This run's final performance — the copy Fight (and any future post-Gameplay system)
     /// reads. Filled automatically here whenever GameEndedEvent fires, in addition to whatever else

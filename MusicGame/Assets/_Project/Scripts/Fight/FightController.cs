@@ -80,6 +80,47 @@ public class FightController : MonoBehaviour
         if (registry != null && registry.FightHud != null) WireUI(registry.FightHud);
         else Build();
         BuildCameraToggle();
+        BuildPortraits();
+    }
+
+    // ── Portraits beside each fighter's name / health (the SAME sprites the VS screen shows) ─────
+    private Image _playerPortrait, _opponentPortrait;
+    private const float PortraitSize = 70f, PortraitGap = 12f;
+
+    private void BuildPortraits()
+    {
+        _playerPortrait   = BuildPortrait("PlayerPortrait",   _playerNameText,   _playerHealthFill,   _playerRoundPipsText,   +1f);
+        _opponentPortrait = BuildPortrait("OpponentPortrait", _opponentNameText, _opponentHealthFill, _opponentRoundPipsText, -1f);
+    }
+
+    // `side` +1 = left group (shift right), −1 = right group (shift left). The portrait takes the group's
+    // old outer x; name / health / pips move inwards by the portrait width — same layout otherwise.
+    private static Image BuildPortrait(string name, TMPro.TextMeshProUGUI nameText, Image healthFill, TMPro.TextMeshProUGUI pips, float side)
+    {
+        if (nameText == null) return null;
+        var nameRt = nameText.rectTransform;
+        var parent = nameRt.parent as RectTransform;
+        var rt = UIFactory.CreateRect(name, parent);
+        rt.anchorMin = rt.anchorMax = nameRt.anchorMin;
+        rt.pivot = new Vector2(side > 0f ? 0f : 1f, 1f);
+        rt.anchoredPosition = new Vector2(nameRt.anchoredPosition.x, -8f);
+        rt.sizeDelta = new Vector2(PortraitSize, PortraitSize);
+        var img = rt.gameObject.AddComponent<Image>();
+        img.preserveAspect = true;
+        img.color = new Color(1f, 1f, 1f, 0.2f);
+
+        float shift = side * (PortraitSize + PortraitGap);
+        nameRt.anchoredPosition += new Vector2(shift, 0f);
+        if (healthFill != null && healthFill.rectTransform.parent is RectTransform bar && bar.parent == parent) bar.anchoredPosition += new Vector2(shift, 0f);
+        if (pips != null && pips.rectTransform.parent == parent) pips.rectTransform.anchoredPosition += new Vector2(shift, 0f);
+        return img;
+    }
+
+    private static void SetPortrait(Image img, Sprite sprite)
+    {
+        if (img == null) return;
+        img.sprite = sprite;
+        img.color = sprite != null ? Color.white : new Color(1f, 1f, 1f, 0.2f); // same neutral placeholder as the VS screen
     }
 
     // ── Camera view toggle (presentation only — FightCameraController.ToggleView) ─────────────
@@ -137,6 +178,9 @@ public class FightController : MonoBehaviour
         var kb = Keyboard.current;
         if (kb != null && kb.escapeKey.wasPressedThisFrame)
             SetPaused(!_paused);
+        // V = the same First/Third Person toggle as the HUD button (one method: FightCameraController.ToggleView).
+        if (kb != null && kb.vKey.wasPressedThisFrame && !_paused)
+            FightCameraController.Instance?.ToggleView();
 
         RefreshCameraToggle();
         if (_paused) return;
@@ -224,8 +268,8 @@ public class FightController : MonoBehaviour
         _root               = view.root.GetComponent<RectTransform>();
         _playerNameText     = view.playerNameText;
         _opponentNameText   = view.opponentNameText;
-        _playerHealthFill   = view.playerHealthFill;
-        _opponentHealthFill = view.opponentHealthFill;
+        _playerHealthFill   = UIFactory.EnsureFillSprite(view.playerHealthFill);
+        _opponentHealthFill = UIFactory.EnsureFillSprite(view.opponentHealthFill);
         _playerRoundPipsText   = view.playerRoundPipsText;
         _opponentRoundPipsText = view.opponentRoundPipsText;
         _timerText          = view.timerText;
@@ -437,6 +481,10 @@ public class FightController : MonoBehaviour
         // Opponent Selection pass (see FightSceneBootstrap's own tolerant logging for that case).
         var opponent = GameSession.Instance?.SelectedOpponent;
         _opponentNameText.text = opponent != null ? opponent.displayName : Loc.Get("Fight.RivalUnknown");
+        // Same sources as VersusScreenController: the committed rival version's portrait; the player has
+        // no portrait art yet (neutral placeholder, exactly like the VS screen).
+        SetPortrait(_opponentPortrait, GameSession.Instance?.SelectedOpponentLevelConfig?.portrait);
+        SetPortrait(_playerPortrait, null);
 
         _playerHealthFill.fillAmount   = 1f;
         _opponentHealthFill.fillAmount = 1f;

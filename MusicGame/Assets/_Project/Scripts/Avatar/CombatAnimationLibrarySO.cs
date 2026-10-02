@@ -49,6 +49,8 @@ public enum CombatRole
     Jump           = 17,
     Turn           = 18,
     HitReactionAlt = 19,
+    LightAttackAlt = 20,
+    HeavyAttackAlt = 21,
 }
 
 public enum CombatRootMotion

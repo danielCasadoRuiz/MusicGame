@@ -25,6 +25,11 @@ public interface IFightInputSource
     /// <summary>Kick is currently held down — see PunchHeld.</summary>
     bool KickHeld { get; }
 
+    /// <summary>First-person view only (FighterInputController.ViewRelative): jump / crouch keys,
+    /// because W/S and A/D are then forward/back and sideways. Sources without them return false.</summary>
+    bool JumpHeld => false;
+    bool CrouchHeld => false;
+
     /// <summary>Call exactly once per frame, before reading the properties above — computes/caches
     /// this frame's values so multiple readers this frame (immediate-normal dispatch, buffer
     /// append) always agree, and an edge-triggered press is never silently "consumed twice" or

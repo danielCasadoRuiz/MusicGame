@@ -111,7 +111,7 @@ public class HorizonWorld : MonoBehaviour
     // optional here — it's the entire "very dark world + bright neon" visual direction.
     private void EnsureBloom()
     {
-        var mainCam = Camera.main;
+        var mainCam = HorizonCameraController.ResolveGameplayCamera(gameObject); // same camera the stack uses
         if (mainCam == null) return;
 
         var camData = mainCam.GetUniversalAdditionalCameraData();

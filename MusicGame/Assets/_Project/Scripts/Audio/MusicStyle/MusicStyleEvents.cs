@@ -6,6 +6,9 @@
 /// </summary>
 public struct MusicStyleDetectedEvent
 {
+    /// <summary>Visual-theme key of the detected style (legacy enum — themes / runner animations).</summary>
     public MusicStyleId Style;
+    /// <summary>The game-facing style (MusicStyleResolver) — what the player is told.</summary>
+    public GameMusicStyle GameStyle;
     public SongProfile  Profile;
 }

@@ -412,8 +412,48 @@ public class FighterMovement : MonoBehaviour
     // outcome specifically ("tap Up/Down SENSE combinació" — task's own wording) but still allows
     // the normal HOLD outcome (Jump/Crouch) once the threshold elapses — a forward-jump or a
     // forward+down crouch both keep working exactly as before.
+    // First-person (view-relative) variant: Space = jump on press, C/Ctrl = crouch while held, and the
+    // sideways keys (CurrentSide) tap → sidestep, hold → sidewalk. Same sidestep/sidewalk/jump/crouch
+    // mechanics as third person, only triggered by keys that match the first-person view.
+    private int _sidePressDirection;
+    private float _sidePressStart;
+    private bool _sideHoldResolved;
+
+    private void HandleViewRelativeDirections()
+    {
+        if (!CanMove)
+        {
+            _verticalPressDirection = FightVerticalDirection.Neutral;
+            _sidePressDirection = 0;
+            _sideHoldResolved = false;
+            _sideWalkDirection = 0;
+            return;
+        }
+        var vertical = _input.CurrentVertical;
+        if (vertical == FightVerticalDirection.Up && _verticalPressDirection != FightVerticalDirection.Up && CanJump) StartJump();
+        _verticalPressDirection = vertical;
+        ApplyCrouchPosture(vertical == FightVerticalDirection.Down);
+
+        int side = _input.CurrentSide;
+        if (side != _sidePressDirection)
+        {
+            if (_sidePressDirection != 0 && !_sideHoldResolved) StartSidestep(_sidePressDirection); // a quick tap
+            _sidePressDirection = side;
+            _sidePressStart = Time.time;
+            _sideHoldResolved = false;
+            _sideWalkDirection = 0;
+        }
+        float threshold = _config != null ? Mathf.Max(0.02f, _config.directionHoldThreshold) : 0.15f;
+        if (side != 0 && !_sideHoldResolved && Time.time - _sidePressStart >= threshold)
+        {
+            _sideHoldResolved = true;
+            if (CanSidestepOrSideWalk) _sideWalkDirection = side;
+        }
+    }
+
     private void HandleVerticalDirection()
     {
+        if (_input.ViewRelative) { HandleViewRelativeDirections(); return; }
         if (!CanMove)
         {
             _verticalPressDirection = FightVerticalDirection.Neutral;

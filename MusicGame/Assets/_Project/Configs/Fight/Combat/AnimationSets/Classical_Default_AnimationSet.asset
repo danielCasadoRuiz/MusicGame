@@ -89,6 +89,14 @@ MonoBehaviour:
     clip: {fileID: 7400000, guid: 619a8f081da6e5f44aa42bfc7584b2c5, type: 2}
     provisional: 0
     note: KnockOut_Loser head snap (second hit reaction, alternates with role 6)
+  - role: 20
+    clip: {fileID: 7400000, guid: 7fd4be878a3d4524f8d08ef754bb803d, type: 2}
+    provisional: 0
+    note: ShadowBoxing jab-cross (alternates with the single jab)
+  - role: 21
+    clip: {fileID: 7400000, guid: 75951be4417833b4eb4d42d50a137fcd, type: 2}
+    provisional: 0
+    note: ShadowBoxing jab-hook (alternates with the rotating hook)
   moveCrossfade: 0.08
   reactionCrossfade: 0.05
   knockdownCrossfade: 0.04

@@ -129,7 +129,7 @@ public class AnalyzingScreenController : MonoBehaviour
             if (!_realProgressActive || _progressFill == null) return;
             _progressFill.fillAmount = Mathf.Lerp(StyleDetectedFill, 1f, Mathf.Clamp01(e.Progress));
         };
-        _onStyleDetected = e => ShowStyleDetected(e.Style);
+        _onStyleDetected = e => ShowStyleDetected(e.GameStyle);
         _onGameStarted = _ => Hide();
         EventBus.Subscribe(_onFlowStateChanged);
         EventBus.Subscribe(_onStarted);
@@ -158,7 +158,7 @@ public class AnalyzingScreenController : MonoBehaviour
         _root         = view.root.GetComponent<RectTransform>();
         _titleText    = view.titleText;
         _tipText      = view.tipText;
-        _progressFill = view.progressFill;
+        _progressFill = UIFactory.EnsureFillSprite(view.progressFill);
 
         _root.gameObject.SetActive(false);
     }
@@ -228,12 +228,12 @@ public class AnalyzingScreenController : MonoBehaviour
 
     // Phase 2 — see this class's own doc. Never snaps the bar past StyleDetectedFill; Phase 3
     // (started from AfterStyleFlash) is what carries it the rest of the way.
-    private void ShowStyleDetected(MusicStyleId style)
+    private void ShowStyleDetected(GameMusicStyle style)
     {
         _realProgressActive = false;
         StopPhaseRoutines();
         if (_progressFill != null) _progressFill.fillAmount = StyleDetectedFill;
-        if (_tipText != null) _tipText.text = Loc.Get("Analyzing.StyleDetected", style.ToString().ToUpperInvariant());
+        if (_tipText != null) _tipText.text = Loc.Get("Analyzing.StyleDetected", Loc.Get("GameStyle." + style));
 
         _progressRoutine = StartCoroutine(AfterStyleFlash());
     }

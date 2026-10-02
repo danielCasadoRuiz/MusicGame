@@ -24,6 +24,7 @@ public class AnimatorFighterAnimationDriver : IFighterAnimationDriver
     private readonly Animator _animator;
     private readonly FighterAnimationSetSO _set;
     private readonly HashSet<CombatRole> _statesPresent = new();
+    private bool _altLight, _altHeavy;
     private CombatRole _current = CombatRole.CombatIdle;
     private bool _hasPlayed;
 
@@ -59,6 +60,9 @@ public class AnimatorFighterAnimationDriver : IFighterAnimationDriver
     public void PlayMoveAnimation(FightMoveDefinition move, float gameplayDuration)
     {
         var role = move != null ? move.role : CombatRole.CombatIdle;
+        // Variety: consecutive light / heavy attacks alternate with their Alt clip (when the set has one).
+        if (role == CombatRole.LightAttack && HasClip(CombatRole.LightAttackAlt) && (_altLight = !_altLight)) role = CombatRole.LightAttackAlt;
+        else if (role == CombatRole.HeavyAttack && HasClip(CombatRole.HeavyAttackAlt) && (_altHeavy = !_altHeavy)) role = CombatRole.HeavyAttackAlt;
         Play(role, gameplayDuration, _set != null ? _set.moveCrossfade : 0.08f, restart: true);
     }
 

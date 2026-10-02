@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OpponentDefinition
   id: pachelbel
   displayName: Pachelbel
+  heightMeters: 1.7
+  heightIsEstimate: 1
+  biographyKey: 
   levels:
   - level: 1
     portrait: {fileID: 21300000, guid: 7a9613c6e4323d94590517cfd8dbec26, type: 3}

@@ -318,6 +318,9 @@ public class FightSceneBootstrap : MonoBehaviour
     /// Never touches gameplay/hitboxes/AI (task's own explicit "no toquis" requirement) — this only
     /// ever replaces what's under VisualRoot, exactly like the capsule-vs-prefab choice already did.
     /// </summary>
+    /// <summary>Every MakeHuman body is baked at this height (MakeHumanBodyBaker.CanonicalHeight).</summary>
+    public const float CanonicalAvatarHeight = 1.75f;
+
     private async System.Threading.Tasks.Task TryBuildAvatar(AvatarRecipeSO recipeSO, FighterActor opponentActor, string who, System.Func<AvatarInstance, bool> keep)
     {
         var runtimeRecipe = recipeSO.ToRuntime();
@@ -346,6 +349,11 @@ public class FightSceneBootstrap : MonoBehaviour
         // must be on the arena floor (y = 0).
         instance.Root.localPosition = new Vector3(0f, -opponentActor.transform.position.y, 0f);
         instance.Root.localRotation = Quaternion.identity;
+        // Composer height (OpponentDefinition.heightMeters, per composer — never per tier): a uniform
+        // scale of the canonical 1.75 m body, pivoting at the feet so they stay on the floor.
+        float height = opponentActor.Side == FighterSide.Opponent && GameSession.Instance?.SelectedOpponent != null
+            ? GameSession.Instance.SelectedOpponent.heightMeters : CanonicalAvatarHeight;
+        instance.Root.localScale = Vector3.one * Mathf.Clamp(height / CanonicalAvatarHeight, 0.8f, 1.2f);
         bool bound = opponentActor.BindAnimator(instance.Animator, _flowConfig != null ? _flowConfig.combatAnimatorController : null);
         Debug.Log($"[FightSceneBootstrap] {who} avatar '{recipeSO.name}' built and applied — combat animator {(bound ? "bound" : "NOT bound")}.");
     }

@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OpponentDefinition
   id: bach
   displayName: Bach
+  heightMeters: 1.67
+  heightIsEstimate: 1
+  biographyKey: 
   levels:
   - level: 1
     portrait: {fileID: 21300000, guid: 8848ee3ca5668c54bb8ab408e6120b7c, type: 3}
