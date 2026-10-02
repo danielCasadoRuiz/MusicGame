@@ -48,6 +48,10 @@ public struct RunnerResourcesChangedEvent { public RunnerResourceCounts Counts; 
 /// <summary>Fired the moment a pickup sequence resolves to a Triple or Quad combo.</summary>
 public struct PickupComboEvent { public PickupComboTier Tier; public RunnerResourceCounts Counts; }
 
+/// <summary>Pickup-combo sequence progress (feedback only): Count = pickups in the open sequence
+/// (0 = none open); Broken = an open sequence just ended without becoming a Triple/Quad.</summary>
+public struct PickupComboProgressEvent { public int Count; public bool Broken; }
+
 /// <summary>Fired by GameSession right after it finalized RunnerResults (musical performance,
 /// resources, combat build) from GameEndedEvent — the results screen reads the conversion from
 /// here, never by recomputing it.</summary>
@@ -63,6 +67,7 @@ public struct RingCollectedEvent
     public float    Confidence;    // TimelineEvent.confidence — classification certainty (see GameplayTimeline.ClassifyOnset), or 1.0 for a Macro-as-collectible (Impact/Peak)
     public string   Contributors;  // TimelineEvent.contributors — e.g. "Kick" or "Impact+Peak" (climax-tagged)
     public bool     IsOffTrack;    // TimelineEvent.isOffTrack — decided at generation time, never inferred here
+    public float    ScoreMultiplier; // TimelineEvent.scoreMultiplier — off-track / height difficulty reward
 }
 
 /// <summary>

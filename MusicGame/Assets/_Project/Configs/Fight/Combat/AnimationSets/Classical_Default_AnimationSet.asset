@@ -69,6 +69,26 @@ MonoBehaviour:
     clip: {fileID: 7400000, guid: 192868d8e55f0764495afb68d7e7e74d, type: 2}
     provisional: 1
     note: "PROVISIONAL \u2014 reuses the knockdown fall"
+  - role: 14
+    clip: {fileID: 7400000, guid: 040b8ce45c82aeb4aa254517826efeaa, type: 2}
+    provisional: 1
+    note: "PROVISIONAL — generic CMU walk (no guard arms); no combat walk exists in the packs"
+  - role: 15
+    clip: {fileID: 7400000, guid: 040b8ce45c82aeb4aa254517826efeaa, type: 2}
+    provisional: 1
+    note: "PROVISIONAL — the CMU walk played in reverse (WalkBack state speed -1) as a backpedal"
+  - role: 16
+    clip: {fileID: 7400000, guid: adb12662c2a97bb4fb0033134a41bdbc, type: 2}
+    provisional: 1
+    note: "PROVISIONAL — the Runner's CMU run loop, used for the charge"
+  - role: 17
+    clip: {fileID: 7400000, guid: 77189b49a86b39b439e869facc837280, type: 2}
+    provisional: 1
+    note: "PROVISIONAL — the Runner's EricJacobus jump segment (in place)"
+  - role: 19
+    clip: {fileID: 7400000, guid: 619a8f081da6e5f44aa42bfc7584b2c5, type: 2}
+    provisional: 0
+    note: KnockOut_Loser head snap (second hit reaction, alternates with role 6)
   moveCrossfade: 0.08
   reactionCrossfade: 0.05
   knockdownCrossfade: 0.04

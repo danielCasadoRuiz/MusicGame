@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5668e28789c04f69aa9b65f78de7311e, type: 3}
   m_Name: FightFlowConfig
   m_EditorClassIdentifier: Assembly-CSharp::FightFlowConfig
-  opponentSelectionDuration: 4
-  selectionStepDuration: 0.25
+  opponentSelectionDuration: 6
+  selectionStepDuration: 0.5
   finalOpponentHoldDuration: 1.5
   versusDuration: 2.5
   roundIntroDuration: 1.5

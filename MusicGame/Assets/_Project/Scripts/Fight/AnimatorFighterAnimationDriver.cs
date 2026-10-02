@@ -66,21 +66,40 @@ public class AnimatorFighterAnimationDriver : IFighterAnimationDriver
     {
         float fade = _set == null ? 0.1f : role switch
         {
-            CombatRole.HitReaction => _set.reactionCrossfade,
+            CombatRole.HitReaction    => _set.reactionCrossfade,
+            CombatRole.HitReactionAlt => _set.reactionCrossfade,
             CombatRole.Knockdown   => _set.knockdownCrossfade,
             CombatRole.Block       => _set.reactionCrossfade,
             _                      => _set.stateCrossfade,
         };
-        bool restart = role == CombatRole.HitReaction || role == CombatRole.Knockdown || role == CombatRole.GetUp;
+        if (role == CombatRole.HitReactionAlt && !HasClip(role)) role = CombatRole.HitReaction;
+        bool restart = role == CombatRole.HitReaction || role == CombatRole.HitReactionAlt || role == CombatRole.Knockdown || role == CombatRole.GetUp;
         Play(role, duration, fade, restart);
     }
 
-    public void SetLocomotion(FightHorizontalDirection direction)
+    public void SetLocomotion(FightHorizontalDirection direction, FighterMovementState state, FighterPosture posture, bool turning)
     {
-        // No locomotion clips yet: moving and standing both show CombatIdle (guard).
-        if (_current != CombatRole.CombatIdle || !_hasPlayed)
-            Play(CombatRole.CombatIdle, -1f, _set != null ? _set.moveCrossfade : 0.08f, restart: false);
+        // Most specific first; a role without a clip in this fighter's set falls through to the next
+        // candidate and finally to CombatIdle (guard), exactly like before locomotion clips existed.
+        CombatRole role = CombatRole.CombatIdle;
+        if (posture == FighterPosture.Airborne && HasClip(CombatRole.Jump)) role = CombatRole.Jump;
+        else if (state == FighterMovementState.Run && HasClip(CombatRole.Run)) role = CombatRole.Run;
+        else if (turning && HasClip(CombatRole.Turn)) role = CombatRole.Turn;
+        else if (state == FighterMovementState.Walk || state == FighterMovementState.Run)
+        {
+            var walk = direction == FightHorizontalDirection.Back ? CombatRole.WalkBack : CombatRole.WalkForward;
+            if (direction != FightHorizontalDirection.Neutral && HasClip(walk)) role = walk;
+        }
+        if (role != _current || !_hasPlayed)
+        {
+            // Back to guard keeps the original quick move crossfade; between locomotion states the
+            // slightly longer state crossfade avoids pops when walking/running starts or stops.
+            float fade = _set == null ? 0.08f : role == CombatRole.CombatIdle ? _set.moveCrossfade : _set.stateCrossfade;
+            Play(role, -1f, fade, restart: false);
+        }
     }
+
+    private bool HasClip(CombatRole role) => _statesPresent.Contains(role) && _set != null && _set.Get(role) != null;
 
     private void Play(CombatRole role, float duration, float fade, bool restart)
     {

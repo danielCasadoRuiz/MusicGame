@@ -236,7 +236,10 @@ public class FighterMoveController : MonoBehaviour
                 if (_actor != null && _actor.Guard != null && _actor.Guard.State != FighterGuardState.None)
                     _animationDriver.PlayRole(CombatRole.Block);
                 else if (_input != null)
-                    _animationDriver.SetLocomotion(_input.CurrentHorizontal);
+                    _animationDriver.SetLocomotion(_input.CurrentHorizontal,
+                        _actor != null ? _actor.MovementState : FighterMovementState.Idle,
+                        _actor != null ? _actor.Posture : FighterPosture.Standing,
+                        _actor != null && _actor.IsTurning);
             }
             return;
         }

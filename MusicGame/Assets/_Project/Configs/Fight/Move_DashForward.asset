@@ -15,14 +15,15 @@ MonoBehaviour:
   id: move_dash_forward
   debugName: Dash Forward
   moveType: 1
+  role: 16
   animationState: Dash
   startupDuration: 0.05
   activeDuration: 0.05
   recoveryDuration: 0.15
   cancelWindow: 0
-  movementLocked: 1
-  movementMultiplier: 0
-  lungeDistance: 2.5
+  movementLocked: 0
+  movementMultiplier: 1
+  lungeDistance: 0
   lockFacingDuringMove: 1
   allowedPostures:
   - 0

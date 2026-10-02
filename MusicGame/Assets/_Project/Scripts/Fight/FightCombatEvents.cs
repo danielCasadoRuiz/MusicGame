@@ -113,3 +113,15 @@ public struct SignatureExecutedEvent
     public bool Enhanced;
     public int SpecialsLeft;
 }
+
+/// <summary>A Forward-Forward charge reached the opponent fast enough to body-check them (see
+/// FighterMovement.TryTackle). Published after the hit was resolved through FightHitDispatcher, so
+/// HitLandedEvent/HitBlockedEvent/HitEvadedEvent for the same contact have already fired.</summary>
+public struct FightTackleEvent
+{
+    public FighterActor Attacker;
+    public FighterActor Defender;
+    public float Speed;     // m/s at contact
+    public float Momentum;  // 0..1 between tackleMinSpeed and full charge speed
+    public FightHitResult Result;
+}

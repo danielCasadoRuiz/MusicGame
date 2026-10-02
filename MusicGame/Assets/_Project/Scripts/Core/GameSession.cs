@@ -223,6 +223,13 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
             // independent of run performance (accumulation-across-runs is a future decision, not
             // one this makes for you by resetting it here).
             FightResources ??= new FightResources();
+            // Every LIFE pickup physically collected in this run grants one extra life for the
+            // fight's "lose with a life → Fight Again" flow (MatchResultController reads ExtraLives).
+            if (e.Resources.Lives > 0)
+            {
+                FightResources.ExtraLives += e.Resources.Lives;
+                Debug.Log($"[GameSession] +{e.Resources.Lives} extra life from Runner LIFE pickups (now {FightResources.ExtraLives})");
+            }
 
             EventBus.Publish(new RunnerResultsReadyEvent { Results = RunnerResults });
         };

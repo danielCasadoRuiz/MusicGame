@@ -208,6 +208,16 @@ public class GameplayTimeline
         EmitResourcePickups(profile, config, path, macroEvents, rng, vFloorDesign, vCeil, warmup, speed, events);
         events.Sort((a, b) => a.eventTime.CompareTo(b.eventTime));
 
+        // Difficulty reward per pickup, decided once here (GameplayManager.ScoreFor reads it):
+        // off-track = its own x2 category; otherwise a smooth height bonus x1..x1.5 above the
+        // normal running collection height. Never both.
+        for (int k = 0; k < events.Count; k++)
+        {
+            var ev = events[k];
+            ev.scoreMultiplier = DifficultyMultiplier(ev, config, maxJumpHeight);
+            events[k] = ev;
+        }
+
         var counts = new Dictionary<RingType, int>();
         foreach (var rt in RarityTypes) counts[rt] = 0;
         foreach (var e in events)
@@ -511,6 +521,49 @@ public class GameplayTimeline
             // A song with no structural moment in the window still offers one Special, mid-window.
             if (placed == 0 && c.specialFallbackWhenNoMoment) Place(RingType.Special, Mathf.Lerp(windowStart, windowEnd, 0.6f));
         }
+
+        // ── TEST fallback (resourcePickupTestFallback): easy, on-path LIFE/SPECIAL so both can be
+        // collected in any normal run. Same TimelineEvent → pool → RingController collision →
+        // RunnerResourceTracker → Fight pipeline as every other pickup; only the PLACEMENT is easy.
+        if (c.resourcePickupTestFallback)
+        {
+            var testTimes = new List<float>();
+            void PlaceTest(RingType type, float desiredTime)
+            {
+                float lo = windowStart + 1.0f, hi = windowEnd - 1.5f;
+                if (hi <= lo) return;
+                float t = FindFreeTime(Mathf.Clamp(desiredTime, lo, hi), lo, hi, c.resourcePickupMinGap, taken,
+                                       candidate => { foreach (float o in testTimes) if (Mathf.Abs(o - candidate) < 1.5f) return false; return true; });
+                if (t < 0f) return;
+                taken.Add(t);
+                testTimes.Add(t);
+                float half = LateralHalfRange(path, config, t * speed) * 0.5f;
+                float floor = CollectibleFloor(type, config, vFloorDesign, vCeil);
+                float runCeil = RunningCeiling(config, floor, vCeil);
+                events.Add(new TimelineEvent
+                {
+                    eventTime      = t,
+                    eventDistance  = t * speed,
+                    eventType      = EventType.Ring,
+                    ringType       = type,
+                    lateralOffset  = half > 0f ? (float)(rng.NextDouble() * 2.0 - 1.0) * half : 0f,
+                    verticalOffset = Mathf.Lerp(floor, runCeil, 0.35f),
+                    floorClearance = floor,
+                    strength       = 1f,
+                    sourceFeature  = type + " (test)",
+                    confidence     = 1f,
+                    contributors   = type + " (test fallback)",
+                });
+            }
+            int total = c.testLifePickups + c.testSpecialPickups;
+            int slot = 0;
+            // Interleaved Life/Special, evenly spread (offset from the regular Life slots).
+            for (int k = 0; k < Mathf.Max(c.testLifePickups, c.testSpecialPickups); k++)
+            {
+                if (k < c.testLifePickups)    PlaceTest(RingType.Life,    Mathf.Lerp(windowStart, windowEnd, (slot++ + 0.6f) / (total + 0.6f)));
+                if (k < c.testSpecialPickups) PlaceTest(RingType.Special, Mathf.Lerp(windowStart, windowEnd, (slot++ + 0.6f) / (total + 0.6f)));
+            }
+        }
     }
 
     // Nearest time to `desired` (searching outward in 0.05 s steps inside [lo, hi]) that keeps
@@ -625,7 +678,8 @@ public class GameplayTimeline
     {
         float songTime  = warmup + c.time;
         float dist      = songTime * speed;
-        bool  offTrack  = rng.NextDouble() < config.collectibles.offTrackBonusChance;
+        var   heights   = config.collectibles.Heights;
+        bool  offTrack  = rng.NextDouble() < heights.offTrackChance;
 
         float lateral;
         float vOff;
@@ -652,7 +706,15 @@ public class GameplayTimeline
             floorClearance = CollectibleFloor(c.type, config, vFloorDesign, vCeil);
             float half = LateralHalfRange(path, config, dist);
             lateral = half > 0f ? (float)(rng.NextDouble() * 2.0 - 1.0) * half : 0f;
-            vOff    = RollVertical(config, rng, floorClearance, vCeil);
+            // Most pickups stay in the RUNNING band (no jump needed); only elevatedChance of them
+            // (per difficulty) go up into the jump band — see Pickup Height by Difficulty.
+            if (rng.NextDouble() < heights.elevatedChance)
+            {
+                float lo = Mathf.Max(floorClearance, config.collectibles.normalCollectHeight);
+                float hi = Mathf.Max(lo, MaxJumpHeight(config) * config.collectibles.elevatedMaxJumpHeightFactor);
+                vOff = lo + (float)rng.NextDouble() * (hi - lo);
+            }
+            else vOff = RollVertical(config, rng, floorClearance, RunningCeiling(config, floorClearance, vCeil));
         }
 
         events.Add(new TimelineEvent
@@ -679,6 +741,8 @@ public class GameplayTimeline
                                     float warmup, float speed, List<TimelineEvent> events)
     {
         bool  stair = rng.NextDouble() < 0.5;
+        // A pattern peaks into the jump band only with patternElevatedChance (per difficulty).
+        bool  elevatedPattern = rng.NextDouble() < config.collectibles.Heights.patternElevatedChance;
 
         float avgDist = 0f;
         for (int k = 0; k < run; k++) avgDist += (warmup + kept[start + k].time) * speed;
@@ -701,7 +765,10 @@ public class GameplayTimeline
             // Same compression curve as single collectibles (RollVertical) — a pattern's peak
             // can still reach vCeil (a rewarding "reach up" moment), but most of its shape stays
             // in the easy/no-jump band, consistent with ordinary collectibles.
-            float vOff = Mathf.Lerp(vFloor, vCeil, Mathf.Clamp01(config.collectibles.verticalOffsetCurve.Evaluate(shapeT)));
+            float ceil = elevatedPattern
+                ? Mathf.Max(vCeil, MaxJumpHeight(config) * config.collectibles.elevatedMaxJumpHeightFactor)
+                : RunningCeiling(config, vFloor, vCeil);
+            float vOff = Mathf.Lerp(vFloor, ceil, Mathf.Clamp01(config.collectibles.verticalOffsetCurve.Evaluate(shapeT)));
 
             float half    = LateralHalfRange(path, config, dist);
             float jitter  = half > 0f ? (float)(rng.NextDouble() * 2.0 - 1.0) * half * 0.25f : 0f;
@@ -755,6 +822,17 @@ public class GameplayTimeline
 
     private static float MaxJumpHeight(MusicRunnerGameplayConfig config) =>
         config.core.gravity < 0f ? (config.core.jumpForce * config.core.jumpForce) / (2f * -config.core.gravity) : 0f;
+
+    // Top of the running (no-jump) band: the normal bonus ceiling, capped at normalCollectHeight.
+    private static float RunningCeiling(MusicRunnerGameplayConfig config, float floor, float vCeil) =>
+        Mathf.Max(floor, Mathf.Min(vCeil, config.collectibles.normalCollectHeight));
+
+    private static float DifficultyMultiplier(in TimelineEvent e, MusicRunnerGameplayConfig config, float maxJumpHeight)
+    {
+        if (RingTypes.IsResource(e.ringType)) return 1f;
+        if (e.isOffTrack) return Mathf.Max(1f, config.collectibles.offTrackBonusScoreMultiplier);
+        return config.collectibles.HeightScoreMultiplier(e.verticalOffset, maxJumpHeight);
+    }
 
     private static float LateralHalfRange(MusicPath path, MusicRunnerGameplayConfig config, float eventDistance)
     {

@@ -20,6 +20,8 @@ MonoBehaviour:
   ringOnset: {fileID: 5167320800414378715, guid: 8af333c83b7f0e24f8029441db6ab781, type: 3}
   ringPeak: {fileID: 0}
   ringImpact: {fileID: 0}
+  ringLife: {fileID: 5167320800414378715, guid: d98857f536ca48588a6663e2f374fd9d, type: 3}
+  ringSpecial: {fileID: 5167320800414378715, guid: 4065862513464bafbc29484c12949a56, type: 3}
   kickColor: {r: 0.9, g: 0.22, b: 0.1, a: 1}
   snareColor: {r: 0.9, g: 0.8, b: 0.1, a: 1}
   hiHatColor: {r: 0.15, g: 0.62, b: 1, a: 1}
@@ -27,6 +29,8 @@ MonoBehaviour:
   onsetColor: {r: 0.1, g: 0.9, b: 0.5, a: 1}
   peakColor: {r: 1, g: 0.92, b: 0.55, a: 1}
   impactColor: {r: 1, g: 0.4, b: 0.05, a: 1}
+  lifeColor: {r: 1, g: 1, b: 1, a: 1}
+  specialColor: {r: 1, g: 0.15, b: 0.85, a: 1}
   uiCollectFlashDuration: 0.6
   spawnKick: 1
   spawnSnare: 1
@@ -91,7 +95,7 @@ MonoBehaviour:
   collectibleSeed: 1337
   offTrackBonusChance: 0.15
   offTrackBonusMaxOffset: 1.5
-  offTrackBonusScoreMultiplier: 1.5
+  offTrackBonusScoreMultiplier: 2
   offTrackBonusMinJumpHeightFactor: 0.7
   offTrackBonusMaxJumpHeightFactor: 1
   poolInitialSize: 8

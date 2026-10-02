@@ -28,6 +28,10 @@ public static class CombatContentSetup
     private const string ProfilesDir  = Root + "/Profiles";
     public  const string ControllerPath = AnimatorDir + "/FighterCombat.controller";
     public  const string AnimationSetPath = SetsDir + "/Classical_Default_AnimationSet.asset";
+    private const string WalkClipPath = "Assets/_Project/Avatar/AnimationTests/Clips/Derived/Walk.anim";
+    private const string RunClipPath  = "Assets/_Project/Avatar/AnimationTests/Clips/Derived/Run.anim";
+    private const string JumpClipPath = "Assets/_Project/Animations/Processed/Combat/EricJacobus/Segments/InPlace/" +
+                                        "EricJacobus_20210714_s010_runJump_overObstacle_tk01_ERJA_mvn232__RunnerJump_InPlace.anim";
     public  const string DefaultProfilePath = ProfilesDir + "/CombatProfile_Classical_Default.asset";
     public  const string MozartProfilePath  = ProfilesDir + "/CombatProfile_Mozart.asset";
     public  const string PlayerProfilePath  = "Assets/_Project/Configs/Fight/Debug/CombatProfile_Player_Temp.asset";
@@ -130,6 +134,12 @@ public static class CombatContentSetup
             Role(CombatRole.Taunt,       Clip("MartialArts_BattleTaunts_WithSword_MIXAMO_769"), true, "PROVISIONAL — full taunt take (start only plays)"),
             Role(CombatRole.Victory,     Clip("MartialArts_BattleTaunts_WithSword_MIXAMO_769__FistRaised"), false, "Fist raised"),
             Role(CombatRole.Defeat,      Clip(Loser + "__KnockedDown"), true, "PROVISIONAL — reuses the knockdown fall"),
+            Role(CombatRole.HitReactionAlt, Clip(Loser + "__HeadSnap"), false, "KnockOut_Loser head snap (second hit reaction, alternates with HitReaction)"),
+            // Locomotion: no combat walk/run/jump exists in the packs — the Runner's generic clips stand in.
+            Role(CombatRole.WalkForward, AssetDatabase.LoadAssetAtPath<AnimationClip>(WalkClipPath), true, "PROVISIONAL — generic CMU walk (no guard arms); no combat walk exists in the packs"),
+            Role(CombatRole.WalkBack,    AssetDatabase.LoadAssetAtPath<AnimationClip>(WalkClipPath), true, "PROVISIONAL — the CMU walk played in reverse (WalkBack state speed -1) as a backpedal"),
+            Role(CombatRole.Run,         AssetDatabase.LoadAssetAtPath<AnimationClip>(RunClipPath), true, "PROVISIONAL — the Runner's CMU run loop, used for the charge"),
+            Role(CombatRole.Jump,        AssetDatabase.LoadAssetAtPath<AnimationClip>(JumpClipPath), true, "PROVISIONAL — the Runner's EricJacobus jump segment (in place)"),
         };
         EditorUtility.SetDirty(set);
 
@@ -240,6 +250,7 @@ public static class CombatContentSetup
             state.iKOnFeet = true;
             state.speedParameterActive = true;
             state.speedParameter = AnimatorFighterAnimationDriver.SpeedParameter;
+            if (role == CombatRole.WalkBack) state.speed = -1f; // the walk clip, reversed = backpedal
             if (role == CombatRole.CombatIdle) idle = state;
             i++;
         }
@@ -247,6 +258,48 @@ public static class CombatContentSetup
         EditorUtility.SetDirty(controller);
         report.AppendLine($"  shared controller: {i} logical states (transitions are code-driven crossfades)");
         return controller;
+    }
+
+    /// <summary>Non-destructive: adds a state (+ placeholder clip) for every CombatRole the shared
+    /// controller doesn't have yet, leaving existing states untouched. Use after appending roles.
+    /// Batch: -executeMethod CombatContentSetup.EnsureRoleStatesFromCommandLine</summary>
+    [MenuItem("Tools/MusicGame/Combat/Add Missing Role States")]
+    public static void EnsureRoleStatesMenu() => Debug.Log(EnsureRoleStates());
+
+    public static void EnsureRoleStatesFromCommandLine()
+    {
+        string report = EnsureRoleStates();
+        File.WriteAllText("Logs/CombatContentSetup.txt", report);
+        EditorApplication.Exit(report.Contains("ERROR") ? 1 : 0);
+    }
+
+    public static string EnsureRoleStates()
+    {
+        var sb = new StringBuilder("[CombatContentSetup] ensure role states\n");
+        var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
+        if (controller == null) return sb.AppendLine("  ERROR no controller at " + ControllerPath).ToString();
+        EnsureFolder(PlaceholdDir);
+        var machine = controller.layers[0].stateMachine;
+        int i = machine.states.Length;
+        foreach (CombatRole role in System.Enum.GetValues(typeof(CombatRole)))
+        {
+            if (machine.states.Any(st => st.state.name == role.ToString())) continue;
+            string clipPath = $"{PlaceholdDir}/{AnimatorFighterAnimationDriver.PlaceholderPrefix}{role}.anim";
+            var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
+            if (clip == null) { clip = new AnimationClip { name = AnimatorFighterAnimationDriver.PlaceholderPrefix + role }; AssetDatabase.CreateAsset(clip, clipPath); }
+            var state = machine.AddState(role.ToString(), new Vector3(300f + (i % 4) * 220f, (i / 4) * 70f, 0f));
+            state.motion = clip;
+            state.writeDefaultValues = true;
+            state.iKOnFeet = true;
+            state.speedParameterActive = true;
+            state.speedParameter = AnimatorFighterAnimationDriver.SpeedParameter;
+            if (role == CombatRole.WalkBack) state.speed = -1f;
+            sb.AppendLine($"  added state {role}");
+            i++;
+        }
+        EditorUtility.SetDirty(controller);
+        AssetDatabase.SaveAssets();
+        return sb.ToString();
     }
 
     // ── Validation (lightweight) ──────────────────────────────────────────────

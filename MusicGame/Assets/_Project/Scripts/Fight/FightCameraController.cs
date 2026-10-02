@@ -9,7 +9,7 @@ using UnityEngine;
 /// offset — now that fighters can occupy a small depth range (see FightArenaConfig.minDepth/
 /// maxDepth), that line is no longer always aligned with world X. Conceptually: the camera watches
 /// combat from a point perpendicular to the fighters' own line, always framing both of them,
-/// re-orbiting smoothly (NOT snapping) as that line's angle changes — see _smoothedLineDir's own
+/// re-orbiting smoothly (NOT snapping) as that line's angle changes — see _yaw's own
 /// doc. This is still a fixed, non-free camera: it only ever reacts to the two Transforms, with two
 /// deliberately separate smoothing stages (position/rotation vs. orbit angle) so a quick sidestep
 /// never visibly whips the view around — see FightCameraConfig.orbitSmoothSpeed's own doc.
@@ -35,7 +35,17 @@ public class FightCameraController : MonoBehaviour
     private Transform _opponent;
 
     private Vector3 _positionVelocity;
-    private Vector3 _smoothedLineDir = Vector3.right;
+
+    // Camera direction from the fighters' midpoint, as a yaw angle (degrees, XZ plane). Tracks the
+    // fighters' line as an UNDIRECTED axis — when they cross, the nearer perpendicular is kept, so
+    // the view never orbits 180° just because two bodies swapped places.
+    private float _yaw;
+    private float _yawVelocity;
+    private bool _yawInitialized;
+    private float _crossedTime; // how long the player has been on screen-right (see sideSwapDelay)
+
+    /// <summary>True while the player is currently shown on screen-right (crossed, not yet swapped back).</summary>
+    public bool PlayerOnScreenRight { get; private set; }
 
     private void Awake()
     {
@@ -75,28 +85,40 @@ public class FightCameraController : MonoBehaviour
         Vector3 opponentXZ = new Vector3(_opponent.position.x, 0f, _opponent.position.z);
         Vector3 lineXZ     = opponentXZ - playerXZ;
         float   separation = lineXZ.magnitude;
-        Vector3 rawLineDir = separation > 0.0001f ? lineXZ / separation : _smoothedLineDir;
 
-        // Orbit smoothing — its OWN pace, separate from the position/rotation SmoothDamp/Slerp
-        // below, so the camera's angular position around the arena eases gently even when the
-        // fighters' instantaneous line changes quickly (a sidestep, a cross-up) — see
-        // FightCameraConfig.orbitSmoothSpeed's own doc. Never a hard snap, never mareig.
-        _smoothedLineDir = Vector3.Slerp(_smoothedLineDir, rawLineDir, Mathf.Clamp01(orbitSmoothSpeed * Time.deltaTime));
-        if (_smoothedLineDir.sqrMagnitude > 0.0001f) _smoothedLineDir.Normalize();
+        // "Player on the left" side of the line = Cross(up, player→opponent) (the original framing).
+        Vector3 playerLeftSide = separation > 0.0001f ? Vector3.Cross(Vector3.up, lineXZ / separation) : YawToDir(_yaw);
+        float playerLeftYaw = DirToYaw(playerLeftSide);
+        if (!_yawInitialized) { _yaw = playerLeftYaw; _yawInitialized = true; }
 
-        // Perpendicular to the (smoothed) fighters' line — "the camera observes the line that
-        // unites the two fighters from a perpendicular angle" (task's own explicit conceptual ask).
-        Vector3 viewSide = Vector3.Cross(Vector3.up, _smoothedLineDir).normalized;
+        // Of the two perpendiculars, stay on the one nearer the current view — a cross-up flips the
+        // fighters' line, not the camera.
+        bool onPlayerLeftSide = Mathf.Abs(Mathf.DeltaAngle(_yaw, playerLeftYaw)) <= 90f;
+        float targetYaw = onPlayerLeftSide ? playerLeftYaw : playerLeftYaw + 180f;
+        PlayerOnScreenRight = !onPlayerLeftSide;
+
+        // Deliberate, slow side swap only after the player has STAYED crossed for sideSwapDelay.
+        float swapDelay = _config != null ? _config.sideSwapDelay : 2.5f;
+        float swapMinSep = _config != null ? _config.sideSwapMinSeparation : 1.3f;
+        _crossedTime = PlayerOnScreenRight ? _crossedTime + Time.deltaTime : 0f;
+        if (PlayerOnScreenRight && swapDelay > 0f && _crossedTime >= swapDelay && separation >= swapMinSep)
+            targetYaw = playerLeftYaw;
+
+        float maxOrbitSpeed = _config != null ? _config.sideSwapMaxSpeed : 110f;
+        _yaw = Mathf.SmoothDampAngle(_yaw, targetYaw, ref _yawVelocity, 1f / orbitSmoothSpeed, maxOrbitSpeed);
+        Vector3 viewSide = YawToDir(_yaw);
+        Vector3 alongLine = Vector3.Cross(viewSide, Vector3.up); // screen-right along the fighters' line
 
         float backDistance = Mathf.Clamp(Mathf.Abs(offset.z) + separation * separationPadding, minDistance, maxDistance);
 
-        // offset.x (previously a fixed world-space sideways slide) now slides ALONG the fighters'
-        // own smoothed line instead, so it stays meaningful at any orbit angle rather than only
-        // when that line happens to be world-X-aligned.
-        Vector3 desiredPosition = midpoint + viewSide * backDistance + _smoothedLineDir * offset.x + Vector3.up * offset.y;
+        // offset.x slides ALONG the fighters' line (screen-right), meaningful at any orbit angle.
+        Vector3 desiredPosition = midpoint + viewSide * backDistance + alongLine * offset.x + Vector3.up * offset.y;
         Quaternion desiredRotation = Quaternion.LookRotation((midpoint - desiredPosition).normalized, Vector3.up);
 
         transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref _positionVelocity, posSmoothTime);
         transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, rotSmoothSpeed * Time.deltaTime);
     }
+
+    private static float DirToYaw(Vector3 dir) => Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+    private static Vector3 YawToDir(float yaw) => new Vector3(Mathf.Sin(yaw * Mathf.Deg2Rad), 0f, Mathf.Cos(yaw * Mathf.Deg2Rad));
 }

@@ -65,6 +65,41 @@ public class FightArenaConfig : ScriptableObject
              "own doc on how Forward-Forward + held Forward enters Run).")]
     public float runSpeedMultiplier = 1.6f;
 
+    [Header("Locomotion feel — continuous movement, never a one-frame position jump")]
+    [Tooltip("Walking AWAY from the opponent (backpedal) = baseMovementSpeed × this. Kept clearly " +
+             "slower than walking forward, and far slower than the charge.")]
+    [Range(0.1f, 1f)] public float backwardSpeedMultiplier = 0.6f;
+    [Tooltip("m/s² — how fast normal walking reaches its speed / stops (high = responsive, still continuous).")]
+    [Min(0.1f)] public float walkAcceleration = 30f;
+    [Tooltip("Body turn speed (°/s) when facing flips (cross-up). 0 = instant snap (old behaviour).")]
+    [Min(0f)] public float turnSpeedDegrees = 720f;
+    [Tooltip("Move lunges (FightMoveDefinition.lungeDistance — attacks, backdash) are travelled over " +
+             "time at this speed (m/s) instead of in a single frame.")]
+    [Min(0.5f)] public float lungeSpeed = 6f;
+    [Tooltip("Hit knockback is travelled over time at this speed (m/s) instead of in a single frame.")]
+    [Min(0.5f)] public float knockbackSpeed = 9f;
+
+    [Header("Charge — Forward, Forward + hold Forward (the run uses runSpeedMultiplier above)")]
+    [Tooltip("m/s² while charging — the run builds up from walking speed to its top speed, so it has " +
+             "visible momentum. Lower = longer build-up.")]
+    [Min(0.1f)] public float chargeAcceleration = 9f;
+    [Tooltip("Forward speed (m/s) the charge must have reached when it meets the opponent to count as " +
+             "a body-check/tackle. Below it the fighters just stop at minimumFighterSeparation.")]
+    [Min(0f)] public float tackleMinSpeed = 5.6f;
+    [Tooltip("Extra distance beyond minimumFighterSeparation at which a charge counts as contact.")]
+    [Min(0f)] public float tackleContactPadding = 0.12f;
+    [Tooltip("Tackle base damage at tackleMinSpeed (x) and at full charge speed (y) — scaled further by " +
+             "the attacker's Strength / defender's defence like any hit (FightHitResolver).")]
+    public Vector2 tackleDamage = new Vector2(10f, 18f);
+    [Tooltip("Tackle knockback distance (m) at tackleMinSpeed (x) and at full charge speed (y).")]
+    public Vector2 tackleKnockback = new Vector2(1.0f, 1.8f);
+    [Tooltip("True = a landed tackle knocks the opponent down (knockdown → downed → get-up flow).")]
+    public bool tackleKnocksDown = true;
+    [Tooltip("Hit stun (s) when tackleKnocksDown is off, or base for the blocked case.")]
+    [Min(0f)] public float tackleHitStun = 0.45f;
+    [Tooltip("Seconds the charger needs to recover after landing (or being blocked on) a tackle.")]
+    [Min(0f)] public float tackleRecovery = 0.35f;
+
     [Header("Jump — a simple velocity/gravity arc, not real physics (see FighterMovement's own doc)")]
     public float jumpVelocity = 6f;
     public float gravity = 20f;

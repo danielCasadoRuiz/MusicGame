@@ -42,6 +42,7 @@ public class FighterHitReaction : MonoBehaviour
     public bool IsInvulnerable => IsInKnockdownFlow;
 
     private bool _stayDown; // KO: remain Downed
+    private bool _altReaction;
 
     public void Initialize(FighterActor actor, FighterActor opponent, FightArenaConfig arenaConfig)
     {
@@ -59,7 +60,11 @@ public class FighterHitReaction : MonoBehaviour
         // A fresh, stronger hit extends the reaction; a weaker one landing mid-stun never shortens it.
         float remaining = State == FighterReactionState.HitStun ? StateRemaining : 0f;
         Enter(FighterReactionState.HitStun, Mathf.Max(remaining, hitStunDuration));
-        _actor.AnimationDriver?.PlayRole(CombatRole.HitReaction, float.IsInfinity(hitStunDuration) ? -1f : hitStunDuration);
+        // Alternate between the available hit reactions so consecutive hits don't all look the same
+        // (HitReactionAlt falls back to HitReaction when the set has no clip for it).
+        _altReaction = !_altReaction;
+        _actor.AnimationDriver?.PlayRole(_altReaction ? CombatRole.HitReactionAlt : CombatRole.HitReaction,
+                                         float.IsInfinity(hitStunDuration) ? -1f : hitStunDuration);
 
         ApplyKnockback(knockbackDistance);
     }
@@ -110,8 +115,10 @@ public class FighterHitReaction : MonoBehaviour
         // Away from the opponent, on the real horizontal combat plane — in a 1v1 arena, whoever hit
         // this fighter IS the opponent, and the OPPONENT's own ForwardXZ already points from them
         // towards us, so it's exactly the "away from attacker" direction we need.
+        // Travelled over time by FighterMovement (knockbackSpeed) — a visible push, never a snap.
         Vector3 delta = _opponent.ForwardXZ * distance;
-        _actor.transform.position = FightMovementUtility.ClampXZ(_actor.transform.position, delta, _opponent.transform.position, _arenaConfig);
+        if (_actor.Movement != null) _actor.Movement.QueueKnockback(delta);
+        else _actor.transform.position = FightMovementUtility.ClampXZ(_actor.transform.position, delta, _opponent.transform.position, _arenaConfig);
     }
 
     private void Update()

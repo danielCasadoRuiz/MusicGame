@@ -30,6 +30,11 @@ public class UIFlowController : MonoBehaviour
         // queued after it in this method, silently leaving the rest of the UI Scene's screens
         // missing entirely (indistinguishable from "the whole UI Scene failed to load"). Isolate
         // each screen so one broken screen never takes the others down with it.
+        // The UI scene owns the game's single EventSystem; any other one a loaded scene brings is
+        // removed as soon as that scene finishes loading (see UIFactory.RemoveForeignEventSystems).
+        UIFactory.EnsureEventSystem();
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+
         AddScreen<AnalyzingScreenController>();
         AddScreen<SongAnalysisController>();
         AddScreen<FightController>();
@@ -49,6 +54,7 @@ public class UIFlowController : MonoBehaviour
         AddScreen<NextSongTransitionController>();
         AddScreen<FightMatchController>();
         AddScreen<FightDebugHUD>();
+        AddScreen<DebugGameplayFeedback>(); // playtest-only feedback (compiled out of release builds)
     }
 
     private void AddScreen<T>() where T : Component
@@ -63,4 +69,9 @@ public class UIFlowController : MonoBehaviour
                             $"missing from the UI Scene, but every other screen still loads. {ex}");
         }
     }
+
+    private void OnDestroy() => UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+
+    private static void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode) =>
+        UIFactory.RemoveForeignEventSystems();
 }

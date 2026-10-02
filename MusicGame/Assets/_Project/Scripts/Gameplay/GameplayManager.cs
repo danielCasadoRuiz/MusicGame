@@ -201,7 +201,7 @@ public class GameplayManager : MonoBehaviour
                 return;
             }
 
-            int points = ScoreFor(e.Type, e.TimingError, e.IsOffTrack);
+            int points = ScoreFor(e.Type, e.TimingError, e.ScoreMultiplier);
             _stats.Register(e.Type);
             _stats.AddScore(points);
 
@@ -510,7 +510,7 @@ public class GameplayManager : MonoBehaviour
     /// they're structurally guaranteed (alwaysKeep) moments, not statistically rare ones, so
     /// they don't participate in the rarity distribution (see GameplayTimeline).
     /// </summary>
-    private int ScoreFor(RingType type, float timingError, bool isOffTrack)
+    private int ScoreFor(RingType type, float timingError, float difficultyMultiplier)
     {
         if (RingTypes.IsResource(type)) return 0; // combat resources never score
         float timing = TimingMultiplier(timingError);
@@ -521,7 +521,9 @@ public class GameplayManager : MonoBehaviour
             RingType.Impact => config.scoring.impactBonusPoints * timing,
             _               => config.scoring.baseScorePerRing * _timeline.RarityMultiplier(type) * timing,
         };
-        if (isOffTrack) raw *= config.collectibles.offTrackBonusScoreMultiplier;
+        // Difficulty reward decided at generation (GameplayTimeline.DifficultyMultiplier): off-track
+        // x2 as its own category, otherwise the height bonus x1..x1.5 — never both.
+        if (difficultyMultiplier > 0f) raw *= difficultyMultiplier;
         return Mathf.RoundToInt(raw);
     }
 
@@ -557,7 +559,7 @@ public class GameplayManager : MonoBehaviour
         foreach (var e in _timeline.Events)
         {
             if (!IsInPlayedWindow(e)) continue; // never reachable this run — doesn't exist for scoring
-            int perfectScore = ScoreFor(e.ringType, 0f, e.isOffTrack);
+            int perfectScore = ScoreFor(e.ringType, 0f, e.scoreMultiplier);
             sum += perfectScore;
 
             _availableByType.TryGetValue(e.ringType, out int c); _availableByType[e.ringType] = c + 1;

@@ -78,6 +78,13 @@ public class FighterActor : MonoBehaviour
     /// default; written exclusively by FighterMovement via SetMovementState.</summary>
     public FighterMovementState MovementState { get; private set; } = FighterMovementState.Idle;
 
+    /// <summary>True while the body is still rotating towards a new facing (e.g. after a cross-up) —
+    /// the visual turn is smoothed at FightArenaConfig.turnSpeedDegrees; gameplay facing
+    /// (ForwardXZ/SideXZ) still switches immediately, so hits/inputs never wait for the animation.</summary>
+    public bool IsTurning { get; private set; }
+
+    private FightArenaConfig _arenaConfig;
+
     /// <summary>This fighter's combat numbers — the Player's come from the Runner (GameSession.
     /// FighterStats), the Opponent's from OpponentLevelConfig.combatStats (or a flat 100-everywhere
     /// default) — see FightSceneBootstrap's own wiring. Read by FightHitResolver/FightDebugHUD;
@@ -253,6 +260,7 @@ public class FighterActor : MonoBehaviour
     /// SetOpponent has run (see FightSceneBootstrap's own call order).</summary>
     public void AttachHitReaction(FightArenaConfig arenaConfig, FighterInputController input)
     {
+        _arenaConfig = arenaConfig;
         var reaction = gameObject.AddComponent<FighterHitReaction>();
         reaction.Initialize(this, _opponent, arenaConfig);
         HitReaction = reaction;
@@ -313,7 +321,11 @@ public class FighterActor : MonoBehaviour
         // While locked, ForwardXZ/SideXZ simply hold their last value (frozen) — the visual
         // rotation freezes with them, exactly matching lockFacingDuringMove's own "no gira a mig
         // move" contract; the instant the lock clears, this naturally re-orients towards the
-        // opponent's CURRENT position again, cross-up included.
-        transform.rotation = Quaternion.LookRotation(ForwardXZ, Vector3.up);
+        // opponent's CURRENT position again, cross-up included — as a quick visible turn
+        // (turnSpeedDegrees) instead of a one-frame 180° snap.
+        var target = Quaternion.LookRotation(ForwardXZ, Vector3.up);
+        float turnSpeed = _arenaConfig != null ? _arenaConfig.turnSpeedDegrees : 720f;
+        transform.rotation = turnSpeed > 0f ? Quaternion.RotateTowards(transform.rotation, target, turnSpeed * Time.deltaTime) : target;
+        IsTurning = Quaternion.Angle(transform.rotation, target) > 20f;
     }
 }

@@ -26,4 +26,15 @@ public class FightCameraConfig : ScriptableObject
              "changing the fighters' relative depth doesn't visibly whip the camera around it; only " +
              "a sustained change in the combat line's angle actually re-orbits the view.")]
     public float orbitSmoothSpeed = 3f;
+
+    [Header("Side stability — fighters crossing never flips the view")]
+    [Tooltip("The camera keeps watching from the SAME side of the fighters' line when they cross " +
+             "(the player may briefly be on screen-right). Only after the player has stayed crossed " +
+             "this many seconds does the camera deliberately move round to put them back on the left. " +
+             "0 or less = never swap sides.")]
+    public float sideSwapDelay = 2.5f;
+    [Tooltip("Max orbit speed (°/s) of that deliberate side swap — slow enough to read as intentional.")]
+    [Min(1f)] public float sideSwapMaxSpeed = 110f;
+    [Tooltip("No side swap while the fighters are closer than this (clinches/cross-ups resolve first).")]
+    [Min(0f)] public float sideSwapMinSeparation = 1.3f;
 }

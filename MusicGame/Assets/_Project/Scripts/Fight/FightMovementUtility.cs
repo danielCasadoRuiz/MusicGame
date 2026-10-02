@@ -42,9 +42,15 @@ public static class FightMovementUtility
         {
             // Degenerate (exactly overlapping) fallback keeps the SAME left/right bias the old
             // pure-X clamp used, rather than picking an arbitrary axis.
+            Vector2 toCurrent = new Vector2(currentPos.x - opponentPos.x, currentPos.z - opponentPos.z);
             Vector2 pushDir = dist > 0.0001f
                 ? toTarget / dist
                 : new Vector2(currentPos.x >= opponentPos.x ? 1f : -1f, 0f);
+            // A displacement that would carry the fighter THROUGH the opponent (target on the far
+            // side of them) stays on the side it came from — no instant cross-up through a body.
+            // Going around them in depth (sidestep) still works: that target isn't on the far side.
+            if (toCurrent.sqrMagnitude > 0.0001f && Vector2.Dot(toTarget, toCurrent) < 0f)
+                pushDir = toCurrent.normalized;
 
             Vector2 corrected = new Vector2(opponentPos.x, opponentPos.z) + pushDir * minSeparation;
             target.x = Mathf.Clamp(corrected.x, minX, maxX);

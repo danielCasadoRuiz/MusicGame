@@ -69,7 +69,18 @@ public class FighterMovement : MonoBehaviour
     private bool _active;
     private bool _locked;
     private float _multiplier = 1f;
-    private float _pendingLunge;
+
+    // Lunges (own moves) and knockback (received hits) are TRAVELLED over time — remaining world
+    // displacement, consumed at FightArenaConfig.lungeSpeed / knockbackSpeed — never one-frame jumps.
+    private Vector3 _lungeRemaining;
+    private Vector3 _knockbackRemaining;
+
+    // Signed speed along ForwardXZ (+ towards the opponent). Accelerates instead of snapping, so the
+    // charge has visible momentum and a tackle can read how fast the fighter actually arrived.
+    private float _forwardVelocity;
+    private float _recoverUntil;            // after a tackle: no input-driven movement until then
+    private FightMoveDefinition _tackleMove; // runtime-only definition used to resolve tackles
+    private FightCombatBalanceConfig _balance;
 
     private bool _groundYCaptured;
     private float _groundY;
@@ -101,6 +112,10 @@ public class FighterMovement : MonoBehaviour
     public bool IsLocked => _locked;
     public float Multiplier => _multiplier;
     public float LastLungeDistance { get; private set; }
+    /// <summary>True while a Forward-Forward charge is running (see HandleRunTracking).</summary>
+    public bool IsCharging => _running;
+    /// <summary>Current signed speed along ForwardXZ (m/s) — debug/AI read-only.</summary>
+    public float ForwardSpeed => _forwardVelocity;
 
     /// <summary>-1 (dodging along -SideXZ) / 0 (none) / +1 (along +SideXZ) — see FightDebugHUD's own
     /// doc on why this is exposed: purely informational, nothing reads it as an input.</summary>
@@ -125,6 +140,7 @@ public class FighterMovement : MonoBehaviour
         _opponent = opponent;
         _config   = config;
         _input    = input;
+        _balance  = Resources.Load<AppConfigSO>("AppConfig")?.combatBalance;
     }
 
     /// <summary>Called by RealFighterMovementDriver.SetMovementLock — see FightMoveDefinition.
@@ -141,6 +157,11 @@ public class FighterMovement : MonoBehaviour
         {
             _sidestepActive = false;
             _sideWalkDirection = 0;
+            // A move or a received hit takes over: the charge/walk momentum ends here (a hit can
+            // interrupt a charge mid-run), and a previous move's unfinished lunge never carries on.
+            _forwardVelocity = 0f;
+            _running = false;
+            _lungeRemaining = Vector3.zero;
         }
     }
 
@@ -149,7 +170,20 @@ public class FighterMovement : MonoBehaviour
     /// does). Consumed (and clamped against bounds/separation) on the very next Update. Sign
     /// matters: a NEGATIVE lungeDistance (see Move_Backdash.asset) lunges BACKWARD along
     /// _actor.ForwardXZ instead of forward — no separate backward-lunge field needed.</summary>
-    public void QueueLunge(float distance) => _pendingLunge += distance;
+    public void QueueLunge(float distance)
+    {
+        if (_actor == null) return;
+        _lungeRemaining += _actor.ForwardXZ * distance;
+        LastLungeDistance = distance;
+    }
+
+    /// <summary>Received-hit pushback (world XZ), travelled over time at knockbackSpeed — see
+    /// FighterHitReaction.ApplyKnockback. Applied even while locked/stunned.</summary>
+    public void QueueKnockback(Vector3 worldDelta)
+    {
+        worldDelta.y = 0f;
+        _knockbackRemaining += worldDelta;
+    }
 
     /// <summary>Explicit API for FightMatchController's between-rounds reset (via FighterActor.
     /// ResetForRound) — clears any lock (including a KO's permanent one — see FighterHealth's own
@@ -160,7 +194,10 @@ public class FighterMovement : MonoBehaviour
     {
         _locked = false;
         _multiplier = 1f;
-        _pendingLunge = 0f;
+        _lungeRemaining = Vector3.zero;
+        _knockbackRemaining = Vector3.zero;
+        _forwardVelocity = 0f;
+        _recoverUntil = 0f;
         LastLungeDistance = 0f;
 
         _isJumping = false;
@@ -200,7 +237,9 @@ public class FighterMovement : MonoBehaviour
 
     private void Update()
     {
-        if (!_active || _input == null || _actor == null) return;
+        if (_actor == null) return;
+        ApplyTimedDisplacements(); // knockback/lunge keep travelling even outside Fighting (e.g. a KO hit)
+        if (!_active || _input == null) return;
 
         if (!_groundYCaptured)
         {
@@ -222,11 +261,23 @@ public class FighterMovement : MonoBehaviour
             }
         }
 
-        float speed = (_config != null ? _config.baseMovementSpeed : 4f) * SpeedMultiplier;
-        if (_running) speed *= _config != null ? _config.runSpeedMultiplier : 1.6f;
+        if (Time.time < _recoverUntil) { forwardAmount = 0f; _running = false; }
+
+        // Target speed: walking forward / backpedalling (slower) / charging (runSpeedMultiplier).
+        float baseSpeed = (_config != null ? _config.baseMovementSpeed : 4f) * SpeedMultiplier;
+        float targetSpeed =
+            forwardAmount > 0f ? baseSpeed * (_running ? (_config != null ? _config.runSpeedMultiplier : 1.6f) : 1f) :
+            forwardAmount < 0f ? -baseSpeed * (_config != null ? _config.backwardSpeedMultiplier : 0.6f) : 0f;
+        // The charge builds up (chargeAcceleration); ordinary walking/stopping is near-immediate but
+        // still continuous (walkAcceleration). A lock (move/hit) already zeroed the velocity.
+        float accel = _running && targetSpeed > _forwardVelocity
+            ? (_config != null ? _config.chargeAcceleration : 9f)
+            : (_config != null ? _config.walkAcceleration : 30f);
+        _forwardVelocity = _locked ? 0f : Mathf.MoveTowards(_forwardVelocity, targetSpeed, accel * Time.deltaTime);
+
         float airControl = _actor.Posture == FighterPosture.Airborne ? (_config != null ? _config.airControlMultiplier : 0.5f) : 1f;
 
-        Vector3 delta = _actor.ForwardXZ * (forwardAmount * speed * _multiplier * airControl * Time.deltaTime);
+        Vector3 delta = _actor.ForwardXZ * (_forwardVelocity * _multiplier * airControl * Time.deltaTime);
 
         // ── Side — SideWalk (continuous, held) or Sidestep (a short timed dodge) ─────────────────
         if (_sideWalkDirection != 0)
@@ -236,17 +287,73 @@ public class FighterMovement : MonoBehaviour
         }
         delta += ComputeSidestepDelta();
 
-        if (_pendingLunge != 0f)
-        {
-            delta += _actor.ForwardXZ * _pendingLunge;
-            LastLungeDistance = _pendingLunge;
-            _pendingLunge = 0f;
-        }
-
         if (delta.sqrMagnitude > 0.0000001f) ApplyClampedDelta(delta);
 
+        TryTackle(forwardAmount);
         UpdateVerticalPhysics();
         UpdateMovementState(forwardAmount);
+    }
+
+    // Lunge + knockback: consume the remaining displacement at a fixed speed (continuous travel).
+    private void ApplyTimedDisplacements()
+    {
+        Vector3 delta = Step(ref _lungeRemaining, _config != null ? _config.lungeSpeed : 6f)
+                      + Step(ref _knockbackRemaining, _config != null ? _config.knockbackSpeed : 9f);
+        if (delta.sqrMagnitude > 0.0000001f) ApplyClampedDelta(delta);
+    }
+
+    private static Vector3 Step(ref Vector3 remaining, float speed)
+    {
+        float left = remaining.magnitude;
+        if (left < 0.0001f) { remaining = Vector3.zero; return Vector3.zero; }
+        float step = Mathf.Min(left, speed * Time.deltaTime);
+        Vector3 d = remaining * (step / left);
+        remaining -= d;
+        return d;
+    }
+
+    // ── Tackle — a charge that ARRIVES fast enough is a body-check ─────────────────────────────
+    //
+    // Contact = within minimumFighterSeparation + tackleContactPadding while still charging forward
+    // at >= tackleMinSpeed. Resolved through the normal hit pipeline (FightHitDispatcher: guard,
+    // invulnerability, stats, knockdown, events) with damage/knockback lerped by how fast the
+    // charger actually arrived. The charge ends there and the charger needs tackleRecovery.
+    private void TryTackle(float forwardAmount)
+    {
+        if (!_running || forwardAmount <= 0f || _opponent == null || _config == null) return;
+        if (_forwardVelocity < _config.tackleMinSpeed) return;
+        Vector3 a = _actor.transform.position, b = _opponent.transform.position;
+        float dist = new Vector2(a.x - b.x, a.z - b.z).magnitude;
+        if (dist > _config.minimumFighterSeparation + _config.tackleContactPadding) return;
+
+        float topSpeed = _config.baseMovementSpeed * SpeedMultiplier * _config.runSpeedMultiplier;
+        float momentum = Mathf.InverseLerp(_config.tackleMinSpeed, Mathf.Max(_config.tackleMinSpeed + 0.01f, topSpeed), _forwardVelocity);
+
+        if (_tackleMove == null)
+        {
+            _tackleMove = ScriptableObject.CreateInstance<FightMoveDefinition>();
+            _tackleMove.name = "Tackle (runtime)";
+            _tackleMove.id = "move_tackle";
+            _tackleMove.debugName = "Tackle";
+            _tackleMove.scalingStat = FighterBuildStat.PunchPower;
+        }
+        _tackleMove.knockdownOnHit = _config.tackleKnocksDown;
+        var hit = new FightHitDefinition
+        {
+            baseDamage    = Mathf.Lerp(_config.tackleDamage.x, _config.tackleDamage.y, momentum),
+            baseKnockback = Mathf.Lerp(_config.tackleKnockback.x, _config.tackleKnockback.y, momentum),
+            baseHitStun   = _config.tackleHitStun,
+            attackHeight  = AttackHeight.Mid,
+        };
+        var result = FightHitDispatcher.ResolveAndApply(_actor, _opponent, _tackleMove, hit, _balance);
+        string outcome = result.IsEvaded ? "evaded" : result.IsBlocked ? "blocked"
+            : $"{result.FinalDamage:F1} dmg, knockdown {result.CausesKnockdown}";
+        Debug.Log($"[FighterMovement] {_actor.name} TACKLE at {_forwardVelocity:F1} m/s (momentum {momentum:P0}) -> {outcome}");
+        EventBus.Publish(new FightTackleEvent { Attacker = _actor, Defender = _opponent, Speed = _forwardVelocity, Momentum = momentum, Result = result });
+
+        _running = false;
+        _forwardVelocity = 0f;
+        _recoverUntil = Time.time + _config.tackleRecovery;
     }
 
     // ── Crouch (instant Down+Back guard case handled inline in HandleVerticalDirection) ─────────

@@ -15,6 +15,7 @@ MonoBehaviour:
   id: move_backdash
   debugName: Backdash
   moveType: 1
+  role: 15
   animationState: Backdash
   startupDuration: 0.05
   activeDuration: 0.05
@@ -22,7 +23,7 @@ MonoBehaviour:
   cancelWindow: 0
   movementLocked: 1
   movementMultiplier: 0
-  lungeDistance: -2
+  lungeDistance: -1.4
   lockFacingDuringMove: 1
   allowedPostures:
   - 0

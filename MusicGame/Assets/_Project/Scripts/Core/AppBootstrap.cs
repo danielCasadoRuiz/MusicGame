@@ -62,6 +62,11 @@ public static class AppBootstrap
         var go = new GameObject("[App Bootstrap]");
         Object.DontDestroyOnLoad(go);
 
+        // The single, persistent AudioListener (see AudioListenerOwner) — never owned by a scene camera.
+        var listener = new GameObject("[Audio Listener]");
+        Object.DontDestroyOnLoad(listener);
+        listener.AddComponent<AudioListenerOwner>();
+
         // 1. construct
         var gameSession  = go.AddComponent<GameSession>();
         var appFlow      = go.AddComponent<AppFlowController>();

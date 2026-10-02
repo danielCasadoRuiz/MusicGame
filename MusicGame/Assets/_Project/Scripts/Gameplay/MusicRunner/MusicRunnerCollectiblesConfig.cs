@@ -241,16 +241,18 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     // now survivable. isOffTrack is decided and stored on the TimelineEvent right here, at
     // generation time — never re-derived from position later.
     [Header("Off-Track Bonuses")]
-    [Tooltip("0..1 chance an ordinary single collectible becomes an off-track one instead.")]
+    [Tooltip("LEGACY — no longer read: the off-track chance is now per difficulty " +
+             "(normalHeights/hardHeights.offTrackChance, see Pickup Height by Difficulty).")]
     [Range(0f, 1f)] public float offTrackBonusChance = 0.15f;
     [Tooltip("How far BEYOND the track's real local half-width (path.GetWidth/2, not world X/Z) " +
              "an off-track bonus can additionally sit — a small, jump+air-control-reachable " +
              "extension, picked randomly left or right each time.")]
     public float offTrackBonusMaxOffset = 1.5f;
-    [Tooltip("Score multiplier for collecting an off-track bonus vs. an equivalent normal one — " +
-             "risk/reward, applied on top of the SAME ScoreFor() calculation every other " +
+    [Tooltip("Score multiplier for collecting an off-track (floating, off-path) bonus vs. an " +
+             "equivalent normal one — its OWN difficulty category: it replaces the height multiplier " +
+             "(never stacks with it). Applied on top of the SAME ScoreFor() calculation every other " +
              "collectible uses (rarity/timing/type all still apply first).")]
-    public float offTrackBonusScoreMultiplier = 1.5f;
+    public float offTrackBonusScoreMultiplier = 2f;
     [Tooltip("Bottom of the OFF-TRACK bonus height range, as a 0..1 fraction of maxJumpHeight " +
              "directly (jumpForce²/(2·|gravity|)) — deliberately INDEPENDENT of " +
              "bonusMinJumpHeightFactor/bonusMaxJumpHeightFactor (the normal-bonus range). An " +
@@ -262,6 +264,50 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     [Tooltip("Top of the OFF-TRACK bonus height range, as a 0..1 fraction of maxJumpHeight " +
              "directly. 1.0 = right at the theoretical peak of a full jump.")]
     [Range(0f, 1f)] public float offTrackBonusMaxJumpHeightFactor = 1.0f;
+
+    // ── Pickup height by difficulty + height score bonus ──────────────────────
+    // "Elevated" = above normalCollectHeight (needs a jump). Normal difficulty keeps most pickups
+    // in the running band; Hard raises the share of elevated and off-track pickups. Applies to
+    // ordinary singles and patterns; Impact/Peak/Life/Special keep their own placement.
+    [Header("Pickup Height by Difficulty")]
+    [Tooltip("Which height distribution the Runner uses (no difficulty selector exists yet — set it here).")]
+    public RunnerDifficulty difficulty = RunnerDifficulty.Normal;
+    public PickupHeightDifficulty normalHeights = new() { elevatedChance = 0.08f, offTrackChance = 0.06f, patternElevatedChance = 0.15f };
+    public PickupHeightDifficulty hardHeights   = new() { elevatedChance = 0.40f, offTrackChance = 0.20f, patternElevatedChance = 0.60f };
+    [Tooltip("Highest pickup CENTRE height (m above the track surface) that ordinary running collects " +
+             "without jumping. Non-elevated pickups never go above it; the height score bonus starts " +
+             "above it (plus heightBonusDeadZone).")]
+    [Min(0f)] public float normalCollectHeight = 1.0f;
+    [Tooltip("Top of the ELEVATED band, as a 0..1 fraction of maxJumpHeight (jumpForce²/(2·|gravity|)).")]
+    [Range(0f, 1f)] public float elevatedMaxJumpHeightFactor = 0.95f;
+    [Tooltip("Height above normalCollectHeight that still counts as ordinary (no bonus) — tiny Y " +
+             "differences are never rewarded.")]
+    [Min(0f)] public float heightBonusDeadZone = 0.15f;
+    [Tooltip("Score multiplier at the top of the elevated band (normalCollectHeight + dead zone → x1, " +
+             "elevatedMaxJumpHeightFactor·maxJumpHeight → this), smoothly in between.")]
+    [Min(1f)] public float heightBonusMaxMultiplier = 1.5f;
+
+    public PickupHeightDifficulty Heights => difficulty == RunnerDifficulty.Hard ? hardHeights : normalHeights;
+
+    /// <summary>x1 at/below normalCollectHeight + heightBonusDeadZone, rising linearly to
+    /// heightBonusMaxMultiplier at the top of the elevated band. `heightAboveSurface` = the
+    /// pickup's TimelineEvent.verticalOffset.</summary>
+    public float HeightScoreMultiplier(float heightAboveSurface, float maxJumpHeight)
+    {
+        float start = normalCollectHeight + heightBonusDeadZone;
+        float full  = Mathf.Max(start + 0.01f, maxJumpHeight * elevatedMaxJumpHeightFactor);
+        float t = Mathf.InverseLerp(start, full, heightAboveSurface);
+        return t <= 0f ? 1f : Mathf.Lerp(1f, heightBonusMaxMultiplier, t);
+    }
+
+    // ── Resource pickups — TEST fallback ──────────────────────────────────────
+    [Header("Resource Pickups — TEST fallback (turn off once song analysis places them reliably)")]
+    [Tooltip("Adds extra LIFE/SPECIAL pickups ON the racing line at running height, spread over the " +
+             "played window, through the normal pickup pipeline (spawn → collision → effect), so both " +
+             "can be collected in any normal test run. Off = only the regular difficult placements.")]
+    public bool resourcePickupTestFallback = true;
+    [Min(0)] public int testLifePickups = 2;
+    [Min(0)] public int testSpecialPickups = 2;
 
     /// <summary>The ordinary off-track score bonus expressed as a placement profile (moderate:
     /// just beyond the edge) — built from the fields above so its behaviour is unchanged.</summary>
@@ -372,4 +418,18 @@ public class PickupPlacementProfile
     public float maxEdgeOffset;
     [Range(0f, 1f)] public float minJumpHeightFactor;
     [Range(0f, 1f)] public float maxJumpHeightFactor = 1f;
+}
+
+public enum RunnerDifficulty { Normal, Hard }
+
+/// <summary>How often pickups need a jump at one difficulty (see MusicRunnerCollectiblesConfig).</summary>
+[System.Serializable]
+public class PickupHeightDifficulty
+{
+    [Tooltip("0..1 chance an ordinary single pickup sits in the ELEVATED (jump) band instead of the running band.")]
+    [Range(0f, 1f)] public float elevatedChance = 0.08f;
+    [Tooltip("0..1 chance an ordinary single pickup becomes an off-track (beyond the edge, high) bonus.")]
+    [Range(0f, 1f)] public float offTrackChance = 0.06f;
+    [Tooltip("0..1 chance a pickup pattern (arc/stair) may peak into the elevated band; otherwise it stays in the running band.")]
+    [Range(0f, 1f)] public float patternElevatedChance = 0.15f;
 }

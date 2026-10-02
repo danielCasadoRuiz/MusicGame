@@ -41,6 +41,14 @@ public enum CombatRole
     Special     = 11,
     Defeat      = 12,
     Downed      = 13,
+    // Locomotion / variety (driven by AnimatorFighterAnimationDriver.SetLocomotion and
+    // FighterHitReaction). A role with no clip in the fighter's set falls back to CombatIdle.
+    WalkForward    = 14,
+    WalkBack       = 15,
+    Run            = 16,
+    Jump           = 17,
+    Turn           = 18,
+    HitReactionAlt = 19,
 }
 
 public enum CombatRootMotion

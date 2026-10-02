@@ -35,4 +35,12 @@ public class FightAIConfig : ScriptableObject
              "PhaseProgress01 is BELOW this — deep into Recovery, there usually isn't enough of the " +
              "window left to actually land something.")]
     [Range(0f, 1f)] public float punishWindowMaxProgress = 0.6f;
+
+    [Header("Charge (DashApproach / RunApproach = Forward, Forward + hold → may tackle)")]
+    [Tooltip("Minimum seconds between two AI charges (scaled ×1.4 at aggression 0 down to ×0.8 at 1) " +
+             "— the AI can charge, but never spams it the way it could spam a plain dash before.")]
+    [Min(0f)] public float chargeCooldownSeconds = 6f;
+    [Tooltip("Scales the DashApproach/RunApproach utility scores — below 1 the AI prefers walking in " +
+             "and only occasionally commits to a charge.")]
+    [Range(0f, 1f)] public float chargeScoreMultiplier = 0.45f;
 }

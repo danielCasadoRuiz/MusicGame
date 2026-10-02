@@ -20,8 +20,10 @@ public interface IFighterAnimationDriver
     /// > 0 fits the clip to that many seconds (clamped); otherwise natural speed.</summary>
     void PlayRole(CombatRole role, float duration = -1f);
 
-    /// <summary>Called every frame while Idle (no move running) — locomotion-driven, not move-driven.</summary>
-    void SetLocomotion(FightHorizontalDirection direction);
+    /// <summary>Called every frame while Idle (no move running) — locomotion-driven, not move-driven.
+    /// `state`/`posture` (FighterMovement's own) pick walk / run / jump; `turning` = the body is still
+    /// rotating towards a new facing (cross-up).</summary>
+    void SetLocomotion(FightHorizontalDirection direction, FighterMovementState state, FighterPosture posture, bool turning);
 }
 
 /// <summary>
@@ -41,9 +43,9 @@ public class DebugFighterAnimationDriver : IFighterAnimationDriver
 
     public void PlayRole(CombatRole role, float duration = -1f) => CurrentState = role.ToString();
 
-    public void SetLocomotion(FightHorizontalDirection direction)
+    public void SetLocomotion(FightHorizontalDirection direction, FighterMovementState state, FighterPosture posture, bool turning)
     {
-        CurrentState = direction switch
+        CurrentState = posture == FighterPosture.Airborne ? "Jump" : state == FighterMovementState.Run ? "Run" : direction switch
         {
             FightHorizontalDirection.Forward => "WalkForward",
             FightHorizontalDirection.Back    => "WalkBack",

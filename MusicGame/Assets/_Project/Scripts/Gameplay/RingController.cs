@@ -125,6 +125,7 @@ public class RingController : MonoBehaviour
             Confidence   = _sourceEvent.confidence,
             Contributors = _sourceEvent.contributors,
             IsOffTrack   = _sourceEvent.isOffTrack,
+            ScoreMultiplier = _sourceEvent.scoreMultiplier,
         });
 
         var cb = _returnCallback;

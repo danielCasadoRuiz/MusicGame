@@ -37,7 +37,7 @@ public class RunnerResourceTracker
     public int PendingComboPickups => _combos.PendingCount;
 
     /// <summary>A musical pickup was collected (songTime = when the player touched it).</summary>
-    public void OnMusicalPickup(float songTime) => Publish(_combos.Register(songTime));
+    public void OnMusicalPickup(float songTime) => Track(_combos.Register(songTime));
 
     /// <summary>A Life/Special pickup was collected.</summary>
     public void OnResourcePickup(RingType type)
@@ -48,19 +48,34 @@ public class RunnerResourceTracker
         EventBus.Publish(new RunnerResourcesChangedEvent { Counts = Counts });
     }
 
-    public void Tick(float songTime) => Publish(_combos.Tick(songTime));
+    public void Tick(float songTime) => Track(_combos.Tick(songTime));
 
     public void OnFall(bool cancelCombo)
     {
-        if (cancelCombo) _combos.Cancel();
+        if (cancelCombo) { _combos.Cancel(); Track(PickupComboTier.None, broken: true); }
     }
 
     /// <summary>End of run: resolves the sequence still open.</summary>
-    public void Flush() => Publish(_combos.Flush());
+    public void Flush() => Track(_combos.Flush());
+
+    // Publishes the combo result (if any) plus sequence progress for feedback: start/count, and
+    // "broken" when an open sequence closes without reaching a combo (timed out or a fall).
+    private int _lastPending;
+    private void Track(PickupComboTier tier, bool broken = false)
+    {
+        Publish(tier);
+        int pending = _combos.PendingCount;
+        bool wasOpen = _lastPending > 0;
+        if (pending == _lastPending && !(broken && wasOpen)) return;
+        bool closedWithoutCombo = wasOpen && pending == 0 && tier == PickupComboTier.None;
+        _lastPending = pending;
+        EventBus.Publish(new PickupComboProgressEvent { Count = pending, Broken = (broken && wasOpen) || closedWithoutCombo });
+    }
 
     public void Reset()
     {
         _combos.Reset();
+        _lastPending = 0;
         _lives    = 0;
         _specials = 0;
         EventBus.Publish(new RunnerResourcesChangedEvent { Counts = Counts });

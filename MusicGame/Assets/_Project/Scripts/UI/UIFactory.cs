@@ -44,11 +44,35 @@ public static class UIFactory
         return _canvasInstance.GetComponent<RectTransform>();
     }
 
-    private static void EnsureEventSystem()
+    private static EventSystem _eventSystemInstance;
+
+    /// <summary>The game's ONE EventSystem, owned by the UI layer (UIFlowController calls this first
+    /// thing) and kept alive across every scene load. Created regardless of any other EventSystem present; any OTHER one — e.g. a
+    /// mode scene that still ships its own — is removed by RemoveForeignEventSystems.</summary>
+    public static void EnsureEventSystem()
     {
-        if (EventSystem.current != null) return;
+        if (_eventSystemInstance != null) return;
         var go = new GameObject("[EventSystem]", typeof(EventSystem), typeof(InputSystemUIInputModule));
-        MoveToUiSceneIfLoaded(go);
+        _eventSystemInstance = go.GetComponent<EventSystem>();
+        // Persistent (not tied to any scene's lifetime) — a mode scene unloading can never leave the
+        // game without one, whichever scene was active when it was created.
+        Object.DontDestroyOnLoad(go);
+        RemoveForeignEventSystems();
+    }
+
+    /// <summary>Destroys every EventSystem that isn't the UI-owned one (called on every scene load) —
+    /// two active EventSystems make Unity warn every frame and split UI input.</summary>
+    public static void RemoveForeignEventSystems()
+    {
+        if (_eventSystemInstance == null) return;
+        foreach (var es in Object.FindObjectsByType<EventSystem>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (es == _eventSystemInstance) continue;
+            Debug.Log($"[UIFactory] Removed extra EventSystem '{es.name}' (scene '{es.gameObject.scene.name}') — " +
+                      "the UI scene owns the only one.");
+            Object.Destroy(es.gameObject);
+        }
+        if (EventSystem.current != _eventSystemInstance) EventSystem.current = _eventSystemInstance;
     }
 
     // Everything UIFactory builds is meant to live in the always-loaded "UI" Scene (see the

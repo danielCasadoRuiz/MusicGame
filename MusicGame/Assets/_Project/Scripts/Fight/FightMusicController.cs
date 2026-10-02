@@ -31,6 +31,8 @@ public class FightMusicController : MonoBehaviour
     private OpponentLevelConfig _playlist; // songs to continue with once the locked one ends (null = loop it)
     private float       _fadeElapsed = -1f;  // < 0 = no cross-fade running
     private float       _fadeDuration;
+    private Coroutine   _fadeOut;
+    private float       _fadeOutSeconds = 1.5f;
 
     public AudioClip CurrentClip => _current != null ? _current.clip : null;
 
@@ -41,6 +43,8 @@ public class FightMusicController : MonoBehaviour
 
         _current  = gameObject.AddComponent<AudioSource>();
         _incoming = gameObject.AddComponent<AudioSource>();
+        var flow = Resources.Load<AppConfigSO>("AppConfig")?.fightFlow;
+        if (flow != null) _fadeOutSeconds = flow.combatMusicFadeOutSeconds;
         _current.loop = true; // a short snippet/song looping is the right default for "radio" music
     }
 
@@ -58,6 +62,7 @@ public class FightMusicController : MonoBehaviour
     public void PlaySnippet(AudioClip clip)
     {
         if (_locked) return;
+        CancelFadeOut();
         CancelCrossfade();
         _current.loop = true;
         if (clip == null) { _current.Stop(); return; }
@@ -96,12 +101,39 @@ public class FightMusicController : MonoBehaviour
     /// <summary>Call when leaving Fight for good — Continue (into the Next Song transition/Song
     /// Analysis), Replay Song, or Main Menu — so the locked-in match song doesn't keep looping over
     /// whatever comes next. Also clears the lock, same as Reset(), so a later Opponent Selection
-    /// roulette can play music again without a separate call.</summary>
+    /// roulette can play music again without a separate call.
+    /// Fades out over FightFlowConfig.combatMusicFadeOutSeconds (unscaled time; this object lives in
+    /// the persistent UI scene, so the fade survives Fight.unity unloading) — never an abrupt cut. A
+    /// new roulette (PlaySnippet/Lock) cancels a fade still running.</summary>
     public void Stop()
     {
         Reset();
         CancelCrossfade();
+        CancelFadeOut();
+        if (_fadeOutSeconds <= 0f || !_current.isPlaying) { _current.Stop(); return; }
+        _fadeOut = StartCoroutine(FadeOutRoutine(_current, _fadeOutSeconds));
+    }
+
+    private System.Collections.IEnumerator FadeOutRoutine(AudioSource source, float seconds)
+    {
+        float start = source.volume;
+        for (float t = 0f; t < seconds; t += Time.unscaledDeltaTime)
+        {
+            source.volume = start * (1f - t / seconds);
+            yield return null;
+        }
+        source.Stop();
+        source.volume = 1f;
+        _fadeOut = null;
+    }
+
+    private void CancelFadeOut()
+    {
+        if (_fadeOut == null) return;
+        StopCoroutine(_fadeOut);
+        _fadeOut = null;
         _current.Stop();
+        _current.volume = 1f;
     }
 
     private void Update()

@@ -67,6 +67,7 @@ public class FighterAI : MonoBehaviour
     private FightArenaConfig _arenaConfig;
 
     private FightAIConfig _aiConfig;
+    private float _nextChargeTime;
     private FightMoveSetSO _moveSet;
     private FightComboSetSO _comboSet;
     private System.Random _random;
@@ -178,6 +179,14 @@ public class FighterAI : MonoBehaviour
         LastErrorNote = null;
         _lastScores.Clear();
         _nextDecisionTime = _active ? Time.time + EffectiveReactionTime() : 0f;
+        _nextChargeTime = Time.time + ChargeCooldown() * 0.5f; // no charge in the round's first seconds
+    }
+
+    private float ChargeCooldown()
+    {
+        float baseCooldown = _aiConfig != null ? _aiConfig.chargeCooldownSeconds : 6f;
+        float aggression = _profile != null ? _profile.aggression : 0.5f;
+        return baseCooldown * Mathf.Lerp(1.4f, 0.8f, aggression);
     }
 
     private void StopExecuting()
@@ -281,8 +290,11 @@ public class FighterAI : MonoBehaviour
         if (opponentAttacking && ctx.Distance < meleeRange * 1.3f) retreatBase += 0.25f;
         scores[FightAIIntention.Retreat] = retreatBase * Mathf.Lerp(0.9f, 0.3f, aggression);
 
-        scores[FightAIIntention.DashApproach] = ctx.Distance > idealDistance * 1.3f ? Mathf.Lerp(0.05f, 0.55f, aggression) : 0f;
-        scores[FightAIIntention.RunApproach]  = ctx.Distance > idealDistance * 1.8f ? Mathf.Lerp(0.03f, 0.45f, aggression) : 0f;
+        // Both now become a real charge (FighterMovement) that can tackle — gated by a cooldown and
+        // scaled down so the AI charges occasionally instead of spamming it.
+        float charge = Time.time >= _nextChargeTime ? (_aiConfig != null ? _aiConfig.chargeScoreMultiplier : 0.45f) : 0f;
+        scores[FightAIIntention.DashApproach] = ctx.Distance > idealDistance * 1.3f ? Mathf.Lerp(0.05f, 0.55f, aggression) * charge : 0f;
+        scores[FightAIIntention.RunApproach]  = ctx.Distance > idealDistance * 1.8f ? Mathf.Lerp(0.03f, 0.45f, aggression) * charge : 0f;
 
         // Defense — see DetectIncomingAttack's own doc
         var incoming = DetectIncomingAttack(ctx);
@@ -439,6 +451,8 @@ public class FighterAI : MonoBehaviour
     {
         StopExecuting();
         float dirSign = ApproachSign();
+        if (intention == FightAIIntention.DashApproach || intention == FightAIIntention.RunApproach)
+            _nextChargeTime = Time.time + ChargeCooldown();
 
         IEnumerator routine = intention switch
         {

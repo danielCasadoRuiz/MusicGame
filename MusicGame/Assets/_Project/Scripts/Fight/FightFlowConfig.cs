@@ -13,13 +13,18 @@ public class FightFlowConfig : ScriptableObject
     [Header("Opponent Selection (roulette)")]
     [Tooltip("Total wall-clock time the roulette spends stepping through opponents before " +
              "settling on the final one (excludes finalOpponentHoldDuration below).")]
-    public float opponentSelectionDuration = 4f;
+    public float opponentSelectionDuration = 6f;
     [Tooltip("How long each intermediate highlight (and its music snippet) stays up before " +
-             "moving to the next opponent.")]
-    public float selectionStepDuration = 0.25f;
+             "moving to the next opponent — long enough to actually hear each fragment.")]
+    public float selectionStepDuration = 0.5f;
     [Tooltip("How long the FINAL opponent stays highlighted, clearly as the definitive pick, " +
              "before transitioning to the Versus screen.")]
     public float finalOpponentHoldDuration = 1.5f;
+
+    [Header("Combat music")]
+    [Tooltip("Seconds the combat track fades out when leaving the fight (Continue / Replay Song / " +
+             "Main Menu) instead of stopping abruptly. 0 = immediate stop.")]
+    [Min(0f)] public float combatMusicFadeOutSeconds = 1.5f;
 
     [Header("Versus")]
     public float versusDuration = 2.5f;
