@@ -51,7 +51,8 @@ public class NextSongTransitionController : MonoBehaviour
 
     private FightFlowConfig _config;
     private SongSelectionService _service;
-    private readonly INextSongSelector _selector = new RandomNextSongSelector();
+    // Similarity route over the remaining (uncompleted) playable catalog — see SongProgression.
+    private readonly INextSongSelector _selector = new SimilarityRouteNextSongSelector();
 
     private Coroutine _routine;
 
@@ -163,7 +164,10 @@ public class NextSongTransitionController : MonoBehaviour
         var nextLocation = _selector.SelectNext(catalog, previousDisplayName);
         if (nextLocation == null)
         {
-            Debug.LogWarning("[NextSongTransitionController] No song available in the 'Song' catalog — cannot continue. Falling back to Main Menu.");
+            // Catalog complete (every playable song done) is a normal end state, not an error: the
+            // Main Menu shows it (SongProgression.CatalogComplete / SongCatalogCompletedEvent).
+            if (SongProgression.CatalogComplete) Debug.Log("[NextSongTransitionController] Playable catalog complete — back to Main Menu.");
+            else Debug.LogWarning("[NextSongTransitionController] No song available in the 'Song' catalog — cannot continue. Falling back to Main Menu.");
             _root.gameObject.SetActive(false);
             FightMusicController.Instance?.Stop();
             AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu);

@@ -47,6 +47,9 @@ public class SentisMusicTagger : IMusicTagger
         "electro","heavy metal","Progressive rock","60s","rnb","indie pop","sad","House","happy",
     };
 
+    /// <summary>The fixed 50-tag vocabulary, in model order (SongSimilarityVector's tag block).</summary>
+    public static System.Collections.Generic.IReadOnlyList<string> TagLabels => Labels;
+
     private readonly AudioAnalysisConfig _config;
     private readonly float[]  _melFilterbank; // flattened [MelBins * FreqBins], row-major
     private readonly Model    _model;

@@ -15,9 +15,11 @@ using UnityEngine.UI;
 /// Tools > MusicGame > Build UI Prefabs) — falls back to the old procedural build only if that
 /// hasn't been run yet, same pattern as GameplayHUD/PauseController.
 ///
-/// PLAY goes to GameFlowState.SongSelection — SongSelectionController's own PLAY button is the one
-/// that actually advances to SongAnalysis (section 9 of the plan: selecting a song must never
-/// auto-start analysis by itself, a separate PLAY button does that).
+/// No progress yet: PLAY → Song Selection (the first song is always chosen manually; it becomes the
+/// similarity seed). With progress: CONTINUE picks the next uncompleted song on the similarity route
+/// (SongProgression) and goes straight to SongAnalysis — no selector; SELECT SONG opens the selector
+/// (a manual choice there becomes the new seed). Both feed the same SongSelectionService →
+/// SongAnalysis pipeline. When every playable song is completed, CONTINUE shows "catalog complete".
 ///
 /// Settings is a simple volume-only panel for now (section 7: "volum per ara") — bound to the real
 /// global AudioListener.volume, persisted via PlayerPrefs so it survives between sessions; not a
@@ -36,6 +38,11 @@ public class MainMenuController : MonoBehaviour
     private Slider        _volumeSlider;
     private TextMeshProUGUI _playLabel;     // "PLAY" first launch, "CONTINUE" once a progression save exists
     private TextMeshProUGUI _profileText;   // persistent level / XP / lives
+    private Button          _selectSongButton; // with progress only: open the selector manually
+    private TextMeshProUGUI _menuStatusText;   // "catalog complete" / load failure
+    private readonly System.Collections.Generic.List<RectTransform> _buttonStack = new(); // top → bottom
+    private SongSelectionService _songService;
+    private bool _continuing;
 
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
 
@@ -78,6 +85,7 @@ public class MainMenuController : MonoBehaviour
         view.playButton.onClick.AddListener(OnPlayClicked);
         view.settingsButton.onClick.AddListener(OnSettingsClicked);
         _playLabel = view.playButtonLabel;
+        _selectSongButton = CloneButton(view.settingsButton, "SelectSongButton", "MainMenu.SelectSong", OnSelectSongClicked);
         // The prefab predates the Rivals collection: add its button + profile line next to Settings.
         var rivals = Instantiate(view.settingsButton, view.settingsButton.transform.parent);
         rivals.name = "RivalsButton";
@@ -88,6 +96,9 @@ public class MainMenuController : MonoBehaviour
         var rivalsLabel = rivals.GetComponentInChildren<TextMeshProUGUI>();
         if (rivalsLabel != null) rivalsLabel.text = Loc.Get("MainMenu.Rivals");
         BuildProfileText(view.root.GetComponent<RectTransform>());
+        BuildMenuStatus(view.root.GetComponent<RectTransform>());
+        _buttonStack.AddRange(new[] { view.playButton.GetComponent<RectTransform>(), _selectSongButton.GetComponent<RectTransform>(),
+                                      rivalsRt, view.settingsButton.GetComponent<RectTransform>(), view.quitButton.GetComponent<RectTransform>() });
         view.quitButton.onClick.AddListener(OnQuitClicked);
         view.closeButton.onClick.AddListener(() => _settingsPanel.gameObject.SetActive(false));
 
@@ -149,6 +160,15 @@ public class MainMenuController : MonoBehaviour
         _playLabel = playLabel;
         y -= btnH + gap;
 
+        var selectBtn = UIFactory.CreateButton("SelectSongButton", _root, Loc.Get("MainMenu.SelectSong"), out var selectLabel);
+        UIFactory.SetBox(selectBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, y), new Vector2(btnW, btnH));
+        selectBtn.onClick.AddListener(OnSelectSongClicked);
+        selectBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        selectLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        _selectSongButton = selectBtn;
+        y -= btnH + gap;
+
         var rivalsBtn = UIFactory.CreateButton("RivalsButton", _root, Loc.Get("MainMenu.Rivals"), out var rivalsLabel);
         UIFactory.SetBox(rivalsBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, y), new Vector2(btnW, btnH));
@@ -176,6 +196,10 @@ public class MainMenuController : MonoBehaviour
         _quitButton.gameObject.SetActive(!PlatformService.IsMobile);
 
         BuildProfileText(_root);
+        BuildMenuStatus(_root);
+        _buttonStack.AddRange(new[] { playBtn.GetComponent<RectTransform>(), selectBtn.GetComponent<RectTransform>(),
+                                      rivalsBtn.GetComponent<RectTransform>(), settingsBtn.GetComponent<RectTransform>(),
+                                      quitBtn.GetComponent<RectTransform>() });
         BuildSettingsPanel();
 
         _root.gameObject.SetActive(false);
@@ -190,11 +214,54 @@ public class MainMenuController : MonoBehaviour
         _profileText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
     }
 
+    // Small helper for the prefab path (the baked prefab predates SELECT SONG / Rivals).
+    private Button CloneButton(Button template, string name, string labelKey, UnityEngine.Events.UnityAction onClick)
+    {
+        var b = Instantiate(template, template.transform.parent);
+        b.name = name;
+        b.onClick = new Button.ButtonClickedEvent();
+        b.onClick.AddListener(onClick);
+        var label = b.GetComponentInChildren<TextMeshProUGUI>();
+        if (label != null) label.text = Loc.Get(labelKey);
+        return b;
+    }
+
+    private void BuildMenuStatus(RectTransform parent)
+    {
+        _menuStatusText = UIFactory.CreateText("MenuStatus", parent, "", 18, new Color(0.45f, 0.85f, 0.5f), TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(_menuStatusText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, 60f), new Vector2(700f, 32f));
+        _menuStatusText.gameObject.SetActive(false);
+    }
+
+    private void SetMenuStatus(string text)
+    {
+        if (_menuStatusText == null) return;
+        _menuStatusText.text = text ?? "";
+        _menuStatusText.gameObject.SetActive(!string.IsNullOrEmpty(text));
+    }
+
+    // Visible buttons stacked top → bottom from the PLAY slot (SELECT SONG only exists with progress).
+    private void LayoutButtons()
+    {
+        if (_buttonStack.Count == 0 || _buttonStack[0] == null) return;
+        float x = _buttonStack[0].anchoredPosition.x, y = _buttonStack[0].anchoredPosition.y, step = _buttonStack[0].sizeDelta.y + 18f;
+        foreach (var rt in _buttonStack)
+        {
+            if (rt == null || !rt.gameObject.activeSelf) continue;
+            rt.anchoredPosition = new Vector2(x, y);
+            y -= step;
+        }
+    }
+
     private void RefreshProgressUI()
     {
         var progress = PlayerProgressService.Instance;
         bool hasSave = progress != null && progress.HasSave;
         if (_playLabel != null) _playLabel.text = Loc.Get(hasSave ? "MainMenu.Continue" : "MainMenu.Play");
+        if (_selectSongButton != null) _selectSongButton.gameObject.SetActive(hasSave);
+        LayoutButtons();
+        SetMenuStatus(hasSave && SongProgression.CatalogComplete ? Loc.Get("MainMenu.CatalogComplete") : null);
         if (_profileText == null) return;
         _profileText.gameObject.SetActive(hasSave);
         if (!hasSave) return;
@@ -258,8 +325,9 @@ public class MainMenuController : MonoBehaviour
 
     // ── Actions ─────────────────────────────────────────────────────────────────
 
-    // PLAY (first launch) starts a progression save right away, so the next launch says CONTINUE;
-    // CONTINUE keeps level / XP / lives / rival collection — every run still gets a fresh RunSession.
+    // PLAY (first launch) starts a progression save right away, so the next launch says CONTINUE,
+    // and opens the selector (the first song is chosen manually). CONTINUE keeps level / XP / lives /
+    // rival collection / song history and auto-picks the next song — every run still gets a fresh RunSession.
     private void OnPlayClicked()
     {
         var progress = PlayerProgressService.Instance;
@@ -267,8 +335,46 @@ public class MainMenuController : MonoBehaviour
         {
             progress.Save();
             Debug.Log("[PlayerProgress] New progression profile created (Play).");
+            AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongSelection);
+            return;
         }
-        AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongSelection);
+        if (progress == null) { AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongSelection); return; }
+        if (!_continuing) StartCoroutine(ContinueRoutine());
+    }
+
+    private void OnSelectSongClicked() => AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongSelection);
+
+    // CONTINUE: next uncompleted song on the similarity route -> the same load + SongAnalysis path
+    // Song Selection uses (SongSelectionService + AddressableSongSource), without showing the selector.
+    private System.Collections.IEnumerator ContinueRoutine()
+    {
+        _continuing = true;
+        System.Collections.Generic.List<UnityEngine.ResourceManagement.ResourceLocations.IResourceLocation> catalog = null;
+        yield return SongProgression.LoadCatalog(list => catalog = list);
+
+        var status = SongProgression.ResolveNext(SongProgression.Ids(catalog), out string songId);
+        var location = status == NextSongStatus.Found ? SongProgression.Find(catalog, songId) : null;
+        if (location == null)
+        {
+            _continuing = false;
+            if (status == NextSongStatus.NoSeed)
+                AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongSelection); // no preference yet (old save): choose one
+            else
+                SetMenuStatus(Loc.Get(status == NextSongStatus.CatalogComplete ? "MainMenu.CatalogComplete" : "SongSelection.LoadFailed"));
+            yield break;
+        }
+
+        // Same order as the selector PLAY: the Analyzing screen appears at once, the clip loads underneath.
+        AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongAnalysis);
+        _songService ??= GetComponent<SongSelectionService>() ?? gameObject.AddComponent<SongSelectionService>();
+        yield return _songService.SelectSong(new AddressableSongSource(location), null, ok =>
+        {
+            if (ok) return;
+            Debug.LogWarning($"[MainMenuController] CONTINUE: failed to load '{songId}' - back to Main Menu.");
+            AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu);
+            SetMenuStatus(Loc.Get("SongSelection.LoadFailed"));
+        });
+        _continuing = false;
     }
 
     private void OnRivalsClicked() => RivalCollectionController.Instance?.Open();

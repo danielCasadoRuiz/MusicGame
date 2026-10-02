@@ -195,7 +195,11 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
     public int RegisterCompletedSong()
     {
         int tier = Progression.RegisterCompletedSong();
-        PlayerProgressService.Instance?.NotifyTierProgressChanged(); // persisted immediately
+        // Song history: only PLAYABLE CATALOG songs (a local file has LocalFilePath and no stable id).
+        var song = SelectedSong;
+        if (song.HasValue && string.IsNullOrEmpty(song.Value.LocalFilePath))
+            PlayerProgressService.Instance?.MarkSongCompleted(Run?.SongId ?? song.Value.DisplayName, save: false);
+        PlayerProgressService.Instance?.NotifyTierProgressChanged(); // persisted immediately (tier + song history)
         return tier;
     }
 
@@ -219,7 +223,14 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
 
     private void OnEnable()
     {
-        _onProfileReady = e => Profile = e.Profile;
+        _onProfileReady = e =>
+        {
+            Profile = e.Profile;
+            // A full analysis is the moment to (re)cache this catalog song's similarity vector.
+            var sel = SelectedSong;
+            if (sel.HasValue && string.IsNullOrEmpty(sel.Value.LocalFilePath))
+                SongSimilarityCache.Store(sel.Value.DisplayName, e.Profile);
+        };
         _onGameEnded = e =>
         {
             RunnerResults = RunnerResultsBuilder.Build(e, _fightStatsConfig);

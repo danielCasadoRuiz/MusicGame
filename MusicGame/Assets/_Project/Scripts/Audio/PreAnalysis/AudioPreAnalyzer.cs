@@ -249,6 +249,13 @@ public class AudioPreAnalyzer : MonoBehaviour
 
     // ── Offline analyzer pipeline ──────────────────────────────────────────────
 
+    /// <summary>Recomputes the derived (non-cached) features of a cached profile — no audio, no ML
+    /// (SongSimilarityCache's lazy/editor path for a SongCache JSON).</summary>
+    public static void ComputeDerivedFeatures(SongProfile profile, AudioAnalysisConfig config)
+    {
+        if (profile != null && config != null) RunOfflineAnalyzers(profile, config);
+    }
+
     private static void RunOfflineAnalyzers(SongProfile profile, AudioAnalysisConfig config)
     {
         if (!config.advancedEnabled) return;

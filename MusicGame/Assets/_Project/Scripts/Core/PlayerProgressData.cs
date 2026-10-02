@@ -15,7 +15,7 @@ using System.Collections.Generic;
 [System.Serializable]
 public class PlayerProgressData
 {
-    public const int CurrentVersion = 1;
+    public const int CurrentVersion = 2; // 2: song history (completedSongIds, seedSongId, songRoute)
 
     public int version = CurrentVersion;
 
@@ -33,6 +33,24 @@ public class PlayerProgressData
     public List<DefeatedOpponentRecord> defeatedOpponents = new();
     /// <summary>Total fights won (informational / future unlocks).</summary>
     public int fightsWon;
+
+    // ── Song history (v2) — stable song ids = the playable song's Addressable address ──────────
+    /// <summary>Playable catalog songs completed (Runner → Fight WON), in completion order. Never
+    /// repeated in normal progression. Ids no longer in the catalog are kept and simply ignored.</summary>
+    public List<string> completedSongIds = new();
+    /// <summary>The player's current preference reference: the last MANUALLY chosen catalog song.</summary>
+    public string seedSongId = "";
+    /// <summary>Cached similarity route around seedSongId (remaining songs at build time) — see SongProgression.</summary>
+    public SongRouteData songRoute = new();
+}
+
+/// <summary>Ordered song ids (most similar to the seed first) + the signature of the catalog /
+/// vector set it was built from; a different signature means "rebuild".</summary>
+[System.Serializable]
+public class SongRouteData
+{
+    public List<string> songIds = new();
+    public string signature = "";
 }
 
 /// <summary>One rival's defeated versions: stable OpponentDefinition.id + the exact

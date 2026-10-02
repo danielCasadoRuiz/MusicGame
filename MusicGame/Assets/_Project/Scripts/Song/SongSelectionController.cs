@@ -245,6 +245,8 @@ public class SongSelectionController : MonoBehaviour
             var background = row.GetComponent<Image>();
             _rowBackgrounds.Add(background);
             row.onClick.AddListener(() => SelectCatalogSong(index));
+            _rowButtons.Add(row);
+            _rowLabels.Add(label);
 
             // Play/Pause on the card itself — selects the song too (see OnCardPlayPause).
             var play = UIFactory.CreateButton("PlayPause", row.GetComponent<RectTransform>(), Loc.Get("SongSelection.CardPlay"), out var playLabel);
@@ -252,12 +254,49 @@ public class SongSelectionController : MonoBehaviour
                 new Vector2(-8f, 0f), new Vector2(92f, SongRowHeight - 14f));
             playLabel.fontSize = 13;
             play.onClick.AddListener(() => OnCardPlayPause(index));
+            _cardPlayButtons.Add(play);
+
+            // Shown instead of PREVIEW once this song is completed (see RefreshCompletedRows).
+            var badge = UIFactory.CreateText("CompletedBadge", row.GetComponent<RectTransform>(), Loc.Get("SongSelection.Completed"), 13,
+                                             CompletedBadgeColor, TextAlignmentOptions.Right, FontStyles.Bold);
+            UIFactory.SetBox(badge.rectTransform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
+                new Vector2(-12f, 0f), new Vector2(150f, SongRowHeight - 14f));
+            _completedBadges.Add(badge);
             play.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
             playLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
             UIFactory.SetBox(label.rectTransform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), new Vector2(-50f, 0f), new Vector2(-124f, 0f));
             _cardPlayLabels.Add(playLabel);
         }
+        RefreshCompletedRows();
         RefreshPreviewButton();
+    }
+
+    // ── Completed songs (PlayerProgress.completedSongIds) — visible, dimmed, not selectable ──────
+
+    private static readonly Color CompletedBadgeColor = new(0.45f, 0.85f, 0.5f, 0.9f);
+    private readonly List<Button> _rowButtons = new();
+    private readonly List<Button> _cardPlayButtons = new();
+    private readonly List<TextMeshProUGUI> _rowLabels = new();
+    private readonly List<TextMeshProUGUI> _completedBadges = new();
+
+    private bool IsCompletedRow(int index) =>
+        index >= 0 && index < _entries.Count && SongProgression.IsCompleted(_entries[index].PrimaryKey);
+
+    /// <summary>Completed songs stay in the list (progress through the catalog is visible) but are
+    /// dimmed, marked COMPLETED, and their row + PREVIEW are disabled. Re-run on every Show.</summary>
+    private void RefreshCompletedRows()
+    {
+        for (int i = 0; i < _rowButtons.Count && i < _entries.Count; i++)
+        {
+            bool done = IsCompletedRow(i);
+            _rowButtons[i].interactable = !done;
+            _cardPlayButtons[i].gameObject.SetActive(!done);
+            _completedBadges[i].gameObject.SetActive(done);
+            _rowLabels[i].text = done ? $"<alpha=#66>{_entries[i].PrimaryKey}" : _entries[i].PrimaryKey;
+        }
+        if (IsCompletedRow(_selectedCatalogIndex)) { StopPreview(); _selectedCatalogIndex = -1; }
+        RefreshRowHighlight(CurrentAccentColor());
+        RefreshPlayButtonInteractable();
     }
 
     private void BuildStreamingRow()
@@ -313,7 +352,7 @@ public class SongSelectionController : MonoBehaviour
     private void OnCardPlayPause(int index)
     {
         var player = SongPreviewPlayer.Instance;
-        if (player == null || index < 0 || index >= _entries.Count) return;
+        if (player == null || index < 0 || index >= _entries.Count || IsCompletedRow(index)) return;
         var location = _entries[index];
         if (player.IsPlaying && player.PlayingId == location.PrimaryKey) { player.Stop(); return; }
         SelectCatalogSong(index); // stops the previous preview when the selection changes
@@ -354,6 +393,7 @@ public class SongSelectionController : MonoBehaviour
     {
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
+        RefreshCompletedRows();
         RefreshPlayButtonInteractable();
         if (SongPreviewPlayer.Instance != null)
         {
@@ -373,6 +413,7 @@ public class SongSelectionController : MonoBehaviour
 
     private void SelectCatalogSong(int index)
     {
+        if (IsCompletedRow(index)) return; // completed songs are not selectable for normal progression
         if (index != _selectedCatalogIndex) StopPreview(); // a different song: the old preview stops
         _selectedCatalogIndex = index;
         _selectedLocalInfo = null;
@@ -459,6 +500,8 @@ public class SongSelectionController : MonoBehaviour
         AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongAnalysis);
 
         var location = _entries[_selectedCatalogIndex];
+        // A manual choice is the player's new preference: future CONTINUE follows songs similar to it.
+        SongProgression.OnManualSelection(location.PrimaryKey, SongProgression.Ids(_entries));
         StartCoroutine(_service.SelectSong(new AddressableSongSource(location), null, success =>
         {
             _isLoading = false;

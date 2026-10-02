@@ -245,6 +245,9 @@ public static class LocalizationSetup
         ("GameStyle.Dreamy", "DREAMY", "SOMIADORA"),
         ("GameStyle.Dark", "DARK", "FOSCA"),
         ("GameStyle.Experimental", "EXPERIMENTAL", "EXPERIMENTAL"),
+        ("MainMenu.SelectSong", "SELECT SONG", "TRIA CANÇÓ"),
+        ("MainMenu.CatalogComplete", "CATALOG COMPLETE — every song completed", "CATÀLEG COMPLETAT — totes les cançons superades"),
+        ("SongSelection.Completed", "COMPLETED", "COMPLETADA"),
     };
 
     [MenuItem("Tools/MusicGame/Setup Localization")]

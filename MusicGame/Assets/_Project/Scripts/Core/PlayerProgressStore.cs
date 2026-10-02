@@ -71,6 +71,12 @@ public static class PlayerProgressStore
         foreach (var r in data.defeatedOpponents) r.levels ??= new System.Collections.Generic.List<int>();
         data.xp = Mathf.Max(0, data.xp);
         data.extraLives = Mathf.Max(0, data.extraLives);
-        // if (data.version < 2) { ...convert... }   ← future migrations go here
+        // v1 → v2: song history did not exist — empty history, no seed, no route (rebuilt on demand).
+        data.completedSongIds ??= new System.Collections.Generic.List<string>();
+        data.completedSongIds.RemoveAll(string.IsNullOrEmpty);
+        data.seedSongId ??= "";
+        data.songRoute ??= new SongRouteData();
+        data.songRoute.songIds ??= new System.Collections.Generic.List<string>();
+        data.songRoute.signature ??= "";
     }
 }

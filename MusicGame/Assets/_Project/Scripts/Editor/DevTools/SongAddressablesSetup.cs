@@ -8,7 +8,8 @@ using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
 
 /// <summary>
-/// One-shot Editor tool: marks every audio clip under Assets/_Project/Audio/Music as Addressable,
+/// One-shot Editor tool: marks every audio clip under Assets/_Project/Audio/Music (and ANY subfolder —
+/// see PlayableSongScope, the single definition of "playable song") as Addressable,
 /// in its OWN "Songs" group (never dumped into "Default Local Group" alongside everything else —
 /// this is what makes it trivial to later flip JUST this group's Build/Load path to Remote / Unity
 /// Cloud Content Delivery without reorganizing anything), tagged with the "Song" label.
@@ -22,12 +23,17 @@ using UnityEngine;
 /// Safe to re-run any time the Music folder's contents change — already-Addressable clips are moved
 /// (not duplicated) if they end up in a different group, and their address is refreshed from the
 /// FriendlyNames table below.
+///
+/// CLEANUP (conservative): anything in the "Songs" group that is NOT under the Music root (e.g. the
+/// composer/opponent MP3s an older layout put there) is removed from THIS group only; an asset outside
+/// Music carrying the "Song" label in ANOTHER group just loses the label. Composer music stays packaged
+/// with the opponent content (OpponentDefinition.songs direct references), never as a playable song.
 /// </summary>
 public static class SongAddressablesSetup
 {
     private const string GroupName    = "Songs";
     private const string Label        = "Song";
-    private const string MusicFolder  = "Assets/_Project/Audio/Music";
+    private const string MusicFolder  = PlayableSongScope.MusicRoot;
 
     // File name (without extension) → friendly display name shown in Song Selection. Anything
     // found in the Music folder that ISN'T listed here still gets added (falls back to its own file
@@ -65,7 +71,9 @@ public static class SongAddressablesSetup
             schema.BundleMode = BundledAssetGroupSchema.BundlePackingMode.PackTogether;
         }
 
-        var guids = AssetDatabase.FindAssets("t:AudioClip", new[] { MusicFolder });
+        // 1. Playable songs: Music root + recursive subfolders ONLY (never a project-wide AudioClip search).
+        var guids = PlayableSongScope.FindPlayableClipGuids();
+        var playable = new System.Collections.Generic.HashSet<string>(guids);
         foreach (var guid in guids)
         {
             string path     = AssetDatabase.GUIDToAssetPath(guid);
@@ -76,10 +84,32 @@ public static class SongAddressablesSetup
             entry.SetLabel(Label, true, false, false);
         }
 
+        // 2. Clean stale playable entries from outside Music (only this group / only the label).
+        int removed = 0, unlabeled = 0;
+        foreach (var entry in group.entries.ToList())
+        {
+            if (playable.Contains(entry.guid) || PlayableSongScope.IsPlayablePath(entry.AssetPath)) continue;
+            Debug.Log($"[SongAddressablesSetup] Removed non-playable '{entry.AssetPath}' from the '{GroupName}' group.");
+            settings.RemoveAssetEntry(entry.guid, false);
+            removed++;
+        }
+        foreach (var g in settings.groups)
+        {
+            if (g == null || g == group) continue;
+            foreach (var entry in g.entries)
+                if (entry.labels.Contains(Label) && !PlayableSongScope.IsPlayablePath(entry.AssetPath))
+                {
+                    entry.SetLabel(Label, false, false, false);
+                    Debug.Log($"[SongAddressablesSetup] Removed the '{Label}' label from '{entry.AssetPath}' (group '{g.Name}', entry kept).");
+                    unlabeled++;
+                }
+        }
+
         settings.SetDirty(AddressableAssetSettings.ModificationEvent.BatchModification, null, true, true);
         AssetDatabase.SaveAssets();
 
-        Debug.Log($"[SongAddressablesSetup] Done — {guids.Length} audio clip(s) from {MusicFolder} are " +
+        Debug.Log($"[SongAddressablesSetup] Cleanup: {removed} non-Music entr(y/ies) removed from '{GroupName}', {unlabeled} label(s) removed elsewhere.");
+        Debug.Log($"[SongAddressablesSetup] Done — {guids.Count} audio clip(s) from {MusicFolder} are " +
                   $"now Addressable in the '{GroupName}' group with the '{Label}' label. Re-run any time " +
                   "a song is added to (or removed from) that folder.");
     }

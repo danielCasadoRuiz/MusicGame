@@ -186,6 +186,38 @@ public class PlayerProgressService : MonoBehaviour
         var record = _data.defeatedOpponents.Find(r => r.opponentId == opponentId);
         return record != null ? record.levels : (IReadOnlyList<int>)System.Array.Empty<int>();
     }
+
+    // ── Song history (ids only — vectors/analysis live in SongSimilarityCache) ───────────────
+
+    public IReadOnlyList<string> CompletedSongIds => _data.completedSongIds;
+    public bool IsSongCompleted(string songId) => !string.IsNullOrEmpty(songId) && _data.completedSongIds.Contains(songId);
+    public string SeedSongId => _data.seedSongId;
+    public SongRouteData SongRoute => _data.songRoute;
+
+    /// <summary>Adds a playable song to the completed history. `save` false lets the caller batch it
+    /// with another change into one save (GameSession.RegisterCompletedSong).</summary>
+    public bool MarkSongCompleted(string songId, bool save = true)
+    {
+        if (string.IsNullOrEmpty(songId) || _data.completedSongIds.Contains(songId)) return false;
+        _data.completedSongIds.Add(songId);
+        Debug.Log($"[PlayerProgress] Song completed: '{songId}' ({_data.completedSongIds.Count} total)");
+        if (save) Changed("song");
+        return true;
+    }
+
+    /// <summary>New preference seed (a manual catalog choice) — the cached route is invalidated.</summary>
+    public void SetSongSeed(string songId)
+    {
+        _data.seedSongId = songId ?? "";
+        _data.songRoute = new SongRouteData();
+        Changed("seed");
+    }
+
+    public void SetSongRoute(List<string> songIds, string signature)
+    {
+        _data.songRoute = new SongRouteData { songIds = songIds ?? new List<string>(), signature = signature ?? "" };
+        Changed("route");
+    }
 }
 
 /// <summary>Any persistent progression value changed (already saved). Reason: life+, life-, xp, tier, win, rival-unlock.</summary>

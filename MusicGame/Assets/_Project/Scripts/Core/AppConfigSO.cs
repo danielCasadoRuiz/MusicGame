@@ -26,6 +26,8 @@ public class AppConfigSO : ScriptableObject
     [Tooltip("Weights mapping raw music tags + analysis features to the game-facing GameMusicStyle " +
              "(MusicStyleResolver). Optional — without an asset the built-in default rules apply.")]
     public MusicStyleRulesSO musicStyleRules;
+    [Tooltip("Pre-computed similarity vectors of the PLAYABLE catalog (Tools > MusicGame > Song Similarity > Bake). Optional: missing vectors are cached at runtime after analysis.")]
+    public SongSimilarityCatalogSO songSimilarity;
 
     [Tooltip("EDITOR ONLY (see PlatformService) — forces mobile/touch UI and input while testing in " +
              "the Editor, where Application.isMobilePlatform is always false. Ignored in real builds, " +
