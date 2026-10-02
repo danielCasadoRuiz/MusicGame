@@ -1,0 +1,43 @@
+{
+  "targetId": "Mozart_1",
+  "composer": "W. A. Mozart",
+  "canonicalTitle": "Eine kleine Nachtmusik",
+  "catalog": "K. 525",
+  "targetMovement": "I. Allegro",
+  "targetInstrumentation": "String orchestra",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=2230",
+  "mutopiaId": "Mutopia-2018/08/04-2230",
+  "pageTitle": "Eine Kleine Nachtmusik",
+  "pageComposer": "W. A. Mozart",
+  "opus": "KV525",
+  "sourceInstrumentation": "Orchestra: Violins, Viola, Cello",
+  "edition": "Breitkopf & Härtel, 1883",
+  "licence": "Public Domain",
+  "licenceStatus": "OK_PD",
+  "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "attribution": "Mike Blackstock",
+  "lastUpdated": "2018/Aug/04.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/MozartWA/KV525/MozartWA-KV525/MozartWA-KV525-mids.zip",
+      "file": "MozartWA-KV525-mids.zip",
+      "sha256": "aa37111c9f339532f26c29d6648bde8c39d92d785f87d14a33e9e9914fa472a7",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/MozartWA/KV525/MozartWA-KV525/MozartWA-KV525-lys.zip",
+      "file": "MozartWA-KV525-lys.zip",
+      "sha256": "911a4a0909174b6bae6068d3f4d2cb73e615f24f5d46ca2663336f2049bf4b24",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "MozartWA-KV525-mids.zip",
+    "member": "MozartWA-KV525-mov-01.mid",
+    "evidence": "mov-01..04 = lys folders 01_allegro / 02_andante / 03_allegretto / 04_allegro; target I. Allegro = mov-01",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Mozart_1\\source.mid",
+    "sha256": "7a6f71b2b7763524a56322723c774d584af006dd980289fce60ebd93a91a16d7"
+  }
+}

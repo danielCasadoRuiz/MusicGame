@@ -1,0 +1,43 @@
+{
+  "targetId": "Vivaldi_3",
+  "composer": "Antonio Vivaldi",
+  "canonicalTitle": "The Four Seasons  Autumn",
+  "catalog": "RV 293",
+  "targetMovement": "I. Allegro",
+  "targetInstrumentation": "Solo violin + strings + continuo",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=350",
+  "mutopiaId": "Mutopia-2010/02/08-350",
+  "pageTitle": "Autumno / Autumn",
+  "pageComposer": "A. Vivaldi",
+  "opus": "Op. 8, No. 3",
+  "sourceInstrumentation": "Violin, Strings",
+  "edition": "Performers' Facsimiles",
+  "licence": "Creative Commons Attribution-ShareAlike 3.0",
+  "licenceStatus": "OK_CC_BY_SA",
+  "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+  "attribution": "smailliw (at) gmail.com",
+  "lastUpdated": "2010/Feb/08.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/autumn/autumn-mids.zip",
+      "file": "autumn-mids.zip",
+      "sha256": "df11044ca3013943f017dea1c5c8a20b5d0aad7d700710928bde9a136239ef09",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/autumn/autumn-lys.zip",
+      "file": "autumn-lys.zip",
+      "sha256": "5cbf89fc9bb7a7139c869a72d6f8e8b7e44135bbc7c744ed38cdc4ec2ba2527d",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "autumn-mids.zip",
+    "member": "autumn-score.mid",
+    "evidence": "autumn-score.ly pieces: Allegro, Adagio Molto, Allegro; 1st \\score = autumn-score.mid",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Vivaldi_3\\source.mid",
+    "sha256": "f5a7f67ded1ba8ce845dbea3da395e1daf8e23ae3871e730fe11ab527770c401"
+  }
+}

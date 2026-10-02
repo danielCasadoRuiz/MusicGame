@@ -1,0 +1,43 @@
+{
+  "targetId": "Vivaldi_4",
+  "composer": "Antonio Vivaldi",
+  "canonicalTitle": "The Four Seasons  Winter",
+  "catalog": "RV 297",
+  "targetMovement": "I. Allegro non molto",
+  "targetInstrumentation": "Solo violin + strings + continuo",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=351",
+  "mutopiaId": "Mutopia-2010/02/08-351",
+  "pageTitle": "L'Inverno / Winter",
+  "pageComposer": "A. Vivaldi",
+  "opus": "Op. 8, No. 4",
+  "sourceInstrumentation": "Violin, String",
+  "edition": "Performers' Facsimiles",
+  "licence": "Creative Commons Attribution-ShareAlike 3.0",
+  "licenceStatus": "OK_CC_BY_SA",
+  "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+  "attribution": "smailliw (at) gmail.com",
+  "lastUpdated": "2010/Feb/08.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/winter/winter-mids.zip",
+      "file": "winter-mids.zip",
+      "sha256": "c130e79b4ab861a3d9210c30cff432014284c675ad8a218f15e8bd7543b4a950",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/winter/winter-lys.zip",
+      "file": "winter-lys.zip",
+      "sha256": "f44b7cc8ec983ce1ab87dce2952d4ec0c07e96471868e2f5a7fab2a6dabc5745",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "winter-mids.zip",
+    "member": "winter-score.mid",
+    "evidence": "winter-score.ly pieces: Allegro non Molto, Largo, Allegro; 1st \\score = winter-score.mid",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Vivaldi_4\\source.mid",
+    "sha256": "4265d2320e01e8eb4934d7dd4a798c91e9a98bca58b35b9bd5c8db986a57e093"
+  }
+}

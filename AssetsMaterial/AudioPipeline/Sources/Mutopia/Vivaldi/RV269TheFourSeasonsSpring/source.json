@@ -1,0 +1,43 @@
+{
+  "targetId": "Vivaldi_1",
+  "composer": "Antonio Vivaldi",
+  "canonicalTitle": "The Four Seasons  Spring",
+  "catalog": "RV 269",
+  "targetMovement": "I. Allegro",
+  "targetInstrumentation": "Solo violin + strings + continuo",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=301",
+  "mutopiaId": "Mutopia-2010/02/08-301",
+  "pageTitle": "La Primavera / Spring",
+  "pageComposer": "A. Vivaldi",
+  "opus": "Op. 8, No. 1",
+  "sourceInstrumentation": "Violin, Strings",
+  "edition": "Performers' Facsimiles",
+  "licence": "Creative Commons Attribution-ShareAlike 3.0",
+  "licenceStatus": "OK_CC_BY_SA",
+  "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+  "attribution": "smailliw (at) gmail.com",
+  "lastUpdated": "2010/Feb/08.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/spring/spring-mids.zip",
+      "file": "spring-mids.zip",
+      "sha256": "1e3d57ffee2dc77a4d06d777f01633d3726c57221b35661d6093095ca8cef3fd",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/spring/spring-lys.zip",
+      "file": "spring-lys.zip",
+      "sha256": "3a87fa93faace5b2d6689fe6d39b3ee32dde6649d924a394f6b05239b22cbab9",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "spring-mids.zip",
+    "member": "spring-score.mid",
+    "evidence": "spring-score.ly pieces in order: Allegro, Largo, Danza Pastorale; 1st \\score = spring-score.mid",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Vivaldi_1\\source.mid",
+    "sha256": "9f9eaaaac0f1a6b0e1a9af86ff2ff65a0ff786dd4fa8d8b8eda19f8d564e35e0"
+  }
+}

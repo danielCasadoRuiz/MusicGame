@@ -1,0 +1,59 @@
+{
+  "targetId": "Mozart_3",
+  "composer": "W. A. Mozart",
+  "work": "Piano Sonata No. 11 – Rondo alla Turca",
+  "catalog": "K. 331",
+  "movement": "III. Alla Turca",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=108",
+  "mutopiaId": "Mutopia-2015/08/13-108",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/MozartWA/KV331/KV331_3_RondoAllaTurca/KV331_3_RondoAllaTurca.mid"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "sourceAttribution": "Typeset/transcribed by Rune Zedeler and Chris Sawer for the Mutopia Project",
+  "sourceEdition": "IMSLP",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "PASS",
+  "unityAsset": "Assets/_Project/Audio/Music/Composers/Mozart/Mozart_K331_PianoSonataNo11RondoAllaTurca_III_AllaTurca.mp3",
+  "durationSeconds": 255.942,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Mozart_3/Mozart_K331_PianoSonataNo11RondoAllaTurca_III_AllaTurca.wav",
+    "masterSamples": 11421900,
+    "trimmedLeadSamples": 175,
+    "trimmedTailSamples": 134681,
+    "encodedSamples": 11287044,
+    "durationSeconds": 255.942,
+    "bytes": 6143373,
+    "sha256": "b3b107a5246e694bec68d94d62aeb2e9299d0c0c78b482570720ff7203e22152",
+    "masterSha256": "0e43d9838488361d62d2b0e24460117edf4472df6a6b60e7079b99ced64ad24d"
+  },
+  "masterQa": {
+    "durationSeconds": 259.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -8.63,
+    "rmsDbfs": -27.73,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "piano",
+    "piano"
+  ],
+  "derivedFormat": {
+    "format": "WAV 44.1 kHz stereo 16-bit PCM (TPDF dither)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Mozart_3/Mozart_K331_PianoSonataNo11RondoAllaTurca_III_AllaTurca.wav",
+    "fromSha256": "0e43d9838488361d62d2b0e24460117edf4472df6a6b60e7079b99ced64ad24d",
+    "gainApplied": 1.0,
+    "convertedAt": "2026-10-02"
+  }
+}

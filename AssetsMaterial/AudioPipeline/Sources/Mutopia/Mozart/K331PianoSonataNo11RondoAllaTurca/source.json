@@ -1,0 +1,43 @@
+{
+  "targetId": "Mozart_3",
+  "composer": "W. A. Mozart",
+  "canonicalTitle": "Piano Sonata No. 11  Rondo alla Turca",
+  "catalog": "K. 331",
+  "targetMovement": "III. Alla Turca",
+  "targetInstrumentation": "Solo piano",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=108",
+  "mutopiaId": "Mutopia-2015/08/13-108",
+  "pageTitle": "Sonate Opus KV 331 - Rondo Alla Turca",
+  "pageComposer": "W. A. Mozart",
+  "opus": "KV 331",
+  "sourceInstrumentation": "Piano",
+  "edition": "IMSLP",
+  "licence": "Public Domain",
+  "licenceStatus": "OK_PD",
+  "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "attribution": "Rune Zedeler and Chris Sawer",
+  "lastUpdated": "2015/Aug/13.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/MozartWA/KV331/KV331_3_RondoAllaTurca/KV331_3_RondoAllaTurca.mid",
+      "file": "KV331_3_RondoAllaTurca.mid",
+      "sha256": "c14299cbdd34c8b2081da84dc06519ef8a52a0d589ee53c758d28b8e3d727d1c",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/MozartWA/KV331/KV331_3_RondoAllaTurca/KV331_3_RondoAllaTurca-lys.zip",
+      "file": "KV331_3_RondoAllaTurca-lys.zip",
+      "sha256": "ac2eba084c584b5e820e8a4554efdf630fa63e661b61ad064a85c041ce92fb24",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "KV331_3_RondoAllaTurca.mid",
+    "member": null,
+    "evidence": "page covers only the 3rd movement; ly title 'Rondo Alla Turca'",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Mozart_3\\source.mid",
+    "sha256": "c14299cbdd34c8b2081da84dc06519ef8a52a0d589ee53c758d28b8e3d727d1c"
+  }
+}

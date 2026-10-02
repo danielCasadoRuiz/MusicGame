@@ -1,0 +1,43 @@
+{
+  "targetId": "Chopin_2",
+  "composer": "Frédéric Chopin",
+  "canonicalTitle": "Fantaisie-Impromptu",
+  "catalog": "Op. 66",
+  "targetMovement": "Complete work",
+  "targetInstrumentation": "Solo piano",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1693",
+  "mutopiaId": "Mutopia-2009/09/05-1693",
+  "pageTitle": "Fantaisie-Impromptu",
+  "pageComposer": "F. F. Chopin",
+  "opus": "Op. 66",
+  "sourceInstrumentation": "Piano",
+  "edition": "Herrmann Scholtz (1845-1918)",
+  "licence": "Public Domain",
+  "licenceStatus": "OK_PD",
+  "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "attribution": "Guy D. Lederfein",
+  "lastUpdated": "2009/Sep/05.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/ChopinFF/O66/chopin_fantaisie-impromptu/chopin_fantaisie-impromptu.mid",
+      "file": "chopin_fantaisie-impromptu.mid",
+      "sha256": "b29f6add7473b6e931c2e66349e860bf0e884cf68e19e90420a4870aae689f96",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/ChopinFF/O66/chopin_fantaisie-impromptu/chopin_fantaisie-impromptu.ly",
+      "file": "chopin_fantaisie-impromptu.ly",
+      "sha256": "3283d648e28120624ceaeec59cf2afc4bc25ef8ac18b1a3108c053c3f562cd33",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "chopin_fantaisie-impromptu.mid",
+    "member": null,
+    "evidence": "single-work page; ly title 'Fantaisie-Impromptu', opus 'Op. 66'",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Chopin_2\\source.mid",
+    "sha256": "b29f6add7473b6e931c2e66349e860bf0e884cf68e19e90420a4870aae689f96"
+  }
+}

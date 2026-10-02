@@ -392,8 +392,9 @@ public class MatchResultController : MonoBehaviour
         if (GameSession.Instance?.FightResources != null) GameSession.Instance.FightResources.ExtraLives--;
         Hide();
         // Same rival/level/song as before — no Opponent Selection re-run (task's own explicit
-        // requirement). FightMusicController.Lock is a no-op if this exact clip is already playing.
-        FightMusicController.Instance?.Lock(GameSession.Instance?.SelectedOpponentSong);
+        // requirement). FightMusicController.Lock is a no-op while this opponent's playlist is
+        // already playing, so the music simply carries on into the rematch.
+        FightMusicController.Instance?.Lock(GameSession.Instance?.SelectedOpponentSong, GameSession.Instance?.SelectedOpponentLevelConfig);
         FightFlowController.Instance?.RequestState(FightFlowState.VersusIntro);
     }
 

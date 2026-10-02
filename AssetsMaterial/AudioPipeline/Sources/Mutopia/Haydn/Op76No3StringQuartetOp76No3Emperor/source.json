@@ -1,0 +1,43 @@
+{
+  "targetId": "Haydn_3",
+  "composer": "Joseph Haydn",
+  "canonicalTitle": "String Quartet Op. 76 No. 3 'Emperor'",
+  "catalog": "Op. 76 No. 3",
+  "targetMovement": "II. Poco adagio, cantabile",
+  "targetInstrumentation": "String quartet",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=385",
+  "mutopiaId": "Mutopia-2015/10/16-385",
+  "pageTitle": "String Quartet in C major",
+  "pageComposer": "F. J. Haydn",
+  "opus": "Op. 76 No. 3",
+  "sourceInstrumentation": "String Quartet",
+  "edition": "Kalmus",
+  "licence": "Public Domain",
+  "licenceStatus": "OK_PD",
+  "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "attribution": "Maurizio Tomasi",
+  "lastUpdated": "2015/Oct/16.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/HaydnFJ/O76/op76-n3/op76-n3-mids.zip",
+      "file": "op76-n3-mids.zip",
+      "sha256": "ebd11b1e4573d91abcabc458284b683799c2e8d3619f81d7b19ad9abff988dca",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/HaydnFJ/O76/op76-n3/op76-n3-lys.zip",
+      "file": "op76-n3-lys.zip",
+      "sha256": "9cfc24290db4e822e324df4a0d39a3e71d95dfdef2afc3ff1cf59e91cbd1d684",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "op76-n3-mids.zip",
+    "member": "score-1.mid",
+    "evidence": "page = Op. 76 No. 3 (lys defs: 'String Quartet in C major (Emperor)'); score/-1/-2/-3 = movements I–IV; target II = score-1",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Haydn_3\\source.mid",
+    "sha256": "289f67299f465aede2f0729e0f861bf4ef039801bc138b45947c9b92f5f75fdc"
+  }
+}

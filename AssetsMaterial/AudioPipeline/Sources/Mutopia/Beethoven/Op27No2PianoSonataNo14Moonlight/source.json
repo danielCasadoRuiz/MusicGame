@@ -1,0 +1,43 @@
+{
+  "targetId": "Beethoven_3",
+  "composer": "L. van Beethoven",
+  "canonicalTitle": "Piano Sonata No. 14 'Moonlight'",
+  "catalog": "Op. 27 No. 2",
+  "targetMovement": "I. Adagio sostenuto",
+  "targetInstrumentation": "Solo piano",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=276",
+  "mutopiaId": "Mutopia-2007/02/11-276",
+  "pageTitle": "Sonata No. 14 “Moonlight”",
+  "pageComposer": "L. V. Beethoven",
+  "opus": "Op. 27, No. 2",
+  "sourceInstrumentation": "Piano",
+  "edition": "Berners, 1908 (edited by A. Winterberger)",
+  "licence": "Creative Commons Attribution-ShareAlike 2.5",
+  "licenceStatus": "OK_CC_BY_SA",
+  "licenceUrl": "http://creativecommons.org/licenses/by-sa/2.5/",
+  "attribution": "Stewart Holmes",
+  "lastUpdated": "2007/Feb/11.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/O27/moonlight/moonlight-mids.zip",
+      "file": "moonlight-mids.zip",
+      "sha256": "94915b176f0b999919a6cd1025a45ec8dd0a454dab33b2b332c5026291ea91f5",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/O27/moonlight/moonlight-lys.zip",
+      "file": "moonlight-lys.zip",
+      "sha256": "3863df81f0a3141f3ea7dd901efd9929f90e32c577377b99a7f7ff81b6b33990",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "moonlight-mids.zip",
+    "member": "moonlight1.mid",
+    "evidence": "moonlight1/2/3 = the three movements; target I. Adagio sostenuto = moonlight1",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Beethoven_3\\source.mid",
+    "sha256": "a34e969c4957f0e9e98fc9ff0278cc1284931bdae6d463469797faa2b73a9c5c"
+  }
+}

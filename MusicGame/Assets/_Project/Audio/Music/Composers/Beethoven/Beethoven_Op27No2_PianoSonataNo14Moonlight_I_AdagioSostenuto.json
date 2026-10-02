@@ -1,0 +1,53 @@
+{
+  "targetId": "Beethoven_3",
+  "composer": "L. van Beethoven",
+  "work": "Piano Sonata No. 14 'Moonlight'",
+  "catalog": "Op. 27 No. 2",
+  "movement": "I. Adagio sostenuto",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=276",
+  "mutopiaId": "Mutopia-2007/02/11-276",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/BeethovenLv/O27/moonlight/moonlight-mids.zip"
+  ],
+  "sourceLicense": "Creative Commons Attribution-ShareAlike 2.5",
+  "sourceLicenseClass": "CC BY-SA",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/by-sa/2.5/",
+  "sourceAttribution": "Typeset/transcribed by Stewart Holmes for the Mutopia Project",
+  "sourceEdition": "Berners, 1908 (edited by A. Winterberger)",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "PASS",
+  "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 2.5 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/2.5/). Attribution: Typeset/transcribed by Stewart Holmes for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=276.",
+  "unityAsset": "Assets/_Project/Audio/Music/Composers/Beethoven/Beethoven_Op27No2_PianoSonataNo14Moonlight_I_AdagioSostenuto.mp3",
+  "durationSeconds": 276.346,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Beethoven_3/Beethoven_Op27No2_PianoSonataNo14Moonlight_I_AdagioSostenuto.wav",
+    "masterSamples": 12303900,
+    "trimmedLeadSamples": 71,
+    "trimmedTailSamples": 116953,
+    "encodedSamples": 12186876,
+    "durationSeconds": 276.346,
+    "bytes": 6633012,
+    "sha256": "e3aff94534657ebc260f6f8cadabe239c6ff17a3b37b8890344e0a71140b1c25",
+    "masterSha256": "ad82aae46d8a8c483ad91b67ee1ca14ffdf75b9a277165c1e1655689510f0eeb"
+  },
+  "masterQa": {
+    "durationSeconds": 279.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -10.08,
+    "rmsDbfs": -27.83,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "piano",
+    "piano"
+  ]
+}

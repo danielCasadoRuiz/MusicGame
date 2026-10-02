@@ -1,0 +1,61 @@
+{
+  "targetId": "Pachelbel_1",
+  "composer": "Johann Pachelbel",
+  "work": "Canon in D",
+  "catalog": "P. 37",
+  "movement": "Complete Canon",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=2047",
+  "mutopiaId": "Mutopia-2015/09/02-2047",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/PachelbelJ/Canon_per_3_Violini_e_Basso/Canon_per_3_Violini_e_Basso-mids.zip"
+  ],
+  "sourceLicense": "Creative Commons Attribution 4.0",
+  "sourceLicenseClass": "CC BY",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+  "sourceAttribution": "Typeset/transcribed by Michael Fischer v. Mollard for the Mutopia Project",
+  "sourceEdition": "IMSLP",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "PASS",
+  "unityAsset": "Assets/_Project/Audio/Music/Composers/Pachelbel/Pachelbel_P37_CanonInD_CompleteCanon.mp3",
+  "durationSeconds": 246.889,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Pachelbel_1/Pachelbel_P37_CanonInD_CompleteCanon.wav",
+    "masterSamples": 11101160,
+    "trimmedLeadSamples": 304,
+    "trimmedTailSamples": 213031,
+    "encodedSamples": 10887825,
+    "durationSeconds": 246.889,
+    "bytes": 5926452,
+    "sha256": "668a5aad22197ebdbff7ca831c40fe7f3c079b9944afd931a57f55b39ced03b1",
+    "masterSha256": "0be0dd8619faaefffbfd3891bbe495f7ff614dabff24354780c6a104902dcaaf"
+  },
+  "masterQa": {
+    "durationSeconds": 251.73,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -10.29,
+    "rmsDbfs": -26.82,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "violin",
+    "violin",
+    "violin",
+    "violoncello"
+  ],
+  "derivedFormat": {
+    "format": "WAV 44.1 kHz stereo 16-bit PCM (TPDF dither)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Pachelbel_1/Pachelbel_P37_CanonInD_CompleteCanon.wav",
+    "fromSha256": "0be0dd8619faaefffbfd3891bbe495f7ff614dabff24354780c6a104902dcaaf",
+    "gainApplied": 1.0,
+    "convertedAt": "2026-10-02"
+  }
+}

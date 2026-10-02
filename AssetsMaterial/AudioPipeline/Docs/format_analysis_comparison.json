@@ -1,0 +1,1112 @@
+{
+  "Beethoven7 WAV16 vs WAV32 (Vorbis)": {
+    "sampleDelta": 0,
+    "durationDelta": 0.0,
+    "bpm": [
+      143,
+      143
+    ],
+    "onsets": [
+      2688,
+      2692
+    ],
+    "onsetF1": 0.9926,
+    "impactF1": 1.0,
+    "drops": [
+      34,
+      34
+    ],
+    "energy": [
+      1.0,
+      0.013
+    ],
+    "intensity": [
+      1.0,
+      0.022
+    ],
+    "centroid": [
+      0.50508,
+      3.386
+    ],
+    "bands": {
+      "band0": [
+        0.99996,
+        0.159
+      ],
+      "band1": [
+        1.0,
+        0.034
+      ],
+      "band2": [
+        1.0,
+        0.041
+      ],
+      "band3": [
+        1.0,
+        0.039
+      ],
+      "band4": [
+        1.0,
+        0.079
+      ],
+      "band5": [
+        0.99999,
+        0.239
+      ]
+    },
+    "segmentAgreementPct": 100.0,
+    "key": [
+      5,
+      5,
+      1,
+      1
+    ],
+    "style": [
+      "Unknown",
+      "Unknown"
+    ],
+    "top5TagOverlap": 5,
+    "maxTagScoreDelta": 0.0001,
+    "danceabilityDelta": 0.0,
+    "complexityDelta": 0.0109,
+    "tempoStabilityDelta": -0.001,
+    "beatConfidenceDelta": 0.0017,
+    "modeConfidenceDelta": -0.0
+  },
+  "Beethoven7 MP3 vs WAV32 (Vorbis)": {
+    "sampleDelta": 3130,
+    "durationDelta": 0.0709,
+    "bpm": [
+      143,
+      197
+    ],
+    "onsets": [
+      2688,
+      2691
+    ],
+    "onsetF1": 0.3454,
+    "impactF1": 0.0,
+    "drops": [
+      34,
+      31
+    ],
+    "energy": [
+      0.90171,
+      15.523
+    ],
+    "intensity": [
+      0.943,
+      11.314
+    ],
+    "centroid": [
+      0.89077,
+      9.102
+    ],
+    "bands": {
+      "band0": [
+        0.8233,
+        40.208
+      ],
+      "band1": [
+        0.85237,
+        25.964
+      ],
+      "band2": [
+        0.77068,
+        29.1
+      ],
+      "band3": [
+        0.91366,
+        18.829
+      ],
+      "band4": [
+        0.90288,
+        20.65
+      ],
+      "band5": [
+        0.91936,
+        16.335
+      ]
+    },
+    "segmentAgreementPct": 100.0,
+    "key": [
+      5,
+      5,
+      1,
+      1
+    ],
+    "style": [
+      "Unknown",
+      "Unknown"
+    ],
+    "top5TagOverlap": 5,
+    "maxTagScoreDelta": 0.0014,
+    "danceabilityDelta": -0.03,
+    "complexityDelta": -0.0167,
+    "tempoStabilityDelta": 0.0496,
+    "beatConfidenceDelta": 0.0504,
+    "modeConfidenceDelta": 0.0004
+  },
+  "Beethoven7 WAV16 vs WAV32 (PCM)": {
+    "sampleDelta": 0,
+    "durationDelta": 0.0,
+    "bpm": [
+      143,
+      143
+    ],
+    "onsets": [
+      2687,
+      2693
+    ],
+    "onsetF1": 0.9959,
+    "impactF1": 1.0,
+    "drops": [
+      34,
+      34
+    ],
+    "energy": [
+      1.0,
+      0.024
+    ],
+    "intensity": [
+      1.0,
+      0.018
+    ],
+    "centroid": [
+      0.49207,
+      3.275
+    ],
+    "bands": {
+      "band0": [
+        1.0,
+        0.039
+      ],
+      "band1": [
+        1.0,
+        0.025
+      ],
+      "band2": [
+        1.0,
+        0.025
+      ],
+      "band3": [
+        1.0,
+        0.022
+      ],
+      "band4": [
+        1.0,
+        0.025
+      ],
+      "band5": [
+        1.0,
+        0.115
+      ]
+    },
+    "segmentAgreementPct": 100.0,
+    "key": [
+      5,
+      5,
+      1,
+      1
+    ],
+    "style": [
+      "Unknown",
+      "Unknown"
+    ],
+    "top5TagOverlap": 5,
+    "maxTagScoreDelta": 0.0,
+    "danceabilityDelta": -0.0002,
+    "complexityDelta": 0.0115,
+    "tempoStabilityDelta": -0.0,
+    "beatConfidenceDelta": -0.0007,
+    "modeConfidenceDelta": -0.0001
+  },
+  "Beethoven7 MP3 vs WAV32 (PCM)": {
+    "sampleDelta": 3130,
+    "durationDelta": 0.0709,
+    "bpm": [
+      143,
+      186
+    ],
+    "onsets": [
+      2687,
+      2689
+    ],
+    "onsetF1": 0.3486,
+    "impactF1": 0.0,
+    "drops": [
+      34,
+      32
+    ],
+    "energy": [
+      0.90197,
+      15.451
+    ],
+    "intensity": [
+      0.94283,
+      11.403
+    ],
+    "centroid": [
+      0.90342,
+      8.904
+    ],
+    "bands": {
+      "band0": [
+        0.82239,
+        40.399
+      ],
+      "band1": [
+        0.8524,
+        25.955
+      ],
+      "band2": [
+        0.77049,
+        29.103
+      ],
+      "band3": [
+        0.9138,
+        18.774
+      ],
+      "band4": [
+        0.90297,
+        20.56
+      ],
+      "band5": [
+        0.91878,
+        16.402
+      ]
+    },
+    "segmentAgreementPct": 99.1,
+    "key": [
+      5,
+      5,
+      1,
+      1
+    ],
+    "style": [
+      "Unknown",
+      "Unknown"
+    ],
+    "top5TagOverlap": 5,
+    "maxTagScoreDelta": 0.0015,
+    "danceabilityDelta": -0.031,
+    "complexityDelta": -0.0054,
+    "tempoStabilityDelta": 0.0412,
+    "beatConfidenceDelta": 0.0602,
+    "modeConfidenceDelta": 0.0002
+  },
+  "Beethoven7 WAV32 Vorbis vs WAV32 PCM": {
+    "sampleDelta": 0,
+    "durationDelta": 0.0,
+    "bpm": [
+      143,
+      143
+    ],
+    "onsets": [
+      2687,
+      2688
+    ],
+    "onsetF1": 0.976,
+    "impactF1": 1.0,
+    "drops": [
+      34,
+      34
+    ],
+    "energy": [
+      0.99999,
+      0.65
+    ],
+    "intensity": [
+      0.99999,
+      0.362
+    ],
+    "centroid": [
+      0.99983,
+      0.306
+    ],
+    "bands": {
+      "band0": [
+        0.9994,
+        2.359
+      ],
+      "band1": [
+        0.99997,
+        0.64
+      ],
+      "band2": [
+        0.99994,
+        0.635
+      ],
+      "band3": [
+        0.99999,
+        0.616
+      ],
+      "band4": [
+        0.99999,
+        0.595
+      ],
+      "band5": [
+        0.99997,
+        0.42
+      ]
+    },
+    "segmentAgreementPct": 100.0,
+    "key": [
+      5,
+      5,
+      1,
+      1
+    ],
+    "style": [
+      "Unknown",
+      "Unknown"
+    ],
+    "top5TagOverlap": 5,
+    "maxTagScoreDelta": 0.0005,
+    "danceabilityDelta": 0.001,
+    "complexityDelta": 0.0065,
+    "tempoStabilityDelta": 0.0018,
+    "beatConfidenceDelta": 0.0011,
+    "modeConfidenceDelta": -0.0001
+  },
+  "Chopin WAV16 vs WAV32 (Vorbis)": {
+    "sampleDelta": 0,
+    "durationDelta": 0.0,
+    "bpm": [
+      172,
+      172
+    ],
+    "onsets": [
+      1637,
+      1643
+    ],
+    "onsetF1": 0.9963,
+    "impactF1": 1.0,
+    "drops": [
+      31,
+      31
+    ],
+    "energy": [
+      1.0,
+      0.013
+    ],
+    "intensity": [
+      1.0,
+      0.026
+    ],
+    "centroid": [
+      0.28035,
+      7.791
+    ],
+    "bands": {
+      "band0": [
+        0.99996,
+        0.215
+      ],
+      "band1": [
+        1.0,
+        0.038
+      ],
+      "band2": [
+        1.0,
+        0.026
+      ],
+      "band3": [
+        1.0,
+        0.042
+      ],
+      "band4": [
+        0.99999,
+        0.106
+      ],
+      "band5": [
+        0.99997,
+        0.6
+      ]
+    },
+    "segmentAgreementPct": 100.0,
+    "key": [
+      5,
+      5,
+      1,
+      1
+    ],
+    "style": [
+      "Jazz",
+      "Jazz"
+    ],
+    "top5TagOverlap": 5,
+    "maxTagScoreDelta": 0.0001,
+    "danceabilityDelta": 0.0013,
+    "complexityDelta": 0.0318,
+    "tempoStabilityDelta": 0.0025,
+    "beatConfidenceDelta": 0.0013,
+    "modeConfidenceDelta": -0.0002
+  },
+  "Chopin MP3 vs WAV32 (Vorbis)": {
+    "sampleDelta": 3434,
+    "durationDelta": 0.0779,
+    "bpm": [
+      172,
+      172
+    ],
+    "onsets": [
+      1637,
+      1631
+    ],
+    "onsetF1": 0.2362,
+    "impactF1": 1.0,
+    "drops": [
+      31,
+      29
+    ],
+    "energy": [
+      0.71196,
+      16.407
+    ],
+    "intensity": [
+      0.80028,
+      13.967
+    ],
+    "centroid": [
+      0.74781,
+      11.769
+    ],
+    "bands": {
+      "band0": [
+        0.63121,
+        58.037
+      ],
+      "band1": [
+        0.61264,
+        32.153
+      ],
+      "band2": [
+        0.54006,
+        28.588
+      ],
+      "band3": [
+        0.71966,
+        22.499
+      ],
+      "band4": [
+        0.67726,
+        25.729
+      ],
+      "band5": [
+        0.57172,
+        36.739
+      ]
+    },
+    "segmentAgreementPct": 100.0,
+    "key": [
+      5,
+      5,
+      1,
+      1
+    ],
+    "style": [
+      "Jazz",
+      "Jazz"
+    ],
+    "top5TagOverlap": 4,
+    "maxTagScoreDelta": 0.0506,
+    "danceabilityDelta": -0.006,
+    "complexityDelta": 0.0184,
+    "tempoStabilityDelta": -0.008,
+    "beatConfidenceDelta": -0.0093,
+    "modeConfidenceDelta": 0.0002
+  },
+  "Chopin WAV16 vs WAV32 (PCM)": {
+    "sampleDelta": 0,
+    "durationDelta": 0.0,
+    "bpm": [
+      172,
+      172
+    ],
+    "onsets": [
+      1639,
+      1649
+    ],
+    "onsetF1": 0.9964,
+    "impactF1": 1.0,
+    "drops": [
+      31,
+      31
+    ],
+    "energy": [
+      1.0,
+      0.029
+    ],
+    "intensity": [
+      1.0,
+      0.02
+    ],
+    "centroid": [
+      0.27182,
+      7.497
+    ],
+    "bands": {
+      "band0": [
+        1.0,
+        0.066
+      ],
+      "band1": [
+        1.0,
+        0.029
+      ],
+      "band2": [
+        1.0,
+        0.029
+      ],
+      "band3": [
+        1.0,
+        0.027
+      ],
+      "band4": [
+        1.0,
+        0.034
+      ],
+      "band5": [
+        0.99998,
+        0.446
+      ]
+    },
+    "segmentAgreementPct": 100.0,
+    "key": [
+      5,
+      5,
+      1,
+      1
+    ],
+    "style": [
+      "Jazz",
+      "Jazz"
+    ],
+    "top5TagOverlap": 5,
+    "maxTagScoreDelta": 0.0,
+    "danceabilityDelta": -0.0001,
+    "complexityDelta": 0.0293,
+    "tempoStabilityDelta": -0.0003,
+    "beatConfidenceDelta": 0.0003,
+    "modeConfidenceDelta": -0.0001
+  },
+  "Chopin MP3 vs WAV32 (PCM)": {
+    "sampleDelta": 3434,
+    "durationDelta": 0.0779,
+    "bpm": [
+      172,
+      172
+    ],
+    "onsets": [
+      1639,
+      1633
+    ],
+    "onsetF1": 0.2439,
+    "impactF1": 1.0,
+    "drops": [
+      31,
+      30
+    ],
+    "energy": [
+      0.7128,
+      16.41
+    ],
+    "intensity": [
+      0.80073,
+      13.963
+    ],
+    "centroid": [
+      0.69558,
+      11.466
+    ],
+    "bands": {
+      "band0": [
+        0.63009,
+        58.291
+      ],
+      "band1": [
+        0.61301,
+        32.229
+      ],
+      "band2": [
+        0.54008,
+        28.646
+      ],
+      "band3": [
+        0.71995,
+        22.556
+      ],
+      "band4": [
+        0.6767,
+        26.043
+      ],
+      "band5": [
+        0.56599,
+        37.305
+      ]
+    },
+    "segmentAgreementPct": 96.9,
+    "key": [
+      5,
+      5,
+      1,
+      1
+    ],
+    "style": [
+      "Jazz",
+      "Jazz"
+    ],
+    "top5TagOverlap": 5,
+    "maxTagScoreDelta": 0.0097,
+    "danceabilityDelta": -0.0066,
+    "complexityDelta": 0.0235,
+    "tempoStabilityDelta": -0.0074,
+    "beatConfidenceDelta": -0.013,
+    "modeConfidenceDelta": 0.0002
+  },
+  "Chopin WAV32 Vorbis vs WAV32 PCM": {
+    "sampleDelta": 0,
+    "durationDelta": 0.0,
+    "bpm": [
+      172,
+      172
+    ],
+    "onsets": [
+      1639,
+      1637
+    ],
+    "onsetF1": 0.989,
+    "impactF1": 1.0,
+    "drops": [
+      31,
+      31
+    ],
+    "energy": [
+      0.99998,
+      0.603
+    ],
+    "intensity": [
+      0.99998,
+      0.148
+    ],
+    "centroid": [
+      0.97164,
+      0.355
+    ],
+    "bands": {
+      "band0": [
+        0.99917,
+        2.809
+      ],
+      "band1": [
+        0.99993,
+        0.635
+      ],
+      "band2": [
+        0.99995,
+        0.629
+      ],
+      "band3": [
+        0.99996,
+        0.564
+      ],
+      "band4": [
+        0.99998,
+        0.53
+      ],
+      "band5": [
+        0.99997,
+        0.402
+      ]
+    },
+    "segmentAgreementPct": 98.5,
+    "key": [
+      5,
+      5,
+      1,
+      1
+    ],
+    "style": [
+      "Jazz",
+      "Jazz"
+    ],
+    "top5TagOverlap": 5,
+    "maxTagScoreDelta": 0.0012,
+    "danceabilityDelta": -0.0016,
+    "complexityDelta": 0.0041,
+    "tempoStabilityDelta": -0.0023,
+    "beatConfidenceDelta": -0.0029,
+    "modeConfidenceDelta": -0.0001
+  },
+  "Vivaldi WAV16 vs WAV32 (Vorbis)": {
+    "sampleDelta": 0,
+    "durationDelta": 0.0,
+    "bpm": [
+      172,
+      172
+    ],
+    "onsets": [
+      1003,
+      1016
+    ],
+    "onsetF1": 0.9856,
+    "impactF1": 1.0,
+    "drops": [
+      93,
+      93
+    ],
+    "energy": [
+      1.0,
+      0.023
+    ],
+    "intensity": [
+      1.0,
+      0.041
+    ],
+    "centroid": [
+      0.27938,
+      8.902
+    ],
+    "bands": {
+      "band0": [
+        0.99978,
+        0.631
+      ],
+      "band1": [
+        1.0,
+        0.064
+      ],
+      "band2": [
+        1.0,
+        0.071
+      ],
+      "band3": [
+        1.0,
+        0.067
+      ],
+      "band4": [
+        0.99999,
+        0.101
+      ],
+      "band5": [
+        0.99999,
+        0.208
+      ]
+    },
+    "segmentAgreementPct": 100.0,
+    "key": [
+      9,
+      9,
+      0,
+      0
+    ],
+    "style": [
+      "Ambient",
+      "Ambient"
+    ],
+    "top5TagOverlap": 5,
+    "maxTagScoreDelta": 0.0001,
+    "danceabilityDelta": -0.0008,
+    "complexityDelta": 0.024,
+    "tempoStabilityDelta": 0.0007,
+    "beatConfidenceDelta": -0.0043,
+    "modeConfidenceDelta": -0.0001
+  },
+  "Vivaldi MP3 vs WAV32 (Vorbis)": {
+    "sampleDelta": 2528,
+    "durationDelta": 0.0573,
+    "bpm": [
+      172,
+      172
+    ],
+    "onsets": [
+      1003,
+      1013
+    ],
+    "onsetF1": 0.3373,
+    "impactF1": 0.0,
+    "drops": [
+      93,
+      126
+    ],
+    "energy": [
+      0.76961,
+      22.189
+    ],
+    "intensity": [
+      0.86513,
+      16.531
+    ],
+    "centroid": [
+      0.89614,
+      10.907
+    ],
+    "bands": {
+      "band0": [
+        0.78578,
+        46.282
+      ],
+      "band1": [
+        0.74979,
+        37.771
+      ],
+      "band2": [
+        0.74667,
+        34.142
+      ],
+      "band3": [
+        0.80212,
+        22.155
+      ],
+      "band4": [
+        0.77434,
+        21.582
+      ],
+      "band5": [
+        0.85423,
+        18.718
+      ]
+    },
+    "segmentAgreementPct": 97.7,
+    "key": [
+      9,
+      9,
+      0,
+      0
+    ],
+    "style": [
+      "Ambient",
+      "Ambient"
+    ],
+    "top5TagOverlap": 5,
+    "maxTagScoreDelta": 0.0019,
+    "danceabilityDelta": 0.0054,
+    "complexityDelta": -0.0211,
+    "tempoStabilityDelta": 0.02,
+    "beatConfidenceDelta": -0.0097,
+    "modeConfidenceDelta": -0.0003
+  },
+  "Vivaldi WAV16 vs WAV32 (PCM)": {
+    "sampleDelta": 0,
+    "durationDelta": 0.0,
+    "bpm": [
+      172,
+      172
+    ],
+    "onsets": [
+      1002,
+      1018
+    ],
+    "onsetF1": 0.9911,
+    "impactF1": 1.0,
+    "drops": [
+      93,
+      93
+    ],
+    "energy": [
+      1.0,
+      0.042
+    ],
+    "intensity": [
+      1.0,
+      0.038
+    ],
+    "centroid": [
+      0.27042,
+      8.715
+    ],
+    "bands": {
+      "band0": [
+        1.0,
+        0.114
+      ],
+      "band1": [
+        1.0,
+        0.039
+      ],
+      "band2": [
+        1.0,
+        0.039
+      ],
+      "band3": [
+        1.0,
+        0.042
+      ],
+      "band4": [
+        1.0,
+        0.045
+      ],
+      "band5": [
+        0.99999,
+        0.117
+      ]
+    },
+    "segmentAgreementPct": 100.0,
+    "key": [
+      9,
+      9,
+      0,
+      0
+    ],
+    "style": [
+      "Ambient",
+      "Ambient"
+    ],
+    "top5TagOverlap": 5,
+    "maxTagScoreDelta": 0.0,
+    "danceabilityDelta": 0.0018,
+    "complexityDelta": 0.0453,
+    "tempoStabilityDelta": 0.0051,
+    "beatConfidenceDelta": -0.0008,
+    "modeConfidenceDelta": -0.0002
+  },
+  "Vivaldi MP3 vs WAV32 (PCM)": {
+    "sampleDelta": 2528,
+    "durationDelta": 0.0573,
+    "bpm": [
+      172,
+      172
+    ],
+    "onsets": [
+      1002,
+      1023
+    ],
+    "onsetF1": 0.3328,
+    "impactF1": 0.0,
+    "drops": [
+      93,
+      126
+    ],
+    "energy": [
+      0.77018,
+      22.086
+    ],
+    "intensity": [
+      0.86524,
+      16.5
+    ],
+    "centroid": [
+      0.91105,
+      10.623
+    ],
+    "bands": {
+      "band0": [
+        0.78534,
+        46.296
+      ],
+      "band1": [
+        0.74985,
+        37.748
+      ],
+      "band2": [
+        0.74684,
+        34.159
+      ],
+      "band3": [
+        0.80279,
+        22.089
+      ],
+      "band4": [
+        0.77504,
+        21.531
+      ],
+      "band5": [
+        0.85396,
+        18.675
+      ]
+    },
+    "segmentAgreementPct": 97.7,
+    "key": [
+      9,
+      9,
+      0,
+      0
+    ],
+    "style": [
+      "Ambient",
+      "Ambient"
+    ],
+    "top5TagOverlap": 5,
+    "maxTagScoreDelta": 0.0026,
+    "danceabilityDelta": 0.004,
+    "complexityDelta": -0.0099,
+    "tempoStabilityDelta": 0.0189,
+    "beatConfidenceDelta": -0.0134,
+    "modeConfidenceDelta": 0.0001
+  },
+  "Vivaldi WAV32 Vorbis vs WAV32 PCM": {
+    "sampleDelta": 0,
+    "durationDelta": 0.0,
+    "bpm": [
+      172,
+      172
+    ],
+    "onsets": [
+      1002,
+      1003
+    ],
+    "onsetF1": 0.9835,
+    "impactF1": 1.0,
+    "drops": [
+      93,
+      93
+    ],
+    "energy": [
+      0.99999,
+      0.637
+    ],
+    "intensity": [
+      0.99999,
+      0.267
+    ],
+    "centroid": [
+      0.9998,
+      0.252
+    ],
+    "bands": {
+      "band0": [
+        0.99892,
+        3.691
+      ],
+      "band1": [
+        0.99999,
+        0.684
+      ],
+      "band2": [
+        0.99998,
+        0.601
+      ],
+      "band3": [
+        0.99998,
+        0.563
+      ],
+      "band4": [
+        0.99997,
+        0.516
+      ],
+      "band5": [
+        0.99997,
+        0.41
+      ]
+    },
+    "segmentAgreementPct": 100.0,
+    "key": [
+      9,
+      9,
+      0,
+      0
+    ],
+    "style": [
+      "Ambient",
+      "Ambient"
+    ],
+    "top5TagOverlap": 5,
+    "maxTagScoreDelta": 0.0006,
+    "danceabilityDelta": 0.0007,
+    "complexityDelta": 0.0044,
+    "tempoStabilityDelta": -0.0002,
+    "beatConfidenceDelta": 0.0028,
+    "modeConfidenceDelta": -0.0001
+  }
+}

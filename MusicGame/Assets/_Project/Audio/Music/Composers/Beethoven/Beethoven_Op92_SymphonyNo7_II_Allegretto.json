@@ -1,0 +1,88 @@
+{
+  "targetId": "Beethoven_5",
+  "composer": "L. van Beethoven",
+  "work": "Symphony No. 7",
+  "catalog": "Op. 92",
+  "movement": "II. Allegretto",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=595",
+  "mutopiaId": "Mutopia-2005/08/21-595",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/BeethovenLv/O92/Symphony7_2/Symphony7_2.mid"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "sourceAttribution": "Typeset/transcribed by Stelios Samelis for the Mutopia Project",
+  "sourceEdition": "Litolff Verlag",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrument assignments of mis-imported parts corrected to the edition's own staff names (Piccolo Clarinet, three -> bb-clarinet, English Horn, five -> horn, Baroque Oboe, six -> c-trumpet, Contrabass, twelve -> contrabasses); no musical changes.",
+  "status": "PASS",
+  "instrumentCorrections": [
+    {
+      "part": "Piccolo Clarinet, three",
+      "imported": "piccolo-clarinet",
+      "corrected": "bb-clarinet",
+      "sound": "wind.reed.clarinet.bflat"
+    },
+    {
+      "part": "English Horn, five",
+      "imported": "english-horn",
+      "corrected": "horn",
+      "sound": "brass.french-horn"
+    },
+    {
+      "part": "Baroque Oboe, six",
+      "imported": "baroque-oboe",
+      "corrected": "c-trumpet",
+      "sound": "brass.trumpet"
+    },
+    {
+      "part": "Contrabass, twelve",
+      "imported": "contrabass",
+      "corrected": "contrabasses",
+      "sound": "strings.contrabass"
+    }
+  ],
+  "unityAsset": "Assets/_Project/Audio/Music/Composers/Beethoven/Beethoven_Op92_SymphonyNo7_II_Allegretto.mp3",
+  "durationSeconds": 439.362,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Beethoven_5/Beethoven_Op92_SymphonyNo7_II_Allegretto.wav",
+    "masterSamples": 19489862,
+    "trimmedLeadSamples": 245,
+    "trimmedTailSamples": 113765,
+    "encodedSamples": 19375852,
+    "durationSeconds": 439.362,
+    "bytes": 10545737,
+    "sha256": "3354545a82cc9b27f682104373e05f2bfe0a2bf70cfd0d497eb45e7bed69cbdc",
+    "masterSha256": "88755cc3b0a3c0bc657259f6a89fd683e4e83d03ad0a01f0cdbc337451c2feb5"
+  },
+  "masterQa": {
+    "durationSeconds": 441.95,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -4.67,
+    "rmsDbfs": -23.24,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "flute",
+    "oboe",
+    "bb-clarinet",
+    "bassoon",
+    "horn",
+    "c-trumpet",
+    "timpani",
+    "violin",
+    "violin",
+    "viola",
+    "violoncello",
+    "contrabasses"
+  ]
+}

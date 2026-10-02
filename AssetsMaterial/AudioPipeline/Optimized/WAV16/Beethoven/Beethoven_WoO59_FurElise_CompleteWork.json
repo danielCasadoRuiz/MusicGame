@@ -1,0 +1,59 @@
+{
+  "targetId": "Beethoven_4",
+  "composer": "L. van Beethoven",
+  "work": "Für Elise",
+  "catalog": "WoO 59",
+  "movement": "Complete work",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=931",
+  "mutopiaId": "Mutopia-2015/08/18-931",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/BeethovenLv/WoO59/fur_Elise_WoO59/fur_Elise_WoO59.mid"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "sourceAttribution": "Typeset/transcribed by Stelios Samelis for the Mutopia Project",
+  "sourceEdition": "Breitkopf & Härtel, 1888",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "PASS",
+  "unityAsset": "Assets/_Project/Audio/Music/Composers/Beethoven/Beethoven_WoO59_FurElise_CompleteWork.mp3",
+  "durationSeconds": 131.558,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Beethoven_4/Beethoven_WoO59_FurElise_CompleteWork.wav",
+    "masterSamples": 5920425,
+    "trimmedLeadSamples": 100,
+    "trimmedTailSamples": 118637,
+    "encodedSamples": 5801688,
+    "durationSeconds": 131.558,
+    "bytes": 3158517,
+    "sha256": "f72edcd51874efdc29beb3ba38ac17786de55644c5898bcae07c53ba5c357578",
+    "masterSha256": "09f92a38c05d3f292f43c04b6e3b932579a6cfb17ebae646fd3584b96562ea3d"
+  },
+  "masterQa": {
+    "durationSeconds": 134.25,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -10.04,
+    "rmsDbfs": -27.58,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "piano",
+    "piano"
+  ],
+  "derivedFormat": {
+    "format": "WAV 44.1 kHz stereo 16-bit PCM (TPDF dither)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Beethoven_4/Beethoven_WoO59_FurElise_CompleteWork.wav",
+    "fromSha256": "09f92a38c05d3f292f43c04b6e3b932579a6cfb17ebae646fd3584b96562ea3d",
+    "gainApplied": 1.0,
+    "convertedAt": "2026-10-02"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "targetId": "Beethoven_5",
+  "composer": "L. van Beethoven",
+  "canonicalTitle": "Symphony No. 7",
+  "catalog": "Op. 92",
+  "targetMovement": "II. Allegretto",
+  "targetInstrumentation": "Full orchestra",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=595",
+  "mutopiaId": "Mutopia-2005/08/21-595",
+  "pageTitle": "Symphony No. 7 in A Major (2nd Movement: Allegretto)",
+  "pageComposer": "L. V. Beethoven",
+  "opus": "Op. 92",
+  "sourceInstrumentation": "Orchestra: Flutes, Oboes, Clarinets, Bassoons, Horns, Trumpets, Timpani, Violins, Viola, 'Cello, Bass",
+  "edition": "Litolff Verlag",
+  "licence": "Public Domain",
+  "licenceStatus": "OK_PD",
+  "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "attribution": "Stelios Samelis",
+  "lastUpdated": "2005/Aug/21.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/O92/Symphony7_2/Symphony7_2.mid",
+      "file": "Symphony7_2.mid",
+      "sha256": "7cf810b4625b9a272d3a0a9153d8beb5750fa3ee64122dc9f27b7661e997b903",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/O92/Symphony7_2/Symphony7_2-lys.zip",
+      "file": "Symphony7_2-lys.zip",
+      "sha256": "89aa0339e90b5166a641f5411a90b79dc7d60d0b0c039e4cfef2ea2eb1b89657",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "Symphony7_2.mid",
+    "member": null,
+    "evidence": "page covers only the 2nd movement; ly subtitle 'Allegretto'; full orchestral score",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Beethoven_5\\source.mid",
+    "sha256": "7cf810b4625b9a272d3a0a9153d8beb5750fa3ee64122dc9f27b7661e997b903"
+  }
+}

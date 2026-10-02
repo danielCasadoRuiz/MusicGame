@@ -1,0 +1,43 @@
+{
+  "targetId": "Pachelbel_1",
+  "composer": "Johann Pachelbel",
+  "canonicalTitle": "Canon in D",
+  "catalog": "P. 37",
+  "targetMovement": "Complete Canon",
+  "targetInstrumentation": "3 violins + basso continuo",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=2047",
+  "mutopiaId": "Mutopia-2015/09/02-2047",
+  "pageTitle": "Canon per 3 Violini e Basso",
+  "pageComposer": "J. Pachelbel",
+  "opus": "Not known",
+  "sourceInstrumentation": "3 Violins, Cello",
+  "edition": "IMSLP",
+  "licence": "Creative Commons Attribution 4.0",
+  "licenceStatus": "OK_CC_BY",
+  "licenceUrl": "http://creativecommons.org/licenses/by/4.0/",
+  "attribution": "Michael Fischer v. Mollard",
+  "lastUpdated": "2015/Sep/02.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/PachelbelJ/Canon_per_3_Violini_e_Basso/Canon_per_3_Violini_e_Basso-mids.zip",
+      "file": "Canon_per_3_Violini_e_Basso-mids.zip",
+      "sha256": "d05d47d19130688728d43476ee30d7e6c41dfc5369e40f2a1dd50a69d389b29c",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/PachelbelJ/Canon_per_3_Violini_e_Basso/Canon_per_3_Violini_e_Basso-lys.zip",
+      "file": "Canon_per_3_Violini_e_Basso-lys.zip",
+      "sha256": "ff8ff9c026f3596844929a5c1a88ba19318c466be5005978f5acbeea81e16272",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "Canon_per_3_Violini_e_Basso-mids.zip",
+    "member": "canon_per_3_violini_e_basso.mid",
+    "evidence": "full score MIDI (others are single parts); ly title 'Canon per 3 Violini e Basso'",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Pachelbel_1\\source.mid",
+    "sha256": "953b73e270117d388e9ef1a76f8b9e97ff640d1400768849f41a3cf71c59cbc1"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "targetId": "Brahms_2",
+  "composer": "Johannes Brahms",
+  "canonicalTitle": "Wiegenlied (Brahms' Lullaby)",
+  "catalog": "Op. 49 No. 4",
+  "targetMovement": "Complete song",
+  "targetInstrumentation": "Voice + piano",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1037",
+  "mutopiaId": "Mutopia-2007/11/04-1037",
+  "pageTitle": "Wiegenlied",
+  "pageComposer": "J. Brahms",
+  "opus": "Op. 49, No. 4",
+  "sourceInstrumentation": "Voice and Piano",
+  "edition": "Indiana University: http://www.dlib.indiana.edu/variations/scores/bgn9130/index1.html",
+  "licence": "Public Domain",
+  "licenceStatus": "OK_PD",
+  "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "attribution": "森 章吾",
+  "lastUpdated": "2007/Nov/04.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/BrahmsJ/O49/Wiegenlied/Wiegenlied-mids.zip",
+      "file": "Wiegenlied-mids.zip",
+      "sha256": "2d2fd42d81dc11ce6d10c6fa0ca9e15b02bd2fea3badf3b1f56da683c6922d41",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/BrahmsJ/O49/Wiegenlied/Wiegenlied-lys.zip",
+      "file": "Wiegenlied-lys.zip",
+      "sha256": "30a426c3a10b6b4395ec725918cb213772a5bfc4828dc71e3b5c7ac2b9040ffc",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "Wiegenlied-mids.zip",
+    "member": "Wiegenlied.mid",
+    "evidence": "Wiegenlied.ly = voice staff + piano (original); Wiegenlied_piano_SATB is an SATB arrangement — not used",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Brahms_2\\source.mid",
+    "sha256": "0ca12af297a5b55228dff2428a157b2811ff3f4e88098ad4f9edce1e3964aef1"
+  }
+}

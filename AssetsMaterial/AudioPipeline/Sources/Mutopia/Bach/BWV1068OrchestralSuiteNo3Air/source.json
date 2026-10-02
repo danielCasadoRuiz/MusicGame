@@ -1,0 +1,43 @@
+{
+  "targetId": "Bach_3",
+  "composer": "J. S. Bach",
+  "canonicalTitle": "Orchestral Suite No. 3  Air",
+  "catalog": "BWV 1068",
+  "targetMovement": "II. Air",
+  "targetInstrumentation": "Orchestra",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=242",
+  "mutopiaId": "Mutopia-2008/10/28-242",
+  "pageTitle": "Air",
+  "pageComposer": "J. S. Bach",
+  "opus": "BWV 1068, Mvmt. 2",
+  "sourceInstrumentation": "Orchestra",
+  "edition": "Bach-Gesellschaft",
+  "licence": "Creative Commons Attribution-ShareAlike 3.0",
+  "licenceStatus": "OK_CC_BY_SA",
+  "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+  "attribution": "jeff covey",
+  "lastUpdated": "2008/Oct/28.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/BachJS/BWV1068/bach-air/bach-air-mids.zip",
+      "file": "bach-air-mids.zip",
+      "sha256": "af2a0b1c1649cf212f7d358d48f0a591a48c4ac907aaa26773c422d039860bf2",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/BachJS/BWV1068/bach-air/bach-air-lys.zip",
+      "file": "bach-air-lys.zip",
+      "sha256": "e54bfbf7c15cc1e101b3d4359ac8da2af728c7b38323fb083f93b0e3cb299388",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "bach-air-mids.zip",
+    "member": "bach-air-score.mid",
+    "evidence": "full score MIDI (others are single parts); notes.ly: title 'Air', opus 'BWV 1068, Mvmt. 2'",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Bach_3\\source.mid",
+    "sha256": "35807002e83528038bd53bed791d71356c937ac792e8ba4c4aef8eb54ffe0859"
+  }
+}

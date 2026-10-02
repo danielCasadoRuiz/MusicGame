@@ -1,0 +1,43 @@
+{
+  "targetId": "Bach_1",
+  "composer": "J. S. Bach",
+  "canonicalTitle": "Toccata and Fugue in D minor",
+  "catalog": "BWV 565",
+  "targetMovement": "Complete work",
+  "targetInstrumentation": "Organ",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1780",
+  "mutopiaId": "Mutopia-2011/09/11-1780",
+  "pageTitle": "Toccata and Fugue in D Minor",
+  "pageComposer": "J. S. Bach",
+  "opus": "BWV 565",
+  "sourceInstrumentation": "Organ",
+  "edition": "Bach-Gesellschaft Ausgabe, 1867",
+  "licence": "Public Domain",
+  "licenceStatus": "OK_PD",
+  "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "attribution": "Anonymous",
+  "lastUpdated": "2011/Sep/11.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/BachJS/BWV565/ToccataFugue/ToccataFugue.mid",
+      "file": "ToccataFugue.mid",
+      "sha256": "1aabd00967aded08d6633482c211af46f679d97f01cfeaca43c83a59dfeeeb6b",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/BachJS/BWV565/ToccataFugue/ToccataFugue.ly",
+      "file": "ToccataFugue.ly",
+      "sha256": "1640bbd2bf11a95e18db03fea285d30718254af0a694e1c36533d8109d71718c",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "ToccataFugue.mid",
+    "member": null,
+    "evidence": "single-work page; ToccataFugue.ly title 'Toccata and Fugue in D Minor', subtitle 'BWV 565'",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Bach_1\\source.mid",
+    "sha256": "1aabd00967aded08d6633482c211af46f679d97f01cfeaca43c83a59dfeeeb6b"
+  }
+}

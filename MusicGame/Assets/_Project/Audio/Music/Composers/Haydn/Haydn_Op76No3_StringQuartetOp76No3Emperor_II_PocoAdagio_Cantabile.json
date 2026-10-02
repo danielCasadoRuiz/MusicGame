@@ -1,0 +1,54 @@
+{
+  "targetId": "Haydn_3",
+  "composer": "Joseph Haydn",
+  "work": "String Quartet Op. 76 No. 3 'Emperor'",
+  "catalog": "Op. 76 No. 3",
+  "movement": "II. Poco adagio, cantabile",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=385",
+  "mutopiaId": "Mutopia-2015/10/16-385",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/HaydnFJ/O76/op76-n3/op76-n3-mids.zip"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "sourceAttribution": "Typeset/transcribed by Maurizio Tomasi for the Mutopia Project",
+  "sourceEdition": "Kalmus",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "PASS",
+  "unityAsset": "Assets/_Project/Audio/Music/Composers/Haydn/Haydn_Op76No3_StringQuartetOp76No3Emperor_II_PocoAdagio_Cantabile.mp3",
+  "durationSeconds": 523.948,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Haydn_3/Haydn_Op76No3_StringQuartetOp76No3Emperor_II_PocoAdagio_Cantabile.wav",
+    "masterSamples": 23284800,
+    "trimmedLeadSamples": 289,
+    "trimmedTailSamples": 178405,
+    "encodedSamples": 23106106,
+    "durationSeconds": 523.948,
+    "bytes": 12575764,
+    "sha256": "efbd2d59c814d2d465c7cc91c69bc5e48837b6048e807bb9f45ef30ef7d1dc8a",
+    "masterSha256": "541901122c21f4194f6eb057569d28cee5e2ddba9a63637e436e6918e3fb88ec"
+  },
+  "masterQa": {
+    "durationSeconds": 528.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -8.98,
+    "rmsDbfs": -28.84,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "violin",
+    "violin",
+    "violoncello",
+    "violoncello"
+  ]
+}

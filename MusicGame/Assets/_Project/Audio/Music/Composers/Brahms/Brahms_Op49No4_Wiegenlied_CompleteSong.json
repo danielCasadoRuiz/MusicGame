@@ -1,0 +1,53 @@
+{
+  "targetId": "Brahms_2",
+  "composer": "Johannes Brahms",
+  "work": "Wiegenlied (Brahms' Lullaby)",
+  "catalog": "Op. 49 No. 4",
+  "movement": "Complete song",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1037",
+  "mutopiaId": "Mutopia-2007/11/04-1037",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/BrahmsJ/O49/Wiegenlied/Wiegenlied-mids.zip"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "sourceAttribution": "Typeset/transcribed by 森 章吾 for the Mutopia Project",
+  "sourceEdition": "Indiana University: http://www.dlib.indiana.edu/variations/scores/bgn9130/index1.html",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrumental version: the voice line is played by the piano together with the original accompaniment. Notes unchanged.",
+  "status": "USER_APPROVED_VARIANT",
+  "variantNote": "Instrumental version: the voice line is played by the piano together with the original accompaniment. Notes unchanged.",
+  "unityAsset": "Assets/_Project/Audio/Music/Composers/Brahms/Brahms_Op49No4_Wiegenlied_CompleteSong.mp3",
+  "durationSeconds": 54.243,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Brahms_2/Brahms_Op49No4_Wiegenlied_CompleteSong.wav",
+    "masterSamples": 2513700,
+    "trimmedLeadSamples": 186,
+    "trimmedTailSamples": 121390,
+    "encodedSamples": 2392124,
+    "durationSeconds": 54.243,
+    "bytes": 1302778,
+    "sha256": "c3101793ebabb3c4875d929701aa393e29e9286758842560a2e1572d5ef808ed",
+    "masterSha256": "c89153ff679dee724421773aed7b1f0fc490499a194ba57edeaa319f5ae05b45"
+  },
+  "masterQa": {
+    "durationSeconds": 57.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -9.74,
+    "rmsDbfs": -27.02,
+    "clippedSamples": 0,
+    "silent": false
+  },
+  "importedInstruments": [
+    "piano",
+    "piano",
+    "piano"
+  ]
+}

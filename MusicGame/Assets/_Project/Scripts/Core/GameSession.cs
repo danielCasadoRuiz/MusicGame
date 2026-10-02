@@ -163,6 +163,21 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
         return OpponentBag.Next(roster.opponents, cooldown, _selectionRng);
     }
 
+    // Last match song per opponent id — so a rival with 2+ songs never repeats the previous one.
+    private readonly System.Collections.Generic.Dictionary<string, AudioClip> _lastOpponentSong = new();
+
+    /// <summary>Random song from the opponent's level config, avoiding the one used the last time
+    /// this same opponent was fought (when it has another). Null if the level has no songs.</summary>
+    public AudioClip PickOpponentSong(OpponentDefinition opponent, OpponentLevelConfig level)
+    {
+        if (level == null) return null;
+        string key = opponent != null ? opponent.id : "";
+        _lastOpponentSong.TryGetValue(key, out var previous);
+        var song = level.GetRandomSong(previous);
+        _lastOpponentSong[key] = song;
+        return song;
+    }
+
     /// <summary>Called ONLY by FightMatchController the instant a match is decisively WON (one
     /// properly completed Runner → Fight cycle). Returns the current tier afterwards.</summary>
     public int RegisterCompletedSong() => Progression.RegisterCompletedSong();

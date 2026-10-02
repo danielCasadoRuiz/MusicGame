@@ -1,0 +1,101 @@
+{
+  "targetId": "Handel_1",
+  "composer": "G. F. Handel",
+  "work": "Messiah – Hallelujah Chorus",
+  "catalog": "HWV 56",
+  "movement": "Hallelujah Chorus",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=459",
+  "mutopiaId": "Mutopia-2015/01/17-459",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/HandelGF/hallelujah/hallelujah-mids.zip"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "sourceAttribution": "Typeset/transcribed by Joshua Koo for the Mutopia Project",
+  "sourceEdition": "Unknown",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds (11/12 parts; bass oboe on MuseScore Basic)",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrumental version: the Soprano/Alto/Tenor/Bass choir lines are played by flute, bass oboe, clarinet and bassoon (the MIDI import's assignment); trumpets corrected to the edition's 'Trombe in C'. Notes unchanged.",
+  "status": "USER_APPROVED_VARIANT",
+  "instrumentCorrections": [
+    {
+      "part": "Cornet, Trumpets:one",
+      "imported": "eb-cornet",
+      "corrected": "c-trumpet",
+      "sound": "brass.trumpet"
+    },
+    {
+      "part": "Flute, :Sop",
+      "imported": "flute",
+      "corrected": "soprano",
+      "sound": "voice.soprano"
+    },
+    {
+      "part": "Bass Oboe, :Alto",
+      "imported": "bass-oboe",
+      "corrected": "alto",
+      "sound": "voice.alto"
+    },
+    {
+      "part": "Clarinet, :Tenor",
+      "imported": "bb-clarinet",
+      "corrected": "tenor",
+      "sound": "voice.tenor"
+    },
+    {
+      "part": "Bassoon, :Bass",
+      "imported": "bassoon",
+      "corrected": "bass",
+      "sound": "voice.bass"
+    }
+  ],
+  "variantNote": "Instrumental version: the Soprano/Alto/Tenor/Bass choir lines are played by flute, bass oboe, clarinet and bassoon (the MIDI import's assignment); trumpets corrected to the edition's 'Trombe in C'. Notes unchanged.",
+  "unityAsset": "Assets/_Project/Audio/Music/Composers/Handel/Handel_HWV56_MessiahHallelujahChorus_HallelujahChorus.mp3",
+  "durationSeconds": 189.614,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Handel_1/PREVIEW_VoicesAsImported_NoChoir.wav",
+    "masterSamples": 8423100,
+    "trimmedLeadSamples": 166,
+    "trimmedTailSamples": 60975,
+    "encodedSamples": 8361959,
+    "durationSeconds": 189.614,
+    "bytes": 4551575,
+    "sha256": "a9791aea0b7885be6204f47f60cc1127540a426051a3fdf94177586ee64ac659",
+    "masterSha256": "75ffe194d6cf55d34cabc6c721cfe47dfe1c93dd4626b20f5a03ab3d5072ae8f"
+  },
+  "masterQa": {
+    "durationSeconds": 191.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -7.07,
+    "rmsDbfs": -25.3,
+    "clippedSamples": 0,
+    "silent": false
+  },
+  "importedInstruments": [
+    "oboe",
+    "bassoon",
+    "c-trumpet",
+    "timpani",
+    "violin",
+    "violin",
+    "viola",
+    "violoncello",
+    "soprano",
+    "alto",
+    "tenor",
+    "bass"
+  ],
+  "derivedFormat": {
+    "format": "WAV 44.1 kHz stereo 16-bit PCM (TPDF dither)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Handel_1/PREVIEW_VoicesAsImported_NoChoir.wav",
+    "fromSha256": "75ffe194d6cf55d34cabc6c721cfe47dfe1c93dd4626b20f5a03ab3d5072ae8f",
+    "gainApplied": 1.0,
+    "convertedAt": "2026-10-02"
+  }
+}

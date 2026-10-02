@@ -1,0 +1,62 @@
+{
+  "targetId": "Bach_3",
+  "composer": "J. S. Bach",
+  "work": "Orchestral Suite No. 3 – Air",
+  "catalog": "BWV 1068",
+  "movement": "II. Air",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=242",
+  "mutopiaId": "Mutopia-2008/10/28-242",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/BachJS/BWV1068/bach-air/bach-air-mids.zip"
+  ],
+  "sourceLicense": "Creative Commons Attribution-ShareAlike 3.0",
+  "sourceLicenseClass": "CC BY-SA",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+  "sourceAttribution": "Typeset/transcribed by jeff covey for the Mutopia Project",
+  "sourceEdition": "Bach-Gesellschaft",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "PASS",
+  "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 3.0 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/3.0/). Attribution: Typeset/transcribed by jeff covey for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=242.",
+  "unityAsset": "Assets/_Project/Audio/Music/Composers/Bach/Bach_BWV1068_OrchestralSuiteNo3Air_II_Air.mp3",
+  "durationSeconds": 153.135,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Bach_3/Bach_BWV1068_OrchestralSuiteNo3Air_II_Air.wav",
+    "masterSamples": 6835500,
+    "trimmedLeadSamples": 253,
+    "trimmedTailSamples": 81985,
+    "encodedSamples": 6753262,
+    "durationSeconds": 153.135,
+    "bytes": 3676369,
+    "sha256": "a327f69f8a2575a10147e269468cc61bb2bbdb56ec76fe42148fdbbfbf5a7ae1",
+    "masterSha256": "60e626c2b85d2931dbc5f7019bc9d36854d4cdb9ee077ef4ecdc79b111805fe9"
+  },
+  "masterQa": {
+    "durationSeconds": 155.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -9.67,
+    "rmsDbfs": -26.91,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "violin",
+    "violin",
+    "viola",
+    "violoncello"
+  ],
+  "derivedFormat": {
+    "format": "WAV 44.1 kHz stereo 16-bit PCM (TPDF dither)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Bach_3/Bach_BWV1068_OrchestralSuiteNo3Air_II_Air.wav",
+    "fromSha256": "60e626c2b85d2931dbc5f7019bc9d36854d4cdb9ee077ef4ecdc79b111805fe9",
+    "gainApplied": 1.0,
+    "convertedAt": "2026-10-02"
+  }
+}

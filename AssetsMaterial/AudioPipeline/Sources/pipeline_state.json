@@ -1,0 +1,1937 @@
+{
+  "Bach_1": {
+    "status": "REVIEW_MUSESOUNDS",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Bach\\BWV565ToccataAndFugueInDMinor",
+    "source": {
+      "targetId": "Bach_1",
+      "composer": "J. S. Bach",
+      "canonicalTitle": "Toccata and Fugue in D minor",
+      "catalog": "BWV 565",
+      "targetMovement": "Complete work",
+      "targetInstrumentation": "Organ",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1780",
+      "mutopiaId": "Mutopia-2011/09/11-1780",
+      "pageTitle": "Toccata and Fugue in D Minor",
+      "pageComposer": "J. S. Bach",
+      "opus": "BWV 565",
+      "sourceInstrumentation": "Organ",
+      "edition": "Bach-Gesellschaft Ausgabe, 1867",
+      "licence": "Public Domain",
+      "licenceStatus": "OK_PD",
+      "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+      "attribution": "Anonymous",
+      "lastUpdated": "2011/Sep/11.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/BachJS/BWV565/ToccataFugue/ToccataFugue.mid",
+          "file": "ToccataFugue.mid",
+          "sha256": "1aabd00967aded08d6633482c211af46f679d97f01cfeaca43c83a59dfeeeb6b",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/BachJS/BWV565/ToccataFugue/ToccataFugue.ly",
+          "file": "ToccataFugue.ly",
+          "sha256": "1640bbd2bf11a95e18db03fea285d30718254af0a694e1c36533d8109d71718c",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/BachJS/BWV565/ToccataFugue/ToccataFugue.mid",
+        "file": "ToccataFugue.mid",
+        "sha256": "1aabd00967aded08d6633482c211af46f679d97f01cfeaca43c83a59dfeeeb6b",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/BachJS/BWV565/ToccataFugue/ToccataFugue.ly",
+        "file": "ToccataFugue.ly",
+        "sha256": "1640bbd2bf11a95e18db03fea285d30718254af0a694e1c36533d8109d71718c",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "ToccataFugue.mid",
+      "member": null,
+      "evidence": "single-work page; ToccataFugue.ly title 'Toccata and Fugue in D Minor', subtitle 'BWV 565'",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Bach_1\\source.mid",
+      "sha256": "1aabd00967aded08d6633482c211af46f679d97f01cfeaca43c83a59dfeeeb6b"
+    },
+    "render": {
+      "midiSha256": "1aabd00967aded08d6633482c211af46f679d97f01cfeaca43c83a59dfeeeb6b",
+      "profile": "Muse Sounds",
+      "parts": 3,
+      "engineEvidence": {
+        "log": "MuseScore_261001_231240.log",
+        "museSamplerTracks": 0,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0",
+          "invalid audio source params for trackId: 1",
+          "invalid audio source params for trackId: 2",
+          "invalid audio source params for trackId: 3"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 3,
+      "importedInstruments": [
+        "organ",
+        "organ",
+        "organ"
+      ],
+      "expectedFamilies": [
+        "organ"
+      ],
+      "missingFamilies": [],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Bach_1\\Bach_BWV565_ToccataAndFugueInDMinor_CompleteWork.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Bach_1\\Bach_BWV565_ToccataAndFugueInDMinor_CompleteWork.wav",
+      "qa": {
+        "durationSeconds": 575.0,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -3.38,
+        "rmsDbfs": -23.08,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-01T23:12:58",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Bach_1/PREVIEW_Catedral_RT4.5.wav",
+      "masterSamples": 25430341,
+      "trimmedLeadSamples": 17,
+      "trimmedTailSamples": 23092,
+      "encodedSamples": 25407232,
+      "durationSeconds": 576.128,
+      "bytes": 13827761,
+      "sha256": "d6ba8bc9d4d60598469a701c9433edce3c69b71e885158bfa7c3769bad9ab067",
+      "masterSha256": "2d995ecf8e777b781da212fdde3ada8f168eeafdb57e6026ba6c7e6eb6666e73"
+    }
+  },
+  "Bach_2": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Bach_3": {
+    "status": "PASS",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Bach\\BWV1068OrchestralSuiteNo3Air",
+    "source": {
+      "targetId": "Bach_3",
+      "composer": "J. S. Bach",
+      "canonicalTitle": "Orchestral Suite No. 3  Air",
+      "catalog": "BWV 1068",
+      "targetMovement": "II. Air",
+      "targetInstrumentation": "Orchestra",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=242",
+      "mutopiaId": "Mutopia-2008/10/28-242",
+      "pageTitle": "Air",
+      "pageComposer": "J. S. Bach",
+      "opus": "BWV 1068, Mvmt. 2",
+      "sourceInstrumentation": "Orchestra",
+      "edition": "Bach-Gesellschaft",
+      "licence": "Creative Commons Attribution-ShareAlike 3.0",
+      "licenceStatus": "OK_CC_BY_SA",
+      "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "attribution": "jeff covey",
+      "lastUpdated": "2008/Oct/28.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/BachJS/BWV1068/bach-air/bach-air-mids.zip",
+          "file": "bach-air-mids.zip",
+          "sha256": "af2a0b1c1649cf212f7d358d48f0a591a48c4ac907aaa26773c422d039860bf2",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/BachJS/BWV1068/bach-air/bach-air-lys.zip",
+          "file": "bach-air-lys.zip",
+          "sha256": "e54bfbf7c15cc1e101b3d4359ac8da2af728c7b38323fb083f93b0e3cb299388",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/BachJS/BWV1068/bach-air/bach-air-mids.zip",
+        "file": "bach-air-mids.zip",
+        "sha256": "af2a0b1c1649cf212f7d358d48f0a591a48c4ac907aaa26773c422d039860bf2",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/BachJS/BWV1068/bach-air/bach-air-lys.zip",
+        "file": "bach-air-lys.zip",
+        "sha256": "e54bfbf7c15cc1e101b3d4359ac8da2af728c7b38323fb083f93b0e3cb299388",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "bach-air-mids.zip",
+      "member": "bach-air-score.mid",
+      "evidence": "full score MIDI (others are single parts); notes.ly: title 'Air', opus 'BWV 1068, Mvmt. 2'",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Bach_3\\source.mid",
+      "sha256": "35807002e83528038bd53bed791d71356c937ac792e8ba4c4aef8eb54ffe0859"
+    },
+    "render": {
+      "midiSha256": "35807002e83528038bd53bed791d71356c937ac792e8ba4c4aef8eb54ffe0859",
+      "profile": "Muse Sounds",
+      "parts": 4,
+      "engineEvidence": {
+        "log": "MuseScore_261001_231302.log",
+        "museSamplerTracks": 4,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 0,
+      "importedInstruments": [
+        "violin",
+        "violin",
+        "viola",
+        "violoncello"
+      ],
+      "expectedFamilies": [],
+      "missingFamilies": [],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Bach_3\\Bach_BWV1068_OrchestralSuiteNo3Air_II_Air.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Bach_3\\Bach_BWV1068_OrchestralSuiteNo3Air_II_Air.wav",
+      "qa": {
+        "durationSeconds": 155.0,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -9.67,
+        "rmsDbfs": -26.91,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-01T23:13:26",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Bach_3/Bach_BWV1068_OrchestralSuiteNo3Air_II_Air.wav",
+      "masterSamples": 6835500,
+      "trimmedLeadSamples": 253,
+      "trimmedTailSamples": 81985,
+      "encodedSamples": 6753262,
+      "durationSeconds": 153.135,
+      "bytes": 3676369,
+      "sha256": "a327f69f8a2575a10147e269468cc61bb2bbdb56ec76fe42148fdbbfbf5a7ae1",
+      "masterSha256": "60e626c2b85d2931dbc5f7019bc9d36854d4cdb9ee077ef4ecdc79b111805fe9"
+    }
+  },
+  "Bach_4": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Bach_5": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Beethoven_1": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Beethoven_2": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Beethoven_3": {
+    "status": "PASS",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Beethoven\\Op27No2PianoSonataNo14Moonlight",
+    "source": {
+      "targetId": "Beethoven_3",
+      "composer": "L. van Beethoven",
+      "canonicalTitle": "Piano Sonata No. 14 'Moonlight'",
+      "catalog": "Op. 27 No. 2",
+      "targetMovement": "I. Adagio sostenuto",
+      "targetInstrumentation": "Solo piano",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=276",
+      "mutopiaId": "Mutopia-2007/02/11-276",
+      "pageTitle": "Sonata No. 14 “Moonlight”",
+      "pageComposer": "L. V. Beethoven",
+      "opus": "Op. 27, No. 2",
+      "sourceInstrumentation": "Piano",
+      "edition": "Berners, 1908 (edited by A. Winterberger)",
+      "licence": "Creative Commons Attribution-ShareAlike 2.5",
+      "licenceStatus": "OK_CC_BY_SA",
+      "licenceUrl": "http://creativecommons.org/licenses/by-sa/2.5/",
+      "attribution": "Stewart Holmes",
+      "lastUpdated": "2007/Feb/11.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/O27/moonlight/moonlight-mids.zip",
+          "file": "moonlight-mids.zip",
+          "sha256": "94915b176f0b999919a6cd1025a45ec8dd0a454dab33b2b332c5026291ea91f5",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/O27/moonlight/moonlight-lys.zip",
+          "file": "moonlight-lys.zip",
+          "sha256": "3863df81f0a3141f3ea7dd901efd9929f90e32c577377b99a7f7ff81b6b33990",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/O27/moonlight/moonlight-mids.zip",
+        "file": "moonlight-mids.zip",
+        "sha256": "94915b176f0b999919a6cd1025a45ec8dd0a454dab33b2b332c5026291ea91f5",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/O27/moonlight/moonlight-lys.zip",
+        "file": "moonlight-lys.zip",
+        "sha256": "3863df81f0a3141f3ea7dd901efd9929f90e32c577377b99a7f7ff81b6b33990",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "moonlight-mids.zip",
+      "member": "moonlight1.mid",
+      "evidence": "moonlight1/2/3 = the three movements; target I. Adagio sostenuto = moonlight1",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Beethoven_3\\source.mid",
+      "sha256": "a34e969c4957f0e9e98fc9ff0278cc1284931bdae6d463469797faa2b73a9c5c"
+    },
+    "render": {
+      "midiSha256": "a34e969c4957f0e9e98fc9ff0278cc1284931bdae6d463469797faa2b73a9c5c",
+      "profile": "Muse Sounds",
+      "parts": 2,
+      "engineEvidence": {
+        "log": "MuseScore_261001_231330.log",
+        "museSamplerTracks": 2,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 0,
+      "importedInstruments": [
+        "piano",
+        "piano"
+      ],
+      "expectedFamilies": [
+        "piano"
+      ],
+      "missingFamilies": [],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Beethoven_3\\Beethoven_Op27No2_PianoSonataNo14Moonlight_I_AdagioSostenuto.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Beethoven_3\\Beethoven_Op27No2_PianoSonataNo14Moonlight_I_AdagioSostenuto.wav",
+      "qa": {
+        "durationSeconds": 279.0,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -10.08,
+        "rmsDbfs": -27.83,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-01T23:13:45",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Beethoven_3/Beethoven_Op27No2_PianoSonataNo14Moonlight_I_AdagioSostenuto.wav",
+      "masterSamples": 12303900,
+      "trimmedLeadSamples": 71,
+      "trimmedTailSamples": 116953,
+      "encodedSamples": 12186876,
+      "durationSeconds": 276.346,
+      "bytes": 6633012,
+      "sha256": "e3aff94534657ebc260f6f8cadabe239c6ff17a3b37b8890344e0a71140b1c25",
+      "masterSha256": "ad82aae46d8a8c483ad91b67ee1ca14ffdf75b9a277165c1e1655689510f0eeb"
+    }
+  },
+  "Beethoven_4": {
+    "status": "PASS",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Beethoven\\WoO59FurElise",
+    "source": {
+      "targetId": "Beethoven_4",
+      "composer": "L. van Beethoven",
+      "canonicalTitle": "Fur Elise",
+      "catalog": "WoO 59",
+      "targetMovement": "Complete work",
+      "targetInstrumentation": "Solo piano",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=931",
+      "mutopiaId": "Mutopia-2015/08/18-931",
+      "pageTitle": "Für Elise",
+      "pageComposer": "L. V. Beethoven",
+      "opus": "WoO 59",
+      "sourceInstrumentation": "Piano",
+      "edition": "Breitkopf & Härtel, 1888",
+      "licence": "Public Domain",
+      "licenceStatus": "OK_PD",
+      "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+      "attribution": "Stelios Samelis",
+      "lastUpdated": "2015/Aug/18.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/WoO59/fur_Elise_WoO59/fur_Elise_WoO59.mid",
+          "file": "fur_Elise_WoO59.mid",
+          "sha256": "1c12c21c7bbf4cf163896732672648a69d497636059837abd153c71abe50215a",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/WoO59/fur_Elise_WoO59/fur_Elise_WoO59.ly",
+          "file": "fur_Elise_WoO59.ly",
+          "sha256": "828a7bd1b42e441fe1b0eb0389ba46f1502dab28bbe488389e635fb446ba7a67",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/WoO59/fur_Elise_WoO59/fur_Elise_WoO59.mid",
+        "file": "fur_Elise_WoO59.mid",
+        "sha256": "1c12c21c7bbf4cf163896732672648a69d497636059837abd153c71abe50215a",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/WoO59/fur_Elise_WoO59/fur_Elise_WoO59.ly",
+        "file": "fur_Elise_WoO59.ly",
+        "sha256": "828a7bd1b42e441fe1b0eb0389ba46f1502dab28bbe488389e635fb446ba7a67",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "fur_Elise_WoO59.mid",
+      "member": null,
+      "evidence": "single-work page; ly title 'Für Elise', subtitle 'WoO 59'",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Beethoven_4\\source.mid",
+      "sha256": "1c12c21c7bbf4cf163896732672648a69d497636059837abd153c71abe50215a"
+    },
+    "render": {
+      "midiSha256": "1c12c21c7bbf4cf163896732672648a69d497636059837abd153c71abe50215a",
+      "profile": "Muse Sounds",
+      "parts": 2,
+      "engineEvidence": {
+        "log": "MuseScore_261001_231348.log",
+        "museSamplerTracks": 2,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 0,
+      "importedInstruments": [
+        "piano",
+        "piano"
+      ],
+      "expectedFamilies": [
+        "piano"
+      ],
+      "missingFamilies": [],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Beethoven_4\\Beethoven_WoO59_FurElise_CompleteWork.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Beethoven_4\\Beethoven_WoO59_FurElise_CompleteWork.wav",
+      "qa": {
+        "durationSeconds": 134.25,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -10.04,
+        "rmsDbfs": -27.58,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-01T23:13:56",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Beethoven_4/Beethoven_WoO59_FurElise_CompleteWork.wav",
+      "masterSamples": 5920425,
+      "trimmedLeadSamples": 100,
+      "trimmedTailSamples": 118637,
+      "encodedSamples": 5801688,
+      "durationSeconds": 131.558,
+      "bytes": 3158517,
+      "sha256": "f72edcd51874efdc29beb3ba38ac17786de55644c5898bcae07c53ba5c357578",
+      "masterSha256": "09f92a38c05d3f292f43c04b6e3b932579a6cfb17ebae646fd3584b96562ea3d"
+    }
+  },
+  "Beethoven_5": {
+    "status": "PASS",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Beethoven\\Op92SymphonyNo7",
+    "source": {
+      "targetId": "Beethoven_5",
+      "composer": "L. van Beethoven",
+      "canonicalTitle": "Symphony No. 7",
+      "catalog": "Op. 92",
+      "targetMovement": "II. Allegretto",
+      "targetInstrumentation": "Full orchestra",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=595",
+      "mutopiaId": "Mutopia-2005/08/21-595",
+      "pageTitle": "Symphony No. 7 in A Major (2nd Movement: Allegretto)",
+      "pageComposer": "L. V. Beethoven",
+      "opus": "Op. 92",
+      "sourceInstrumentation": "Orchestra: Flutes, Oboes, Clarinets, Bassoons, Horns, Trumpets, Timpani, Violins, Viola, 'Cello, Bass",
+      "edition": "Litolff Verlag",
+      "licence": "Public Domain",
+      "licenceStatus": "OK_PD",
+      "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+      "attribution": "Stelios Samelis",
+      "lastUpdated": "2005/Aug/21.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/O92/Symphony7_2/Symphony7_2.mid",
+          "file": "Symphony7_2.mid",
+          "sha256": "7cf810b4625b9a272d3a0a9153d8beb5750fa3ee64122dc9f27b7661e997b903",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/O92/Symphony7_2/Symphony7_2-lys.zip",
+          "file": "Symphony7_2-lys.zip",
+          "sha256": "89aa0339e90b5166a641f5411a90b79dc7d60d0b0c039e4cfef2ea2eb1b89657",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/O92/Symphony7_2/Symphony7_2.mid",
+        "file": "Symphony7_2.mid",
+        "sha256": "7cf810b4625b9a272d3a0a9153d8beb5750fa3ee64122dc9f27b7661e997b903",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/O92/Symphony7_2/Symphony7_2-lys.zip",
+        "file": "Symphony7_2-lys.zip",
+        "sha256": "89aa0339e90b5166a641f5411a90b79dc7d60d0b0c039e4cfef2ea2eb1b89657",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "Symphony7_2.mid",
+      "member": null,
+      "evidence": "page covers only the 2nd movement; ly subtitle 'Allegretto'; full orchestral score",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Beethoven_5\\source.mid",
+      "sha256": "7cf810b4625b9a272d3a0a9153d8beb5750fa3ee64122dc9f27b7661e997b903"
+    },
+    "render": {
+      "midiSha256": "7cf810b4625b9a272d3a0a9153d8beb5750fa3ee64122dc9f27b7661e997b903",
+      "profile": "Muse Sounds",
+      "parts": 12,
+      "instrumentCorrections": [
+        {
+          "part": "Piccolo Clarinet, three",
+          "imported": "piccolo-clarinet",
+          "corrected": "bb-clarinet",
+          "sound": "wind.reed.clarinet.bflat"
+        },
+        {
+          "part": "English Horn, five",
+          "imported": "english-horn",
+          "corrected": "horn",
+          "sound": "brass.french-horn"
+        },
+        {
+          "part": "Baroque Oboe, six",
+          "imported": "baroque-oboe",
+          "corrected": "c-trumpet",
+          "sound": "brass.trumpet"
+        },
+        {
+          "part": "Contrabass, twelve",
+          "imported": "contrabass",
+          "corrected": "contrabasses",
+          "sound": "strings.contrabass"
+        }
+      ],
+      "engineEvidence": {
+        "log": "MuseScore_261002_000006.log",
+        "museSamplerTracks": 12,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 0,
+      "importedInstruments": [
+        "flute",
+        "oboe",
+        "bb-clarinet",
+        "bassoon",
+        "horn",
+        "c-trumpet",
+        "timpani",
+        "violin",
+        "violin",
+        "viola",
+        "violoncello",
+        "contrabasses"
+      ],
+      "expectedFamilies": [],
+      "missingFamilies": [],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Beethoven_5\\Beethoven_Op92_SymphonyNo7_II_Allegretto.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Beethoven_5\\Beethoven_Op92_SymphonyNo7_II_Allegretto.wav",
+      "qa": {
+        "durationSeconds": 441.95,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -4.67,
+        "rmsDbfs": -23.24,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-02T00:00:55",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Beethoven_5/Beethoven_Op92_SymphonyNo7_II_Allegretto.wav",
+      "masterSamples": 19489862,
+      "trimmedLeadSamples": 245,
+      "trimmedTailSamples": 113765,
+      "encodedSamples": 19375852,
+      "durationSeconds": 439.362,
+      "bytes": 10545737,
+      "sha256": "3354545a82cc9b27f682104373e05f2bfe0a2bf70cfd0d497eb45e7bed69cbdc",
+      "masterSha256": "88755cc3b0a3c0bc657259f6a89fd683e4e83d03ad0a01f0cdbc337451c2feb5"
+    }
+  },
+  "Brahms_1": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Brahms_2": {
+    "status": "REVIEW_BAD_INSTRUMENTATION",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Brahms\\Op49No4WiegenliedBrahmsLullaby",
+    "source": {
+      "targetId": "Brahms_2",
+      "composer": "Johannes Brahms",
+      "canonicalTitle": "Wiegenlied (Brahms' Lullaby)",
+      "catalog": "Op. 49 No. 4",
+      "targetMovement": "Complete song",
+      "targetInstrumentation": "Voice + piano",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1037",
+      "mutopiaId": "Mutopia-2007/11/04-1037",
+      "pageTitle": "Wiegenlied",
+      "pageComposer": "J. Brahms",
+      "opus": "Op. 49, No. 4",
+      "sourceInstrumentation": "Voice and Piano",
+      "edition": "Indiana University: http://www.dlib.indiana.edu/variations/scores/bgn9130/index1.html",
+      "licence": "Public Domain",
+      "licenceStatus": "OK_PD",
+      "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+      "attribution": "森 章吾",
+      "lastUpdated": "2007/Nov/04.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/BrahmsJ/O49/Wiegenlied/Wiegenlied-mids.zip",
+          "file": "Wiegenlied-mids.zip",
+          "sha256": "2d2fd42d81dc11ce6d10c6fa0ca9e15b02bd2fea3badf3b1f56da683c6922d41",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/BrahmsJ/O49/Wiegenlied/Wiegenlied-lys.zip",
+          "file": "Wiegenlied-lys.zip",
+          "sha256": "30a426c3a10b6b4395ec725918cb213772a5bfc4828dc71e3b5c7ac2b9040ffc",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/BrahmsJ/O49/Wiegenlied/Wiegenlied-mids.zip",
+        "file": "Wiegenlied-mids.zip",
+        "sha256": "2d2fd42d81dc11ce6d10c6fa0ca9e15b02bd2fea3badf3b1f56da683c6922d41",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/BrahmsJ/O49/Wiegenlied/Wiegenlied-lys.zip",
+        "file": "Wiegenlied-lys.zip",
+        "sha256": "30a426c3a10b6b4395ec725918cb213772a5bfc4828dc71e3b5c7ac2b9040ffc",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "Wiegenlied-mids.zip",
+      "member": "Wiegenlied.mid",
+      "evidence": "Wiegenlied.ly = voice staff + piano (original); Wiegenlied_piano_SATB is an SATB arrangement — not used",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Brahms_2\\source.mid",
+      "sha256": "0ca12af297a5b55228dff2428a157b2811ff3f4e88098ad4f9edce1e3964aef1"
+    },
+    "render": {
+      "midiSha256": "0ca12af297a5b55228dff2428a157b2811ff3f4e88098ad4f9edce1e3964aef1",
+      "profile": "Muse Sounds",
+      "parts": 3,
+      "engineEvidence": {
+        "log": "MuseScore_261001_231504.log",
+        "museSamplerTracks": 3,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 0,
+      "importedInstruments": [
+        "piano",
+        "piano",
+        "piano"
+      ],
+      "expectedFamilies": [
+        "voice",
+        "piano"
+      ],
+      "missingFamilies": [
+        "voice"
+      ],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Brahms_2\\Brahms_Op49No4_Wiegenlied_CompleteSong.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Brahms_2\\Brahms_Op49No4_Wiegenlied_CompleteSong.wav",
+      "qa": {
+        "durationSeconds": 57.0,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -9.74,
+        "rmsDbfs": -27.02,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-01T23:15:10",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Brahms_2/Brahms_Op49No4_Wiegenlied_CompleteSong.wav",
+      "masterSamples": 2513700,
+      "trimmedLeadSamples": 186,
+      "trimmedTailSamples": 121390,
+      "encodedSamples": 2392124,
+      "durationSeconds": 54.243,
+      "bytes": 1302778,
+      "sha256": "c3101793ebabb3c4875d929701aa393e29e9286758842560a2e1572d5ef808ed",
+      "masterSha256": "c89153ff679dee724421773aed7b1f0fc490499a194ba57edeaa319f5ae05b45"
+    }
+  },
+  "Brahms_3": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Brahms_4": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Brahms_5": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Chopin_1": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Chopin_2": {
+    "status": "PASS",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Chopin\\Op66FantaisieImpromptu",
+    "source": {
+      "targetId": "Chopin_2",
+      "composer": "Frédéric Chopin",
+      "canonicalTitle": "Fantaisie-Impromptu",
+      "catalog": "Op. 66",
+      "targetMovement": "Complete work",
+      "targetInstrumentation": "Solo piano",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1693",
+      "mutopiaId": "Mutopia-2009/09/05-1693",
+      "pageTitle": "Fantaisie-Impromptu",
+      "pageComposer": "F. F. Chopin",
+      "opus": "Op. 66",
+      "sourceInstrumentation": "Piano",
+      "edition": "Herrmann Scholtz (1845-1918)",
+      "licence": "Public Domain",
+      "licenceStatus": "OK_PD",
+      "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+      "attribution": "Guy D. Lederfein",
+      "lastUpdated": "2009/Sep/05.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/ChopinFF/O66/chopin_fantaisie-impromptu/chopin_fantaisie-impromptu.mid",
+          "file": "chopin_fantaisie-impromptu.mid",
+          "sha256": "b29f6add7473b6e931c2e66349e860bf0e884cf68e19e90420a4870aae689f96",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/ChopinFF/O66/chopin_fantaisie-impromptu/chopin_fantaisie-impromptu.ly",
+          "file": "chopin_fantaisie-impromptu.ly",
+          "sha256": "3283d648e28120624ceaeec59cf2afc4bc25ef8ac18b1a3108c053c3f562cd33",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/ChopinFF/O66/chopin_fantaisie-impromptu/chopin_fantaisie-impromptu.mid",
+        "file": "chopin_fantaisie-impromptu.mid",
+        "sha256": "b29f6add7473b6e931c2e66349e860bf0e884cf68e19e90420a4870aae689f96",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/ChopinFF/O66/chopin_fantaisie-impromptu/chopin_fantaisie-impromptu.ly",
+        "file": "chopin_fantaisie-impromptu.ly",
+        "sha256": "3283d648e28120624ceaeec59cf2afc4bc25ef8ac18b1a3108c053c3f562cd33",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "chopin_fantaisie-impromptu.mid",
+      "member": null,
+      "evidence": "single-work page; ly title 'Fantaisie-Impromptu', opus 'Op. 66'",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Chopin_2\\source.mid",
+      "sha256": "b29f6add7473b6e931c2e66349e860bf0e884cf68e19e90420a4870aae689f96"
+    },
+    "render": {
+      "midiSha256": "b29f6add7473b6e931c2e66349e860bf0e884cf68e19e90420a4870aae689f96",
+      "profile": "Muse Sounds",
+      "parts": 2,
+      "engineEvidence": {
+        "log": "MuseScore_261001_230958.log",
+        "museSamplerTracks": 2,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 0,
+      "importedInstruments": [
+        "piano",
+        "piano"
+      ],
+      "expectedFamilies": [
+        "piano"
+      ],
+      "missingFamilies": [],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Chopin_2\\Chopin_Op66_Fantaisie_CompleteWork.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Chopin_2\\Chopin_Op66_Fantaisie_CompleteWork.wav",
+      "qa": {
+        "durationSeconds": 256.52,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -10.31,
+        "rmsDbfs": -25.86,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-01T23:10:09",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Chopin_2/Chopin_Op66_Fantaisie_CompleteWork.wav",
+      "masterSamples": 11312664,
+      "trimmedLeadSamples": 98,
+      "trimmedTailSamples": 108742,
+      "encodedSamples": 11203824,
+      "durationSeconds": 254.055,
+      "bytes": 6098233,
+      "sha256": "25e0a9c661893ea43f45c347af75fc03c40734c3888e765256ff389aedf983ac",
+      "masterSha256": "565b214837c1552e71a5337c8217c4a0e1f79bc66b344f77c9a5cd856098008d"
+    }
+  },
+  "Chopin_3": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Chopin_4": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Chopin_5": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Handel_1": {
+    "status": "PASS",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Handel\\HWV56MessiahHallelujahChorus",
+    "source": {
+      "targetId": "Handel_1",
+      "composer": "G. F. Handel",
+      "canonicalTitle": "Messiah  Hallelujah Chorus",
+      "catalog": "HWV 56",
+      "targetMovement": "Hallelujah Chorus",
+      "targetInstrumentation": "Choir + orchestra",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=459",
+      "mutopiaId": "Mutopia-2015/01/17-459",
+      "pageTitle": "Hallelujah Chorus from Messiah",
+      "pageComposer": "G. F. Handel",
+      "opus": "HWV 56,",
+      "sourceInstrumentation": "Voice (SATB), Orchestra: Strings (Violins, Viola, Cello, Bass), Oboes, Bassoons, Trumpet, Timpani",
+      "edition": "Unknown",
+      "licence": "Public Domain",
+      "licenceStatus": "OK_PD",
+      "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+      "attribution": "Joshua Koo",
+      "lastUpdated": "2015/Jan/17.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/HandelGF/hallelujah/hallelujah-mids.zip",
+          "file": "hallelujah-mids.zip",
+          "sha256": "74bf4f72e3c534d3cea991885106a829c0bb38e362f13432e24b85a7981277d3",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/HandelGF/hallelujah/hallelujah-lys.zip",
+          "file": "hallelujah-lys.zip",
+          "sha256": "bece0f8dc876fbddd006d177a66f243b7813d4074bed9f276b03d10b665730ab",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/HandelGF/hallelujah/hallelujah-mids.zip",
+        "file": "hallelujah-mids.zip",
+        "sha256": "74bf4f72e3c534d3cea991885106a829c0bb38e362f13432e24b85a7981277d3",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/HandelGF/hallelujah/hallelujah-lys.zip",
+        "file": "hallelujah-lys.zip",
+        "sha256": "bece0f8dc876fbddd006d177a66f243b7813d4074bed9f276b03d10b665730ab",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "hallelujah-mids.zip",
+      "member": "combined-score.mid",
+      "evidence": "combined-score.ly includes oboe, bassoon, trumpet ×2, timpani, strings, SATB = original scoring; Clarinet/Trombone MIDIs are separate add-on parts, NOT in the combined score",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Handel_1\\source.mid",
+      "sha256": "d7a59451ba87bf138d0a6d5be589db9f07c0a9268361d91c9033a136d181c1a5"
+    },
+    "render": {
+      "midiSha256": "d7a59451ba87bf138d0a6d5be589db9f07c0a9268361d91c9033a136d181c1a5",
+      "profile": "Muse Sounds",
+      "parts": 12,
+      "instrumentCorrections": [
+        {
+          "part": "Cornet, Trumpets:one",
+          "imported": "eb-cornet",
+          "corrected": "c-trumpet",
+          "sound": "brass.trumpet"
+        },
+        {
+          "part": "Flute, :Sop",
+          "imported": "flute",
+          "corrected": "soprano",
+          "sound": "voice.soprano"
+        },
+        {
+          "part": "Bass Oboe, :Alto",
+          "imported": "bass-oboe",
+          "corrected": "alto",
+          "sound": "voice.alto"
+        },
+        {
+          "part": "Clarinet, :Tenor",
+          "imported": "bb-clarinet",
+          "corrected": "tenor",
+          "sound": "voice.tenor"
+        },
+        {
+          "part": "Bassoon, :Bass",
+          "imported": "bassoon",
+          "corrected": "bass",
+          "sound": "voice.bass"
+        }
+      ],
+      "engineEvidence": {
+        "log": "MuseScore_261001_235907.log",
+        "museSamplerTracks": 12,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 0,
+      "importedInstruments": [
+        "oboe",
+        "bassoon",
+        "c-trumpet",
+        "timpani",
+        "violin",
+        "violin",
+        "viola",
+        "violoncello",
+        "soprano",
+        "alto",
+        "tenor",
+        "bass"
+      ],
+      "expectedFamilies": [
+        "choir",
+        "violin",
+        "oboe",
+        "bassoon",
+        "trumpet",
+        "timpani"
+      ],
+      "missingFamilies": [],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Handel_1\\Handel_HWV56_MessiahHallelujahChorus_HallelujahChorus.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Handel_1\\Handel_HWV56_MessiahHallelujahChorus_HallelujahChorus.wav",
+      "qa": {
+        "durationSeconds": 191.0,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -3.97,
+        "rmsDbfs": -22.81,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-01T23:59:35",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Handel_1/PREVIEW_VoicesAsImported_NoChoir.wav",
+      "masterSamples": 8423100,
+      "trimmedLeadSamples": 166,
+      "trimmedTailSamples": 60975,
+      "encodedSamples": 8361959,
+      "durationSeconds": 189.614,
+      "bytes": 4551575,
+      "sha256": "a9791aea0b7885be6204f47f60cc1127540a426051a3fdf94177586ee64ac659",
+      "masterSha256": "75ffe194d6cf55d34cabc6c721cfe47dfe1c93dd4626b20f5a03ab3d5072ae8f"
+    }
+  },
+  "Handel_2": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Handel_3": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Handel_4": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Handel_5": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Haydn_1": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Haydn_2": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Haydn_3": {
+    "status": "PASS",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Haydn\\Op76No3StringQuartetOp76No3Emperor",
+    "source": {
+      "targetId": "Haydn_3",
+      "composer": "Joseph Haydn",
+      "canonicalTitle": "String Quartet Op. 76 No. 3 'Emperor'",
+      "catalog": "Op. 76 No. 3",
+      "targetMovement": "II. Poco adagio, cantabile",
+      "targetInstrumentation": "String quartet",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=385",
+      "mutopiaId": "Mutopia-2015/10/16-385",
+      "pageTitle": "String Quartet in C major",
+      "pageComposer": "F. J. Haydn",
+      "opus": "Op. 76 No. 3",
+      "sourceInstrumentation": "String Quartet",
+      "edition": "Kalmus",
+      "licence": "Public Domain",
+      "licenceStatus": "OK_PD",
+      "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+      "attribution": "Maurizio Tomasi",
+      "lastUpdated": "2015/Oct/16.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/HaydnFJ/O76/op76-n3/op76-n3-mids.zip",
+          "file": "op76-n3-mids.zip",
+          "sha256": "ebd11b1e4573d91abcabc458284b683799c2e8d3619f81d7b19ad9abff988dca",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/HaydnFJ/O76/op76-n3/op76-n3-lys.zip",
+          "file": "op76-n3-lys.zip",
+          "sha256": "9cfc24290db4e822e324df4a0d39a3e71d95dfdef2afc3ff1cf59e91cbd1d684",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/HaydnFJ/O76/op76-n3/op76-n3-mids.zip",
+        "file": "op76-n3-mids.zip",
+        "sha256": "ebd11b1e4573d91abcabc458284b683799c2e8d3619f81d7b19ad9abff988dca",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/HaydnFJ/O76/op76-n3/op76-n3-lys.zip",
+        "file": "op76-n3-lys.zip",
+        "sha256": "9cfc24290db4e822e324df4a0d39a3e71d95dfdef2afc3ff1cf59e91cbd1d684",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "op76-n3-mids.zip",
+      "member": "score-1.mid",
+      "evidence": "page = Op. 76 No. 3 (lys defs: 'String Quartet in C major (Emperor)'); score/-1/-2/-3 = movements I–IV; target II = score-1",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Haydn_3\\source.mid",
+      "sha256": "289f67299f465aede2f0729e0f861bf4ef039801bc138b45947c9b92f5f75fdc"
+    },
+    "render": {
+      "midiSha256": "289f67299f465aede2f0729e0f861bf4ef039801bc138b45947c9b92f5f75fdc",
+      "profile": "Muse Sounds",
+      "parts": 4,
+      "engineEvidence": {
+        "log": "MuseScore_261001_231557.log",
+        "museSamplerTracks": 4,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 0,
+      "importedInstruments": [
+        "violin",
+        "violin",
+        "violoncello",
+        "violoncello"
+      ],
+      "expectedFamilies": [],
+      "missingFamilies": [],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Haydn_3\\Haydn_Op76No3_StringQuartetOp76No3Emperor_II_PocoAdagio_Cantabile.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Haydn_3\\Haydn_Op76No3_StringQuartetOp76No3Emperor_II_PocoAdagio_Cantabile.wav",
+      "qa": {
+        "durationSeconds": 528.0,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -8.98,
+        "rmsDbfs": -28.84,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-01T23:16:48",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Haydn_3/Haydn_Op76No3_StringQuartetOp76No3Emperor_II_PocoAdagio_Cantabile.wav",
+      "masterSamples": 23284800,
+      "trimmedLeadSamples": 289,
+      "trimmedTailSamples": 178405,
+      "encodedSamples": 23106106,
+      "durationSeconds": 523.948,
+      "bytes": 12575764,
+      "sha256": "efbd2d59c814d2d465c7cc91c69bc5e48837b6048e807bb9f45ef30ef7d1dc8a",
+      "masterSha256": "541901122c21f4194f6eb057569d28cee5e2ddba9a63637e436e6918e3fb88ec"
+    }
+  },
+  "Haydn_4": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Haydn_5": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Monteverdi_1": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Monteverdi_2": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Monteverdi_3": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Monteverdi_4": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Monteverdi_5": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Mozart_1": {
+    "status": "PASS",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Mozart\\K525EineKleineNachtmusik",
+    "source": {
+      "targetId": "Mozart_1",
+      "composer": "W. A. Mozart",
+      "canonicalTitle": "Eine kleine Nachtmusik",
+      "catalog": "K. 525",
+      "targetMovement": "I. Allegro",
+      "targetInstrumentation": "String orchestra",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=2230",
+      "mutopiaId": "Mutopia-2018/08/04-2230",
+      "pageTitle": "Eine Kleine Nachtmusik",
+      "pageComposer": "W. A. Mozart",
+      "opus": "KV525",
+      "sourceInstrumentation": "Orchestra: Violins, Viola, Cello",
+      "edition": "Breitkopf & Härtel, 1883",
+      "licence": "Public Domain",
+      "licenceStatus": "OK_PD",
+      "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+      "attribution": "Mike Blackstock",
+      "lastUpdated": "2018/Aug/04.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/MozartWA/KV525/MozartWA-KV525/MozartWA-KV525-mids.zip",
+          "file": "MozartWA-KV525-mids.zip",
+          "sha256": "aa37111c9f339532f26c29d6648bde8c39d92d785f87d14a33e9e9914fa472a7",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/MozartWA/KV525/MozartWA-KV525/MozartWA-KV525-lys.zip",
+          "file": "MozartWA-KV525-lys.zip",
+          "sha256": "911a4a0909174b6bae6068d3f4d2cb73e615f24f5d46ca2663336f2049bf4b24",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/MozartWA/KV525/MozartWA-KV525/MozartWA-KV525-mids.zip",
+        "file": "MozartWA-KV525-mids.zip",
+        "sha256": "aa37111c9f339532f26c29d6648bde8c39d92d785f87d14a33e9e9914fa472a7",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/MozartWA/KV525/MozartWA-KV525/MozartWA-KV525-lys.zip",
+        "file": "MozartWA-KV525-lys.zip",
+        "sha256": "911a4a0909174b6bae6068d3f4d2cb73e615f24f5d46ca2663336f2049bf4b24",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "MozartWA-KV525-mids.zip",
+      "member": "MozartWA-KV525-mov-01.mid",
+      "evidence": "mov-01..04 = lys folders 01_allegro / 02_andante / 03_allegretto / 04_allegro; target I. Allegro = mov-01",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Mozart_1\\source.mid",
+      "sha256": "7a6f71b2b7763524a56322723c774d584af006dd980289fce60ebd93a91a16d7"
+    },
+    "render": {
+      "midiSha256": "7a6f71b2b7763524a56322723c774d584af006dd980289fce60ebd93a91a16d7",
+      "profile": "Muse Sounds",
+      "parts": 4,
+      "engineEvidence": {
+        "log": "MuseScore_261001_231013.log",
+        "museSamplerTracks": 4,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 0,
+      "importedInstruments": [
+        "violin",
+        "violin",
+        "viola",
+        "violoncello"
+      ],
+      "expectedFamilies": [
+        "violin",
+        "viola",
+        "cello"
+      ],
+      "missingFamilies": [],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Mozart_1\\Mozart_K525_EineKleineNachtmusik_I_Allegro.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Mozart_1\\Mozart_K525_EineKleineNachtmusik_I_Allegro.wav",
+      "qa": {
+        "durationSeconds": 252.09,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -13.41,
+        "rmsDbfs": -30.77,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-01T23:10:45",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Mozart_1/Mozart_K525_EineKleineNachtmusik_I_Allegro.wav",
+      "masterSamples": 11117169,
+      "trimmedLeadSamples": 342,
+      "trimmedTailSamples": 103267,
+      "encodedSamples": 11013560,
+      "durationSeconds": 249.741,
+      "bytes": 5994788,
+      "sha256": "a1dd49da50c0b101d681e81a8068996e22cbac67c573629c217df3a9cb071588",
+      "masterSha256": "5be6688de563fed4ebf8fc595d58a55b25529e6ec6415ed5a10ff06c9db1545d"
+    }
+  },
+  "Mozart_2": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Mozart_3": {
+    "status": "PASS",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Mozart\\K331PianoSonataNo11RondoAllaTurca",
+    "source": {
+      "targetId": "Mozart_3",
+      "composer": "W. A. Mozart",
+      "canonicalTitle": "Piano Sonata No. 11  Rondo alla Turca",
+      "catalog": "K. 331",
+      "targetMovement": "III. Alla Turca",
+      "targetInstrumentation": "Solo piano",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=108",
+      "mutopiaId": "Mutopia-2015/08/13-108",
+      "pageTitle": "Sonate Opus KV 331 - Rondo Alla Turca",
+      "pageComposer": "W. A. Mozart",
+      "opus": "KV 331",
+      "sourceInstrumentation": "Piano",
+      "edition": "IMSLP",
+      "licence": "Public Domain",
+      "licenceStatus": "OK_PD",
+      "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+      "attribution": "Rune Zedeler and Chris Sawer",
+      "lastUpdated": "2015/Aug/13.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/MozartWA/KV331/KV331_3_RondoAllaTurca/KV331_3_RondoAllaTurca.mid",
+          "file": "KV331_3_RondoAllaTurca.mid",
+          "sha256": "c14299cbdd34c8b2081da84dc06519ef8a52a0d589ee53c758d28b8e3d727d1c",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/MozartWA/KV331/KV331_3_RondoAllaTurca/KV331_3_RondoAllaTurca-lys.zip",
+          "file": "KV331_3_RondoAllaTurca-lys.zip",
+          "sha256": "ac2eba084c584b5e820e8a4554efdf630fa63e661b61ad064a85c041ce92fb24",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/MozartWA/KV331/KV331_3_RondoAllaTurca/KV331_3_RondoAllaTurca.mid",
+        "file": "KV331_3_RondoAllaTurca.mid",
+        "sha256": "c14299cbdd34c8b2081da84dc06519ef8a52a0d589ee53c758d28b8e3d727d1c",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/MozartWA/KV331/KV331_3_RondoAllaTurca/KV331_3_RondoAllaTurca-lys.zip",
+        "file": "KV331_3_RondoAllaTurca-lys.zip",
+        "sha256": "ac2eba084c584b5e820e8a4554efdf630fa63e661b61ad064a85c041ce92fb24",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "KV331_3_RondoAllaTurca.mid",
+      "member": null,
+      "evidence": "page covers only the 3rd movement; ly title 'Rondo Alla Turca'",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Mozart_3\\source.mid",
+      "sha256": "c14299cbdd34c8b2081da84dc06519ef8a52a0d589ee53c758d28b8e3d727d1c"
+    },
+    "render": {
+      "midiSha256": "c14299cbdd34c8b2081da84dc06519ef8a52a0d589ee53c758d28b8e3d727d1c",
+      "profile": "Muse Sounds",
+      "parts": 2,
+      "engineEvidence": {
+        "log": "MuseScore_261001_231652.log",
+        "museSamplerTracks": 2,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 0,
+      "importedInstruments": [
+        "piano",
+        "piano"
+      ],
+      "expectedFamilies": [
+        "piano"
+      ],
+      "missingFamilies": [],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Mozart_3\\Mozart_K331_PianoSonataNo11RondoAllaTurca_III_AllaTurca.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Mozart_3\\Mozart_K331_PianoSonataNo11RondoAllaTurca_III_AllaTurca.wav",
+      "qa": {
+        "durationSeconds": 259.0,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -8.63,
+        "rmsDbfs": -27.73,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-01T23:17:01",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Mozart_3/Mozart_K331_PianoSonataNo11RondoAllaTurca_III_AllaTurca.wav",
+      "masterSamples": 11421900,
+      "trimmedLeadSamples": 175,
+      "trimmedTailSamples": 134681,
+      "encodedSamples": 11287044,
+      "durationSeconds": 255.942,
+      "bytes": 6143373,
+      "sha256": "b3b107a5246e694bec68d94d62aeb2e9299d0c0c78b482570720ff7203e22152",
+      "masterSha256": "0e43d9838488361d62d2b0e24460117edf4472df6a6b60e7079b99ced64ad24d"
+    }
+  },
+  "Mozart_4": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Mozart_5": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Pachelbel_1": {
+    "status": "PASS",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Pachelbel\\P37CanonInD",
+    "source": {
+      "targetId": "Pachelbel_1",
+      "composer": "Johann Pachelbel",
+      "canonicalTitle": "Canon in D",
+      "catalog": "P. 37",
+      "targetMovement": "Complete Canon",
+      "targetInstrumentation": "3 violins + basso continuo",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=2047",
+      "mutopiaId": "Mutopia-2015/09/02-2047",
+      "pageTitle": "Canon per 3 Violini e Basso",
+      "pageComposer": "J. Pachelbel",
+      "opus": "Not known",
+      "sourceInstrumentation": "3 Violins, Cello",
+      "edition": "IMSLP",
+      "licence": "Creative Commons Attribution 4.0",
+      "licenceStatus": "OK_CC_BY",
+      "licenceUrl": "http://creativecommons.org/licenses/by/4.0/",
+      "attribution": "Michael Fischer v. Mollard",
+      "lastUpdated": "2015/Sep/02.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/PachelbelJ/Canon_per_3_Violini_e_Basso/Canon_per_3_Violini_e_Basso-mids.zip",
+          "file": "Canon_per_3_Violini_e_Basso-mids.zip",
+          "sha256": "d05d47d19130688728d43476ee30d7e6c41dfc5369e40f2a1dd50a69d389b29c",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/PachelbelJ/Canon_per_3_Violini_e_Basso/Canon_per_3_Violini_e_Basso-lys.zip",
+          "file": "Canon_per_3_Violini_e_Basso-lys.zip",
+          "sha256": "ff8ff9c026f3596844929a5c1a88ba19318c466be5005978f5acbeea81e16272",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/PachelbelJ/Canon_per_3_Violini_e_Basso/Canon_per_3_Violini_e_Basso-mids.zip",
+        "file": "Canon_per_3_Violini_e_Basso-mids.zip",
+        "sha256": "d05d47d19130688728d43476ee30d7e6c41dfc5369e40f2a1dd50a69d389b29c",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/PachelbelJ/Canon_per_3_Violini_e_Basso/Canon_per_3_Violini_e_Basso-lys.zip",
+        "file": "Canon_per_3_Violini_e_Basso-lys.zip",
+        "sha256": "ff8ff9c026f3596844929a5c1a88ba19318c466be5005978f5acbeea81e16272",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "Canon_per_3_Violini_e_Basso-mids.zip",
+      "member": "canon_per_3_violini_e_basso.mid",
+      "evidence": "full score MIDI (others are single parts); ly title 'Canon per 3 Violini e Basso'",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Pachelbel_1\\source.mid",
+      "sha256": "953b73e270117d388e9ef1a76f8b9e97ff640d1400768849f41a3cf71c59cbc1"
+    },
+    "render": {
+      "midiSha256": "953b73e270117d388e9ef1a76f8b9e97ff640d1400768849f41a3cf71c59cbc1",
+      "profile": "Muse Sounds",
+      "parts": 4,
+      "engineEvidence": {
+        "log": "MuseScore_261001_231049.log",
+        "museSamplerTracks": 4,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 0,
+      "importedInstruments": [
+        "violin",
+        "violin",
+        "violin",
+        "violoncello"
+      ],
+      "expectedFamilies": [
+        "violin",
+        "cello"
+      ],
+      "missingFamilies": [],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Pachelbel_1\\Pachelbel_P37_CanonInD_CompleteCanon.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Pachelbel_1\\Pachelbel_P37_CanonInD_CompleteCanon.wav",
+      "qa": {
+        "durationSeconds": 251.73,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -10.29,
+        "rmsDbfs": -26.82,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-01T23:11:25",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Pachelbel_1/Pachelbel_P37_CanonInD_CompleteCanon.wav",
+      "masterSamples": 11101160,
+      "trimmedLeadSamples": 304,
+      "trimmedTailSamples": 213031,
+      "encodedSamples": 10887825,
+      "durationSeconds": 246.889,
+      "bytes": 5926452,
+      "sha256": "668a5aad22197ebdbff7ca831c40fe7f3c079b9944afd931a57f55b39ced03b1",
+      "masterSha256": "0be0dd8619faaefffbfd3891bbe495f7ff614dabff24354780c6a104902dcaaf"
+    }
+  },
+  "Pachelbel_2": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Pachelbel_3": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Pachelbel_4": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Pachelbel_5": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Tchaikovsky_1": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Tchaikovsky_2": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Tchaikovsky_3": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Tchaikovsky_4": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Tchaikovsky_5": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Vivaldi_1": {
+    "status": "PASS",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Vivaldi\\RV269TheFourSeasonsSpring",
+    "source": {
+      "targetId": "Vivaldi_1",
+      "composer": "Antonio Vivaldi",
+      "canonicalTitle": "The Four Seasons  Spring",
+      "catalog": "RV 269",
+      "targetMovement": "I. Allegro",
+      "targetInstrumentation": "Solo violin + strings + continuo",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=301",
+      "mutopiaId": "Mutopia-2010/02/08-301",
+      "pageTitle": "La Primavera / Spring",
+      "pageComposer": "A. Vivaldi",
+      "opus": "Op. 8, No. 1",
+      "sourceInstrumentation": "Violin, Strings",
+      "edition": "Performers' Facsimiles",
+      "licence": "Creative Commons Attribution-ShareAlike 3.0",
+      "licenceStatus": "OK_CC_BY_SA",
+      "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "attribution": "smailliw (at) gmail.com",
+      "lastUpdated": "2010/Feb/08.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/spring/spring-mids.zip",
+          "file": "spring-mids.zip",
+          "sha256": "1e3d57ffee2dc77a4d06d777f01633d3726c57221b35661d6093095ca8cef3fd",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/spring/spring-lys.zip",
+          "file": "spring-lys.zip",
+          "sha256": "3a87fa93faace5b2d6689fe6d39b3ee32dde6649d924a394f6b05239b22cbab9",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/spring/spring-mids.zip",
+        "file": "spring-mids.zip",
+        "sha256": "1e3d57ffee2dc77a4d06d777f01633d3726c57221b35661d6093095ca8cef3fd",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/spring/spring-lys.zip",
+        "file": "spring-lys.zip",
+        "sha256": "3a87fa93faace5b2d6689fe6d39b3ee32dde6649d924a394f6b05239b22cbab9",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "spring-mids.zip",
+      "member": "spring-score.mid",
+      "evidence": "spring-score.ly pieces in order: Allegro, Largo, Danza Pastorale; 1st \\score = spring-score.mid",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Vivaldi_1\\source.mid",
+      "sha256": "9f9eaaaac0f1a6b0e1a9af86ff2ff65a0ff786dd4fa8d8b8eda19f8d564e35e0"
+    },
+    "render": {
+      "midiSha256": "9f9eaaaac0f1a6b0e1a9af86ff2ff65a0ff786dd4fa8d8b8eda19f8d564e35e0",
+      "profile": "Muse Sounds",
+      "parts": 5,
+      "engineEvidence": {
+        "log": "MuseScore_261001_231704.log",
+        "museSamplerTracks": 5,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 0,
+      "importedInstruments": [
+        "violin",
+        "violin",
+        "violin",
+        "viola",
+        "violoncello"
+      ],
+      "expectedFamilies": [
+        "violin"
+      ],
+      "missingFamilies": [],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Vivaldi_1\\Vivaldi_RV269_TheFourSeasonsSpring_I_Allegro.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Vivaldi_1\\Vivaldi_RV269_TheFourSeasonsSpring_I_Allegro.wav",
+      "qa": {
+        "durationSeconds": 176.22,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -11.41,
+        "rmsDbfs": -29.37,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-01T23:17:23",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Vivaldi_1/Vivaldi_RV269_TheFourSeasonsSpring_I_Allegro.wav",
+      "masterSamples": 7771169,
+      "trimmedLeadSamples": 199,
+      "trimmedTailSamples": 145446,
+      "encodedSamples": 7625524,
+      "durationSeconds": 172.914,
+      "bytes": 4150961,
+      "sha256": "0047f772aa68774ebd13365bc80a44f7f55e60c624504fe2074215e568ef4ec4",
+      "masterSha256": "63add49d57583e33df6d194a853000741e8f98744c77ba5f8e5afb7a345f0587"
+    }
+  },
+  "Vivaldi_2": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Vivaldi_3": {
+    "status": "PASS",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Vivaldi\\RV293TheFourSeasonsAutumn",
+    "source": {
+      "targetId": "Vivaldi_3",
+      "composer": "Antonio Vivaldi",
+      "canonicalTitle": "The Four Seasons  Autumn",
+      "catalog": "RV 293",
+      "targetMovement": "I. Allegro",
+      "targetInstrumentation": "Solo violin + strings + continuo",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=350",
+      "mutopiaId": "Mutopia-2010/02/08-350",
+      "pageTitle": "Autumno / Autumn",
+      "pageComposer": "A. Vivaldi",
+      "opus": "Op. 8, No. 3",
+      "sourceInstrumentation": "Violin, Strings",
+      "edition": "Performers' Facsimiles",
+      "licence": "Creative Commons Attribution-ShareAlike 3.0",
+      "licenceStatus": "OK_CC_BY_SA",
+      "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "attribution": "smailliw (at) gmail.com",
+      "lastUpdated": "2010/Feb/08.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/autumn/autumn-mids.zip",
+          "file": "autumn-mids.zip",
+          "sha256": "df11044ca3013943f017dea1c5c8a20b5d0aad7d700710928bde9a136239ef09",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/autumn/autumn-lys.zip",
+          "file": "autumn-lys.zip",
+          "sha256": "5cbf89fc9bb7a7139c869a72d6f8e8b7e44135bbc7c744ed38cdc4ec2ba2527d",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/autumn/autumn-mids.zip",
+        "file": "autumn-mids.zip",
+        "sha256": "df11044ca3013943f017dea1c5c8a20b5d0aad7d700710928bde9a136239ef09",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/autumn/autumn-lys.zip",
+        "file": "autumn-lys.zip",
+        "sha256": "5cbf89fc9bb7a7139c869a72d6f8e8b7e44135bbc7c744ed38cdc4ec2ba2527d",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "autumn-mids.zip",
+      "member": "autumn-score.mid",
+      "evidence": "autumn-score.ly pieces: Allegro, Adagio Molto, Allegro; 1st \\score = autumn-score.mid",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Vivaldi_3\\source.mid",
+      "sha256": "f5a7f67ded1ba8ce845dbea3da395e1daf8e23ae3871e730fe11ab527770c401"
+    },
+    "render": {
+      "midiSha256": "f5a7f67ded1ba8ce845dbea3da395e1daf8e23ae3871e730fe11ab527770c401",
+      "profile": "Muse Sounds",
+      "parts": 5,
+      "engineEvidence": {
+        "log": "MuseScore_261001_231727.log",
+        "museSamplerTracks": 5,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 0,
+      "importedInstruments": [
+        "violin",
+        "violin",
+        "violin",
+        "viola",
+        "violoncello"
+      ],
+      "expectedFamilies": [
+        "violin"
+      ],
+      "missingFamilies": [],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Vivaldi_3\\Vivaldi_RV293_TheFourSeasonsAutumn_I_Allegro.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Vivaldi_3\\Vivaldi_RV293_TheFourSeasonsAutumn_I_Allegro.wav",
+      "qa": {
+        "durationSeconds": 233.0,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -8.08,
+        "rmsDbfs": -28.99,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-01T23:17:48",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Vivaldi_3/Vivaldi_RV293_TheFourSeasonsAutumn_I_Allegro.wav",
+      "masterSamples": 10275300,
+      "trimmedLeadSamples": 188,
+      "trimmedTailSamples": 59857,
+      "encodedSamples": 10215255,
+      "durationSeconds": 231.638,
+      "bytes": 5560320,
+      "sha256": "65559d4e2c0fbf0e91566d84e535774e7a39587f1be88709a015c7760e4e9e94",
+      "masterSha256": "aff58efdfc96ee6a8e63261e2641a0a9e9ba6b224d7f4c42648068f3372a2134"
+    }
+  },
+  "Vivaldi_4": {
+    "status": "PASS",
+    "folder": "AssetsMaterial\\AudioPipeline\\Sources\\Mutopia\\Vivaldi\\RV297TheFourSeasonsWinter",
+    "source": {
+      "targetId": "Vivaldi_4",
+      "composer": "Antonio Vivaldi",
+      "canonicalTitle": "The Four Seasons  Winter",
+      "catalog": "RV 297",
+      "targetMovement": "I. Allegro non molto",
+      "targetInstrumentation": "Solo violin + strings + continuo",
+      "source": "Mutopia Project",
+      "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=351",
+      "mutopiaId": "Mutopia-2010/02/08-351",
+      "pageTitle": "L'Inverno / Winter",
+      "pageComposer": "A. Vivaldi",
+      "opus": "Op. 8, No. 4",
+      "sourceInstrumentation": "Violin, String",
+      "edition": "Performers' Facsimiles",
+      "licence": "Creative Commons Attribution-ShareAlike 3.0",
+      "licenceStatus": "OK_CC_BY_SA",
+      "licenceUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "attribution": "smailliw (at) gmail.com",
+      "lastUpdated": "2010/Feb/08.",
+      "downloads": [
+        {
+          "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/winter/winter-mids.zip",
+          "file": "winter-mids.zip",
+          "sha256": "c130e79b4ab861a3d9210c30cff432014284c675ad8a218f15e8bd7543b4a950",
+          "role": "midi"
+        },
+        {
+          "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/winter/winter-lys.zip",
+          "file": "winter-lys.zip",
+          "sha256": "f44b7cc8ec983ce1ab87dce2952d4ec0c07e96471868e2f5a7fab2a6dabc5745",
+          "role": "lilypond-source"
+        }
+      ],
+      "downloadDate": "2026-10-01"
+    },
+    "downloads": [
+      {
+        "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/winter/winter-mids.zip",
+        "file": "winter-mids.zip",
+        "sha256": "c130e79b4ab861a3d9210c30cff432014284c675ad8a218f15e8bd7543b4a950",
+        "role": "midi"
+      },
+      {
+        "url": "https://www.mutopiaproject.org/ftp/VivaldiA/O8/winter/winter-lys.zip",
+        "file": "winter-lys.zip",
+        "sha256": "f44b7cc8ec983ce1ab87dce2952d4ec0c07e96471868e2f5a7fab2a6dabc5745",
+        "role": "lilypond-source"
+      }
+    ],
+    "selection": {
+      "archive": "winter-mids.zip",
+      "member": "winter-score.mid",
+      "evidence": "winter-score.ly pieces: Allegro non Molto, Largo, Allegro; 1st \\score = winter-score.mid",
+      "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Vivaldi_4\\source.mid",
+      "sha256": "4265d2320e01e8eb4934d7dd4a798c91e9a98bca58b35b9bd5c8db986a57e093"
+    },
+    "render": {
+      "midiSha256": "4265d2320e01e8eb4934d7dd4a798c91e9a98bca58b35b9bd5c8db986a57e093",
+      "profile": "Muse Sounds",
+      "parts": 5,
+      "engineEvidence": {
+        "log": "MuseScore_261001_231752.log",
+        "museSamplerTracks": 5,
+        "museSamplerVersion": "0.105.8",
+        "synthErrors": [
+          "invalid audio source params for trackId: 0"
+        ],
+        "saved": true
+      },
+      "museSoundsInstalled": true,
+      "fallbackTracks": 0,
+      "importedInstruments": [
+        "violin",
+        "violin",
+        "violin",
+        "viola",
+        "violoncello"
+      ],
+      "expectedFamilies": [
+        "violin"
+      ],
+      "missingFamilies": [],
+      "mscz": "AssetsMaterial\\AudioPipeline\\Work\\Vivaldi_4\\Vivaldi_RV297_TheFourSeasonsWinter_I_AllegroNonMolto.mscz",
+      "wav": "AssetsMaterial\\AudioPipeline\\Work\\Vivaldi_4\\Vivaldi_RV297_TheFourSeasonsWinter_I_AllegroNonMolto.wav",
+      "qa": {
+        "durationSeconds": 111.0,
+        "sampleRate": 44100,
+        "channels": 2,
+        "bitsPerSample": 32,
+        "sampleFormat": "float",
+        "peakDbfs": -11.59,
+        "rmsDbfs": -28.85,
+        "clippedSamples": 0,
+        "silent": false,
+        "ceilingGainDb": 0.0
+      },
+      "renderedAt": "2026-10-01T23:18:07",
+      "museScore": "MuseScore Studio 4.7.5"
+    },
+    "unityMp3": {
+      "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+      "fromMaster": "AssetsMaterial/AudioPipeline/Work/Vivaldi_4/Vivaldi_RV297_TheFourSeasonsWinter_I_AllegroNonMolto.wav",
+      "masterSamples": 4895100,
+      "trimmedLeadSamples": 208,
+      "trimmedTailSamples": 76979,
+      "encodedSamples": 4817913,
+      "durationSeconds": 109.25,
+      "bytes": 2623111,
+      "sha256": "0882fce9f0ba269365b0d9b8c336379a80aa855a0a23d83c4b61e508a8c015f7",
+      "masterSha256": "cfe1d6501845ed866fc300fa034bb70733e719592280756e9badcbf43f57ca29"
+    }
+  },
+  "Vivaldi_5": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Wagner_1": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Wagner_2": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Wagner_3": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Wagner_4": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  },
+  "Wagner_5": {
+    "status": "PENDING_NO_APPROVED_SOURCE"
+  }
+}

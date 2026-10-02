@@ -1,0 +1,53 @@
+{
+  "targetId": "Bach_1",
+  "composer": "J. S. Bach",
+  "work": "Toccata and Fugue in D minor",
+  "catalog": "BWV 565",
+  "movement": "Complete work",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1780",
+  "mutopiaId": "Mutopia-2011/09/11-1780",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/BachJS/BWV565/ToccataFugue/ToccataFugue.mid"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "sourceAttribution": "Typeset/transcribed by Anonymous for the Mutopia Project",
+  "sourceEdition": "Bach-Gesellschaft Ausgabe, 1867",
+  "renderedWith": "MuseScore Studio 4.7.5 (MuseScore Basic church organ — no free Muse Sounds pipe organ) + Tools/reverb.py",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Synthetic cathedral reverb added after rendering (RT60 4.5 s, wet -4 dB, predelay 40 ms); no musical changes.",
+  "status": "USER_APPROVED_VARIANT",
+  "variantNote": "Synthetic cathedral reverb added after rendering (RT60 4.5 s, wet -4 dB, predelay 40 ms); no musical changes.",
+  "unityAsset": "Assets/_Project/Audio/Music/Composers/Bach/Bach_BWV565_ToccataAndFugueInDMinor_CompleteWork.mp3",
+  "durationSeconds": 576.128,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Bach_1/PREVIEW_Catedral_RT4.5.wav",
+    "masterSamples": 25430341,
+    "trimmedLeadSamples": 17,
+    "trimmedTailSamples": 23092,
+    "encodedSamples": 25407232,
+    "durationSeconds": 576.128,
+    "bytes": 13827761,
+    "sha256": "d6ba8bc9d4d60598469a701c9433edce3c69b71e885158bfa7c3769bad9ab067",
+    "masterSha256": "2d995ecf8e777b781da212fdde3ada8f168eeafdb57e6026ba6c7e6eb6666e73"
+  },
+  "masterQa": {
+    "durationSeconds": 576.65,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -1.0,
+    "rmsDbfs": -20.95,
+    "clippedSamples": 0,
+    "silent": false
+  },
+  "importedInstruments": [
+    "organ",
+    "organ",
+    "organ"
+  ]
+}

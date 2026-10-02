@@ -113,20 +113,21 @@ public class OpponentLevelConfig
     [Min(0)] public int quadCombos;
 
     /// <summary>Null if songs is empty/all-null (expected for a freshly-created level entry) —
-    /// callers must tolerate it, same as before.</summary>
-    public AudioClip GetRandomSong()
+    /// callers must tolerate it, same as before. `avoid` is skipped whenever another song exists.</summary>
+    public AudioClip GetRandomSong(AudioClip avoid = null)
     {
         if (songs == null || songs.Length == 0) return null;
 
-        int count = 0;
+        int count = 0, avoidable = 0;
         for (int i = 0; i < songs.Length; i++)
-            if (songs[i] != null) count++;
+            if (songs[i] != null) { count++; if (songs[i] == avoid) avoidable++; }
         if (count == 0) return null;
+        if (avoidable == count) avoid = null; // nothing else to pick
 
-        int pick = Random.Range(0, count);
+        int pick = Random.Range(0, count - (avoid != null ? avoidable : 0));
         for (int i = 0; i < songs.Length; i++)
         {
-            if (songs[i] == null) continue;
+            if (songs[i] == null || (avoid != null && songs[i] == avoid)) continue;
             if (pick == 0) return songs[i];
             pick--;
         }

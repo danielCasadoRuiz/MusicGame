@@ -1,0 +1,43 @@
+{
+  "targetId": "Beethoven_4",
+  "composer": "L. van Beethoven",
+  "canonicalTitle": "Fur Elise",
+  "catalog": "WoO 59",
+  "targetMovement": "Complete work",
+  "targetInstrumentation": "Solo piano",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=931",
+  "mutopiaId": "Mutopia-2015/08/18-931",
+  "pageTitle": "Für Elise",
+  "pageComposer": "L. V. Beethoven",
+  "opus": "WoO 59",
+  "sourceInstrumentation": "Piano",
+  "edition": "Breitkopf & Härtel, 1888",
+  "licence": "Public Domain",
+  "licenceStatus": "OK_PD",
+  "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "attribution": "Stelios Samelis",
+  "lastUpdated": "2015/Aug/18.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/WoO59/fur_Elise_WoO59/fur_Elise_WoO59.mid",
+      "file": "fur_Elise_WoO59.mid",
+      "sha256": "1c12c21c7bbf4cf163896732672648a69d497636059837abd153c71abe50215a",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/BeethovenLv/WoO59/fur_Elise_WoO59/fur_Elise_WoO59.ly",
+      "file": "fur_Elise_WoO59.ly",
+      "sha256": "828a7bd1b42e441fe1b0eb0389ba46f1502dab28bbe488389e635fb446ba7a67",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "fur_Elise_WoO59.mid",
+    "member": null,
+    "evidence": "single-work page; ly title 'Für Elise', subtitle 'WoO 59'",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Beethoven_4\\source.mid",
+    "sha256": "1c12c21c7bbf4cf163896732672648a69d497636059837abd153c71abe50215a"
+  }
+}

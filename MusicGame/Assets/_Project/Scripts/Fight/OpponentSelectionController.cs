@@ -244,8 +244,10 @@ public class OpponentSelectionController : MonoBehaviour
         var finalOpponent    = opponents[finalIndex];
         int resolvedTier     = 0;
         var finalLevelConfig = finalOpponent != null ? finalOpponent.GetConfigForTier(CurrentTier, out resolvedTier) : null;
-        var finalSong        = finalLevelConfig?.GetRandomSong();
-        FightMusicController.Instance?.Lock(finalSong);
+        var finalSong        = GameSession.Instance != null
+            ? GameSession.Instance.PickOpponentSong(finalOpponent, finalLevelConfig)
+            : finalLevelConfig?.GetRandomSong();
+        FightMusicController.Instance?.Lock(finalSong, finalLevelConfig);
 
         if (GameSession.Instance != null)
         {

@@ -1,0 +1,61 @@
+{
+  "targetId": "Mozart_1",
+  "composer": "W. A. Mozart",
+  "work": "Eine kleine Nachtmusik",
+  "catalog": "K. 525",
+  "movement": "I. Allegro",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=2230",
+  "mutopiaId": "Mutopia-2018/08/04-2230",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/MozartWA/KV525/MozartWA-KV525/MozartWA-KV525-mids.zip"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "sourceAttribution": "Typeset/transcribed by Mike Blackstock for the Mutopia Project",
+  "sourceEdition": "Breitkopf & Härtel, 1883",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "PASS",
+  "unityAsset": "Assets/_Project/Audio/Music/Composers/Mozart/Mozart_K525_EineKleineNachtmusik_I_Allegro.mp3",
+  "durationSeconds": 249.741,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Mozart_1/Mozart_K525_EineKleineNachtmusik_I_Allegro.wav",
+    "masterSamples": 11117169,
+    "trimmedLeadSamples": 342,
+    "trimmedTailSamples": 103267,
+    "encodedSamples": 11013560,
+    "durationSeconds": 249.741,
+    "bytes": 5994788,
+    "sha256": "a1dd49da50c0b101d681e81a8068996e22cbac67c573629c217df3a9cb071588",
+    "masterSha256": "5be6688de563fed4ebf8fc595d58a55b25529e6ec6415ed5a10ff06c9db1545d"
+  },
+  "masterQa": {
+    "durationSeconds": 252.09,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -13.41,
+    "rmsDbfs": -30.77,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "violin",
+    "violin",
+    "viola",
+    "violoncello"
+  ],
+  "derivedFormat": {
+    "format": "WAV 44.1 kHz stereo 16-bit PCM (TPDF dither)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Mozart_1/Mozart_K525_EineKleineNachtmusik_I_Allegro.wav",
+    "fromSha256": "5be6688de563fed4ebf8fc595d58a55b25529e6ec6415ed5a10ff06c9db1545d",
+    "gainApplied": 1.0,
+    "convertedAt": "2026-10-02"
+  }
+}

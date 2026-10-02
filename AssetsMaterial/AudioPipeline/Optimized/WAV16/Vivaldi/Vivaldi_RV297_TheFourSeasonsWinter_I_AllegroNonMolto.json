@@ -1,0 +1,63 @@
+{
+  "targetId": "Vivaldi_4",
+  "composer": "Antonio Vivaldi",
+  "work": "The Four Seasons – Winter",
+  "catalog": "RV 297",
+  "movement": "I. Allegro non molto",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=351",
+  "mutopiaId": "Mutopia-2010/02/08-351",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/VivaldiA/O8/winter/winter-mids.zip"
+  ],
+  "sourceLicense": "Creative Commons Attribution-ShareAlike 3.0",
+  "sourceLicenseClass": "CC BY-SA",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+  "sourceAttribution": "Typeset/transcribed by smailliw (at) gmail.com for the Mutopia Project",
+  "sourceEdition": "Performers' Facsimiles",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "PASS",
+  "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 3.0 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/3.0/). Attribution: Typeset/transcribed by smailliw (at) gmail.com for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=351.",
+  "unityAsset": "Assets/_Project/Audio/Music/Composers/Vivaldi/Vivaldi_RV297_TheFourSeasonsWinter_I_AllegroNonMolto.mp3",
+  "durationSeconds": 109.25,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Vivaldi_4/Vivaldi_RV297_TheFourSeasonsWinter_I_AllegroNonMolto.wav",
+    "masterSamples": 4895100,
+    "trimmedLeadSamples": 208,
+    "trimmedTailSamples": 76979,
+    "encodedSamples": 4817913,
+    "durationSeconds": 109.25,
+    "bytes": 2623111,
+    "sha256": "0882fce9f0ba269365b0d9b8c336379a80aa855a0a23d83c4b61e508a8c015f7",
+    "masterSha256": "cfe1d6501845ed866fc300fa034bb70733e719592280756e9badcbf43f57ca29"
+  },
+  "masterQa": {
+    "durationSeconds": 111.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -11.59,
+    "rmsDbfs": -28.85,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "violin",
+    "violin",
+    "violin",
+    "viola",
+    "violoncello"
+  ],
+  "derivedFormat": {
+    "format": "WAV 44.1 kHz stereo 16-bit PCM (TPDF dither)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Vivaldi_4/Vivaldi_RV297_TheFourSeasonsWinter_I_AllegroNonMolto.wav",
+    "fromSha256": "cfe1d6501845ed866fc300fa034bb70733e719592280756e9badcbf43f57ca29",
+    "gainApplied": 1.0,
+    "convertedAt": "2026-10-02"
+  }
+}

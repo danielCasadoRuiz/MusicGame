@@ -1,0 +1,56 @@
+{
+  "targetId": "Vivaldi_1",
+  "composer": "Antonio Vivaldi",
+  "work": "The Four Seasons – Spring",
+  "catalog": "RV 269",
+  "movement": "I. Allegro",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=301",
+  "mutopiaId": "Mutopia-2010/02/08-301",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/VivaldiA/O8/spring/spring-mids.zip"
+  ],
+  "sourceLicense": "Creative Commons Attribution-ShareAlike 3.0",
+  "sourceLicenseClass": "CC BY-SA",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+  "sourceAttribution": "Typeset/transcribed by smailliw (at) gmail.com for the Mutopia Project",
+  "sourceEdition": "Performers' Facsimiles",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "PASS",
+  "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 3.0 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/3.0/). Attribution: Typeset/transcribed by smailliw (at) gmail.com for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=301.",
+  "unityAsset": "Assets/_Project/Audio/Music/Composers/Vivaldi/Vivaldi_RV269_TheFourSeasonsSpring_I_Allegro.mp3",
+  "durationSeconds": 172.914,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Vivaldi_1/Vivaldi_RV269_TheFourSeasonsSpring_I_Allegro.wav",
+    "masterSamples": 7771169,
+    "trimmedLeadSamples": 199,
+    "trimmedTailSamples": 145446,
+    "encodedSamples": 7625524,
+    "durationSeconds": 172.914,
+    "bytes": 4150961,
+    "sha256": "0047f772aa68774ebd13365bc80a44f7f55e60c624504fe2074215e568ef4ec4",
+    "masterSha256": "63add49d57583e33df6d194a853000741e8f98744c77ba5f8e5afb7a345f0587"
+  },
+  "masterQa": {
+    "durationSeconds": 176.22,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -11.41,
+    "rmsDbfs": -29.37,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "violin",
+    "violin",
+    "violin",
+    "viola",
+    "violoncello"
+  ]
+}

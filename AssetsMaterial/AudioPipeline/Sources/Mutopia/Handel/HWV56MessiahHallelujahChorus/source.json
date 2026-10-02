@@ -1,0 +1,43 @@
+{
+  "targetId": "Handel_1",
+  "composer": "G. F. Handel",
+  "canonicalTitle": "Messiah  Hallelujah Chorus",
+  "catalog": "HWV 56",
+  "targetMovement": "Hallelujah Chorus",
+  "targetInstrumentation": "Choir + orchestra",
+  "source": "Mutopia Project",
+  "mutopiaPageUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=459",
+  "mutopiaId": "Mutopia-2015/01/17-459",
+  "pageTitle": "Hallelujah Chorus from Messiah",
+  "pageComposer": "G. F. Handel",
+  "opus": "HWV 56,",
+  "sourceInstrumentation": "Voice (SATB), Orchestra: Strings (Violins, Viola, Cello, Bass), Oboes, Bassoons, Trumpet, Timpani",
+  "edition": "Unknown",
+  "licence": "Public Domain",
+  "licenceStatus": "OK_PD",
+  "licenceUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "attribution": "Joshua Koo",
+  "lastUpdated": "2015/Jan/17.",
+  "downloads": [
+    {
+      "url": "https://www.mutopiaproject.org/ftp/HandelGF/hallelujah/hallelujah-mids.zip",
+      "file": "hallelujah-mids.zip",
+      "sha256": "74bf4f72e3c534d3cea991885106a829c0bb38e362f13432e24b85a7981277d3",
+      "role": "midi"
+    },
+    {
+      "url": "https://www.mutopiaproject.org/ftp/HandelGF/hallelujah/hallelujah-lys.zip",
+      "file": "hallelujah-lys.zip",
+      "sha256": "bece0f8dc876fbddd006d177a66f243b7813d4074bed9f276b03d10b665730ab",
+      "role": "lilypond-source"
+    }
+  ],
+  "downloadDate": "2026-10-01",
+  "selection": {
+    "archive": "hallelujah-mids.zip",
+    "member": "combined-score.mid",
+    "evidence": "combined-score.ly includes oboe, bassoon, trumpet ×2, timpani, strings, SATB = original scoring; Clarinet/Trombone MIDIs are separate add-on parts, NOT in the combined score",
+    "workMidi": "AssetsMaterial\\AudioPipeline\\Work\\Handel_1\\source.mid",
+    "sha256": "d7a59451ba87bf138d0a6d5be589db9f07c0a9268361d91c9033a136d181c1a5"
+  }
+}

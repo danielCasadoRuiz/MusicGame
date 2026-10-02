@@ -1,0 +1,52 @@
+{
+  "targetId": "Chopin_2",
+  "composer": "Frédéric Chopin",
+  "work": "Fantaisie-Impromptu",
+  "catalog": "Op. 66",
+  "movement": "Complete work",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1693",
+  "mutopiaId": "Mutopia-2009/09/05-1693",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/ChopinFF/O66/chopin_fantaisie-impromptu/chopin_fantaisie-impromptu.mid"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "sourceAttribution": "Typeset/transcribed by Guy D. Lederfein for the Mutopia Project",
+  "sourceEdition": "Herrmann Scholtz (1845-1918)",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "PASS",
+  "unityAsset": "Assets/_Project/Audio/Music/Composers/Chopin/Chopin_Op66_Fantaisie_CompleteWork.mp3",
+  "durationSeconds": 254.055,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Chopin_2/Chopin_Op66_Fantaisie_CompleteWork.wav",
+    "masterSamples": 11312664,
+    "trimmedLeadSamples": 98,
+    "trimmedTailSamples": 108742,
+    "encodedSamples": 11203824,
+    "durationSeconds": 254.055,
+    "bytes": 6098233,
+    "sha256": "25e0a9c661893ea43f45c347af75fc03c40734c3888e765256ff389aedf983ac",
+    "masterSha256": "565b214837c1552e71a5337c8217c4a0e1f79bc66b344f77c9a5cd856098008d"
+  },
+  "masterQa": {
+    "durationSeconds": 256.52,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -10.31,
+    "rmsDbfs": -25.86,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "piano",
+    "piano"
+  ]
+}
