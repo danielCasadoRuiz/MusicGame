@@ -21,6 +21,8 @@ public class AppConfigSO : ScriptableObject
     public FightCombatBalanceConfig combatBalance;
     public FightAIConfig aiConfig;
     public PlayerAvatarConfigSO playerAvatar;
+    [Tooltip("Per-song preview ranges (Song Selection preview + rival roulette snippets).")]
+    public SongPreviewConfigSO songPreview;
 
     [Tooltip("EDITOR ONLY (see PlatformService) — forces mobile/touch UI and input while testing in " +
              "the Editor, where Application.isMobilePlatform is always false. Ignored in real builds, " +

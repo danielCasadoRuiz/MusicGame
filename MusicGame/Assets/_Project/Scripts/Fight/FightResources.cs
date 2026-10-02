@@ -1,5 +1,5 @@
 /// <summary>
-/// Consumable/special combat resources (extra lives, revives, shields, heals, special attacks) —
+/// Consumable/special combat resources (revives, shields, heals, special attacks — extra lives are persistent, see PlayerProgressService) —
 /// completely independent of run performance. NOT derived from RunnerFightResources/FighterStats,
 /// and not populated by the Runner at all in V1 (every count starts at its default of 0).
 ///
@@ -10,7 +10,7 @@
 /// </summary>
 public class FightResources
 {
-    public int ExtraLives;
+    // Extra lives moved to the persistent PlayerProgressService.ExtraLives (single counter).
     public int Revives;
     public int Shields;
     public int Heals;

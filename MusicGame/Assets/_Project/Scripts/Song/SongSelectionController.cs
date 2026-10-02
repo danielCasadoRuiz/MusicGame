@@ -130,6 +130,7 @@ public class SongSelectionController : MonoBehaviour
         // The catalog rows stay dynamic runtime population either way (Section 9 of the plan) — the
         // prefab only supplies the empty container they get added into.
         BuildSongList();
+        BuildPreviewButton();
 
         _root.gameObject.SetActive(false);
     }
@@ -156,6 +157,7 @@ public class SongSelectionController : MonoBehaviour
         BuildPlayYourSongButton();
         BuildStreamingRow();
         BuildBottomBar();
+        BuildPreviewButton();
 
         _root.gameObject.SetActive(false);
     }
@@ -290,6 +292,59 @@ public class SongSelectionController : MonoBehaviour
             new Vector2(0f, 90f), new Vector2(500f, 24f));
     }
 
+    // ── Preview (SongPreviewPlayer — one preview at a time, per-song range in SongPreviewConfigSO) ──
+
+    private Button _previewButton;
+    private TMPro.TextMeshProUGUI _previewLabel;
+
+    private void BuildPreviewButton()
+    {
+        _previewButton = UIFactory.CreateButton("PreviewButton", _root, Loc.Get("SongSelection.Preview"), out _previewLabel);
+        UIFactory.SetBox(_previewButton.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+            new Vector2(0f, 40f), new Vector2(104f, 44f));
+        _previewLabel.fontSize = 13;
+        _previewButton.onClick.AddListener(OnPreviewClicked);
+        _previewButton.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        _previewLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        RefreshPreviewButton();
+    }
+
+    private void OnPreviewClicked()
+    {
+        var player = SongPreviewPlayer.Instance;
+        if (player == null || _selectedCatalogIndex < 0 || _selectedCatalogIndex >= _entries.Count) return;
+        var location = _entries[_selectedCatalogIndex];
+        if (player.IsPlaying && player.PlayingId == location.PrimaryKey) player.Stop(); // same song again = stop
+        else player.Play(location);
+    }
+
+    private void StopPreview() => SongPreviewPlayer.Instance?.Stop();
+
+    private void RefreshPreviewButton()
+    {
+        if (_previewButton == null) return;
+        var player = SongPreviewPlayer.Instance;
+        bool catalogSelected = _selectedCatalogIndex >= 0 && _selectedCatalogIndex < _entries.Count;
+        bool playingThis = player != null && player.IsPlaying && catalogSelected && player.PlayingId == _entries[_selectedCatalogIndex].PrimaryKey;
+        _previewButton.interactable = catalogSelected && !_isLoading; // catalog songs only (local files: no preview)
+        _previewLabel.text = Loc.Get(playingThis ? "SongSelection.StopPreview" : "SongSelection.Preview");
+        // Lightweight range readout in the existing status line while a preview plays.
+        if (playingThis && player.PlayingRange.duration > 0f)
+        {
+            var (start, duration) = player.PlayingRange;
+            SetStatus(Loc.Get("SongSelection.PreviewRange", Clock(start), Clock(start + duration)), NeutralStatusColor);
+        }
+        else if (_statusText != null && _previewRangeShown) SetStatus(null);
+        _previewRangeShown = playingThis;
+    }
+
+    private bool _previewRangeShown;
+    private static string Clock(float seconds)
+    {
+        int s = Mathf.Max(0, Mathf.RoundToInt(seconds));
+        return $"{s / 60:00}:{s % 60:00}";
+    }
+
     // ── Show / hide ─────────────────────────────────────────────────────────────
 
     private void Show()
@@ -297,10 +352,17 @@ public class SongSelectionController : MonoBehaviour
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
         RefreshPlayButtonInteractable();
+        if (SongPreviewPlayer.Instance != null)
+        {
+            SongPreviewPlayer.Instance.StateChanged -= RefreshPreviewButton;
+            SongPreviewPlayer.Instance.StateChanged += RefreshPreviewButton;
+        }
+        RefreshPreviewButton();
     }
 
     private void Hide()
     {
+        StopPreview(); // leaving the selector never leaves a preview playing
         if (_root != null) _root.gameObject.SetActive(false);
     }
 
@@ -308,10 +370,12 @@ public class SongSelectionController : MonoBehaviour
 
     private void SelectCatalogSong(int index)
     {
+        if (index != _selectedCatalogIndex) StopPreview(); // a different song: the old preview stops
         _selectedCatalogIndex = index;
         _selectedLocalInfo = null;
         RefreshRowHighlight(CurrentAccentColor());
         RefreshPlayButtonInteractable();
+        RefreshPreviewButton();
         SetStatus(null);
     }
 
@@ -325,8 +389,10 @@ public class SongSelectionController : MonoBehaviour
                 SetStatus(Loc.Get("SongSelection.LocalFileCancelled"), ErrorStatusColor);
                 return;
             }
+            StopPreview();
             _selectedLocalInfo = info;
             _selectedCatalogIndex = -1;
+            RefreshPreviewButton();
             RefreshRowHighlight(CurrentAccentColor());
             RefreshPlayButtonInteractable();
             SetStatus(Loc.Get("SongSelection.LocalFileSelected", info.Value.DisplayName), NeutralStatusColor);
@@ -369,6 +435,7 @@ public class SongSelectionController : MonoBehaviour
     private void OnPlayClicked()
     {
         if (!HasSelection || _isLoading) return;
+        StopPreview(); // the real run starts — never alongside a preview
 
         if (_selectedLocalInfo.HasValue)
         {

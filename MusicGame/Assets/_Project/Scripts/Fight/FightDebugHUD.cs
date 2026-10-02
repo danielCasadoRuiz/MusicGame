@@ -119,7 +119,7 @@ public class FightDebugHUD : MonoBehaviour
     //   F8  Set accumulated point differential to 0 (tied match after final round -> exact-tie fallback)
     //   F9  Force Match WIN  — jumps straight to Match Result (Win/Level Up/Continue) for testing
     //   F10 Force Match LOSE — jumps straight to Match Result (Lose/Fight Again/Replay Song) for testing
-    //   F11 +1 Extra Life (GameSession.FightResources.ExtraLives) — so "Lose with a life" is testable
+    //   F11 +1 Extra Life (PlayerProgressService.ExtraLives, persistent) — so "Lose with a life" is testable
     //       on demand; the real economy for how lives are earned isn't decided yet (see FightResources'
     //       own doc), this is purely a test aid
     //   F12 EDITOR ONLY — toggle "simulate a successful Rewarded Ad" (see NotImplementedRewardedAdService's
@@ -162,8 +162,8 @@ public class FightDebugHUD : MonoBehaviour
         {
             if (GameSession.Instance?.FightResources != null)
             {
-                GameSession.Instance.FightResources.ExtraLives++;
-                AddLog($"Debug: +1 Extra Life (now {GameSession.Instance.FightResources.ExtraLives})");
+                PlayerProgressService.Instance?.AddLife(1, "debug F11");
+                AddLog($"Debug: +1 Extra Life (now {PlayerProgressService.Instance?.ExtraLives})");
             }
         }
 #if UNITY_EDITOR

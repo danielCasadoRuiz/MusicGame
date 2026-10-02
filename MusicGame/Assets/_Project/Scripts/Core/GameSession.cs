@@ -129,19 +129,28 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
 
     private System.Action<SongProfileReadyEvent> _onProfileReady;
     private System.Action<GameEndedEvent>        _onGameEnded;
+    private System.Action<GameStartedEvent>      _onGameStarted;
+    private int _runCounter;
+
+    /// <summary>The CURRENT run (one Runner song + its fight) — temporary state that resets when the
+    /// next run starts (see RunSession). Persistent progression lives in PlayerProgressService.</summary>
+    public RunSession Run { get; private set; } = new RunSession(0, null);
+
+    // The tier state is the persistent one when the progression service exists (it is created first).
+    private GameProgressionState TierState => PlayerProgressService.Instance != null ? PlayerProgressService.Instance.TierProgress : _progressionState;
 
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        Progression ??= new GameProgression(_progressionState, _progressionConfig);
+        Progression ??= new GameProgression(TierState, _progressionConfig);
     }
 
     public void Configure(ProgressionConfigSO config)
     {
         _progressionConfig = config;
-        Progression ??= new GameProgression(_progressionState, config);
+        Progression ??= new GameProgression(TierState, config);
         Progression.SetConfig(config);
         if (config == null)
             Debug.LogWarning("[GameSession] No ProgressionConfigSO (AppConfig.progression) — using songsPerTier 5 / cooldown 2 defaults.");
@@ -180,7 +189,12 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
 
     /// <summary>Called ONLY by FightMatchController the instant a match is decisively WON (one
     /// properly completed Runner → Fight cycle). Returns the current tier afterwards.</summary>
-    public int RegisterCompletedSong() => Progression.RegisterCompletedSong();
+    public int RegisterCompletedSong()
+    {
+        int tier = Progression.RegisterCompletedSong();
+        PlayerProgressService.Instance?.NotifyTierProgressChanged(); // persisted immediately
+        return tier;
+    }
 
     /// <summary>DEBUG ONLY — force the next fights' opponent (by id, null = none) and/or the tier its
     /// content resolves at (0 = real tier). Production progression/bag/history are untouched.</summary>
@@ -221,26 +235,42 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
 
             // Never overwritten once created — see FightResources' own doc on why these are
             // independent of run performance (accumulation-across-runs is a future decision, not
-            // one this makes for you by resetting it here).
+            // one this makes for you by resetting it here). Extra lives are NOT here any more: they
+            // are persistent (PlayerProgressService), saved the moment a LIFE is collected.
             FightResources ??= new FightResources();
-            // Every LIFE pickup physically collected in this run grants one extra life for the
-            // fight's "lose with a life → Fight Again" flow (MatchResultController reads ExtraLives).
-            if (e.Resources.Lives > 0)
+
+            // This run's results + the combos it earned go into the run's own wallet (SPECIALs were
+            // already added at pickup time); XP is persistent progression, derived from the
+            // NORMALIZED score — the run score itself is never kept.
+            Run.Score = e.Stats.Score;
+            Run.NormalizedScore = e.NormalizedScore;
+            Run.Wallet.Add(CombatResourceType.TripleCombo, e.Resources.TripleCombos);
+            Run.Wallet.Add(CombatResourceType.QuadCombo, e.Resources.QuadCombos);
+            if (_progressionConfig != null && PlayerProgressService.Instance != null)
             {
-                FightResources.ExtraLives += e.Resources.Lives;
-                Debug.Log($"[GameSession] +{e.Resources.Lives} extra life from Runner LIFE pickups (now {FightResources.ExtraLives})");
+                Run.XpEarned = _progressionConfig.XpForRun(e.NormalizedScore);
+                PlayerProgressService.Instance.AddXp(Run.XpEarned, $"run {Run.Index}, score {e.Stats.Score}, {e.NormalizedScore:P0}");
             }
 
             EventBus.Publish(new RunnerResultsReadyEvent { Results = RunnerResults });
         };
+        // A Runner run starting = a NEW run session (new song, Replay Song or restart): SPECIAL,
+        // combos and run statistics start from zero; Runner → Fight never triggers this.
+        _onGameStarted = _ =>
+        {
+            Run = new RunSession(++_runCounter, SelectedSong?.DisplayName);
+            Debug.Log($"[GameSession] New run session #{Run.Index} — song '{Run.SongId}'");
+        };
         EventBus.Subscribe(_onProfileReady);
         EventBus.Subscribe(_onGameEnded);
+        EventBus.Subscribe(_onGameStarted);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onProfileReady);
         EventBus.Unsubscribe(_onGameEnded);
+        EventBus.Unsubscribe(_onGameStarted);
     }
 }
 

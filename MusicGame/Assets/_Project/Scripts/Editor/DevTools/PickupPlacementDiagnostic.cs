@@ -38,8 +38,8 @@ public static class PickupPlacementDiagnostic
         var core = config.core; var c = config.collectibles;
         float airTime = 2f * core.jumpForce / -core.gravity;
         float maxJump = core.jumpForce * core.jumpForce / (2f * -core.gravity);
-        float maxBeyond = core.allowAirControl ? core.strafeSpeed * airTime * 0.5f * c.difficultPickupAirReach : 0f;
-        float maxFromCenter = core.strafeSpeed * (c.spawnLookAhead - c.minReactionTime);
+        float maxBeyond = core.allowAirControl ? core.EffectiveStrafeSpeed * airTime * 0.5f * c.difficultPickupAirReach : 0f;
+        float maxFromCenter = core.EffectiveStrafeSpeed * (c.spawnLookAhead - c.minReactionTime);
         sb.AppendLine($"limits: air time {airTime:0.00}s, max jump {maxJump:0.00} m, beyond-edge reach {maxBeyond:0.00} m, from-centre reach {maxFromCenter:0.00} m");
 
         string cacheDir = Path.Combine(Application.persistentDataPath, "SongCache");
@@ -61,7 +61,7 @@ public static class PickupPlacementDiagnostic
                 float gap = rares.Length > 0 ? rares.Min(d => Mathf.Abs(d.eventTime - e.eventTime)) : 99f;
                 var near = difficult.Where(d => d.isOffTrack && Mathf.Abs(d.eventTime - e.eventTime) < c.difficultPickupMinSpacing).ToArray();
                 bool sameSide = near.All(d => Mathf.Sign(d.lateralOffset) == Mathf.Sign(e.lateralOffset));
-                float reachTime = Mathf.Abs(e.lateralOffset) / core.strafeSpeed + c.minReactionTime;
+                float reachTime = Mathf.Abs(e.lateralOffset) / core.EffectiveStrafeSpeed + c.minReactionTime;
                 sb.AppendLine($"    {e.ringType,-7} t {e.eventTime,6:0.0}s  lateral {e.lateralOffset,6:+0.00;-0.00} (half-width {half:0.00}, beyond edge {edge:+0.00;-0.00} m)  " +
                               $"height {e.verticalOffset:0.00}/{maxJump:0.00} m  nearest Life/Special {gap:0.0}s, {near.Length} off-track bonus(es) within {c.difficultPickupMinSpacing:0}s all same side {sameSide}  reach {reachTime:0.00}s/{c.spawnLookAhead:0.00}s");
                 Check(sb, $"{e.ringType} @{e.eventTime:0.0}s outside the racing line, reachable, spaced, consistent side",

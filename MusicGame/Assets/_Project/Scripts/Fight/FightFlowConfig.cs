@@ -11,8 +11,11 @@ using UnityEngine;
 public class FightFlowConfig : ScriptableObject
 {
     [Header("Opponent Selection (roulette)")]
-    [Tooltip("Total wall-clock time the roulette spends stepping through opponents before " +
-             "settling on the final one (excludes finalOpponentHoldDuration below).")]
+    [Tooltip("How many FAKE rivals the roulette shows (each with its music snippet) before revealing " +
+             "the real, precomputed one. Never repeats a rival within one roulette, excludes the final " +
+             "rival when enough others exist, and clamps to the unique candidates available.")]
+    [Min(0)] public int fakeSelectionCount = 6;
+    [Tooltip("LEGACY — no longer read: the roulette length is fakeSelectionCount × selectionStepDuration.")]
     public float opponentSelectionDuration = 6f;
     [Tooltip("How long each intermediate highlight (and its music snippet) stays up before " +
              "moving to the next opponent — long enough to actually hear each fragment.")]

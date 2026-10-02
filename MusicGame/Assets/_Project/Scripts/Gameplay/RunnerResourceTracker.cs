@@ -1,3 +1,5 @@
+using UnityEngine;
+
 /// <summary>
 /// The Runner's combat resources, as earned by one run — carried to the Fight through
 /// GameEndedEvent → GameSession (see RunnerResults.Resources). Independent of TotalScore,
@@ -21,8 +23,6 @@ public struct RunnerResourceCounts
 public class RunnerResourceTracker
 {
     private readonly PickupComboTracker _combos;
-    private int _lives;
-    private int _specials;
 
     public RunnerResourceTracker(MusicRunnerScoringConfig scoring) => _combos = new PickupComboTracker(scoring);
 
@@ -30,8 +30,10 @@ public class RunnerResourceTracker
     {
         TripleCombos = _combos.TripleCount,
         QuadCombos   = _combos.QuadCount,
-        Lives        = _lives,
-        Specials     = _specials,
+        // Statistics of THIS run (RunSession) — the inventories themselves are
+        // PlayerProgressService.ExtraLives (persistent) and RunSession.Wallet.Specials.
+        Lives        = GameSession.Instance != null ? GameSession.Instance.Run.LivesCollectedThisRun : 0,
+        Specials     = GameSession.Instance != null ? GameSession.Instance.Run.SpecialsCollectedThisRun : 0,
     };
 
     public int PendingComboPickups => _combos.PendingCount;
@@ -39,11 +41,21 @@ public class RunnerResourceTracker
     /// <summary>A musical pickup was collected (songTime = when the player touched it).</summary>
     public void OnMusicalPickup(float songTime) => Track(_combos.Register(songTime));
 
-    /// <summary>A Life/Special pickup was collected.</summary>
+    /// <summary>A Life/Special pickup was collected. LIFE → persistent extra life (saved at once) +
+    /// run statistic; SPECIAL → the current run's wallet (temporary) + run statistic.</summary>
     public void OnResourcePickup(RingType type)
     {
-        if (type == RingType.Life) _lives++;
-        else if (type == RingType.Special) _specials++;
+        var run = GameSession.Instance != null ? GameSession.Instance.Run : null;
+        if (type == RingType.Life)
+        {
+            PlayerProgressService.Instance?.AddLife(1, "Runner LIFE pickup");
+            run?.CountLifeCollected();
+        }
+        else if (type == RingType.Special)
+        {
+            run?.CollectSpecial();
+            Debug.Log($"[RunSession] +1 SPECIAL → {run?.Wallet.Specials} for the upcoming fight");
+        }
         else return;
         EventBus.Publish(new RunnerResourcesChangedEvent { Counts = Counts });
     }
@@ -76,8 +88,6 @@ public class RunnerResourceTracker
     {
         _combos.Reset();
         _lastPending = 0;
-        _lives    = 0;
-        _specials = 0;
         EventBus.Publish(new RunnerResourcesChangedEvent { Counts = Counts });
     }
 

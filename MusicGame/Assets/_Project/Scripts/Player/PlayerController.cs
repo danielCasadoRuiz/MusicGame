@@ -268,7 +268,8 @@ public class PlayerController : MonoBehaviour
             bool readKeyboard = !PlatformService.IsMobile || PlatformService.DualInputInEditor;
 
             float dir = 0f;
-            if (readTouch) dir = Mathf.Clamp(TouchInputState.Lateral, -1f, 1f);
+            // Raw stick value stays untouched in TouchInputState; only the gameplay steering is shaped.
+            if (readTouch) dir = config.ShapeJoystickLateral(TouchInputState.Lateral);
             // Keyboard only drives this when the joystick isn't actively doing so — combining both
             // additively would double the effective speed while a developer holds both at once.
             if (readKeyboard && Mathf.Approximately(dir, 0f))

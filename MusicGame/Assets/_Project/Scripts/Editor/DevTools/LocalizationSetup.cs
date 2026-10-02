@@ -171,6 +171,30 @@ public static class LocalizationSetup
         // ── Next Song transition cartela (Continue -> Song Analysis hand-off) ─────────────────────
         ("NextSong.Header", "NEXT SONG",  "SEGÜENT CANÇÓ"),
         ("NextSong.Level",  "LEVEL {0}",  "NIVELL {0}"),
+
+        // ── Progression / rival collection / previews / runner resources ─────────────────────────
+        ("MainMenu.Continue", "CONTINUE", "CONTINUA"),
+        ("MainMenu.Rivals", "RIVALS", "RIVALS"),
+        ("MainMenu.Profile", "LEVEL {0}  ·  XP {1}/{2}  ·  LIVES {3}", "NIVELL {0}  ·  XP {1}/{2}  ·  VIDES {3}"),
+        ("Rivals.Title", "RIVALS", "RIVALS"),
+        ("Rivals.Back", "BACK", "ENRERE"),
+        ("Rivals.Summary", "{0} / {1} rival versions defeated", "{0} / {1} versions de rivals derrotades"),
+        ("Rivals.Level", "LV {0}", "NV {0}"),
+        ("Rivals.Defeated", "DEFEATED", "DERROTAT"),
+        ("Rivals.Undefeated", "UNDISCOVERED", "PER DESCOBRIR"),
+        ("MatchResult.NewRival", "NEW RIVAL UNLOCKED", "NOU RIVAL DESBLOQUEJAT"),
+        ("MatchResult.NewRivalLevel", "{0} — Level {1}", "{0} — Nivell {1}"),
+        ("HUD.Resources", "LIFE {0}    SPECIAL {1}", "VIDA {0}    ESPECIAL {1}"),
+        ("EndScreen.RunScore", "Score: {0}", "Puntuació: {0}"),
+        ("EndScreen.LivesCollected", "Lives collected: +{0}", "Vides recollides: +{0}"),
+        ("EndScreen.TotalLives", "Total lives: {0}", "Vides totals: {0}"),
+        ("EndScreen.SpecialsCollected", "Specials collected: {0}", "Especials recollits: {0}"),
+        ("EndScreen.SpecialsAvailable", "Specials for the fight: {0}", "Especials per al combat: {0}"),
+        ("EndScreen.Xp", "XP: +{0}  (Level {1})", "XP: +{0}  (Nivell {1})"),
+        ("SongSelection.Preview", "PREVIEW", "ESCOLTA"),
+        ("SongSelection.StopPreview", "STOP", "ATURA"),
+        ("OpponentSelection.Skip", "SKIP", "SALTA"),
+        ("SongSelection.PreviewRange", "PREVIEW {0} – {1}", "ESCOLTA {0} – {1}"),
     };
 
     [MenuItem("Tools/MusicGame/Setup Localization")]

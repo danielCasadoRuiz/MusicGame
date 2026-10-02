@@ -8,11 +8,12 @@ public enum CombatResourceType
 }
 
 /// <summary>
-/// A fighter's spendable combat resources for ONE match — a mutable wallet the combat runtime checks
-/// and consumes (FighterMoveController.TryExecuteMove). Never writes back into its source:
-///   Player   — filled from GameSession.RunnerResults.Resources (the Runner's canonical output stays untouched);
-///   Opponent — filled from its tier config (OpponentLevelConfig.specials/tripleCombos/quadCombos).
-/// Lives are carried for reference only (the existing "lose with a life" flow reads FightResources).
+/// A fighter's spendable combat resources — a mutable wallet the combat runtime checks and consumes
+/// (FighterMoveController.TryExecuteMove):
+///   Player   — the CURRENT RunSession's own wallet (GameSession.Run.Wallet): SPECIALs collected in the
+///              Runner are added to it directly, so Runner, HUD and fight share one counter;
+///   Opponent — a fresh wallet from its tier config (OpponentLevelConfig.specials/tripleCombos/quadCombos).
+/// Lives are not here: the life inventory is persistent (PlayerProgressService.ExtraLives).
 /// </summary>
 public class FighterCombatResources
 {
@@ -54,6 +55,18 @@ public class FighterCombatResources
             case CombatResourceType.Special:     Specials     -= amount; break;
         }
         return true;
+    }
+
+    /// <summary>Adds earned resources (RunSession: SPECIAL pickups, end-of-run Triple/Quad combos).</summary>
+    public void Add(CombatResourceType type, int amount)
+    {
+        if (amount <= 0) return;
+        switch (type)
+        {
+            case CombatResourceType.TripleCombo: TripleCombos += amount; break;
+            case CombatResourceType.QuadCombo:   QuadCombos   += amount; break;
+            case CombatResourceType.Special:     Specials     += amount; break;
+        }
     }
 
     /// <summary>DEBUG ONLY (FightDebugCombatInput) — never called by gameplay.</summary>

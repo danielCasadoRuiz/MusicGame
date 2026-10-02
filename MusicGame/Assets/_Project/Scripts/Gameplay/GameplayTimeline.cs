@@ -795,9 +795,10 @@ public class GameplayTimeline
     /// Signed lateral offset for a pickup that must sit OUTSIDE the normal racing line: the track's
     /// real local half-width + an edge offset rolled inside `profile` (the same roll order the
     /// off-track bonus always used: offset, then side), clamped to what the player can reach —
-    /// beyond the edge at most strafeSpeed·airTime/2·difficultPickupAirReach (out and back in one
+    /// beyond the edge at most EffectiveStrafeSpeed·airTime/2·difficultPickupAirReach (the slower of
+    /// keyboard and full joystick) (out and back in one
     /// jump; none without air control), and from the centre at most
-    /// strafeSpeed·(spawnLookAhead − minReactionTime). `side` ±1 forces a side; 0 rolls it.
+    /// EffectiveStrafeSpeed·(spawnLookAhead − minReactionTime). `side` ±1 forces a side; 0 rolls it.
     /// </summary>
     private static float DifficultLateral(PickupPlacementProfile profile, MusicPath path, MusicRunnerGameplayConfig config,
                                           float eventDistance, System.Random rng, float side)
@@ -811,9 +812,9 @@ public class GameplayTimeline
 
         float airTime = config.core.gravity < 0f ? 2f * config.core.jumpForce / -config.core.gravity : 0f;
         float maxBeyondEdge = config.core.allowAirControl
-            ? config.core.strafeSpeed * airTime * 0.5f * c.difficultPickupAirReach
+            ? config.core.EffectiveStrafeSpeed * airTime * 0.5f * c.difficultPickupAirReach
             : -c.collectibleRadius; // no air control: right at the edge, never beyond it
-        float maxFromCenter = config.core.strafeSpeed * Mathf.Max(0f, c.spawnLookAhead - c.minReactionTime);
+        float maxFromCenter = config.core.EffectiveStrafeSpeed * Mathf.Max(0f, c.spawnLookAhead - c.minReactionTime);
 
         float fromCenter = halfWidth + Mathf.Min(edgeOffset, maxBeyondEdge);
         fromCenter = Mathf.Min(fromCenter, maxFromCenter);

@@ -42,6 +42,7 @@ public class GameplayHUD : MonoBehaviour
         if (endScreenView != null) WireEndScreen(endScreenView);
         else { Debug.LogWarning("[GameplayHUD] No EndScreenView wired (UIRegistry missing/empty) — building the end screen procedurally instead."); BuildEndScreen(); }
 
+        BuildResourceElements();
         SetGameEnded(false);
     }
 
@@ -83,12 +84,73 @@ public class GameplayHUD : MonoBehaviour
     private TextMeshProUGUI  _fallsText;
     private TextMeshProUGUI  _noFallBonusText;
     private TextMeshProUGUI  _sessionText;
+
+    // LIFE / SPECIAL — read straight from the authoritative state (PlayerProgressService.ExtraLives,
+    // GameSession.Run): the ints below only detect changes, they are never a second counter.
+    private TextMeshProUGUI _resourceHudText;
+    private TextMeshProUGUI _runSummaryText;
+    private int _shownLives = -1, _shownSpecials = -1;
+    private System.Action<PlayerProgressChangedEvent> _onProgressChanged;
     private readonly List<GameObject> _rowObjects = new();
 
     // ── Lifecycle ────────────────────────────────────────────────────────────
 
+    // Extra elements both the prefab and the procedural HUD get (the prefabs predate them).
+    private void BuildResourceElements()
+    {
+        if (_resourceHudText == null && _liveRoot != null)
+        {
+            var bg = UIFactory.CreatePanel("ResourcesHud", _liveRoot, new Color(0.03f, 0.03f, 0.03f, 0.75f));
+            UIFactory.SetBox(bg.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-12f, -108f), new Vector2(270f, 30f));
+            bg.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
+            _resourceHudText = UIFactory.CreateText("Value", bg.rectTransform, "", 15, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+            UIFactory.Stretch(_resourceHudText.rectTransform);
+            _resourceHudText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        }
+        if (_runSummaryText == null && _endRoot != null)
+        {
+            var box = UIFactory.CreatePanel("RunResources", _endRoot, new Color(0.04f, 0.04f, 0.04f, 0.95f));
+            UIFactory.SetBox(box.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 0.5f), new Vector2(230f, 0f), new Vector2(300f, 210f));
+            box.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
+            _runSummaryText = UIFactory.CreateText("Summary", box.rectTransform, "", 15, Color.white, TextAlignmentOptions.TopLeft);
+            UIFactory.SetBox(_runSummaryText.rectTransform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(-28f, -24f));
+            _runSummaryText.textWrappingMode = TextWrappingModes.Normal;
+            _runSummaryText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        }
+    }
+
+    private void UpdateResourceHud()
+    {
+        if (_resourceHudText == null) return;
+        int lives = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.ExtraLives : 0;
+        int specials = GameSession.Instance != null ? GameSession.Instance.Run.Wallet.Specials : 0;
+        if (lives == _shownLives && specials == _shownSpecials) return;
+        _shownLives = lives;
+        _shownSpecials = specials;
+        _resourceHudText.text = Loc.Get("HUD.Resources", lives.ToString(), specials.ToString());
+    }
+
+    // Run statistics (this run) next to the persistent totals — see RunSession / PlayerProgressService.
+    private void RefreshRunSummary()
+    {
+        if (_runSummaryText == null) return;
+        var run = GameSession.Instance != null ? GameSession.Instance.Run : null;
+        var progress = PlayerProgressService.Instance;
+        int score = (_finalStats ?? manager?.Stats)?.Score ?? 0;
+        _runSummaryText.text =
+            Loc.Get("EndScreen.RunScore", score.ToString("N0")) + "\n" +
+            Loc.Get("EndScreen.LivesCollected", (run?.LivesCollectedThisRun ?? 0).ToString()) + "\n" +
+            Loc.Get("EndScreen.TotalLives", (progress != null ? progress.ExtraLives : 0).ToString()) + "\n" +
+            Loc.Get("EndScreen.SpecialsCollected", (run?.SpecialsCollectedThisRun ?? 0).ToString()) + "\n" +
+            Loc.Get("EndScreen.SpecialsAvailable", (run != null ? run.Wallet.Specials : 0).ToString()) + "\n" +
+            Loc.Get("EndScreen.Xp", (run?.XpEarned ?? 0).ToString(), (progress != null ? progress.Level : 1).ToString());
+    }
+
     private void OnEnable()
     {
+        // XP is granted by GameSession on the same GameEndedEvent — refresh once it lands.
+        _onProgressChanged = _ => { if (_endRoot != null && _endRoot.gameObject.activeSelf) RefreshRunSummary(); };
+        EventBus.Subscribe(_onProgressChanged);
         _onLevel = e => _totalRings = e.RingCount;
         _onEnd   = e =>
         {
@@ -124,6 +186,7 @@ public class GameplayHUD : MonoBehaviour
 
     private void OnDisable()
     {
+        EventBus.Unsubscribe(_onProgressChanged);
         EventBus.Unsubscribe(_onLevel);
         EventBus.Unsubscribe(_onEnd);
         EventBus.Unsubscribe(_onProfile);
@@ -146,6 +209,7 @@ public class GameplayHUD : MonoBehaviour
         }
         if (_gameEnded) return;
         UpdateLiveHud();
+        UpdateResourceHud();
     }
 
     private void SetGameEnded(bool ended)
@@ -505,6 +569,7 @@ public class GameplayHUD : MonoBehaviour
         }
 
         _fallsText.text = Loc.Get("EndScreen.Falls", _finalFallCount.ToString());
+        RefreshRunSummary();
 
         bool noFallBonus = _finalFallCount == 0 && config != null && config.scoring.noFallScoreMultiplier > 1f;
         _noFallBonusText.gameObject.SetActive(noFallBonus);

@@ -67,7 +67,9 @@ public static class AppBootstrap
         Object.DontDestroyOnLoad(listener);
         listener.AddComponent<AudioListenerOwner>();
 
-        // 1. construct
+        // 1. construct — persistent progression FIRST (GameSession borrows its tier state)
+        var playerProgress = go.AddComponent<PlayerProgressService>();
+        playerProgress.Configure(appConfig != null ? appConfig.progression : null);
         var gameSession  = go.AddComponent<GameSession>();
         var appFlow      = go.AddComponent<AppFlowController>();
         var themeAssets  = go.AddComponent<ThemeAssetLoader>();

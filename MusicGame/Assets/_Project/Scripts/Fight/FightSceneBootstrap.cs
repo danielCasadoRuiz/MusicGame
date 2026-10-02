@@ -283,7 +283,8 @@ public class FightSceneBootstrap : MonoBehaviour
         var results = GameSession.Instance != null ? GameSession.Instance.RunnerResults : null;
 
         _playerActor.SetBuildStats(results?.CombatBuild != null ? FighterBuildStats.FromCombatBuild(results.CombatBuild) : FighterBuildStats.Even(NeutralBuildBudget));
-        _playerActor.SetCombatResources(results != null ? FighterCombatResources.FromRunner(results.Resources) : new FighterCombatResources(0, 0, 0));
+        // The run's own wallet (not a copy): SPECIALs/combos the Runner earned, spent here, one counter.
+        _playerActor.SetCombatResources(GameSession.Instance != null ? GameSession.Instance.Run.Wallet : new FighterCombatResources(0, 0, 0));
         _playerActor.SetCombatProfile(_flowConfig != null ? _flowConfig.defaultPlayerCombatProfile : null);
         // Until a pick is committed the opponent carries the default profile (Fighting only starts after VersusIntro).
         _opponentActor.SetCombatProfile(_flowConfig != null ? _flowConfig.defaultOpponentCombatProfile : null);

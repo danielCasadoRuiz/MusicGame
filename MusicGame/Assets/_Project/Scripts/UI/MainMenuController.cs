@@ -34,6 +34,8 @@ public class MainMenuController : MonoBehaviour
     private RectTransform _settingsPanel;
     private Button        _quitButton;
     private Slider        _volumeSlider;
+    private TextMeshProUGUI _playLabel;     // "PLAY" first launch, "CONTINUE" once a progression save exists
+    private TextMeshProUGUI _profileText;   // persistent level / XP / lives
 
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
 
@@ -75,6 +77,17 @@ public class MainMenuController : MonoBehaviour
 
         view.playButton.onClick.AddListener(OnPlayClicked);
         view.settingsButton.onClick.AddListener(OnSettingsClicked);
+        _playLabel = view.playButtonLabel;
+        // The prefab predates the Rivals collection: add its button + profile line next to Settings.
+        var rivals = Instantiate(view.settingsButton, view.settingsButton.transform.parent);
+        rivals.name = "RivalsButton";
+        rivals.onClick = new Button.ButtonClickedEvent();
+        rivals.onClick.AddListener(OnRivalsClicked);
+        var rivalsRt = rivals.GetComponent<RectTransform>();
+        rivalsRt.anchoredPosition += new Vector2(0f, rivalsRt.sizeDelta.y + 18f) * 0.5f + new Vector2(rivalsRt.sizeDelta.x * 0.55f, 0f);
+        var rivalsLabel = rivals.GetComponentInChildren<TextMeshProUGUI>();
+        if (rivalsLabel != null) rivalsLabel.text = Loc.Get("MainMenu.Rivals");
+        BuildProfileText(view.root.GetComponent<RectTransform>());
         view.quitButton.onClick.AddListener(OnQuitClicked);
         view.closeButton.onClick.AddListener(() => _settingsPanel.gameObject.SetActive(false));
 
@@ -133,6 +146,15 @@ public class MainMenuController : MonoBehaviour
         playBtn.onClick.AddListener(OnPlayClicked);
         playBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
         playLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
+        _playLabel = playLabel;
+        y -= btnH + gap;
+
+        var rivalsBtn = UIFactory.CreateButton("RivalsButton", _root, Loc.Get("MainMenu.Rivals"), out var rivalsLabel);
+        UIFactory.SetBox(rivalsBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, y), new Vector2(btnW, btnH));
+        rivalsBtn.onClick.AddListener(OnRivalsClicked);
+        rivalsBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
+        rivalsLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
         y -= btnH + gap;
 
         var settingsBtn = UIFactory.CreateButton("SettingsButton", _root, Loc.Get("MainMenu.Settings"), out var settingsLabel);
@@ -153,9 +175,31 @@ public class MainMenuController : MonoBehaviour
         // QUIT is a desktop-only action — never a primary action on mobile (section 7 of the plan).
         _quitButton.gameObject.SetActive(!PlatformService.IsMobile);
 
+        BuildProfileText(_root);
         BuildSettingsPanel();
 
         _root.gameObject.SetActive(false);
+    }
+
+    // Persistent progression summary under the title (PlayerProgressService is the only source).
+    private void BuildProfileText(RectTransform parent)
+    {
+        _profileText = UIFactory.CreateText("ProfileText", parent, "", 18, Color.white, TextAlignmentOptions.Center);
+        UIFactory.SetBox(_profileText.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, -165f), new Vector2(900f, 30f));
+        _profileText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
+    }
+
+    private void RefreshProgressUI()
+    {
+        var progress = PlayerProgressService.Instance;
+        bool hasSave = progress != null && progress.HasSave;
+        if (_playLabel != null) _playLabel.text = Loc.Get(hasSave ? "MainMenu.Continue" : "MainMenu.Play");
+        if (_profileText == null) return;
+        _profileText.gameObject.SetActive(hasSave);
+        if (!hasSave) return;
+        var (inLevel, needed) = progress.LevelProgress;
+        _profileText.text = Loc.Get("MainMenu.Profile", progress.Level.ToString(), inLevel.ToString(), needed.ToString(), progress.ExtraLives.ToString());
     }
 
     private void BuildSettingsPanel()
@@ -199,6 +243,7 @@ public class MainMenuController : MonoBehaviour
 
     private void Show()
     {
+        RefreshProgressUI();
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
         _settingsPanel.gameObject.SetActive(false);
@@ -211,10 +256,20 @@ public class MainMenuController : MonoBehaviour
 
     // ── Actions ─────────────────────────────────────────────────────────────────
 
+    // PLAY (first launch) starts a progression save right away, so the next launch says CONTINUE;
+    // CONTINUE keeps level / XP / lives / rival collection — every run still gets a fresh RunSession.
     private void OnPlayClicked()
     {
+        var progress = PlayerProgressService.Instance;
+        if (progress != null && !progress.HasSave)
+        {
+            progress.Save();
+            Debug.Log("[PlayerProgress] New progression profile created (Play).");
+        }
         AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongSelection);
     }
+
+    private void OnRivalsClicked() => RivalCollectionController.Instance?.Open();
 
     private void OnSettingsClicked() => _settingsPanel.gameObject.SetActive(true);
 

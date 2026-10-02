@@ -16,6 +16,36 @@ public class MusicRunnerCoreConfig : ScriptableObject
     [Header("Player")]
     public float playerSpeed = 10f;
     public float strafeSpeed = 8f;
+
+    [Header("Touch joystick — ANALOG (on-screen stick only; keyboard keeps its full ±1)")]
+    [Tooltip("Stick deflection (0..1) ignored around the centre, so a resting thumb doesn't drift.")]
+    [Range(0f, 0.5f)] public float joystickDeadZone = 0.12f;
+    [Tooltip("Response curve exponent applied to the deflection left after the dead zone: 1 = linear, " +
+             ">1 = much gentler near the centre, still full strength at the edge.")]
+    [Range(1f, 3f)] public float joystickResponseExponent = 1.8f;
+    [Tooltip("Gain on the curved deflection before the top-speed clamp: 1 = the edge of the stick " +
+             "reaches the joystick top speed exactly; >1 reaches it earlier; <1 never quite reaches it.")]
+    [Range(0.25f, 2f)] public float joystickSensitivity = 1f;
+    [Tooltip("Joystick TOP lateral speed as a fraction of strafeSpeed (keyboard speed). Below 1 the " +
+             "stick is calmer than the keyboard; pickup reach is computed with EffectiveStrafeSpeed, " +
+             "so lowering this never creates unreachable pickups.")]
+    [Range(0.3f, 1f)] public float joystickMaxLateralSpeedMultiplier = 0.85f;
+
+    /// <summary>Raw stick X (-1..1) → steering (-1..1) that multiplies strafeSpeed:
+    /// sign · maxMultiplier · clamp01(sensitivity · ((|x| − deadZone) / (1 − deadZone))^exponent).
+    /// Analog: 20 % deflection gives a small fraction of the speed, never the keyboard's 100 %.</summary>
+    public float ShapeJoystickLateral(float raw)
+    {
+        float a = Mathf.Abs(Mathf.Clamp(raw, -1f, 1f));
+        if (a <= joystickDeadZone) return 0f;
+        float t = (a - joystickDeadZone) / Mathf.Max(0.0001f, 1f - joystickDeadZone);
+        float curved = Mathf.Clamp01(joystickSensitivity * Mathf.Pow(t, joystickResponseExponent));
+        return Mathf.Sign(raw) * curved * joystickMaxLateralSpeedMultiplier;
+    }
+
+    /// <summary>The lateral speed the player can ALWAYS count on, whichever input they use (the
+    /// slower of keyboard and full joystick). Pickup reachability (GameplayTimeline) uses this.</summary>
+    public float EffectiveStrafeSpeed => strafeSpeed * Mathf.Min(1f, joystickMaxLateralSpeedMultiplier);
     public float strafeLerp  = 10f;
     public float jumpForce   = 9f;
     public float gravity     = -22f;

@@ -1,0 +1,164 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+/// <summary>
+/// Owner of the PERSISTENT player progression (PlayerProgressData) — level, XP, extra lives,
+/// opponent-tier progress and the rival collection. Separate from GameSession (current-run state, see
+/// RunSession) and from the per-match combat state (FighterCombatResources): those reset, this never
+/// does except through a future explicit "Reset Progress".
+///
+/// Every meaningful change is saved IMMEDIATELY (PlayerProgressStore, atomic) — LIFE collected or
+/// consumed, XP / level, a newly defeated rival version, a completed song — so closing the game right
+/// after a reward never loses it. Changes are announced with PlayerProgressChangedEvent; a first-time
+/// rival version defeat also publishes RivalVersionUnlockedEvent.
+///
+/// Lives on [App Bootstrap] (DontDestroyOnLoad), created by AppBootstrap BEFORE GameSession, which
+/// borrows `TierProgress` so the existing tier rules keep working unchanged — now persisted.
+/// </summary>
+public class PlayerProgressService : MonoBehaviour
+{
+    public static PlayerProgressService Instance { get; private set; }
+
+    private PlayerProgressData _data;
+    private ProgressionConfigSO _config;
+
+    /// <summary>True when a save file existed at launch or one has been written since — the main
+    /// menu shows Continue instead of Play.</summary>
+    public bool HasSave { get; private set; }
+
+    public int Xp => _data.xp;
+    public int Level => _data.playerLevel;
+    public int ExtraLives => _data.extraLives;
+    public int FightsWon => _data.fightsWon;
+    public GameProgressionState TierProgress => _data.tierProgress;
+
+    /// <summary>XP gathered inside the current level, and the XP that level needs in total.</summary>
+    public (int inLevel, int needed) LevelProgress
+    {
+        get
+        {
+            if (_config == null) return (0, 1);
+            int start = _config.TotalXpForLevel(Level), next = _config.TotalXpForLevel(Level + 1);
+            return (_data.xp - start, Mathf.Max(1, next - start));
+        }
+    }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(this); return; }
+        Instance = this;
+        _data = PlayerProgressStore.Load();
+        HasSave = _data != null;
+        _data ??= new PlayerProgressData();
+        Debug.Log(HasSave
+            ? $"[PlayerProgress] Loaded save: level {_data.playerLevel}, {_data.xp} XP, {_data.extraLives} extra lives, " +
+              $"{_data.defeatedOpponents.Count} rivals with defeated versions, {_data.tierProgress.completedSongs} completed songs ({PlayerProgressStore.FilePath})"
+            : "[PlayerProgress] No save yet — fresh progression (first launch).");
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
+    }
+
+    public void Configure(ProgressionConfigSO config)
+    {
+        _config = config;
+        if (_config != null) _data.playerLevel = _config.LevelForXp(_data.xp); // follow the current thresholds
+    }
+
+    // ── Save ─────────────────────────────────────────────────────────────────
+
+    /// <summary>Writes the save now (also used by the main menu's Play to start a profile).</summary>
+    public void Save()
+    {
+        PlayerProgressStore.Save(_data);
+        HasSave = true;
+    }
+
+    private void Changed(string what)
+    {
+        Save();
+        EventBus.Publish(new PlayerProgressChangedEvent { Reason = what });
+    }
+
+    // ── Lives (persistent inventory) ─────────────────────────────────────────
+
+    public void AddLife(int amount = 1, string source = "pickup")
+    {
+        if (amount <= 0) return;
+        _data.extraLives += amount;
+        Debug.Log($"[PlayerProgress] +{amount} LIFE ({source}) → {_data.extraLives} extra lives (saved)");
+        Changed("life+");
+    }
+
+    /// <summary>Consumes one extra life (Fight Again); false when none are left.</summary>
+    public bool TryConsumeLife()
+    {
+        if (_data.extraLives <= 0) return false;
+        _data.extraLives--;
+        Debug.Log($"[PlayerProgress] LIFE consumed → {_data.extraLives} extra lives (saved)");
+        Changed("life-");
+        return true;
+    }
+
+    // ── XP / level ───────────────────────────────────────────────────────────
+
+    /// <summary>Adds XP and recomputes the level. Returns the level change (0 = none).</summary>
+    public int AddXp(int amount, string source)
+    {
+        if (amount <= 0) return 0;
+        int old = _data.playerLevel;
+        _data.xp += amount;
+        _data.playerLevel = _config != null ? _config.LevelForXp(_data.xp) : _data.playerLevel;
+        Debug.Log($"[PlayerProgress] +{amount} XP ({source}) → {_data.xp} XP, level {_data.playerLevel}" +
+                  (_data.playerLevel != old ? $" (LEVEL UP from {old})" : ""));
+        Changed("xp");
+        return _data.playerLevel - old;
+    }
+
+    /// <summary>The tier progression (GameProgression) changed — persist it.</summary>
+    public void NotifyTierProgressChanged() => Changed("tier");
+
+    // ── Rival collection (non-linear: each version independent) ─────────────
+
+    /// <summary>Records a won fight against `opponentId` at `level`. True only the FIRST time that
+    /// exact version is defeated (then RivalVersionUnlockedEvent is published).</summary>
+    public bool RegisterDefeat(OpponentDefinition opponent, int level)
+    {
+        _data.fightsWon++;
+        if (opponent == null || string.IsNullOrEmpty(opponent.id) || level <= 0) { Changed("win"); return false; }
+
+        var record = _data.defeatedOpponents.Find(r => r.opponentId == opponent.id);
+        if (record == null) { record = new DefeatedOpponentRecord { opponentId = opponent.id }; _data.defeatedOpponents.Add(record); }
+        bool isNew = !record.levels.Contains(level);
+        if (isNew) { record.levels.Add(level); record.levels.Sort(); }
+        Changed(isNew ? "rival-unlock" : "win");
+        if (isNew)
+        {
+            Debug.Log($"[PlayerProgress] NEW RIVAL VERSION defeated: {opponent.displayName} ({opponent.id}) level {level} (saved)");
+            EventBus.Publish(new RivalVersionUnlockedEvent { Opponent = opponent, Level = level });
+        }
+        return isNew;
+    }
+
+    public bool IsDefeated(string opponentId, int level)
+    {
+        var record = _data.defeatedOpponents.Find(r => r.opponentId == opponentId);
+        return record != null && record.levels.Contains(level);
+    }
+
+    /// <summary>Defeated levels of one rival (empty when none) — includes stored levels the current
+    /// content may no longer define; callers intersect with OpponentDefinition.levels.</summary>
+    public IReadOnlyList<int> DefeatedLevels(string opponentId)
+    {
+        var record = _data.defeatedOpponents.Find(r => r.opponentId == opponentId);
+        return record != null ? record.levels : (IReadOnlyList<int>)System.Array.Empty<int>();
+    }
+}
+
+/// <summary>Any persistent progression value changed (already saved). Reason: life+, life-, xp, tier, win, rival-unlock.</summary>
+public struct PlayerProgressChangedEvent { public string Reason; }
+
+/// <summary>A rival VERSION was defeated for the first time (already saved).</summary>
+public struct RivalVersionUnlockedEvent { public OpponentDefinition Opponent; public int Level; }

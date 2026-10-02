@@ -12,7 +12,7 @@ using UnityEngine.UI;
 ///
 ///   WIN  -> Continue: hands off entirely to NextSongTransitionController (see its own doc) — this
 ///           class never touches song selection/loading itself.
-///   LOSE -> Fight Again (GameSession.FightResources.ExtraLives > 0): consumes one life, restarts the
+///   LOSE -> Fight Again (PlayerProgressService.ExtraLives > 0, persistent): consumes one life, restarts the
 ///           SAME match (same GameSession.SelectedOpponent/SelectedOpponentLevelConfig/
 ///           SelectedOpponentSong — never re-runs Opponent Selection) via FightFlowState.VersusIntro,
 ///           exactly the "Fight Again -> VS curt -> Round 1 -> Countdown -> Fight" sequence the task
@@ -65,6 +65,10 @@ public class MatchResultController : MonoBehaviour
     /// finished" apart from GameStartedEvent firing for any unrelated reason.</summary>
     private bool _awaitingReplaySongReady;
     private System.Action<GameStartedEvent> _onGameStarted;
+    // First-time defeat of a rival version (PlayerProgressService) — published by FightMatchController
+    // BEFORE MatchWon, shown once on this result screen, then cleared.
+    private RivalVersionUnlockedEvent? _pendingUnlock;
+    private System.Action<RivalVersionUnlockedEvent> _onRivalUnlocked;
 
     private void Awake()
     {
@@ -119,6 +123,8 @@ public class MatchResultController : MonoBehaviour
             if (_awaitingReplaySongReady) return;
             ExitFightUI();
         };
+        _onRivalUnlocked = e => _pendingUnlock = e;
+        EventBus.Subscribe(_onRivalUnlocked);
         EventBus.Subscribe(_onMatchEnded);
         EventBus.Subscribe(_onFightFlowChanged);
         EventBus.Subscribe(_onGameStarted);
@@ -306,6 +312,13 @@ public class MatchResultController : MonoBehaviour
         _rivalText.text   = OpponentDisplayName();
         _roundsText.text  = $"{data.PlayerRoundsWon} - {data.OpponentRoundsWon}";
         _summaryText.text = BuildSummary(data);
+        if (playerWon && _pendingUnlock.HasValue && _pendingUnlock.Value.Opponent != null)
+        {
+            var u = _pendingUnlock.Value;
+            _summaryText.text += "\n\n<b>" + Loc.Get("MatchResult.NewRival") + "</b>\n" +
+                                 Loc.Get("MatchResult.NewRivalLevel", u.Opponent.displayName, u.Level.ToString());
+        }
+        _pendingUnlock = null; // shown once; a repeat victory over the same version never sets it
 
         _levelText.gameObject.SetActive(playerWon);
         if (playerWon) _levelText.text = Loc.Get("MatchResult.LevelUp", data.OldPlayerLevel.ToString(), data.NewPlayerLevel.ToString());
@@ -342,10 +355,8 @@ public class MatchResultController : MonoBehaviour
             : Loc.Get("MatchResult.FightAgain");
     }
 
-    private static int ExtraLives =>
-        GameSession.Instance != null && GameSession.Instance.FightResources != null
-            ? GameSession.Instance.FightResources.ExtraLives
-            : 0;
+    // The persistent life inventory — the same counter the Runner HUD/summary show.
+    private static int ExtraLives => PlayerProgressService.Instance != null ? PlayerProgressService.Instance.ExtraLives : 0;
 
     private static string BuildSummary(MatchEndedEvent data)
     {
@@ -389,7 +400,8 @@ public class MatchResultController : MonoBehaviour
 
     private void BeginFightAgain()
     {
-        if (GameSession.Instance?.FightResources != null) GameSession.Instance.FightResources.ExtraLives--;
+        // Consumes (and saves) one persistent extra life; the normal first attempt never costs one.
+        if (PlayerProgressService.Instance == null || !PlayerProgressService.Instance.TryConsumeLife()) return;
         Hide();
         // Same rival/level/song as before — no Opponent Selection re-run (task's own explicit
         // requirement). FightMusicController.Lock is a no-op while this opponent's playlist is
@@ -459,7 +471,7 @@ public class MatchResultController : MonoBehaviour
 
             // "+1 retry/life -> consumeix-la / inicia Fight Again" — granted and immediately spent,
             // see this phase's own explicit Rewarded Ad flow requirement.
-            if (GameSession.Instance?.FightResources != null) GameSession.Instance.FightResources.ExtraLives++;
+            PlayerProgressService.Instance?.AddLife(1, "rewarded ad");
             BeginFightAgain();
         });
     }

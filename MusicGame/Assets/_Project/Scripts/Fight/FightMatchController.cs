@@ -326,8 +326,23 @@ public class FightMatchController : MonoBehaviour
             // MatchResultController to display.
             // A won match completes one song cycle; the TIER (PlayerLevel) only changes every
             // ProgressionConfigSO.songsPerTier completed songs.
-            int oldLevel = GameSession.Instance != null ? GameSession.Instance.PlayerLevel : 1;
-            int newLevel = GameSession.Instance != null ? GameSession.Instance.RegisterCompletedSong() : oldLevel;
+            // The opponent-difficulty TIER (completed songs) keeps its own rules; the PLAYER level shown
+            // to the player is the persistent XP level (PlayerProgressService).
+            GameSession.Instance?.RegisterCompletedSong();
+            var progress = PlayerProgressService.Instance;
+            int oldLevel = progress != null ? progress.Level : 1;
+            if (progress != null)
+            {
+                var session = GameSession.Instance;
+                int beatenLevel = session?.SelectedOpponentLevelConfig != null ? session.SelectedOpponentLevelConfig.level : 0;
+                bool firstTime = progress.RegisterDefeat(session?.SelectedOpponent, beatenLevel);
+                var appCfg = Resources.Load<AppConfigSO>("AppConfig");
+                var cfg = appCfg != null ? appCfg.progression : null;
+                int xp = cfg != null ? cfg.xpPerFightWin + (firstTime ? cfg.xpFirstRivalVersion : 0) : 0;
+                progress.AddXp(xp, firstTime ? "fight win + first defeat of this rival version" : "fight win");
+                if (session != null) session.Run.XpEarned += xp;
+            }
+            int newLevel = progress != null ? progress.Level : oldLevel;
 
             EventBus.Publish(BuildMatchEndedEvent(FighterSide.Player, resolution, oldLevel, newLevel));
             FightFlowController.Instance?.RequestState(FightFlowState.MatchWon);
@@ -336,7 +351,7 @@ public class FightMatchController : MonoBehaviour
         {
             // A loss never touches PlayerLevel — Old/New are the same, unchanged value (task's own
             // explicit "si perds, no baixa, no puja" requirement).
-            int level = GameSession.Instance != null ? GameSession.Instance.PlayerLevel : 1;
+            int level = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.Level : 1;
 
             EventBus.Publish(BuildMatchEndedEvent(FighterSide.Opponent, resolution, level, level));
             FightFlowController.Instance?.RequestState(FightFlowState.MatchLost);

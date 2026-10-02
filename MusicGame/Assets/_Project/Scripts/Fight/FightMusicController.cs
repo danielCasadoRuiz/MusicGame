@@ -59,7 +59,11 @@ public class FightMusicController : MonoBehaviour
     /// song the instant it's locked in, when the step that highlighted it already happened to be
     /// playing that exact clip. Does nothing once Lock() has been called, until Reset().
     /// </summary>
-    public void PlaySnippet(AudioClip clip)
+    public void PlaySnippet(AudioClip clip) => PlaySnippet(clip, 0f);
+
+    /// <summary>Same as PlaySnippet(clip), starting `startTime` seconds in (the rival roulette starts
+    /// each fragment at the song's preview region — SongPreviewConfigSO).</summary>
+    public void PlaySnippet(AudioClip clip, float startTime)
     {
         if (_locked) return;
         CancelFadeOut();
@@ -68,9 +72,10 @@ public class FightMusicController : MonoBehaviour
         if (clip == null) { _current.Stop(); return; }
         if (_current.clip == clip && _current.isPlaying) return;
 
+        if (clip.loadState != AudioDataLoadState.Loaded) clip.LoadAudioData(); // preload is off on music clips
         _current.clip = clip;
-        _current.time = 0f;
         _current.Play();
+        _current.time = Mathf.Clamp(startTime, 0f, Mathf.Max(0f, clip.length - 0.1f)); // seek after Play: reliable once data is loaded
     }
 
     /// <summary>

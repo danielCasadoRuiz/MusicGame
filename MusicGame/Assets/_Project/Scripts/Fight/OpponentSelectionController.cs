@@ -12,12 +12,11 @@ using UnityEngine.UI;
 /// reflows the same grid, no code change).
 ///
 /// Runs a roulette the instant this state begins (FightFlowState.OpponentSelection): the FINAL
-/// opponent is chosen up front (GameSession.PickNextOpponent — persistent shuffle bag), then a fixed number of intermediate highlight steps
-/// (pseudo-random, never repeating the immediately-previous one) visit other opponents — including,
-/// deliberately, possibly the eventual winner itself. Excluding the winner from every intermediate
-/// step would make it guessable before the reveal (the one opponent that never lit up has to be
-/// it) — letting it appear like any other keeps the outcome genuinely unclear until the last step,
-/// which always lands on it and holds there.
+/// opponent is chosen up front (GameSession.PickNextOpponent — persistent shuffle bag), then
+/// FightFlowConfig.fakeSelectionCount FAKE rivals are shown, each with a short snippet from its
+/// song's preview region — drawn without replacement (no rival twice in one roulette) and never the
+/// final one, clamped to the unique candidates available — and the sequence ends on the precomputed
+/// rival. SKIP only cuts the animation short: it reveals that same precomputed rival, never re-rolls.
 ///
 /// Never touches an AudioSource itself (see FightMusicController's own doc) — each step just
 /// reports which opponent is highlighted and lets FightMusicController decide what to actually
@@ -55,6 +54,9 @@ public class OpponentSelectionController : MonoBehaviour
     private FightFlowConfig  _config;
 
     private Coroutine _rouletteRoutine;
+    private Button _skipButton;
+    private bool _skipRequested;   // Skip = skip the reveal ANIMATION, never a re-roll
+    private SongPreviewConfigSO _preview;
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
     private System.Action<GameFlowStateChangedEvent>  _onGameFlowChanged;
 
@@ -63,6 +65,7 @@ public class OpponentSelectionController : MonoBehaviour
         var appConfig = Resources.Load<AppConfigSO>("AppConfig");
         _roster = appConfig != null ? appConfig.opponentRoster : null;
         _config = appConfig != null ? appConfig.fightFlow : null;
+        _preview = appConfig != null ? appConfig.songPreview : null;
         if (_roster == null)
             Debug.LogWarning("[OpponentSelectionController] No OpponentRosterSO (AppConfig.opponentRoster) configured — the grid will be empty.");
 
@@ -71,6 +74,7 @@ public class OpponentSelectionController : MonoBehaviour
         else Build();
 
         PopulateGrid();
+        BuildSkipButton();
         _root.gameObject.SetActive(false);
     }
 
@@ -179,8 +183,20 @@ public class OpponentSelectionController : MonoBehaviour
 
     // ── Show / hide ───────────────────────────────────────────────────────────────
 
+    private void BuildSkipButton()
+    {
+        _skipButton = UIFactory.CreateButton("SkipButton", _root, Loc.Get("OpponentSelection.Skip"), out var label);
+        UIFactory.SetBox(_skipButton.GetComponent<RectTransform>(), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f),
+            new Vector2(-40f, 40f), new Vector2(170f, 50f));
+        _skipButton.onClick.AddListener(() => _skipRequested = true);
+        _skipButton.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        label.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+    }
+
     private void Show()
     {
+        _skipRequested = false;
+        if (_skipButton != null) _skipButton.gameObject.SetActive(true);
         FightMusicController.Instance?.Reset();
         ResetHighlights();
         _root.gameObject.SetActive(true);
@@ -214,36 +230,40 @@ public class OpponentSelectionController : MonoBehaviour
             yield break;
         }
 
-        float stepDuration   = _config != null ? Mathf.Max(0.05f, _config.selectionStepDuration)   : 0.25f;
-        float totalDuration  = _config != null ? Mathf.Max(stepDuration, _config.opponentSelectionDuration) : 4f;
-        float holdDuration   = _config != null ? Mathf.Max(0f, _config.finalOpponentHoldDuration)   : 1.5f;
-        int   steps          = Mathf.Max(1, Mathf.RoundToInt(totalDuration / stepDuration));
+        float stepDuration = _config != null ? Mathf.Max(0.05f, _config.selectionStepDuration) : 0.5f;
+        float holdDuration = _config != null ? Mathf.Max(0f, _config.finalOpponentHoldDuration) : 1.5f;
+        int   fakeCount    = _config != null ? Mathf.Max(0, _config.fakeSelectionCount) : 6;
 
-        // The real pick comes from GameSession's persistent shuffle bag (no repeats, cross-bag
-        // cooldown) — the roulette steps below are only the visual build-up to it.
+        // 1. The REAL pick comes first, from GameSession's persistent shuffle bag (no repeats,
+        //    cross-bag cooldown) — everything after this is theatre and can never change it.
         var picked     = GameSession.Instance != null ? GameSession.Instance.PickNextOpponent(_roster) : null;
         int finalIndex = picked != null ? System.Array.IndexOf(opponents, picked) : -1;
         if (finalIndex < 0) finalIndex = Random.Range(0, opponents.Length);
-        int lastIndex  = -1;
 
-        for (int step = 0; step < steps - 1; step++)
+        // 2. Fake rivals: drawn WITHOUT replacement (never the same rival twice in one roulette),
+        //    never the final one, clamped to the unique candidates that exist.
+        var fakes = BuildFakeSequence(opponents, finalIndex, fakeCount);
+        // ONE tier for the whole flow: every fake and the final are that composer's CURRENT-tier
+        // version (never Mozart Tier 1 next to Mozart Tier 3).
+        int tier = CurrentTier;
+        Debug.Log($"[OpponentSelectionController] Final rival precomputed: {Name(opponents[finalIndex])} — fake sequence " +
+                  $"({fakes.Count}/{fakeCount}): {string.Join(" -> ", fakes.ConvertAll(i => Name(opponents[i])))}");
+
+        foreach (int index in fakes)
         {
-            int index = NextRouletteIndex(opponents.Length, lastIndex);
-            lastIndex = index;
+            if (_skipRequested) break;
             HighlightOnly(index);
-
-            var clip = ResolveLevel(opponents[index])?.GetRandomSong();
-            FightMusicController.Instance?.PlaySnippet(clip);
-
-            yield return new WaitForSeconds(stepDuration);
+            var clip = opponents[index].GetConfigForTier(tier)?.GetRandomSong();
+            FightMusicController.Instance?.PlaySnippet(clip, SnippetStart(clip)); // from the song's preview region
+            for (float t = 0f; t < stepDuration && !_skipRequested; t += Time.deltaTime) yield return null;
         }
+        if (_skipRequested) Debug.Log($"[OpponentSelectionController] Skip — revealing the precomputed rival {Name(opponents[finalIndex])} (no re-roll).");
 
-        // The definitive pick — always the last step, always lands here regardless of whatever
-        // was visited above.
+        // 3. The definitive pick — always the last step, the SAME rival computed in step 1.
         HighlightOnly(finalIndex);
         var finalOpponent    = opponents[finalIndex];
         int resolvedTier     = 0;
-        var finalLevelConfig = finalOpponent != null ? finalOpponent.GetConfigForTier(CurrentTier, out resolvedTier) : null;
+        var finalLevelConfig = finalOpponent != null ? finalOpponent.GetConfigForTier(tier, out resolvedTier) : null;
         var finalSong        = GameSession.Instance != null
             ? GameSession.Instance.PickOpponentSong(finalOpponent, finalLevelConfig)
             : finalLevelConfig?.GetRandomSong();
@@ -255,31 +275,55 @@ public class OpponentSelectionController : MonoBehaviour
             GameSession.Instance.SelectedOpponentSong        = finalSong;
             GameSession.Instance.SelectedOpponentLevelConfig = finalLevelConfig;
             GameSession.Instance.SelectedOpponentTier        = resolvedTier;
+            GameSession.Instance.Run.OpponentId    = finalOpponent != null ? finalOpponent.id : null;
+            GameSession.Instance.Run.OpponentLevel = finalLevelConfig != null ? finalLevelConfig.level : 0;
         }
         Debug.Log($"[OpponentSelectionController] Final pick: " +
                   $"{(finalOpponent != null ? finalOpponent.displayName : "(null)")} — tier {CurrentTier} (config tier {resolvedTier}) — " +
                   $"song: {(finalSong != null ? finalSong.name : "(none)")}");
 
-        yield return new WaitForSeconds(holdDuration);
+        if (_skipButton != null) _skipButton.gameObject.SetActive(false);
+        for (float t = 0f; t < holdDuration && !_skipRequested; t += Time.deltaTime) yield return null;
 
         _rouletteRoutine = null;
         FightFlowController.Instance?.RequestState(FightFlowState.VersusIntro);
     }
 
+    /// <summary>Up to `count` roster indices for the fake reveal, in random order, where each COMPOSER
+    /// (OpponentDefinition.id — the identity, not a tier/version object) appears at most once and
+    /// the final rival's composer never appears. Partial Fisher–Yates over the unique candidates — no
+    /// rerolls, so no possible infinite loop; fewer candidates than `count` = a shorter sequence.</summary>
+    private static List<int> BuildFakeSequence(OpponentDefinition[] opponents, int finalIndex, int count)
+    {
+        string finalKey = finalIndex >= 0 && finalIndex < opponents.Length ? IdentityKey(opponents[finalIndex]) : null;
+        var seen = new HashSet<string>();
+        if (finalKey != null) seen.Add(finalKey);
+        var pool = new List<int>(opponents.Length);
+        for (int i = 0; i < opponents.Length; i++)
+            if (opponents[i] != null && seen.Add(IdentityKey(opponents[i]))) pool.Add(i); // one entry per composer
+        int n = Mathf.Min(count, pool.Count);
+        for (int i = 0; i < n; i++)
+        {
+            int j = Random.Range(i, pool.Count);
+            (pool[i], pool[j]) = (pool[j], pool[i]);
+        }
+        return pool.GetRange(0, n);
+    }
+
+    // Composer identity: the stable id (falls back to the display name for an id-less asset).
+    private static string IdentityKey(OpponentDefinition o) =>
+        o == null ? null : !string.IsNullOrEmpty(o.id) ? o.id : o.displayName;
+
+    // The SAME preview region the Song Selection preview uses (manual override or centred default).
+    private float SnippetStart(AudioClip clip) =>
+        clip == null ? 0f : _preview != null ? _preview.Resolve(clip.name, clip.length).start : Mathf.Max(0f, clip.length * 0.5f - 15f);
+
+    private static string Name(OpponentDefinition o) => o != null ? o.displayName : "(null)";
+
     // Single place this controller ever asks "what does this opponent look/sound like right now"
     // — see OpponentDefinition.GetConfigForTier's own doc on how tiers resolve.
     private static OpponentLevelConfig ResolveLevel(OpponentDefinition opponent) =>
         opponent != null ? opponent.GetConfigForTier(CurrentTier) : null;
-
-    // Avoids repeating the immediately-previous step's opponent — with 2+ opponents this always
-    // terminates in a handful of iterations at worst.
-    private static int NextRouletteIndex(int count, int lastIndex)
-    {
-        if (count <= 1) return 0;
-        int index;
-        do { index = Random.Range(0, count); } while (index == lastIndex);
-        return index;
-    }
 
     private void ResetHighlights() => HighlightOnly(-1);
 
