@@ -20,13 +20,13 @@ public class FightFlowConfig : ScriptableObject
     [Min(0f)] public float songPreloadTimeout = 3f;
     [Tooltip("A tiny radio-tuning / static burst between fake rivals' snippets. Purely cosmetic.")]
     public bool radioStaticEnabled = true;
-    [Min(0.01f)] public float radioStaticDuration = 0.14f;
+    [Min(0.01f)] public float radioStaticDuration = 0.08f; // 0.07–0.10 s reads as a quick tuning blip
     [Range(0f, 1f)] public float radioStaticVolume = 0.12f;
     [Tooltip("LEGACY — no longer read: the roulette length is fakeSelectionCount × selectionStepDuration.")]
     public float opponentSelectionDuration = 6f;
     [Tooltip("How long each intermediate highlight (and its music snippet) stays up before " +
              "moving to the next opponent — long enough to actually hear each fragment.")]
-    public float selectionStepDuration = 1.0f;
+    public float selectionStepDuration = 0.75f;
     [Tooltip("How long the FINAL opponent stays highlighted, clearly as the definitive pick, " +
              "before transitioning to the Versus screen.")]
     public float finalOpponentHoldDuration = 1.5f;

@@ -242,7 +242,7 @@ public class PauseController : MonoBehaviour
             view.cameraToggleButton.onClick.AddListener(() => CameraFollow.Instance?.ToggleView());
         else
             // The baked PauseMenu prefab lost its camera toggle (cameraToggleButton was never assigned),
-            // which is why First/Third Person disappeared from the Runner — rebuild it next to Pause.
+            // which is why First/Third Person disappeared from the Runner — rebuild it below the bar.
             BuildCameraToggle(_pauseButtonRoot.parent as RectTransform);
         RefreshCameraToggleDisplay(CameraFollow.Instance != null ? CameraFollow.Instance.ViewMode : CameraViewMode.ThirdPerson);
 
@@ -333,14 +333,14 @@ public class PauseController : MonoBehaviour
         if (_cameraToggleButtonRoot != null) _cameraToggleButtonRoot.gameObject.SetActive(showPersistentButtons);
     }
 
-    // First/Third Person toggle, inside the Runner's top bar right end, just left of Pause
-    // (GameplayHUD keeps that end of the bar free for both buttons).
+    // First/Third Person toggle — OUTSIDE the Runner's 44 px top bar, directly below it, right-aligned
+    // (its original placement). LIFE/SPECIAL stay inside the bar. Button and V key share ToggleView().
     private void BuildCameraToggle(RectTransform parent)
     {
         var cameraToggleBtn = UIFactory.CreateButton("CameraToggleButton", parent, "", out _cameraToggleLabel);
         _cameraToggleLabel.fontSize = 12;
         UIFactory.SetBox(cameraToggleBtn.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
-            new Vector2(-104f, -12f), new Vector2(124f, 28f));
+            new Vector2(-12f, -46f), new Vector2(120f, 28f));
         cameraToggleBtn.onClick.AddListener(() => CameraFollow.Instance?.ToggleView());
         _cameraToggleButtonRoot = cameraToggleBtn.GetComponent<RectTransform>();
         RefreshCameraToggleDisplay(CameraFollow.Instance != null ? CameraFollow.Instance.ViewMode : CameraViewMode.ThirdPerson);

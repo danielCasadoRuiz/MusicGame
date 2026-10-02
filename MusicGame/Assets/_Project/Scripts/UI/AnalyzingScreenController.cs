@@ -78,6 +78,7 @@ public class AnalyzingScreenController : MonoBehaviour
     private const float StyleFlashSeconds    = 1.4f;
     private const float CacheHitFinishSeconds = 1.6f; // Phase 3 duration when there's no real progress signal
     private const float CacheHitFinishCeiling = 0.97f;
+    private const float PendingCeiling       = 0.90f; // Phase 1 bar cap while the style waits for the full analysis
 
     private RectTransform _root;
     private TextMeshProUGUI _titleText;
@@ -89,11 +90,14 @@ public class AnalyzingScreenController : MonoBehaviour
     private int       _lastTipIndex = -1;
     private bool      _isCacheHit;
     private bool      _realProgressActive; // Phase 3, cache-miss only — _onProgress is allowed to drive the fill
+    private bool      _stylePending;       // tags inconclusive: real progress drives Phase 1 until the final style
+    private float     _lastProgress;
 
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
     private System.Action<PreAnalysisStartedEvent>   _onStarted;
     private System.Action<PreAnalysisProgressEvent>  _onProgress;
     private System.Action<MusicStyleDetectedEvent>   _onStyleDetected;
+    private System.Action<MusicStylePendingEvent>    _onStylePending;
     private System.Action<GameStartedEvent>          _onGameStarted;
 
     private void Awake()
@@ -126,8 +130,18 @@ public class AnalyzingScreenController : MonoBehaviour
         _onStarted  = e => _isCacheHit = e.IsCacheHit;
         _onProgress = e =>
         {
-            if (!_realProgressActive || _progressFill == null) return;
-            _progressFill.fillAmount = Mathf.Lerp(StyleDetectedFill, 1f, Mathf.Clamp01(e.Progress));
+            _lastProgress = Mathf.Clamp01(e.Progress);
+            if (_progressFill == null) return;
+            if (_stylePending)
+                _progressFill.fillAmount = Mathf.Max(_progressFill.fillAmount, Mathf.Lerp(PhaseOneCeiling, PendingCeiling, _lastProgress));
+            else if (_realProgressActive)
+                _progressFill.fillAmount = Mathf.Max(_progressFill.fillAmount, Mathf.Lerp(StyleDetectedFill, 1f, _lastProgress));
+        };
+        // Style still pending: keep tips rotating, let the real analysis progress move the bar.
+        _onStylePending = _ =>
+        {
+            _stylePending = true;
+            if (_progressRoutine != null) { StopCoroutine(_progressRoutine); _progressRoutine = null; }
         };
         _onStyleDetected = e => ShowStyleDetected(e.GameStyle);
         _onGameStarted = _ => Hide();
@@ -135,6 +149,7 @@ public class AnalyzingScreenController : MonoBehaviour
         EventBus.Subscribe(_onStarted);
         EventBus.Subscribe(_onProgress);
         EventBus.Subscribe(_onStyleDetected);
+        EventBus.Subscribe(_onStylePending);
         EventBus.Subscribe(_onGameStarted);
 
         // Same UI-Scene-loads-asynchronously race as the other Frontend screens.
@@ -148,6 +163,7 @@ public class AnalyzingScreenController : MonoBehaviour
         EventBus.Unsubscribe(_onStarted);
         EventBus.Unsubscribe(_onProgress);
         EventBus.Unsubscribe(_onStyleDetected);
+        EventBus.Unsubscribe(_onStylePending);
         EventBus.Unsubscribe(_onGameStarted);
     }
 
@@ -207,6 +223,8 @@ public class AnalyzingScreenController : MonoBehaviour
 
         _isCacheHit = false;
         _realProgressActive = false;
+        _stylePending = false;
+        _lastProgress = 0f;
         StopPhaseRoutines();
         _lastTipIndex = -1;
         _tipRoutine      = StartCoroutine(RotateTips());
@@ -231,8 +249,9 @@ public class AnalyzingScreenController : MonoBehaviour
     private void ShowStyleDetected(GameMusicStyle style)
     {
         _realProgressActive = false;
+        _stylePending = false;
         StopPhaseRoutines();
-        if (_progressFill != null) _progressFill.fillAmount = StyleDetectedFill;
+        if (_progressFill != null) _progressFill.fillAmount = Mathf.Max(_progressFill.fillAmount, StyleDetectedFill);
         if (_tipText != null) _tipText.text = Loc.Get("Analyzing.StyleDetected", Loc.Get("GameStyle." + style));
 
         _progressRoutine = StartCoroutine(AfterStyleFlash());
@@ -243,9 +262,15 @@ public class AnalyzingScreenController : MonoBehaviour
     {
         yield return new WaitForSeconds(StyleFlashSeconds);
 
-        if (_isCacheHit)
+        // The final style has been shown — SongAnalysisController may continue to the Runner now.
+        EventBus.Publish(new MusicStyleRevealFinishedEvent());
+
+        bool analysisDone = _lastProgress >= 0.999f;
+        if (_isCacheHit || analysisDone)
         {
-            _progressRoutine = StartCoroutine(EaseFillOverTime(StyleDetectedFill, CacheHitFinishCeiling, CacheHitFinishSeconds));
+            float from = _progressFill != null ? _progressFill.fillAmount : StyleDetectedFill;
+            _progressRoutine = StartCoroutine(EaseFillOverTime(from, Mathf.Max(from, CacheHitFinishCeiling),
+                                                               analysisDone ? 0.4f : CacheHitFinishSeconds));
         }
         else
         {

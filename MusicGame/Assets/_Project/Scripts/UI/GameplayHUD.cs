@@ -395,7 +395,8 @@ public class GameplayHUD : MonoBehaviour
 
     private void UpdateSemanticTagsStrip()
     {
-        if (_profile == null || !_profile.HasMusicTags) { _tagsStrip.gameObject.SetActive(false); return; }
+        // Raw detector tags are debug-only (F1 overlay); the player only ever sees the final GameMusicStyle.
+        if (_profile == null || !_profile.HasMusicTags || !GameplayDebugHUD.IsVisible) { _tagsStrip.gameObject.SetActive(false); return; }
 
         string style = FormatCategory(MusicTagCategory.Style);
         string vibe  = FormatCategory(MusicTagCategory.Vibe);

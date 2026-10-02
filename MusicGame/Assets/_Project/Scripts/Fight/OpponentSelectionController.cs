@@ -7,8 +7,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Opponent Selection screen — a grid populated directly from AppConfigSO.opponentRoster
 /// (OpponentRosterSO.opponents), one cell per entry, NEVER a hardcoded count (today's roster
-/// happens to have 8, laid out 2x4 by the baked GridLayoutGroup's own FixedColumnCount=4 — see
-/// UIPrefabBuilder.BuildOpponentSelection — but adding/removing an OpponentDefinition just
+/// has 12, laid out 6 columns × 2 rows by ApplyGridLayout, overriding the prefab's bake — but adding/removing an OpponentDefinition just
 /// reflows the same grid, no code change).
 ///
 /// Runs a roulette the instant this state begins (FightFlowState.OpponentSelection): the FINAL
@@ -37,9 +36,13 @@ public class OpponentSelectionController : MonoBehaviour
 {
     private static readonly Color NormalCellColor = new(1f, 1f, 1f, 0.10f);
 
-    private const float DefaultCellWidth  = 180f;
-    private const float DefaultCellHeight = 220f;
-    private const int   PreferredColumns  = 4;
+    // 6 columns × 2 rows for the 12-composer roster (rows grow with the roster) — fits 1920×1080
+    // between the title and the Skip button. Applied at runtime to both the procedural and the
+    // baked-prefab grid (ApplyGridLayout), so the prefab's old 4-column bake is overridden.
+    private const float DefaultCellWidth  = 190f;
+    private const float DefaultCellHeight = 240f;
+    private const float CellSpacing       = 18f;
+    private const int   PreferredColumns  = 6;
 
     // The tier opponent content resolves at (GameSession.EffectiveOpponentTier: the real progression
     // tier, or a debug-forced one). Falls back to 1 only if GameSession doesn't exist.
@@ -127,7 +130,7 @@ public class OpponentSelectionController : MonoBehaviour
 
         _gridRoot = UIFactory.CreateRect("Grid", _root);
         UIFactory.SetBox(_gridRoot, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2((DefaultCellWidth + 16f) * PreferredColumns, (DefaultCellHeight + 16f) * 2f));
+            Vector2.zero, Vector2.zero); // sized by ApplyGridLayout from the roster count
         BuildGridLayout(_gridRoot);
     }
 
@@ -135,7 +138,7 @@ public class OpponentSelectionController : MonoBehaviour
     {
         var layout = gridRoot.gameObject.AddComponent<GridLayoutGroup>();
         layout.cellSize       = new Vector2(DefaultCellWidth, DefaultCellHeight);
-        layout.spacing        = new Vector2(16f, 16f);
+        layout.spacing        = new Vector2(CellSpacing, CellSpacing);
         layout.childAlignment = TextAnchor.MiddleCenter;
         layout.constraint     = GridLayoutGroup.Constraint.FixedColumnCount;
         layout.constraintCount = PreferredColumns;
@@ -146,12 +149,29 @@ public class OpponentSelectionController : MonoBehaviour
     private void PopulateGrid()
     {
         if (_gridRoot.GetComponent<GridLayoutGroup>() == null) BuildGridLayout(_gridRoot); // baked prefab safety net
+        var opponents = _roster != null ? _roster.opponents : System.Array.Empty<OpponentDefinition>();
+        ApplyGridLayout(_gridRoot.GetComponent<GridLayoutGroup>(), opponents.Length);
         var cellSize = _gridRoot.GetComponent<GridLayoutGroup>().cellSize;
 
         _cellBackgrounds.Clear();
-        var opponents = _roster != null ? _roster.opponents : System.Array.Empty<OpponentDefinition>();
         for (int i = 0; i < opponents.Length; i++)
             BuildCell(i, opponents[i], cellSize);
+    }
+
+    // Same cells for every path: fixed column count, container sized to exactly columns × rows.
+    private void ApplyGridLayout(GridLayoutGroup layout, int count)
+    {
+        int rows = Mathf.Max(1, Mathf.CeilToInt(count / (float)PreferredColumns));
+        layout.cellSize        = new Vector2(DefaultCellWidth, DefaultCellHeight);
+        layout.spacing         = new Vector2(CellSpacing, CellSpacing);
+        layout.childAlignment  = TextAnchor.MiddleCenter;
+        layout.constraint      = GridLayoutGroup.Constraint.FixedColumnCount;
+        layout.constraintCount = PreferredColumns;
+        layout.padding         = new RectOffset();
+
+        _gridRoot.anchorMin = _gridRoot.anchorMax = _gridRoot.pivot = new Vector2(0.5f, 0.5f);
+        _gridRoot.sizeDelta = new Vector2(PreferredColumns * DefaultCellWidth + (PreferredColumns - 1) * CellSpacing,
+                                          rows * DefaultCellHeight + (rows - 1) * CellSpacing);
     }
 
     private void BuildCell(int index, OpponentDefinition opponent, Vector2 cellSize)
@@ -230,7 +250,7 @@ public class OpponentSelectionController : MonoBehaviour
             yield break;
         }
 
-        float stepDuration = _config != null ? Mathf.Max(0.05f, _config.selectionStepDuration) : 0.5f;
+        float stepDuration = _config != null ? Mathf.Max(0.05f, _config.selectionStepDuration) : 0.75f;
         float holdDuration = _config != null ? Mathf.Max(0f, _config.finalOpponentHoldDuration) : 1.5f;
         int   fakeCount    = _config != null ? Mathf.Max(0, _config.fakeSelectionCount) : 6;
 
@@ -271,7 +291,7 @@ public class OpponentSelectionController : MonoBehaviour
             if (_skipRequested) break;
             HighlightOnly(fakes[k]);
             var clip = fakeClips[k];
-            if (radio && k > 0) FightMusicController.Instance?.PlayRadioStatic(_config != null ? _config.radioStaticDuration : 0.14f,
+            if (radio && k > 0) FightMusicController.Instance?.PlayRadioStatic(_config != null ? _config.radioStaticDuration : 0.08f,
                                                                                 _config != null ? _config.radioStaticVolume : 0.12f);
             FightMusicController.Instance?.PlaySnippet(clip, SnippetStart(clip)); // from the song's preview region
             for (float t = 0f; t < stepDuration && !_skipRequested; t += Time.deltaTime) yield return null;
@@ -280,7 +300,7 @@ public class OpponentSelectionController : MonoBehaviour
 
         // 3. The definitive pick — always the last step, the SAME rival computed in step 1.
         HighlightOnly(finalIndex);
-        if (radio && fakes.Count > 0) FightMusicController.Instance?.PlayRadioStatic(_config != null ? _config.radioStaticDuration : 0.14f,
+        if (radio && fakes.Count > 0) FightMusicController.Instance?.PlayRadioStatic(_config != null ? _config.radioStaticDuration : 0.08f,
                                                                                     _config != null ? _config.radioStaticVolume : 0.12f);
         FightMusicController.Instance?.Lock(finalSong, finalLevelConfig);
         // The fakes' tracks are not needed any more — free their audio data (the final one keeps playing).

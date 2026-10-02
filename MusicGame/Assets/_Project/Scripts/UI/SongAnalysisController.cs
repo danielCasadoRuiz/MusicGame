@@ -24,18 +24,14 @@ using UnityEngine;
 ///      which AnalyzingScreenController already reacts to regardless of who's driving it.
 ///   2. As soon as AudioPreAnalyzer's semantic-tagging pass knows this song's tags — which happens
 ///      BEFORE the rest of its (level-generation-critical) per-frame analysis even starts, see its
-///      own doc — OnTagsReady classifies the style (same IMusicStyleClassifier RunnerSceneBootstrap
-///      used to own), writes GameSession.DetectedMusicStyleId, and publishes
-///      MusicStyleDetectedEvent right away. ThemeManager already subscribes to that on its own and
-///      swaps CurrentTheme accordingly (Addressables-loading the style's visual, then Rebuild());
-///      nothing new to wire there. The rest of the analysis keeps running in the background.
-///      FALLBACK: if semantic tagging is disabled (OnTagsReady never fires), classification instead
-///      happens once the full profile is ready, exactly as before this early path existed.
-///   3. Wait roughly one theme-transition's worth of time so the Analyzing screen's own
-///      ThemeColorReceiver/ThemeTextReceiver children actually finish animating to the new style
-///      BEFORE Runner loads underneath them — NOT by waiting on ThemeChangedEvent itself, since
-///      ThemeManager legitimately never publishes it when a style has no authored visual yet (falls
-///      back to whatever's already showing), which would hang this coroutine forever.
+///      own doc — OnTagsReady runs MusicStyleResolver.ResolveEarly. ONLY if the tags are conclusive
+///      (dominant recognized genre, confidence + margin from MusicStyleRulesSO) the FINAL style is
+///      published right away (GameSession + MusicStyleDetectedEvent → ThemeManager swaps the theme).
+///      Otherwise the style stays PENDING (MusicStylePendingEvent, no UI/theme change).
+///   3. Full profile ready: if still pending, resolve ONCE from tags + all SongProfile features and
+///      publish. The style is never published twice. Then wait for MusicStyleRevealFinishedEvent
+///      from the Analyzing screen (already true if the early reveal ended) and at least one theme
+///      transition since publication — with a timeout fallback, never forever.
 ///   4. Request GameFlowState.Gameplay — SceneFlowController maps that to Runner and loads it only
 ///      now, with RunnerSceneBootstrap re-publishing SongProfileReadyEvent once Runner's own
 ///      scene-local listeners (GameplayManager, MusicWorldManager, ...) have subscribed, so they
@@ -57,17 +53,20 @@ public class SongAnalysisController : MonoBehaviour
     private const float PostDetectionBufferSeconds = 0.15f;
 
     private MusicStyleRulesSO _styleRules; // AppConfigSO.musicStyleRules (null = built-in defaults)
-    private MusicStyleResolution _lastStyle;
 
     private AudioPreAnalyzer     _preAnalyzer;
     private AudioAnalysisConfig  _config;
 
-    // Set the instant onTagsReady fires (see BeginAnalysis) — lets FinishAnalysis know whether it
-    // still needs to classify+publish itself (semantic tagging was disabled, so onTagsReady never
-    // fired) or whether that already happened early and it should just do the theme-transition
-    // wait + advance to Gameplay.
-    private bool _styleDetectedEarly;
+    // GameMusicStyle is published ONCE per song: at tags time only when conclusive, otherwise after
+    // the full analysis. _stylePublished guards against a second publication.
+    private bool _stylePublished;
+    private bool _revealFinished;
+    private float _publishedAt;
 
+    // Safety net only — the Analyzing screen normally reports the end of its reveal well before this.
+    private const float RevealTimeoutSeconds = 4f;
+
+    private System.Action<MusicStyleRevealFinishedEvent> _onRevealFinished;
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
 
     private void Awake()
@@ -86,6 +85,8 @@ public class SongAnalysisController : MonoBehaviour
             if (e.Current == GameFlowState.SongAnalysis) BeginAnalysis();
         };
         EventBus.Subscribe(_onFlowStateChanged);
+        _onRevealFinished = _ => _revealFinished = true;
+        EventBus.Subscribe(_onRevealFinished);
 
         // Same UI-Scene-loads-asynchronously race as the other Frontend screens.
         if (AppBootstrap.Context != null && AppBootstrap.Context.AppFlow.CurrentState == GameFlowState.SongAnalysis)
@@ -95,6 +96,7 @@ public class SongAnalysisController : MonoBehaviour
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onFlowStateChanged);
+        EventBus.Unsubscribe(_onRevealFinished);
     }
 
     // SongSelectionController now requests SongAnalysis IMMEDIATELY on Play — for a catalog song,
@@ -135,56 +137,52 @@ public class SongAnalysisController : MonoBehaviour
             yield return null;
         }
 
-        _styleDetectedEarly = false;
+        _stylePublished = false;
+        _revealFinished = false;
         StartCoroutine(_preAnalyzer.Analyze(selected.Value.Clip, _config, OnProfileReady, OnTagsReady));
     }
 
-    // Fires as soon as the semantic-tagging pass knows this song's tags — genuinely before the
-    // rest of the (level-generation-critical) analysis finishes, since that pass only needs the
-    // raw clip data (see AudioPreAnalyzer's own doc). Classifying and publishing HERE, instead of
-    // waiting for the full SongProfile, is what lets the theme start changing while the detailed
-    // per-frame analysis is still running in the background.
+    // Fires as soon as the semantic-tagging pass knows this song's tags, before the rest of the
+    // analysis. The style is FINAL here only when conclusive (a dominant recognized genre — see
+    // MusicStyleResolver.ResolveEarly / MusicStyleRulesSO early thresholds); otherwise it stays pending
+    // and nothing user-facing changes until FinishAnalysis.
     private void OnTagsReady(MusicTagScore[] tags)
     {
-        _styleDetectedEarly = true;
-        ClassifyAndPublish(new SongProfile { musicTags = tags });
+        if (_stylePublished) return;
+        var early = MusicStyleResolver.ResolveEarly(tags, _styleRules);
+        Debug.Log($"[SongAnalysisController] Tags: {early.Style} {early.Score:0.00} (margin {early.Margin:0.00} over {early.RunnerUp}) → " +
+                  (early.Conclusive ? "conclusive, final" : "pending full analysis"));
+        if (early.Conclusive) PublishFinal(early, new SongProfile { musicTags = tags });
+        else EventBus.Publish(new MusicStylePendingEvent());
     }
 
     private void OnProfileReady(SongProfile profile) => StartCoroutine(FinishAnalysis(profile));
 
     private IEnumerator FinishAnalysis(SongProfile profile)
     {
-        // Fallback only — semantic tagging was disabled (or produced nothing), so OnTagsReady
-        // never fired. Classify from the now-complete profile instead, exactly as before this
-        // early-detection path existed.
-        if (!_styleDetectedEarly)
-            ClassifyAndPublish(profile);
-        else
-        {
-            // Refinement with the FULL profile (danceability, intensity, mode…): the game style is
-            // updated; the theme is only swapped again if its visual key actually changed.
-            var refined = MusicStyleResolver.Resolve(profile, _styleRules);
-            if (refined.Style != _lastStyle.Style)
-            {
-                Debug.Log($"[SongAnalysisController] Style refined with full analysis: {_lastStyle.Style} → {refined.Style} ({refined.Score:0.00})");
-                if (refined.ThemeStyle != _lastStyle.ThemeStyle) Publish(refined, profile);
-                else if (GameSession.Instance != null) GameSession.Instance.DetectedGameStyle = refined.Style;
-                _lastStyle = refined;
-            }
-        }
+        // Pending (or tagging disabled): resolve once from tags + the full SongProfile features.
+        if (!_stylePublished)
+            PublishFinal(MusicStyleResolver.Resolve(profile, _styleRules), profile);
 
-        yield return new WaitForSeconds(ThemeTransitionController.Duration + PostDetectionBufferSeconds);
+        // Wait for the Analyzing screen to finish revealing the final style (immediate when the early
+        // reveal already ended), and for the theme transition started at publication. Never forever.
+        float minThemeEnd = _publishedAt + ThemeTransitionController.Duration + PostDetectionBufferSeconds;
+        float timeout = Time.unscaledTime + RevealTimeoutSeconds;
+        while ((!_revealFinished || Time.unscaledTime < minThemeEnd) && Time.unscaledTime < timeout)
+            yield return null;
+        if (!_revealFinished) Debug.LogWarning("[SongAnalysisController] Style reveal not reported in time — continuing to Gameplay.");
 
         AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.Gameplay);
     }
 
     // Raw tags/features → controlled GameMusicStyle (MusicStyleResolver); never the raw top tag.
-    private void ClassifyAndPublish(SongProfile profileForClassification)
+    private void PublishFinal(MusicStyleResolution res, SongProfile profile)
     {
-        _lastStyle = MusicStyleResolver.Resolve(profileForClassification, _styleRules);
-        Debug.Log($"[SongAnalysisController] Game style {_lastStyle.Style} (score {_lastStyle.Score:0.00}, theme {_lastStyle.ThemeStyle}, " +
-                  $"features {(_lastStyle.UsedFeatures ? "yes" : "tags only")})");
-        Publish(_lastStyle, profileForClassification);
+        _stylePublished = true;
+        _publishedAt = Time.unscaledTime;
+        Debug.Log($"[SongAnalysisController] FINAL game style {res.Style} (score {res.Score:0.00}, margin {res.Margin:0.00}, " +
+                  $"theme {res.ThemeStyle}, features {(res.UsedFeatures ? "yes" : "tags only")})");
+        Publish(res, profile);
     }
 
     private static void Publish(MusicStyleResolution res, SongProfile profile)

@@ -13,6 +13,8 @@ public class GameplayDebugHUD : MonoBehaviour
     [SerializeField] private bool showGizmos   = true;
 
     private bool            _visible;
+    /// <summary>True while the F1 overlay is open — raw music tags are only shown then (debug only).</summary>
+    public static bool IsVisible { get; private set; }
     private GameplayManager _manager;
     private PlayerController _player;
     private CameraFollow    _camera;
@@ -35,6 +37,7 @@ public class GameplayDebugHUD : MonoBehaviour
     private void Start()
     {
         _visible     = showOnStart;
+        IsVisible    = _visible;
         _manager     = FindFirstObjectByType<GameplayManager>();
         _player      = FindFirstObjectByType<PlayerController>();
         _camera      = FindFirstObjectByType<CameraFollow>();
@@ -67,6 +70,7 @@ public class GameplayDebugHUD : MonoBehaviour
 
     private void OnDisable()
     {
+        IsVisible = false;
         EventBus.Unsubscribe(_onRingDebug);
         EventBus.Unsubscribe(_onMacroDebug);
         EventBus.Unsubscribe(_onProfileDebug);
@@ -76,7 +80,9 @@ public class GameplayDebugHUD : MonoBehaviour
     {
         if (Keyboard.current != null && Keyboard.current.f1Key.wasPressedThisFrame)
             _visible = !_visible;
+        IsVisible = _visible;
     }
+
 
     private void OnGUI()
     {

@@ -69,28 +69,51 @@ public class HorizonCameraController : MonoBehaviour
             var mainData = _mainCamera.GetUniversalAdditionalCameraData();
             if (mainData != null) mainData.renderType = CameraRenderType.Base;
         }
+        foreach (var cam in _disabledStrayCameras) if (cam != null) cam.enabled = true;
+        _disabledStrayCameras.Clear();
         if (HorizonCamera != null) Destroy(HorizonCamera.gameObject);
         if (HorizonRoot != null) Destroy(HorizonRoot.gameObject);
     }
 
-    /// <summary>The Runner's OWN gameplay camera: the MainCamera-tagged camera in the same scene as the
-    /// Horizon World (the Runner scene). Never blindly Camera.main — with a second MainCamera alive
-    /// (e.g. a "Main Camera" left in the scene Play was started from) Camera.main returned THAT one,
-    /// the horizon stack was built on it, and the Runner camera kept clearing to solid blue over the
-    /// mountains/bars.</summary>
+    /// <summary>The Runner's OWN gameplay camera — explicit, never a blind Camera.main lookup:
+    /// 1) the Camera on CameraFollow in the owner's scene (the camera that actually follows the player),
+    /// 2) else the MainCamera-tagged camera of that scene. Never the Horizon Camera itself.
+    /// enabled + activeInHierarchy is used instead of isActiveAndEnabled, which can still be false for
+    /// cameras of a scene that is being loaded additively (this runs from GameplayManager.Awake).</summary>
     public static Camera ResolveGameplayCamera(GameObject owner)
     {
         var scene = owner != null ? owner.scene : default;
-        Camera sameScene = null;
+        bool Usable(Camera c) => c != null && c.enabled && c.gameObject.activeInHierarchy && c.targetTexture == null
+                                 && c.gameObject.scene == scene && (Instance == null || c != Instance.HorizonCamera);
+
+        foreach (var follow in FindObjectsByType<CameraFollow>(FindObjectsSortMode.None))
+            if (follow.TryGetComponent<Camera>(out var c) && Usable(c)) return c;
+
+        foreach (var cam in FindObjectsByType<Camera>(FindObjectsSortMode.None))
+            if (Usable(cam) && cam.CompareTag("MainCamera")) return cam;
+
+        Debug.LogWarning($"[HorizonCameraController] No gameplay camera found in scene '{scene.name}'.");
+        return null;
+    }
+
+    // Screen cameras outside the stack that were switched off by Initialize (restored in OnDestroy).
+    private readonly System.Collections.Generic.List<Camera> _disabledStrayCameras = new();
+
+    /// <summary>Any OTHER camera still rendering to the screen (e.g. the "Main Camera" of the untitled
+    /// scene Play was started from, or the outgoing mode scene's camera) is a second Base camera that
+    /// renders AFTER the horizon stack and paints over the whole frame from its own fixed position.
+    /// Only the Horizon (Base) + gameplay (Overlay) stack may render to the screen in the Runner.</summary>
+    private void DisableStrayScreenCameras()
+    {
         foreach (var cam in FindObjectsByType<Camera>(FindObjectsSortMode.None))
         {
-            if (!cam.isActiveAndEnabled || cam.targetTexture != null || cam.gameObject.scene != scene) continue;
-            if (cam.CompareTag("MainCamera")) return cam;
-            sameScene ??= cam;
+            if (cam == HorizonCamera || cam == _mainCamera || !cam.enabled || cam.targetTexture != null) continue;
+            var data = cam.GetUniversalAdditionalCameraData();
+            if (data != null && data.renderType == CameraRenderType.Overlay) continue;
+            cam.enabled = false;
+            _disabledStrayCameras.Add(cam);
+            Debug.Log($"[HorizonCameraController] Disabled stray screen camera '{cam.name}' (scene '{cam.gameObject.scene.name}').");
         }
-        if (sameScene != null) return sameScene;
-        if (Camera.main != null) Debug.LogWarning($"[HorizonCameraController] No camera in scene '{scene.name}' — falling back to Camera.main '{Camera.main.name}'.");
-        return Camera.main;
     }
 
     public void Initialize(HorizonConfig config)
@@ -101,7 +124,7 @@ public class HorizonCameraController : MonoBehaviour
         _mainCamera = ResolveGameplayCamera(gameObject);
         if (_mainCamera == null)
         {
-            Debug.LogWarning("[HorizonCameraController] No Main Camera found — Horizon World disabled.");
+            Debug.LogWarning("[HorizonCameraController] No gameplay camera found — Horizon World disabled.");
             return;
         }
 
@@ -146,6 +169,8 @@ public class HorizonCameraController : MonoBehaviour
         // The Main Camera no longer sees the Horizon layer(s) itself — the Horizon Camera owns
         // them entirely, at its own fixed distance, so nothing draws twice.
         _mainCamera.cullingMask &= ~cullMask;
+
+        DisableStrayScreenCameras();
 
         IsActive = true;
     }
