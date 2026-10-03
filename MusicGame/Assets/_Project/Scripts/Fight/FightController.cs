@@ -52,6 +52,10 @@ public class FightController : MonoBehaviour
 
     private RectTransform _pausePanel;
     private bool _paused;
+
+    /// <summary>True while the fight pause menu is open: Time.timeScale = 0 (fighters, round timer,
+    /// round/intro sequences frozen), fight music paused, fighter input + AI ignored.</summary>
+    public static bool IsPaused { get; private set; }
     private bool _active;
 
     // Only ever READ here — see class doc: FightController presents combat data, never decides it.
@@ -176,7 +180,10 @@ public class FightController : MonoBehaviour
         if (!_active) return;
 
         var kb = Keyboard.current;
-        if (kb != null && kb.escapeKey.wasPressedThisFrame)
+        // Esc pauses only while the match is being played (not on the result screen).
+        var fightState = FightFlowController.Instance != null ? FightFlowController.Instance.CurrentState : FightFlowState.Fighting;
+        bool matchOver = fightState == FightFlowState.MatchWon || fightState == FightFlowState.MatchLost;
+        if (kb != null && kb.escapeKey.wasPressedThisFrame && (!matchOver || _paused))
             SetPaused(!_paused);
         // V = the same First/Third Person toggle as the HUD button (one method: FightCameraController.ToggleView).
         if (kb != null && kb.vKey.wasPressedThisFrame && !_paused)
@@ -251,6 +258,12 @@ public class FightController : MonoBehaviour
 
     private void ExitFight()
     {
+        // Leaving Fight while paused: never carry timeScale 0 / a paused song into the next screen.
+        if (_paused)
+        {
+            FightMusicController.Instance?.Stop();
+            SetPaused(false);
+        }
         _active = false;
         if (_root != null) _root.gameObject.SetActive(false);
         if (_mobileControlsRoot != null) _mobileControlsRoot.gameObject.SetActive(false);
@@ -468,10 +481,17 @@ public class FightController : MonoBehaviour
         _pausePanel.gameObject.SetActive(false);
     }
 
+    // A REAL pause (it used to only show the panel while the match kept running underneath).
     private void SetPaused(bool paused)
     {
+        bool changed = _paused != paused;
         _paused = paused;
-        _pausePanel.gameObject.SetActive(paused);
+        IsPaused = paused;
+        if (_pausePanel != null) _pausePanel.gameObject.SetActive(paused);
+        if (!changed) return;
+        Time.timeScale = paused ? 0f : 1f;
+        FightMusicController.Instance?.SetPaused(paused);
+        Debug.Log($"[FightController] Fight {(paused ? "PAUSED" : "resumed")}.");
     }
 
     private void PopulateInfo()
@@ -509,6 +529,11 @@ public class FightController : MonoBehaviour
         // correct, honest "you're done" destination until a real Results screen exists in the UI
         // Scene that reads GameSession.RunnerResults directly instead of depending on Runner being
         // alive.
+        // Quitting mid-fight ENDS the match (no result, the song stays undefended — its pendingRun is
+        // kept so CONTINUE resumes it): stop the match + music BEFORE unpausing, so nothing resumes.
+        FightMatchController.Instance?.AbortMatch("main menu");
+        FightMusicController.Instance?.Stop();
+        SetPaused(false);
         AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu);
     }
 }

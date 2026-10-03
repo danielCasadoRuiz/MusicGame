@@ -13,6 +13,7 @@ public struct SongCatalogCompletedEvent { }
 
 /// <summary>
 /// Automatic song progression over the PLAYABLE catalog ("Song" Addressables label = Music folder only).
+/// Every id here is the STABLE songId (PlayableSongCatalogSO), never the Addressable address.
 ///   available catalog − completedSongIds, ordered by the similarity route around seedSongId → first.
 /// Persistent ids live in PlayerProgress (completedSongIds, seedSongId, songRoute); vectors live in
 /// SongSimilarityCache; the comparison itself in SongSimilarityService.
@@ -42,22 +43,33 @@ public static class SongProgression
         onLoaded?.Invoke(list);
     }
 
-    /// <summary>Distinct stable ids (Addressable addresses), catalog order.</summary>
+    /// <summary>Distinct STABLE song ids (PlayableSongCatalogSO) of the loaded locations, catalog order.
+    /// A location missing from the catalog (tool not re-run) is skipped with a warning.</summary>
     public static List<string> Ids(IEnumerable<IResourceLocation> locations)
     {
         var ids = new List<string>();
         var seen = new HashSet<string>();
         if (locations != null)
             foreach (var l in locations)
-                if (l != null && !string.IsNullOrEmpty(l.PrimaryKey) && seen.Add(l.PrimaryKey)) ids.Add(l.PrimaryKey);
+            {
+                if (l == null || string.IsNullOrEmpty(l.PrimaryKey)) continue;
+                string id = SongCatalog.IdForAddress(l.PrimaryKey);
+                if (id == null) { Debug.LogWarning($"[SongProgression] '{l.PrimaryKey}' has no stable songId — re-run Tools > MusicGame > Setup Song Addressables."); continue; }
+                if (seen.Add(id)) ids.Add(id);
+            }
         return ids;
     }
 
+    /// <summary>songId → catalog entry → Addressable address → its location.</summary>
     public static IResourceLocation Find(IEnumerable<IResourceLocation> locations, string songId)
     {
-        if (locations != null) foreach (var l in locations) if (l != null && l.PrimaryKey == songId) return l;
+        string address = SongCatalog.AddressForId(songId);
+        if (address != null && locations != null) foreach (var l in locations) if (l != null && l.PrimaryKey == address) return l;
         return null;
     }
+
+    /// <summary>Stable id of one loaded location (null if not in the catalog).</summary>
+    public static string IdOf(IResourceLocation location) => location != null ? SongCatalog.IdForAddress(location.PrimaryKey) : null;
 
     public static bool IsCompleted(string songId) =>
         PlayerProgressService.Instance != null && PlayerProgressService.Instance.IsSongCompleted(songId);

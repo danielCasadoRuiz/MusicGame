@@ -25,7 +25,10 @@ public static class PlayerProgressStore
         {
             var data = JsonUtility.FromJson<PlayerProgressData>(File.ReadAllText(path));
             if (data == null) throw new IOException("empty save");
+            int loadedVersion = data.version;
             Migrate(data);
+            // Persist the migrated format once (not if the song-id mapping could not run: no catalog).
+            if (loadedVersion < PlayerProgressData.CurrentVersion && SongCatalog.IsAvailable) Save(data);
             return data;
         }
         catch (System.Exception e)
@@ -63,6 +66,30 @@ public static class PlayerProgressStore
 
     /// <summary>Upgrades older formats in place. Fields added later with an initializer need no code
     /// here (JsonUtility keeps their default); only conversions do. Also repairs nulls.</summary>
+    private static void MigrateSongIdsToStable(PlayerProgressData data)
+    {
+        if (!SongCatalog.IsAvailable)
+        {
+            Debug.LogError("[PlayerProgressStore] No playable song catalog — cannot migrate song ids to stable ids.");
+            return;
+        }
+        string Map(string id) => string.IsNullOrEmpty(id) || SongCatalog.IsKnownId(id) ? id : (SongCatalog.IdForAddress(id) ?? id);
+        int mapped = 0;
+        for (int i = 0; i < data.completedSongIds.Count; i++)
+        {
+            string m = Map(data.completedSongIds[i]);
+            if (m != data.completedSongIds[i]) { data.completedSongIds[i] = m; mapped++; }
+        }
+        var unique = new System.Collections.Generic.List<string>();
+        foreach (var id in data.completedSongIds) if (!unique.Contains(id)) unique.Add(id);
+        data.completedSongIds = unique;
+        data.seedSongId = Map(data.seedSongId);
+        data.songRoute.songIds = data.songRoute.songIds.ConvertAll(Map);
+        data.songRoute.signature = "";
+        data.pendingRun.songId = Map(data.pendingRun.songId);
+        Debug.Log($"[PlayerProgressStore] Migrated save v{data.version} → v4 stable song ids ({mapped} completed id(s) remapped).");
+    }
+
     private static void Migrate(PlayerProgressData data)
     {
         data.tierProgress ??= new GameProgressionState();
@@ -78,5 +105,13 @@ public static class PlayerProgressStore
         data.songRoute ??= new SongRouteData();
         data.songRoute.songIds ??= new System.Collections.Generic.List<string>();
         data.songRoute.signature ??= "";
+        // v2 → v3: no pending assignment (content validity is checked on CONTINUE — RunAssignment).
+        data.pendingRun ??= new PendingRunData();
+        data.pendingRun.songId ??= "";
+        data.pendingRun.opponentId ??= "";
+        // v3 → v4: song ids were Addressable addresses — map each to its stable songId through the
+        // playable catalog (deterministic). An id already stable or unknown is kept as-is (ignored by
+        // readers if it no longer exists). The route is re-keyed and its signature cleared (rebuilt).
+        if (data.version < 4) MigrateSongIdsToStable(data);
     }
 }

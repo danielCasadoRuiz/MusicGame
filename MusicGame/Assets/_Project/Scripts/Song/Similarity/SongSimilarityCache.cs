@@ -4,11 +4,12 @@ using UnityEngine;
 
 /// <summary>
 /// Where similarity vectors come from, in priority order:
-///   1. runtime cache  — persistentDataPath/SongSimilarity/vectors.json, written whenever a FULL
-///                       SongProfile of a catalog song becomes available (GameSession, SongProfileReadyEvent);
-///   2. baked catalog  — AppConfigSO.songSimilarity (SongSimilarityCatalogSO, Editor-precomputed);
+///   1. baked catalog  — AppConfigSO.songSimilarity (SongSimilarityCatalogSO, Editor-precomputed for
+///                       EVERY built-in playable song): the normal source, no play history needed;
+///   2. runtime cache  — persistentDataPath/SongSimilarity/vectors.json, written after a FULL analysis
+///                       of a catalog song that has NO baked vector (dev content / future content);
 ///   3. lazy fallback  — an existing SongCache analysis JSON for that clip (no audio, no ML: only the
-///                       derived features are recomputed), then stored into (1). Not the normal case.
+///                       derived features are recomputed), then stored into (2). Not the normal case.
 /// Never runs a full audio analysis just to answer "what comes next?". Small (ids + ~66 floats each),
 /// kept apart from PlayerProgress (which stores ids only).
 /// </summary>
@@ -27,8 +28,8 @@ public static class SongSimilarityCache
     {
         EnsureLoaded();
         if (!string.IsNullOrEmpty(songId) &&
-            ((s_runtime.TryGetValue(songId, out vector) && vector.IsValid) ||
-             (s_baked.TryGetValue(songId, out vector) && vector.IsValid)))
+            ((s_baked.TryGetValue(songId, out vector) && vector.IsValid) ||
+             (s_runtime.TryGetValue(songId, out vector) && vector.IsValid)))
             return true;
         vector = null;
         return false;
@@ -45,12 +46,14 @@ public static class SongSimilarityCache
         return TryGet(songId, out vector);
     }
 
-    /// <summary>Caches the vector of a FULL profile for a playable catalog song (no-op otherwise).</summary>
+    /// <summary>Caches the vector of a FULL profile for a playable catalog song without a baked vector
+    /// (no-op otherwise).</summary>
     public static void Store(string songId, SongProfile profile)
     {
         var v = SongSimilarityVector.Build(songId, profile);
         if (v == null) return;
         EnsureLoaded();
+        if (s_baked.TryGetValue(songId, out var baked) && baked.IsValid) return; // shipped vector is authoritative
         if (s_runtime.TryGetValue(songId, out var old) && SameValues(old, v)) return;
         s_runtime[songId] = v;
         SaveRuntime();
@@ -102,10 +105,12 @@ public static class SongSimilarityCache
     }
 
     /// <summary>The SongCache JSON of a catalog song (SongCache names it "&lt;clip name&gt;_&lt;samples&gt;.json";
-    /// a playable song's address is its clip name). Derived features recomputed. Null when absent.</summary>
+    /// a playable song's address is its clip name, resolved from the stable songId). Derived features
+    /// recomputed. Null when absent.</summary>
     public static SongProfile LoadCachedProfile(string songId, string clipName = null)
     {
-        clipName ??= songId;
+        clipName ??= SongCatalog.AddressForId(songId); // songId → address (= clip name for playable songs)
+        if (string.IsNullOrEmpty(clipName)) return null;
         try
         {
             string dir = Path.Combine(Application.persistentDataPath, "SongCache");

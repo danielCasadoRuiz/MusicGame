@@ -46,6 +46,7 @@ public class MatchResultController : MonoBehaviour
     private TextMeshProUGUI _levelText;
 
     private Button          _continueButton;
+    private Button          _selectSongButton; // won match only: choose the next song manually (secondary to CONTINUE)
     private Button          _fightAgainButton;
     private TextMeshProUGUI _fightAgainButtonLabel;
     private Button          _replaySongButton;
@@ -177,6 +178,15 @@ public class MatchResultController : MonoBehaviour
         view.replaySongButton.onClick.AddListener(OnReplaySongClicked);
         view.replaySongButtonLabel.text = Loc.Get("MatchResult.ReplaySong");
 
+        // The baked prefab predates SELECT SONG: a secondary-styled copy of Replay Song, in Replay
+        // Song's slot (that button only shows after a LOSS, this one only after a WIN).
+        _selectSongButton = Instantiate(view.replaySongButton, view.replaySongButton.transform.parent);
+        _selectSongButton.name = "SelectSongButton";
+        _selectSongButton.onClick = new Button.ButtonClickedEvent();
+        _selectSongButton.onClick.AddListener(OnSelectSongClicked);
+        var selectLabel = _selectSongButton.GetComponentInChildren<TextMeshProUGUI>();
+        if (selectLabel != null) selectLabel.text = Loc.Get("MatchResult.SelectSong");
+
         _mainMenuButton = view.mainMenuButton;
         view.mainMenuButton.onClick.AddListener(OnMainMenuClicked);
         view.mainMenuButtonLabel.text = Loc.Get("Fight.MainMenu");
@@ -252,6 +262,14 @@ public class MatchResultController : MonoBehaviour
         replaySongLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
         _replaySongButton = replaySongBtn;
 
+        var selectSongBtn = UIFactory.CreateButton("SelectSongButton", _root, Loc.Get("MatchResult.SelectSong"), out var selectSongLabel);
+        UIFactory.SetBox(selectSongBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -120f), new Vector2(260f, 52f));
+        selectSongBtn.onClick.AddListener(OnSelectSongClicked);
+        selectSongBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+        selectSongLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        _selectSongButton = selectSongBtn;
+
         var mainMenuBtn = UIFactory.CreateButton("MainMenuButton", _root, Loc.Get("Fight.MainMenu"), out var mainMenuLabel);
         UIFactory.SetBox(mainMenuBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, -180f), new Vector2(260f, 52f));
@@ -324,6 +342,7 @@ public class MatchResultController : MonoBehaviour
         if (playerWon) _levelText.text = MasteryLine(data);
 
         _continueButton.gameObject.SetActive(playerWon);
+        if (_selectSongButton != null) _selectSongButton.gameObject.SetActive(playerWon);
         _fightAgainButton.gameObject.SetActive(!playerWon);
         _replaySongButton.gameObject.SetActive(!playerWon);
         if (!playerWon) RefreshFightAgainLabel();
@@ -402,6 +421,17 @@ public class MatchResultController : MonoBehaviour
         int newLevel = _pendingMatchEnded?.NewPlayerLevel ?? (GameSession.Instance != null ? GameSession.Instance.PlayerLevel : 1);
         Hide();
         NextSongTransitionController.Instance?.BeginWin(newLevel);
+    }
+
+    // SELECT SONG (won match): the existing selector instead of the automatic route pick. Confirming a
+    // song there makes it the new seed and creates its pendingRun (same CreatePendingRun pipeline as
+    // CONTINUE); completed songs are shown but disabled. The defended song is already completed and
+    // its pendingRun already cleared (FightMatchController), so nothing is abandoned here.
+    private void OnSelectSongClicked()
+    {
+        Hide();
+        FightMusicController.Instance?.Stop();
+        AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongSelection);
     }
 
     private void OnFightAgainClicked()

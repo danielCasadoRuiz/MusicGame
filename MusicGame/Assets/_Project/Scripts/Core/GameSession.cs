@@ -119,6 +119,21 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
     /// <summary>The tier SelectedOpponentLevelConfig was actually resolved from (after fallback).</summary>
     public int SelectedOpponentTier { get; set; }
 
+    // ── Precomputed assignment (RunAssignment) — the FINAL rival of the current song, decided BEFORE
+    //    the Runner (and persisted as PlayerProgress.pendingRun for catalog songs). The Opponent
+    //    Selection roulette only REVEALS it; it never re-rolls or modifies it. ──
+    public OpponentDefinition  AssignedOpponent { get; private set; }
+    public OpponentLevelConfig AssignedOpponentLevelConfig { get; private set; }
+    /// <summary>Tier the assignment was made at (the roulette's fakes use it too).</summary>
+    public int AssignedOpponentTier { get; private set; }
+
+    public void SetAssignedOpponent(OpponentDefinition opponent, OpponentLevelConfig level, int tier)
+    {
+        AssignedOpponent            = opponent;
+        AssignedOpponentLevelConfig = level;
+        AssignedOpponentTier        = tier;
+    }
+
     // ── Debug override (never touches progression, bag or history) ──
     public string DebugForcedOpponentId { get; private set; }
     public int    DebugForcedTier { get; private set; }
@@ -190,16 +205,26 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
         return song;
     }
 
-    /// <summary>Called ONLY by FightMatchController the instant a match is decisively WON (one
-    /// properly completed Runner → Fight cycle). Returns the current tier afterwards.</summary>
-    public int RegisterCompletedSong()
+    /// <summary>Called ONLY by FightMatchController the instant a match is decisively WON — the song
+    /// has been DEFENDED: tier progression +1, the song joins completedSongIds, and its pending
+    /// assignment is cleared. `save` false = FightMatchController batches this into RecordVictory's
+    /// single save. Returns the current tier afterwards.</summary>
+    public int RegisterCompletedSong(bool save = true)
     {
         int tier = Progression.RegisterCompletedSong();
+        var progress = PlayerProgressService.Instance;
         // Song history: only PLAYABLE CATALOG songs (a local file has LocalFilePath and no stable id).
         var song = SelectedSong;
-        if (song.HasValue && string.IsNullOrEmpty(song.Value.LocalFilePath))
-            PlayerProgressService.Instance?.MarkSongCompleted(Run?.SongId ?? song.Value.DisplayName, save: false);
-        PlayerProgressService.Instance?.NotifyTierProgressChanged(); // persisted immediately (tier + song history)
+        if (progress != null && song.HasValue && string.IsNullOrEmpty(song.Value.LocalFilePath))
+        {
+            // (songId resolved below — always the stable catalog id, never the address)
+            string songId = !string.IsNullOrEmpty(song.Value.SongId) ? song.Value.SongId : SongCatalog.IdForAddress(song.Value.DisplayName);
+            progress.MarkSongCompleted(songId, save: false);
+            // Only the assignment of THIS song is cleared (a local-file side run never touches it).
+            if (progress.PendingRun.IsSet && progress.PendingRun.songId == songId) progress.ClearPendingRun(save: false);
+        }
+        SetAssignedOpponent(null, null, 0);
+        if (save) progress?.NotifyTierProgressChanged(); // persisted immediately (tier + song history + pending)
         return tier;
     }
 
@@ -228,8 +253,8 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
             Profile = e.Profile;
             // A full analysis is the moment to (re)cache this catalog song's similarity vector.
             var sel = SelectedSong;
-            if (sel.HasValue && string.IsNullOrEmpty(sel.Value.LocalFilePath))
-                SongSimilarityCache.Store(sel.Value.DisplayName, e.Profile);
+            if (sel.HasValue && string.IsNullOrEmpty(sel.Value.LocalFilePath) && !string.IsNullOrEmpty(sel.Value.SongId))
+                SongSimilarityCache.Store(sel.Value.SongId, e.Profile);
         };
         _onGameEnded = e =>
         {
@@ -272,7 +297,8 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
         // combos and run statistics start from zero; Runner → Fight never triggers this.
         _onGameStarted = _ =>
         {
-            Run = new RunSession(++_runCounter, SelectedSong?.DisplayName);
+            var s = SelectedSong;
+            Run = new RunSession(++_runCounter, s.HasValue && !string.IsNullOrEmpty(s.Value.SongId) ? s.Value.SongId : s?.DisplayName);
             Debug.Log($"[GameSession] New run session #{Run.Index} — song '{Run.SongId}'");
         };
         EventBus.Subscribe(_onProfileReady);
@@ -297,6 +323,9 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
 public struct SelectedSongInfo
 {
     public string    DisplayName;
+    /// <summary>Stable playable-song id (PlayableSongCatalogSO, e.g. "song_007") — the persistent
+    /// identity; null for a local file. DisplayName/address is only how it was loaded/shown.</summary>
+    public string    SongId;
     public AudioClip Clip;
     /// <summary>Null for a predefined song; set for a locally-picked WAV/MP3.</summary>
     public string    LocalFilePath;

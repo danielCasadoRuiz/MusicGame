@@ -125,7 +125,7 @@ public class FighterInputController : MonoBehaviour
 
     private void Update()
     {
-        if (!_active) return;
+        if (!_active || FightController.IsPaused) return; // paused: no input is read or queued
 
         _inputSource.Tick();
 

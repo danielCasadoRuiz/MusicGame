@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: SongSimilarityCatalog
   m_EditorClassIdentifier: Assembly-CSharp::SongSimilarityCatalogSO
   vectors:
-  - songId: "All But Water \u2014 Zero Nine"
+  - songId: song_001
+    address: "All But Water \u2014 Zero Nine"
     version: 1
     features:
     - 0.19775671
@@ -83,7 +84,10 @@ MonoBehaviour:
     - 0
     - 0.28499243
     - 0
-  - songId: Caribbean Machines - Milonga_Candidate
+    sourceGuid: 130dff2d0a1683741b9faf90c9c51835
+    sourceHash: 38dedf858e86625998f449a90529e81c
+  - songId: song_002
+    address: Caribbean Machines - Milonga_Candidate
     version: 1
     features:
     - 0.22618844
@@ -153,7 +157,10 @@ MonoBehaviour:
     - 0
     - 0.15851979
     - 0
-  - songId: "DeepVoice Redhead \u2014 Still Holding On"
+    sourceGuid: 1ccad945d423c2b4aaba38e81a1cb502
+    sourceHash: 845c142ad57371f1856b45122770b592
+  - songId: song_003
+    address: "DeepVoice Redhead \u2014 Still Holding On"
     version: 1
     features:
     - 0.22117916
@@ -223,7 +230,10 @@ MonoBehaviour:
     - 0
     - 0.07912679
     - 0
-  - songId: "Glorious Trainer \u2014 I Feel So High"
+    sourceGuid: b77b95693304e8f498a78c019f8bae10
+    sourceHash: e4bf396b0deff88c9992ab082932e221
+  - songId: song_004
+    address: "Glorious Trainer \u2014 I Feel So High"
     version: 1
     features:
     - 0.22716722
@@ -293,7 +303,10 @@ MonoBehaviour:
     - 0
     - 0.17266
     - 0
-  - songId: Gym Bros  - Dyin' Alive
+    sourceGuid: 37244ff76c97f964b968c14f0cec13be
+    sourceHash: ce018f63930741ebd4be8d8ca37039da
+  - songId: song_005
+    address: Gym Bros  - Dyin' Alive
     version: 1
     features:
     - 0.171325
@@ -363,7 +376,10 @@ MonoBehaviour:
     - 0
     - 0
     - 0
-  - songId: "Heidegger \u2014 Questioning What Love Means_Candidate"
+    sourceGuid: 2d2d0f97be867e14cab8a3d0a376dd70
+    sourceHash: 1bab65542b44a5434cbfe9feecad83e5
+  - songId: song_006
+    address: "Heidegger \u2014 Questioning What Love Means_Candidate"
     version: 1
     features:
     - 0.23890664
@@ -433,7 +449,156 @@ MonoBehaviour:
     - 0
     - 0.1978983
     - 0
-  - songId: Michele Beautiless  -  Tasmanian
+    sourceGuid: e8c89b45f08842340a6b68bd2f0b2795
+    sourceHash: 92006068e5c9f7df65078268df629bc2
+  - songId: song_007
+    address: "Lord \u2014 The Ring of the Blight"
+    version: 1
+    features:
+    - 0.26253313
+    - 0.3650309
+    - 0.37851334
+    - 0.23516399
+    - 0.5708743
+    - 0.3286276
+    - 0.874729
+    - 0.06463527
+    - 0.05355494
+    - 0.92983353
+    - 0.86123055
+    - 0.9735809
+    - 0.11938243
+    - 0.17006873
+    - 0
+    - 0.5800996
+    tags:
+    - 0
+    - 0.2889347
+    - 0
+    - 0
+    - 0.17727134
+    - 0.13139588
+    - 0.6032946
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.1421268
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.20500119
+    - 0
+    sourceGuid: c6f34526cfe3efb4ba1021b8f8f48ee5
+    sourceHash: 870b6cef8b7286f486d93558b713ddfb
+  - songId: song_008
+    address: "Low Megas \u2014 Combo Master Tribe"
+    version: 1
+    features:
+    - 0.24712694
+    - 0.37719432
+    - 0.3515866
+    - 0.5748144
+    - 0.60387796
+    - 0.22024016
+    - 0.83517
+    - 0.80649525
+    - 0.2300406
+    - 0.9422546
+    - 0.75498265
+    - 1
+    - 0.12509413
+    - 0.23478875
+    - 0
+    - 0.581939
+    tags:
+    - 0.094222486
+    - 0.10960465
+    - 0
+    - 0
+    - 0.28349927
+    - 0
+    - 0.1390831
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.07565385
+    - 0.14503506
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.121764034
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.101116955
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    sourceGuid: 0337bb5e6b8b5f94ebff37b0ad7678a5
+    sourceHash: aa0d60cb346807219671716c768b1c39
+  - songId: song_009
+    address: Michele Beautiless  -  Tasmanian
     version: 1
     features:
     - 0.24600814
@@ -503,7 +668,10 @@ MonoBehaviour:
     - 0
     - 0
     - 0
-  - songId: "Mikel Json \u2014 Really, Dean_"
+    sourceGuid: 1b7fc4e84c73b1f48b356a13717dc0d8
+    sourceHash: 853320b50ff12401026509546408b8aa
+  - songId: song_010
+    address: "Mikel Json \u2014 Really, Dean_"
     version: 1
     features:
     - 0.20629783
@@ -573,7 +741,10 @@ MonoBehaviour:
     - 0
     - 0.09806559
     - 0
-  - songId: "Older New \u2014 Azure WeekStart"
+    sourceGuid: ee3d843bedfd09546a884bab48d38243
+    sourceHash: 6c4d5ced2a1f2fd3cc763f378f5c8fbf
+  - songId: song_011
+    address: "Older New \u2014 Azure WeekStart"
     version: 1
     features:
     - 0.26095748
@@ -643,7 +814,229 @@ MonoBehaviour:
     - 0
     - 0.088239945
     - 0
-  - songId: SuperBeliefs - Stevie Whatever
+    sourceGuid: ad19a3f4efa400c4d87026f1f6cc2b4d
+    sourceHash: b504884f823e0d0cb49137105e647057
+  - songId: song_012
+    address: "Rich\xE1rdos Jamatos \u2014 Hyper Greek"
+    version: 1
+    features:
+    - 0.17513727
+    - 0.36024436
+    - 0.24537958
+    - 0.6082424
+    - 0.57680035
+    - 0.2461491
+    - 0.6735453
+    - 0.6679198
+    - 0.25313282
+    - 0.9413382
+    - 0.8337705
+    - 0.9665816
+    - 0.12245023
+    - 0.20616324
+    - 0
+    - 0.53084105
+    tags:
+    - 0
+    - 0.109626144
+    - 0
+    - 0.07175551
+    - 0.3643122
+    - 0
+    - 0.21478069
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.08495602
+    - 0.092405505
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.23543234
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.11022461
+    - 0
+    sourceGuid: c11d347659c84c64ba219df5d5e69492
+    sourceHash: 3adbed78aaf861f3b43bbd196e6062de
+  - songId: song_013
+    address: "ScratchCat Joseph \u2014 ScratchCat_candidate_"
+    version: 1
+    features:
+    - 0.21400681
+    - 0.34626415
+    - 0.3471636
+    - 0.5138127
+    - 0.6049172
+    - 0.3014355
+    - 0.6735453
+    - 0.53736657
+    - 0.08113879
+    - 0.9398681
+    - 0.74599105
+    - 0.9391078
+    - 0.11565368
+    - 0.2450928
+    - 0
+    - 0.6004946
+    tags:
+    - 0
+    - 0.085537806
+    - 0
+    - 0.051287614
+    - 0.49760115
+    - 0
+    - 0.34638718
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.11811095
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.25729954
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.18016157
+    - 0
+    sourceGuid: 5fa61e70620c5d84dbcf0262584f6e63
+    sourceHash: 8b7720158ce714330a6dee2baed04035
+  - songId: song_014
+    address: "Sinthronic \u2014 Blast out the sound"
+    version: 1
+    features:
+    - 0.21830304
+    - 0.35158402
+    - 0.3222451
+    - 0.27979296
+    - 0.5378118
+    - 0.31632704
+    - 0.874729
+    - 0.12906504
+    - 0.12703252
+    - 0.92097
+    - 0.73950887
+    - 0.99422026
+    - 0.120203875
+    - 0.15649119
+    - 0
+    - 0.57534534
+    tags:
+    - 0
+    - 0.15500318
+    - 0
+    - 0
+    - 0.28996125
+    - 0.087757915
+    - 0.43975422
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.0762494
+    - 0
+    - 0
+    - 0.05372268
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.1203178
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.23054147
+    - 0
+    sourceGuid: e26b0c682b3f5c042966ffed3ca7b383
+    sourceHash: 4acb96e860e945d953b38c809b16e126
+  - songId: song_015
+    address: SuperBeliefs - Stevie Whatever
     version: 1
     features:
     - 0.22096853
@@ -713,7 +1106,10 @@ MonoBehaviour:
     - 0
     - 0
     - 0
-  - songId: "Synthy Looper \u2014 Chicks Are Out to Live It Up"
+    sourceGuid: e0cf713220f5a614ab47cc747c57b598
+    sourceHash: c16c8d0cfc5de8e59f9f40901c70e71a
+  - songId: song_016
+    address: "Synthy Looper \u2014 Chicks Are Out to Live It Up"
     version: 1
     features:
     - 0.27262056
@@ -783,7 +1179,83 @@ MonoBehaviour:
     - 0
     - 0.14666578
     - 0
-  - songId: "V\xC5\xC5V - Dancig Queer"
+    sourceGuid: 498754dcae0a78b40901e6cb1a5dba38
+    sourceHash: 1114e9f4c7706f0298275c877a9a6da5
+  - songId: song_017
+    address: "The Backup Boys  \u2014 All together (meh!)"
+    version: 1
+    features:
+    - 0.2780746
+    - 0.32756138
+    - 0.38194233
+    - 0.58703583
+    - 0.55454594
+    - 0.2464509
+    - 0.48820594
+    - 0.62560153
+    - 0.18575554
+    - 0.9378102
+    - 0.8349765
+    - 1
+    - 0.14126928
+    - 0.2177956
+    - 0
+    - 0.6216131
+    tags:
+    - 0
+    - 0.25653446
+    - 0
+    - 0
+    - 0.24455675
+    - 0.06722997
+    - 0.38828945
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.070067406
+    - 0.081634104
+    - 0
+    - 0.098981164
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.10293399
+    - 0
+    sourceGuid: 3ecec02e60f47fb4a8d0b15026aecba8
+    sourceHash: fd55948af7c16f94451437979ec483b3
+  - songId: song_018
+    address: "V\xC5\xC5V - Dancig Queer"
     version: 1
     features:
     - 0.22056445
@@ -853,7 +1325,83 @@ MonoBehaviour:
     - 0
     - 0
     - 0
-  - songId: hah  - Go for it
+    sourceGuid: a36bbcbca3a3b714fa1ef7435231e0a5
+    sourceHash: afbefed3a51fe4181ad9b0dd329b46d2
+  - songId: song_019
+    address: "WHAT_ \u2014 Then You Roam-Roam"
+    version: 1
+    features:
+    - 0.2317974
+    - 0.34279922
+    - 0.3456842
+    - 0.64283377
+    - 0.6768284
+    - 0.19277292
+    - 0.83517
+    - 0.8742004
+    - 0.3816631
+    - 0.92502856
+    - 0.82514966
+    - 1
+    - 0.13543238
+    - 0.1859394
+    - 0
+    - 0.5642941
+    tags:
+    - 0
+    - 0.2906217
+    - 0
+    - 0
+    - 0.15333407
+    - 0.09968925
+    - 0.2499699
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.114532635
+    - 0
+    - 0
+    - 0
+    - 0.24191853
+    - 0
+    - 0.064789
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0.07420076
+    - 0
+    sourceGuid: 0f79e366191cabf4985af32a782f528c
+    sourceHash: 42be8a9940486187584996ef1838a8a8
+  - songId: song_020
+    address: hah  - Go for it
     version: 1
     features:
     - 0.25295666
@@ -923,3 +1471,5 @@ MonoBehaviour:
     - 0
     - 0
     - 0
+    sourceGuid: 63172a5d8c41f8d4fbf21c194da595e0
+    sourceHash: 3dde02027048f76685bf42475e3f61b8

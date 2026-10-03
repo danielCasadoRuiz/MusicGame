@@ -138,6 +138,7 @@ public class FighterAI : MonoBehaviour
 
     private void Update()
     {
+        if (FightController.IsPaused) return; // frozen with the match, decisions resume on unpause
         if (!_active || _actor == null || _opponent == null)
         {
             StopExecuting();

@@ -24,6 +24,11 @@ using UnityEngine;
 /// (not duplicated) if they end up in a different group, and their address is refreshed from the
 /// FriendlyNames table below.
 ///
+/// STABLE IDS: it also maintains Configs/Song/PlayableSongCatalog.asset (AppConfig.songCatalog) — one
+/// immutable songId ("song_007") per playable song, reconnected through the clip's GUID (or, if the
+/// GUID was lost, its previous address) so renaming/moving a clip keeps its id; only a genuinely new
+/// song gets a new id (nextIdNumber only grows, ids are never reused). Saves store the songId.
+///
 /// CLEANUP (conservative): anything in the "Songs" group that is NOT under the Music root (e.g. the
 /// composer/opponent MP3s an older layout put there) is removed from THIS group only; an asset outside
 /// Music carrying the "Song" label in ANOTHER group just loses the label. Composer music stays packaged
@@ -108,10 +113,72 @@ public static class SongAddressablesSetup
         settings.SetDirty(AddressableAssetSettings.ModificationEvent.BatchModification, null, true, true);
         AssetDatabase.SaveAssets();
 
+        UpdateSongCatalog(settings, guids);
+
         Debug.Log($"[SongAddressablesSetup] Cleanup: {removed} non-Music entr(y/ies) removed from '{GroupName}', {unlabeled} label(s) removed elsewhere.");
         Debug.Log($"[SongAddressablesSetup] Done — {guids.Count} audio clip(s) from {MusicFolder} are " +
                   $"now Addressable in the '{GroupName}' group with the '{Label}' label. Re-run any time " +
                   "a song is added to (or removed from) that folder.");
+    }
+
+    public const string CatalogPath = "Assets/_Project/Configs/Song/PlayableSongCatalog.asset";
+
+    /// <summary>songId ⇄ address bookkeeping. Existing ids are kept (matched by GUID, then by old
+    /// address); new songs get the next song_NNN; songs no longer under Music drop out (their id is
+    /// retired, never handed to another song).</summary>
+    public static PlayableSongCatalogSO UpdateSongCatalog(AddressableAssetSettings settings, System.Collections.Generic.List<string> playableGuids)
+    {
+        var catalog = AssetDatabase.LoadAssetAtPath<PlayableSongCatalogSO>(CatalogPath);
+        if (catalog == null)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(CatalogPath));
+            catalog = ScriptableObject.CreateInstance<PlayableSongCatalogSO>();
+            AssetDatabase.CreateAsset(catalog, CatalogPath);
+        }
+
+        var byGuid = new System.Collections.Generic.Dictionary<string, PlayableSongCatalogSO.Entry>();
+        var byAddress = new System.Collections.Generic.Dictionary<string, PlayableSongCatalogSO.Entry>();
+        foreach (var e in catalog.songs)
+        {
+            if (e == null || string.IsNullOrEmpty(e.songId)) continue;
+            if (!string.IsNullOrEmpty(e.editorGuid)) byGuid[e.editorGuid] = e;
+            if (!string.IsNullOrEmpty(e.address)) byAddress[e.address] = e;
+            // never hand out a number that is already in use (hand-edited asset safety)
+            if (e.songId.StartsWith("song_") && int.TryParse(e.songId.Substring(5), out int n) && n >= catalog.nextIdNumber)
+                catalog.nextIdNumber = n + 1;
+        }
+
+        var result = new System.Collections.Generic.List<PlayableSongCatalogSO.Entry>();
+        var used = new System.Collections.Generic.HashSet<string>();
+        int added = 0, moved = 0;
+        foreach (var guid in playableGuids)
+        {
+            var entry = settings.FindAssetEntry(guid);
+            string address = entry != null ? entry.address : Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(guid));
+            if (!byGuid.TryGetValue(guid, out var e) && !(byAddress.TryGetValue(address, out e) && !playableGuids.Contains(e.editorGuid)))
+                e = null;
+            if (e == null || used.Contains(e.songId))
+            {
+                e = new PlayableSongCatalogSO.Entry { songId = PlayableSongCatalogSO.FormatId(catalog.nextIdNumber++) };
+                added++;
+                Debug.Log($"[SongAddressablesSetup] New playable song '{address}' → {e.songId}");
+            }
+            else if (e.address != address) { moved++; Debug.Log($"[SongAddressablesSetup] {e.songId}: '{e.address}' → '{address}' (renamed/moved, id kept)"); }
+            e.address = address;
+            e.editorGuid = guid;
+            used.Add(e.songId);
+            result.Add(e);
+        }
+        result.Sort((a, b) => string.CompareOrdinal(a.songId, b.songId));
+        catalog.songs = result;
+        EditorUtility.SetDirty(catalog);
+
+        var app = Resources.Load<AppConfigSO>("AppConfig");
+        if (app != null && app.songCatalog != catalog) { app.songCatalog = catalog; EditorUtility.SetDirty(app); }
+        AssetDatabase.SaveAssets();
+        SongCatalog.Reset();
+        Debug.Log($"[SongAddressablesSetup] Song catalog: {result.Count} stable ids ({added} new, {moved} renamed/moved, next {PlayableSongCatalogSO.FormatId(catalog.nextIdNumber)}).");
+        return catalog;
     }
 
     private static string FriendlyNameFor(string fileName)

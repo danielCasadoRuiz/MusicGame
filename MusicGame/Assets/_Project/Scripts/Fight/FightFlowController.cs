@@ -38,7 +38,9 @@ public class FightFlowController : MonoBehaviour
     {
         _onGameFlowChanged = e =>
         {
+            if (e.Previous == GameFlowState.Fight && e.Current != GameFlowState.Fight) { _inFight = false; return; }
             if (e.Current != GameFlowState.Fight) return;
+            _inFight = true;
 
             // Always (re-)announce OpponentSelection here, even on a second Fight entry this
             // session where CurrentState may already equal it — RequestState's own no-op guard
@@ -51,6 +53,8 @@ public class FightFlowController : MonoBehaviour
             EventBus.Publish(new FightFlowStateChangedEvent { Previous = previous, Current = CurrentState });
         };
         EventBus.Subscribe(_onGameFlowChanged);
+        // UI scene loading after Fight was already entered (Fight opened directly in the Editor).
+        if (AppBootstrap.Context != null && AppBootstrap.Context.AppFlow.CurrentState == GameFlowState.Fight) _inFight = true;
     }
 
     private void OnDisable()
@@ -58,8 +62,13 @@ public class FightFlowController : MonoBehaviour
         EventBus.Unsubscribe(_onGameFlowChanged);
     }
 
+    // False once the app left Fight: a sequence still finishing in the persistent UI scene (round
+    // end, intro, versus…) must not advance a fight that no longer exists.
+    private bool _inFight;
+
     public void RequestState(FightFlowState next)
     {
+        if (!_inFight) { Debug.Log($"[FightFlowController] Ignored request for {next} — not in Fight any more."); return; }
         if (next == CurrentState) return;
         var previous = CurrentState;
         CurrentState = next;

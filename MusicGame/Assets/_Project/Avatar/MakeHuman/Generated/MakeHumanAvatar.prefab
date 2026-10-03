@@ -80,6 +80,30 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: b1949822b109c3f46a82a96efdde24f0, type: 2}
+    - target: {fileID: 1630794972795428178, guid: 6d39994aacdc9c14fbb1ae24d7ef5737, type: 3}
+      propertyPath: 'm_BlendShapeWeights.Array.data[0]'
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1630794972795428178, guid: 6d39994aacdc9c14fbb1ae24d7ef5737, type: 3}
+      propertyPath: 'm_BlendShapeWeights.Array.data[1]'
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1630794972795428178, guid: 6d39994aacdc9c14fbb1ae24d7ef5737, type: 3}
+      propertyPath: 'm_BlendShapeWeights.Array.data[2]'
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1630794972795428178, guid: 6d39994aacdc9c14fbb1ae24d7ef5737, type: 3}
+      propertyPath: 'm_BlendShapeWeights.Array.data[4]'
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1630794972795428178, guid: 6d39994aacdc9c14fbb1ae24d7ef5737, type: 3}
+      propertyPath: 'm_BlendShapeWeights.Array.data[5]'
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1630794972795428178, guid: 6d39994aacdc9c14fbb1ae24d7ef5737, type: 3}
+      propertyPath: 'm_BlendShapeWeights.Array.data[6]'
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2321523695958950486, guid: 6d39994aacdc9c14fbb1ae24d7ef5737, type: 3}
       propertyPath: m_AABB.m_Center.y
       value: -0.049747765

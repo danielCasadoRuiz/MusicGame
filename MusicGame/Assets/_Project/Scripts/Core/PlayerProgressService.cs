@@ -213,6 +213,26 @@ public class PlayerProgressService : MonoBehaviour
         Changed("seed");
     }
 
+    /// <summary>The persisted song + rival assignment (never null; IsSet false when none).</summary>
+    public PendingRunData PendingRun => _data.pendingRun;
+
+    /// <summary>Replaces the pending assignment and saves at once (before analysis/Runner starts).</summary>
+    public void SetPendingRun(PendingRunData run)
+    {
+        _data.pendingRun = run ?? new PendingRunData();
+        Debug.Log($"[PlayerProgress] Pending run: song '{_data.pendingRun.songId}' vs '{_data.pendingRun.opponentId}' " +
+                  $"v{_data.pendingRun.opponentLevel} (tier {_data.pendingRun.opponentTier}) (saved)");
+        Changed("pending");
+    }
+
+    /// <summary>Clears the pending assignment. `save` false = part of a batched change (victory).</summary>
+    public void ClearPendingRun(bool save = true)
+    {
+        if (!_data.pendingRun.IsSet) return;
+        _data.pendingRun = new PendingRunData();
+        if (save) Changed("pending-clear");
+    }
+
     public void SetSongRoute(List<string> songIds, string signature)
     {
         _data.songRoute = new SongRouteData { songIds = songIds ?? new List<string>(), signature = signature ?? "" };

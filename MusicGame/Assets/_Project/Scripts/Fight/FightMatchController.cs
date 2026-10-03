@@ -100,6 +100,7 @@ public class FightMatchController : MonoBehaviour
 
     private System.Action<FightFlowStateChangedEvent> _onFlowChanged;
     private System.Action<FighterKOEvent> _onKO;
+    private System.Action<GameFlowStateChangedEvent> _onGameFlowChanged;
 
     private void Awake()
     {
@@ -127,14 +128,29 @@ public class FightMatchController : MonoBehaviour
         {
             if (RoundActive) EndRound(RoundEndReason.KO, WinnerFromKO(e.Fighter));
         };
+        // This controller lives in the persistent UI scene: leaving Fight by ANY path must end the
+        // match here too, or the round timer keeps running and could resolve a match nobody plays.
+        _onGameFlowChanged = e => { if (e.Previous == GameFlowState.Fight && e.Current != GameFlowState.Fight) AbortMatch("left Fight"); };
         EventBus.Subscribe(_onFlowChanged);
         EventBus.Subscribe(_onKO);
+        EventBus.Subscribe(_onGameFlowChanged);
+    }
+
+    /// <summary>Ends the current match WITHOUT a result (quit to menu / left Fight): no round end, no
+    /// victory or defeat recorded, nothing published. A no-op when no round is running.</summary>
+    public void AbortMatch(string reason)
+    {
+        if (!RoundActive && _roundEndProcessed) return;
+        RoundActive = false;
+        _roundEndProcessed = true;
+        Debug.Log($"[FightMatchController] Match aborted ({reason}) — no result recorded.");
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onFlowChanged);
         EventBus.Unsubscribe(_onKO);
+        EventBus.Unsubscribe(_onGameFlowChanged);
     }
 
     private void Update()
@@ -333,12 +349,15 @@ public class FightMatchController : MonoBehaviour
             var session = GameSession.Instance;
             var beatenOpponent = session != null ? session.SelectedOpponent : null;
             int beatenLevel = session?.SelectedOpponentLevelConfig != null ? session.SelectedOpponentLevelConfig.level : 0;
-            // 2–6. collection unlock, +1 win, Musical Mastery, XP, one save, announcements.
+            // 2. The song is DEFENDED: completedSongIds + tier progression + pendingRun cleared — not
+            //    saved yet (the opponent version above is already captured, so nothing below can shift it).
+            session?.RegisterCompletedSong(save: false);
+            // 3–7. collection unlock (exact version), +1 win, Musical Mastery, XP, then ONE save of
+            //      everything (including step 2), then the announcements.
             var progress = PlayerProgressService.Instance;
             var victory = progress != null ? progress.RecordVictory(beatenOpponent, beatenLevel) : default;
+            if (progress == null) Debug.LogWarning("[FightMatchController] No PlayerProgressService — victory not persisted.");
             if (session != null) session.Run.XpEarned += victory.Xp;
-            // The opponent-difficulty tier keeps its own rule (completed songs) — after the record above.
-            session?.RegisterCompletedSong();
             // MatchEndedEvent's "player level" is the Musical Mastery rank (1-based).
             int oldLevel = victory.OldRank + 1;
             int newLevel = victory.NewRank + 1;

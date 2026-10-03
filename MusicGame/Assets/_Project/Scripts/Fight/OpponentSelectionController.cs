@@ -11,7 +11,8 @@ using UnityEngine.UI;
 /// reflows the same grid, no code change).
 ///
 /// Runs a roulette the instant this state begins (FightFlowState.OpponentSelection): the FINAL
-/// opponent is chosen up front (GameSession.PickNextOpponent — persistent shuffle bag), then
+/// opponent was already ASSIGNED before the Runner (RunAssignment → GameSession.AssignedOpponent,
+/// persisted as PlayerProgress.pendingRun; this screen only reveals it and never modifies it), then
 /// FightFlowConfig.fakeSelectionCount FAKE rivals are shown, each with a short snippet from its
 /// song's preview region — drawn without replacement (no rival twice in one roulette) and never the
 /// final one, clamped to the unique candidates available — and the sequence ends on the precomputed
@@ -254,18 +255,23 @@ public class OpponentSelectionController : MonoBehaviour
         float holdDuration = _config != null ? Mathf.Max(0f, _config.finalOpponentHoldDuration) : 1.5f;
         int   fakeCount    = _config != null ? Mathf.Max(0, _config.fakeSelectionCount) : 6;
 
-        // 1. The REAL pick comes first, from GameSession's persistent shuffle bag (no repeats,
-        //    cross-bag cooldown) — everything after this is theatre and can never change it.
-        var picked     = GameSession.Instance != null ? GameSession.Instance.PickNextOpponent(_roster) : null;
+        // 1. The FINAL rival was already decided before the Runner (RunAssignment → GameSession.
+        //    AssignedOpponent, persisted as PlayerProgress.pendingRun) — this screen only REVEALS it and
+        //    never modifies the assignment. Fallback (Fight reached without an assignment, e.g. debug):
+        //    pick from the shuffle bag here, as before.
+        var session    = GameSession.Instance;
+        var assigned   = session != null ? session.AssignedOpponent : null;
+        var picked     = assigned != null ? assigned : (session != null ? session.PickNextOpponent(_roster) : null);
         int finalIndex = picked != null ? System.Array.IndexOf(opponents, picked) : -1;
         if (finalIndex < 0) finalIndex = Random.Range(0, opponents.Length);
+        bool useAssigned = assigned != null && opponents[finalIndex] == assigned && session.AssignedOpponentLevelConfig != null;
 
         // 2. Fake rivals: drawn WITHOUT replacement (never the same rival twice in one roulette),
         //    never the final one, clamped to the unique candidates that exist.
         var fakes = BuildFakeSequence(opponents, finalIndex, fakeCount);
         // ONE tier for the whole flow: every fake and the final are that composer's CURRENT-tier
         // version (never Mozart Tier 1 next to Mozart Tier 3).
-        int tier = CurrentTier;
+        int tier = useAssigned && session.AssignedOpponentTier > 0 ? session.AssignedOpponentTier : CurrentTier;
         Debug.Log($"[OpponentSelectionController] Final rival precomputed: {Name(opponents[finalIndex])} — fake sequence " +
                   $"({fakes.Count}/{fakeCount}): {string.Join(" -> ", fakes.ConvertAll(i => Name(opponents[i])))}");
 
@@ -275,7 +281,9 @@ public class OpponentSelectionController : MonoBehaviour
         var fakeClips = fakes.ConvertAll(i => opponents[i].GetConfigForTier(tier)?.GetRandomSong());
         var finalOpponent    = opponents[finalIndex];
         int resolvedTier     = 0;
-        var finalLevelConfig = finalOpponent != null ? finalOpponent.GetConfigForTier(tier, out resolvedTier) : null;
+        var finalLevelConfig = useAssigned ? session.AssignedOpponentLevelConfig
+                             : finalOpponent != null ? finalOpponent.GetConfigForTier(tier, out resolvedTier) : null;
+        if (useAssigned) resolvedTier = finalLevelConfig.level; // the exact persisted version
         var finalSong        = GameSession.Instance != null
             ? GameSession.Instance.PickOpponentSong(finalOpponent, finalLevelConfig)
             : finalLevelConfig?.GetRandomSong();
@@ -317,7 +325,8 @@ public class OpponentSelectionController : MonoBehaviour
             GameSession.Instance.Run.OpponentLevel = finalLevelConfig != null ? finalLevelConfig.level : 0;
         }
         Debug.Log($"[OpponentSelectionController] Final pick: " +
-                  $"{(finalOpponent != null ? finalOpponent.displayName : "(null)")} — tier {CurrentTier} (config tier {resolvedTier}) — " +
+                  $"{(finalOpponent != null ? finalOpponent.displayName : "(null)")} — tier {tier} (config tier {resolvedTier}, " +
+                  $"{(useAssigned ? "precomputed assignment" : "picked here — no assignment")}) — " +
                   $"song: {(finalSong != null ? finalSong.name : "(none)")}");
 
         if (_skipButton != null) _skipButton.gameObject.SetActive(false);

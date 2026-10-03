@@ -15,7 +15,7 @@ using System.Collections.Generic;
 [System.Serializable]
 public class PlayerProgressData
 {
-    public const int CurrentVersion = 2; // 2: song history (completedSongIds, seedSongId, songRoute)
+    public const int CurrentVersion = 4; // 2: song history; 3: pendingRun; 4: song ids = stable songId (was Addressable address)
 
     public int version = CurrentVersion;
 
@@ -34,7 +34,8 @@ public class PlayerProgressData
     /// <summary>Total fights won (informational / future unlocks).</summary>
     public int fightsWon;
 
-    // ── Song history (v2) — stable song ids = the playable song's Addressable address ──────────
+    // ── Song history (v2) — song ids are the STABLE PlayableSongCatalogSO songId ("song_007") since
+    //    v4 (v2/v3 saves stored Addressable addresses; PlayerProgressStore.Migrate maps them) ──────
     /// <summary>Playable catalog songs completed (Runner → Fight WON), in completion order. Never
     /// repeated in normal progression. Ids no longer in the catalog are kept and simply ignored.</summary>
     public List<string> completedSongIds = new();
@@ -42,6 +43,28 @@ public class PlayerProgressData
     public string seedSongId = "";
     /// <summary>Cached similarity route around seedSongId (remaining songs at build time) — see SongProgression.</summary>
     public SongRouteData songRoute = new();
+
+    // ── Pending assignment (v3) ──────────────────────────────────────────────────────────────
+    /// <summary>The song the player is currently trying to DEFEND + the exact rival assigned to
+    /// challenge it, persisted the moment it is assigned (before analysis/Runner). Survives quitting,
+    /// a lost fight and Fight Again; cleared only by the victory (or replaced by a confirmed manual
+    /// SELECT SONG). Ids only — no song/fight state (a resumed run restarts the song).</summary>
+    public PendingRunData pendingRun = new();
+}
+
+[System.Serializable]
+public class PendingRunData
+{
+    /// <summary>Stable playable song id (songId). Empty = no pending assignment.</summary>
+    public string songId = "";
+    /// <summary>OpponentDefinition.id of the assigned rival.</summary>
+    public string opponentId = "";
+    /// <summary>OpponentLevelConfig.level — the exact rival VERSION.</summary>
+    public int opponentLevel;
+    /// <summary>Tier the assignment was made at (fake roulette rivals use the same tier).</summary>
+    public int opponentTier;
+
+    public bool IsSet => !string.IsNullOrEmpty(songId);
 }
 
 /// <summary>Ordered song ids (most similar to the seed first) + the signature of the catalog /

@@ -147,8 +147,9 @@ public class NextSongTransitionController : MonoBehaviour
     {
         // The just-played song's own identity — see INextSongSelector's own doc on why this (its
         // Addressables PrimaryKey) is reused as-is rather than inventing a new Song ID scheme.
+        // Stable songId of the just-defended song (null for a local file).
         string previousDisplayName = GameSession.Instance != null && GameSession.Instance.SelectedSong.HasValue
-            ? GameSession.Instance.SelectedSong.Value.DisplayName
+            ? GameSession.Instance.SelectedSong.Value.SongId
             : null;
 
         var catalog = new List<IResourceLocation>();

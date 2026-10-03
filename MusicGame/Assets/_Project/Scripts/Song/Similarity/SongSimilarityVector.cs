@@ -26,11 +26,17 @@ public class SongSimilarityVector
         "noisiness", "timbralChange", "impacts", "loudness",
     };
 
-    /// <summary>Stable song id = the playable song's Addressable address.</summary>
+    /// <summary>Stable song id (PlayableSongCatalogSO, e.g. "song_007") — the identity routes use.</summary>
     public string songId;
+    /// <summary>Addressable address at bake time — informational/tooling only (never an identity).</summary>
+    public string address = "";
     public int version = CurrentVersion;
     public float[] features;
     public float[] tags;
+    /// <summary>Editor bake invalidation: source AudioClip GUID + its import/dependency hash (file
+    /// content or import settings change ⇒ different hash ⇒ re-analysed). Empty for runtime vectors.</summary>
+    public string sourceGuid = "";
+    public string sourceHash = "";
 
     public bool IsValid => version == CurrentVersion && features != null && features.Length == FeatureNames.Length
                            && tags != null && tags.Length == SentisMusicTagger.TagLabels.Count;

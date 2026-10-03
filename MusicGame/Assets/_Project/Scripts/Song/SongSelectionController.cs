@@ -280,7 +280,7 @@ public class SongSelectionController : MonoBehaviour
     private readonly List<TextMeshProUGUI> _completedBadges = new();
 
     private bool IsCompletedRow(int index) =>
-        index >= 0 && index < _entries.Count && SongProgression.IsCompleted(_entries[index].PrimaryKey);
+        index >= 0 && index < _entries.Count && SongProgression.IsCompleted(SongProgression.IdOf(_entries[index]));
 
     /// <summary>Completed songs stay in the list (progress through the catalog is visible) but are
     /// dimmed, marked COMPLETED, and their row + PREVIEW are disabled. Re-run on every Show.</summary>
@@ -484,6 +484,7 @@ public class SongSelectionController : MonoBehaviour
         if (_selectedLocalInfo.HasValue)
         {
             if (GameSession.Instance != null) GameSession.Instance.SelectedSong = _selectedLocalInfo;
+            RunAssignment.AssignSessionOnly(); // rival decided now; nothing persisted, catalog pendingRun untouched
             AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongAnalysis);
             return;
         }
@@ -501,7 +502,14 @@ public class SongSelectionController : MonoBehaviour
 
         var location = _entries[_selectedCatalogIndex];
         // A manual choice is the player's new preference: future CONTINUE follows songs similar to it.
-        SongProgression.OnManualSelection(location.PrimaryKey, SongProgression.Ids(_entries));
+        // CONFIRMING it (not merely opening the selector) replaces an unfinished assignment — the
+        // abandoned song is NOT completed. Re-confirming the pending song itself keeps its rival.
+        var catalogIds = SongProgression.Ids(_entries);
+        string songId = SongProgression.IdOf(location); // stable id; the address is only how it loads
+        SongProgression.OnManualSelection(songId, catalogIds);
+        var pending = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.PendingRun : null;
+        if (pending == null || pending.songId != songId || !RunAssignment.TryRestorePending(catalogIds, out _))
+            RunAssignment.CreatePendingRun(songId);
         StartCoroutine(_service.SelectSong(new AddressableSongSource(location), null, success =>
         {
             _isLoading = false;

@@ -117,6 +117,16 @@ public class FightMusicController : MonoBehaviour
     /// Fades out over FightFlowConfig.combatMusicFadeOutSeconds (unscaled time; this object lives in
     /// the persistent UI scene, so the fade survives Fight.unity unloading) — never an abrupt cut. A
     /// new roulette (PlaySnippet/Lock) cancels a fade still running.</summary>
+    /// <summary>Fight pause menu: pauses/resumes every fight music source in place (no fade).</summary>
+    public void SetPaused(bool paused)
+    {
+        foreach (var s in new[] { _current, _incoming, _fx })
+        {
+            if (s == null) continue;
+            if (paused) s.Pause(); else s.UnPause();
+        }
+    }
+
     public void Stop()
     {
         Reset();

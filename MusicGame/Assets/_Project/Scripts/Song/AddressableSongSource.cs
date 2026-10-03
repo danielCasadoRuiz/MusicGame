@@ -59,6 +59,7 @@ public class AddressableSongSource : ISongSource
         onComplete?.Invoke(new SelectedSongInfo
         {
             DisplayName   = DisplayName,
+            SongId        = SongCatalog.IdForAddress(_location.PrimaryKey), // stable identity (address = loading only)
             Clip          = handle.Result,
             LocalFilePath = null,
         });
