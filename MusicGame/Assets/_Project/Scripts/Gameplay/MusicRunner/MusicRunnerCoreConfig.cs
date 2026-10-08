@@ -51,9 +51,37 @@ public class MusicRunnerCoreConfig : ScriptableObject
     public float gravity     = -22f;
 
     [Header("Player Surge (W / ↑)")]
+    [Tooltip("Max distance AHEAD of the song's canonical position (positive song-relative offset).")]
     public float maxSurge   = 5f;
+    [Tooltip("Rate (units/s) the offset grows toward +maxSurge while surging.")]
     public float surgeSpeed = 8f;
+    [Tooltip("Rate (units/s) a positive offset returns to 0 once surge is released.")]
     public float surgeDecay = 6f;
+
+    [Header("Player Hold Back (S / ↓) — the symmetric, negative side of the same offset")]
+    [Tooltip("Max distance BEHIND the song's canonical position. The song itself never slows; the " +
+             "player only lags a bounded amount and is rubber-banded back.")]
+    [Min(0f)] public float maxHoldBack = 3f;
+    [Tooltip("Rate (units/s) the offset moves toward −maxHoldBack while holding back.")]
+    [Min(0.01f)] public float holdBackSpeed = 5f;
+    [Tooltip("Rate (units/s) a negative offset returns to 0 once released.")]
+    [Min(0.01f)] public float holdBackRecover = 4.5f;
+    [Tooltip("Visual lean of the avatar (degrees): back while holding back, forward while surging. 0 = off.")]
+    public float holdBackLeanDegrees = 10f;
+    public float surgeLeanDegrees = 4f;
+    [Tooltip("How fast the visual lean follows (1/s).")]
+    public float leanResponse = 8f;
+
+    [Header("Player Crouch (C / Left Ctrl, mobile Crouch button)")]
+    [Tooltip("Collision capsule height while crouching (standing = PlayerController.CapsuleHeight). " +
+             "Feet stay on the ground: the centre moves down with the height.")]
+    [Min(0.6f)] public float crouchHeight = 1.0f;
+    [Tooltip("How fast PlayerController.CrouchBlend (0..1, presentation helper) follows the crouch state (1/s). " +
+             "The collider changes immediately; the visual is the avatar's Crouch animation.")]
+    public float crouchVisualSpeed = 5f; // ~0.2 s down / up
+    [Tooltip("AIR TUCK (crouch pressed mid-jump): share of the height loss taken by the HEAD going down " +
+             "(the rest is the feet coming up). 0 = head fixed, legs do it all; 1 = like a ground crouch.")]
+    [Range(0f, 1f)] public float airTuckHeadDrop = 0.3f;
 
     [Header("Player — Air Control")]
     [Tooltip("true: full lateral control while airborne (strafe input keeps steering mid-jump, " +

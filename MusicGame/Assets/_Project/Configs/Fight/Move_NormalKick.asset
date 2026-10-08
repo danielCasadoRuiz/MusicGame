@@ -30,18 +30,19 @@ MonoBehaviour:
   movementLocked: 1
   movementMultiplier: 0
   lungeDistance: 0
+  forwardCarry: 0.35
   lockFacingDuringMove: 1
   allowedPostures: 
   requiredMovementStates: 
   attackDelivery: 0
   hits:
   - shape: 0
-    localOffset: {x: 0.8, y: 0.9, z: 0}
-    size: {x: 0.6, y: 0.6, z: 0.6}
+    localOffset: {x: 0.85, y: 0.35, z: 0}
+    size: {x: 0.65, y: 0.7, z: 0.6}
     baseDamage: 12
     baseHitStun: 0.3
     baseKnockback: 1
-    attackHeight: 0
+    attackHeight: 1
     guardType: 0
     chipDamage: 0
     tracking: 0

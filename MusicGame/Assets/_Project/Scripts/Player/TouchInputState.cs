@@ -19,4 +19,10 @@ public static class TouchInputState
 
     /// <summary>Set true by the touch jump button on press; PlayerController reads and clears it.</summary>
     public static bool JumpRequested;
+
+    /// <summary>True while the virtual joystick is pulled back past its threshold (hold back).</summary>
+    public static bool HoldingBack;
+
+    /// <summary>True while the touch Crouch button (action B) is held.</summary>
+    public static bool CrouchHeld;
 }

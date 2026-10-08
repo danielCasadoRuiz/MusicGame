@@ -11,6 +11,9 @@ public interface IFighterMovementDriver
     /// <summary>Called once, the instant a move starts (and once more, unlocked, the instant it
     /// ends) — see FightMoveDefinition.movementLocked/movementMultiplier's own doc.</summary>
     void SetMovementLock(bool locked, float multiplier);
+    /// <summary>Lock with MOMENTUM CARRY: `carry` (0..1) of the current horizontal velocity keeps
+    /// travelling through the move (see FighterMovement.SetLock).</summary>
+    void SetMovementLock(bool locked, float multiplier, float carry) => SetMovementLock(locked, multiplier);
 
     /// <summary>Called once, at move start, if FightMoveDefinition.lungeDistance is nonzero.</summary>
     void ApplyLunge(float distance);
@@ -53,5 +56,6 @@ public class RealFighterMovementDriver : IFighterMovementDriver
     public RealFighterMovementDriver(FighterMovement movement) => _movement = movement;
 
     public void SetMovementLock(bool locked, float multiplier) => _movement?.SetLock(locked, multiplier);
+    public void SetMovementLock(bool locked, float multiplier, float carry) => _movement?.SetLock(locked, multiplier, carry);
     public void ApplyLunge(float distance) => _movement?.QueueLunge(distance);
 }

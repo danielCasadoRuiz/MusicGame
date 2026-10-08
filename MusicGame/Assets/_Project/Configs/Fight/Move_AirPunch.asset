@@ -27,9 +27,10 @@ MonoBehaviour:
   activeDuration: 0.1
   recoveryDuration: 0.15
   cancelWindow: 0
-  movementLocked: 0
-  movementMultiplier: 0.3
+  movementLocked: 1
+  movementMultiplier: 0
   lungeDistance: 0
+  airCarry: 1
   lockFacingDuringMove: 1
   allowedPostures: 02000000
   requiredMovementStates: 

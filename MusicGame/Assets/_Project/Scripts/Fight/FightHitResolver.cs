@@ -76,7 +76,12 @@ public static class FightHitResolver
             float blockStunMult      = config != null ? config.blockStunMultiplier      : 0.5f;
             float blockKnockbackMult = config != null ? config.blockKnockbackMultiplier : 0.5f;
 
-            result.FinalChipDamage = UnityEngine.Mathf.Max(0f, hitDef.chipDamage * defenderMods.DamageTakenMultiplier * bonus.damage);
+            // Block / chip damage: a correct guard REDUCES the hit (blockDamageMultiplier × the would-be
+            // damage), it never nulls it — holding guard forever is not a strategy. A hand-authored
+            // chipDamage is kept as a floor.
+            float blockDamageMult = config != null ? config.blockDamageMultiplier : 0.2f;
+            float chipBase = UnityEngine.Mathf.Max(hitDef.chipDamage, hitDef.baseDamage * attackerMods.DamageDealtMultiplier * blockDamageMult);
+            result.FinalChipDamage = UnityEngine.Mathf.Max(0f, chipBase * defenderMods.DamageTakenMultiplier * bonus.damage);
             result.FinalBlockStun  = UnityEngine.Mathf.Max(0f, hitDef.baseHitStun * blockStunMult * defenderMods.ResistanceMultiplier * bonus.stagger);
             result.FinalKnockback  = UnityEngine.Mathf.Max(0f, hitDef.baseKnockback * blockKnockbackMult * attackerMods.KnockbackDealtMultiplier * defenderMods.ResistanceMultiplier * bonus.knockback);
             // FinalDamage/FinalHitStun stay 0 — a blocked hit never applies normal damage/hit stun.

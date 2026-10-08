@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5113f3db8c54387965085ce138f977d, type: 3}
+  m_Name: Move_RunningKick
+  m_EditorClassIdentifier: Assembly-CSharp::FightMoveDefinition
+  id: move_running_kick
+  debugName: Running Kick
+  moveType: 0
+  role: 3
+  scalingStat: 2
+  resourceCost: 0
+  resourceAmount: 1
+  knockdownOnHit: 0
+  invulnerableStart: 0
+  invulnerableDuration: 0
+  animationState: Kick
+  startupDuration: 0.2
+  activeDuration: 0.12
+  recoveryDuration: 0.4
+  cancelWindow: 0.05
+  movementLocked: 1
+  movementMultiplier: 0
+  lungeDistance: 0
+  forwardCarry: 0.85
+  lockFacingDuringMove: 1
+  allowedPostures: 
+  requiredMovementStates: 03000000
+  attackDelivery: 0
+  hits:
+  - shape: 0
+    localOffset: {x: 0.9, y: 0.35, z: 0}
+    size: {x: 0.7, y: 0.75, z: 0.6}
+    baseDamage: 14
+    baseHitStun: 0.35
+    baseKnockback: 1.5
+    attackHeight: 1
+    guardType: 0
+    chipDamage: 0
+    tracking: 0
+  projectile:
+    visualPrefab: {fileID: 0}
+    speed: 8
+    maxLifetime: 3
+    maxDistance: 10
+    localSpawnOffset: {x: 0.8, y: 1, z: 0}
+    hitDefinition:
+      shape: 0
+      localOffset: {x: 0.8, y: 1, z: 0}
+      size: {x: 0.6, y: 0.6, z: 0.6}
+      baseDamage: 10
+      baseHitStun: 0.3
+      baseKnockback: 1
+      attackHeight: 1
+      guardType: 0
+      chipDamage: 0
+      tracking: 0
+    destroyOnHit: 1
+  damage: 0

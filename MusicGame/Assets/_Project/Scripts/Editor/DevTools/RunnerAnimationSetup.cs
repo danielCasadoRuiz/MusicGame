@@ -49,6 +49,9 @@ public static class RunnerAnimationSetup
         (Teach,  "RunnerPresentGesture", 38.6f, 41.6f, false, true,  "Open presenting arm gesture."),
         ("MartialArts_thaichitake_12_DEFAULT_QUP", "RunnerTaiChiRaise", 4.5f, 9.5f, false, true, "Slow tai chi arm raise."),
         ("MartialArts_MartialArtsKata_MIXAMO_769", "RunnerKataStrikes", 11.3f, 13.3f, false, true, "Sharp kata strikes."),
+        // Muscle-space scan (2026-10-03): the most stable deep crouch in the packs — body ~52 % of standing
+        // height, knees bent, torso pitched forward, both feet planted, ~1 s steady. Looping duck pose.
+        ("Superhero_SuperHeroLanding_Takeoff_mixamo", "RunnerCrouch", 3.55f, 4.45f, true, true, "Superhero-landing crouch hold as the runner duck pose."),
     };
 
     // Clip keys: "cmu:<Name>" = Avatar/AnimationTests/Clips/Derived/<Name>.anim; otherwise a library
@@ -60,7 +63,7 @@ public static class RunnerAnimationSetup
     private class StyleDef
     {
         public string asset, display;
-        public E[] idle, loco, fast, jump, land, autoReturn, flourish;
+        public E[] idle, loco, fast, jump, land, autoReturn, flourish, crouch;
         public float chance = 0.4f, minCd = 7f, maxCd = 16f;
         public Vector2 locoRange = new(0.85f, 1.2f);
     }
@@ -69,6 +72,7 @@ public static class RunnerAnimationSetup
     private static readonly E JumpSeg = C(Seg(Jump1, "RunnerJump"), "PROVISIONAL generic hurdle jump — replace with a style-specific jump.");
     private static readonly E LandSeg = C(Seg(Jump1, "RunnerLand"), "PROVISIONAL hurdle landing.");
     private static readonly E Spin    = C(Seg("Fight_RoundHouseKick_mixamo", "RunnerSpin360"), "PROVISIONAL spinning roundhouse as a 360 turn.");
+    private static readonly E CrouchSeg = C(Seg("Superhero_SuperHeroLanding_Takeoff_mixamo", "RunnerCrouch"), "Superhero-landing crouch hold (looped) — duck pose; a dedicated slide/duck clip would be better.");
 
     private static readonly StyleDef[] Styles =
     {
@@ -76,6 +80,7 @@ public static class RunnerAnimationSetup
         {
             asset = "RunnerStyle_Default", display = "Default",
             idle = new[] { IdleCmu },
+            crouch = new[] { CrouchSeg },
             loco = new[] { C("cmu:Run", "CMU run cycle — generic locomotion.", prov: false) },
             fast = new[] { C("cmu:Run", "PROVISIONAL: same run, faster cadence (no clean sprint clip).", 1.2f) },
             jump = new[] { JumpSeg }, land = new[] { LandSeg }, autoReturn = new[] { Spin },
@@ -183,10 +188,17 @@ public static class RunnerAnimationSetup
                 style.autoReturn = Entries(def.autoReturn, library, sb, def.asset);
                 style.flourish = Entries(def.flourish, library, sb, def.asset);
                 style.fall = System.Array.Empty<RunnerAnimationEntry>();
+                style.crouch = Entries(def.crouch, library, sb, def.asset);
                 style.flourishChance = def.chance;
                 style.flourishMinCooldown = def.minCd;
                 style.flourishMaxCooldown = def.maxCd;
                 style.locomotionSpeedRange = def.locoRange;
+                EditorUtility.SetDirty(style);
+            }
+            // Roles added after a style was authored (e.g. Crouch) are filled in without overwriting the rest.
+            if (!created && !overwriteStyles && (style.crouch == null || style.crouch.Length == 0) && def.crouch != null)
+            {
+                style.crouch = Entries(def.crouch, library, sb, def.asset);
                 EditorUtility.SetDirty(style);
             }
             styles[def.asset] = style;
@@ -199,6 +211,7 @@ public static class RunnerAnimationSetup
             slots[role] = Mathf.Max(1, styles.Values.Max(s => s.Usable(role).Length));
         slots[RunnerAnimationRole.Flourish] = Mathf.Max(slots[RunnerAnimationRole.Flourish], 4); // headroom for new variants
         var controller = BuildController(mask, slots, sb);
+        PrepareAdditiveCrouchClips(styles.Values, sb);
 
         // 4. Library + config.
         var lib = AssetDatabase.LoadAssetAtPath<RunnerAnimationStyleLibrarySO>(LibraryPath);
@@ -318,9 +331,44 @@ public static class RunnerAnimationSetup
             state.speedParameterActive = true;
             state.speedParameter = RunnerAvatarAnimator.UpperSpeedParameter;
         }
+        // CROUCH as an ADDITIVE layer over whatever the base plays (the legs keep running): weight 0,
+        // driven by RunnerAvatarAnimator from PlayerController.CrouchBlendEased.
+        controller.AddLayer(RunnerAvatarAnimator.CrouchLayerName);
+        layers = controller.layers;
+        int ci = layers.Length - 1;
+        layers[ci].defaultWeight = 0f;
+        layers[ci].blendingMode = AnimatorLayerBlendingMode.Additive;
+        controller.layers = layers;
+        var crouchSm = controller.layers[ci].stateMachine;
+        var crouchState = crouchSm.AddState(RunnerAvatarAnimator.CrouchState, new Vector3(260f, 0f, 0f));
+        crouchState.motion = Placeholder($"{RunnerAvatarAnimator.PlaceholderPrefix}{RunnerAnimationRole.Crouch}_0");
+        crouchState.writeDefaultValues = false;
+        crouchSm.defaultState = crouchState;
+
         EditorUtility.SetDirty(controller);
         sb.AppendLine($"  PASS  RunnerHumanoid.controller: {total} base states ({string.Join(", ", slots.Select(kv => $"{kv.Key}×{kv.Value}"))}), UpperBody layer Empty + {flourishPlaceholders.Count} Flourish (masked)");
         return controller;
+    }
+
+    /// <summary>An additive humanoid clip needs a reference pose: the delta (crouch − standing idle) is
+    /// what gets added on top of the running cycle — bent knees, lowered body, pitched torso.</summary>
+    private static void PrepareAdditiveCrouchClips(IEnumerable<RunnerAnimationStyleSO> styles, StringBuilder sb)
+    {
+        var idle = AssetDatabase.LoadAssetAtPath<AnimationClip>(CmuDir + "Idle.anim");
+        if (idle == null) { sb.AppendLine("  ERROR  CMU Idle missing — crouch additive reference pose not set"); return; }
+        var done = new HashSet<AnimationClip>();
+        foreach (var style in styles)
+            foreach (var e in style.Usable(RunnerAnimationRole.Crouch))
+            {
+                if (!done.Add(e.clip)) continue;
+                var settings = AnimationUtility.GetAnimationClipSettings(e.clip);
+                settings.hasAdditiveReferencePose = true;
+                settings.additiveReferencePoseClip = idle;
+                settings.additiveReferencePoseTime = 0f;
+                AnimationUtility.SetAnimationClipSettings(e.clip, settings);
+                EditorUtility.SetDirty(e.clip);
+                sb.AppendLine($"  PASS  {e.clip.name}: additive reference pose = CMU Idle (crouch layered over running)");
+            }
     }
 
     private static AnimationClip Placeholder(string name)

@@ -17,6 +17,11 @@ MonoBehaviour:
   airNormalPunch: {fileID: 11400000, guid: b3d152909e894a3daa20bdd54d455c10, type: 2}
   airNormalKick: {fileID: 11400000, guid: 939976e5b9614d3689005e40342b6008, type: 2}
   runNormalPunch: {fileID: 11400000, guid: 7a513017614a4ab39f65b64b70978aae, type: 2}
+  lowNormalKick: {fileID: 11400000, guid: e3413b06b1a74769888b789303bc1ee0, type: 2}
+  highNormalKick: {fileID: 11400000, guid: 71d374b701704155bdb607aa7c65a8a8, type: 2}
+  lowNormalPunch: {fileID: 11400000, guid: 694b3080822d480686247102c0f32db0, type: 2}
+  highNormalPunch: {fileID: 11400000, guid: 94bbf9648b524e41947bab70dcfade8e, type: 2}
+  runNormalKick: {fileID: 11400000, guid: 473c7da91f714074a04f2a55e6ae1afa, type: 2}
   moves:
   - {fileID: 11400000, guid: 6cc984990f5fd5144afa847f710137cd, type: 2}
   - {fileID: 11400000, guid: e9b025a49830c8d47aac83038a9e48a7, type: 2}

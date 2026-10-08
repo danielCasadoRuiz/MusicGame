@@ -147,8 +147,18 @@ public class FighterMovement : MonoBehaviour
     /// movementLocked/movementMultiplier's own doc. This is ALSO the single authority hit
     /// stun/block stun/KO lock through (see FighterHitReaction's own doc) — CanMove/CanCrouch/
     /// CanJump/sidestep/sidewalk all read this one flag.</summary>
-    public void SetLock(bool locked, float multiplier)
+    public void SetLock(bool locked, float multiplier) => SetLock(locked, multiplier, 0f);
+
+    /// <summary>`carry` (0..1): fraction of the current horizontal velocity that KEEPS travelling
+    /// while locked (a running kick keeps moving, an air attack keeps its jump arc) instead of being
+    /// destroyed. 0 = the old behaviour (hit stun, KO, standing moves). Grounded carry decays at
+    /// FightArenaConfig.attackCarryDeceleration; airborne carry is ballistic until landing. On unlock
+    /// the remaining carry becomes normal velocity again (no stop-start).</summary>
+    public void SetLock(bool locked, float multiplier, float carry)
     {
+        if (!locked && _locked && Mathf.Abs(_carryVelocity) > 0.01f) _forwardVelocity = _carryVelocity;
+        float source = _locked ? _carryVelocity : _forwardVelocity; // already locked (cancel chain) → re-carry the carry
+        _carryVelocity = locked ? source * Mathf.Clamp01(carry) : 0f;
         _locked     = locked;
         _multiplier = multiplier;
         // Getting hit/locked cancels an in-flight sidestep/sidewalk outright — task's own explicit
@@ -197,6 +207,7 @@ public class FighterMovement : MonoBehaviour
         _lungeRemaining = Vector3.zero;
         _knockbackRemaining = Vector3.zero;
         _forwardVelocity = 0f;
+        _carryVelocity = 0f;
         _recoverUntil = 0f;
         LastLungeDistance = 0f;
 
@@ -233,6 +244,18 @@ public class FighterMovement : MonoBehaviour
     {
         EventBus.Unsubscribe(_onFightFlowChanged);
         EventBus.Unsubscribe(_onComboDetected);
+    }
+
+    private float _carryVelocity; // signed, along ForwardXZ — momentum carried through a locked move
+
+    /// <summary>Velocity carried through the current locked move (signed, m/s).</summary>
+    public float CarryVelocity => _carryVelocity;
+
+    /// <summary>A height-modified attack (Up/Down + button) used the current vertical press: it must
+    /// not ALSO resolve as a jump/sidestep when the hold threshold passes or the key is released.</summary>
+    public void ConsumeVerticalPress()
+    {
+        if (_verticalPressDirection != FightVerticalDirection.Neutral) _verticalHoldResolved = true;
     }
 
     private void Update()
@@ -273,11 +296,25 @@ public class FighterMovement : MonoBehaviour
         float accel = _running && targetSpeed > _forwardVelocity
             ? (_config != null ? _config.chargeAcceleration : 9f)
             : (_config != null ? _config.walkAcceleration : 30f);
-        _forwardVelocity = _locked ? 0f : Mathf.MoveTowards(_forwardVelocity, targetSpeed, accel * Time.deltaTime);
+        bool airborne = _actor.Posture == FighterPosture.Airborne;
+        float airControl = airborne ? (_config != null ? _config.airControlMultiplier : 0.5f) : 1f;
+        if (_locked)
+        {
+            _forwardVelocity = 0f;
+            // Carried attack momentum: ballistic in the air, decaying on the ground.
+            if (!airborne)
+                _carryVelocity = Mathf.MoveTowards(_carryVelocity, 0f, (_config != null ? _config.attackCarryDeceleration : 7f) * Time.deltaTime);
+        }
+        else if (airborne)
+        {
+            // JUMP MOMENTUM: the take-off velocity is kept (a real forward/back arc). Input only bends
+            // it slowly (airAcceleration) — never an instant mid-air reversal; no input = keep going.
+            float airTarget = forwardAmount == 0f ? _forwardVelocity : targetSpeed;
+            _forwardVelocity = Mathf.MoveTowards(_forwardVelocity, airTarget, (_config != null ? _config.airAcceleration : 4f) * Time.deltaTime);
+        }
+        else _forwardVelocity = Mathf.MoveTowards(_forwardVelocity, targetSpeed, accel * Time.deltaTime);
 
-        float airControl = _actor.Posture == FighterPosture.Airborne ? (_config != null ? _config.airControlMultiplier : 0.5f) : 1f;
-
-        Vector3 delta = _actor.ForwardXZ * (_forwardVelocity * _multiplier * airControl * Time.deltaTime);
+        Vector3 delta = _actor.ForwardXZ * ((_forwardVelocity * _multiplier + _carryVelocity) * Time.deltaTime);
 
         // ── Side — SideWalk (continuous, held) or Sidestep (a short timed dodge) ─────────────────
         if (_sideWalkDirection != 0)
@@ -430,7 +467,9 @@ public class FighterMovement : MonoBehaviour
             return;
         }
         var vertical = _input.CurrentVertical;
-        if (vertical == FightVerticalDirection.Up && _verticalPressDirection != FightVerticalDirection.Up && CanJump) StartJump();
+        // Back (S) + Space = HIGH guard in first person too — never a jump.
+        if (vertical == FightVerticalDirection.Up && _verticalPressDirection != FightVerticalDirection.Up && CanJump &&
+            _input.CurrentHorizontal != FightHorizontalDirection.Back) StartJump();
         _verticalPressDirection = vertical;
         ApplyCrouchPosture(vertical == FightVerticalDirection.Down);
 
@@ -477,6 +516,16 @@ public class FighterMovement : MonoBehaviour
             _verticalPressDirection = FightVerticalDirection.Down;
             _verticalHoldResolved = true;
             ApplyCrouchPosture(true);
+            return;
+        }
+
+        // Back + Up = HIGH guard (FighterGuard) — never a jump or a sidestep while held.
+        if (vertical == FightVerticalDirection.Up && _input.CurrentHorizontal == FightHorizontalDirection.Back)
+        {
+            _sideWalkDirection = 0;
+            _verticalPressDirection = FightVerticalDirection.Up;
+            _verticalHoldResolved = true;
+            ApplyCrouchPosture(false);
             return;
         }
 

@@ -1547,6 +1547,31 @@ MonoBehaviour:
     review: 1
     notes: Reviewed 2026-10-01. Superhero landing crouch at ~3-5 s, jump take-off
       at ~17 s. Good for a flashy entrance.
+  - name: Superhero_SuperHeroLanding_Takeoff_mixamo__RunnerCrouch
+    clip: {fileID: 7400000, guid: a20a3acda7f063346bfae3916fbc318d, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 806d436e519c92b48a5111a743b51769, type: 2}
+    category: 11
+    categoryReviewed: 1
+    loop: 1
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 15 Free Superhero Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Superhero/SuperHeroLanding_Takeoff_mixamo.fbx
+    sourceTake: clip
+    duration: 0.91666675
+    frameRate: 24
+    rootTravel: {x: 0.0017797059, y: 0.021773597, z: -0.0033624205}
+    rootYaw: -0.587389
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.Spread 1,99)
+    segmentOf: Superhero_SuperHeroLanding_Takeoff_mixamo
+    segmentStart: 3.55
+    segmentEnd: 4.45
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Superhero-landing crouch
+      hold as the runner duck pose.
   - name: Superhero_Telekenisis_mixamo
     clip: {fileID: 7400000, guid: 3cd071af5f8d3734fbf529c3b12eb5cc, type: 2}
     inPlaceClip: {fileID: 7400000, guid: 834ad5dccbf29df4fb16d60f7bcf1a26, type: 2}
@@ -1852,6 +1877,16 @@ MonoBehaviour:
     keepFacing: 1
     review: 1
     notes: Runner segment (RunnerClipAnalysis 2026-10-01). Sharp kata strikes.
+  - name: RunnerCrouch
+    sourceEntry: Superhero_SuperHeroLanding_Takeoff_mixamo
+    start: 3.55
+    end: 4.45
+    category: 11
+    loop: 1
+    keepFacing: 1
+    review: 1
+    notes: Runner segment (RunnerClipAnalysis 2026-10-01). Superhero-landing crouch
+      hold as the runner duck pose.
   roles:
   - role: 0
     entryName: Fight_Boxing_mixamo__GuardIdle
@@ -2152,13 +2187,15 @@ MonoBehaviour:
     captured/Preserve, trimmed 1, facing -82,5 deg, level +0,594; WARN pose pop(s)
     at 4,96s, 5,25s, 5,29s, 5,33s, 29,25s; muscle beyond limits (RightHand.Ring.Spread
     2,88)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Superhero/SuperHeroLanding_Takeoff_mixamo.fbx:
-    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_SuperHeroLanding_Takeoff_mixamo:
     Special, 21,79 s, loop False, RootMotion (travel 1,99 m, yaw -67), fingers captured/Preserve,
     trimmed 1, facing -7,6 deg, level +0,000; WARN pose pop(s) at 2,29s, 2,33s, 2,50s,
-    17,00s, 17,04s...; muscle beyond limits (RightHand.Ring.Spread 3,43)\nIMPORTED
-    Assets/_Project/Animations/Source/Rokoko/Superhero/Telekenisis_mixamo.fbx: 1
-    take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    17,00s, 17,04s...; muscle beyond limits (RightHand.Ring.Spread 3,43)\n   Superhero_SuperHeroLanding_Takeoff_mixamo__RunnerCrouch:
+    Movement, 0,92 s, loop True, InPlace (travel 0,00 m, yaw -1), fingers captured/Preserve,
+    trimmed 0, facing -7,0 deg, level -0,020; WARN muscle beyond limits (LeftHand.Thumb.Spread
+    1,99)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Superhero/Telekenisis_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_Telekenisis_mixamo:
     Unknown (auto), 52,83 s, loop False, RootMotion (travel 1,16 m, yaw -80), fingers
     captured/Preserve, trimmed 1, facing +12,5 deg, level -0,002; WARN pose pop(s)

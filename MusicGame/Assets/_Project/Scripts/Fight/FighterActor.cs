@@ -65,6 +65,8 @@ public class FighterActor : MonoBehaviour
     public FighterHealth Health { get; private set; }
     public FighterHitReaction HitReaction { get; private set; }
     public FighterGuard Guard { get; private set; }
+    /// <summary>Grab / takedown / ground control (Punch + Kick) — see FighterGrapple.</summary>
+    public FighterGrapple Grapple { get; private set; }
 
     /// <summary>The other FighterActor in the arena — set once via SetOpponent, right after both
     /// exist. Public so FightProjectile (and future AI) can resolve "who do I actually target" the
@@ -268,6 +270,10 @@ public class FighterActor : MonoBehaviour
         var guard = gameObject.AddComponent<FighterGuard>();
         guard.Initialize(this, input);
         Guard = guard;
+
+        var grapple = gameObject.AddComponent<FighterGrapple>();
+        grapple.Initialize(this, _opponent, input, arenaConfig);
+        Grapple = grapple;
     }
 
     /// <summary>
@@ -285,6 +291,7 @@ public class FighterActor : MonoBehaviour
 
         Health?.ResetForRound();
         HitReaction?.ResetForRound();
+        Grapple?.ResetForRound();
         Movement?.ResetForRound();
         MoveController?.ResetForRound();
         Attack?.ResetForRound();

@@ -25,6 +25,8 @@ public enum FightAIIntention
     SideStepRight,
     SideWalk,
     BackDash,
+    // appended (gameplay-depth pass)
+    HighGuard, HighAttack, RunAttack, AirAttack, Grab,
 }
 
 /// <summary>
@@ -146,6 +148,8 @@ public class FighterAI : MonoBehaviour
         }
 
         var ctx = FightAIContext.Capture(_actor, _opponent, _arenaConfig, FightMatchController.Instance);
+
+        if (UpdateGrapple()) return; // held / grounded / ground control: grapple decisions only
 
         if (!ctx.SelfCanAct)
         {
@@ -299,7 +303,7 @@ public class FighterAI : MonoBehaviour
 
         // Defense — see DetectIncomingAttack's own doc
         var incoming = DetectIncomingAttack(ctx);
-        float guardBase = 0.03f, crouchGuardBase = 0.02f, crouchBase = 0.03f, jumpDefenseBase = 0f, retreatDefenseBonus = 0f;
+        float guardBase = 0.03f, crouchGuardBase = 0.02f, crouchBase = 0.03f, jumpDefenseBase = 0f, retreatDefenseBonus = 0f, highGuardBase = 0.01f;
         if (incoming.present)
         {
             if (incoming.guardType == GuardType.Unblockable)
@@ -314,8 +318,9 @@ public class FighterAI : MonoBehaviour
             }
             else if (incoming.height == AttackHeight.High)
             {
-                guardBase = 0.7f;
-                crouchBase = 0.3f;
+                highGuardBase = 0.7f;
+                crouchBase = 0.3f;   // a low crouch also lets a High whiff over
+                guardBase = 0.1f;    // MID guard is the WRONG guard against a High
             }
             else // Mid
             {
@@ -324,6 +329,7 @@ public class FighterAI : MonoBehaviour
             }
         }
         scores[FightAIIntention.Guard]       = guardBase * defense;
+        scores[FightAIIntention.HighGuard]   = highGuardBase * defense;
         scores[FightAIIntention.CrouchGuard] = crouchGuardBase * defense;
         scores[FightAIIntention.Crouch]      = crouchBase * defense * 0.6f;
         scores[FightAIIntention.Jump]        = jumpDefenseBase * defense + 0.04f * aggression;
@@ -335,8 +341,28 @@ public class FighterAI : MonoBehaviour
         bool inProjectileRange = ctx.Distance <= _projectileRange;
 
         scores[FightAIIntention.NormalAttack] = inMeleeRange ? Mathf.Lerp(0.25f, 0.7f, aggression) : 0f;
+        bool oppMidOrHighGuard = ctx.OpponentGuardState == FighterGuardState.StandingGuard || ctx.OpponentGuardState == FighterGuardState.HighGuard;
         scores[FightAIIntention.LowAttack] = inLowRange
-            ? Mathf.Lerp(0.15f, 0.6f, aggression) * (ctx.OpponentGuardState == FighterGuardState.StandingGuard ? 1.4f : 0.7f)
+            ? Mathf.Lerp(0.15f, 0.6f, aggression) * (oppMidOrHighGuard ? 1.4f : 0.7f)
+            : 0f;
+        // HIGH attack: good vs a MID guard, useless vs a crouch (whiffs over it).
+        scores[FightAIIntention.HighAttack] = inMeleeRange
+            ? Mathf.Lerp(0.08f, 0.4f, aggression) * (ctx.OpponentGuardState == FighterGuardState.StandingGuard ? 1.4f :
+                                                     ctx.OpponentGuardState == FighterGuardState.CrouchGuard || ctx.OpponentPosture == FighterPosture.Crouching ? 0.2f : 0.8f)
+            : 0f;
+        // Momentum attacks — occasional, never spammed (share the charge cooldown / low weights).
+        bool chargeReady = Time.time >= _nextChargeTime;
+        scores[FightAIIntention.RunAttack] = chargeReady && ctx.Distance > meleeRange * 1.6f && ctx.Distance < idealDistance * 3f
+            ? Mathf.Lerp(0.03f, 0.3f, aggression) * (_aiConfig != null ? _aiConfig.chargeScoreMultiplier : 0.45f) * 1.6f
+            : 0f;
+        scores[FightAIIntention.AirAttack] = ctx.Distance > meleeRange * 1.2f && ctx.Distance < meleeRange * 2.4f
+            ? Mathf.Lerp(0.01f, 0.12f, aggression) * (_aiConfig != null ? _aiConfig.airAttackScoreMultiplier : 1f)
+            : 0f;
+        // Grab: close, opponent free; better against a guarding opponent (grabs beat guard).
+        bool canGrab = _actor.Grapple != null && _actor.Grapple.InGrabRange() && ctx.OpponentPosture != FighterPosture.Airborne;
+        bool oppGuarding = ctx.OpponentGuardState != FighterGuardState.None;
+        scores[FightAIIntention.Grab] = canGrab
+            ? Mathf.Lerp(0.02f, 0.16f, aggression) * (oppGuarding ? 2.2f : 1f) * (_aiConfig != null ? _aiConfig.grabScoreMultiplier : 1f)
             : 0f;
         scores[FightAIIntention.ComboAttack] = inMeleeRange ? Mathf.Lerp(0.05f, 0.65f, comboSkill) * Mathf.Lerp(0.4f, 1f, aggression) : 0f;
         scores[FightAIIntention.SpecialAttack] = (inProjectileRange || inMeleeRange)
@@ -461,6 +487,10 @@ public class FighterAI : MonoBehaviour
             FightAIIntention.DashApproach   => DashRunRoutine(dirSign, false),
             FightAIIntention.RunApproach    => DashRunRoutine(dirSign, true),
             FightAIIntention.NormalAttack   => NormalAttackRoutine(),
+            FightAIIntention.HighAttack     => HighAttackRoutine(),
+            FightAIIntention.RunAttack      => RunAttackRoutine(dirSign),
+            FightAIIntention.AirAttack      => AirAttackRoutine(dirSign),
+            FightAIIntention.Grab           => GrabRoutine(),
             FightAIIntention.LowAttack      => LowAttackRoutine(),
             FightAIIntention.ComboAttack    => ComboRoutine(dirSign),
             FightAIIntention.SpecialAttack  => SpecialRoutine(dirSign),
@@ -488,6 +518,7 @@ public class FighterAI : MonoBehaviour
             case FightAIIntention.Retreat:     _inputSource.SetDirection(-dirSign, 0f); break;
             case FightAIIntention.Guard:       _inputSource.SetDirection(-dirSign, 0f); break;
             case FightAIIntention.CrouchGuard: _inputSource.SetDirection(-dirSign, -1f); break;
+            case FightAIIntention.HighGuard:   _inputSource.SetDirection(-dirSign, 1f); break;
             case FightAIIntention.Crouch:      _inputSource.SetDirection(0f, -1f); break;
         }
     }
@@ -497,6 +528,113 @@ public class FighterAI : MonoBehaviour
         yield return routine;
         if (_inputSource != null) _inputSource.SetDirection(0f, 0f);
         _executionRoutine = null;
+    }
+
+    // ── Gameplay-depth intentions (all through real inputs, like every other routine) ──────────
+
+    private IEnumerator HighAttackRoutine()
+    {
+        // Up + button, released before the hold threshold — the press consumes the Up (no jump).
+        _inputSource.SetDirection(0f, 1f);
+        yield return null;
+        if (RollChance(0.65)) _inputSource.RequestKick(); else _inputSource.RequestPunch();
+        yield return new WaitForSeconds(0.05f);
+        _inputSource.SetDirection(0f, 0f);
+        yield return new WaitForSeconds(0.1f);
+    }
+
+    private IEnumerator RunAttackRoutine(float dirSign)
+    {
+        _nextChargeTime = Time.time + ChargeCooldown();
+        yield return DashRunRoutine(dirSign, true);
+        // Keep running until in reach, then strike carrying the run's momentum (or, rarely, a takedown).
+        float reach = _meleeRange * 1.15f;
+        for (float t = 0f; t < 1.0f && _actor.DistanceToOpponent > reach; t += Time.deltaTime)
+        {
+            _inputSource.SetDirection(dirSign, 0f);
+            yield return null;
+        }
+        bool takedown = _actor.Grapple != null && _actor.Grapple.InGrabRange() &&
+                        RollChance(0.25 * (_aiConfig != null ? _aiConfig.grabScoreMultiplier : 1f));
+        if (takedown) _inputSource.RequestGrab();
+        else if (RollChance(0.7)) _inputSource.RequestKick(); else _inputSource.RequestPunch();
+        yield return new WaitForSeconds(0.15f);
+    }
+
+    private IEnumerator AirAttackRoutine(float dirSign)
+    {
+        // Build a little forward speed, jump (hold Up past the threshold), kick near the opponent.
+        _inputSource.SetDirection(dirSign, 0f);
+        yield return new WaitForSeconds(0.15f);
+        float hold = (_arenaConfig != null ? _arenaConfig.directionHoldThreshold : 0.15f) + 0.05f;
+        _inputSource.SetDirection(dirSign, 1f);
+        yield return new WaitForSeconds(hold);
+        _inputSource.SetDirection(dirSign, 0f);
+        for (float t = 0f; t < 0.6f; t += Time.deltaTime)
+        {
+            if (_actor.Posture == FighterPosture.Airborne && _actor.DistanceToOpponent <= _meleeRange * 1.6f) break;
+            yield return null;
+        }
+        if (_actor.Posture == FighterPosture.Airborne) _inputSource.RequestKick();
+        yield return new WaitForSeconds(0.2f);
+    }
+
+    private IEnumerator GrabRoutine()
+    {
+        _inputSource.SetDirection(0f, 0f);
+        yield return null;
+        _inputSource.RequestGrab();
+        yield return new WaitForSeconds(0.1f);
+    }
+
+    // Grapple states: escape rolls (one per grab, after a human-like reaction delay) and limited
+    // ground strikes. Returns true while a grapple owns this fighter's decisions.
+    private FighterGrappleState _lastGrappleState;
+    private float _escapeAt = -1f;
+    private float _nextGroundStrikeAt;
+
+    private bool UpdateGrapple()
+    {
+        var g = _actor.Grapple;
+        if (g == null) return false;
+        var state = g.State;
+        if (state != _lastGrappleState)
+        {
+            _lastGrappleState = state;
+            _escapeAt = -1f;
+            if (state == FighterGrappleState.Held || state == FighterGrappleState.Grounded)
+            {
+                StopExecuting();
+                _inputSource.SetDirection(0f, 0f);
+                float defense = _profile != null ? _profile.defenseProbability : 0.5f;
+                float chance = Mathf.Clamp01((_aiConfig != null ? _aiConfig.grabEscapeChance : 0.6f) * Mathf.Lerp(0.4f, 1.1f, defense));
+                if (RollChance(chance))
+                {
+                    float min = _aiConfig != null ? _aiConfig.grabEscapeDelay.x : 0.15f, max = _aiConfig != null ? _aiConfig.grabEscapeDelay.y : 0.4f;
+                    _escapeAt = Time.time + Mathf.Lerp(min, max, (float)_random.NextDouble()) + EffectiveReactionTime() * 0.3f;
+                }
+            }
+            if (state == FighterGrappleState.GroundControl) _nextGroundStrikeAt = Time.time + 0.2f;
+        }
+
+        switch (state)
+        {
+            case FighterGrappleState.Held:
+            case FighterGrappleState.Grounded:
+                if (_escapeAt >= 0f && Time.time >= _escapeAt && g.CanEscapeNow) { _inputSource.RequestGrab(); _escapeAt = -1f; }
+                return true;
+            case FighterGrappleState.GroundControl:
+                if (Time.time >= _nextGroundStrikeAt)
+                {
+                    _inputSource.RequestPunch();
+                    _nextGroundStrikeAt = Time.time + 0.35f + (float)_random.NextDouble() * 0.3f;
+                }
+                return true;
+            case FighterGrappleState.Holding:
+            case FighterGrappleState.Recover:
+                return true;
+        }
+        return false;
     }
 
     private IEnumerator JumpRoutine()

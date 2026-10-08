@@ -22,6 +22,9 @@ using UnityEngine.InputSystem;
 /// Mapping (priority top → bottom):
 ///   IsFalling                         → Fall (falls back to Jump)
 ///   PlayerController.Jumped           → Jump (fit to the jump's air time) → on ground: Land → locomotion
+///   IsCrouching                       → CrouchAdditive layer weight = eased CrouchBlend: the duck pose is
+///                                       ADDED over the current locomotion (legs keep running, bent knees,
+///                                       lowered body); cancels Land/AutoReturn one-shots and flourishes
 ///   AutoReturnStarted (SYSTEM return) → AutoReturn one-shot (spin/turn), fit to the return duration —
 ///                                       only when grounded, displacement ≥ autoReturnMinAmount, off cooldown
 ///   not running                       → Idle
@@ -37,6 +40,10 @@ public class RunnerAvatarAnimator : MonoBehaviour
     public const string UpperSpeedParameter = "UpperSpeed";
     public const string UpperLayerName = "UpperBody";
     public const string UpperEmptyState = "Empty";
+    /// <summary>Additive layer: the crouch pose (relative to a standing reference) added on top of the
+    /// running cycle, so the legs KEEP RUNNING with bent knees / lowered body / bent torso.</summary>
+    public const string CrouchLayerName = "CrouchAdditive";
+    public const string CrouchState = "Crouch";
     private static readonly int BaseSpeedHash = Animator.StringToHash(BaseSpeedParameter);
     private static readonly int UpperSpeedHash = Animator.StringToHash(UpperSpeedParameter);
 
@@ -45,6 +52,7 @@ public class RunnerAvatarAnimator : MonoBehaviour
     private RunnerAnimationStyleLibrarySO _library;
     private AnimatorOverrideController _override;
     private int _upperLayer = -1;
+    private int _crouchLayer = -1;
 
     // Per role: placeholder clip per slot, and the entry assigned to each usable slot.
     private readonly Dictionary<RunnerAnimationRole, List<AnimationClip>> _placeholders = new();
@@ -93,6 +101,8 @@ public class RunnerAvatarAnimator : MonoBehaviour
         CollectPlaceholders();
         _animator.runtimeAnimatorController = _override;
         _upperLayer = _animator.GetLayerIndex(UpperLayerName);
+        _crouchLayer = _animator.GetLayerIndex(CrouchLayerName);
+        if (_crouchLayer >= 0) _animator.SetLayerWeight(_crouchLayer, 0f);
 
         if (_player != null)
         {
@@ -214,6 +224,7 @@ public class RunnerAvatarAnimator : MonoBehaviour
         UpdateDebugKeys();
 #endif
         UpdateUpperFlourish();
+        UpdateCrouchLayer();
         bool falling = _player != null && _player.IsFalling;
         bool grounded = _player == null || _player.IsGrounded;
 
@@ -237,6 +248,20 @@ public class RunnerAvatarAnimator : MonoBehaviour
             return;
         }
 
+        // CROUCH: wins over Land/AutoReturn one-shots and flourishes (a jump keeps its own one-shot
+        // above). With the additive layer the base keeps the normal locomotion underneath; only an
+        // older controller without it falls back to the full-body Crouch state.
+        if (WantsCrouch(grounded))
+        {
+            if (_oneShot.HasValue) _oneShot = null;
+            if (_upperActive) StopUpperFlourish();
+            if (_crouchLayer < 0)
+            {
+                if (CurrentRole != RunnerAnimationRole.Crouch) PlayRole(RunnerAnimationRole.Crouch, false);
+                return;
+            }
+        }
+
         if (_oneShot.HasValue)
         {
             if (Time.time < _oneShotEnd - Style.crossfade) return;
@@ -251,6 +276,19 @@ public class RunnerAvatarAnimator : MonoBehaviour
         if (desired == RunnerAnimationRole.Locomotion && grounded && !_upperActive && Time.time >= _nextFlourishCheck)
             TryFlourish();
     }
+
+    // Same eased blend as the first-person camera drop (PlayerController.CrouchBlendEased): the pose
+    // fades in/out over the transition instead of snapping.
+    private void UpdateCrouchLayer()
+    {
+        if (_crouchLayer < 0 || _player == null) return;
+        _animator.SetLayerWeight(_crouchLayer, _player.IsFalling ? 0f : _player.CrouchBlendEased);
+    }
+
+    // Only once RunnerHumanoid.controller has the Crouch state (RunnerAnimationSetup) — never a
+    // crossfade into a missing state.
+    private bool WantsCrouch(bool grounded) =>
+        grounded && _player != null && _player.IsRunning && _player.IsCrouching && _placeholders.ContainsKey(RunnerAnimationRole.Crouch);
 
     private RunnerAnimationRole DesiredLocomotionRole()
     {
@@ -303,7 +341,8 @@ public class RunnerAvatarAnimator : MonoBehaviour
         if (instant) _animator.Play(state, 0, 0f);
         else if (!same || forceRestart)
         {
-            float fade = role == RunnerAnimationRole.Jump || role == RunnerAnimationRole.Land ? Style.quickCrossfade : Style.crossfade;
+            float fade = role == RunnerAnimationRole.Jump || role == RunnerAnimationRole.Land || role == RunnerAnimationRole.Crouch
+                ? Style.quickCrossfade : Style.crossfade;
             _animator.CrossFadeInFixedTime(state, fade, 0, 0f);
         }
         if (role == RunnerAnimationRole.Locomotion || role == RunnerAnimationRole.FastLocomotion) ApplyLocomotionSpeed(role);

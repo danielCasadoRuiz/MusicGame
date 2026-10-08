@@ -74,6 +74,14 @@ public class FightMoveDefinition : ScriptableObject
     [Tooltip("A one-off forward displacement applied once, at move start. 0 = no lunge.")]
     public float lungeDistance = 0f;
 
+    [Header("Momentum carry (see FighterMovement.SetLock)")]
+    [Tooltip("GROUNDED: fraction (0..1) of the fighter's current horizontal velocity that keeps travelling " +
+             "through this move instead of being stopped (a running kick keeps moving). Decays at " +
+             "FightArenaConfig.attackCarryDeceleration. 0 = stops dead (old behaviour).")]
+    [Range(0f, 1f)] public float forwardCarry = 0f;
+    [Tooltip("AIRBORNE: fraction of the jump's horizontal velocity kept (1 = the attack follows the jump arc).")]
+    [Range(0f, 1f)] public float airCarry = 1f;
+
     [Header("Facing — see IFightFacingProvider's own doc (still the always-true debug placeholder)")]
     [Tooltip("While true, facing must not flip during this move's Startup/Active (Recovery is " +
              "always safe to flip in, same as most fighting games' own convention) — see " +

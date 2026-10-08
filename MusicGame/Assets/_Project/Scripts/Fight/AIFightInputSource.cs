@@ -38,6 +38,8 @@ public class AIFightInputSource : IFightInputSource
 
     public void RequestPunch() => _punchRequested = true;
     public void RequestKick() => _kickRequested = true;
+    /// <summary>Punch + Kick on the SAME frame: the logical grab / grab-escape chord.</summary>
+    public void RequestGrab() { _punchRequested = true; _kickRequested = true; }
 
     public void Tick()
     {

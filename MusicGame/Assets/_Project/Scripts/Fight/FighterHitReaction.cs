@@ -95,6 +95,37 @@ public class FighterHitReaction : MonoBehaviour
         ApplyKnockback(knockbackDistance);
     }
 
+    // ── Grapple hooks (FighterGrapple) ───────────────────────────────────────
+
+    /// <summary>Being held by a grab: locked, "held" reaction, no knockback, for `duration` at most
+    /// (the grab normally resolves — throw / break — well before).</summary>
+    public void HoldGrabbed(float duration)
+    {
+        if (IsInKnockdownFlow) return;
+        BeginActionLock();
+        Enter(FighterReactionState.HitStun, duration);
+        _actor.AnimationDriver?.PlayRole(CombatRole.HitReaction, -1f);
+    }
+
+    /// <summary>Ends a hit/block stun immediately (grab broken / about to be thrown) — never a knockdown.</summary>
+    public void ReleaseStun()
+    {
+        if (State != FighterReactionState.HitStun && State != FighterReactionState.BlockStun) return;
+        State = FighterReactionState.None;
+        StateRemaining = 0f;
+        if (_actor.Movement != null) _actor.Movement.SetLock(false, 1f);
+        if (_actor.MoveController != null) _actor.MoveController.IsHitStunned = false;
+    }
+
+    /// <summary>Downed fighter escapes ground control early: straight into the get-up.</summary>
+    public void ForceGetUp()
+    {
+        if (_stayDown || (State != FighterReactionState.Knockdown && State != FighterReactionState.Downed)) return;
+        float getUp = _balance != null ? _balance.getUpDuration : 1.6f;
+        Enter(FighterReactionState.GetUp, getUp);
+        _actor.AnimationDriver?.PlayRole(CombatRole.GetUp, getUp);
+    }
+
     private void Enter(FighterReactionState state, float duration)
     {
         State = state;

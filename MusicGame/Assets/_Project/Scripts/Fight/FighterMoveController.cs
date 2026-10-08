@@ -167,9 +167,10 @@ public class FighterMoveController : MonoBehaviour
 
     private void OnEnable()
     {
-        _onPunch = e => { if (e.Source == _input) TryExecuteMove(ResolvePunch(), FightAttackBonus.Identity, AttackTag.None, e.StringId, false); };
-        _onKick  = e => { if (e.Source == _input) TryExecuteMove(ResolveKick(), FightAttackBonus.Identity, AttackTag.None, e.StringId, false); };
-        _onCombo = e => { if (e.Source == _input) OnCombo(e.Combo, e.StringId, e.ReplacesPrevious); };
+        // While grappling (grab hold / ground control) FighterGrapple owns the buttons.
+        _onPunch = e => { if (e.Source == _input && !GrappleBusy) TryExecuteMove(ResolvePunch(), FightAttackBonus.Identity, AttackTag.None, e.StringId, false); };
+        _onKick  = e => { if (e.Source == _input && !GrappleBusy) TryExecuteMove(ResolveKick(), FightAttackBonus.Identity, AttackTag.None, e.StringId, false); };
+        _onCombo = e => { if (e.Source == _input && !GrappleBusy) OnCombo(e.Combo, e.StringId, e.ReplacesPrevious); };
         _onPower = e => { if (e.Source == _input) TryActivatePower(); };
         _onFightFlowChanged = e => _active = e.Current == FightFlowState.Fighting;
         _onMatchEnded = e =>
@@ -447,19 +448,27 @@ public class FighterMoveController : MonoBehaviour
     /// priority over Run since the two are mutually exclusive in practice (Run requires Standing/
     /// grounded Forward-holding — see FighterMovement's own doc) but airborne is checked first for
     /// safety regardless.</summary>
-    private FightMoveDefinition ResolvePunch()
-    {
-        if (_moveSet == null) return null;
-        if (_actor != null && _actor.Posture == FighterPosture.Airborne && _moveSet.airNormalPunch != null) return _moveSet.airNormalPunch;
-        if (_actor != null && _actor.MovementState == FighterMovementState.Run && _moveSet.runNormalPunch != null) return _moveSet.runNormalPunch;
-        return _moveSet.normalPunch;
-    }
+    private bool GrappleBusy => _actor != null && _actor.Grapple != null && _actor.Grapple.IsBusy;
 
-    private FightMoveDefinition ResolveKick()
+    private FightMoveDefinition ResolvePunch() =>
+        _moveSet == null ? null : ResolveNormal(_moveSet.airNormalPunch, _moveSet.runNormalPunch, _moveSet.highNormalPunch, _moveSet.normalPunch, _moveSet.lowNormalPunch);
+
+    private FightMoveDefinition ResolveKick() =>
+        _moveSet == null ? null : ResolveNormal(_moveSet.airNormalKick, _moveSet.runNormalKick, _moveSet.highNormalKick, _moveSet.normalKick, _moveSet.lowNormalKick);
+
+    /// <summary>Context first (airborne → air move, running → running move), then the ATTACK HEIGHT
+    /// from the vertical direction held at the press: Up = HIGH, none = MID, Down = LOW. An Up/Down
+    /// used for a height is consumed so it never also becomes a jump/sidestep. Missing slots fall back
+    /// to the MID normal.</summary>
+    private FightMoveDefinition ResolveNormal(FightMoveDefinition air, FightMoveDefinition run, FightMoveDefinition high,
+                                              FightMoveDefinition mid, FightMoveDefinition low)
     {
-        if (_moveSet == null) return null;
-        if (_actor != null && _actor.Posture == FighterPosture.Airborne && _moveSet.airNormalKick != null) return _moveSet.airNormalKick;
-        return _moveSet.normalKick;
+        if (_actor != null && _actor.Posture == FighterPosture.Airborne && air != null) return air;
+        if (_actor != null && _actor.MovementState == FighterMovementState.Run && run != null) return run;
+        var vertical = _input != null ? _input.CurrentVertical : FightVerticalDirection.Neutral;
+        if (vertical == FightVerticalDirection.Up && high != null) { _actor?.Movement?.ConsumeVerticalPress(); return high; }
+        if (vertical == FightVerticalDirection.Down && low != null) { _actor?.Movement?.ConsumeVerticalPress(); return low; }
+        return mid;
     }
 
     private void BeginMove(FightMoveDefinition move, FightAttackBonus bonus, AttackTag tag, int stringId)
@@ -500,8 +509,15 @@ public class FighterMoveController : MonoBehaviour
         // this is a cancel-chain) — UpdatePhase() below is the ONLY place a phase transition (and
         // its FightMovePhaseChangedEvent) is ever published, so it must own this one too.
 
-        _movementDriver.SetMovementLock(move.movementLocked, move.movementMultiplier);
+        // MOMENTUM: the move keeps a share of the current horizontal velocity (forwardCarry on the
+        // ground, airCarry in a jump) instead of stopping dead — see FighterMovement.SetLock.
+        bool airborneMove = _actor != null && _actor.Posture == FighterPosture.Airborne;
+        float carry = airborneMove ? move.airCarry : move.forwardCarry;
+        float speedIn = _actor != null && _actor.Movement != null ? Mathf.Abs(_actor.Movement.ForwardSpeed + _actor.Movement.CarryVelocity) : 0f;
+        _movementDriver.SetMovementLock(move.movementLocked, move.movementMultiplier, carry);
         if (!Mathf.Approximately(move.lungeDistance, 0f)) _movementDriver.ApplyLunge(move.lungeDistance);
+        if (airborneMove && _moveSet != null && move == _moveSet.airNormalKick && speedIn >= 2.5f)
+            EventBus.Publish(new FightFlyingKickEvent { Fighter = _actor, Speed = speedIn });
         _animationDriver.PlayMoveAnimation(move, move.startupDuration * _timingScale + move.activeDuration + move.recoveryDuration * _timingScale);
 
         Debug.Log($"[FighterMoveController] Move started: {move.debugName} ({move.moveType})");

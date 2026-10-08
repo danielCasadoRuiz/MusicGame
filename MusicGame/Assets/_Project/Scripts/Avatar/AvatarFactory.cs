@@ -273,9 +273,10 @@ public static class AvatarFactory
 
         if (visualPart.skinnedRenderers.Length > 0)
         {
+            var body = AvatarClothingBinder.MainBody(instance.BodyRenderers);
             foreach (var smr in visualPart.skinnedRenderers)
             {
-                mapper.Remap(smr, itemDef.displayName);
+                BindClothing(smr, body, mapper, instance, itemDef.displayName);
                 RegisterMorphTarget(instance, smr, variant.supportedMorphChannels, itemDef.displayName);
             }
         }
@@ -292,6 +293,22 @@ public static class AvatarFactory
         // parented at VisualRoot by InstantiateAsync, nothing more to do.
 
         instance.EquippedItems.Add(new EquippedAvatarItem { Definition = itemDef, Instance = itemGO, VisualPart = visualPart });
+    }
+
+    /// <summary>Binds a garment renderer to the avatar skeleton with the proven SkinnedMeshBinder logic
+    /// (avatar bones by name + the BODY's bind poses, cloned mesh, body rootBone/bounds, synced
+    /// blendshapes — see AvatarClothingBinder). If the garment can't be fully resolved against the body
+    /// (a bone the body mesh doesn't skin), falls back to the plain by-name bone remap.</summary>
+    private static void BindClothing(SkinnedMeshRenderer smr, SkinnedMeshRenderer body, AvatarSkeletonMapper mapper, AvatarInstance instance, string label)
+    {
+        if (smr == null) return;
+        if (AvatarClothingBinder.TryResolve(smr, body, mapper.FindBone, out var bones, out var bindPoses, out string error))
+        {
+            instance.TrackClonedMesh(AvatarClothingBinder.Apply(smr, smr.sharedMesh, body, bones, bindPoses));
+            return;
+        }
+        Debug.LogWarning($"[AvatarFactory] '{label}' ({smr.name}) could not be bound with the body bind poses ({error}) — using the plain bone remap.");
+        mapper.Remap(smr, label);
     }
 
     // ── Masking / occlusion ───────────────────────────────────────────────────────

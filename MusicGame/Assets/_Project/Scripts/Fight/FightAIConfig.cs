@@ -43,4 +43,14 @@ public class FightAIConfig : ScriptableObject
     [Tooltip("Scales the DashApproach/RunApproach utility scores — below 1 the AI prefers walking in " +
              "and only occasionally commits to a charge.")]
     [Range(0f, 1f)] public float chargeScoreMultiplier = 0.45f;
+
+    [Header("Gameplay-depth (conservative defaults)")]
+    [Tooltip("Base chance the AI tries to break a grab / escape ground control (x its defenseProbability).")]
+    [Range(0f, 1f)] public float grabEscapeChance = 0.6f;
+    [Tooltip("Reaction delay range (s) before the AI's escape input.")]
+    public Vector2 grabEscapeDelay = new Vector2(0.15f, 0.4f);
+    [Tooltip("Scales how often the AI grabs (and turns a running attack into a takedown).")]
+    public float grabScoreMultiplier = 1f;
+    [Tooltip("Scales how often the AI goes for a jump-in (flying) kick.")]
+    public float airAttackScoreMultiplier = 1f;
 }

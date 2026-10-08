@@ -61,6 +61,13 @@ MonoBehaviour:
     provisional: 1
     note: PROVISIONAL arms up.
   fall: []
+  crouch:
+  - clip: {fileID: 7400000, guid: 806d436e519c92b48a5111a743b51769, type: 2}
+    playbackSpeed: 1
+    upperBodyOnly: 1
+    provisional: 1
+    note: "Superhero-landing crouch hold (looped) \u2014 duck pose; a dedicated slide/duck
+      clip would be better."
   locomotionSpeedRange: {x: 0.85, y: 1.2}
   fastLocomotionSpeedRange: {x: 0.9, y: 1.3}
   actionSpeedRange: {x: 0.7, y: 1.6}

@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5113f3db8c54387965085ce138f977d, type: 3}
+  m_Name: Move_HighKick
+  m_EditorClassIdentifier: Assembly-CSharp::FightMoveDefinition
+  id: move_high_kick
+  debugName: High Kick
+  moveType: 0
+  role: 11
+  scalingStat: 2
+  resourceCost: 0
+  resourceAmount: 1
+  knockdownOnHit: 0
+  invulnerableStart: 0
+  invulnerableDuration: 0
+  animationState: HighKick
+  startupDuration: 0.24
+  activeDuration: 0.12
+  recoveryDuration: 0.45
+  cancelWindow: 0.05
+  movementLocked: 1
+  movementMultiplier: 0
+  lungeDistance: 0
+  forwardCarry: 0.3
+  lockFacingDuringMove: 1
+  allowedPostures: 
+  requiredMovementStates: 
+  attackDelivery: 0
+  hits:
+  - shape: 0
+    localOffset: {x: 0.85, y: 0.95, z: 0}
+    size: {x: 0.65, y: 0.55, z: 0.6}
+    baseDamage: 13
+    baseHitStun: 0.3
+    baseKnockback: 1
+    attackHeight: 0
+    guardType: 0
+    chipDamage: 0
+    tracking: 0
+  projectile:
+    visualPrefab: {fileID: 0}
+    speed: 8
+    maxLifetime: 3
+    maxDistance: 10
+    localSpawnOffset: {x: 0.8, y: 1, z: 0}
+    hitDefinition:
+      shape: 0
+      localOffset: {x: 0.8, y: 1, z: 0}
+      size: {x: 0.6, y: 0.6, z: 0.6}
+      baseDamage: 10
+      baseHitStun: 0.3
+      baseKnockback: 1
+      attackHeight: 1
+      guardType: 0
+      chipDamage: 0
+      tracking: 0
+    destroyOnHit: 1
+  damage: 0

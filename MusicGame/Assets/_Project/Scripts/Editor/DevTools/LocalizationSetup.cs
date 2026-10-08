@@ -249,6 +249,7 @@ public static class LocalizationSetup
         ("MainMenu.CatalogComplete", "CATALOG COMPLETE — every song completed", "CATÀLEG COMPLETAT — totes les cançons superades"),
         ("SongSelection.Completed", "COMPLETED", "COMPLETADA"),
         ("MatchResult.SelectSong", "SELECT SONG", "TRIA CANÇÓ"),
+        ("Mobile.Crouch", "CROUCH", "AJUP"),
     };
 
     [MenuItem("Tools/MusicGame/Setup Localization")]

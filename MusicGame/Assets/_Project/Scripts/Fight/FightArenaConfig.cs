@@ -105,6 +105,12 @@ public class FightArenaConfig : ScriptableObject
     public float gravity = 20f;
     [Tooltip("Horizontal movement multiplier while Airborne — 1 = full ground speed, 0 = no air control.")]
     [Range(0f, 1f)] public float airControlMultiplier = 0.5f;
+    [Tooltip("Jump momentum: how fast (m/s²) input can bend the horizontal take-off velocity in the air. " +
+             "Low = committed arcs (no instant mid-air reversal).")]
+    public float airAcceleration = 4f;
+    [Tooltip("Attack momentum carry: deceleration (m/s²) of the velocity a grounded attack carries " +
+             "(FightMoveDefinition.forwardCarry). Airborne carry is ballistic until landing.")]
+    public float attackCarryDeceleration = 7f;
 
     [Header("Player visual")]
     [Tooltip("No Player avatar/progression system exists yet (see FighterActor's own doc) — null " +

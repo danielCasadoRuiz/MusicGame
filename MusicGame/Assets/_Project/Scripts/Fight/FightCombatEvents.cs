@@ -117,6 +117,18 @@ public struct SignatureExecutedEvent
 /// <summary>A Forward-Forward charge reached the opponent fast enough to body-check them (see
 /// FighterMovement.TryTackle). Published after the hit was resolved through FightHitDispatcher, so
 /// HitLandedEvent/HitBlockedEvent/HitEvadedEvent for the same contact have already fired.</summary>
+/// <summary>An airborne kick started while carrying real horizontal speed (a flying kick).</summary>
+public struct FightFlyingKickEvent { public FighterActor Fighter; public float Speed; }
+
+public enum FightGrappleKind { Grab, Takedown, Throw, Break, Whiff, GroundStrike, GroundEscape, GroundEnd }
+
+/// <summary>Grab / takedown lifecycle (FighterGrapple) — the meaningful ones are toasted in playtests.</summary>
+public struct FightGrappleEvent { public FighterActor Attacker; public FighterActor Defender; public FightGrappleKind Kind; public float Damage; }
+
+/// <summary>Punch + Kick pressed together (within FightFlowConfig.grabChordWindow, no Down held) —
+/// a logical GRAB request (or a grab/ground escape when the source is the one being held).</summary>
+public struct FightGrabRequestedEvent { public FighterInputController Source; }
+
 public struct FightTackleEvent
 {
     public FighterActor Attacker;

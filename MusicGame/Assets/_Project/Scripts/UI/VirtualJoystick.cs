@@ -79,6 +79,7 @@ public class VirtualJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler,
         {
             TouchInputState.Lateral = normalized.x;
             TouchInputState.Surging = normalized.y > SurgeThreshold;
+            TouchInputState.HoldingBack = normalized.y < -SurgeThreshold;
         }
         _onValueChanged?.Invoke(normalized);
     }

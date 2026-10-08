@@ -201,6 +201,26 @@ public class FighterInputController : MonoBehaviour
             return;
         }
 
+        // GRAB CHORD (no Down — Down + both is the Power chord above): Punch + Kick together, or the
+        // second within grabChordWindow of the first. No added latency: the first press already
+        // started its normal; FighterGrapple converts it (cancel in Startup) into the grab. The
+        // second press never becomes a normal/combo step itself.
+        if (!down && !_hasPendingPress)
+        {
+            float now = Time.time, window = GrabChordWindow;
+            bool chord = (punchPressed && kickPressed) ||
+                         (punchPressed && now - _lastKickTime <= window) ||
+                         (kickPressed && now - _lastPunchTime <= window);
+            if (chord)
+            {
+                _lastPunchTime = _lastKickTime = float.NegativeInfinity;
+                EventBus.Publish(new FightGrabRequestedEvent { Source = this });
+                return;
+            }
+            if (punchPressed) _lastPunchTime = now;
+            if (kickPressed)  _lastKickTime = now;
+        }
+
         if (_hasPendingPress)
         {
             bool expired = Time.time - _pendingTime >= WindowSeconds || !down;
@@ -214,6 +234,8 @@ public class FighterInputController : MonoBehaviour
     }
 
     private float WindowSeconds => _config != null ? _config.simultaneousPressWindow : 0.1f;
+    private float GrabChordWindow => _config != null ? _config.grabChordWindow : 0.08f;
+    private float _lastPunchTime = float.NegativeInfinity, _lastKickTime = float.NegativeInfinity;
 
     private void PressOrDefer(FightButton button, bool down)
     {

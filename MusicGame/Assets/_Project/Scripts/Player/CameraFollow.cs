@@ -334,6 +334,8 @@ public class CameraFollow : MonoBehaviour
 
         bool       hasFPTarget    = firstPersonCameraTarget != null;
         Vector3    firstPersonPos = hasFPTarget ? firstPersonCameraTarget.position : thirdPersonPos;
+        // Crouch: the eyes go down with the body, over the same eased transition (and back up).
+        if (hasFPTarget && playerController != null) firstPersonPos -= playerController.transform.up * playerController.CrouchEyeDrop;
         Quaternion firstPersonRot = hasFPTarget ? firstPersonCameraTarget.rotation : transform.rotation;
 
         // ── Apply ────────────────────────────────────────────────────────────────────────────

@@ -24,23 +24,25 @@ MonoBehaviour:
   invulnerableDuration: 0
   animationState: AirKick
   startupDuration: 0.1
-  activeDuration: 0.1
-  recoveryDuration: 0.18
+  activeDuration: 0.22
+  recoveryDuration: 0.4
   cancelWindow: 0
-  movementLocked: 0
-  movementMultiplier: 0.3
+  movementLocked: 1
+  movementMultiplier: 0
   lungeDistance: 0
+  forwardCarry: 0.5
+  airCarry: 1
   lockFacingDuringMove: 1
   allowedPostures: 02000000
   requiredMovementStates: 
   attackDelivery: 0
   hits:
   - shape: 0
-    localOffset: {x: 0.8, y: 1, z: 0}
-    size: {x: 0.6, y: 0.6, z: 0.6}
-    baseDamage: 10
-    baseHitStun: 0.28
-    baseKnockback: 1
+    localOffset: {x: 0.85, y: 0.5, z: 0}
+    size: {x: 0.7, y: 0.9, z: 0.6}
+    baseDamage: 13
+    baseHitStun: 0.35
+    baseKnockback: 1.7
     attackHeight: 1
     guardType: 0
     chipDamage: 0

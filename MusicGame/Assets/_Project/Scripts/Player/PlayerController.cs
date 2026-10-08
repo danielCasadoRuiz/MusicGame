@@ -15,11 +15,13 @@ using UnityEngine.InputSystem;
 ///                                                    CameraFollow/GameplayManager/FallRespawnSystem/
 ///                                                    debug all read it from here instead of each
 ///                                                    re-deriving songTime*speed themselves.
-///   forwardOffset  ∈ [0, config.maxSurge]         — distance ahead of CanonicalDistance; eases
-///                                                    back to 0 when not pressed, never negative
-///                                                    (so ActualDistance can never fall behind
-///                                                    CanonicalDistance)
-///   ActualDistance = CanonicalDistance + forwardOffset  — where the player REALLY is (incl. surge)
+///   songOffset     ∈ [−config.maxHoldBack, config.maxSurge] — ONE signed song-relative offset:
+///                                                    positive = ahead of the beat (surge, W/↑),
+///                                                    negative = behind it (hold back, S/↓), 0 =
+///                                                    canonical. Moves continuously at bounded rates
+///                                                    and is rubber-banded back to 0 on release; the
+///                                                    song/audio itself never changes speed.
+///   ActualDistance = CanonicalDistance + songOffset  — where the player REALLY is
 ///   sample         = MusicPath.GetSample(ActualDistance)   — ONE sample/frame; position,
 ///                                                    right, up and width all come from it
 ///   lateralOffset  — UNCLAMPED path-local right units; how far the player can actually get
@@ -46,8 +48,10 @@ using UnityEngine.InputSystem;
 /// PlayerController.AutoReturnStarted.</summary>
 public enum RunnerAutoReturnKind
 {
-    /// <summary>Surge released: forwardOffset eases back to the music's canonical distance.</summary>
+    /// <summary>Surge released: a positive offset eases back to the music's canonical distance.</summary>
     SurgeReturn,
+    /// <summary>Hold-back released: a negative offset catches back up to the canonical distance.</summary>
+    HoldBackReturn,
     /// <summary>Farewell: lateral offset glides back to the track centre.</summary>
     Recenter,
 }
@@ -57,7 +61,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private MusicRunnerCoreConfig config;
 
     // ── State ─────────────────────────────────────────────────────────────────
-    private float _forwardOffset;    // distance-space, 0 <= forwardOffset <= config.maxSurge
+    private float _forwardOffset;    // SIGNED song-relative offset: −maxHoldBack .. +maxSurge (see class doc)
     private float _lateralOffset;    // path-local right units (negative = left)
     private float _lateralVelocity;  // path-local right units/sec — carried through the air when !allowAirControl
     private float _verticalVelocity; // real gravity-integrated vertical speed
@@ -84,7 +88,30 @@ public class PlayerController : MonoBehaviour
     // ── Public API ─────────────────────────────────────────────────────────────
     public bool  IsRunning          => _running;
     public bool  IsFalling          => _isFalling;
+    /// <summary>Signed song-relative offset (negative = behind the song). Kept name for existing readers.</summary>
     public float ForwardOffset      => _forwardOffset;
+    public float SongOffset         => _forwardOffset;
+    public float MaxHoldBackDistance => config.maxHoldBack;
+    /// <summary>Hold-back input is being applied this frame.</summary>
+    public bool IsHoldingBack { get; private set; }
+    /// <summary>Gameplay crouch state (reduced collision capsule) — future overhead obstacles query this.</summary>
+    public bool IsCrouching { get; private set; }
+    /// <summary>Smoothed 0..1 visual crouch amount (presentation only) — linear over the transition.</summary>
+    public float CrouchBlend { get; private set; }
+    /// <summary>CrouchBlend eased in/out (smoothstep): drives the crouch animation layer and the camera.</summary>
+    public float CrouchBlendEased => CrouchBlend * CrouchBlend * (3f - 2f * CrouchBlend);
+    /// <summary>How much lower the eyes / first-person camera sit right now (0 standing → full crouch drop),
+    /// following the same eased transition both ways.</summary>
+    public float CrouchEyeDrop => CrouchDrop * CrouchBlendEased;
+    /// <summary>Full height difference standing → crouched.</summary>
+    private float CrouchDrop => CapsuleHeight - (config != null ? Mathf.Clamp(config.crouchHeight, 0.6f, CapsuleHeight) : CapsuleHeight);
+    /// <summary>Crouch started in the air: the body is tucked UP (feet raised, head in place).</summary>
+    public bool IsAirTucked => _airTuck;
+    private bool _airTuck;
+    private float _airLift;      // how far the feet are currently raised by the tuck
+    private float _pendingLift;  // lift delta to apply in this frame's single Move()
+    /// <summary>Current collision capsule height (CapsuleHeight standing, config.crouchHeight crouched).</summary>
+    public float CurrentCapsuleHeight => _cc != null ? _cc.height : CapsuleHeight;
     public float LateralOffset      => _lateralOffset;
     public float VerticalVelocity   => _verticalVelocity;
     public bool  IsGrounded         => _cc != null && _cc.isGrounded;
@@ -109,7 +136,7 @@ public class PlayerController : MonoBehaviour
 
     /// <summary>Where the player REALLY is, including surge. What GameplayManager's spawn/
     /// recycle windows and the debug HUD should read instead of MusicDistance + ForwardOffset.</summary>
-    public float ActualDistance => CanonicalDistance + _forwardOffset;
+    public float ActualDistance => CanonicalDistance + _forwardOffset; // offset is signed
 
     // The track's real half-width at the player's own distance, computed once per frame in
     // UpdateLateralOffset — a REFERENCE value only (HUD/debug, IsAtLateralLimit below); it does
@@ -173,7 +200,7 @@ public class PlayerController : MonoBehaviour
         var path  = MusicWorldManager.Instance?.Path;
         if (clock == null || path == null) return;
 
-        // ── 1. Longitudinal: forwardOffset never negative → never behind CanonicalDistance ──
+        // ── 1. Longitudinal: signed, bounded song-relative offset (surge ahead / hold back behind) ──
         UpdateForwardOffset();
         var sample = path.GetSample(ActualDistance);
 
@@ -182,6 +209,7 @@ public class PlayerController : MonoBehaviour
 
         // ── 3. Vertical: pure gravity/jump state, no position writes yet ───────────────────
         UpdateVertical();
+        UpdateCrouch();
 
         // ── 4. Single motion authority ──────────────────────────────────────────────────────
         ApplyMotion(sample);
@@ -197,18 +225,20 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateForwardOffset()
     {
-        bool surging = false;
+        bool surging = false, holdingBack = false;
         if (!_farewellMode)
         {
             bool readTouch    = PlatformService.IsMobile || PlatformService.DualInputInEditor;
             bool readKeyboard = !PlatformService.IsMobile || PlatformService.DualInputInEditor;
 
-            if (readTouch) surging |= TouchInputState.Surging;
+            if (readTouch) { surging |= TouchInputState.Surging; holdingBack |= TouchInputState.HoldingBack; }
             if (readKeyboard)
             {
                 var kb = Keyboard.current;
-                surging |= kb != null && (kb.wKey.isPressed || kb.upArrowKey.isPressed);
+                surging     |= kb != null && (kb.wKey.isPressed || kb.upArrowKey.isPressed);
+                holdingBack |= kb != null && (kb.sKey.isPressed || kb.downArrowKey.isPressed);
             }
+            if (surging && holdingBack) surging = holdingBack = false; // both = neither
         }
         // Farewell: no surge input at all — forward motion still comes entirely from
         // MusicClock's own manual advance (see EnterFarewellMode's own doc), so the player keeps
@@ -218,13 +248,122 @@ public class PlayerController : MonoBehaviour
         if (IsSurging && !surging && _forwardOffset > 0.01f)
             AutoReturnStarted?.Invoke(RunnerAutoReturnKind.SurgeReturn, _forwardOffset / Mathf.Max(0.01f, config.maxSurge),
                                       _forwardOffset / Mathf.Max(0.01f, config.surgeDecay));
+        if (IsHoldingBack && !holdingBack && _forwardOffset < -0.01f)
+            AutoReturnStarted?.Invoke(RunnerAutoReturnKind.HoldBackReturn, -_forwardOffset / Mathf.Max(0.01f, config.maxHoldBack),
+                                      -_forwardOffset / Mathf.Max(0.01f, config.holdBackRecover));
         IsSurging = surging;
+        IsHoldingBack = holdingBack;
+        _forwardOffset = StepSongOffset(_forwardOffset, surging, holdingBack, Time.deltaTime, config);
+    }
 
-        _forwardOffset = surging
-            ? Mathf.MoveTowards(_forwardOffset, config.maxSurge, config.surgeSpeed * Time.deltaTime)
-            : Mathf.MoveTowards(_forwardOffset, 0f, config.surgeDecay * Time.deltaTime);
+    /// <summary>One step of the signed song-relative offset (pure — also used by sanity checks).
+    /// Positive side: exactly the original surge (surgeSpeed out, surgeDecay back). Negative side:
+    /// holdBackSpeed out, holdBackRecover back. Crossing 0 (e.g. surging while behind) uses the
+    /// faster of the two relevant rates so a direction change never feels sluggish.</summary>
+    public static float StepSongOffset(float offset, bool surging, bool holdingBack, float dt, MusicRunnerCoreConfig c)
+    {
+        float maxBack = Mathf.Max(0f, c.maxHoldBack);
+        if (surging)
+            offset = Mathf.MoveTowards(offset, c.maxSurge, (offset < 0f ? Mathf.Max(c.surgeSpeed, c.holdBackRecover) : c.surgeSpeed) * dt);
+        else if (holdingBack)
+            offset = Mathf.MoveTowards(offset, -maxBack, (offset > 0f ? Mathf.Max(c.holdBackSpeed, c.surgeDecay) : c.holdBackSpeed) * dt);
+        else
+            offset = Mathf.MoveTowards(offset, 0f, (offset > 0f ? c.surgeDecay : c.holdBackRecover) * dt);
+        return Mathf.Clamp(offset, -maxBack, c.maxSurge);
+    }
 
-        _forwardOffset = Mathf.Clamp(_forwardOffset, 0f, config.maxSurge);
+    // ── Crouch ───────────────────────────────────────────────────────────────────
+
+    private float _lean; // degrees, + = forward
+
+    private void UpdateCrouch()
+    {
+        bool want = false;
+        if (!_farewellMode)
+        {
+            bool readTouch    = PlatformService.IsMobile || PlatformService.DualInputInEditor;
+            bool readKeyboard = !PlatformService.IsMobile || PlatformService.DualInputInEditor;
+            if (readTouch) want |= TouchInputState.CrouchHeld;
+            if (readKeyboard)
+            {
+                var kb = Keyboard.current;
+                want |= kb != null && (kb.cKey.isPressed || kb.leftCtrlKey.isPressed || kb.rightCtrlKey.isPressed);
+            }
+        }
+
+        bool airborne = _cc != null && !_cc.isGrounded;
+        if (want && !IsCrouching)
+        {
+            SetCrouched(true);
+            // AIR TUCK: crouching while airborne (from a standing jump) curls the body into a ball — the
+            // legs come up and the head drops a little (config.airTuckHeadDrop) — to clear obstacles / gaps. Not for a crouch held before
+            // the jump (that body is already compressed).
+            _airTuck = airborne;
+        }
+        else if (!want && IsCrouching && HasStandingHeadroom()) SetCrouched(false); // never stand up into geometry
+
+        float dt = Time.deltaTime;
+        CrouchBlend = Mathf.MoveTowards(CrouchBlend, IsCrouching ? 1f : 0f, config.crouchVisualSpeed * dt);
+
+        // The tuck lift follows the same eased blend as the eye drop (CrouchEyeDrop), so the head stays
+        // put while the feet rise (and lower again when released mid-air); the motion goes through the
+        // CharacterController (ApplyMotion), so it never pushes the player through geometry.
+        if (_airTuck)
+        {
+            if (!airborne)
+            {
+                // Landed tucked: the feet are simply where the crouched body landed — no snap, it
+                // continues as a normal grounded crouch from here.
+                _airTuck = false;
+                _airLift = 0f;
+            }
+            else
+            {
+                // Feet rise by (1 − airTuckHeadDrop) of the height loss; the head drops by the rest.
+                float target = CrouchDrop * (1f - Mathf.Clamp01(config.airTuckHeadDrop)) * CrouchBlendEased;
+                _pendingLift += target - _airLift;
+                _airLift = target;
+                if (!IsCrouching && CrouchBlend <= 0f) { _airTuck = false; _airLift = 0f; }
+            }
+        }
+        float leanTarget = IsSurging ? config.surgeLeanDegrees : IsHoldingBack ? -config.holdBackLeanDegrees : 0f;
+        _lean = Mathf.Lerp(_lean, leanTarget, 1f - Mathf.Exp(-config.leanResponse * dt));
+        // The crouch VISUAL is the avatar's Crouch animation (RunnerAvatarAnimator) — never a scale.
+        // No lean while crouched: the duck pose already carries its own forward bend.
+        if (_visualAnchor != null) _visualAnchor.localRotation = Quaternion.Euler(IsCrouching ? 0f : _lean, 0f, 0f);
+    }
+
+    /// <summary>Capsule height/centre for a state: feet stay at the transform origin (centre = h/2).</summary>
+    public static (float height, Vector3 center) CapsuleFor(bool crouched, MusicRunnerCoreConfig c)
+    {
+        float h = crouched ? Mathf.Clamp(c.crouchHeight, 0.6f, CapsuleHeight) : CapsuleHeight;
+        return (h, new Vector3(0f, h * 0.5f, 0f));
+    }
+
+    private void SetCrouched(bool crouched)
+    {
+        IsCrouching = crouched;
+        if (_cc == null) return;
+        var (h, center) = CapsuleFor(crouched, config);
+        _cc.height = h;
+        _cc.center = center;
+    }
+
+    /// <summary>Is the space between the crouched top and the standing top free (non-trigger colliders
+    /// other than the player itself)? Checks only the EXTRA volume standing needs, so the ground the
+    /// player stands on can never block standing up.</summary>
+    private bool HasStandingHeadroom()
+    {
+        if (_cc == null) return true;
+        float r = _cc.radius * 0.95f;
+        Vector3 up = transform.up, basePos = transform.position;
+        Vector3 bottom = basePos + up * Mathf.Max(r, config.crouchHeight);
+        Vector3 top    = basePos + up * (CapsuleHeight - r);
+        if (top.y < bottom.y) top = bottom;
+        var hits = Physics.OverlapCapsule(bottom, top, r, ~0, QueryTriggerInteraction.Ignore);
+        foreach (var h in hits)
+            if (h != null && h.transform != transform && !h.transform.IsChildOf(transform)) return false;
+        return true;
     }
 
     // ── Lateral ──────────────────────────────────────────────────────────────────
@@ -338,7 +477,8 @@ public class PlayerController : MonoBehaviour
         Vector3 horizontalDelta  = targetXZ - transform.position;
         horizontalDelta.y = 0f;
 
-        Vector3 motion = horizontalDelta + Vector3.up * _verticalVelocity * Time.deltaTime;
+        Vector3 motion = horizontalDelta + Vector3.up * (_verticalVelocity * Time.deltaTime + _pendingLift);
+        _pendingLift = 0f;
         _cc.Move(motion);
 
         transform.rotation = Quaternion.LookRotation(sample.tangent, Vector3.up);
@@ -414,6 +554,12 @@ public class PlayerController : MonoBehaviour
     // input back.
     private void ResetMotionState()
     {
+        if (IsCrouching) SetCrouched(false); // a respawn/restart always stands
+        CrouchBlend       = 0f;
+        _airTuck          = false;
+        _airLift          = 0f;
+        _pendingLift      = 0f;
+        IsHoldingBack     = false;
         _fallVelocity     = Vector3.zero;
         _forwardOffset    = 0f;
         _lateralOffset    = 0f;

@@ -99,6 +99,9 @@ public class FightFlowConfig : ScriptableObject
              "button (Down + Punch + Kick = Power charge) before being processed normally. Only " +
              "Down + button presses are ever delayed, and only by this much.")]
     [Range(0f, 0.25f)] public float simultaneousPressWindow = 0.1f;
+    [Tooltip("GRAB chord: Punch and Kick count as pressed together (grab / grab escape) when the second " +
+             "arrives within this many seconds of the first (Down NOT held: Down + both = Power).")]
+    [Range(0f, 0.2f)] public float grabChordWindow = 0.08f;
 
     [Tooltip("After a combo has COMPLETED (and its move started), how long the next input may take to " +
              "extend it into a longer registered combo (PPP → PPPK), which then cancels and replaces " +

@@ -24,6 +24,15 @@ public class FightMoveSetSO : ScriptableObject
     [Tooltip("Used instead of normalPunch while FighterMovementState is Run. Null = the grounded " +
              "normalPunch still fires while running.")]
     public FightMoveDefinition runNormalPunch;
+    [Tooltip("Kick while RUNNING (MovementState Run) — carries the run's momentum (running kick).")]
+    public FightMoveDefinition runNormalKick;
+
+    [Header("Attack heights — Up + button = HIGH, button alone = MID (normalPunch/normalKick), Down + button = LOW")]
+    public FightMoveDefinition highNormalPunch;
+    public FightMoveDefinition lowNormalPunch;
+    public FightMoveDefinition highNormalKick;
+    [Tooltip("Down + Kick is normally caught first by the down_b combo (also LOW); this is the plain fallback.")]
+    public FightMoveDefinition lowNormalKick;
 
     [Tooltip("Combo-triggered moves (including Dash/Specials — see this phase's own scope note) — " +
              "looked up by id via GetByMoveId, matched against the detected FightComboDefinition's " +

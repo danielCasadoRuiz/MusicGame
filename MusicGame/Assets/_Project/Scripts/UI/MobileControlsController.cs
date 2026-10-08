@@ -78,6 +78,7 @@ public class MobileControlsController : MonoBehaviour
 
         BuildJoystick();
         BuildJumpButton();
+        BuildCrouchButton();
 
         _root.gameObject.SetActive(false);
     }
@@ -110,5 +111,20 @@ public class MobileControlsController : MonoBehaviour
         UIFactory.Stretch(label.rectTransform);
 
         button.gameObject.AddComponent<TouchJumpButton>();
+    }
+
+    // Action B — CROUCH (hold), just left of Jump (action A).
+    private void BuildCrouchButton()
+    {
+        const float size = 100f;
+
+        var button = UIFactory.CreatePanel("CrouchButton", _root, new Color(1f, 1f, 1f, 0.2f));
+        UIFactory.SetBox(button.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f),
+            new Vector2(-180f, 30f), new Vector2(size, size));
+
+        var label = UIFactory.CreateText("Label", button.rectTransform, Loc.Get("Mobile.Crouch"), 15, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.Stretch(label.rectTransform);
+
+        button.gameObject.AddComponent<TouchCrouchButton>();
     }
 }

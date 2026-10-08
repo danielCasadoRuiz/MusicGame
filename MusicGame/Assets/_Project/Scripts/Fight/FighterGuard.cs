@@ -5,8 +5,12 @@ using UnityEngine;
 public enum FighterGuardState
 {
     None,
+    /// <summary>MID guard — Back (neutral vertical). Blocks Mid attacks.</summary>
     StandingGuard,
+    /// <summary>LOW guard — Back + Down (crouched hurtbox, so High attacks also whiff over it).</summary>
     CrouchGuard,
+    /// <summary>HIGH guard — Back + Up. Blocks High attacks.</summary>
+    HighGuard,
 }
 
 /// <summary>
@@ -56,9 +60,12 @@ public class FighterGuard : MonoBehaviour
         if (IsBlockMoveActive) return FighterGuardState.StandingGuard;
         if (_input == null || !CanGuard()) return FighterGuardState.None;
         if (_input.CurrentHorizontal != FightHorizontalDirection.Back) return FighterGuardState.None;
-        return _input.CurrentVertical == FightVerticalDirection.Down
-            ? FighterGuardState.CrouchGuard
-            : FighterGuardState.StandingGuard;
+        return _input.CurrentVertical switch
+        {
+            FightVerticalDirection.Down => FighterGuardState.CrouchGuard, // LOW
+            FightVerticalDirection.Up   => FighterGuardState.HighGuard,   // HIGH
+            _                           => FighterGuardState.StandingGuard, // MID
+        };
     }
 
     /// <summary>Public — a future AI needs to know its own (and read the opponent's) guard
@@ -88,10 +95,21 @@ public class FighterGuard : MonoBehaviour
     public bool WouldBlock(AttackHeight height, GuardType guardType)
     {
         if (guardType == GuardType.Unblockable) return false;
-        return State switch
+        // An explicit Block MOVE keeps its old full standing cover (High + Mid).
+        if (IsBlockMoveActive) return height == AttackHeight.High || height == AttackHeight.Mid;
+        return Blocks(State, height);
+    }
+
+    /// <summary>The guard-height matrix (pure): each guard blocks ONLY its own height; a wrong
+    /// guard lets the attack connect normally. (A High attack vs LOW guard usually whiffs anyway:
+    /// the crouched hurtbox is below it.)</summary>
+    public static bool Blocks(FighterGuardState state, AttackHeight height)
+    {
+        return state switch
         {
-            FighterGuardState.StandingGuard => height == AttackHeight.High || height == AttackHeight.Mid,
-            FighterGuardState.CrouchGuard    => height == AttackHeight.Low,
+            FighterGuardState.HighGuard     => height == AttackHeight.High,
+            FighterGuardState.StandingGuard => height == AttackHeight.Mid,
+            FighterGuardState.CrouchGuard   => height == AttackHeight.Low,
             _ => false,
         };
     }

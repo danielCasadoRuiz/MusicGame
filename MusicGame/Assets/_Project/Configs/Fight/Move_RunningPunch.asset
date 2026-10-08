@@ -29,7 +29,8 @@ MonoBehaviour:
   cancelWindow: 0
   movementLocked: 1
   movementMultiplier: 0
-  lungeDistance: 1.2
+  lungeDistance: 0.6
+  forwardCarry: 0.6
   lockFacingDuringMove: 1
   allowedPostures: 
   requiredMovementStates: 03000000

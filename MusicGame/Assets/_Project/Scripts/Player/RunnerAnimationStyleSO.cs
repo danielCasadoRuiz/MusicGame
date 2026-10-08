@@ -12,6 +12,8 @@ public enum RunnerAnimationRole
     AutoReturn,
     Flourish,
     Fall,
+    /// <summary>Held while PlayerController.IsCrouching (looping duck pose). Appended — never reorder.</summary>
+    Crouch,
 }
 
 /// <summary>One assignable clip. Any Humanoid AnimationClip works (Rokoko, CMU, future video-mocap
@@ -53,6 +55,8 @@ public class RunnerAnimationStyleSO : ScriptableObject
     public RunnerAnimationEntry[] autoReturn = System.Array.Empty<RunnerAnimationEntry>();
     public RunnerAnimationEntry[] flourish = System.Array.Empty<RunnerAnimationEntry>();
     public RunnerAnimationEntry[] fall = System.Array.Empty<RunnerAnimationEntry>();
+    [Tooltip("Looping duck/crouch pose, held while crouching (empty = Default style's).")]
+    public RunnerAnimationEntry[] crouch = System.Array.Empty<RunnerAnimationEntry>();
 
     [Header("Playback")]
     [Tooltip("Locomotion cadence follows the runner's real speed ratio (actual / music pace), clamped here.")]
@@ -87,6 +91,7 @@ public class RunnerAnimationStyleSO : ScriptableObject
         RunnerAnimationRole.AutoReturn     => autoReturn,
         RunnerAnimationRole.Flourish       => flourish,
         RunnerAnimationRole.Fall           => fall,
+        RunnerAnimationRole.Crouch         => crouch,
         _                                  => System.Array.Empty<RunnerAnimationEntry>(),
     };
 

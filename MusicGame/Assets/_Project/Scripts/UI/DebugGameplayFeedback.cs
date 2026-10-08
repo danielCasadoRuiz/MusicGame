@@ -33,6 +33,8 @@ public class DebugGameplayFeedback : MonoBehaviour
     private System.Action<FightComboDetectedEvent> _onCombo;
     private System.Action<FightResourceSpentEvent> _onSpent;
     private System.Action<FightTackleEvent> _onTackle;
+    private System.Action<FightGrappleEvent> _onGrapple;
+    private System.Action<FightFlyingKickEvent> _onFlyingKick;
     private System.Action<SignatureExecutedEvent> _onSignature;
     private System.Action<PowerStateChangedEvent> _onPower;
     private System.Action<PickupComboEvent> _onPickupCombo;
@@ -63,6 +65,19 @@ public class DebugGameplayFeedback : MonoBehaviour
         _onTackle = e => Add($"{WhoActor(e.Attacker)} TACKLE {e.Speed:0.0} m/s → " +
                              (e.Result.IsEvaded ? "evaded" : e.Result.IsBlocked ? "blocked" :
                               $"{e.Result.FinalDamage:0.#} dmg{(e.Result.CausesKnockdown ? ", KNOCKDOWN" : "")}"), FightColor);
+        // Grapple: only the meaningful outcomes (no per-strike / whiff spam).
+        _onGrapple = e =>
+        {
+            switch (e.Kind)
+            {
+                case FightGrappleKind.Takedown:     Add($"{WhoActor(e.Attacker)} TAKEDOWN attempt", FightColor); break;
+                case FightGrappleKind.Throw:        Add($"{WhoActor(e.Attacker)} GRAB → THROW {e.Damage:0.#} dmg", FightColor); break;
+                case FightGrappleKind.Break:        Add($"{WhoActor(e.Defender)} THROW BREAK", FightColor); break;
+                case FightGrappleKind.GroundEscape: Add($"{WhoActor(e.Defender)} escaped ground control", FightColor); break;
+                case FightGrappleKind.GroundEnd:    Add($"{WhoActor(e.Attacker)} ground control over ({e.Attacker?.Grapple?.GroundStrikes ?? 0} strikes)", FightColor); break;
+            }
+        };
+        _onFlyingKick = e => Add($"{WhoActor(e.Fighter)} FLYING KICK ({e.Speed:0.0} m/s)", FightColor);
         _onSignature = e => Add($"{WhoActor(e.Fighter)} SIGNATURE {(e.Enhanced ? "ENHANCED (1 SPECIAL used)" : "basic")} — specials left {e.SpecialsLeft}", ResourceColor);
         _onPower = e => { if (e.Active) Add($"{WhoActor(e.Fighter)} x4 POWER ON ({e.Duration:0.#}s)", ResourceColor); };
         _onPickupCombo = e => Add($"PICKUP COMBO: {e.Tier.ToString().ToUpperInvariant()}  (x3 {e.Counts.TripleCombos} / x4 {e.Counts.QuadCombos})", RunnerColor);
@@ -82,6 +97,8 @@ public class DebugGameplayFeedback : MonoBehaviour
         EventBus.Subscribe(_onCombo);
         EventBus.Subscribe(_onSpent);
         EventBus.Subscribe(_onTackle);
+        EventBus.Subscribe(_onGrapple);
+        EventBus.Subscribe(_onFlyingKick);
         EventBus.Subscribe(_onSignature);
         EventBus.Subscribe(_onPower);
         EventBus.Subscribe(_onPickupCombo);
@@ -94,6 +111,8 @@ public class DebugGameplayFeedback : MonoBehaviour
         EventBus.Unsubscribe(_onCombo);
         EventBus.Unsubscribe(_onSpent);
         EventBus.Unsubscribe(_onTackle);
+        EventBus.Unsubscribe(_onGrapple);
+        EventBus.Unsubscribe(_onFlyingKick);
         EventBus.Unsubscribe(_onSignature);
         EventBus.Unsubscribe(_onPower);
         EventBus.Unsubscribe(_onPickupCombo);

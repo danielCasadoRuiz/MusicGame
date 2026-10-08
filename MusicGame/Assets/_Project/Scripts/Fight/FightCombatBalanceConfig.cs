@@ -46,6 +46,38 @@ public class FightCombatBalanceConfig : ScriptableObject
     public float blockStunMultiplier = 0.5f;
     [Tooltip("Applied on top of the attacker's impact / defender's resistance when a hit is blocked.")]
     public float blockKnockbackMultiplier = 0.5f;
+    [Tooltip("BLOCK/CHIP DAMAGE: a correctly blocked hit still deals this fraction of its would-be damage " +
+             "(never 0 — holding guard forever must not be a strategy). A move's own chipDamage is a floor.")]
+    [Range(0f, 1f)] public float blockDamageMultiplier = 0.2f;
+
+    [Header("Grab / takedown (FighterGrapple) — Punch + Kick together")]
+    [Tooltip("Grab reach beyond FightArenaConfig.minimumFighterSeparation (short).")]
+    public float grabRangePadding = 0.45f;
+    [Tooltip("Seconds the defender has to break a standing grab with Punch + Kick.")]
+    public float grabEscapeWindow = 0.45f;
+    [Tooltip("Seconds the defender has to break a RUNNING takedown (shorter: it's a committed rush).")]
+    public float takedownEscapeWindow = 0.3f;
+    [Tooltip("Attacker forward speed (m/s) at or above which Punch + Kick becomes a running takedown.")]
+    public float runningGrabMinSpeed = 5f;
+    public float throwDamage = 12f;
+    public float throwKnockback = 1.4f;
+    public float takedownDamage = 9f;
+    [Tooltip("Recovery lock after a WHIFFED grab (nobody in range) — grabs are not free.")]
+    public float grabWhiffRecovery = 0.45f;
+    [Tooltip("Lock for both fighters after a successful break, plus the push apart.")]
+    public float throwBreakLock = 0.25f;
+    public float throwBreakPush = 0.9f;
+
+    [Header("Ground control (after a successful running takedown)")]
+    [Tooltip("Hard maximum of the ground-control window (s). It ALWAYS ends here.")]
+    public float groundControlDuration = 1.5f;
+    [Tooltip("Max ground strikes (Punch) per takedown.")]
+    public int groundStrikeMax = 3;
+    public float groundStrikeDamage = 4f;
+    [Tooltip("Min seconds between ground strikes.")]
+    public float groundStrikeInterval = 0.3f;
+    [Tooltip("The defender can escape early with Punch + Kick after this many seconds on the ground.")]
+    public float groundEscapeMinTime = 0.6f;
 
     [Header("Knockdown flow — Knockdown → Downed → GetUp → CombatIdle (fighter invulnerable throughout)")]
     [Min(0.05f)] public float knockdownDuration = 1.2f;
