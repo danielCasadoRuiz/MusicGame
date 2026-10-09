@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Remote_Enemies_Mid
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Remote_Enemies_Mid
+  m_GUID: b8010d5d53921c1459474e8870dd8d12
+  m_SerializeEntries:
+  - m_GUID: 1884518762b2dcb42a5c6852f2d7fd67
+    m_Address: Enemy_monteverdi/Wearable_Monteverdi_pants/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_monteverdi
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 50b4e16e05af1784da9a451de0a4d703
+    m_Address: Enemy_wagner/Wearable_Wagner_jacket/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_wagner
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a14b03418ad5cf545b4b3e7a468c9351
+    m_Address: Enemy_monteverdi/Wearable_Monteverdi_shoes/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_monteverdi
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a4cc0dfc618f344aaae658dde9bb725, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 3db8ac0be3075c744beb8d547cd1eb9f, type: 2}
+    - {fileID: 11400000, guid: f749027d0ad636740bf7ce51a12b57ee, type: 2}

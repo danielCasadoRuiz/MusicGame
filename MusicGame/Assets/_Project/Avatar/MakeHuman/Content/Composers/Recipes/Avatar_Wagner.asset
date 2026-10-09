@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AvatarRecipeSO
   identity: {fileID: 11400000, guid: 4171ab1929a1e714da86ef33553e069e, type: 2}
   baseAvatar: {fileID: 11400000, guid: edb208ecbe0ae364cb01448c90f6cb52, type: 2}
-  items: []
+  items:
+  - {fileID: 11400000, guid: 1d57bb289efc39b458d4e15104a9b9ae, type: 2}
   bodyOverride:
     overrideWeight: 0
     weight: 0.5
