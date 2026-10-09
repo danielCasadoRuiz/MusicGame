@@ -15,15 +15,12 @@ using UnityEngine;
 ///   - creates ProgressionConfig.asset and wires it into Resources/AppConfig;
 ///   - creates the 12 composer OpponentDefinitions (Configs/Fight/Opponents/), every tier pointing at
 ///     the same provisional content (MakeHuman test recipe, AI profile Easy/Medium/Hard, default stats);
-///   - makes OpponentRoster.asset the 12 composers, and moves the old placeholder opponents to
-///     Configs/Fight/Debug/ (GUIDs kept, so every reference survives) + OpponentRoster_Debug.asset.
+///   - makes OpponentRoster.asset the 12 composers (the only opponents in the project).
 /// </summary>
 public static class OpponentRosterSetup
 {
     public const string OpponentsFolder = "Assets/_Project/Configs/Fight/Opponents";
-    public const string DebugFolder     = "Assets/_Project/Configs/Fight/Debug";
     public const string RosterPath      = "Assets/_Project/Configs/Fight/OpponentRoster.asset";
-    public const string DebugRosterPath = DebugFolder + "/OpponentRoster_Debug.asset";
     public const string ProgressionPath = "Assets/_Project/Configs/Progression/ProgressionConfig.asset";
     private const string AppConfigPath  = "Assets/_Project/Resources/AppConfig.asset";
 
@@ -33,8 +30,6 @@ public static class OpponentRosterSetup
         ("handel", "Handel"), ("haydn", "Haydn"), ("monteverdi", "Monteverdi"), ("mozart", "Mozart"),
         ("pachelbel", "Pachelbel"), ("tchaikovsky", "Tchaikovsky"), ("vivaldi", "Vivaldi"), ("wagner", "Wagner"),
     };
-
-    private static readonly string[] PlaceholderOpponents = { "Ash", "Bolt", "Jax", "Kira", "Nova", "Nyx", "Rex", "Vex" };
 
     [MenuItem("Tools/MusicGame/Progression/Setup Composer Roster")]
     public static void SetupMenu() => Debug.Log(Setup());
@@ -61,7 +56,6 @@ public static class OpponentRosterSetup
     {
         var report = new StringBuilder("[OpponentRosterSetup]\n");
         EnsureFolder(OpponentsFolder);
-        EnsureFolder(DebugFolder);
         EnsureFolder(Path.GetDirectoryName(ProgressionPath).Replace('\\', '/'));
 
         // Progression config + seeded tier count from the REAL catalog.
@@ -85,28 +79,8 @@ public static class OpponentRosterSetup
             report.AppendLine("  AppConfig.progression assigned");
         }
 
-        // Move placeholder opponents to Debug (GUIDs preserved).
-        var placeholders = new List<OpponentDefinition>();
-        foreach (var p in PlaceholderOpponents)
-        {
-            string from = $"Assets/_Project/Configs/Fight/Opponent_{p}.asset";
-            string to   = $"{DebugFolder}/Opponent_{p}.asset";
-            if (AssetDatabase.LoadMainAssetAtPath(from) != null)
-            {
-                string err = AssetDatabase.MoveAsset(from, to);
-                report.AppendLine(string.IsNullOrEmpty(err) ? $"  moved placeholder {p} -> Debug/" : $"  FAILED to move {p}: {err}");
-            }
-            var def = AssetDatabase.LoadAssetAtPath<OpponentDefinition>(to);
-            if (def != null) placeholders.Add(def);
-        }
-        var debugRoster = LoadOrCreate<OpponentRosterSO>(DebugRosterPath);
-        debugRoster.opponents = placeholders.ToArray();
-        EditorUtility.SetDirty(debugRoster);
-
-        // Provisional shared content (taken from the existing placeholder Rex setup — nothing duplicated).
-        var rex = placeholders.FirstOrDefault(o => o.id == "rex");
-        var recipe = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>("Assets/_Project/Avatar/MakeHuman/Content/Recipes/Avatar_MakeHuman_TestMale.asset")
-                     ?? rex?.levels.FirstOrDefault()?.avatarRecipe;
+        // Provisional shared content for tiers that don't exist yet (authored tiers are never touched).
+        var recipe = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>("Assets/_Project/Avatar/MakeHuman/Content/Recipes/Avatar_MakeHuman_TestMale.asset");
         var stats  = AssetDatabase.LoadAssetAtPath<FighterStatsProfileSO>("Assets/_Project/Configs/Fight/FighterStatsProfile_Default.asset");
         var ai = new[]
         {
@@ -145,7 +119,6 @@ public static class OpponentRosterSetup
         EditorUtility.SetDirty(roster);
         AssetDatabase.SaveAssets();
         report.AppendLine($"  production roster: {string.Join(", ", composers.Select(c => c.displayName))} ({tiers} tiers each)");
-        report.AppendLine($"  debug roster: {DebugRosterPath} ({placeholders.Count} placeholder opponents)");
         return report.ToString();
     }
 

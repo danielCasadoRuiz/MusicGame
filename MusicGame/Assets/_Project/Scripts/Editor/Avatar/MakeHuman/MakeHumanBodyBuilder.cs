@@ -43,7 +43,7 @@ public class MakeHumanBodyBuilder : EditorWindow
     public const string FemaleRecipePath = ContentFolder + "/Recipes/Avatar_MakeHuman_TestFemale.asset";
 
     public const string DebugScenePath = "Assets/_Project/Scenes/Debug/AvatarDebug.unity";
-    public const string TestOpponentPath = "Assets/_Project/Configs/Fight/Debug/Opponent_Rex.asset"; // placeholder (debug) opponent — see OpponentRosterSetup
+    public const string TestOpponentPath = "Assets/_Project/Configs/Fight/Opponents/Opponent_Bach.asset"; // composer used by the Fight play-mode check
 
     public const string AddressablesGroup = "Avatars";
     public const string PrefabAddress = "Avatar/MakeHumanBody";
@@ -64,7 +64,6 @@ public class MakeHumanBodyBuilder : EditorWindow
         if (GUILayout.Button("Bake / Rebake MakeHuman Body", GUILayout.Height(32))) _lastReport = BakeAll(out _);
         if (GUILayout.Button("Setup Animation Test Clips (Idle / Walk / Run)")) _lastReport = MakeHumanAnimationTestSetup.Setup(out _);
         if (GUILayout.Button("Create / Rebuild Avatar Debug Scene")) _lastReport = CreateDebugScene();
-        if (GUILayout.Button("Assign Test Recipe to Opponent Rex (all levels)")) _lastReport = AssignTestRecipeToOpponent();
         if (GUILayout.Button("Run MakeHuman Body Tests (edit mode)")) _lastReport = MakeHumanBodyTests.RunEditModeTests(out _);
         if (GUILayout.Button("Validate Avatars")) AvatarValidator.Validate();
 
@@ -343,28 +342,6 @@ public class MakeHumanBodyBuilder : EditorWindow
         return $"[MakeHumanBodyBuilder] Debug scene saved to {DebugScenePath} — open it and press Play.";
     }
 
-    [MenuItem("Tools/MusicGame/Avatars/Assign MakeHuman Test Recipe to Opponent Rex")]
-    public static void AssignTestRecipeMenu() => Debug.Log(AssignTestRecipeToOpponent());
-
-    /// <summary>Uses the EXISTING Fight integration point (OpponentLevelConfig.avatarRecipe) — nothing
-    /// Fight-side changes. Only fills empty slots; an already-assigned recipe is left alone.</summary>
-    public static string AssignTestRecipeToOpponent()
-    {
-        var recipe = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>(MaleRecipePath);
-        var opponent = AssetDatabase.LoadAssetAtPath<OpponentDefinition>(TestOpponentPath);
-        if (recipe == null) return "[MakeHumanBodyBuilder] Bake the MakeHuman body first (test recipe missing).";
-        if (opponent == null) return $"[MakeHumanBodyBuilder] Opponent not found at {TestOpponentPath}.";
-
-        int assigned = 0;
-        foreach (var level in opponent.levels)
-            if (level != null && level.avatarRecipe == null) { level.avatarRecipe = recipe; assigned++; }
-        if (opponent.defaultConfig != null && opponent.defaultConfig.avatarRecipe == null) { opponent.defaultConfig.avatarRecipe = recipe; assigned++; }
-
-        EditorUtility.SetDirty(opponent);
-        AssetDatabase.SaveAssets();
-        return $"[MakeHumanBodyBuilder] '{recipe.name}' assigned to {assigned} empty level slot(s) of '{opponent.name}'.";
-    }
-
     // ── Batch-mode entry point ───────────────────────────────────────────────────
 
     /// <summary>Unity.exe -batchmode -projectPath ... -executeMethod MakeHumanBodyBuilder.BakeFromCommandLine -quit</summary>
@@ -375,7 +352,6 @@ public class MakeHumanBodyBuilder : EditorWindow
         {
             if (MakeHumanAnimationTestSetup.ClipsPresent()) Debug.Log(MakeHumanAnimationTestSetup.Setup(out _));
             Debug.Log(CreateDebugScene());
-            Debug.Log(AssignTestRecipeToOpponent());
         }
         Debug.Log(report);
         EditorApplication.Exit(success ? 0 : 1);

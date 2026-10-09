@@ -491,13 +491,13 @@ public static partial class MakeHumanBodyTests
             }
 
             // B — the real Fight pipeline: OpponentLevelConfig.avatarRecipe -> FightSceneBootstrap -> AvatarFactory -> FighterActor.
-            var rex = AssetDatabase.LoadAssetAtPath<OpponentDefinition>(MakeHumanBodyBuilder.TestOpponentPath);
-            var levelConfig = rex != null && rex.levels.Length > 0 ? rex.levels[0] : null;
-            log.Check("P3 Opponent_Rex level 1 has the MakeHuman recipe", levelConfig != null && levelConfig.avatarRecipe != null, "no avatarRecipe assigned");
+            var composer = AssetDatabase.LoadAssetAtPath<OpponentDefinition>(MakeHumanBodyBuilder.TestOpponentPath);
+            var levelConfig = composer != null && composer.levels.Length > 0 ? composer.levels[0] : null;
+            log.Check("P3 Opponent_Bach level 1 has a MakeHuman recipe", levelConfig != null && levelConfig.avatarRecipe != null, "no avatarRecipe assigned");
 
             var sessionGO = new GameObject("TestGameSession");
             var session = sessionGO.AddComponent<GameSession>();
-            session.SelectedOpponent = rex;
+            session.SelectedOpponent = composer;
             session.SelectedOpponentLevelConfig = levelConfig;
 
             var loadOp = EditorSceneManager.LoadSceneAsyncInPlayMode("Assets/_Project/Scenes/Fight.unity", new LoadSceneParameters(LoadSceneMode.Additive));
@@ -522,7 +522,7 @@ public static partial class MakeHumanBodyTests
                 log.Check("P3 Fight opponent is the Humanoid MakeHuman avatar", animator != null && animator.isHuman &&
                           smr != null && smr.sharedMesh.GetBlendShapeIndex(MorphChannel.Gender.ToString()) >= 0, "not the MakeHuman humanoid");
                 log.Check("P3 Fight opponent uses its own runtime mesh", smr != null && !AssetDatabase.Contains(smr.sharedMesh), "shared asset mesh in use");
-                log.Check("P3 Rex (Male recipe) renders at Gender 0", smr != null && smr.GetBlendShapeWeight(smr.sharedMesh.GetBlendShapeIndex("Gender")) == 0f, "Gender weight not 0");
+                log.Check("P3 Bach (male recipe) renders at Gender 0", smr != null && smr.GetBlendShapeWeight(smr.sharedMesh.GetBlendShapeIndex("Gender")) == 0f, "Gender weight not 0");
             }
         }
         catch (System.Exception e)
