@@ -1,0 +1,68 @@
+{
+  "leonardo_url": "https://app.leonardo.ai/universal-upscaler",
+  "leonardo": {
+    "upscaler": "Pro",
+    "mode": "Precise",
+    "factor": 2,
+    "precise_detail": "Detailed",
+    "fix_ai_image_artifacts": false
+  },
+  "claude": {
+    "executable": "claude",
+    "playwright_server_name": "playwright",
+    "max_turns": 70,
+    "timeout_minutes": 40,
+    "repeat_max_turns": 48
+  },
+  "meshy": {
+    "ai_model": "meshy-7.1",
+    "geometry_resolution": "2k",
+    "pose_mode": "t-pose",
+    "should_texture": true,
+    "texture_resolution": "2k",
+    "enable_pbr": true,
+    "image_enhancement": true,
+    "should_remesh": false,
+    "target_formats": [
+      "glb"
+    ]
+  },
+  "preprocess": {
+    "layout": "2x2",
+    "background": "auto_chroma",
+    "island_margin_px": 24,
+    "cell_padding_px": 25,
+    "gap_px": 50,
+    "outer_margin_px": 20,
+    "max_aspect": 1.5
+  },
+  "pipeline_version": "v20_simple_chroma_retopo_independent",
+  "behavior": {
+    "checkpoint_authority": "visible_files_only",
+    "checkpoint_order": [
+      "Raw3D/<asset>.glb",
+      "Upscaled_and_Cut/<asset>/*.png",
+      "Upscaled/<asset>/upscaled_full.*",
+      "Input/<asset>"
+    ],
+    "resume_claude_sessions": false,
+    "resume_running_state_files": false,
+    "resume_meshy_task_ids_after_restart": false,
+    "keep_debug": false,
+    "delete_temp_after_raw3d_success": true
+  },
+  "control_file": "pipeline_steps.json",
+  "manual_leonardo_folder": "Manual_Leonardo",
+  "post_upscale": {
+    "split_mode": "known_2x2_rectangles",
+    "remove_chroma": false,
+    "restore_alpha": false,
+    "use_masks": false,
+    "despill": false
+  },
+  "meshy_input": {
+    "background": "keep_chroma",
+    "format": "png_rgb"
+  },
+  "retopo_independent": true
+}

@@ -1,0 +1,4 @@
+REM El retopo i el fitting continuen sent programes independents.
+REM Si algun dia vols encadenar-los per a un asset concret:
+
+call "%~dp0FittingAndRigging.bat" "Output\NomAsset"

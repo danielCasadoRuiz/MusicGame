@@ -1,0 +1,14 @@
+{
+  "_info": "Aquest JSON controla NOMÉS 01_GENERAR_RAW3D.bat. El PRIMER false atura el producer abans d'aquell procés. 02_RETOPO.bat és completament independent.",
+  "settings": {
+    "process_only_newest_input": false,
+    "exit_after_one_pass_when_stopped": false,
+    "leonardo_mode": "manual"
+  },
+  "steps": {
+    "prepare_chroma": true,
+    "leonardo_upscale": true,
+    "cut_views": true,
+    "meshy_raw3d": true
+  }
+}

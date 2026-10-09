@@ -1,0 +1,38 @@
+{
+  "blender": "C:\\Program Files\\Blender Foundation\\Blender 4.5\\blender.exe",
+  "output_dir": "Output",
+  "avatar_dir": "_System/FittingAndRigging/Avatar",
+  "avatar_file": "MakeHuman_Canonical.fbx",
+  "work_dir": "_System/FittingAndRigging/_work",
+  "rigged_subdir": "Rigged",
+  "avatar_armature_name": "",
+  "avatar_body_name": "",
+  "supported_models": [
+    ".glb",
+    ".gltf",
+    ".fbx",
+    ".obj"
+  ],
+  "export_glb": true,
+  "save_blend": false,
+  "max_influences": 4,
+  "min_weight": 0.0001,
+  "blendshape_max_distance": 0.25,
+  "exclude_shape_keys": [],
+  "export_report": false,
+  "garment_weights": {
+    "_info": "Garment-aware skinning (garment_weights.py). Runs after the nearest-body transfer, before rest normalization, for the ULTRA and every LOD (LODs read the ULTRA result side by side). Lengths in metres; 'gap' = median cloth-to-skin distance measured on each garment, so looser garments get wider transitions. Per-asset overrides: Output/<asset>/garment.json {\"garment_type\": ..., \"garment_weights\": {...}}.",
+    "enabled": true,
+    "validation": "report",
+    "weld_epsilon_rel": 1e-05,
+    "profiles": {
+      "default": {},
+      "trousers": {},
+      "top": {},
+      "shoe": {},
+      "headwear": {},
+      "generic": {}
+    }
+  },
+  "keep_work_files": false
+}

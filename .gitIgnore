@@ -8,7 +8,16 @@
 [Uu]ser[Ss]ettings/
 world-map-projection-experiment/
 AssetsMaterial/AudioPipeline/Work/
-AssetsMaterial/3D_pipeline/
+
+# 3D pipeline: secrets, caches, third-party paid add-on and transient process folders
+AssetsMaterial/3D_pipeline/_System/secrets.env
+AssetsMaterial/3D_pipeline/_System/Retopo/vendor/
+AssetsMaterial/3D_pipeline/**/__pycache__/
+AssetsMaterial/3D_pipeline/.playwright-mcp/
+AssetsMaterial/3D_pipeline/Debug/
+AssetsMaterial/3D_pipeline/_W/
+AssetsMaterial/3D_pipeline/_System/Temp/
+AssetsMaterial/3D_pipeline/_System/FittingAndRigging/_work/
 
 # Unity memory captures
 [Mm]emoryCaptures/

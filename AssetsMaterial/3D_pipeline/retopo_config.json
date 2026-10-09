@@ -1,0 +1,27 @@
+{
+  "_info": "V84 Quad Remesher direct-from-RAW. Five quality LODs; target values are QUADS, not vertices or triangles.",
+  "adaptive_size": 100,
+  "adapt_quad_count": false,
+  "targets": [
+    {
+      "label": "ULTRA",
+      "quads": 50000
+    },
+    {
+      "label": "HIGH",
+      "quads": 30000
+    },
+    {
+      "label": "MIDHIGH",
+      "quads": 20000
+    },
+    {
+      "label": "MEDIUM",
+      "quads": 10000
+    },
+    {
+      "label": "LOW",
+      "quads": 5000
+    }
+  ]
+}
