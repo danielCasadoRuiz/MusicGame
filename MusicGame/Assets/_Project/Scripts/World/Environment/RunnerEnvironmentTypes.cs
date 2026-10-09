@@ -31,6 +31,19 @@ public class EnvironmentModuleOverride
     [Tooltip("Only used when Mode = Override. Must contain an IRunnerEnvironmentModule component " +
              "(e.g. SpectrumBars3D, HorizonMountainLayers).")]
     public GameObject prefab;
+    [Tooltip("Optional per-quality Addressable variants of this module (Override only). When any is assigned, " +
+             "the active Unity quality level picks one and `prefab` is ignored.")]
+    public QualityAssetCollection qualityPrefabs = new();
+}
+
+/// <summary>What a slot resolved to: a direct prefab (legacy / quality-independent) or a quality
+/// Addressable to load. At most one is set.</summary>
+public struct EnvironmentModuleSource
+{
+    public GameObject prefab;
+    public UnityEngine.AddressableAssets.AssetReferenceGameObject reference;
+    public string resolvedQuality;
+    public bool IsEmpty => prefab == null && reference == null;
 }
 
 /// <summary>Everything a module gets from the Runner — handed over by the controller, so prefabs

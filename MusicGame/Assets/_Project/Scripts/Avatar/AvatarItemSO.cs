@@ -24,7 +24,13 @@ public enum AvatarItemVariantMode
 [System.Serializable]
 public class AvatarItemVariant
 {
+    [Tooltip("Single prefab (quality-independent). Used when no quality variant below is assigned.")]
     public AssetReferenceGameObject prefab;
+
+    [Tooltip("Optional per-Unity-quality-level prefabs (Low / Mid / HighMid / High / Ultra). When any is " +
+             "assigned, the active QualitySettings level picks one (with fallback) and `prefab` is ignored. " +
+             "All variants must use the base avatar skeleton.")]
+    public QualityAssetCollection qualityPrefabs = new();
 
     [Tooltip("Which MorphChannel(s) THIS variant's own mesh responds to (see MorphChannel's own doc " +
              "on the strict exact-name contract — no mapper). A GenderSpecific variant should only " +
@@ -37,7 +43,27 @@ public class AvatarItemVariant
     /// <summary>False for an unassigned/default variant instance (e.g. a GenderSpecific item's
     /// maleVariant left empty because the item simply doesn't exist for Male) — see GetVariant's own
     /// doc on why that's a normal, non-error outcome.</summary>
-    public bool IsAssigned => prefab != null && prefab.RuntimeKeyIsValid();
+    public bool IsAssigned => (prefab != null && prefab.RuntimeKeyIsValid()) || (qualityPrefabs != null && qualityPrefabs.HasAny);
+
+    /// <summary>The Addressable to load NOW: the active-quality variant (QualityAssetResolver, with
+    /// fallback) when quality variants exist, else the single prefab.</summary>
+    public AssetReferenceGameObject ResolvePrefab()
+    {
+        if (qualityPrefabs != null && qualityPrefabs.HasAny) return qualityPrefabs.Resolve();
+        return prefab;
+    }
+
+    /// <summary>Editor/validation: a representative reference (single prefab, else the first variant).</summary>
+    public AssetReferenceGameObject DefaultReference
+    {
+        get
+        {
+            if (prefab != null && prefab.RuntimeKeyIsValid()) return prefab;
+            if (qualityPrefabs?.variants != null)
+                foreach (var v in qualityPrefabs.variants) if (v != null && v.IsAssigned) return v.prefab;
+            return prefab;
+        }
+    }
 }
 
 /// <summary>
@@ -55,11 +81,18 @@ public class AvatarItemVariant
 /// on why: Hair needs none of it, and duplicating that decision per subclass is exactly the
 /// "contaminate the base with things not every subclass needs" this split avoids.
 /// </summary>
-public abstract class AvatarItemSO : ScriptableObject
+public abstract class AvatarItemSO : ScriptableObject, IContentGroupProvider
 {
     [Header("Identity")]
     public string stableId;
     public string displayName;
+
+    [Header("Content delivery")]
+    [Tooltip("Logical download group (Addressables label) for this item's prefabs, e.g. 'Enemy_monteverdi' or " +
+             "'PlayerClothing_Outfit001'. Empty = 'PlayerClothing_<stableId>'. Assigned by Tools > MusicGame > Content.")]
+    public string contentGroup = "";
+
+    public string ContentGroupOrDefault => string.IsNullOrWhiteSpace(contentGroup) ? ContentKeys.PlayerClothing(stableId) : contentGroup;
 
     [Header("Variants")]
     public AvatarItemVariantMode variantMode = AvatarItemVariantMode.Shared;

@@ -40,6 +40,9 @@ public static class RunAssignment
             Debug.Log($"[RunAssignment] Unfinished assignment '{progress.PendingRun.songId}' abandoned (NOT completed) for '{songId}'.");
         progress?.SetPendingRun(run); // saved BEFORE gameplay starts
         session.SetAssignedOpponent(opponent, level, tier);
+        // The rival is known before the Runner: fetch its content group now (active quality only), so
+        // the fight never waits on a download. No-op when nothing is labelled for it / already cached.
+        if (opponent != null) ContentDownloadManager.Instance?.PreloadContentAsync(ContentKeys.Enemy(opponent.id));
         return run;
     }
 
@@ -81,6 +84,7 @@ public static class RunAssignment
         else
         {
             session.SetAssignedOpponent(opponent, level, run.opponentTier);
+            ContentDownloadManager.Instance?.PreloadContentAsync(ContentKeys.Enemy(opponent.id));
             songId = run.songId;
             Debug.Log($"[RunAssignment] Resuming pending run: '{run.songId}' vs {opponent.displayName} v{run.opponentLevel} (same song, same rival).");
             return true;

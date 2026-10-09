@@ -15,10 +15,13 @@ public class AppContext
     public ThemeAssetLoader   ThemeAssets { get; }
     public ThemeManager       Theme       { get; }
     public SceneFlowController SceneFlow  { get; }
+    /// <summary>Downloads / caches Addressable content (quality-aware) — see ContentDownloadManager.</summary>
+    public ContentDownloadManager Content { get; }
 
     public AppContext(GameSession gameSession, AppFlowController appFlow, ThemeAssetLoader themeAssets,
-        ThemeManager theme, SceneFlowController sceneFlow)
+        ThemeManager theme, SceneFlowController sceneFlow, ContentDownloadManager content = null)
     {
+        Content     = content;
         GameSession = gameSession;
         AppFlow     = appFlow;
         ThemeAssets = themeAssets;

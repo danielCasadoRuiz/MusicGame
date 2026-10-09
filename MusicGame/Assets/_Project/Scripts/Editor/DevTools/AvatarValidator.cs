@@ -323,7 +323,7 @@ public static class AvatarValidator
 
     private static int ValidateHairAttachment(string label, string variantLabel, AvatarItemVariant variant, string attachmentBoneName)
     {
-        var prefab = ResolveEditorPrefab(variant?.prefab);
+        var prefab = ResolveEditorPrefab(variant?.DefaultReference);
         if (prefab == null) return 0; // already reported by ValidateItemVariants
 
         var visualPart = prefab.GetComponentInChildren<AvatarVisualPart>();
@@ -372,7 +372,7 @@ public static class AvatarValidator
     /// authoring error, never something AvatarFactory could sensibly apply anyway).</summary>
     private static int ValidateVariant(string label, string variantLabel, AvatarItemVariant variant, BodyBaseType? expectedGender)
     {
-        var prefab = ResolveEditorPrefab(variant?.prefab);
+        var prefab = ResolveEditorPrefab(variant?.DefaultReference);
         if (prefab == null)
         {
             Debug.LogWarning($"[AvatarValidator] {label}: {variantLabel} has no prefab assigned.");

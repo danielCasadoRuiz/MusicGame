@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "_comment": "Optional per-rule overrides: targetFPS (mobile frame rate / desktop cap), renderScale, shadowDistance. qualityDefaults = per-level defaults (mobile target FPS). ILLUSTRATIVE starting values, not validated hardware classifications. First matching rule wins: devices -> gpuFamilies -> hardwareRules (ordered best to worst) -> platformDefaults. Quality names must match Project Settings > Quality. A remote copy with an equal or higher version overrides this file.",
+
+  "platformDefaults": {
+    "Android": "Mid",
+    "iOS": "HighMid",
+    "Windows": "High",
+    "macOS": "High",
+    "Linux": "High",
+    "Default": "Mid"
+  },
+
+  "devices": [
+    { "model": "ExampleDevice", "quality": "High" },
+    { "model": "ExampleDeviceB", "quality": "High", "targetFPS": 30 }
+  ],
+
+  "gpuFamilies": [
+    { "pattern": "Mali-4", "platform": "Android", "quality": "Low" },
+    { "pattern": "Adreno (TM) 5", "platform": "Android", "quality": "Low" },
+    { "pattern": "Adreno (TM) 7", "platform": "Android", "quality": "HighMid" },
+    { "pattern": "Apple M", "platform": "macOS", "quality": "High" },
+    { "pattern": "Intel(R) UHD", "platform": "Windows", "quality": "HighMid" },
+    { "pattern": "RTX 40", "platform": "Windows", "quality": "Ultra" }
+  ],
+
+  "hardwareRules": [
+    { "platform": "Android", "minSystemMemoryMB": 7500, "minProcessorCount": 8, "quality": "HighMid" },
+    { "platform": "Android", "minSystemMemoryMB": 3500, "quality": "Mid" },
+    { "platform": "Android", "minSystemMemoryMB": 0, "quality": "Low" },
+    { "platform": "iOS", "minSystemMemoryMB": 5500, "quality": "High" },
+    { "platform": "iOS", "minSystemMemoryMB": 3500, "quality": "HighMid" },
+    { "platform": "iOS", "minSystemMemoryMB": 0, "quality": "Mid" },
+    { "platform": "Windows", "minGraphicsMemoryMB": 8000, "minSystemMemoryMB": 16000, "quality": "Ultra" },
+    { "platform": "Windows", "minGraphicsMemoryMB": 3500, "quality": "High" },
+    { "platform": "Windows", "minGraphicsMemoryMB": 0, "quality": "HighMid" }
+  ],
+
+  "qualityDefaults": {
+    "Low":     { "targetFPS": 30 },
+    "Mid":     { "targetFPS": 60 },
+    "HighMid": { "targetFPS": 60 },
+    "High":    { "targetFPS": 60 },
+    "Ultra":   { "targetFPS": 60 }
+  }
+}

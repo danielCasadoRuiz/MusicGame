@@ -30,6 +30,8 @@ public class AppConfigSO : ScriptableObject
     public SongSimilarityCatalogSO songSimilarity;
     [Tooltip("Stable ids of the playable songs (songId ⇄ Addressable address) — Tools > MusicGame > Setup Song Addressables.")]
     public PlayableSongCatalogSO songCatalog;
+    [Tooltip("Device-quality rules source + Addressables download settings (optional; defaults apply without it).")]
+    public ContentDeliveryConfigSO contentDelivery;
 
     [Tooltip("EDITOR ONLY (see PlatformService) — forces mobile/touch UI and input while testing in " +
              "the Editor, where Application.isMobilePlatform is always false. Ignored in real builds, " +

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 /// <summary>
 /// Owns the Runner's visual environment MODULES — the single owner of their creation/destruction.
@@ -27,6 +29,9 @@ public class RunnerEnvironmentController : MonoBehaviour
     private readonly List<IRunnerEnvironmentModule>[] _modules = new List<IRunnerEnvironmentModule>[Slots.Length];
     private readonly string[] _resolvedInfo = new string[Slots.Length];
     private Transform _root;
+    // Quality-variant modules are Addressables: their handles live until the next Build/Clear.
+    private readonly List<AsyncOperationHandle<GameObject>> _handles = new();
+    private int _buildToken;
 
     public RunnerEnvironmentBaseSO BaseEnvironment { get; private set; }
     public RunnerEnvironmentStyleSO Style { get; private set; }
@@ -67,21 +72,64 @@ public class RunnerEnvironmentController : MonoBehaviour
             slotRoot.SetParent(_root, false);
             _modules[i] = new List<IRunnerEnvironmentModule>();
 
-            var prefab = Resolve(baseEnvironment, style, slot, out string how);
-            if (prefab == null) { _resolvedInfo[i] = $"{slot}: none ({how})"; continue; }
+            var source = ResolveSource(baseEnvironment, style, slot, out string how);
+            if (source.IsEmpty) { _resolvedInfo[i] = $"{slot}: none ({how})"; continue; }
 
-            var instance = Instantiate(prefab, slotRoot, false);
-            instance.name = prefab.name;
-            instance.GetComponentsInChildren(true, _modules[i]);
-            if (_modules[i].Count == 0)
-                Debug.LogWarning($"[RunnerEnvironment] '{prefab.name}' ({slot}) has no IRunnerEnvironmentModule — it is shown as static content only.");
-            _context.ModuleRoot = instance.transform;
-            foreach (var module in _modules[i]) module.InitializeModule(_context);
-            _resolvedInfo[i] = $"{slot}: {prefab.name} ({how})";
+            if (source.prefab != null) { Spawn(i, slot, source.prefab, slotRoot, how); continue; }
+
+            // Quality variant (Addressable, active Unity quality): instantiated once loaded.
+            _resolvedInfo[i] = $"{slot}: loading {source.resolvedQuality} variant ({how})";
+            int token = _buildToken, index = i;
+            var handle = Addressables.LoadAssetAsync<GameObject>(source.reference);
+            _handles.Add(handle);
+            handle.Completed += h =>
+            {
+                if (token != _buildToken || slotRoot == null) return; // rebuilt / destroyed meanwhile
+                if (h.Status != AsyncOperationStatus.Succeeded || h.Result == null)
+                {
+                    Debug.LogError($"[RunnerEnvironment] {slot}: failed to load the {source.resolvedQuality} variant ({how}).");
+                    _resolvedInfo[index] = $"{slot}: load failed";
+                    return;
+                }
+                Spawn(index, slot, h.Result, slotRoot, $"{how}, {source.resolvedQuality}");
+                Summary = $"style '{(style != null ? style.name : "(none — base)")}' → {string.Join(" | ", _resolvedInfo)}";
+            };
         }
 
         Summary = $"style '{(style != null ? style.name : "(none — base)")}' → {string.Join(" | ", _resolvedInfo)}";
         Debug.Log($"[RunnerEnvironment] {Summary}");
+    }
+
+    private void Spawn(int i, RunnerEnvironmentSlot slot, GameObject prefab, Transform slotRoot, string how)
+    {
+        var instance = Instantiate(prefab, slotRoot, false);
+        instance.name = prefab.name;
+        instance.GetComponentsInChildren(true, _modules[i]);
+        if (_modules[i].Count == 0)
+            Debug.LogWarning($"[RunnerEnvironment] '{prefab.name}' ({slot}) has no IRunnerEnvironmentModule — it is shown as static content only.");
+        _context.ModuleRoot = instance.transform;
+        foreach (var module in _modules[i]) module.InitializeModule(_context);
+        _resolvedInfo[i] = $"{slot}: {prefab.name} ({how})";
+    }
+
+    /// <summary>The resolution rule + QUALITY: the slot's decided module (Disabled / style Override /
+    /// base) becomes its active-quality Addressable variant when that module has quality variants
+    /// (QualityAssetResolver, with fallback), else its direct prefab.</summary>
+    public static EnvironmentModuleSource ResolveSource(RunnerEnvironmentBaseSO baseEnvironment, RunnerEnvironmentStyleSO style,
+                                                        RunnerEnvironmentSlot slot, out string how)
+    {
+        var decision = style != null ? style.Get(slot) : null;
+        var prefab = Resolve(baseEnvironment, style, slot, out how);
+        if (how == "Disabled") return default;
+        QualityAssetCollection quality = how == "Override"
+            ? decision?.qualityPrefabs
+            : baseEnvironment != null ? baseEnvironment.GetQualityPrefabs(slot) : null;
+        if (quality != null && quality.HasAny)
+        {
+            var reference = QualityAssetResolver.Resolve(quality, out string q);
+            if (reference != null) return new EnvironmentModuleSource { reference = reference, resolvedQuality = q };
+        }
+        return new EnvironmentModuleSource { prefab = prefab };
     }
 
     /// <summary>The resolution rule (see class doc). `how` explains the outcome for logs/debug.</summary>
@@ -96,7 +144,7 @@ public class RunnerEnvironmentController : MonoBehaviour
             case EnvironmentOverrideMode.Disabled:
                 how = "Disabled";
                 return null;
-            case EnvironmentOverrideMode.Override when decision.prefab != null:
+            case EnvironmentOverrideMode.Override when decision.prefab != null || (decision.qualityPrefabs != null && decision.qualityPrefabs.HasAny):
                 how = "Override";
                 return decision.prefab;
             case EnvironmentOverrideMode.Override:
@@ -123,7 +171,10 @@ public class RunnerEnvironmentController : MonoBehaviour
 
     private void Clear()
     {
+        _buildToken++;
         for (int i = 0; i < _modules.Length; i++) _modules[i]?.Clear();
+        foreach (var h in _handles) if (h.IsValid()) Addressables.Release(h);
+        _handles.Clear();
         if (_root != null) Destroy(_root.gameObject);
         _root = null;
         Summary = "";

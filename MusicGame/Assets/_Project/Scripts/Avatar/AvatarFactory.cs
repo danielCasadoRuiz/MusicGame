@@ -217,7 +217,8 @@ public static class AvatarFactory
             return;
         }
 
-        var hairGO = await InstantiateAsync(variant.prefab, instance.VisualRoot, instance, $"Hair({hair.stableId})");
+        // Quality-aware: the active Unity quality level picks the variant (see AvatarItemVariant.ResolvePrefab).
+        var hairGO = await InstantiateAsync(variant.ResolvePrefab(), instance.VisualRoot, instance, $"Hair({hair.stableId})");
         if (hairGO == null) return;
 
         var visualPart = hairGO.GetComponentInChildren<AvatarVisualPart>();
@@ -259,7 +260,9 @@ public static class AvatarFactory
             return;
         }
 
-        var itemGO = await InstantiateAsync(variant.prefab, instance.VisualRoot, instance, itemDef.displayName);
+        // Quality-aware: the active Unity quality level picks the variant (see AvatarItemVariant.ResolvePrefab);
+        // the base avatar above stays a single shared prefab on purpose.
+        var itemGO = await InstantiateAsync(variant.ResolvePrefab(), instance.VisualRoot, instance, itemDef.displayName);
         if (itemGO == null) return;
 
         var visualPart = itemGO.GetComponentInChildren<AvatarVisualPart>();

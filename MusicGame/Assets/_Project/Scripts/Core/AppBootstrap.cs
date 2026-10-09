@@ -59,6 +59,10 @@ public static class AppBootstrap
             Debug.LogWarning("[AppBootstrap] No 'Resources/AppConfig.asset' found — modules with " +
                               "real config (e.g. AppFlowController) will fall back to hardcoded defaults.");
 
+        // 0. Device quality FIRST — before any quality-dependent asset can load. Synchronous, offline:
+        // the best rules already on the device (bundled JSON, or a newer cached remote copy).
+        DeviceQualityResolver.ApplyAtStartup();
+
         var go = new GameObject("[App Bootstrap]");
         Object.DontDestroyOnLoad(go);
 
@@ -75,15 +79,17 @@ public static class AppBootstrap
         var themeAssets  = go.AddComponent<ThemeAssetLoader>();
         var themeManager = go.AddComponent<ThemeManager>();
         var sceneFlow    = go.AddComponent<SceneFlowController>();
+        var content      = go.AddComponent<ContentDownloadManager>();
 
         // 2. configure (only modules that actually have config)
         appFlow.Configure(appConfig != null ? appConfig.flow : null);
         themeManager.Configure(appConfig != null ? appConfig.theme : null);
         gameSession.Configure(appConfig != null ? appConfig.fightStats : null);
         gameSession.Configure(appConfig != null ? appConfig.progression : null);
+        content.Configure(appConfig != null ? appConfig.contentDelivery : null);
 
         // 3. compose context
-        Context = new AppContext(gameSession, appFlow, themeAssets, themeManager, sceneFlow);
+        Context = new AppContext(gameSession, appFlow, themeAssets, themeManager, sceneFlow, content);
 
         // 4. initialize (cross-module wiring) — ThemeManager's Initialize immediately resolves a
         // BaseTheme-only CurrentTheme and kicks off loading a random frontend visual, so it must
@@ -96,6 +102,8 @@ public static class AppBootstrap
         ((IAppModule)themeAssets).Initialize(Context);
         ((IAppModule)themeManager).Initialize(Context);
         ((IAppModule)sceneFlow).Initialize(Context);
+        // Addressables init + remote catalog check + remote device rules — all non-blocking.
+        ((IAppModule)content).Initialize(Context);
 
         Application.quitting += Shutdown;
     }
@@ -115,6 +123,7 @@ public static class AppBootstrap
         ((IAppModule)Context.Theme).Shutdown();
         ((IAppModule)Context.ThemeAssets).Shutdown();
         ((IAppModule)Context.SceneFlow).Shutdown();
+        if (Context.Content != null) ((IAppModule)Context.Content).Shutdown();
         Context = null;
         Application.quitting -= Shutdown;
     }
