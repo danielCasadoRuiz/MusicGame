@@ -1,0 +1,54 @@
+{
+  "targetId": "Monteverdi_3",
+  "composer": "Claudio Monteverdi",
+  "work": "Zefiro torna",
+  "catalog": "SV 251",
+  "movement": "Complete madrigal",
+  "source": "MuseScore.com",
+  "sourceUrl": "https://musescore.com/user/143645/scores/10680685",
+  "mutopiaId": "https://musescore.com/user/143645/scores/10680685",
+  "sourceFiles": [
+    "https://musescore.com/user/143645/scores/10680685"
+  ],
+  "sourceLicense": "Creative Commons Zero (CC0)",
+  "sourceLicenseClass": "CC0 1.0",
+  "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "sourceAttribution": "MuseScore.com user Edgar Santiago",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "DONE",
+  "unityAsset": "Assets/_Project/Audio/Composers/Monteverdi/Monteverdi_SV251_ZefiroTorna_CompleteMadrigal.mp3",
+  "durationSeconds": 317.74,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Monteverdi_3/Monteverdi_SV251_ZefiroTorna_CompleteMadrigal.wav",
+    "masterSamples": 14085540,
+    "trimmedLeadSamples": 136,
+    "trimmedTailSamples": 73061,
+    "encodedSamples": 14012343,
+    "durationSeconds": 317.74,
+    "bytes": 7626710,
+    "sha256": "5853d669397e766aaa694991f10ef3758ab4651747ade636b5a581780d5ccb4c",
+    "masterSha256": "1f4dd6cfbaeb2d02aa41f01cbda6310f464c3b0f027d4a40aad904c748d2477e"
+  },
+  "masterQa": {
+    "durationSeconds": 319.4,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -15.05,
+    "rmsDbfs": -32.12,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "tenor",
+    "tenor",
+    "piano"
+  ]
+}

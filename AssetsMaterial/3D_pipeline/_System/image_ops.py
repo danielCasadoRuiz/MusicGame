@@ -94,61 +94,38 @@ def _merge_nearest(runs: List[Tuple[int, int]], target: int) -> List[Tuple[int, 
     return runs
 
 
+def _detect_four_view_masks(alpha: Image.Image) -> list[np.ndarray]:
+    """Find silhouettes in two dimensions, retaining nearby detached details.
+
+    Bounding boxes may overlap: ownership is determined by pixel islands,
+    never by vertical cut lines through the source image.
+    """
+    mask = (np.asarray(alpha, dtype=np.uint8) > 4).astype(np.uint8)
+    count, labels, stats, _ = cv2.connectedComponentsWithStats(mask, 8)
+    ranked = sorted(range(1, count), key=lambda i: int(stats[i, 4]), reverse=True)
+    if len(ranked) < 4:
+        raise RuntimeError(f"Expected 4 separate silhouette islands but detected {len(ranked)}.")
+    seeds = ranked[:4]
+    # Do not silently discard an additional substantial silhouette.
+    if len(ranked) > 4 and stats[ranked[4], 4] > stats[seeds[-1], 4] * 0.35:
+        raise RuntimeError("Ambiguous view islands: more than 4 substantial components. Disconnected accessories need explicit view grouping.")
+    seeds.sort(key=lambda i: int(stats[i, 0]))
+    groups = [labels == i for i in seeds]
+    # Distance to actual silhouette pixels, rather than their rectangles.
+    distances = [cv2.distanceTransform((~g).astype(np.uint8), cv2.DIST_L2, 5) for g in groups]
+    detail_limit = max(8.0, min(mask.shape) * 0.02)
+    for component in ranked[4:]:
+        ys, xs = np.where(labels == component)
+        nearest = [float(d[ys, xs].min()) for d in distances]
+        owner = int(np.argmin(nearest))
+        if nearest[owner] <= detail_limit:
+            groups[owner][ys, xs] = True
+    return groups
+
+
 def detect_four_view_boxes(alpha: Image.Image) -> List[Box]:
-    """
-    Detect the four PHYSICAL left-to-right view groups.
-    Horizontal occupancy keeps disconnected buttons/straps/details attached
-    to the same view instead of treating every connected component as a view.
-    """
-    mask = np.asarray(alpha, dtype=np.uint8) > 4
-    h, w = mask.shape
-
-    projection = np.count_nonzero(mask, axis=0)
-    active = (projection > max(1, int(h * 0.0005))).astype(np.uint8) * 255
-
-    close_w = max(3, int(round(w * 0.0025)))
-    if close_w % 2 == 0:
-        close_w += 1
-
-    active = cv2.morphologyEx(
-        active.reshape(1, -1),
-        cv2.MORPH_CLOSE,
-        np.ones((1, close_w), np.uint8),
-    ).reshape(-1)
-
-    runs = _runs(active > 0)
-    total = max(1, int(np.count_nonzero(mask)))
-    runs = [
-        (x0, x1)
-        for x0, x1 in runs
-        if np.count_nonzero(mask[:, x0:x1]) >= max(24, int(total * 0.003))
-    ]
-
-    if len(runs) > 4:
-        runs = _merge_nearest(runs, 4)
-
-    if len(runs) != 4:
-        raise RuntimeError(
-            f"Expected 4 separated view groups but detected {len(runs)}."
-        )
-
-    boxes = []
-    for x0, x1 in runs:
-        ys, xs = np.where(mask[:, x0:x1])
-        boxes.append(
-            Box(
-                x0 + int(xs.min()),
-                int(ys.min()),
-                x0 + int(xs.max()) + 1,
-                int(ys.max()) + 1,
-            )
-        )
-    boxes.sort(key=lambda b: b.x0)
-    return boxes
-
-
-def _mid(a: int, b: int) -> int:
-    return (a + b) // 2
+    """Return bounds of four pixel-island groups (bounds may overlap)."""
+    return [_bbox(Image.fromarray(g.astype(np.uint8) * 255)) for g in _detect_four_view_masks(alpha)]
 
 
 def _extract_isolated_views(
@@ -156,13 +133,14 @@ def _extract_isolated_views(
     island_margin_px: int = 24,
 ) -> tuple[list[Image.Image], list[Image.Image], dict]:
     """
-    Extract four independent RGBA view crops with GUARANTEED non-overlapping
-    source territories. Margins are clipped at the midpoint between neighbours,
-    so a neighbouring silhouette can never leak into a crop.
+    Extract four RGBA crops using exclusive pixel-island masks.
+    Crop rectangles may overlap, but neighbouring silhouettes are masked out.
     """
     img = _rgba(source)
     alpha = source_alpha(img)
-    boxes = detect_four_view_boxes(alpha)
+    groups = _detect_four_view_masks(alpha)
+    boxes = [_bbox(Image.fromarray(g.astype(np.uint8) * 255)) for g in groups]
+    alpha_array = np.asarray(alpha, dtype=np.uint8)
     w, h = img.size
 
     rgba_views: list[Image.Image] = []
@@ -170,16 +148,14 @@ def _extract_isolated_views(
     extracted_boxes = []
 
     for i, b in enumerate(boxes):
-        left_limit = 0 if i == 0 else _mid(boxes[i - 1].x1, b.x0)
-        right_limit = w if i == 3 else _mid(b.x1, boxes[i + 1].x0)
-
-        x0 = max(left_limit, b.x0 - island_margin_px)
-        x1 = min(right_limit, b.x1 + island_margin_px)
+        x0 = max(0, b.x0 - island_margin_px)
+        x1 = min(w, b.x1 + island_margin_px)
         y0 = max(0, b.y0 - island_margin_px)
         y1 = min(h, b.y1 + island_margin_px)
 
         rgb_crop = img.crop((x0, y0, x1, y1)).convert("RGBA")
-        mask_crop = alpha.crop((x0, y0, x1, y1)).convert("L")
+        isolated_alpha = Image.fromarray(np.where(groups[i], alpha_array, 0).astype(np.uint8))
+        mask_crop = isolated_alpha.crop((x0, y0, x1, y1)).convert("L")
 
         # Force a true transparent background even if the original was white.
         rgb_crop.putalpha(mask_crop)

@@ -1,0 +1,56 @@
+{
+  "targetId": "Vivaldi_2",
+  "composer": "Antonio Vivaldi",
+  "work": "The Four Seasons – Summer",
+  "catalog": "RV 315",
+  "movement": "III. Presto",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=336",
+  "mutopiaId": "Mutopia-2010/02/08-336",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/VivaldiA/O8/summer/summer-mids.zip"
+  ],
+  "sourceLicense": "Creative Commons Attribution-ShareAlike 3.0",
+  "sourceLicenseClass": "CC BY-SA",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+  "sourceAttribution": "Typeset/transcribed by smailliw (at) gmail.com for the Mutopia Project",
+  "sourceEdition": "Performers' Facsimiles",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "DONE",
+  "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 3.0 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/3.0/). Attribution: Typeset/transcribed by smailliw (at) gmail.com for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=336.",
+  "unityAsset": "Assets/_Project/Audio/Composers/Vivaldi/Vivaldi_RV315_TheFourSeasonsSummer_III_Presto.mp3",
+  "durationSeconds": 157.254,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Vivaldi_2/Vivaldi_RV315_TheFourSeasonsSummer_III_Presto.wav",
+    "masterSamples": 7011900,
+    "trimmedLeadSamples": 207,
+    "trimmedTailSamples": 76800,
+    "encodedSamples": 6934893,
+    "durationSeconds": 157.254,
+    "bytes": 3774798,
+    "sha256": "22ecf279fdd06749b28dfba3ffa5a3d7c0eeb1f19bf6453d23580738adcb187e",
+    "masterSha256": "6275710464b47fb75a6299525be2f2a93a95157af1fcc03af350608302778598"
+  },
+  "masterQa": {
+    "durationSeconds": 159.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -11.01,
+    "rmsDbfs": -28.87,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "violin",
+    "violin",
+    "violin",
+    "viola",
+    "violoncello"
+  ]
+}

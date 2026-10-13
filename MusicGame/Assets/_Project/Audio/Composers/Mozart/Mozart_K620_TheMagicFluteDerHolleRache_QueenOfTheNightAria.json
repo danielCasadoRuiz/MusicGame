@@ -1,0 +1,70 @@
+{
+  "targetId": "Mozart_5",
+  "composer": "W. A. Mozart",
+  "work": "The Magic Flute – Der Hölle Rache",
+  "catalog": "K. 620",
+  "movement": "Queen of the Night aria",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=266",
+  "mutopiaId": "Mutopia-2013/03/24-266",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/MozartWA/KV620/magicflute-14-aria/magicflute-14-aria-mids.zip"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "sourceAttribution": "Typeset/transcribed by Deborah Lowrey for the Mutopia Project",
+  "sourceEdition": "J. L. Peters 1875, C. F. Peters 18??, Lee & Walker 1870, North & Co. 1879",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrument assignments of mis-imported parts corrected to the edition's own staff names (Piano -> viola); no musical changes.",
+  "status": "DONE",
+  "instrumentCorrections": [
+    {
+      "part": "Piano",
+      "imported": "piano",
+      "corrected": "viola",
+      "sound": "strings.viola"
+    }
+  ],
+  "unityAsset": "Assets/_Project/Audio/Composers/Mozart/Mozart_K620_TheMagicFluteDerHolleRache_QueenOfTheNightAria.mp3",
+  "durationSeconds": 198.659,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Mozart_5/Mozart_K620_TheMagicFluteDerHolleRache_QueenOfTheNightAria.wav",
+    "masterSamples": 8864100,
+    "trimmedLeadSamples": 497,
+    "trimmedTailSamples": 102737,
+    "encodedSamples": 8760866,
+    "durationSeconds": 198.659,
+    "bytes": 4768496,
+    "sha256": "5bce2ff476bb96ac10c99e9e174294f8e8178000c00c32a2cf80810ce8ca31ab",
+    "masterSha256": "e1912b7d7e05ca8d2243291d6f9b01294db2b2812087c03c5e9c60c014457b29"
+  },
+  "masterQa": {
+    "durationSeconds": 201.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -6.48,
+    "rmsDbfs": -24.75,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "flute",
+    "oboe",
+    "bassoon",
+    "violin",
+    "violin",
+    "viola",
+    "violoncello",
+    "contrabass",
+    "voice",
+    "c-horn-alto",
+    "bb-trumpet",
+    "timpani"
+  ]
+}

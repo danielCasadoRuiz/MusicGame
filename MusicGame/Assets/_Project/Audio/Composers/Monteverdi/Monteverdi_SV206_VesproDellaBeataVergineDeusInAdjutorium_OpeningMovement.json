@@ -1,0 +1,73 @@
+{
+  "targetId": "Monteverdi_5",
+  "composer": "Claudio Monteverdi",
+  "work": "Vespro della Beata Vergine – Deus in adjutorium",
+  "catalog": "SV 206",
+  "movement": "Opening movement",
+  "source": "John Kilpatrick",
+  "sourceUrl": "http://www.johnkilpatrick.co.uk/music/1610",
+  "mutopiaId": "http://www.johnkilpatrick.co.uk/music/1610",
+  "sourceFiles": [
+    "http://www.johnkilpatrick.co.uk/music/1610/V01-Deus-score.mid"
+  ],
+  "sourceLicense": "Public Domain (CPDL #20567 lists the edition as Public Domain; the editor: 'may be freely copied and used provided all copyright notices are preserved')",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "https://www.cpdl.org/wiki/index.php/Vespro_della_Beata_Vergine_(Claudio_Monteverdi)",
+  "sourceAttribution": "John Kilpatrick, 2010 edition",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrument assignments of mis-imported parts corrected to the edition's own staff names (Flute, Continuo -> organ); no musical changes.",
+  "status": "DONE",
+  "instrumentCorrections": [
+    {
+      "part": "Flute, Continuo",
+      "imported": "flute",
+      "corrected": "organ",
+      "sound": "keyboard.organ"
+    }
+  ],
+  "unityAsset": "Assets/_Project/Audio/Composers/Monteverdi/Monteverdi_SV206_VesproDellaBeataVergineDeusInAdjutorium_OpeningMovement.mp3",
+  "durationSeconds": 99.711,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Monteverdi_5/Monteverdi_SV206_VesproDellaBeataVergineDeusInAdjutorium_OpeningMovement.wav",
+    "masterSamples": 4462082,
+    "trimmedLeadSamples": 14,
+    "trimmedTailSamples": 64799,
+    "encodedSamples": 4397269,
+    "durationSeconds": 99.711,
+    "bytes": 2394279,
+    "sha256": "b7c81e3e71f29f55d146fbe1df9e4a130d124cce966a2ad3c07db0b68d984adf",
+    "masterSha256": "b1530d379322d3c375182c7444a2d9343f06b96d617caaac124aef78d1674f94"
+  },
+  "masterQa": {
+    "durationSeconds": 101.18,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -8.01,
+    "rmsDbfs": -23.1,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "bb-trumpet",
+    "bb-trumpet",
+    "bb-trumpet",
+    "trombone",
+    "trombone",
+    "trombone",
+    "soprano",
+    "soprano",
+    "alto",
+    "tenor",
+    "tenor",
+    "baritone",
+    "organ",
+    "violoncello"
+  ]
+}

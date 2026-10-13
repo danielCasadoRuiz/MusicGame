@@ -1,20 +1,27 @@
 from __future__ import annotations
-import argparse, hashlib, json, os, shutil, subprocess, time, uuid
+import argparse, hashlib, json, os, shutil, subprocess, sys, time, uuid
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent))
+from incremental_outputs import publish_additions, lod_files, LOD_TARGETS, model_lod_rank
 from garment_profiles import resolve as resolve_garment
 LOD_ORDER = ["ULTRA_50k", "HIGH_30k", "MIDHIGH_20k", "MEDIUM_10k", "LOW_5k"]
 LOD_OUTPUT_FOLDERS = {
     "ULTRA_50K": "ULTRA",
     "HIGH_30K": "HIGH",
     "MIDHIGH_20K": "MID-HIGH",
+    "MEDIUM_20K": "MID-HIGH",
+    "MID-HIGH_20K": "MID-HIGH",
     "MEDIUM_10K": "MEDIUM",
     "LOW_5K": "LOW",
 }
 
 
 def lod_output_folder(path: Path):
+    rank = model_lod_rank(path)
+    if rank < 5:
+        return ['ULTRA', 'HIGH', 'MID-HIGH', 'MEDIUM', 'LOW'][rank]
     upper = path.stem.upper()
     for token, folder in LOD_OUTPUT_FOLDERS.items():
         if token in upper:
@@ -50,11 +57,7 @@ def find_avatar(avatar_dir: Path, config):
 
 
 def lod_rank(path: Path):
-    name = path.stem.upper()
-    for i, token in enumerate(LOD_ORDER):
-        if token.upper() in name:
-            return i
-    return 999
+    return model_lod_rank(path)
 
 
 def find_lods(asset_dir: Path, exts: set[str]):
@@ -73,19 +76,42 @@ def find_lods(asset_dir: Path, exts: set[str]):
     return models
 
 
+def rigged_fbx_path(asset_dir: Path, config, model: Path):
+    return asset_dir / config.get("rigged_subdir", "Rigged") / lod_output_folder(model) / f"{model.stem}_rigged.fbx"
+
+
+def missing_rigged_lods(asset_dir: Path, config, lods):
+    directory = asset_dir / config.get('rigged_subdir', 'Rigged')
+    return [model for model in lods
+            if not lod_files(directory, LOD_TARGETS[lod_rank(model)], '.fbx')]
+
+
+def report_rigged_levels(output: Path, config):
+    if not output.is_dir():
+        return
+    for directory in sorted(output.iterdir()):
+        if not directory.is_dir() or directory.name.startswith('.'):
+            continue
+        missing = [target['label'] for target in LOD_TARGETS
+                   if not lod_files(directory / config['rigged_subdir'], target, '.fbx')]
+        status = 'falten ' + ', '.join(missing) if missing else 'complet'
+        print(f"RIGGING {directory.name}: {5-len(missing)}/5 FBX; {status}.")
+        for target in LOD_TARGETS:
+            if target['label'] in missing and not lod_files(directory, target):
+                print(f"  {target['label']}: falta tambe el GLB; executa primer 02_RETOPO.bat.")
+
+
 def discover_assets(output: Path, exts: set[str]):
     if not output.exists():
         return []
     out = []
     for d in sorted((p for p in output.iterdir() if p.is_dir()), key=lambda p: p.name.lower()):
-        if d.name.lower() in {"rigged", "_work"}:
+        if d.name.startswith('.') or d.name.lower() in {"rigged", "_work"}:
             continue
         lods = find_lods(d, exts)
         if not lods:
             continue
-        rigged = d / "Rigged"
-        expected = [rigged / lod_output_folder(p) / f"{p.stem}_rigged.fbx" for p in lods]
-        if expected and all(x.exists() for x in expected):
+        if not missing_rigged_lods(d, {}, lods):
             continue
         out.append((d, lods))
     return out
@@ -183,7 +209,12 @@ def clear_work(root: Path, config, name: str):
     if config.get("keep_work_files", False):
         return
     work_root = root / config["work_dir"]
-    shutil.rmtree(work_root / name, ignore_errors=True)
+    target = work_root / name
+    shutil.rmtree(target, ignore_errors=True)
+    parent = target.parent
+    while parent != work_root and parent.is_dir() and not any(parent.iterdir()):
+        parent.rmdir()
+        parent = parent.parent
     if work_root.is_dir() and not any(work_root.iterdir()):
         work_root.rmdir()
 
@@ -200,13 +231,22 @@ def process_asset(root: Path, config, asset_dir: Path, lods: list[Path], avatar:
                 proc.wait(timeout=15)
             except subprocess.TimeoutExpired:
                 pass
-        clear_work(root, config, asset_dir.name)
+        if ctx.get('work_relative'):
+            clear_work(root, config, ctx['work_relative'])
 
 
 def _process_asset(root: Path, config, asset_dir: Path, lods: list[Path], avatar: Path, ctx: dict):
     name = asset_dir.name
     primary = lods[0]  # ULTRA_50k whenever present because of LOD_ORDER
-    session_dir = root / config["work_dir"] / name
+    pending = missing_rigged_lods(asset_dir, config, lods)
+    if not pending:
+        print(f"{name}: tots els FBX ja existeixen; no es modifica cap resultat.")
+        return
+    has_existing = any((asset_dir / config['rigged_subdir']).rglob('*.fbx'))
+    print(f"{name}: FBX pendents: {', '.join(p.name for p in pending)}")
+    work_relative = str(Path(name) / uuid.uuid4().hex[:12])
+    ctx['work_relative'] = work_relative
+    session_dir = root / config["work_dir"] / work_relative
     session_dir.mkdir(parents=True, exist_ok=True)
 
     # Saved fitting of a previous run (optional reuse), stored with the asset.
@@ -216,15 +256,25 @@ def _process_asset(root: Path, config, asset_dir: Path, lods: list[Path], avatar
     if fit_record and fit_record.get("fit_snapshot"):
         when = fit_record.get("committed_at", "?")
         stale = None
-        if fit_record.get("model") != primary.name or fit_record.get("model_sha256") != sha256_file(primary):
+        if fit_record.get("model_sha256") != sha256_file(primary):
             stale = f"{primary.name} ha canviat des del fitting"
         elif fit_record.get("avatar_sha256") != sha256_file(avatar):
             stale = f"{avatar.name} ha canviat des del fitting"
         if stale:
-            print(f"\nHi ha un fitting desat ({when}) però NO es pot reutilitzar: {stale}. Cal fer el fitting manual.")
-        elif yes_no(f"\nHi ha un fitting desat de l'ULTRA ({when}). El vols reutilitzar i recalcular els pesos "
-                    f"sense fitting manual? (n = fer el fitting de nou)", default=True):
+            raise RuntimeError(f"No puc completar els LODs amb el fitting antic: {stale}. Els outputs i el fitting desat es conserven.")
+        else:
             reuse_fit = {"fit_snapshot": fit_record["fit_snapshot"], "garment_vertices": fit_record.get("garment_vertices")}
+
+    if (has_existing or fit_record_path(asset_dir, config).exists()) and not reuse_fit:
+        raise RuntimeError("Hi ha FBX finals pero falta un fit_record.json valid. "
+                           "No es fa un fitting nou incompatible; els resultats existents queden intactes.")
+    if reuse_fit:
+        symmetry = bool(reuse_fit["fit_snapshot"].get("symmetry"))
+    else:
+        print(f"\nAsset: {name}")
+        symmetry = yes_no(
+            "Vols crear una copia simetrica amb Mirror X? "
+            "(una sola sabata/peca; no un parell ja complet)", default=False)
 
     for f in ("command.json", "ack.json", "ready.json", "state.json"):
         try:
@@ -232,7 +282,8 @@ def _process_asset(root: Path, config, asset_dir: Path, lods: list[Path], avatar
         except FileNotFoundError:
             pass
 
-    out_dir = asset_dir / config["rigged_subdir"]
+    final_out_dir = asset_dir / config["rigged_subdir"]
+    out_dir = session_dir / "publish"
     out_dir.mkdir(parents=True, exist_ok=True)
     manual_blend = session_dir / f"{primary.stem}_manual_fit.blend"
     garment = resolve_garment(name, asset_dir)
@@ -250,6 +301,7 @@ def _process_asset(root: Path, config, asset_dir: Path, lods: list[Path], avatar
         "garment_type_source": garment["source"],
         "garment_overrides": garment["overrides"],
         "reuse_fit": reuse_fit,
+        "symmetry": symmetry,
     }
     save_json(session_dir / "session.json", session)
 
@@ -264,12 +316,14 @@ def _process_asset(root: Path, config, asset_dir: Path, lods: list[Path], avatar
     print("=" * 78)
     print(f"Fitting manual sobre: {primary.name}")
     print("LODs que es processaran:")
-    for p in lods:
+    for p in pending:
         print(f"  - {p.name}")
     print(f"Avatar: {avatar.name}")
     print(f"Tipus de peça (pesos): {garment['garment_type']} (font: {garment['source']}; "
           f"es pot forçar amb {asset_dir.name}/garment.json)")
 
+    if symmetry:
+        print("Simetria X activada: ajusta una sola peça; l'altra es reflecteix al pla central fix.")
     proc = subprocess.Popen(cmd)
     ctx["proc"] = proc
     info = wait_blender_ready(session_dir, proc)
@@ -279,6 +333,8 @@ def _process_asset(root: Path, config, asset_dir: Path, lods: list[Path], avatar
     if info.get("fit_reused"):
         print("Fitting desat verificat (mateix avatar i mateixa malla ULTRA) i aplicat.")
     else:
+        if info.get("fit_reuse_rejected") and has_existing:
+            raise RuntimeError("Blender ha rebutjat el fitting desat; no es publica cap resultat nou.")
         if info.get("fit_reuse_rejected"):
             print("\nEl fitting desat NO s'ha aplicat:")
             for reason in info["fit_reuse_rejected"].get("reasons", []):
@@ -293,28 +349,34 @@ def _process_asset(root: Path, config, asset_dir: Path, lods: list[Path], avatar
             "Quan estigui bé, fes Ctrl+S, torna aquí i prem ENTER... "
         )
 
-    needs_shapes = yes_no("\nAquesta peça necessita blendshapes del BODY?", default=bool(previous_shapes))
+    needs_shapes = previous_shapes if reuse_fit else yes_no(
+        "\nAquesta peça necessita blendshapes del BODY?", default=bool(previous_shapes))
 
     print(f"\nProcessant ULTRA amb el fitting {'desat' if fit_source == 'reused' else 'manual'}...")
     commit = send_command(session_dir, "commit_manual_fit").get("result", {})
     # The fitting + fingerprints of what was fitted, so a later run can reuse it safely.
-    save_json(fit_record_path(asset_dir, config), {
-        "model": primary.name, "model_sha256": sha256_file(primary),
-        "avatar": avatar.name, "avatar_sha256": sha256_file(avatar),
-        "garment_vertices": commit.get("garment_vertices"), "fit_snapshot": commit.get("fit_snapshot"),
-        "fit_source": fit_source, "needs_blendshapes": bool(needs_shapes),
-        "committed_at": time.strftime("%Y-%m-%d %H:%M:%S"),
-    })
-    if needs_shapes:
+    if not fit_record_path(asset_dir, config).exists():
+        save_json(out_dir / "fit_record.json", {
+            "model": primary.name, "model_sha256": sha256_file(primary),
+            "avatar": avatar.name, "avatar_sha256": sha256_file(avatar),
+            "garment_vertices": commit.get("garment_vertices"), "fit_snapshot": commit.get("fit_snapshot"),
+            "fit_source": fit_source, "needs_blendshapes": bool(needs_shapes),
+            "symmetry": bool((commit.get("fit_snapshot") or {}).get("symmetry")),
+            "committed_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+        })
+    if primary in pending and needs_shapes:
         send_command(session_dir, "generate_blendshapes")
     else:
         send_command(session_dir, "skip_blendshapes")
-    first = send_command(session_dir, "export_current")
-    first_result = first.get("result", {})
-    if first_result.get("fbx"):
-        print("  OK", first_result.get("fbx"))
+    if primary in pending:
+        first = send_command(session_dir, "export_current")
+        first_result = first.get("result", {})
+        if first_result.get("fbx"):
+            print("  OK", first_result.get("fbx"))
+    else:
+        print(f"  {primary.name}: referencia calculada en memoria; FBX existent conservat.")
 
-    for model in lods[1:]:
+    for model in (p for p in pending if p != primary):
         print(f"\nPreprocessant i riggejant automàticament {model.name} amb EXACTAMENT el fitting de l'ULTRA...")
         ack = send_command(
             session_dir,
@@ -333,9 +395,16 @@ def _process_asset(root: Path, config, asset_dir: Path, lods: list[Path], avatar
         pass
 
 
-    print("\nCOMPLETAT. Resultats:")
-    for model in lods:
-        folder = out_dir / lod_output_folder(model)
+    # Publish only after every missing LOD succeeded. Collision checks protect
+    # existing FBX, BLEND, textures and fitting records, including partial folders.
+    for model in pending:
+        expected = out_dir / lod_output_folder(model) / f"{model.stem}_rigged.fbx"
+        if not expected.is_file() or not expected.stat().st_size:
+            raise RuntimeError(f"Blender no ha generat el FBX pendent: {expected}")
+    publish_additions(out_dir, final_out_dir)
+    print("\nCOMPLETAT. Nous resultats (els anteriors es conserven):")
+    for model in pending:
+        folder = final_out_dir / lod_output_folder(model)
         print("  ", folder / f"{model.stem}_rigged.fbx")
         print("  ", folder / f"{model.stem}_rigged.blend")
         print("  ", folder / "Textures")
@@ -365,11 +434,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", required=True)
     ap.add_argument("--asset", default=None)
+    ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
     root = Path(args.root).resolve()
     config = load_json(HERE / "config.json")
     output = root / config["output_dir"]
+    report_rigged_levels(output, config)
     exts = set(config["supported_models"])
 
     avatar = find_avatar(root / config["avatar_dir"], config)
@@ -383,10 +454,13 @@ def main():
     assets = [requested] if requested else discover_assets(output, exts)
     if not assets:
         print(f"No s'ha trobat cap asset pendent dins {output}")
-        assets = choose_asset_to_regenerate(root, config, output, exts)
-        if not assets:
-            return 0
+        return 0
 
+    if args.dry_run:
+        for asset_dir, lods in assets:
+            pending = missing_rigged_lods(asset_dir, config, lods)
+            print(f"{asset_dir.name}: {', '.join(p.name for p in pending) or 'complet'}")
+        return 0
     for asset_dir, lods in assets:
         try:
             process_asset(root, config, asset_dir, lods, avatar)

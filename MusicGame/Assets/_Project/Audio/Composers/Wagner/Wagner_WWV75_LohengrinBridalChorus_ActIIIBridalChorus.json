@@ -1,0 +1,186 @@
+{
+  "targetId": "Wagner_2",
+  "composer": "Richard Wagner",
+  "work": "Lohengrin – Bridal Chorus",
+  "catalog": "WWV 75",
+  "movement": "Act III Bridal Chorus",
+  "source": "IMSLP",
+  "sourceUrl": "https://imslp.org/wiki/Lohengrin,_WWV_75_(Wagner,_Richard)",
+  "mutopiaId": "https://imslp.org/wiki/Lohengrin,_WWV_75_(Wagner,_Richard)",
+  "sourceFiles": [
+    "https://imslp.org/wiki/Special:ImagefromIndex/66166"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "https://imslp.org/wiki/IMSLP:Public_domain",
+  "sourceAttribution": "Breitkopf und Härtel [1887] (Kalmus reprint)",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 (OMR source)",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. 2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+  "status": "USER_APPROVED_VARIANT",
+  "instrumentCorrections": [
+    {
+      "part": "Violin, Violin",
+      "imported": "violin",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Violin, Violin",
+      "imported": "violin",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Violin, Violin",
+      "imported": "violin",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Violin, Violin",
+      "imported": "violin",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Treble Viol, Violin",
+      "imported": "treble-viol",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Violin, Violin",
+      "imported": "violin",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Treble Viol, Violin",
+      "imported": "treble-viol",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Violin, Violin",
+      "imported": "violin",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Violin, Violin",
+      "imported": "violin",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Viola, Viola",
+      "imported": "viola",
+      "corrected": "viola",
+      "sound": "strings.viola"
+    },
+    {
+      "part": "Violoncello, Violoncello",
+      "imported": "violoncello",
+      "corrected": "violoncello",
+      "sound": "strings.cello"
+    },
+    {
+      "part": "Violin, Violin",
+      "imported": "violin",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Viola, Viola",
+      "imported": "viola",
+      "corrected": "viola",
+      "sound": "strings.viola"
+    },
+    {
+      "part": "Viola, Viola",
+      "imported": "viola",
+      "corrected": "viola",
+      "sound": "strings.viola"
+    },
+    {
+      "part": "Violoncello, Violoncello",
+      "imported": "violoncello",
+      "corrected": "violoncello",
+      "sound": "strings.cello"
+    },
+    {
+      "part": "Violoncello, Violoncello",
+      "imported": "violoncello",
+      "corrected": "violoncello",
+      "sound": "strings.cello"
+    },
+    {
+      "part": "Treble Viol, Violin",
+      "imported": "treble-viol",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Treble Viol, Violin",
+      "imported": "treble-viol",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Viola, Viola",
+      "imported": "viola",
+      "corrected": "viola",
+      "sound": "strings.viola"
+    }
+  ],
+  "variantNote": "2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+  "unityAsset": "Assets/_Project/Audio/Composers/Wagner/Wagner_WWV75_LohengrinBridalChorus_ActIIIBridalChorus.mp3",
+  "durationSeconds": 114.641,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Wagner_2/Wagner_WWV75_LohengrinBridalChorus_ActIIIBridalChorus.wav",
+    "masterSamples": 5263908,
+    "trimmedLeadSamples": 281,
+    "trimmedTailSamples": 207939,
+    "encodedSamples": 5055688,
+    "durationSeconds": 114.641,
+    "bytes": 2752261,
+    "sha256": "675e48b0c41af46043044c813edac23b1cd65e6dc0652af57eb01ddda99578ea",
+    "masterSha256": "020623670bd20a417d163eed51ac23b2f1efe7608ed76a7d2c578f892cb7eec9"
+  },
+  "masterQa": {
+    "durationSeconds": 119.36,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -9.03,
+    "rmsDbfs": -27.86,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false
+  },
+  "importedInstruments": [
+    "violin",
+    "violin",
+    "violin",
+    "violin",
+    "violin",
+    "violin",
+    "violin",
+    "violin",
+    "violin",
+    "viola",
+    "violoncello",
+    "violin",
+    "viola",
+    "viola",
+    "violoncello",
+    "violoncello",
+    "violin",
+    "violin",
+    "viola"
+  ]
+}

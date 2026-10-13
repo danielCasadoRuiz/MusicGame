@@ -1,0 +1,62 @@
+{
+  "targetId": "Beethoven_1",
+  "composer": "L. van Beethoven",
+  "work": "Symphony No. 5",
+  "catalog": "Op. 67",
+  "movement": "I. Allegro con brio",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=941",
+  "mutopiaId": "Mutopia-2017/11/05-941",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/BeethovenLv/O67/Symphony5_1/Symphony5_1.mid"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "sourceAttribution": "Typeset/transcribed by Stelios Samelis (adapted to 2.16.2 by Johannes Heinecke) for the Mutopia Project",
+  "sourceEdition": "Breitkopf and Härtel (1862-1865)",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "DONE",
+  "unityAsset": "Assets/_Project/Audio/Composers/Beethoven/Beethoven_Op67_SymphonyNo5_I_AllegroConBrio.mp3",
+  "durationSeconds": 318.123,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Beethoven_1/Beethoven_Op67_SymphonyNo5_I_AllegroConBrio.wav",
+    "masterSamples": 14106487,
+    "trimmedLeadSamples": 5660,
+    "trimmedTailSamples": 71610,
+    "encodedSamples": 14029217,
+    "durationSeconds": 318.123,
+    "bytes": 7636114,
+    "sha256": "026151b42d9eb24279959f72cc31d517aa68bbbb6a2d02f57da9adac5b1780f5",
+    "masterSha256": "f61d9d7d0ef33486954a7cdf165eab32e5738d12befa12d7bbfb257620c9f59f"
+  },
+  "masterQa": {
+    "durationSeconds": 319.87,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -4.88,
+    "rmsDbfs": -24.48,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "flute",
+    "oboe",
+    "bb-clarinet",
+    "bassoon",
+    "english-horn",
+    "english-horn",
+    "timpani",
+    "violin",
+    "violin",
+    "viola",
+    "violoncello",
+    "contrabass"
+  ]
+}

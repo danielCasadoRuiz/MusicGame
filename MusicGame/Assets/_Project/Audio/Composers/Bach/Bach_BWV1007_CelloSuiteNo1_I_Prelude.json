@@ -1,0 +1,51 @@
+{
+  "targetId": "Bach_4",
+  "composer": "J. S. Bach",
+  "work": "Cello Suite No. 1",
+  "catalog": "BWV 1007",
+  "movement": "I. Prelude",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=517",
+  "mutopiaId": "Mutopia-2018/01/19-517",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/BachJS/BWV1007/bwv1007/bwv1007-mids.zip"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "sourceAttribution": "Typeset/transcribed by Andreas Scherer for the Mutopia Project",
+  "sourceEdition": "Schirmer, 1916",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "DONE",
+  "unityAsset": "Assets/_Project/Audio/Composers/Bach/Bach_BWV1007_CelloSuiteNo1_I_Prelude.mp3",
+  "durationSeconds": 127.192,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Bach_4/Bach_BWV1007_CelloSuiteNo1_I_Prelude.wav",
+    "masterSamples": 5688900,
+    "trimmedLeadSamples": 192,
+    "trimmedTailSamples": 79558,
+    "encodedSamples": 5609150,
+    "durationSeconds": 127.192,
+    "bytes": 3053818,
+    "sha256": "e4e1e6ba9212d93d59948cdde04c5f0b5f1734bf9a3fce56ba841ce9d28c0bc7",
+    "masterSha256": "6357db0d7cc72c008676cbea1ffd42d29c3ec3eb75f6e6862eb6272ef6d1900e"
+  },
+  "masterQa": {
+    "durationSeconds": 129.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -16.05,
+    "rmsDbfs": -33.41,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "violoncello"
+  ]
+}

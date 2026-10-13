@@ -26,6 +26,9 @@ def parse_args():
 HERE = Path(__file__).resolve().parent
 if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
+if str(HERE.parent) not in sys.path:
+    sys.path.insert(0, str(HERE.parent))
+from incremental_outputs import model_lod_rank
 import garment_weights
 from garment_profiles import resolve as resolve_garment
 
@@ -112,6 +115,67 @@ def bake_object_transform_preserve_world(obj):
     log(f"TRANSFORM bake world-preserving OK delta={delta:.8f}")
 
 
+MIRROR_NAME = "FAR_Mirror_X"
+
+
+def prepare_symmetric_garment(obj, settings=None):
+    """Bake imported placement once, then mirror about a fixed world plane.
+
+    A separate reference keeps the plane fixed during Object Mode rotation,
+    translation and scaling. No bisect/merge: duplicate the entire single shoe.
+    """
+    bake_object_transform_preserve_world(obj)
+    reference = next((o for o in bpy.data.objects
+                      if o.get("FAR_ROLE") == "MIRROR_PLANE"), None)
+    if reference is None:
+        reference = bpy.data.objects.new("FAR_Symmetry_Plane", None)
+        bpy.context.scene.collection.objects.link(reference)
+        reference["FAR_ROLE"] = "MIRROR_PLANE"
+        reference.empty_display_size = 0.15
+        reference.hide_select = True
+        reference.hide_render = True
+    reference.matrix_world = matrix_from_list(settings["plane_matrix_world"]) if settings else Matrix.Identity(4)
+    mod = obj.modifiers.new(MIRROR_NAME, 'MIRROR')
+    mod.mirror_object = reference
+    mod.use_axis = (True, False, False)
+    mod.use_bisect_axis = (False, False, False)
+    mod.use_mirror_merge = False
+    mod.use_clip = False
+    mod.show_in_editmode = True
+    bpy.context.view_layer.update()
+
+
+def capture_symmetry_settings():
+    mod = GARMENT.modifiers.get(MIRROR_NAME)
+    if mod is None:
+        if SESSION.get("symmetry"):
+            raise RuntimeError("Falta FAR_Mirror_X. Conserva el Mirror sense aplicar durant el fitting.")
+        return None
+    if mod.type != 'MIRROR' or mod.mirror_object is None:
+        raise RuntimeError("El Mirror del fitting ha de conservar el seu pla de referencia.")
+    if (tuple(mod.use_axis) != (True, False, False)
+            or any(mod.use_bisect_axis) or mod.use_mirror_merge
+            or not mod.show_viewport):
+        raise RuntimeError("Conserva Mirror X visible, sense Bisect ni Merge, per replicar-lo als LODs.")
+    return {"axis": "X", "plane_matrix_world": matrix_to_list(mod.mirror_object.matrix_world)}
+
+
+def apply_symmetric_garment():
+    """Materialize both sides BEFORE transforms, weights and blendshapes."""
+    mod = GARMENT.modifiers.get(MIRROR_NAME)
+    if mod is None:
+        if (FIT_SNAPSHOT or {}).get("symmetry"):
+            raise RuntimeError("Falta el Mirror abans de calcular els pesos.")
+        return
+    bpy.ops.object.select_all(action='DESELECT')
+    GARMENT.hide_set(False)
+    GARMENT.select_set(True)
+    bpy.context.view_layer.objects.active = GARMENT
+    bpy.ops.object.modifier_apply(modifier=mod.name)
+    bpy.context.view_layer.update()
+    log(f"MIRROR applied vertices={len(GARMENT.data.vertices)}")
+
+
 def parent_to_armature_preserve_world(obj, arm):
     """Parent garment to armature while keeping the exact current world transform."""
     world = obj.matrix_world.copy()
@@ -127,12 +191,17 @@ LOD_OUTPUT_FOLDERS = {
     "ULTRA_50K": "ULTRA",
     "HIGH_30K": "HIGH",
     "MIDHIGH_20K": "MID-HIGH",
+    "MEDIUM_20K": "MID-HIGH",
+    "MID-HIGH_20K": "MID-HIGH",
     "MEDIUM_10K": "MEDIUM",
     "LOW_5K": "LOW",
 }
 
 
 def lod_output_folder(model_path: Path):
+    rank = model_lod_rank(model_path)
+    if rank < 5:
+        return ['ULTRA', 'HIGH', 'MID-HIGH', 'MEDIUM', 'LOW'][rank]
     upper = model_path.stem.upper()
     for token, folder in LOD_OUTPUT_FOLDERS.items():
         if token in upper:
@@ -200,15 +269,59 @@ def export_textures(obj, textures_dir: Path):
             exported.append(str(dst))
         except Exception as e:
             log(f'TEXTURE WARNING {img.name}: {e}')
+    # glTF stores metallic in B, roughness in G; Unity consumes metallic in R
+    # and smoothness in A. Keep the source map and emit the Unity-ready map too.
+    for path in list(exported):
+        if Path(path).stem.lower() == 'metallic-roughness':
+            exported.append(str(export_unity_metallic_smoothness(Path(path))))
     log(f'TEXTURES exported count={len(exported)} dir={textures_dir}')
     return exported
+
+
+def export_unity_metallic_smoothness(source: Path):
+    import numpy as np
+    src = bpy.data.images.load(str(source), check_existing=False)
+    dst = None
+    try:
+        src.colorspace_settings.name = 'Non-Color'
+        width, height = src.size
+        pixels = np.empty(width * height * 4, dtype=np.float32)
+        src.pixels.foreach_get(pixels)
+        pixels = pixels.reshape((-1, 4))
+        result = np.zeros_like(pixels)
+        result[:, 0] = pixels[:, 2]
+        result[:, 3] = 1.0 - pixels[:, 1]
+        dst = bpy.data.images.new('FAR_Unity_MetallicSmoothness', width, height, alpha=True)
+        dst.colorspace_settings.name = 'Non-Color'
+        dst.pixels.foreach_set(result.ravel())
+        target = source.with_name('MetallicSmoothness.png')
+        dst.filepath_raw = str(target)
+        dst.file_format = 'PNG'
+        dst.save()
+        return target
+    finally:
+        bpy.data.images.remove(src)
+        if dst is not None:
+            bpy.data.images.remove(dst)
 
 
 def save_final_blend_copy(path: Path):
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
         path.unlink()                       # overwrite without leaving a .blend1 backup in Output
-    bpy.ops.wm.save_as_mainfile(filepath=str(path), copy=True)
+    # Save a clean deliverable while keeping the avatar in the live fitting scene.
+    links = [(obj, collection) for obj in bpy.context.scene.objects
+             if obj not in (ARM, GARMENT) for collection in obj.users_collection]
+    try:
+        for obj, collection in links:
+            collection.objects.unlink(obj)
+        for image in iter_material_images(GARMENT):
+            if not image.packed_file:
+                image.pack()
+        bpy.ops.wm.save_as_mainfile(filepath=str(path), copy=True)
+    finally:
+        for obj, collection in links:
+            collection.objects.link(obj)
     backup = path.with_suffix(".blend1")
     if backup.exists():
         backup.unlink()
@@ -257,7 +370,8 @@ def export_current_fbx_package():
         path_mode='COPY',
         embed_textures=True,
         use_mesh_modifiers=True,
-        mesh_smooth_type='OFF',
+        mesh_smooth_type='FACE',
+        use_tspace=True,
     )
     log(f'EXPORT FBX package done {fbx_path}')
     return {'fbx':str(fbx_path),'blend':str(blend_path),'textures':textures,'folder':str(lod_dir)}
@@ -397,6 +511,8 @@ def capture_fit_snapshot():
     refresh_scene_refs(require_garment=True)
     FIT_SNAPSHOT = {
         "garment_matrix_world": matrix_to_list(GARMENT.matrix_world.copy()),
+        "symmetry": capture_symmetry_settings(),
+        "source_garment_vertices": len(GARMENT.data.vertices),
         "pose_basis": {pb.name: matrix_to_list(pb.matrix_basis.copy()) for pb in ARM.pose.bones},
     }
     log(f"FIT snapshot captured bones={len(FIT_SNAPSHOT['pose_basis'])}")
@@ -433,6 +549,8 @@ def import_lod_as_garment(model_path: Path):
     GARMENT = join_garment_meshes(imported)
     GARMENT["FAR_ROLE"] = "GARMENT"
     CURRENT_MODEL = model_path.resolve()
+    if (FIT_SNAPSHOT or {}).get("symmetry"):
+        prepare_symmetric_garment(GARMENT, FIT_SNAPSHOT["symmetry"])
     restore_fit_snapshot_to_current_garment()
     return GARMENT
 
@@ -637,9 +755,10 @@ def frame_scene():
 def _saved_fit_problems(fit):
     problems = []
     nverts = len(GARMENT.data.vertices)
-    if fit.get("garment_vertices") not in (None, nverts):
+    expected = fit.get("fit_snapshot", {}).get("source_garment_vertices", fit.get("garment_vertices"))
+    if expected not in (None, nverts):
         problems.append(f"la malla de l'ULTRA actual ({nverts} vèrtexs) no és la del fitting desat "
-                        f"({fit.get('garment_vertices')} vèrtexs)")
+                        f"({expected} vèrtexs)")
     bones = set(fit.get("fit_snapshot", {}).get("pose_basis", {}))
     missing = bones - {b.name for b in ARM.data.bones}
     if not bones or missing:
@@ -683,12 +802,17 @@ def initial_setup():
             log(f"SAVED FIT rejected: {problems}")
         else:
             FIT_SNAPSHOT = reuse["fit_snapshot"]
+            if FIT_SNAPSHOT.get("symmetry"):
+                prepare_symmetric_garment(GARMENT, FIT_SNAPSHOT["symmetry"])
             restore_fit_snapshot_to_current_garment()
             save_state()
             write_json(READY_PATH, {'status': 'ok', 'body': BODY.name, 'armature': ARM.name, 'garment': GARMENT.name,
                                     'fit_reused': True, **avatar_info})
             log("READY (saved fitting reused: garment transform + rig pose)")
             return
+
+    if SESSION.get("symmetry"):
+        prepare_symmetric_garment(GARMENT)
 
     # Pre-create the manual fitting checkpoint. Ctrl+S now saves exactly here.
     manual_blend = Path(SESSION.get('manual_blend', SESSION_DIR / 'manual_fit.blend'))
@@ -1032,6 +1156,7 @@ def commit_manual_fit():
     GARMENT.hide_set(False)
     GARMENT.select_set(True)
     bpy.context.view_layer.objects.active = GARMENT
+    apply_symmetric_garment()
     bake_object_transform_preserve_world(GARMENT)
 
     # Body is still evaluated in the user-defined temporary bone pose here.
@@ -1118,6 +1243,7 @@ def process_additional_lod(model_path: Path, needs_blendshapes: bool):
     bpy.ops.object.select_all(action='DESELECT')
     GARMENT.select_set(True)
     bpy.context.view_layer.objects.active = GARMENT
+    apply_symmetric_garment()
     bake_object_transform_preserve_world(GARMENT)
 
     transfer_weights_from_current_body_pose(reference_mode="use")

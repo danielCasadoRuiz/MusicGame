@@ -1,0 +1,88 @@
+{
+  "targetId": "Handel_4",
+  "composer": "G. F. Handel",
+  "work": "Solomon – The Arrival of the Queen of Sheba",
+  "catalog": "HWV 67",
+  "movement": "Instrumental sinfonia",
+  "source": "IMSLP",
+  "sourceUrl": "https://imslp.org/wiki/Solomon,_HWV_67_(Handel,_George_Frideric)",
+  "mutopiaId": "https://imslp.org/wiki/Solomon,_HWV_67_(Handel,_George_Frideric)",
+  "sourceFiles": [
+    "https://imslp.org/wiki/Special:ImagefromIndex/01067"
+  ],
+  "sourceLicense": "Creative Commons Attribution 3.0",
+  "sourceLicenseClass": "CC BY",
+  "sourceLicenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+  "sourceAttribution": "Vit Reichel (Mutopia Project)",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 (OMR source)",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. 2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+  "status": "USER_APPROVED_VARIANT",
+  "instrumentCorrections": [
+    {
+      "part": "Voice, Oboe I.",
+      "imported": "voice",
+      "corrected": "oboe",
+      "sound": "wind.reed.oboe"
+    },
+    {
+      "part": "Voice, Oboe II.",
+      "imported": "voice",
+      "corrected": "oboe",
+      "sound": "wind.reed.oboe"
+    },
+    {
+      "part": "Voice, Violino I. II.",
+      "imported": "voice",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Voice, Viola",
+      "imported": "voice",
+      "corrected": "viola",
+      "sound": "strings.viola"
+    },
+    {
+      "part": "Voice, Bassi",
+      "imported": "voice",
+      "corrected": "contrabasses",
+      "sound": "strings.contrabass"
+    }
+  ],
+  "variantNote": "2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+  "unityAsset": "Assets/_Project/Audio/Composers/Handel/Handel_HWV67_SolomonTheArrivalOfTheQueenOfSheba_InstrumentalSinfonia.mp3",
+  "durationSeconds": 197.542,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Handel_4/Handel_HWV67_SolomonTheArrivalOfTheQueenOfSheba_InstrumentalSinfonia.wav",
+    "masterSamples": 8854265,
+    "trimmedLeadSamples": 126,
+    "trimmedTailSamples": 142532,
+    "encodedSamples": 8711607,
+    "durationSeconds": 197.542,
+    "bytes": 4742164,
+    "sha256": "14e3c1040861e498280b87c5e52e788cdc30c24eddef2121872326fc44129b3d",
+    "masterSha256": "94984db7cafa6ce229f96662d2749b661a4500096ec9d884a356a80eededc246"
+  },
+  "masterQa": {
+    "durationSeconds": 200.78,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -11.58,
+    "rmsDbfs": -28.57,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false
+  },
+  "importedInstruments": [
+    "oboe",
+    "oboe",
+    "violin",
+    "viola",
+    "contrabasses"
+  ]
+}

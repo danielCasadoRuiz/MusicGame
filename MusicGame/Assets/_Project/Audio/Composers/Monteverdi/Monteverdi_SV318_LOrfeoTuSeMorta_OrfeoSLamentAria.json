@@ -1,0 +1,95 @@
+{
+  "targetId": "Monteverdi_2",
+  "composer": "Claudio Monteverdi",
+  "work": "L'Orfeo – Tu se' morta",
+  "catalog": "SV 318",
+  "movement": "Orfeo's lament aria",
+  "source": "CPDL",
+  "sourceUrl": "https://www.cpdl.org/wiki/index.php/L%27Orfeo,_SV_318_(Claudio_Monteverdi)",
+  "mutopiaId": "https://www.cpdl.org/wiki/index.php/L%27Orfeo,_SV_318_(Claudio_Monteverdi)",
+  "sourceFiles": [
+    "https://web.archive.org/web/20240218072520id_/https://www.cpdl.org/wiki/images/4/40/Mont-orf.midi"
+  ],
+  "sourceLicense": "CPDL License (Choral Public Domain Library), version 4",
+  "sourceLicenseClass": "OK_CPDL",
+  "sourceLicenseUrl": "https://www.cpdl.org/wiki/index.php/ChoralWiki:CPDL",
+  "sourceAttribution": "Peter Rottländer, CPDL #40106 (transcribed from the 1609 print); file via the Internet Archive (cpdl.org blocks scripts)",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrument assignments of mis-imported parts corrected to the edition's own staff names (Lupophone, MIDIorfeoVoice: -> tenor, Harp, MIDIorfeoHarp: -> harp, Treble Viol, MIDIorfeoViolin: -> violin, Bass Recorder, MIDIorfeoRecorder: -> flute, Mellophone Bugle, MIDIorfeoCornet: -> c-trumpet, Violoncello, MIDIorfeoBc: -> violoncello); no musical changes.",
+  "status": "DONE",
+  "instrumentCorrections": [
+    {
+      "part": "Lupophone, MIDIorfeoVoice:",
+      "imported": "lupophone",
+      "corrected": "tenor",
+      "sound": "voice.tenor"
+    },
+    {
+      "part": "Harp, MIDIorfeoHarp:",
+      "imported": "harp",
+      "corrected": "harp",
+      "sound": "pluck.harp"
+    },
+    {
+      "part": "Treble Viol, MIDIorfeoViolin:",
+      "imported": "treble-viol",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Bass Recorder, MIDIorfeoRecorder:",
+      "imported": "bass-recorder",
+      "corrected": "flute",
+      "sound": "wind.flutes.flute"
+    },
+    {
+      "part": "Mellophone Bugle, MIDIorfeoCornet:",
+      "imported": "mellophon-bugle",
+      "corrected": "c-trumpet",
+      "sound": "brass.trumpet"
+    },
+    {
+      "part": "Violoncello, MIDIorfeoBc:",
+      "imported": "violoncello",
+      "corrected": "violoncello",
+      "sound": "strings.cello"
+    }
+  ],
+  "unityAsset": "Assets/_Project/Audio/Composers/Monteverdi/Monteverdi_SV318_LOrfeoTuSeMorta_OrfeoSLamentAria.mp3",
+  "durationSeconds": 97.44,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Monteverdi_2/Monteverdi_SV318_LOrfeoTuSeMorta_OrfeoSLamentAria.wav",
+    "masterSamples": 4365900,
+    "trimmedLeadSamples": 239,
+    "trimmedTailSamples": 68542,
+    "encodedSamples": 4297119,
+    "durationSeconds": 97.44,
+    "bytes": 2339735,
+    "sha256": "ecba88d1c948616ff0d7e60c8d7e04767440b3d7c38f8da716930f0c0777d073",
+    "masterSha256": "70c315883132c4fbdb031263d1fa25ff34c855078911317eac6f64f0cf518f6f"
+  },
+  "masterQa": {
+    "durationSeconds": 99.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -9.44,
+    "rmsDbfs": -28.14,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "tenor",
+    "harp",
+    "violin",
+    "flute",
+    "c-trumpet",
+    "violoncello"
+  ]
+}

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import hashlib, json, os, shutil, subprocess, sys, time
+import argparse, hashlib, json, os, shutil, subprocess, sys, time, uuid
+from incremental_outputs import missing_lods, publish_additions
 from datetime import datetime
 from pathlib import Path
 
@@ -40,8 +41,9 @@ def raw_packages():
     Retopo depends ONLY on the GLB. Extra package files are optional and are
     carried to preProcess after success if they happen to share its folder.
     """
-    RAW.mkdir(parents=True,exist_ok=True)
     packages=[]
+    if not RAW.is_dir():
+        return packages
     for raw in sorted(RAW.rglob("*.glb"), key=lambda p:str(p).casefold()):
         try:
             rel=raw.relative_to(RAW)
@@ -92,15 +94,56 @@ def preflight(targets):
 
 
 def reset_session_scratch():
-    """_W and hidden finalizing folders are NEVER process state."""
-    if WORK_ROOT.exists():
-        shutil.rmtree(WORK_ROOT, ignore_errors=True)
+    """Own a unique scratch directory; leave other runs and all outputs alone."""
+    global WORK_ROOT
+    WORK_ROOT = ROOT / "_W" / ("incremental_" + uuid.uuid4().hex[:12])
     WORK_ROOT.mkdir(parents=True, exist_ok=True)
 
-    if OUTPUT.exists():
-        for p in OUTPUT.iterdir():
-            if p.is_dir() and p.name.startswith(".") and p.name.endswith(".finalizing"):
-                shutil.rmtree(p, ignore_errors=True)
+
+def archived_packages(targets):
+    """Find original RAWs archived by earlier runs, including renamed assets."""
+    if not OUTPUT.is_dir():
+        return []
+    packages = []
+    for directory in sorted(OUTPUT.iterdir(), key=lambda p: p.name.casefold()):
+        if not directory.is_dir() or directory.name.startswith("."):
+            continue
+        if not missing_lods(directory.name, directory, targets):
+            continue
+        archive = directory / "preProcess"
+        exact = archive / (directory.name + ".glb")
+        if exact.is_file():
+            raw = exact
+        else:
+            direct = list(archive.glob("*.glb")) if archive.is_dir() else []
+            candidates = direct or (list(archive.rglob("*.glb")) if archive.is_dir() else [])
+            if len(candidates) != 1:
+                log(f"{directory.name}: falten LODs pero no hi ha un RAW unic a preProcess; no toco els resultats.")
+                continue
+            raw = candidates[0]
+        packages.append((None, raw, directory.name, True))
+    return packages
+
+
+def pending_packages(targets):
+    """Output is inspected first and independently of the Raw3D queue."""
+    archived = archived_packages(targets)
+    archived_assets = {asset for _, _, asset, _ in archived}
+    fresh = [(directory, raw, raw.stem, False)
+             for directory, raw in raw_packages()
+             if raw.stem not in archived_assets]
+    return archived + fresh
+
+
+def report_output_levels(targets):
+    if not OUTPUT.is_dir():
+        return
+    for directory in sorted(OUTPUT.iterdir()):
+        if not directory.is_dir() or directory.name.startswith('.'):
+            continue
+        missing = missing_lods(directory.name, directory, targets)
+        status = 'falten ' + ', '.join(t['label'] for t in missing) if missing else 'complet'
+        log(f"RETOPO {directory.name}: {len(targets)-len(missing)}/{len(targets)} GLB; {status}.")
 
 
 def _clear_work(digest):
@@ -111,115 +154,99 @@ def _clear_work(digest):
         WORK_ROOT.rmdir()   # recreated by the next job
 
 
-def process_package(package_dir,raw,targets,attempted):
-    asset=raw.stem
-    start_hash=sha256(raw)
-    signature=(str(raw.resolve()),start_hash)
+def process_package(package_dir, raw, targets, attempted, asset_name=None, archived=False):
+    asset = asset_name or raw.stem
+    final_dir = OUTPUT / asset
+    pending = missing_lods(asset, final_dir, targets)
+    if not pending:
+        return False, []
+    start_hash = sha256(raw)
+    signature = (str(raw.resolve()), start_hash)
     if signature in attempted:
         return False, []
     attempted.add(signature)
-    digest=start_hash[:8]
-    final_dir=OUTPUT/asset
-    staging=OUTPUT/f".{asset}.finalizing"
-    if final_dir.exists():
-        log(f"FAILED {asset}: Output/{asset} ja existeix; no sobreescric.")
-        return True,[f"{asset}:output_exists"]
-    if staging.exists(): shutil.rmtree(staging,ignore_errors=True)
+    # Never combine an unrelated new RAW with retained LODs of an older RAW.
+    retained_models = len(pending) < len(targets) or any((final_dir / 'Rigged').rglob('*.fbx'))
+    if retained_models and not archived:
+        saved_raws = [r for _, r, a, _ in archived_packages(targets) if a == asset]
+        if not saved_raws or sha256(saved_raws[0]) != start_hash:
+            log(f"{asset}: el RAW no coincideix amb preProcess; els outputs existents queden protegits.")
+            return True, [f"{asset}:raw_mismatch"]
+    digest = start_hash[:8]
+    staging = WORK_ROOT / (digest + "__publish__" + uuid.uuid4().hex[:8])
     staging.mkdir(parents=True)
-    asset_failed=[]
-    generated=[]
-    for t in targets:
-        if not raw.is_file():
-            asset_failed.append("raw_disappeared")
-            log(f"{asset}: RAW ha desaparegut; aborto asset.")
-            break
-        current_hash=sha256(raw)
-        if current_hash != start_hash:
-            asset_failed.append("raw_changed")
-            log(f"{asset}: RAW ha canviat durant el procés; descarto parcials i es reprocessarà des de HIGH.")
-            attempted.discard(signature)
-            break
-        label,quads=t["label"],t["quads"]
-        job=WORK_ROOT/f"{digest}__{label.lower()}__{quads}q"
-        result=job/"result"
-        if job.exists(): shutil.rmtree(job)
-        result.mkdir(parents=True)
-        log(f"{raw.name}: START {label} {quads:,} QUADS FROM CURRENT RAW")
-        cmd=[sys.executable,str(ENGINE),str(raw),
-             "--quads",str(quads),
-             "--output",str(result),
-             "--profile","auto",
-             "--no-resume","--no-preview",
-             "--blender",str(BLENDER)]
-        log("CMD: "+" ".join(cmd))
-        started=time.time()
-        rc=subprocess.run(cmd,cwd=str(ROOT)).returncode
-        elapsed=time.time()-started
-        if rc:
-            log(f"FAILED {raw.name} {label}: exit={rc}; elapsed={elapsed:.1f}s")
-            show_failure(result)
-
-            asset_failed.append(f"{label}:exit={rc}")
-            break
-        if not raw.is_file() or sha256(raw) != start_hash:
-            asset_failed.append("raw_changed")
-            log(f"{asset}: RAW ha canviat mentre es feia {label}; descarto resultat.")
-            attempted.discard(signature)
-            break
-        internal=result/f"{raw.stem}_HIGH.glb"
-        if not internal.exists():
-            log(f"FAILED {raw.name} {label}: GLB intern no trobat")
-            asset_failed.append(f"{label}:missing_glb")
-            break
-        final_name=lod_name(asset,label,quads)
-        staged_glb=staging/final_name
-        shutil.copy2(internal,staged_glb)
-        generated.append(staged_glb)
-        shutil.rmtree(job, ignore_errors=True)
-        log(f"OK {raw.name} {label}: {final_name}; elapsed={elapsed:.1f}s")
-    if asset_failed or len(generated)!=len(targets):
-        shutil.rmtree(staging,ignore_errors=True)
-        _clear_work(digest)
-        log(f"{asset}: NO FINALITZAT. Raw3D queda com única pista de pendent.")
-        return True,[f"{asset}:{x}" for x in asset_failed]
-    preprocess_target=staging/"preProcess"
+    failures = []
+    generated = []
+    log(f"{asset}: falten {', '.join(t['label'] for t in pending)}; la resta es conserva.")
     try:
+        for target in pending:
+            if not raw.is_file() or sha256(raw) != start_hash:
+                raise RuntimeError("RAW ha canviat o desaparegut durant el proces")
+            label, quads = target["label"], target["quads"]
+            job = WORK_ROOT / f"{digest}__{label.lower()}__{quads}q"
+            result = job / "result"
+            result.mkdir(parents=True)
+            cmd = [sys.executable, str(ENGINE), str(raw), "--quads", str(quads),
+                   "--output", str(result), "--profile", "auto", "--no-resume",
+                   "--no-preview", "--blender", str(BLENDER)]
+            log(f"{raw.name}: START {label} {quads:,} QUADS FROM ARCHIVED/CURRENT RAW")
+            rc = subprocess.run(cmd, cwd=str(ROOT)).returncode
+            if rc:
+                show_failure(result)
+                raise RuntimeError(f"{label}: exit={rc}")
+            if not raw.is_file() or sha256(raw) != start_hash:
+                raise RuntimeError("RAW ha canviat durant el retopo")
+            internal = result / f"{raw.stem}_HIGH.glb"
+            if not internal.is_file():
+                raise RuntimeError(f"{label}: GLB intern no trobat")
+            output = staging / lod_name(asset, label, quads)
+            shutil.copy2(internal, output)
+            generated.append(output)
+            shutil.rmtree(job)
+        if not archived and not (final_dir / "preProcess").exists():
+            archive = staging / "preProcess"
+            # Copy first; do not move/delete the RAW until publication succeeds.
+            if package_dir is not None:
+                shutil.copytree(package_dir, archive)
+            else:
+                archive.mkdir()
+                shutil.copy2(raw, archive / raw.name)
         if not raw.is_file() or sha256(raw) != start_hash:
-            raise RuntimeError("RAW changed before finalization")
-        if package_dir is not None:
-            # Preserve whatever related files happen to exist beside the GLB
-            # (input_original, images, etc.). None of them were prerequisites.
-            shutil.move(str(package_dir),str(preprocess_target))
-        else:
-            # Legacy/loose Raw3D/<asset>.glb: the GLB alone is sufficient.
-            preprocess_target.mkdir(parents=True,exist_ok=False)
-            shutil.move(str(raw),str(preprocess_target/raw.name))
-        if final_dir.exists():
-            raise RuntimeError(f"Output destination appeared during finalize: {final_dir}")
-        staging.replace(final_dir)
+            raise RuntimeError("RAW ha canviat abans de publicar")
+        publish_additions(staging, final_dir)
+        if not archived:
+            if package_dir is not None:
+                shutil.rmtree(package_dir)
+            else:
+                raw.unlink()
+        log(f"{asset}: AFEGITS {len(generated)} LODs; outputs previs i Rigged intactes.")
     except Exception as exc:
-        moved_pre=staging/"preProcess"
-        if moved_pre.exists():
-            try:
-                if package_dir is not None and not package_dir.exists():
-                    shutil.move(str(moved_pre),str(package_dir))
-                elif package_dir is None and not raw.exists():
-                    candidate=moved_pre/raw.name
-                    if candidate.exists(): shutil.move(str(candidate),str(raw))
-            except Exception:
-                pass
-        if staging.exists(): shutil.rmtree(staging,ignore_errors=True)
+        log(f"FAILED {asset}: {exc}; no se sobreescriu cap output existent.")
+        failures.append(f"{asset}:{exc}")
+    finally:
+        shutil.rmtree(staging, ignore_errors=True)
         _clear_work(digest)
-        log(f"FAILED {asset} FINALIZE: {type(exc).__name__}: {exc}")
-        return True,[f"{asset}:finalize:{type(exc).__name__}"]
-    _clear_work(digest)
-    log(f"{asset}: TANCAT -> Output/{asset}/ (preProcess + 5 LODs)")
-    return True,[]
+    return True, failures
+
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--once", action="store_true", help="Una passada, sense watcher")
+    ap.add_argument("--dry-run", action="store_true", help="Mostra els LODs pendents sense modificar fitxers")
+    args = ap.parse_args()
     targets=load_targets()
+    report_output_levels(targets)
+    if args.dry_run:
+        jobs = pending_packages(targets)
+        for _, raw, asset, _ in jobs:
+            pending = missing_lods(asset, OUTPUT / asset, targets)
+            log(f"{asset}: {', '.join(t['label'] for t in pending) or 'complet'}; RAW={raw}")
+        if not jobs:
+            log("Cap LOD pendent amb RAW disponible.")
+        return 0
     preflight(targets)
     OUTPUT.mkdir(exist_ok=True)
+    RAW.mkdir(exist_ok=True)
     reset_session_scratch()
 
     poll_seconds=5.0
@@ -228,8 +255,9 @@ def main():
 
     print()
     print("=== V98 RAW3D GLB-ONLY + QUAD REMESHER + ADAPTIVE CAGE ===")
-    print("Vigila Raw3D contínuament i processa qualsevol .glb que hi aparegui (també dins subcarpetes).")
-    print("Assets OK -> MOVE a Output/<asset>/.")
+    print("Primer revisa Output i completa els cinc LODs des de preProcess, encara que Raw3D estigui buit.")
+    print("Despres revisa els nous RAW de Raw3D. Repeteix les dues comprovacions continuament.")
+    print("Completa nomes LODs absents; recupera el RAW de Output/<asset>/preProcess si cal.")
     print("Assets fallits es queden a Raw3D i no es reintenten en bucle en aquesta execució.")
     print(f"Polling Raw3D cada {poll_seconds:.0f}s. Ctrl+C per sortir.")
     for t in targets:print(f"  {t['label']}: {t['quads']:,} quads")
@@ -237,20 +265,22 @@ def main():
 
     try:
         while True:
-            packages=raw_packages()
+            packages=pending_packages(targets)
             did_work=False
 
-            for package_dir,raw in packages:
+            for package_dir,raw,asset_name,archived in packages:
                 # Same unchanged RAW that already failed/was attempted this run:
                 # leave it pending, but don't hammer it repeatedly.
                 signature=(str(raw.resolve()),sha256(raw))
                 if signature in attempted:
                     continue
 
-                processed,errs=process_package(package_dir,raw,targets,attempted)
+                processed,errs=process_package(package_dir,raw,targets,attempted,asset_name,archived)
                 did_work = did_work or processed
                 failures.extend(errs)
 
+            if args.once:
+                return 1 if failures else 0
             if not did_work:
                 time.sleep(poll_seconds)
 

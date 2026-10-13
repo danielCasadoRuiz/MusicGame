@@ -1,0 +1,166 @@
+{
+  "targetId": "Haydn_2",
+  "composer": "Joseph Haydn",
+  "work": "Symphony No. 101 'The Clock'",
+  "catalog": "Hob. I:101",
+  "movement": "II. Andante",
+  "source": "IMSLP",
+  "sourceUrl": "https://imslp.org/wiki/Symphony_No.101_in_D_major,_Hob.I:101_(Haydn,_Joseph)",
+  "mutopiaId": "https://imslp.org/wiki/Symphony_No.101_in_D_major,_Hob.I:101_(Haydn,_Joseph)",
+  "sourceFiles": [
+    "https://imslp.org/wiki/Special:ImagefromIndex/517005"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "https://imslp.org/wiki/IMSLP:Public_domain",
+  "sourceAttribution": "Ernst Praetorius ed., Eulenburg ca.1934 (600 dpi monochrome)",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 (OMR source)",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. 2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+  "status": "USER_APPROVED_VARIANT",
+  "instrumentCorrections": [
+    {
+      "part": "Voice, Fl.",
+      "imported": "voice",
+      "corrected": "flute",
+      "sound": "wind.flutes.flute"
+    },
+    {
+      "part": "Voice, Ob.",
+      "imported": "voice",
+      "corrected": "oboe",
+      "sound": "wind.reed.oboe"
+    },
+    {
+      "part": "Voice, Cl",
+      "imported": "voice",
+      "corrected": "bb-clarinet",
+      "sound": "wind.reed.clarinet.bflat"
+    },
+    {
+      "part": "Voice, Fag.",
+      "imported": "voice",
+      "corrected": "bassoon",
+      "sound": "wind.reed.bassoon"
+    },
+    {
+      "part": "Voice, Cor.",
+      "imported": "voice",
+      "corrected": "horn",
+      "sound": "brass.french-horn"
+    },
+    {
+      "part": "Voice, Timp.",
+      "imported": "voice",
+      "corrected": "timpani",
+      "sound": "drum.timpani"
+    },
+    {
+      "part": "Violin, Violin",
+      "imported": "violin",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Treble Viol, Violin",
+      "imported": "treble-viol",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Violin, Violin",
+      "imported": "violin",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Violoncello, Violoncello",
+      "imported": "violoncello",
+      "corrected": "violoncello",
+      "sound": "strings.cello"
+    },
+    {
+      "part": "Violin, Violin",
+      "imported": "violin",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Treble Viol, Violin",
+      "imported": "treble-viol",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Violin, Violin",
+      "imported": "violin",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Violin, Violin",
+      "imported": "violin",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Viola, Viola",
+      "imported": "viola",
+      "corrected": "viola",
+      "sound": "strings.viola"
+    },
+    {
+      "part": "Violoncello, Violoncello",
+      "imported": "violoncello",
+      "corrected": "violoncello",
+      "sound": "strings.cello"
+    }
+  ],
+  "variantNote": "2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+  "unityAsset": "Assets/_Project/Audio/Composers/Haydn/Haydn_HobI101_SymphonyNo101TheClock_II_Andante.mp3",
+  "durationSeconds": 61.872,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Haydn_2/Haydn_HobI101_SymphonyNo101TheClock_II_Andante.wav",
+    "masterSamples": 2954700,
+    "trimmedLeadSamples": 141,
+    "trimmedTailSamples": 226024,
+    "encodedSamples": 2728535,
+    "durationSeconds": 61.872,
+    "bytes": 1485844,
+    "sha256": "8a3ed60df5f321550d8bb5066affbe5974710f3c42982c5bf5f981f597005343",
+    "masterSha256": "a35cb1ad8ddd7ab893b856c40d40015f910e156817409aebc5168888ac19093b"
+  },
+  "masterQa": {
+    "durationSeconds": 67.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -7.02,
+    "rmsDbfs": -27.34,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false
+  },
+  "importedInstruments": [
+    "flute",
+    "oboe",
+    "bb-clarinet",
+    "bassoon",
+    "horn",
+    "voice",
+    "timpani",
+    "violin",
+    "violin",
+    "violin",
+    "violoncello",
+    "violin",
+    "violin",
+    "violin",
+    "violin",
+    "viola",
+    "violoncello"
+  ]
+}

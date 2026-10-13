@@ -7,8 +7,28 @@ for each target is in SELECTION below together with its evidence. LilyPond names
 The chosen file is copied untouched to Work/<target>/source.mid (the original download stays as-is).
 Usage: python AssetsMaterial/AudioPipeline/Tools/select_sources.py
 """
-import json, shutil, zipfile
+import io, json, os, re, shutil, subprocess, zipfile
+import excerpt
 from common import *
+
+
+LILYPOND = Path(os.environ.get("LOCALAPPDATA", "")) / "Microsoft/WinGet/Packages/LilyPond.LilyPond_Microsoft.Winget.Source_8wekyb3d8bbwe/lilypond-2.24.4/bin/lilypond.exe"
+
+
+def scale_musicxml_tempo(path, factor):
+    """Multiplies every <sound tempo="..."> of a MusicXML/MXL file (a source whose tempo mark was written
+    for the wrong beat unit, e.g. quarter = 116 where the edition means eighth = 116)."""
+    fix = lambda s: re.sub(r'(<sound[^>]*tempo=")([\d.]+)', lambda m: f"{m.group(1)}{float(m.group(2)) * factor:g}", s)
+    if path.suffix.lower() != ".mxl":
+        path.write_text(fix(path.read_text(encoding="utf-8")), encoding="utf-8"); return
+    buf = io.BytesIO()
+    with zipfile.ZipFile(path) as src, zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as out:
+        for item in src.infolist():
+            data = src.read(item)
+            if item.filename.lower().endswith((".xml", ".musicxml")) and not item.filename.startswith("META-INF"):
+                data = fix(data.decode("utf-8")).encode("utf-8")
+            out.writestr(item, data)
+    path.write_bytes(buf.getvalue())
 
 # target → (archive or file, member, evidence). Rule: full/combined score > parts; exact movement.
 SELECTION = {
@@ -31,18 +51,129 @@ SELECTION = {
 }
 
 
+def prepare_score(tid, dest, extra):
+    """Optional steps from extra_sources.json, in order:
+      "omr": {"sheets": "2-6", "movement": 1}   a PDF score read by Audiveris -> Work/<id>/source.mxl
+                                               (+ source.omr, the Audiveris project, to fix it by hand)
+      "measures": "93-205"                     only those measures (MIDI/MSCZ are converted to MusicXML first)
+    Returns the file MuseScore will import and notes for the evidence trail."""
+    work, notes = dest.parent, []
+    ly = extra.get("lilypond")                   # {"score": "094-score.ly", "piece": "II"}: LilyPond engraving source
+    if ly and dest.suffix.lower() == ".zip":
+        src_dir = work / "ly"
+        shutil.rmtree(src_dir, ignore_errors=True)
+        with zipfile.ZipFile(dest) as z: z.extractall(src_dir)
+        text = (src_dir / ly["score"]).read_text(encoding="utf-8")
+        start = text.index("\\keepWithTag", text.index(f'piece = "{ly["piece"]}"'))
+        body = text[start:text.index("\n    }\n", start)]
+        head = text[:text.index("\\book")]       # \version, N = .., \include of the edition
+        (src_dir / "midi_build.ly").write_text(head + "\\score {\n" + body + "\n  \\midi { }\n}\n", encoding="utf-8")
+        subprocess.run([str(LILYPOND), "-o", "midi_build", "midi_build.ly"], cwd=src_dir,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=1800)
+        built = sorted(src_dir.glob("*.mid*"), key=lambda p: p.stat().st_mtime)
+        if not built: raise RuntimeError("LilyPond produced no MIDI")
+        out = work / "source.mid"
+        shutil.copyfile(built[-1], out)
+        shutil.rmtree(src_dir, ignore_errors=True)
+        dest.unlink(); dest = out
+        notes.append(f"MIDI built with LilyPond from {ly['score']}, piece {ly['piece']}")
+    if dest.suffix.lower() == ".mscz":           # user-made scores: bars MuseScore's batch mode refuses to open
+        fixed = excerpt.repair_mscz(dest, work)
+        if fixed: notes.append(f"repaired bars (filled with rests): {', '.join(fixed)}")
+    omr_opts = extra.get("omr")
+    if omr_opts is not None:
+        if dest.suffix.lower() != ".pdf":
+            raise RuntimeError(f"'omr' needs a PDF source, got {dest.name}")
+        marker, prev_mxl = work / "source.omr.json", work / "source.mxl"
+        key = {"pdf_sha256": sha256(dest), "sheets": omr_opts.get("sheets"), "movement": omr_opts.get("movement", 1)}
+        if prev_mxl.exists() and marker.exists() and load_json_file(marker, {}) == key:
+            dest.unlink()                          # same PDF + pages: reuse the OMR result (it takes long)
+            dest = prev_mxl
+            notes.append("OMR (Audiveris) result reused")
+            omr_opts = dict(omr_opts, _reused=True)
+    if omr_opts is not None and not omr_opts.get("_reused"):
+        tmp = work / "omr_tmp"
+        shutil.rmtree(tmp, ignore_errors=True)
+        (work / "omr.log").unlink(missing_ok=True)
+        found = excerpt.omr(dest, tmp, omr_opts.get("sheets"), log=work / "omr.log")
+        movement = int(omr_opts.get("movement", 1))
+        chosen = found[min(movement, len(found)) - 1]
+        out = work / f"source{chosen.suffix.lower()}"
+        shutil.copyfile(chosen, out)
+        for book in tmp.glob("*.omr"):
+            shutil.copyfile(book, work / "source.omr")
+        shutil.rmtree(tmp, ignore_errors=True)
+        dest.unlink()                              # the PDF itself stays in Sources/
+        dest = out
+        notes.append(f"OMR (Audiveris) of sheets {omr_opts.get('sheets') or 'all'}, movement {movement} of {len(found)}")
+        save_json_file(marker, key)
+    if extra.get("measures") and dest.suffix.lower() == ".mscz":
+        notes.append(f"measures {extra['measures']}: the audio is cut at those bars after rendering (render_qa)")
+    elif extra.get("measures"):
+        first, last = (int(x) for x in str(extra["measures"]).split("-"))
+        src = dest
+        if dest.suffix.lower() in (".mid", ".midi", ".mscz"):
+            src = work / "full.musicxml"
+            excerpt.to_musicxml(dest, src, work / "convert.log")
+        out = work / "source.musicxml"
+        n = excerpt.cut_measures(src, out, first, last)
+        for f in {dest, src} - {out}:
+            f.unlink(missing_ok=True)
+        dest = out
+        notes.append(f"measures {first}-{last} ({n} bars) cut by excerpt.py")
+    if omr_opts is not None:                     # MuseScore refuses OMR scores with inexact bars: play it via MIDI
+        mid = work / "source.mid"
+        parts, quarters = excerpt.score_to_midi(dest, mid, omr_opts.get("tempo"))
+        dest = mid
+        notes.append(f"OMR score -> MIDI with music21 ({parts} parts, {quarters:.0f} quarter notes"
+                     + (f", tempo {omr_opts['tempo']} per quarter)" if omr_opts.get("tempo") else ")"))
+    return dest, notes
+
+
+def automatic_choice(tid, rec):
+    """(archive, member, evidence) without a reviewed SELECTION entry, or None when it is ambiguous:
+    the extra source's explicit "midi_member", or the only MIDI the source provides."""
+    extra = extra_for(tid)
+    member = extra.get("midi_member")
+    if member:
+        archive, _, inner = member.partition("::")
+        return archive, inner or None, f"extra_sources.json midi_member: {extra.get('note', '')}".strip()
+    midis = [d["file"] for d in rec.get("downloads", []) if d.get("role") == "midi"]
+    if len(midis) != 1:
+        return None
+    folder = ROOT / rec["folder"]
+    name = midis[0]
+    if is_score_file(name) or name.lower().endswith(".pdf") or (name.lower().endswith(".zip") and extra.get("lilypond")):
+        return name, None, "the source provides a single score/MIDI/PDF file"
+    if name.lower().endswith(".zip"):
+        with zipfile.ZipFile(folder / name) as z:
+            inner = [n for n in z.namelist() if is_score_file(n)]
+        if len(inner) == 1:
+            return name, inner[0], "the source's archive holds a single score/MIDI file"
+    return None
+
+
 def main():
     state = load_state()
     done = review = 0
     for tid, rec in state.items():
-        if rec.get("status") not in ("SOURCE_OK", "SELECTED"): continue
+        if rec.get("status") not in ("SOURCE_OK", "SELECTED", "REVIEW_MOVEMENT"): continue
         folder = ROOT / rec["folder"]
-        if tid not in SELECTION:
-            rec.update(status="REVIEW_MOVEMENT", reason="no reviewed selection for this source"); review += 1
-            print(f"[{tid}] REVIEW_MOVEMENT"); continue
-        archive, member, evidence = SELECTION[tid]
+        choice = SELECTION.get(tid) or automatic_choice(tid, rec)
+        if choice is None:
+            rec.update(status="REVIEW_MOVEMENT", reason="several MIDI files and no selection: add 'midi_member' "
+                                                        "(archive::file) for this target in Sources/extra_sources.json"); review += 1
+            print(f"[{tid}] REVIEW_MOVEMENT — {rec['reason']}"); continue
+        archive, member, evidence = choice
+        extra = extra_for(tid)
+        options = {k: extra[k] for k in ("omr", "measures", "musicxml_tempo_scale", "lilypond") if k in extra}
+        prev = rec.get("selection") or {}
+        if options and prev.get("options") == options and prev.get("archive") == archive \
+                and (ROOT / prev.get("workMidi", "-")).exists():
+            print(f"[{tid}] up to date ({Path(prev['workMidi']).name})"); continue   # OMR / excerpt already made
         src = folder / archive
-        dest = WORK / tid / "source.mid"
+        ext = Path(member or archive).suffix.lower()
+        dest = WORK / tid / f"source{'.mid' if ext == '.midi' else ext}"   # MuseScore imports it as it is
         dest.parent.mkdir(parents=True, exist_ok=True)
         try:
             if member:
@@ -53,7 +184,18 @@ def main():
         except (KeyError, FileNotFoundError) as ex:
             rec.update(status="SOURCE_FAILED", reason=f"selected file missing: {ex}"); review += 1
             print(f"[{tid}] SOURCE_FAILED {ex}"); continue
-        sel = dict(archive=archive, member=member, evidence=evidence, workMidi=str(dest.relative_to(ROOT)), sha256=sha256(dest))
+        try:
+            dest, notes = prepare_score(tid, dest, extra)
+        except Exception as ex:
+            rec.update(status="SOURCE_FAILED", reason=f"{type(ex).__name__}: {ex}"); review += 1
+            print(f"[{tid}] SOURCE_FAILED {rec['reason']}"); continue
+        if notes: evidence += " | " + "; ".join(notes)
+        factor = extra.get("musicxml_tempo_scale")
+        if factor and dest.suffix.lower() in (".mxl", ".musicxml", ".xml"):
+            scale_musicxml_tempo(dest, factor)
+            evidence += f" | tempo x{factor} (extra_sources.json musicxml_tempo_scale)"
+        sel = dict(archive=archive, member=member, evidence=evidence, workMidi=str(dest.relative_to(ROOT)), sha256=sha256(dest),
+                   options=options)
         rec.update(status="SELECTED", selection=sel)
         # keep the source sidecar complete
         sj = folder / "source.json"

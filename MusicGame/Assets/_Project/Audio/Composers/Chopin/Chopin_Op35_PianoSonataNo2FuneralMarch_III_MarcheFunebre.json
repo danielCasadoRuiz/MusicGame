@@ -1,0 +1,53 @@
+{
+  "targetId": "Chopin_4",
+  "composer": "Frédéric Chopin",
+  "work": "Piano Sonata No. 2 – Funeral March",
+  "catalog": "Op. 35",
+  "movement": "III. Marche funèbre",
+  "source": "IMSLP",
+  "sourceUrl": "https://imslp.org/wiki/Piano_Sonata_No.2,_Op.35_(Chopin,_Frédéric)",
+  "mutopiaId": "https://imslp.org/wiki/Piano_Sonata_No.2,_Op.35_(Chopin,_Frédéric)",
+  "sourceFiles": [
+    "https://imslp.org/wiki/Special:ImagefromIndex/127835"
+  ],
+  "sourceLicense": "Creative Commons Attribution-ShareAlike 4.0",
+  "sourceLicenseClass": "CC BY-SA",
+  "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "sourceAttribution": "Pierre Gouin, Les Éditions Outremontaises 2006",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 (OMR source)",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. 2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+  "status": "USER_APPROVED_VARIANT",
+  "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 4.0 work and is distributed under the same licence (https://creativecommons.org/licenses/by-sa/4.0/). Attribution: Pierre Gouin, Les Éditions Outremontaises 2006; source https://imslp.org/wiki/Piano_Sonata_No.2,_Op.35_(Chopin,_Frédéric).",
+  "variantNote": "2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+  "unityAsset": "Assets/_Project/Audio/Composers/Chopin/Chopin_Op35_PianoSonataNo2FuneralMarch_III_MarcheFunebre.mp3",
+  "durationSeconds": 261.242,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Chopin_4/Chopin_Op35_PianoSonataNo2FuneralMarch_III_MarcheFunebre.wav",
+    "masterSamples": 11733951,
+    "trimmedLeadSamples": 63,
+    "trimmedTailSamples": 213095,
+    "encodedSamples": 11520793,
+    "durationSeconds": 261.242,
+    "bytes": 6270641,
+    "sha256": "43ea7d91256a0f604774305cad630bbe8939eb36711dc157264fdaad1ab10303",
+    "masterSha256": "3c7e08d648fa569775fe8c299c0061957507aa6f78ffb7f4a228d644a5bcb9ce"
+  },
+  "masterQa": {
+    "durationSeconds": 266.08,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -7.12,
+    "rmsDbfs": -26.89,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false
+  },
+  "importedInstruments": [
+    "piano"
+  ]
+}

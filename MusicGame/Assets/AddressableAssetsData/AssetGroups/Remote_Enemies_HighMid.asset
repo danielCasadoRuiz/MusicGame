@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Remote_Enemies_HighMid
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Remote_Enemies_HighMid
+  m_GUID: 8d567ade7dc96fe46b3e7e111b2dfbe4
+  m_SerializeEntries:
+  - m_GUID: 15b971e6974b0da4f92cbc92fd42523b
+    m_Address: Assets/_Project/Art/Opponents/Monteverdi/Monteverdi_pants/HighMid/Monteverdi_pants_HighMid.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6bb44fb631590db47add6647d85e4aab
+    m_Address: Assets/_Project/Art/Opponents/Monteverdi/Monteverdi_jacket/HighMid/Monteverdi_jacket_HighMid.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d23c3558ec449724f8c4aedc02c62344
+    m_Address: Assets/_Project/Art/Opponents/Monteverdi/Monteverdi_shoes/HighMid/Monteverdi_shoes_HighMid.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a4cc0dfc618f344aaae658dde9bb725, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 68348a21261a4974cbb84e2486f2b64f, type: 2}
+    - {fileID: 11400000, guid: 22a9c5e06f96e8040ab440c064589b96, type: 2}

@@ -5,7 +5,8 @@ For each published master (32-bit float WAV in Work/, see publish.py — the sam
   - its Unity <name>.json sidecar is copied next to it with an added "derivedFormat" block.
 Gain is applied ONLY if 16-bit would otherwise clip (reported per track). Every output is decoded back and
 checked (decodable, same sample count, peak / clipping, residual vs the master); the Unity MP3 is decoded too.
-Writes Docs/optimized_formats_report.json/.md. Idempotent (skips outputs newer than their source; --force).
+Results are printed to the console (no report files). Idempotent: a track whose WAV16 archive exists and whose
+master is gone (cleaned after publishing) or older than the archive is skipped (--force to redo when the master exists).
 Usage: python AssetsMaterial/AudioPipeline/Tools/optimize.py [--force]
 """
 import argparse, datetime, json, os, struct, subprocess
@@ -68,6 +69,11 @@ def main():
         sidecar = mp3.with_suffix(".json")
         meta = json.loads(sidecar.read_text(encoding="utf-8"))
         src = ROOT / meta["unityFormat"]["fromMaster"]
+        archived = OUT / "WAV16" / comp / f"{name}.wav"
+        if archived.exists() and (not src.exists() or (archived.stat().st_mtime >= src.stat().st_mtime and not args.force)):
+            continue                                   # already archived
+        if not src.exists():
+            print(f"{comp}/{name}: no master and no WAV16 archive — render it again"); continue
         audio, rate, ch, bits, code = read_wav(src)
         row = dict(composer=comp, name=name, source=src.relative_to(ROOT).as_posix(), sourceBytes=src.stat().st_size,
                    sourceFormat=f"{rate} Hz, {ch} ch, {bits}-bit {'float' if code == 3 else 'PCM'}",
@@ -100,23 +106,12 @@ def main():
               f"(Δ{row['WAV16']['sampleDelta']} smp, SNR {row['WAV16']['snrDb']} dB) | MP3 {row['MP3']['bytes']/1e6:.1f} MB "
               f"(Δ{row['MP3']['sampleDelta']} smp, SNR {row['MP3']['snrDb']} dB, peak {row['MP3']['peakDbfs']})")
 
+    if not rows:
+        print("WAV16 archive: nothing new")
+        return
     tot = {k: sum(r[k]["bytes"] if k != "sourceBytes" else r[k] for r in rows) for k in ("sourceBytes", "WAV16", "MP3")}
-    report = dict(generatedAt=datetime.datetime.now().isoformat(timespec="seconds"), tracks=rows, totals=tot)
-    DOCS.mkdir(parents=True, exist_ok=True)
-    (DOCS / "optimized_formats_report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
-    mb = lambda b: f"{b / 1e6:.1f}"
-    lines = ["# Optimized formats report", "", f"Generated {report['generatedAt']}. Originals untouched.", "",
-             "| Track | WAV32 master MB | WAV16 archive MB | Unity MP3 MB | WAV16 Δsamples / SNR | MP3 Δsamples / SNR / peak | gain |", "|---|---|---|---|---|---|---|"]
-    for r in rows:
-        w, m = r["WAV16"], r["MP3"]
-        lines.append(f"| {r['composer']}/{r['name']} | {mb(r['sourceBytes'])} | {mb(w['bytes'])} | {mb(m['bytes'])} | "
-                     f"{w['sampleDelta']} / {w['snrDb']} dB | {m['sampleDelta']} / {m['snrDb']} dB / {m['peakDbfs']} dBFS | "
-                     f"{w['gainApplied']} / {m['gainApplied']} |")
     s = tot["sourceBytes"]
-    lines += ["", f"**Totals:** WAV32 {mb(s)} MB · WAV16 {mb(tot['WAV16'])} MB (−{100 * (1 - tot['WAV16'] / s):.1f}%) · "
-                  f"MP3 {mb(tot['MP3'])} MB (−{100 * (1 - tot['MP3'] / s):.1f}%)"]
-    (DOCS / "optimized_formats_report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print("\n" + lines[-1])
+    print(f"WAV16 archive: {len(rows)} new | WAV32 {s / 1e6:.1f} MB -> WAV16 {tot['WAV16'] / 1e6:.1f} MB, MP3 {tot['MP3'] / 1e6:.1f} MB")
 
 
 if __name__ == "__main__":

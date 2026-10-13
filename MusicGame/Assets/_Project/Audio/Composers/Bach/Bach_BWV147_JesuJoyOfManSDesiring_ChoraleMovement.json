@@ -1,0 +1,59 @@
+{
+  "targetId": "Bach_5",
+  "composer": "J. S. Bach",
+  "work": "Jesu, Joy of Man's Desiring",
+  "catalog": "BWV 147",
+  "movement": "Chorale movement",
+  "source": "IMSLP",
+  "sourceUrl": "https://imslp.org/wiki/Herz_und_Mund_und_Tat_und_Leben,_BWV_147_(Bach,_Johann_Sebastian)",
+  "mutopiaId": "https://imslp.org/wiki/Herz_und_Mund_und_Tat_und_Leben,_BWV_147_(Bach,_Johann_Sebastian)",
+  "sourceFiles": [
+    "https://imslp.org/wiki/Special:ImagefromIndex/563035"
+  ],
+  "sourceLicense": "Creative Commons Attribution 4.0",
+  "sourceLicenseClass": "CC BY",
+  "sourceLicenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "sourceAttribution": "Vladimír Váša, 2018 (rewritten from Bach's manuscript)",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "DONE",
+  "unityAsset": "Assets/_Project/Audio/Composers/Bach/Bach_BWV147_JesuJoyOfManSDesiring_ChoraleMovement.mp3",
+  "durationSeconds": 109.273,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Bach_5/Bach_BWV147_JesuJoyOfManSDesiring_ChoraleMovement.wav",
+    "masterSamples": 4895011,
+    "trimmedLeadSamples": 214,
+    "trimmedTailSamples": 75841,
+    "encodedSamples": 4818956,
+    "durationSeconds": 109.273,
+    "bytes": 2623738,
+    "sha256": "30d9f1e30d1bf4ffed1784a7b14636c9413d5e1878b752fe695e156794383176",
+    "masterSha256": "0b5929b21fb6df405d440e904488d5b48ee41fb72f8b70c3f1438c507a39a9c0"
+  },
+  "masterQa": {
+    "durationSeconds": 111.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -10.48,
+    "rmsDbfs": -27.1,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "violin",
+    "violin",
+    "viola",
+    "soprano",
+    "alto",
+    "tenor",
+    "bass",
+    "violoncello"
+  ]
+}

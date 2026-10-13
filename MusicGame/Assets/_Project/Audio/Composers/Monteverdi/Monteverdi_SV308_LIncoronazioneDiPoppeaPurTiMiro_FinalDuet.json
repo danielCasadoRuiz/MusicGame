@@ -1,0 +1,74 @@
+{
+  "targetId": "Monteverdi_4",
+  "composer": "Claudio Monteverdi",
+  "work": "L'incoronazione di Poppea – Pur ti miro",
+  "catalog": "SV 308",
+  "movement": "Final duet",
+  "source": "CPDL",
+  "sourceUrl": "https://www.cpdl.org/wiki/index.php/Pur_ti_miro_(from_%22Poppea%22)_(Claudio_Monteverdi)",
+  "mutopiaId": "https://www.cpdl.org/wiki/index.php/Pur_ti_miro_(from_%22Poppea%22)_(Claudio_Monteverdi)",
+  "sourceFiles": [
+    "https://web.archive.org/web/2025id_/https://www.cpdl.org/wiki/images/b/be/Pur_ti_miro.mxl"
+  ],
+  "sourceLicense": "CPDL License (Choral Public Domain Library), version 4",
+  "sourceLicenseClass": "OK_CPDL",
+  "sourceLicenseUrl": "https://www.cpdl.org/wiki/index.php/ChoralWiki:CPDL",
+  "sourceAttribution": "Jorge Luis Gaete Calderon, CPDL #11682; file via the Internet Archive",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrument assignments of mis-imported parts corrected to the edition's own staff names (MusicXML Part -> soprano, MusicXML Part -> alto, MusicXML Part -> violoncello); no musical changes.",
+  "status": "DONE",
+  "instrumentCorrections": [
+    {
+      "part": "MusicXML Part",
+      "imported": "piano",
+      "corrected": "soprano",
+      "sound": "voice.soprano"
+    },
+    {
+      "part": "MusicXML Part",
+      "imported": "piano",
+      "corrected": "alto",
+      "sound": "voice.alto"
+    },
+    {
+      "part": "MusicXML Part",
+      "imported": "piano",
+      "corrected": "violoncello",
+      "sound": "strings.cello"
+    }
+  ],
+  "unityAsset": "Assets/_Project/Audio/Composers/Monteverdi/Monteverdi_SV308_LIncoronazioneDiPoppeaPurTiMiro_FinalDuet.mp3",
+  "durationSeconds": 209.06,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Monteverdi_4/Monteverdi_SV308_LIncoronazioneDiPoppeaPurTiMiro_FinalDuet.wav",
+    "masterSamples": 9282961,
+    "trimmedLeadSamples": 457,
+    "trimmedTailSamples": 62975,
+    "encodedSamples": 9219529,
+    "durationSeconds": 209.06,
+    "bytes": 5018644,
+    "sha256": "5e7040ac699c5e97061538e5c294081fa242fdd9349863884339afa89104c4d8",
+    "masterSha256": "6e669da6f0eeceec2eedf94806ccd41c192c9741e6cea8885451ff5f7f5aa8e2"
+  },
+  "masterQa": {
+    "durationSeconds": 210.5,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -10.5,
+    "rmsDbfs": -27.36,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "soprano",
+    "alto",
+    "violoncello"
+  ]
+}

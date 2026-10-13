@@ -12,34 +12,6 @@
     "left": true
   },
   "images": {
-    "Monteverdi_beard.png": {
-      "order": [
-        "front",
-        "back",
-        "left",
-        "right"
-      ],
-      "use_views": {
-        "front": true,
-        "back": false,
-        "left": true,
-        "right": false
-      }
-    },
-    "Monteverdi_hair.png": {
-      "order": [
-        "front",
-        "back",
-        "left",
-        "right"
-      ],
-      "use_views": {
-        "front": true,
-        "back": true,
-        "left": true,
-        "right": false
-      }
-    },
     "Monteverdi_jacket.png": {
       "order": [
         "front",
@@ -50,37 +22,9 @@
       "use_views": {
         "front": true,
         "back": true,
-        "left": true,
+        "left": false,
         "right": true
       }
-    },
-    "Monteverdi_pants_2.png": {
-      "order": [
-        "front",
-        "left",
-        "back",
-        "right"
-      ],
-      "use_views": {
-        "front": true,
-        "back": true,
-        "left": true,
-        "right": true
-      }
-    },
-    "Monteverdi_shoes.png": {
-      "order": [
-        "front",
-        "left",
-        "back",
-        "right"
-      ],
-      "use_views": {
-        "front": true,
-        "back": true,
-        "left": true,
-        "right": false
-      }
-    }
+    }  
   }
 }

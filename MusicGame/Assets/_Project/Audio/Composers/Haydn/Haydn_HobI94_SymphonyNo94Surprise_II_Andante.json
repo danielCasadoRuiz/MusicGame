@@ -1,0 +1,62 @@
+{
+  "targetId": "Haydn_1",
+  "composer": "Joseph Haydn",
+  "work": "Symphony No. 94 'Surprise'",
+  "catalog": "Hob. I:94",
+  "movement": "II. Andante",
+  "source": "IMSLP",
+  "sourceUrl": "https://imslp.org/wiki/Symphony_No.94_in_G_major,_Hob.I:94_(Haydn,_Joseph)",
+  "mutopiaId": "https://imslp.org/wiki/Symphony_No.94_in_G_major,_Hob.I:94_(Haydn,_Joseph)",
+  "sourceFiles": [
+    "https://imslp.org/wiki/Special:ImagefromIndex/933686"
+  ],
+  "sourceLicense": "Creative Commons Attribution 4.0",
+  "sourceLicenseClass": "CC BY",
+  "sourceLicenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "sourceAttribution": "Timothy Lanfear (LilyPond engraving, transcribed from the H. C. Robbins Landon edition)",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "DONE",
+  "unityAsset": "Assets/_Project/Audio/Composers/Haydn/Haydn_HobI94_SymphonyNo94Surprise_II_Andante.mp3",
+  "durationSeconds": 312.582,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Haydn_1/Haydn_HobI94_SymphonyNo94Surprise_II_Andante.wav",
+    "masterSamples": 13891500,
+    "trimmedLeadSamples": 44,
+    "trimmedTailSamples": 106593,
+    "encodedSamples": 13784863,
+    "durationSeconds": 312.582,
+    "bytes": 7503203,
+    "sha256": "548d4d0b44c127ecae5352812a459a99c010e4dad7d49ba5da2a6dd4259bc8a3",
+    "masterSha256": "8621165e667e9d9320d1feac2a4ee202d7340d8f613bbae5eaa0b4dea7dfdee3"
+  },
+  "masterQa": {
+    "durationSeconds": 315.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -4.61,
+    "rmsDbfs": -25.44,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "flute",
+    "oboe",
+    "oboe",
+    "bassoon",
+    "horn",
+    "bb-trumpet",
+    "timpani",
+    "violin",
+    "violin",
+    "treble-viol",
+    "violoncello"
+  ]
+}

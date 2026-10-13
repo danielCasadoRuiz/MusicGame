@@ -1,0 +1,62 @@
+{
+  "targetId": "Mozart_2",
+  "composer": "W. A. Mozart",
+  "work": "Symphony No. 40",
+  "catalog": "K. 550",
+  "movement": "I. Molto allegro",
+  "source": "MuseScore.com",
+  "sourceUrl": "https://musescore.com/user/6725176/scores/3291171",
+  "mutopiaId": "https://musescore.com/user/6725176/scores/3291171",
+  "sourceFiles": [
+    "https://musescore.com/user/6725176/scores/3291171"
+  ],
+  "sourceLicense": "Creative Commons Zero (CC0)",
+  "sourceLicenseClass": "CC0 1.0",
+  "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "sourceAttribution": "MuseScore.com user Samuel Ricke",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "DONE",
+  "unityAsset": "Assets/_Project/Audio/Composers/Mozart/Mozart_K550_SymphonyNo40_I_MoltoAllegro.mp3",
+  "durationSeconds": 134.215,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Mozart_2/Mozart_K550_SymphonyNo40_I_MoltoAllegro.wav",
+    "masterSamples": 6012285,
+    "trimmedLeadSamples": 324,
+    "trimmedTailSamples": 93101,
+    "encodedSamples": 5918860,
+    "durationSeconds": 134.215,
+    "bytes": 3221838,
+    "sha256": "693d919f28e08f8b874545c5fb23e4a31e20db2def6fea37d04f4b355a7a85bb",
+    "masterSha256": "567c855d1c08ebb83917642a88e4521275615ea139456bcb32af0d6f0433bb5e"
+  },
+  "masterQa": {
+    "durationSeconds": 136.33,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -3.13,
+    "rmsDbfs": -21.44,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "flute",
+    "oboe",
+    "bb-clarinet",
+    "bassoon",
+    "bb-horn-basso",
+    "g-horn",
+    "violins",
+    "violins",
+    "violas",
+    "violoncellos",
+    "contrabasses"
+  ]
+}

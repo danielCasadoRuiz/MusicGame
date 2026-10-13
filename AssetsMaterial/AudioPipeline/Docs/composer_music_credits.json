@@ -21,7 +21,30 @@
     "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Synthetic cathedral reverb added after rendering (RT60 4.5 s, wet -4 dB, predelay 40 ms); no musical changes.",
     "status": "USER_APPROVED_VARIANT",
     "variantNote": "Synthetic cathedral reverb added after rendering (RT60 4.5 s, wet -4 dB, predelay 40 ms); no musical changes.",
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Bach/Bach_BWV565_ToccataAndFugueInDMinor_CompleteWork.mp3"
+    "unityAsset": "Assets/_Project/Audio/Composers/Bach/Bach_BWV565_ToccataAndFugueInDMinor_CompleteWork.mp3"
+  },
+  {
+    "targetId": "Bach_2",
+    "composer": "J. S. Bach",
+    "work": "Brandenburg Concerto No. 3",
+    "catalog": "BWV 1048",
+    "movement": "I. Allegro",
+    "source": "OpenScore Orchestra",
+    "sourceUrl": "https://github.com/MarkGotham/Hauptstimme",
+    "mutopiaId": "https://github.com/MarkGotham/Hauptstimme",
+    "sourceFiles": [
+      "https://raw.githubusercontent.com/MarkGotham/Hauptstimme/main/data/Bach,_Johann_Sebastian/Brandenburg_Concerto_No.3,_BWV.1048/1/Bach_BWV.1048_1.mxl"
+    ],
+    "sourceLicense": "CC0 1.0 Universal",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "OpenScore Orchestra corpus (Gotham et al.), transcribed from a public-domain IMSLP edition",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Bach/Bach_BWV1048_BrandenburgConcertoNo3_I_Allegro.mp3"
   },
   {
     "targetId": "Bach_3",
@@ -43,9 +66,101 @@
     "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
     "modified": true,
     "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
-    "status": "PASS",
+    "status": "DONE",
     "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 3.0 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/3.0/). Attribution: Typeset/transcribed by jeff covey for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=242.",
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Bach/Bach_BWV1068_OrchestralSuiteNo3Air_II_Air.mp3"
+    "unityAsset": "Assets/_Project/Audio/Composers/Bach/Bach_BWV1068_OrchestralSuiteNo3Air_II_Air.mp3"
+  },
+  {
+    "targetId": "Bach_4",
+    "composer": "J. S. Bach",
+    "work": "Cello Suite No. 1",
+    "catalog": "BWV 1007",
+    "movement": "I. Prelude",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=517",
+    "mutopiaId": "Mutopia-2018/01/19-517",
+    "sourceFiles": [
+      "https://www.mutopiaproject.org/ftp/BachJS/BWV1007/bwv1007/bwv1007-mids.zip"
+    ],
+    "sourceLicense": "Public Domain",
+    "sourceLicenseClass": "Public Domain",
+    "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+    "sourceAttribution": "Typeset/transcribed by Andreas Scherer for the Mutopia Project",
+    "sourceEdition": "Schirmer, 1916",
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Bach/Bach_BWV1007_CelloSuiteNo1_I_Prelude.mp3"
+  },
+  {
+    "targetId": "Bach_5",
+    "composer": "J. S. Bach",
+    "work": "Jesu, Joy of Man's Desiring",
+    "catalog": "BWV 147",
+    "movement": "Chorale movement",
+    "source": "IMSLP",
+    "sourceUrl": "https://imslp.org/wiki/Herz_und_Mund_und_Tat_und_Leben,_BWV_147_(Bach,_Johann_Sebastian)",
+    "mutopiaId": "https://imslp.org/wiki/Herz_und_Mund_und_Tat_und_Leben,_BWV_147_(Bach,_Johann_Sebastian)",
+    "sourceFiles": [
+      "https://imslp.org/wiki/Special:ImagefromIndex/563035"
+    ],
+    "sourceLicense": "Creative Commons Attribution 4.0",
+    "sourceLicenseClass": "CC BY",
+    "sourceLicenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceAttribution": "Vladimír Váša, 2018 (rewritten from Bach's manuscript)",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Bach/Bach_BWV147_JesuJoyOfManSDesiring_ChoraleMovement.mp3"
+  },
+  {
+    "targetId": "Beethoven_1",
+    "composer": "L. van Beethoven",
+    "work": "Symphony No. 5",
+    "catalog": "Op. 67",
+    "movement": "I. Allegro con brio",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=941",
+    "mutopiaId": "Mutopia-2017/11/05-941",
+    "sourceFiles": [
+      "https://www.mutopiaproject.org/ftp/BeethovenLv/O67/Symphony5_1/Symphony5_1.mid"
+    ],
+    "sourceLicense": "Public Domain",
+    "sourceLicenseClass": "Public Domain",
+    "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+    "sourceAttribution": "Typeset/transcribed by Stelios Samelis (adapted to 2.16.2 by Johannes Heinecke) for the Mutopia Project",
+    "sourceEdition": "Breitkopf and Härtel (1862-1865)",
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Beethoven/Beethoven_Op67_SymphonyNo5_I_AllegroConBrio.mp3"
+  },
+  {
+    "targetId": "Beethoven_2",
+    "composer": "L. van Beethoven",
+    "work": "Symphony No. 9",
+    "catalog": "Op. 125",
+    "movement": "IV. Ode to Joy section",
+    "source": "OpenScore Orchestra",
+    "sourceUrl": "https://github.com/MarkGotham/Hauptstimme",
+    "mutopiaId": "https://github.com/MarkGotham/Hauptstimme",
+    "sourceFiles": [
+      "https://raw.githubusercontent.com/MarkGotham/Hauptstimme/main/data/Beethoven,_Ludwig_van/Symphony_No.9,_Op.125/4/Beethoven_Op.125_4.mxl"
+    ],
+    "sourceLicense": "CC0 1.0 Universal",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "OpenScore Orchestra corpus (Gotham et al.), transcribed from a public-domain IMSLP edition",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Beethoven/Beethoven_Op125_SymphonyNo9_IV_OdeToJoySection.mp3"
   },
   {
     "targetId": "Beethoven_3",
@@ -67,9 +182,9 @@
     "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
     "modified": true,
     "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
-    "status": "PASS",
+    "status": "DONE",
     "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 2.5 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/2.5/). Attribution: Typeset/transcribed by Stewart Holmes for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=276.",
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Beethoven/Beethoven_Op27No2_PianoSonataNo14Moonlight_I_AdagioSostenuto.mp3"
+    "unityAsset": "Assets/_Project/Audio/Composers/Beethoven/Beethoven_Op27No2_PianoSonataNo14Moonlight_I_AdagioSostenuto.mp3"
   },
   {
     "targetId": "Beethoven_4",
@@ -91,8 +206,8 @@
     "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
     "modified": true,
     "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
-    "status": "PASS",
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Beethoven/Beethoven_WoO59_FurElise_CompleteWork.mp3"
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Beethoven/Beethoven_WoO59_FurElise_CompleteWork.mp3"
   },
   {
     "targetId": "Beethoven_5",
@@ -114,7 +229,7 @@
     "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
     "modified": true,
     "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrument assignments of mis-imported parts corrected to the edition's own staff names (Piccolo Clarinet, three -> bb-clarinet, English Horn, five -> horn, Baroque Oboe, six -> c-trumpet, Contrabass, twelve -> contrabasses); no musical changes.",
-    "status": "PASS",
+    "status": "DONE",
     "instrumentCorrections": [
       {
         "part": "Piccolo Clarinet, three",
@@ -141,7 +256,30 @@
         "sound": "strings.contrabass"
       }
     ],
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Beethoven/Beethoven_Op92_SymphonyNo7_II_Allegretto.mp3"
+    "unityAsset": "Assets/_Project/Audio/Composers/Beethoven/Beethoven_Op92_SymphonyNo7_II_Allegretto.mp3"
+  },
+  {
+    "targetId": "Brahms_1",
+    "composer": "Johannes Brahms",
+    "work": "Hungarian Dance No. 5",
+    "catalog": "WoO 1 No. 5",
+    "movement": "Complete work / orchestral version target",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/user/32377169/scores/7108101",
+    "mutopiaId": "https://musescore.com/user/32377169/scores/7108101",
+    "sourceFiles": [
+      "https://musescore.com/user/32377169/scores/7108101"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "MuseScore.com user neveruser123",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Brahms/Brahms_WoO1No5_HungarianDanceNo5_CompleteWorkOrchestralVersionTarget.mp3"
   },
   {
     "targetId": "Brahms_2",
@@ -165,7 +303,100 @@
     "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrumental version: the voice line is played by the piano together with the original accompaniment. Notes unchanged.",
     "status": "USER_APPROVED_VARIANT",
     "variantNote": "Instrumental version: the voice line is played by the piano together with the original accompaniment. Notes unchanged.",
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Brahms/Brahms_Op49No4_Wiegenlied_CompleteSong.mp3"
+    "unityAsset": "Assets/_Project/Audio/Composers/Brahms/Brahms_Op49No4_Wiegenlied_CompleteSong.mp3"
+  },
+  {
+    "targetId": "Brahms_3",
+    "composer": "Johannes Brahms",
+    "work": "Symphony No. 3",
+    "catalog": "Op. 90",
+    "movement": "III. Poco allegretto",
+    "source": "OpenScore Orchestra",
+    "sourceUrl": "https://github.com/MarkGotham/Hauptstimme",
+    "mutopiaId": "https://github.com/MarkGotham/Hauptstimme",
+    "sourceFiles": [
+      "https://raw.githubusercontent.com/MarkGotham/Hauptstimme/main/data/Brahms,_Johannes/Symphony_No.3,_Op.90/3/Brahms_Op.90_3.mxl"
+    ],
+    "sourceLicense": "CC0 1.0 Universal",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "OpenScore Orchestra corpus (Gotham et al.), transcribed from a public-domain IMSLP edition",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Brahms/Brahms_Op90_SymphonyNo3_III_PocoAllegretto.mp3"
+  },
+  {
+    "targetId": "Brahms_4",
+    "composer": "Johannes Brahms",
+    "work": "Symphony No. 1",
+    "catalog": "Op. 68",
+    "movement": "IV. Adagio – Allegro non troppo",
+    "source": "OpenScore Orchestra",
+    "sourceUrl": "https://github.com/MarkGotham/Hauptstimme",
+    "mutopiaId": "https://github.com/MarkGotham/Hauptstimme",
+    "sourceFiles": [
+      "https://raw.githubusercontent.com/MarkGotham/Hauptstimme/main/data/Brahms,_Johannes/Symphony_No.1,_Op.68/4/Brahms_Op.68_4.mxl"
+    ],
+    "sourceLicense": "CC0 1.0 Universal",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "OpenScore Orchestra corpus (Gotham et al.), transcribed from a public-domain IMSLP edition",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Brahms/Brahms_Op68_SymphonyNo1_IV_AdagioAllegroNonTroppo.mp3"
+  },
+  {
+    "targetId": "Brahms_5",
+    "composer": "Johannes Brahms",
+    "work": "Symphony No. 4",
+    "catalog": "Op. 98",
+    "movement": "I. Allegro non troppo",
+    "source": "OpenScore Orchestra",
+    "sourceUrl": "https://github.com/MarkGotham/Hauptstimme",
+    "mutopiaId": "https://github.com/MarkGotham/Hauptstimme",
+    "sourceFiles": [
+      "https://raw.githubusercontent.com/MarkGotham/Hauptstimme/main/data/Brahms,_Johannes/Symphony_No.4,_Op.98/1/Brahms_Op.98_1.mxl"
+    ],
+    "sourceLicense": "CC0 1.0 Universal",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "OpenScore Orchestra corpus (Gotham et al.), transcribed from a public-domain IMSLP edition",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Brahms/Brahms_Op98_SymphonyNo4_I_AllegroNonTroppo.mp3"
+  },
+  {
+    "targetId": "Chopin_1",
+    "composer": "Frédéric Chopin",
+    "work": "Nocturne in E-flat major",
+    "catalog": "Op. 9 No. 2",
+    "movement": "Complete work",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1590",
+    "mutopiaId": "Mutopia-2014/12/18-1590",
+    "sourceFiles": [
+      "https://www.mutopiaproject.org/ftp/ChopinFF/O9/chopin_nocturne_op9_n2/chopin_nocturne_op9_n2.mid"
+    ],
+    "sourceLicense": "Creative Commons Attribution-ShareAlike 3.0",
+    "sourceLicenseClass": "CC BY-SA",
+    "sourceLicenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "sourceAttribution": "Typeset/transcribed by Renato Biolcati Rinaldi for the Mutopia Project",
+    "sourceEdition": "G. Schirmer, New York, 1881",
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 3.0 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/3.0/). Attribution: Typeset/transcribed by Renato Biolcati Rinaldi for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1590.",
+    "unityAsset": "Assets/_Project/Audio/Composers/Chopin/Chopin_Op9No2_NocturneInE_CompleteWork.mp3"
   },
   {
     "targetId": "Chopin_2",
@@ -187,8 +418,79 @@
     "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
     "modified": true,
     "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
-    "status": "PASS",
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Chopin/Chopin_Op66_Fantaisie_CompleteWork.mp3"
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Chopin/Chopin_Op66_Fantaisie_CompleteWork.mp3"
+  },
+  {
+    "targetId": "Chopin_3",
+    "composer": "Frédéric Chopin",
+    "work": "Waltz in D-flat major 'Minute Waltz'",
+    "catalog": "Op. 64 No. 1",
+    "movement": "Complete work",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=483",
+    "mutopiaId": "Mutopia-2015/01/17-483",
+    "sourceFiles": [
+      "https://www.mutopiaproject.org/ftp/ChopinFF/O64/chopin_valse_op64_no1/chopin_valse_op64_no1.mid"
+    ],
+    "sourceLicense": "Public Domain",
+    "sourceLicenseClass": "Public Domain",
+    "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+    "sourceAttribution": "Typeset/transcribed by Magnus Lewis-Smith for the Mutopia Project",
+    "sourceEdition": "Edition Peters",
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Chopin/Chopin_Op64No1_WaltzInD_CompleteWork.mp3"
+  },
+  {
+    "targetId": "Chopin_4",
+    "composer": "Frédéric Chopin",
+    "work": "Piano Sonata No. 2 – Funeral March",
+    "catalog": "Op. 35",
+    "movement": "III. Marche funèbre",
+    "source": "IMSLP",
+    "sourceUrl": "https://imslp.org/wiki/Piano_Sonata_No.2,_Op.35_(Chopin,_Frédéric)",
+    "mutopiaId": "https://imslp.org/wiki/Piano_Sonata_No.2,_Op.35_(Chopin,_Frédéric)",
+    "sourceFiles": [
+      "https://imslp.org/wiki/Special:ImagefromIndex/127835"
+    ],
+    "sourceLicense": "Creative Commons Attribution-ShareAlike 4.0",
+    "sourceLicenseClass": "CC BY-SA",
+    "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "sourceAttribution": "Pierre Gouin, Les Éditions Outremontaises 2006",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 (OMR source)",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. 2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+    "status": "USER_APPROVED_VARIANT",
+    "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 4.0 work and is distributed under the same licence (https://creativecommons.org/licenses/by-sa/4.0/). Attribution: Pierre Gouin, Les Éditions Outremontaises 2006; source https://imslp.org/wiki/Piano_Sonata_No.2,_Op.35_(Chopin,_Frédéric).",
+    "variantNote": "2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+    "unityAsset": "Assets/_Project/Audio/Composers/Chopin/Chopin_Op35_PianoSonataNo2FuneralMarch_III_MarcheFunebre.mp3"
+  },
+  {
+    "targetId": "Chopin_5",
+    "composer": "Frédéric Chopin",
+    "work": "Étude in C minor 'Revolutionary'",
+    "catalog": "Op. 10 No. 12",
+    "movement": "Complete work",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=743",
+    "mutopiaId": "Mutopia-2018/05/15-743",
+    "sourceFiles": [
+      "https://www.mutopiaproject.org/ftp/ChopinFF/O10/op-10-12-wfi/op-10-12-wfi.mid"
+    ],
+    "sourceLicense": "Public Domain",
+    "sourceLicenseClass": "Public Domain",
+    "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+    "sourceAttribution": "Typeset/transcribed by Roland Goretzki for the Mutopia Project",
+    "sourceEdition": "Peters, Herrmann Scholtz, 1900b",
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Chopin/Chopin_Op10No12_EtudeInCMinorRevolutionary_CompleteWork.mp3"
   },
   {
     "targetId": "Handel_1",
@@ -244,7 +546,587 @@
       }
     ],
     "variantNote": "Instrumental version: the Soprano/Alto/Tenor/Bass choir lines are played by flute, bass oboe, clarinet and bassoon (the MIDI import's assignment); trumpets corrected to the edition's 'Trombe in C'. Notes unchanged.",
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Handel/Handel_HWV56_MessiahHallelujahChorus_HallelujahChorus.mp3"
+    "unityAsset": "Assets/_Project/Audio/Composers/Handel/Handel_HWV56_MessiahHallelujahChorus_HallelujahChorus.mp3"
+  },
+  {
+    "targetId": "Handel_2",
+    "composer": "G. F. Handel",
+    "work": "Water Music – Alla Hornpipe",
+    "catalog": "HWV 349",
+    "movement": "Alla Hornpipe",
+    "source": "IMSLP",
+    "sourceUrl": "https://imslp.org/wiki/Water_Music_Suite_No.2,_HWV_349_(Handel,_George_Frideric)",
+    "mutopiaId": "https://imslp.org/wiki/Water_Music_Suite_No.2,_HWV_349_(Handel,_George_Frideric)",
+    "sourceFiles": [
+      "https://imslp.org/wiki/Special:ImagefromIndex/1028604"
+    ],
+    "sourceLicense": "Creative Commons Attribution-ShareAlike 4.0",
+    "sourceLicenseClass": "CC BY-SA",
+    "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "sourceAttribution": "Evans Chou, 2026 (revised edition after the Urtext of H. F. Redlich)",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 (OMR source)",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. 2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+    "status": "USER_APPROVED_VARIANT",
+    "instrumentCorrections": [
+      {
+        "part": "Voice, Oh. 1",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Ob. 2",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Bsn.",
+        "imported": "voice",
+        "corrected": "bassoon",
+        "sound": "wind.reed.bassoon"
+      },
+      {
+        "part": "Voice, Vlns. l",
+        "imported": "voice",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Oh. 1",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Ob. 2",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Tpt. 1",
+        "imported": "voice",
+        "corrected": "c-trumpet",
+        "sound": "brass.trumpet"
+      },
+      {
+        "part": "Voice, Tpt. 2",
+        "imported": "voice",
+        "corrected": "c-trumpet",
+        "sound": "brass.trumpet"
+      },
+      {
+        "part": "Voice, Hn. 1",
+        "imported": "voice",
+        "corrected": "horn",
+        "sound": "brass.french-horn"
+      },
+      {
+        "part": "Voice, Tpt. 1",
+        "imported": "voice",
+        "corrected": "c-trumpet",
+        "sound": "brass.trumpet"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Hn. 2",
+        "imported": "voice",
+        "corrected": "horn",
+        "sound": "brass.french-horn"
+      },
+      {
+        "part": "Voice, Oh. 1",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Oh. 2",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Bsn.",
+        "imported": "voice",
+        "corrected": "bassoon",
+        "sound": "wind.reed.bassoon"
+      },
+      {
+        "part": "Voice, Hn. 1",
+        "imported": "voice",
+        "corrected": "horn",
+        "sound": "brass.french-horn"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Ob. 1",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Oh. 2",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Violoncello, Violoncello",
+        "imported": "violoncello",
+        "corrected": "violoncello",
+        "sound": "strings.cello"
+      },
+      {
+        "part": "Voice, Vlns. 1",
+        "imported": "voice",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Vlns. 2",
+        "imported": "voice",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Vlns. 3",
+        "imported": "voice",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Vlas.",
+        "imported": "voice",
+        "corrected": "viola",
+        "sound": "strings.viola"
+      },
+      {
+        "part": "Voice, Tpt. 1",
+        "imported": "voice",
+        "corrected": "c-trumpet",
+        "sound": "brass.trumpet"
+      },
+      {
+        "part": "Voice, Tpt. 2",
+        "imported": "voice",
+        "corrected": "c-trumpet",
+        "sound": "brass.trumpet"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Hn. 2",
+        "imported": "voice",
+        "corrected": "horn",
+        "sound": "brass.french-horn"
+      },
+      {
+        "part": "Voice, Oh. 1",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Oh. 2",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Bsn.",
+        "imported": "voice",
+        "corrected": "bassoon",
+        "sound": "wind.reed.bassoon"
+      },
+      {
+        "part": "Voice, Vlns. 1",
+        "imported": "voice",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Vlns. 2",
+        "imported": "voice",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Tpt. 1",
+        "imported": "voice",
+        "corrected": "c-trumpet",
+        "sound": "brass.trumpet"
+      },
+      {
+        "part": "Voice, Tpt. 2",
+        "imported": "voice",
+        "corrected": "c-trumpet",
+        "sound": "brass.trumpet"
+      },
+      {
+        "part": "Voice, Oh. 1",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Ob. 2",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Bsn.",
+        "imported": "voice",
+        "corrected": "bassoon",
+        "sound": "wind.reed.bassoon"
+      },
+      {
+        "part": "Voice, Vlns. 1",
+        "imported": "voice",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Vlns. 2",
+        "imported": "voice",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Vlns. 3",
+        "imported": "voice",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Oboe 1",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Oboe 2",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Bassoon",
+        "imported": "voice",
+        "corrected": "bassoon",
+        "sound": "wind.reed.bassoon"
+      },
+      {
+        "part": "Voice, Violins 1",
+        "imported": "voice",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Violins 2",
+        "imported": "voice",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Violins 3",
+        "imported": "voice",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Violas",
+        "imported": "voice",
+        "corrected": "viola",
+        "sound": "strings.viola"
+      },
+      {
+        "part": "Voice, Violoncellos",
+        "imported": "voice",
+        "corrected": "violoncello",
+        "sound": "strings.cello"
+      }
+    ],
+    "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 4.0 work and is distributed under the same licence (https://creativecommons.org/licenses/by-sa/4.0/). Attribution: Evans Chou, 2026 (revised edition after the Urtext of H. F. Redlich); source https://imslp.org/wiki/Water_Music_Suite_No.2,_HWV_349_(Handel,_George_Frideric).",
+    "variantNote": "2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+    "unityAsset": "Assets/_Project/Audio/Composers/Handel/Handel_HWV349_WaterMusicAllaHornpipe_AllaHornpipe.mp3"
+  },
+  {
+    "targetId": "Handel_3",
+    "composer": "G. F. Handel",
+    "work": "Music for the Royal Fireworks – La Réjouissance",
+    "catalog": "HWV 351",
+    "movement": "La Réjouissance",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/user/29779490/scores/5769837",
+    "mutopiaId": "https://musescore.com/user/29779490/scores/5769837",
+    "sourceFiles": [
+      "https://musescore.com/user/29779490/scores/5769837"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "MuseScore.com user C_Richardson",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Handel/Handel_HWV351_MusicForTheRoyalFireworksLaRejouissance_LaRejouissance.mp3"
+  },
+  {
+    "targetId": "Handel_4",
+    "composer": "G. F. Handel",
+    "work": "Solomon – The Arrival of the Queen of Sheba",
+    "catalog": "HWV 67",
+    "movement": "Instrumental sinfonia",
+    "source": "IMSLP",
+    "sourceUrl": "https://imslp.org/wiki/Solomon,_HWV_67_(Handel,_George_Frideric)",
+    "mutopiaId": "https://imslp.org/wiki/Solomon,_HWV_67_(Handel,_George_Frideric)",
+    "sourceFiles": [
+      "https://imslp.org/wiki/Special:ImagefromIndex/01067"
+    ],
+    "sourceLicense": "Creative Commons Attribution 3.0",
+    "sourceLicenseClass": "CC BY",
+    "sourceLicenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceAttribution": "Vit Reichel (Mutopia Project)",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 (OMR source)",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. 2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+    "status": "USER_APPROVED_VARIANT",
+    "instrumentCorrections": [
+      {
+        "part": "Voice, Oboe I.",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Oboe II.",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Violino I. II.",
+        "imported": "voice",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Voice, Viola",
+        "imported": "voice",
+        "corrected": "viola",
+        "sound": "strings.viola"
+      },
+      {
+        "part": "Voice, Bassi",
+        "imported": "voice",
+        "corrected": "contrabasses",
+        "sound": "strings.contrabass"
+      }
+    ],
+    "variantNote": "2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+    "unityAsset": "Assets/_Project/Audio/Composers/Handel/Handel_HWV67_SolomonTheArrivalOfTheQueenOfSheba_InstrumentalSinfonia.mp3"
+  },
+  {
+    "targetId": "Handel_5",
+    "composer": "G. F. Handel",
+    "work": "Serse – Ombra mai fu",
+    "catalog": "HWV 40",
+    "movement": "Opening aria",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/user/29383948/scores/6710835",
+    "mutopiaId": "https://musescore.com/user/29383948/scores/6710835",
+    "sourceFiles": [
+      "https://musescore.com/user/29383948/scores/6710835"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "MuseScore.com user yoichi123",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Handel/Handel_HWV40_SerseOmbraMaiFu_OpeningAria.mp3"
+  },
+  {
+    "targetId": "Haydn_1",
+    "composer": "Joseph Haydn",
+    "work": "Symphony No. 94 'Surprise'",
+    "catalog": "Hob. I:94",
+    "movement": "II. Andante",
+    "source": "IMSLP",
+    "sourceUrl": "https://imslp.org/wiki/Symphony_No.94_in_G_major,_Hob.I:94_(Haydn,_Joseph)",
+    "mutopiaId": "https://imslp.org/wiki/Symphony_No.94_in_G_major,_Hob.I:94_(Haydn,_Joseph)",
+    "sourceFiles": [
+      "https://imslp.org/wiki/Special:ImagefromIndex/933686"
+    ],
+    "sourceLicense": "Creative Commons Attribution 4.0",
+    "sourceLicenseClass": "CC BY",
+    "sourceLicenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceAttribution": "Timothy Lanfear (LilyPond engraving, transcribed from the H. C. Robbins Landon edition)",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Haydn/Haydn_HobI94_SymphonyNo94Surprise_II_Andante.mp3"
+  },
+  {
+    "targetId": "Haydn_2",
+    "composer": "Joseph Haydn",
+    "work": "Symphony No. 101 'The Clock'",
+    "catalog": "Hob. I:101",
+    "movement": "II. Andante",
+    "source": "IMSLP",
+    "sourceUrl": "https://imslp.org/wiki/Symphony_No.101_in_D_major,_Hob.I:101_(Haydn,_Joseph)",
+    "mutopiaId": "https://imslp.org/wiki/Symphony_No.101_in_D_major,_Hob.I:101_(Haydn,_Joseph)",
+    "sourceFiles": [
+      "https://imslp.org/wiki/Special:ImagefromIndex/517005"
+    ],
+    "sourceLicense": "Public Domain",
+    "sourceLicenseClass": "Public Domain",
+    "sourceLicenseUrl": "https://imslp.org/wiki/IMSLP:Public_domain",
+    "sourceAttribution": "Ernst Praetorius ed., Eulenburg ca.1934 (600 dpi monochrome)",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 (OMR source)",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. 2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+    "status": "USER_APPROVED_VARIANT",
+    "instrumentCorrections": [
+      {
+        "part": "Voice, Fl.",
+        "imported": "voice",
+        "corrected": "flute",
+        "sound": "wind.flutes.flute"
+      },
+      {
+        "part": "Voice, Ob.",
+        "imported": "voice",
+        "corrected": "oboe",
+        "sound": "wind.reed.oboe"
+      },
+      {
+        "part": "Voice, Cl",
+        "imported": "voice",
+        "corrected": "bb-clarinet",
+        "sound": "wind.reed.clarinet.bflat"
+      },
+      {
+        "part": "Voice, Fag.",
+        "imported": "voice",
+        "corrected": "bassoon",
+        "sound": "wind.reed.bassoon"
+      },
+      {
+        "part": "Voice, Cor.",
+        "imported": "voice",
+        "corrected": "horn",
+        "sound": "brass.french-horn"
+      },
+      {
+        "part": "Voice, Timp.",
+        "imported": "voice",
+        "corrected": "timpani",
+        "sound": "drum.timpani"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Treble Viol, Violin",
+        "imported": "treble-viol",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Violoncello, Violoncello",
+        "imported": "violoncello",
+        "corrected": "violoncello",
+        "sound": "strings.cello"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Treble Viol, Violin",
+        "imported": "treble-viol",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Viola, Viola",
+        "imported": "viola",
+        "corrected": "viola",
+        "sound": "strings.viola"
+      },
+      {
+        "part": "Violoncello, Violoncello",
+        "imported": "violoncello",
+        "corrected": "violoncello",
+        "sound": "strings.cello"
+      }
+    ],
+    "variantNote": "2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+    "unityAsset": "Assets/_Project/Audio/Composers/Haydn/Haydn_HobI101_SymphonyNo101TheClock_II_Andante.mp3"
   },
   {
     "targetId": "Haydn_3",
@@ -266,8 +1148,273 @@
     "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
     "modified": true,
     "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
-    "status": "PASS",
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Haydn/Haydn_Op76No3_StringQuartetOp76No3Emperor_II_PocoAdagio_Cantabile.mp3"
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Haydn/Haydn_Op76No3_StringQuartetOp76No3Emperor_II_PocoAdagio_Cantabile.mp3"
+  },
+  {
+    "targetId": "Haydn_4",
+    "composer": "Joseph Haydn",
+    "work": "Symphony No. 45 'Farewell'",
+    "catalog": "Hob. I:45",
+    "movement": "IV. Finale",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/user/72581653/scores/27265909",
+    "mutopiaId": "https://musescore.com/user/72581653/scores/27265909",
+    "sourceFiles": [
+      "https://musescore.com/user/72581653/scores/27265909"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "MuseScore.com user xzqpmsqtmd",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Haydn/Haydn_HobI45_SymphonyNo45Farewell_IV_Finale.mp3"
+  },
+  {
+    "targetId": "Haydn_5",
+    "composer": "Joseph Haydn",
+    "work": "Trumpet Concerto in E-flat major",
+    "catalog": "Hob. VIIe:1",
+    "movement": "III. Allegro",
+    "source": "IMSLP",
+    "sourceUrl": "https://imslp.org/wiki/Trumpet_Concerto_in_E-flat_major,_Hob.VIIe:1_(Haydn,_Joseph)",
+    "mutopiaId": "https://imslp.org/wiki/Trumpet_Concerto_in_E-flat_major,_Hob.VIIe:1_(Haydn,_Joseph)",
+    "sourceFiles": [
+      "https://imslp.org/wiki/Special:ImagefromIndex/226886"
+    ],
+    "sourceLicense": "Creative Commons Attribution 3.0",
+    "sourceLicenseClass": "CC BY",
+    "sourceLicenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sourceAttribution": "Michel Rondeau",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Haydn/Haydn_HobVIIe1_TrumpetConcertoInE_III_Allegro.mp3"
+  },
+  {
+    "targetId": "Monteverdi_1",
+    "composer": "Claudio Monteverdi",
+    "work": "L'Orfeo – Toccata",
+    "catalog": "SV 318",
+    "movement": "Opening Toccata",
+    "source": "CPDL",
+    "sourceUrl": "https://www.cpdl.org/wiki/index.php/L%27Orfeo,_SV_318_(Claudio_Monteverdi)",
+    "mutopiaId": "https://www.cpdl.org/wiki/index.php/L%27Orfeo,_SV_318_(Claudio_Monteverdi)",
+    "sourceFiles": [
+      "https://web.archive.org/web/20240218072520id_/https://www.cpdl.org/wiki/images/4/40/Mont-orf.midi"
+    ],
+    "sourceLicense": "CPDL License (Choral Public Domain Library), version 4",
+    "sourceLicenseClass": "OK_CPDL",
+    "sourceLicenseUrl": "https://www.cpdl.org/wiki/index.php/ChoralWiki:CPDL",
+    "sourceAttribution": "Peter Rottländer, CPDL #40106 (transcribed from the 1609 print); file via the Internet Archive (cpdl.org blocks scripts)",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrument assignments of mis-imported parts corrected to the edition's own staff names (Lupophone, MIDIorfeoVoice: -> tenor, Harp, MIDIorfeoHarp: -> harp, Treble Viol, MIDIorfeoViolin: -> violin, Bass Recorder, MIDIorfeoRecorder: -> flute, Mellophone Bugle, MIDIorfeoCornet: -> c-trumpet, Violoncello, MIDIorfeoBc: -> violoncello); no musical changes.",
+    "status": "DONE",
+    "instrumentCorrections": [
+      {
+        "part": "Lupophone, MIDIorfeoVoice:",
+        "imported": "lupophone",
+        "corrected": "tenor",
+        "sound": "voice.tenor"
+      },
+      {
+        "part": "Harp, MIDIorfeoHarp:",
+        "imported": "harp",
+        "corrected": "harp",
+        "sound": "pluck.harp"
+      },
+      {
+        "part": "Treble Viol, MIDIorfeoViolin:",
+        "imported": "treble-viol",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Bass Recorder, MIDIorfeoRecorder:",
+        "imported": "bass-recorder",
+        "corrected": "flute",
+        "sound": "wind.flutes.flute"
+      },
+      {
+        "part": "Mellophone Bugle, MIDIorfeoCornet:",
+        "imported": "mellophon-bugle",
+        "corrected": "c-trumpet",
+        "sound": "brass.trumpet"
+      },
+      {
+        "part": "Violoncello, MIDIorfeoBc:",
+        "imported": "violoncello",
+        "corrected": "violoncello",
+        "sound": "strings.cello"
+      }
+    ],
+    "unityAsset": "Assets/_Project/Audio/Composers/Monteverdi/Monteverdi_SV318_LOrfeoToccata_OpeningToccata.mp3"
+  },
+  {
+    "targetId": "Monteverdi_2",
+    "composer": "Claudio Monteverdi",
+    "work": "L'Orfeo – Tu se' morta",
+    "catalog": "SV 318",
+    "movement": "Orfeo's lament aria",
+    "source": "CPDL",
+    "sourceUrl": "https://www.cpdl.org/wiki/index.php/L%27Orfeo,_SV_318_(Claudio_Monteverdi)",
+    "mutopiaId": "https://www.cpdl.org/wiki/index.php/L%27Orfeo,_SV_318_(Claudio_Monteverdi)",
+    "sourceFiles": [
+      "https://web.archive.org/web/20240218072520id_/https://www.cpdl.org/wiki/images/4/40/Mont-orf.midi"
+    ],
+    "sourceLicense": "CPDL License (Choral Public Domain Library), version 4",
+    "sourceLicenseClass": "OK_CPDL",
+    "sourceLicenseUrl": "https://www.cpdl.org/wiki/index.php/ChoralWiki:CPDL",
+    "sourceAttribution": "Peter Rottländer, CPDL #40106 (transcribed from the 1609 print); file via the Internet Archive (cpdl.org blocks scripts)",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrument assignments of mis-imported parts corrected to the edition's own staff names (Lupophone, MIDIorfeoVoice: -> tenor, Harp, MIDIorfeoHarp: -> harp, Treble Viol, MIDIorfeoViolin: -> violin, Bass Recorder, MIDIorfeoRecorder: -> flute, Mellophone Bugle, MIDIorfeoCornet: -> c-trumpet, Violoncello, MIDIorfeoBc: -> violoncello); no musical changes.",
+    "status": "DONE",
+    "instrumentCorrections": [
+      {
+        "part": "Lupophone, MIDIorfeoVoice:",
+        "imported": "lupophone",
+        "corrected": "tenor",
+        "sound": "voice.tenor"
+      },
+      {
+        "part": "Harp, MIDIorfeoHarp:",
+        "imported": "harp",
+        "corrected": "harp",
+        "sound": "pluck.harp"
+      },
+      {
+        "part": "Treble Viol, MIDIorfeoViolin:",
+        "imported": "treble-viol",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Bass Recorder, MIDIorfeoRecorder:",
+        "imported": "bass-recorder",
+        "corrected": "flute",
+        "sound": "wind.flutes.flute"
+      },
+      {
+        "part": "Mellophone Bugle, MIDIorfeoCornet:",
+        "imported": "mellophon-bugle",
+        "corrected": "c-trumpet",
+        "sound": "brass.trumpet"
+      },
+      {
+        "part": "Violoncello, MIDIorfeoBc:",
+        "imported": "violoncello",
+        "corrected": "violoncello",
+        "sound": "strings.cello"
+      }
+    ],
+    "unityAsset": "Assets/_Project/Audio/Composers/Monteverdi/Monteverdi_SV318_LOrfeoTuSeMorta_OrfeoSLamentAria.mp3"
+  },
+  {
+    "targetId": "Monteverdi_3",
+    "composer": "Claudio Monteverdi",
+    "work": "Zefiro torna",
+    "catalog": "SV 251",
+    "movement": "Complete madrigal",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/user/143645/scores/10680685",
+    "mutopiaId": "https://musescore.com/user/143645/scores/10680685",
+    "sourceFiles": [
+      "https://musescore.com/user/143645/scores/10680685"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "MuseScore.com user Edgar Santiago",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Monteverdi/Monteverdi_SV251_ZefiroTorna_CompleteMadrigal.mp3"
+  },
+  {
+    "targetId": "Monteverdi_4",
+    "composer": "Claudio Monteverdi",
+    "work": "L'incoronazione di Poppea – Pur ti miro",
+    "catalog": "SV 308",
+    "movement": "Final duet",
+    "source": "CPDL",
+    "sourceUrl": "https://www.cpdl.org/wiki/index.php/Pur_ti_miro_(from_%22Poppea%22)_(Claudio_Monteverdi)",
+    "mutopiaId": "https://www.cpdl.org/wiki/index.php/Pur_ti_miro_(from_%22Poppea%22)_(Claudio_Monteverdi)",
+    "sourceFiles": [
+      "https://web.archive.org/web/2025id_/https://www.cpdl.org/wiki/images/b/be/Pur_ti_miro.mxl"
+    ],
+    "sourceLicense": "CPDL License (Choral Public Domain Library), version 4",
+    "sourceLicenseClass": "OK_CPDL",
+    "sourceLicenseUrl": "https://www.cpdl.org/wiki/index.php/ChoralWiki:CPDL",
+    "sourceAttribution": "Jorge Luis Gaete Calderon, CPDL #11682; file via the Internet Archive",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrument assignments of mis-imported parts corrected to the edition's own staff names (MusicXML Part -> soprano, MusicXML Part -> alto, MusicXML Part -> violoncello); no musical changes.",
+    "status": "DONE",
+    "instrumentCorrections": [
+      {
+        "part": "MusicXML Part",
+        "imported": "piano",
+        "corrected": "soprano",
+        "sound": "voice.soprano"
+      },
+      {
+        "part": "MusicXML Part",
+        "imported": "piano",
+        "corrected": "alto",
+        "sound": "voice.alto"
+      },
+      {
+        "part": "MusicXML Part",
+        "imported": "piano",
+        "corrected": "violoncello",
+        "sound": "strings.cello"
+      }
+    ],
+    "unityAsset": "Assets/_Project/Audio/Composers/Monteverdi/Monteverdi_SV308_LIncoronazioneDiPoppeaPurTiMiro_FinalDuet.mp3"
+  },
+  {
+    "targetId": "Monteverdi_5",
+    "composer": "Claudio Monteverdi",
+    "work": "Vespro della Beata Vergine – Deus in adjutorium",
+    "catalog": "SV 206",
+    "movement": "Opening movement",
+    "source": "John Kilpatrick",
+    "sourceUrl": "http://www.johnkilpatrick.co.uk/music/1610",
+    "mutopiaId": "http://www.johnkilpatrick.co.uk/music/1610",
+    "sourceFiles": [
+      "http://www.johnkilpatrick.co.uk/music/1610/V01-Deus-score.mid"
+    ],
+    "sourceLicense": "Public Domain (CPDL #20567 lists the edition as Public Domain; the editor: 'may be freely copied and used provided all copyright notices are preserved')",
+    "sourceLicenseClass": "Public Domain",
+    "sourceLicenseUrl": "https://www.cpdl.org/wiki/index.php/Vespro_della_Beata_Vergine_(Claudio_Monteverdi)",
+    "sourceAttribution": "John Kilpatrick, 2010 edition",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrument assignments of mis-imported parts corrected to the edition's own staff names (Flute, Continuo -> organ); no musical changes.",
+    "status": "DONE",
+    "instrumentCorrections": [
+      {
+        "part": "Flute, Continuo",
+        "imported": "flute",
+        "corrected": "organ",
+        "sound": "keyboard.organ"
+      }
+    ],
+    "unityAsset": "Assets/_Project/Audio/Composers/Monteverdi/Monteverdi_SV206_VesproDellaBeataVergineDeusInAdjutorium_OpeningMovement.mp3"
   },
   {
     "targetId": "Mozart_1",
@@ -289,8 +1436,31 @@
     "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
     "modified": true,
     "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
-    "status": "PASS",
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Mozart/Mozart_K525_EineKleineNachtmusik_I_Allegro.mp3"
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Mozart/Mozart_K525_EineKleineNachtmusik_I_Allegro.mp3"
+  },
+  {
+    "targetId": "Mozart_2",
+    "composer": "W. A. Mozart",
+    "work": "Symphony No. 40",
+    "catalog": "K. 550",
+    "movement": "I. Molto allegro",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/user/6725176/scores/3291171",
+    "mutopiaId": "https://musescore.com/user/6725176/scores/3291171",
+    "sourceFiles": [
+      "https://musescore.com/user/6725176/scores/3291171"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "MuseScore.com user Samuel Ricke",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Mozart/Mozart_K550_SymphonyNo40_I_MoltoAllegro.mp3"
   },
   {
     "targetId": "Mozart_3",
@@ -312,8 +1482,62 @@
     "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
     "modified": true,
     "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
-    "status": "PASS",
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Mozart/Mozart_K331_PianoSonataNo11RondoAllaTurca_III_AllaTurca.mp3"
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Mozart/Mozart_K331_PianoSonataNo11RondoAllaTurca_III_AllaTurca.mp3"
+  },
+  {
+    "targetId": "Mozart_4",
+    "composer": "W. A. Mozart",
+    "work": "Requiem – Lacrimosa",
+    "catalog": "K. 626",
+    "movement": "Lacrimosa",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/user/6725176/scores/2918781",
+    "mutopiaId": "https://musescore.com/user/6725176/scores/2918781",
+    "sourceFiles": [
+      "https://musescore.com/user/6725176/scores/2918781"
+    ],
+    "sourceLicense": "Public Domain",
+    "sourceLicenseClass": "Public Domain",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "sourceAttribution": "MuseScore.com user Samuel Ricke",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Mozart/Mozart_K626_RequiemLacrimosa_Lacrimosa.mp3"
+  },
+  {
+    "targetId": "Mozart_5",
+    "composer": "W. A. Mozart",
+    "work": "The Magic Flute – Der Hölle Rache",
+    "catalog": "K. 620",
+    "movement": "Queen of the Night aria",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=266",
+    "mutopiaId": "Mutopia-2013/03/24-266",
+    "sourceFiles": [
+      "https://www.mutopiaproject.org/ftp/MozartWA/KV620/magicflute-14-aria/magicflute-14-aria-mids.zip"
+    ],
+    "sourceLicense": "Public Domain",
+    "sourceLicenseClass": "Public Domain",
+    "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+    "sourceAttribution": "Typeset/transcribed by Deborah Lowrey for the Mutopia Project",
+    "sourceEdition": "J. L. Peters 1875, C. F. Peters 18??, Lee & Walker 1870, North & Co. 1879",
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrument assignments of mis-imported parts corrected to the edition's own staff names (Piano -> viola); no musical changes.",
+    "status": "DONE",
+    "instrumentCorrections": [
+      {
+        "part": "Piano",
+        "imported": "piano",
+        "corrected": "viola",
+        "sound": "strings.viola"
+      }
+    ],
+    "unityAsset": "Assets/_Project/Audio/Composers/Mozart/Mozart_K620_TheMagicFluteDerHolleRache_QueenOfTheNightAria.mp3"
   },
   {
     "targetId": "Pachelbel_1",
@@ -335,8 +1559,218 @@
     "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
     "modified": true,
     "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
-    "status": "PASS",
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Pachelbel/Pachelbel_P37_CanonInD_CompleteCanon.mp3"
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Pachelbel/Pachelbel_P37_CanonInD_CompleteCanon.mp3"
+  },
+  {
+    "targetId": "Pachelbel_2",
+    "composer": "Johann Pachelbel",
+    "work": "Gigue in D",
+    "catalog": "P. 37 companion",
+    "movement": "Complete Gigue",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=2212",
+    "mutopiaId": "Mutopia-2018/02/08-2212",
+    "sourceFiles": [
+      "https://www.mutopiaproject.org/ftp/PachelbelJ/PachelbelGigue/PachelbelGigue.mid"
+    ],
+    "sourceLicense": "Creative Commons Attribution 4.0",
+    "sourceLicenseClass": "CC BY",
+    "sourceLicenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+    "sourceAttribution": "Typeset/transcribed by Urs Metzger for the Mutopia Project",
+    "sourceEdition": "Manuscript 1838-1842",
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Pachelbel/Pachelbel_P37Companion_GigueInD_CompleteGigue.mp3"
+  },
+  {
+    "targetId": "Pachelbel_3",
+    "composer": "Johann Pachelbel",
+    "work": "Chaconne in F minor",
+    "catalog": "P. 43",
+    "movement": "Complete work",
+    "source": "IMSLP",
+    "sourceUrl": "https://imslp.org/wiki/Chaconne_in_F_minor,_P.43_(Pachelbel,_Johann)",
+    "mutopiaId": "https://imslp.org/wiki/Chaconne_in_F_minor,_P.43_(Pachelbel,_Johann)",
+    "sourceFiles": [
+      "https://imslp.org/wiki/Special:ImagefromIndex/451615"
+    ],
+    "sourceLicense": "Creative Commons Attribution-ShareAlike 4.0",
+    "sourceLicenseClass": "CC BY-SA",
+    "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "sourceAttribution": "Pierre Gouin, Les Éditions Outremontaises 2016",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 4.0 work and is distributed under the same licence (https://creativecommons.org/licenses/by-sa/4.0/). Attribution: Pierre Gouin, Les Éditions Outremontaises 2016; source https://imslp.org/wiki/Chaconne_in_F_minor,_P.43_(Pachelbel,_Johann).",
+    "unityAsset": "Assets/_Project/Audio/Composers/Pachelbel/Pachelbel_P43_ChaconneInFMinor_CompleteWork.mp3"
+  },
+  {
+    "targetId": "Pachelbel_4",
+    "composer": "Johann Pachelbel",
+    "work": "Hexachordum Apollinis – Aria Sebaldina",
+    "catalog": "P. 193",
+    "movement": "Aria Sebaldina",
+    "source": "IMSLP",
+    "sourceUrl": "https://imslp.org/wiki/Aria_and_8_Variations_in_F_minor,_P.198_(Pachelbel,_Johann)",
+    "mutopiaId": "https://imslp.org/wiki/Aria_and_8_Variations_in_F_minor,_P.198_(Pachelbel,_Johann)",
+    "sourceFiles": [
+      "https://imslp.org/wiki/Special:ImagefromIndex/451592"
+    ],
+    "sourceLicense": "Public Domain",
+    "sourceLicenseClass": "Public Domain",
+    "sourceLicenseUrl": "https://imslp.org/wiki/IMSLP:Public_domain",
+    "sourceAttribution": "Max Seiffert ed., DTB, Breitkopf & Härtel 1901",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 (OMR source)",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. 2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+    "status": "USER_APPROVED_VARIANT",
+    "variantNote": "2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+    "unityAsset": "Assets/_Project/Audio/Composers/Pachelbel/Pachelbel_P193_HexachordumApollinisAriaSebaldina_AriaSebaldina.mp3"
+  },
+  {
+    "targetId": "Pachelbel_5",
+    "composer": "Johann Pachelbel",
+    "work": "Magnificat Fugue",
+    "catalog": "selected fugue",
+    "movement": "One representative Magnificat fugue",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=420",
+    "mutopiaId": "Mutopia-2014/02/25-420",
+    "sourceFiles": [
+      "https://www.mutopiaproject.org/ftp/PachelbelJ/fugue-3-7/fugue-3-7.mid"
+    ],
+    "sourceLicense": "Creative Commons Attribution-ShareAlike 4.0",
+    "sourceLicenseClass": "CC BY-SA",
+    "sourceLicenseUrl": "http://creativecommons.org/licenses/by-sa/4.0/",
+    "sourceAttribution": "Typeset/transcribed by Steve Dunlop for the Mutopia Project",
+    "sourceEdition": "Wien: Artaria, 1901 (Denkmaler der tonkunst in Osterreich; v. 17)",
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 4.0 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/4.0/). Attribution: Typeset/transcribed by Steve Dunlop for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=420.",
+    "unityAsset": "Assets/_Project/Audio/Composers/Pachelbel/Pachelbel_SelectedFugue_MagnificatFugue_OneRepresentativeMagnificatFugue.mp3"
+  },
+  {
+    "targetId": "Tchaikovsky_1",
+    "composer": "P. I. Tchaikovsky",
+    "work": "Swan Lake – Scene",
+    "catalog": "Op. 20",
+    "movement": "Act II, No. 10 Scene / main theme",
+    "source": "IMSLP",
+    "sourceUrl": "https://imslp.org/wiki/Swan_Lake_Suite,_Op.20a_(Tchaikovsky,_Pyotr)",
+    "mutopiaId": "https://imslp.org/wiki/Swan_Lake_Suite,_Op.20a_(Tchaikovsky,_Pyotr)",
+    "sourceFiles": [
+      "https://imslp.org/wiki/Special:ImagefromIndex/917974"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "Gajewski",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Tchaikovsky/Tchaikovsky_Op20_SwanLakeScene_ActII_No_10SceneMainTheme.mp3"
+  },
+  {
+    "targetId": "Tchaikovsky_2",
+    "composer": "P. I. Tchaikovsky",
+    "work": "The Nutcracker – Dance of the Sugar Plum Fairy",
+    "catalog": "Op. 71",
+    "movement": "No. 14, Var. II",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/user/31011711/scores/7281314",
+    "mutopiaId": "https://musescore.com/user/31011711/scores/7281314",
+    "sourceFiles": [
+      "https://musescore.com/user/31011711/scores/7281314"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "MuseScore.com user スタジオコンコン",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Tchaikovsky/Tchaikovsky_Op71_TheNutcrackerDanceOfTheSugarPlumFairy_No_14_Var_II.mp3"
+  },
+  {
+    "targetId": "Tchaikovsky_3",
+    "composer": "P. I. Tchaikovsky",
+    "work": "The Nutcracker – Waltz of the Flowers",
+    "catalog": "Op. 71",
+    "movement": "No. 13",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/user/194052/scores/5304439",
+    "mutopiaId": "https://musescore.com/user/194052/scores/5304439",
+    "sourceFiles": [
+      "https://musescore.com/user/194052/scores/5304439"
+    ],
+    "sourceLicense": "Creative Commons Attribution 4.0",
+    "sourceLicenseClass": "CC BY",
+    "sourceLicenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceAttribution": "MuseScore.com user Laurelin",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Tchaikovsky/Tchaikovsky_Op71_TheNutcrackerWaltzOfTheFlowers_No_13.mp3"
+  },
+  {
+    "targetId": "Tchaikovsky_4",
+    "composer": "P. I. Tchaikovsky",
+    "work": "1812 Overture",
+    "catalog": "Op. 49",
+    "movement": "Main concert work",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/openscore/scores/4145221",
+    "mutopiaId": "https://musescore.com/openscore/scores/4145221",
+    "sourceFiles": [
+      "https://musescore.com/openscore/scores/4145221"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "MuseScore.com user OpenScore (Mike Nelson)",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Tchaikovsky/Tchaikovsky_Op49_1812Overture_MainConcertWork.mp3"
+  },
+  {
+    "targetId": "Tchaikovsky_5",
+    "composer": "P. I. Tchaikovsky",
+    "work": "Piano Concerto No. 1",
+    "catalog": "Op. 23",
+    "movement": "I. Allegro non troppo e molto maestoso",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/user/20208436/scores/5871238",
+    "mutopiaId": "https://musescore.com/user/20208436/scores/5871238",
+    "sourceFiles": [
+      "https://musescore.com/user/20208436/scores/5871238"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "MuseScore.com user jeronjoseph",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Tchaikovsky/Tchaikovsky_Op23_PianoConcertoNo1_I_AllegroNonTroppoEMoltoMaestoso.mp3"
   },
   {
     "targetId": "Vivaldi_1",
@@ -358,9 +1792,33 @@
     "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
     "modified": true,
     "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
-    "status": "PASS",
+    "status": "DONE",
     "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 3.0 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/3.0/). Attribution: Typeset/transcribed by smailliw (at) gmail.com for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=301.",
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Vivaldi/Vivaldi_RV269_TheFourSeasonsSpring_I_Allegro.mp3"
+    "unityAsset": "Assets/_Project/Audio/Composers/Vivaldi/Vivaldi_RV269_TheFourSeasonsSpring_I_Allegro.mp3"
+  },
+  {
+    "targetId": "Vivaldi_2",
+    "composer": "Antonio Vivaldi",
+    "work": "The Four Seasons – Summer",
+    "catalog": "RV 315",
+    "movement": "III. Presto",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=336",
+    "mutopiaId": "Mutopia-2010/02/08-336",
+    "sourceFiles": [
+      "https://www.mutopiaproject.org/ftp/VivaldiA/O8/summer/summer-mids.zip"
+    ],
+    "sourceLicense": "Creative Commons Attribution-ShareAlike 3.0",
+    "sourceLicenseClass": "CC BY-SA",
+    "sourceLicenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "sourceAttribution": "Typeset/transcribed by smailliw (at) gmail.com for the Mutopia Project",
+    "sourceEdition": "Performers' Facsimiles",
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 3.0 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/3.0/). Attribution: Typeset/transcribed by smailliw (at) gmail.com for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=336.",
+    "unityAsset": "Assets/_Project/Audio/Composers/Vivaldi/Vivaldi_RV315_TheFourSeasonsSummer_III_Presto.mp3"
   },
   {
     "targetId": "Vivaldi_3",
@@ -382,9 +1840,9 @@
     "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
     "modified": true,
     "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
-    "status": "PASS",
+    "status": "DONE",
     "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 3.0 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/3.0/). Attribution: Typeset/transcribed by smailliw (at) gmail.com for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=350.",
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Vivaldi/Vivaldi_RV293_TheFourSeasonsAutumn_I_Allegro.mp3"
+    "unityAsset": "Assets/_Project/Audio/Composers/Vivaldi/Vivaldi_RV293_TheFourSeasonsAutumn_I_Allegro.mp3"
   },
   {
     "targetId": "Vivaldi_4",
@@ -406,8 +1864,263 @@
     "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
     "modified": true,
     "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
-    "status": "PASS",
+    "status": "DONE",
     "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 3.0 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/3.0/). Attribution: Typeset/transcribed by smailliw (at) gmail.com for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=351.",
-    "unityAsset": "Assets/_Project/Audio/Music/Composers/Vivaldi/Vivaldi_RV297_TheFourSeasonsWinter_I_AllegroNonMolto.mp3"
+    "unityAsset": "Assets/_Project/Audio/Composers/Vivaldi/Vivaldi_RV297_TheFourSeasonsWinter_I_AllegroNonMolto.mp3"
+  },
+  {
+    "targetId": "Vivaldi_5",
+    "composer": "Antonio Vivaldi",
+    "work": "Gloria",
+    "catalog": "RV 589",
+    "movement": "I. Gloria in excelsis Deo",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/user/272961/scores/6749120",
+    "mutopiaId": "https://musescore.com/user/272961/scores/6749120",
+    "sourceFiles": [
+      "https://musescore.com/user/272961/scores/6749120"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "MuseScore.com user edward.maurath",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Vivaldi/Vivaldi_RV589_Gloria_I_GloriaInExcelsisDeo.mp3"
+  },
+  {
+    "targetId": "Wagner_1",
+    "composer": "Richard Wagner",
+    "work": "Die Walküre – Ride of the Valkyries",
+    "catalog": "WWV 86B",
+    "movement": "Act III prelude / Ride",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/user/340306/scores/6232442",
+    "mutopiaId": "https://musescore.com/user/340306/scores/6232442",
+    "sourceFiles": [
+      "https://musescore.com/user/340306/scores/6232442"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "MuseScore.com user marty strasinger",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Wagner/Wagner_WWV86B_DieWalkureRideOfTheValkyries_ActIIIPreludeRide.mp3"
+  },
+  {
+    "targetId": "Wagner_2",
+    "composer": "Richard Wagner",
+    "work": "Lohengrin – Bridal Chorus",
+    "catalog": "WWV 75",
+    "movement": "Act III Bridal Chorus",
+    "source": "IMSLP",
+    "sourceUrl": "https://imslp.org/wiki/Lohengrin,_WWV_75_(Wagner,_Richard)",
+    "mutopiaId": "https://imslp.org/wiki/Lohengrin,_WWV_75_(Wagner,_Richard)",
+    "sourceFiles": [
+      "https://imslp.org/wiki/Special:ImagefromIndex/66166"
+    ],
+    "sourceLicense": "Public Domain",
+    "sourceLicenseClass": "Public Domain",
+    "sourceLicenseUrl": "https://imslp.org/wiki/IMSLP:Public_domain",
+    "sourceAttribution": "Breitkopf und Härtel [1887] (Kalmus reprint)",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 (OMR source)",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. 2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+    "status": "USER_APPROVED_VARIANT",
+    "instrumentCorrections": [
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Treble Viol, Violin",
+        "imported": "treble-viol",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Treble Viol, Violin",
+        "imported": "treble-viol",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Viola, Viola",
+        "imported": "viola",
+        "corrected": "viola",
+        "sound": "strings.viola"
+      },
+      {
+        "part": "Violoncello, Violoncello",
+        "imported": "violoncello",
+        "corrected": "violoncello",
+        "sound": "strings.cello"
+      },
+      {
+        "part": "Violin, Violin",
+        "imported": "violin",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Viola, Viola",
+        "imported": "viola",
+        "corrected": "viola",
+        "sound": "strings.viola"
+      },
+      {
+        "part": "Viola, Viola",
+        "imported": "viola",
+        "corrected": "viola",
+        "sound": "strings.viola"
+      },
+      {
+        "part": "Violoncello, Violoncello",
+        "imported": "violoncello",
+        "corrected": "violoncello",
+        "sound": "strings.cello"
+      },
+      {
+        "part": "Violoncello, Violoncello",
+        "imported": "violoncello",
+        "corrected": "violoncello",
+        "sound": "strings.cello"
+      },
+      {
+        "part": "Treble Viol, Violin",
+        "imported": "treble-viol",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Treble Viol, Violin",
+        "imported": "treble-viol",
+        "corrected": "violin",
+        "sound": "strings.violin"
+      },
+      {
+        "part": "Viola, Viola",
+        "imported": "viola",
+        "corrected": "viola",
+        "sound": "strings.viola"
+      }
+    ],
+    "variantNote": "2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+    "unityAsset": "Assets/_Project/Audio/Composers/Wagner/Wagner_WWV75_LohengrinBridalChorus_ActIIIBridalChorus.mp3"
+  },
+  {
+    "targetId": "Wagner_3",
+    "composer": "Richard Wagner",
+    "work": "Tristan und Isolde – Prelude",
+    "catalog": "WWV 90",
+    "movement": "Act I Prelude",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/user/43726/scores/7419392",
+    "mutopiaId": "https://musescore.com/user/43726/scores/7419392",
+    "sourceFiles": [
+      "https://musescore.com/user/43726/scores/7419392"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "MuseScore.com user jayW",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Wagner/Wagner_WWV90_TristanUndIsoldePrelude_ActIPrelude.mp3"
+  },
+  {
+    "targetId": "Wagner_4",
+    "composer": "Richard Wagner",
+    "work": "Tannhäuser – Overture",
+    "catalog": "WWV 70",
+    "movement": "Overture",
+    "source": "MuseScore.com",
+    "sourceUrl": "https://musescore.com/user/10429841/scores/5951196",
+    "mutopiaId": "https://musescore.com/user/10429841/scores/5951196",
+    "sourceFiles": [
+      "https://musescore.com/user/10429841/scores/5951196"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "MuseScore.com user Guevny",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Wagner/Wagner_WWV70_TannhauserOverture_Overture.mp3"
+  },
+  {
+    "targetId": "Wagner_5",
+    "composer": "Richard Wagner",
+    "work": "Götterdämmerung – Siegfried's Funeral March",
+    "catalog": "WWV 86D",
+    "movement": "Act III funeral music",
+    "source": "IMSLP",
+    "sourceUrl": "https://imslp.org/wiki/G%C3%B6tterd%C3%A4mmerung,_WWV_86D_(Wagner,_Richard)",
+    "mutopiaId": "https://imslp.org/wiki/G%C3%B6tterd%C3%A4mmerung,_WWV_86D_(Wagner,_Richard)",
+    "sourceFiles": [
+      "https://imslp.org/wiki/Special:ImagefromIndex/928975"
+    ],
+    "sourceLicense": "Creative Commons Zero (CC0)",
+    "sourceLicenseClass": "CC0 1.0",
+    "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceAttribution": "DpMusicman, engraved from the Eulenburg score",
+    "sourceEdition": null,
+    "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+    "modified": true,
+    "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+    "status": "DONE",
+    "unityAsset": "Assets/_Project/Audio/Composers/Wagner/Wagner_WWV86D_GotterdammerungSiegfriedSFuneralMarch_ActIIIFuneralMusic.mp3"
   }
 ]

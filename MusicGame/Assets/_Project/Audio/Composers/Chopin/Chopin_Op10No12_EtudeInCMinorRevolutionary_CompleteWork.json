@@ -1,0 +1,52 @@
+{
+  "targetId": "Chopin_5",
+  "composer": "Frédéric Chopin",
+  "work": "Étude in C minor 'Revolutionary'",
+  "catalog": "Op. 10 No. 12",
+  "movement": "Complete work",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=743",
+  "mutopiaId": "Mutopia-2018/05/15-743",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/ChopinFF/O10/op-10-12-wfi/op-10-12-wfi.mid"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "sourceAttribution": "Typeset/transcribed by Roland Goretzki for the Mutopia Project",
+  "sourceEdition": "Peters, Herrmann Scholtz, 1900b",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "DONE",
+  "unityAsset": "Assets/_Project/Audio/Composers/Chopin/Chopin_Op10No12_EtudeInCMinorRevolutionary_CompleteWork.mp3",
+  "durationSeconds": 126.661,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Chopin_5/Chopin_Op10No12_EtudeInCMinorRevolutionary_CompleteWork.wav",
+    "masterSamples": 5688855,
+    "trimmedLeadSamples": 29,
+    "trimmedTailSamples": 103063,
+    "encodedSamples": 5585763,
+    "durationSeconds": 126.661,
+    "bytes": 3040653,
+    "sha256": "589caf2f1f22c903a20e76f9cff751366665adf08856f6c5bf1bd60ed92f1209",
+    "masterSha256": "ef88993be5fce443e149f2912a2b87cdfc8734356e64de69dd1c49e475768bd8"
+  },
+  "masterQa": {
+    "durationSeconds": 129.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -8.56,
+    "rmsDbfs": -24.85,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "piano",
+    "piano"
+  ]
+}

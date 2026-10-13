@@ -1,0 +1,53 @@
+{
+  "targetId": "Pachelbel_5",
+  "composer": "Johann Pachelbel",
+  "work": "Magnificat Fugue",
+  "catalog": "selected fugue",
+  "movement": "One representative Magnificat fugue",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=420",
+  "mutopiaId": "Mutopia-2014/02/25-420",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/PachelbelJ/fugue-3-7/fugue-3-7.mid"
+  ],
+  "sourceLicense": "Creative Commons Attribution-ShareAlike 4.0",
+  "sourceLicenseClass": "CC BY-SA",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/by-sa/4.0/",
+  "sourceAttribution": "Typeset/transcribed by Steve Dunlop for the Mutopia Project",
+  "sourceEdition": "Wien: Artaria, 1901 (Denkmaler der tonkunst in Osterreich; v. 17)",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "DONE",
+  "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 4.0 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/4.0/). Attribution: Typeset/transcribed by Steve Dunlop for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=420.",
+  "unityAsset": "Assets/_Project/Audio/Composers/Pachelbel/Pachelbel_SelectedFugue_MagnificatFugue_OneRepresentativeMagnificatFugue.mp3",
+  "durationSeconds": 140.179,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Pachelbel_5/Pachelbel_SelectedFugue_MagnificatFugue_OneRepresentativeMagnificatFugue.wav",
+    "masterSamples": 6306300,
+    "trimmedLeadSamples": 124,
+    "trimmedTailSamples": 124272,
+    "encodedSamples": 6181904,
+    "durationSeconds": 140.179,
+    "bytes": 3365407,
+    "sha256": "9c156a5f18c0c438a1404fb82e9d7603ca6d981ade43be67c6b57315b1940c0a",
+    "masterSha256": "da417afb3bae41e7d0b87585a80205403911fc775d0fca35ae705b2a7c749086"
+  },
+  "masterQa": {
+    "durationSeconds": 143.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -12.08,
+    "rmsDbfs": -29.14,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "piano",
+    "piano"
+  ]
+}

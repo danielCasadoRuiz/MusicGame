@@ -1,0 +1,95 @@
+{
+  "targetId": "Monteverdi_1",
+  "composer": "Claudio Monteverdi",
+  "work": "L'Orfeo – Toccata",
+  "catalog": "SV 318",
+  "movement": "Opening Toccata",
+  "source": "CPDL",
+  "sourceUrl": "https://www.cpdl.org/wiki/index.php/L%27Orfeo,_SV_318_(Claudio_Monteverdi)",
+  "mutopiaId": "https://www.cpdl.org/wiki/index.php/L%27Orfeo,_SV_318_(Claudio_Monteverdi)",
+  "sourceFiles": [
+    "https://web.archive.org/web/20240218072520id_/https://www.cpdl.org/wiki/images/4/40/Mont-orf.midi"
+  ],
+  "sourceLicense": "CPDL License (Choral Public Domain Library), version 4",
+  "sourceLicenseClass": "OK_CPDL",
+  "sourceLicenseUrl": "https://www.cpdl.org/wiki/index.php/ChoralWiki:CPDL",
+  "sourceAttribution": "Peter Rottländer, CPDL #40106 (transcribed from the 1609 print); file via the Internet Archive (cpdl.org blocks scripts)",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrument assignments of mis-imported parts corrected to the edition's own staff names (Lupophone, MIDIorfeoVoice: -> tenor, Harp, MIDIorfeoHarp: -> harp, Treble Viol, MIDIorfeoViolin: -> violin, Bass Recorder, MIDIorfeoRecorder: -> flute, Mellophone Bugle, MIDIorfeoCornet: -> c-trumpet, Violoncello, MIDIorfeoBc: -> violoncello); no musical changes.",
+  "status": "DONE",
+  "instrumentCorrections": [
+    {
+      "part": "Lupophone, MIDIorfeoVoice:",
+      "imported": "lupophone",
+      "corrected": "tenor",
+      "sound": "voice.tenor"
+    },
+    {
+      "part": "Harp, MIDIorfeoHarp:",
+      "imported": "harp",
+      "corrected": "harp",
+      "sound": "pluck.harp"
+    },
+    {
+      "part": "Treble Viol, MIDIorfeoViolin:",
+      "imported": "treble-viol",
+      "corrected": "violin",
+      "sound": "strings.violin"
+    },
+    {
+      "part": "Bass Recorder, MIDIorfeoRecorder:",
+      "imported": "bass-recorder",
+      "corrected": "flute",
+      "sound": "wind.flutes.flute"
+    },
+    {
+      "part": "Mellophone Bugle, MIDIorfeoCornet:",
+      "imported": "mellophon-bugle",
+      "corrected": "c-trumpet",
+      "sound": "brass.trumpet"
+    },
+    {
+      "part": "Violoncello, MIDIorfeoBc:",
+      "imported": "violoncello",
+      "corrected": "violoncello",
+      "sound": "strings.cello"
+    }
+  ],
+  "unityAsset": "Assets/_Project/Audio/Composers/Monteverdi/Monteverdi_SV318_LOrfeoToccata_OpeningToccata.mp3",
+  "durationSeconds": 67.253,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Monteverdi_1/Monteverdi_SV318_LOrfeoToccata_OpeningToccata.wav",
+    "masterSamples": 3042900,
+    "trimmedLeadSamples": 342,
+    "trimmedTailSamples": 76690,
+    "encodedSamples": 2965868,
+    "durationSeconds": 67.253,
+    "bytes": 1614994,
+    "sha256": "c92492eace649f30af899c7c6cf90bfcaf964b0502002b540b172a0ea394d775",
+    "masterSha256": "923048d138302f1fbe539ecc7a64967af8fb4bdfad2dda04d56f7f14986545d7"
+  },
+  "masterQa": {
+    "durationSeconds": 69.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -9.13,
+    "rmsDbfs": -25.67,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "tenor",
+    "harp",
+    "violin",
+    "flute",
+    "c-trumpet",
+    "violoncello"
+  ]
+}

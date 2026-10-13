@@ -1,0 +1,62 @@
+{
+  "targetId": "Bach_2",
+  "composer": "J. S. Bach",
+  "work": "Brandenburg Concerto No. 3",
+  "catalog": "BWV 1048",
+  "movement": "I. Allegro",
+  "source": "OpenScore Orchestra",
+  "sourceUrl": "https://github.com/MarkGotham/Hauptstimme",
+  "mutopiaId": "https://github.com/MarkGotham/Hauptstimme",
+  "sourceFiles": [
+    "https://raw.githubusercontent.com/MarkGotham/Hauptstimme/main/data/Bach,_Johann_Sebastian/Brandenburg_Concerto_No.3,_BWV.1048/1/Bach_BWV.1048_1.mxl"
+  ],
+  "sourceLicense": "CC0 1.0 Universal",
+  "sourceLicenseClass": "CC0 1.0",
+  "sourceLicenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "sourceAttribution": "OpenScore Orchestra corpus (Gotham et al.), transcribed from a public-domain IMSLP edition",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "DONE",
+  "unityAsset": "Assets/_Project/Audio/Composers/Bach/Bach_BWV1048_BrandenburgConcertoNo3_I_Allegro.mp3",
+  "durationSeconds": 329.1,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Bach_2/Bach_BWV1048_BrandenburgConcertoNo3_I_Allegro.wav",
+    "masterSamples": 14566141,
+    "trimmedLeadSamples": 142,
+    "trimmedTailSamples": 52693,
+    "encodedSamples": 14513306,
+    "durationSeconds": 329.1,
+    "bytes": 7899428,
+    "sha256": "9e307ad69949bac1613aa7a90fb18c0420d563209b7581183c295e331fbd988c",
+    "masterSha256": "6ceb1160187255d5f31d293589490914db128f865f4477a7d799ddc97533f8b0"
+  },
+  "masterQa": {
+    "durationSeconds": 330.3,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -1.0,
+    "rmsDbfs": -23.91,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false,
+    "ceilingGainDb": -6.93
+  },
+  "importedInstruments": [
+    "violin",
+    "violin",
+    "violin",
+    "viola",
+    "viola",
+    "viola",
+    "violoncello",
+    "violoncello",
+    "violoncello",
+    "violone",
+    "harpsichord"
+  ]
+}

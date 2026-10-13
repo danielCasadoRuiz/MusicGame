@@ -1,0 +1,52 @@
+{
+  "targetId": "Chopin_3",
+  "composer": "Frédéric Chopin",
+  "work": "Waltz in D-flat major 'Minute Waltz'",
+  "catalog": "Op. 64 No. 1",
+  "movement": "Complete work",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=483",
+  "mutopiaId": "Mutopia-2015/01/17-483",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/ChopinFF/O64/chopin_valse_op64_no1/chopin_valse_op64_no1.mid"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/publicdomain/",
+  "sourceAttribution": "Typeset/transcribed by Magnus Lewis-Smith for the Mutopia Project",
+  "sourceEdition": "Edition Peters",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "DONE",
+  "unityAsset": "Assets/_Project/Audio/Composers/Chopin/Chopin_Op64No1_WaltzInD_CompleteWork.mp3",
+  "durationSeconds": 90.995,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Chopin_3/Chopin_Op64No1_WaltzInD_CompleteWork.wav",
+    "masterSamples": 4101255,
+    "trimmedLeadSamples": 168,
+    "trimmedTailSamples": 88216,
+    "encodedSamples": 4012871,
+    "durationSeconds": 90.995,
+    "bytes": 2184881,
+    "sha256": "8751a32f43db7d6e4e43d058cb6d332f88a4c95b788be87586fc114f83b5cb26",
+    "masterSha256": "b69334ef658527d6409de5fa71eec33c6f82ab8b58b8ed579d816a384969ed39"
+  },
+  "masterQa": {
+    "durationSeconds": 93.0,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -9.39,
+    "rmsDbfs": -23.92,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "piano",
+    "piano"
+  ]
+}

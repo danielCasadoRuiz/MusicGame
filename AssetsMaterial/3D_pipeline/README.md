@@ -143,3 +143,76 @@ l'empremta (sha256) de l'ULTRA i de l'avatar ajustats. En tornar a executar el .
 es pot reutilitzar (pregunta [Y/n]) i es recalculen pesos i LODs sense fitting manual. Si l'ULTRA o
 l'avatar han canviat, no s'ofereix i cal fer el fitting de nou. Si no hi ha cap asset pendent, el .bat
 llista els assets amb fitting desat per regenerar-ne un.
+
+
+## Fitting amb una peça i còpia simètrica (Mirror X)
+
+El BAT `03_FITTING_&_RIGGING.bat` pregunta abans d'obrir Blender si vols
+crear una còpia simètrica. Respon sí per una sola sabata o peça lateral;
+respon no per una peça completa o un parell ja modelat. El valor per defecte és no.
+
+Amb simetria, es bakegen els transforms importats sense moure la malla i
+s'afegeix `FAR_Mirror_X`, referenciat a un pla fix al centre del món (X=0).
+Pots ajustar posició, rotació i escala en Object Mode: l'altra peça segueix
+reflectida automàticament. Conserva el modificador sense aplicar, visible,
+sobre X, sense Bisect ni Merge. No moguis el pla de referència.
+Fes Ctrl+S i confirma a la consola com sempre.
+
+El procés aplica el Mirror abans dels pesos i blendshapes, tant a l'ULTRA
+com a cada LOD. El fitting desat conserva la simetria i el pla, a més de la
+transformació i pose. Si reutilitzes el fitting, es recupera la mateixa opció
+sense preguntar de nou. Per canviar-la, tria fer el fitting de nou.
+
+Els canvis de vèrtexs en Edit Mode no es transfereixen automàticament als
+altres LODs; utilitza els transforms de l'objecte per a l'ajust compartit.
+
+
+## Exportacio FBX i noms a Unity
+
+Els FBX conserven les normals personalitzades del model, exporten smoothing
+per cares i tangents, i inclouen nomes GARMENT + ARMATURE. Els BLEND finals
+tambe exclouen el cos i els ulls de referencia i empaqueten les textures.
+No recalcular les normals d'un BLEND validat visualment abans d'exportar.
+
+Textures exportades: BaseColor.png, Normal.png, Metallic-Roughness.png
+i MetallicSmoothness.png (Unity: R=metallic, A=1-roughness).
+Unity utilitza el mateix nom de FBX i textures que l'exportador, conservant
+les carpetes Ultra/High/Mid/Low. El nivell Mid correspon a MEDIUM_10k.
+Els canvis de nom d'assets existents es fan amb AssetDatabase.MoveAsset,
+conservant GUIDs i referencies de materials i prefabs.
+
+
+## Completar nomes els nivells que falten
+
+Executa `02_RETOPO.bat` i despres `03_FITTING_&_RIGGING.bat` com sempre.
+
+- Retopo comprova els cinc GLB esperats segons `retopo_config.json`. Si
+  l'asset ja es a Output, recupera el RAW de `preProcess` i genera nomes
+  els nivells absents. Els GLB i la carpeta Rigged existents es conserven.
+- Rigging comprova els FBX per LOD a `Rigged/ULTRA`, `HIGH`, `MID-HIGH`,
+  `MEDIUM` i `LOW`. Processa nomes els absents, reutilitzant automaticament
+  el fitting verificat, Mirror i opcio de blendshapes. Pot recalcular
+  l'ULTRA en memoria com a referencia de pesos, sense exportar-lo de nou.
+- Una segona execucio no repeteix els nivells completats. Ja no s'ofereix
+  regenerar outputs existents quan no hi ha cap LOD pendent.
+- Els nous fitxers es preparen separadament i s'afegeixen sense
+  sobreescriure. Si un nom ja existeix amb contingut diferent, el proces
+  s'atura i protegeix el resultat existent, incloent textures i fitting.
+- Si falta el RAW arxivat, hi ha diversos RAW candidats, o el fitting no
+  correspon al model/avatar actual, no s'inventa un substitut: s'informa
+  del problema i es conserven els outputs.
+- Es reconeix tambe l'antic nom `MEDIUM_20k` com a MID-HIGH.
+
+Per inspeccionar sense generar ni modificar res, executa
+`python _System/retopo_worker.py --dry-run` o
+`python _System/FittingAndRigging/controller.py --root . --dry-run`.
+El retopo tambe accepta `--once` per completar una passada i sortir.
+
+La comprovacio de rigging es fa sobre els LODs de retopo disponibles:
+per crear una resolucio que encara no existeix, executa primer el retopo.
+
+La deteccio de nivells reconeix el sufix de qualitat encara que el prefix
+de l'asset hagi canviat, i les carpetes ULTRA/HIGH/MID-HIGH/HIGH-MID/MEDIUM/LOW.
+Cada inici mostra un resum 0-5/5 per asset, tant per GLB com per FBX.
+Les carpetes preProcess i Rigged no compten com a retopo.
+Despres d'actualitzar els scripts, tanca el watcher anterior i torna a obrir el BAT.

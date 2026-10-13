@@ -1,0 +1,54 @@
+{
+  "targetId": "Pachelbel_2",
+  "composer": "Johann Pachelbel",
+  "work": "Gigue in D",
+  "catalog": "P. 37 companion",
+  "movement": "Complete Gigue",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=2212",
+  "mutopiaId": "Mutopia-2018/02/08-2212",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/PachelbelJ/PachelbelGigue/PachelbelGigue.mid"
+  ],
+  "sourceLicense": "Creative Commons Attribution 4.0",
+  "sourceLicenseClass": "CC BY",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/by/4.0/",
+  "sourceAttribution": "Typeset/transcribed by Urs Metzger for the Mutopia Project",
+  "sourceEdition": "Manuscript 1838-1842",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "DONE",
+  "unityAsset": "Assets/_Project/Audio/Composers/Pachelbel/Pachelbel_P37Companion_GigueInD_CompleteGigue.mp3",
+  "durationSeconds": 54.539,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Pachelbel_2/Pachelbel_P37Companion_GigueInD_CompleteGigue.wav",
+    "masterSamples": 2484285,
+    "trimmedLeadSamples": 341,
+    "trimmedTailSamples": 78786,
+    "encodedSamples": 2405158,
+    "durationSeconds": 54.539,
+    "bytes": 1309675,
+    "sha256": "9d33f8747db500b7067a0d98d7656f0bbb8c28fa4575f37eed012d4923d71e14",
+    "masterSha256": "b6bf23d41a2d5416a7b43d6d297c2f72c53de18edfdf614ff6db90c3191abf0d"
+  },
+  "masterQa": {
+    "durationSeconds": 56.33,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -14.59,
+    "rmsDbfs": -31.31,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "violin",
+    "viola",
+    "violin",
+    "harpsichord"
+  ]
+}

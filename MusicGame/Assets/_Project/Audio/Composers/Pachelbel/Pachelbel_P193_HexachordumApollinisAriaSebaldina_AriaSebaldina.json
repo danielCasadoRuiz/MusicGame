@@ -1,0 +1,52 @@
+{
+  "targetId": "Pachelbel_4",
+  "composer": "Johann Pachelbel",
+  "work": "Hexachordum Apollinis – Aria Sebaldina",
+  "catalog": "P. 193",
+  "movement": "Aria Sebaldina",
+  "source": "IMSLP",
+  "sourceUrl": "https://imslp.org/wiki/Aria_and_8_Variations_in_F_minor,_P.198_(Pachelbel,_Johann)",
+  "mutopiaId": "https://imslp.org/wiki/Aria_and_8_Variations_in_F_minor,_P.198_(Pachelbel,_Johann)",
+  "sourceFiles": [
+    "https://imslp.org/wiki/Special:ImagefromIndex/451592"
+  ],
+  "sourceLicense": "Public Domain",
+  "sourceLicenseClass": "Public Domain",
+  "sourceLicenseUrl": "https://imslp.org/wiki/IMSLP:Public_domain",
+  "sourceAttribution": "Max Seiffert ed., DTB, Breitkopf & Härtel 1901",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 (OMR source)",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. 2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+  "status": "USER_APPROVED_VARIANT",
+  "variantNote": "2026-10-12: the user asked to publish all OMR renders now and discard after listening if needed.",
+  "unityAsset": "Assets/_Project/Audio/Composers/Pachelbel/Pachelbel_P193_HexachordumApollinisAriaSebaldina_AriaSebaldina.mp3",
+  "durationSeconds": 204.518,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Pachelbel_4/Pachelbel_P193_HexachordumApollinisAriaSebaldina_AriaSebaldina.wav",
+    "masterSamples": 9137564,
+    "trimmedLeadSamples": 12,
+    "trimmedTailSamples": 118305,
+    "encodedSamples": 9019247,
+    "durationSeconds": 204.518,
+    "bytes": 4909557,
+    "sha256": "800bf0a927184f453a09eab1f8d63b7bcdca7f961448d98256624a7666d53b0f",
+    "masterSha256": "3b8ecd8a67542daf40a9c48940bb5d486166e2dcab441a84a6219bb7577b7237"
+  },
+  "masterQa": {
+    "durationSeconds": 207.2,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -4.81,
+    "rmsDbfs": -23.12,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false
+  },
+  "importedInstruments": [
+    "piano"
+  ]
+}

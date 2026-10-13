@@ -18,7 +18,7 @@
   "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
   "modified": true,
   "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame. Instrument assignments of mis-imported parts corrected to the edition's own staff names (Piccolo Clarinet, three -> bb-clarinet, English Horn, five -> horn, Baroque Oboe, six -> c-trumpet, Contrabass, twelve -> contrabasses); no musical changes.",
-  "status": "PASS",
+  "status": "DONE",
   "instrumentCorrections": [
     {
       "part": "Piccolo Clarinet, three",
@@ -45,7 +45,7 @@
       "sound": "strings.contrabass"
     }
   ],
-  "unityAsset": "Assets/_Project/Audio/Music/Composers/Beethoven/Beethoven_Op92_SymphonyNo7_II_Allegretto.mp3",
+  "unityAsset": "Assets/_Project/Audio/Composers/Beethoven/Beethoven_Op92_SymphonyNo7_II_Allegretto.mp3",
   "durationSeconds": 439.362,
   "unityFormat": {
     "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",

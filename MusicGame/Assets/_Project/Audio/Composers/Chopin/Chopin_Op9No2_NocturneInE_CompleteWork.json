@@ -1,0 +1,53 @@
+{
+  "targetId": "Chopin_1",
+  "composer": "Frédéric Chopin",
+  "work": "Nocturne in E-flat major",
+  "catalog": "Op. 9 No. 2",
+  "movement": "Complete work",
+  "source": "Mutopia Project",
+  "sourceUrl": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1590",
+  "mutopiaId": "Mutopia-2014/12/18-1590",
+  "sourceFiles": [
+    "https://www.mutopiaproject.org/ftp/ChopinFF/O9/chopin_nocturne_op9_n2/chopin_nocturne_op9_n2.mid"
+  ],
+  "sourceLicense": "Creative Commons Attribution-ShareAlike 3.0",
+  "sourceLicenseClass": "CC BY-SA",
+  "sourceLicenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+  "sourceAttribution": "Typeset/transcribed by Renato Biolcati Rinaldi for the Mutopia Project",
+  "sourceEdition": "G. Schirmer, New York, 1881",
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "DONE",
+  "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 3.0 work and is distributed under the same licence (http://creativecommons.org/licenses/by-sa/3.0/). Attribution: Typeset/transcribed by Renato Biolcati Rinaldi for the Mutopia Project; source https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1590.",
+  "unityAsset": "Assets/_Project/Audio/Composers/Chopin/Chopin_Op9No2_NocturneInE_CompleteWork.mp3",
+  "durationSeconds": 203.451,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Chopin_1/Chopin_Op9No2_NocturneInE_CompleteWork.wav",
+    "masterSamples": 9272995,
+    "trimmedLeadSamples": 242,
+    "trimmedTailSamples": 300580,
+    "encodedSamples": 8972173,
+    "durationSeconds": 203.451,
+    "bytes": 4883853,
+    "sha256": "fbf685323fce80c32ad2b4a42da2fcec90e5104bc539bf79ce7cc148f2399782",
+    "masterSha256": "b03f06a6563244ed7eb9ff9b3685ead28550e0d97f89aaafa589c6f170f80a56"
+  },
+  "masterQa": {
+    "durationSeconds": 210.27,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -9.14,
+    "rmsDbfs": -26.54,
+    "clippedSamples": 0,
+    "silent": false,
+    "ceilingGainDb": 0.0
+  },
+  "importedInstruments": [
+    "piano",
+    "piano"
+  ]
+}

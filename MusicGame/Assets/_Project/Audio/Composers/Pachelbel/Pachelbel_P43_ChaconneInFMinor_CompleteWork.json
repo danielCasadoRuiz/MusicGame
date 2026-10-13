@@ -1,0 +1,57 @@
+{
+  "targetId": "Pachelbel_3",
+  "composer": "Johann Pachelbel",
+  "work": "Chaconne in F minor",
+  "catalog": "P. 43",
+  "movement": "Complete work",
+  "source": "IMSLP",
+  "sourceUrl": "https://imslp.org/wiki/Chaconne_in_F_minor,_P.43_(Pachelbel,_Johann)",
+  "mutopiaId": "https://imslp.org/wiki/Chaconne_in_F_minor,_P.43_(Pachelbel,_Johann)",
+  "sourceFiles": [
+    "https://imslp.org/wiki/Special:ImagefromIndex/451615"
+  ],
+  "sourceLicense": "Creative Commons Attribution-ShareAlike 4.0",
+  "sourceLicenseClass": "CC BY-SA",
+  "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "sourceAttribution": "Pierre Gouin, Les Éditions Outremontaises 2016",
+  "sourceEdition": null,
+  "renderedWith": "MuseScore Studio 4.7.5 + Muse Sounds",
+  "modified": true,
+  "modificationNote": "MIDI imported into MuseScore Studio and rendered to audio for MusicGame (no musical changes).",
+  "status": "DONE",
+  "shareAlike": "This audio is an adaptation of a Creative Commons Attribution-ShareAlike 4.0 work and is distributed under the same licence (https://creativecommons.org/licenses/by-sa/4.0/). Attribution: Pierre Gouin, Les Éditions Outremontaises 2016; source https://imslp.org/wiki/Chaconne_in_F_minor,_P.43_(Pachelbel,_Johann).",
+  "unityAsset": "Assets/_Project/Audio/Composers/Pachelbel/Pachelbel_P43_ChaconneInFMinor_CompleteWork.mp3",
+  "durationSeconds": 418.196,
+  "unityFormat": {
+    "format": "MP3 44.1 kHz stereo 192kbps CBR (LAME, no Xing/LAME info frame)",
+    "fromMaster": "AssetsMaterial/AudioPipeline/Work/Pachelbel_3/Pachelbel_P43_ChaconneInFMinor_CompleteWork.wav",
+    "masterSamples": 18604643,
+    "trimmedLeadSamples": 5,
+    "trimmedTailSamples": 162192,
+    "encodedSamples": 18442446,
+    "durationSeconds": 418.196,
+    "bytes": 10037916,
+    "sha256": "dcafdcfc1eb47d45278d47cffd9af3a314fc70653bb8a5590147c801b92d9ad2",
+    "masterSha256": "99f9a5b38bb2cd98b64a0dd87d9fcb4e56ce5eab804e97d37699c1a0ddca3e6d"
+  },
+  "masterQa": {
+    "durationSeconds": 421.87,
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 32,
+    "sampleFormat": "float",
+    "peakDbfs": -1.0,
+    "rmsDbfs": -19.88,
+    "clippedSamples": 0,
+    "nonFiniteSamples": 0,
+    "silent": false,
+    "ceilingGainDb": -1.41
+  },
+  "importedInstruments": [
+    "pan-flute",
+    "horn",
+    "organ",
+    "contrabassoon",
+    "vuvuzela"
+  ]
+}
