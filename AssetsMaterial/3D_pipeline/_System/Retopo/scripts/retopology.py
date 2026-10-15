@@ -1,8 +1,8 @@
 """Phase 2: RAW copy -> conservative Merge by Distance -> diagnostics -> Exoside Quad Remesher -> conservative post merge -> recalculate outside.
 
 SOURCE remains byte/geometry-equivalent to the imported GLB and is kept untouched for baking.
-HIGH is a working copy. No voxel remesh, decimate, subdivision, hole fill, conform,
-or component deletion is performed. Diagnostics are warning-only.
+HIGH is a working copy. Optional surface cleanup/voxel repair is applied only when explicitly enabled.
+SOURCE stays untouched. Diagnostics are warning-only.
 """
 import argparse, hashlib, json, os, subprocess, sys, time, tempfile
 from pathlib import Path
@@ -11,6 +11,24 @@ from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from blender_inspect import activate
+
+
+def qr_progress_error(progress):
+    """Recognize terminal textual errors as well as numeric engine statuses."""
+    if progress is None:
+        return None
+    text = str(progress).strip()
+    if not text:
+        return None
+    if any(token in text.casefold() for token in ('error', 'failed', 'failure', 'cancelled', 'canceled')):
+        return text
+    try:
+        value = float(text.split()[0])
+    except (ValueError, IndexError):
+        return None
+    if value < 0 and value != -2.0:
+        return text
+    return None
 
 
 def stats(obj):
@@ -28,6 +46,58 @@ def stats(obj):
     }
     bm.free(); return r
 
+
+
+def apply_alternate_preprocess(target, config):
+    if config.get('mode') == 'clean_surface':
+        from mesh_cleanup import apply_clean_preprocess
+        return apply_clean_preprocess(target, config, stats, activate)
+    activate(target)
+    report = {'config': config, 'before': stats(target)}
+    limit = int(config['max_intermediate_faces'])
+    coords = [v.co for v in target.data.vertices]
+    if not coords:
+        raise RuntimeError('Preprocess: empty input mesh')
+    voxel = float(config['voxel_size'])
+    if voxel <= 0:
+        raise RuntimeError('Preprocess: invalid mesh size')
+    print('PREPROCESS_VOXEL_START', voxel, flush=True)
+    mod = target.modifiers.new('AlternateVoxel', 'REMESH')
+    mod.mode = 'VOXEL'; mod.voxel_size = voxel; mod.adaptivity = 0
+    mod.use_remove_disconnected = False
+    bpy.ops.object.modifier_apply(modifier=mod.name)
+    print('PREPROCESS_VOXEL_APPLIED', len(target.data.polygons), flush=True)
+    report['voxel_size'] = voxel
+    report['after_voxel'] = stats(target)
+    print('PREPROCESS_PRE_DECIMATE_START', config['pre_decimate_ratio'], flush=True)
+    mod = target.modifiers.new('AlternatePreDecimate', 'DECIMATE')
+    mod.decimate_type = 'COLLAPSE'; mod.ratio = float(config['pre_decimate_ratio'])
+    bpy.ops.object.modifier_apply(modifier=mod.name)
+    if not target.data.polygons:
+        raise RuntimeError('Pre-decimate produced an empty mesh')
+    print('PREPROCESS_PRE_DECIMATE_APPLIED', len(target.data.polygons), flush=True)
+    report['after_pre_decimate'] = stats(target)
+    levels = int(config['subdivision_levels'])
+    estimated = sum(len(face.vertices) for face in target.data.polygons) * (4 ** (levels - 1)) if levels else len(target.data.polygons)
+    if not target.data.polygons or (limit > 0 and estimated > limit):
+        raise RuntimeError(f'Preprocess geometry limit: estimated {estimated} faces, maximum {limit}. Increase voxel_size or reduce subdivision_levels.')
+    if levels:
+        print('PREPROCESS_SUBDIVISION_START', levels, flush=True)
+        mod = target.modifiers.new('AlternateSubdivision', 'SUBSURF')
+        mod.subdivision_type = 'CATMULL_CLARK'; mod.levels = levels; mod.render_levels = levels
+        bpy.ops.object.modifier_apply(modifier=mod.name)
+    print('PREPROCESS_SUBDIVISION_APPLIED', len(target.data.polygons), flush=True)
+    report['after_subdivision'] = stats(target)
+    print('PREPROCESS_DECIMATE_START', config['decimate_ratio'], flush=True)
+    mod = target.modifiers.new('AlternateDecimate', 'DECIMATE')
+    mod.decimate_type = 'COLLAPSE'; mod.ratio = float(config['decimate_ratio'])
+    bpy.ops.object.modifier_apply(modifier=mod.name)
+    if not target.data.polygons:
+        raise RuntimeError('Preprocess produced an empty mesh')
+    print('PREPROCESS_DECIMATE_APPLIED', len(target.data.polygons), flush=True)
+    report['after_decimate'] = stats(target)
+    print('ALTERNATE_PREPROCESS_COMPLETE', json.dumps(report), flush=True)
+    return report
 
 
 def merge_by_distance(obj, distance):
@@ -297,7 +367,7 @@ def read_qr_progress():
         return None
 
 
-def start_retopology_async(path,output,diagnostics,target_quads=50000,qr_config=None):
+def start_retopology_async(path,output,diagnostics,target_quads=50000,qr_config=None,preprocess=None):
     if qr_config is None:
         qr_config={
             'adaptive_size':0.0,'adapt_quad_count':False,'use_vertex_color':False,
@@ -318,8 +388,12 @@ def start_retopology_async(path,output,diagnostics,target_quads=50000,qr_config=
     print('RAW_SOURCE_STATS',json.dumps(source_stats),flush=True)
 
     scale=max(target.dimensions) if max(target.dimensions)>0 else 1.0
-    merge_distance=scale*1e-7
-    merge_report=merge_by_distance(target,merge_distance)
+    merge_distance=float(preprocess.get('merge_distance', 0.0001)) if preprocess and preprocess.get('mode') == 'clean_surface' else 0.0001
+    merge_enabled=not preprocess or preprocess.get('mode') != 'clean_surface' or preprocess.get('merge_by_distance_enabled', True)
+    import_merge_report=merge_by_distance(target,merge_distance) if merge_enabled else {'skipped': 'Disabled in preprocess config'}
+    print('IMPORT_MERGE_BY_DISTANCE',json.dumps(import_merge_report),flush=True)
+    preprocess_report = apply_alternate_preprocess(target, preprocess) if preprocess else None
+    merge_report=({'skipped': 'Clean surface already welded; preserve repaired face fans'} if preprocess and preprocess.get('mode') == 'clean_surface' else merge_by_distance(target,merge_distance)) if preprocess else import_merge_report
     print('PRE_QR_MERGE_BY_DISTANCE',json.dumps(merge_report),flush=True)
 
     pre_stats=stats(target); comps=component_report(target)
@@ -361,8 +435,12 @@ def start_retopology_async(path,output,diagnostics,target_quads=50000,qr_config=
         print('QUAD_REMESHER_ASYNC_ERROR',msg,flush=True)
         try: (diagnostics/'quad_remesher_error.txt').write_text(str(msg),encoding='utf-8')
         except Exception: pass
-        bpy.ops.wm.quit_blender()
-        return None
+        # GUI quit can wait for a Save/Discard dialog. This is a disposable worker.
+        # Flush diagnostics and terminate with a failure code without that dialog.
+        import os, sys
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(1)
 
     def finalize_with(imported):
         if state['finished']: return None
@@ -406,16 +484,17 @@ def start_retopology_async(path,output,diagnostics,target_quads=50000,qr_config=
             final=stats(target); metrics=deviation(source,target)
             report={
                 'asset':path.name,'source_sha256':digest,'blender':bpy.app.version_string,
-                'method':'RAW -> conservative Merge by Distance -> warning-only diagnostics -> Quad Remesher 1.4.1 Blender add-on -> conservative Merge by Distance -> Recalculate Outside -> UV/Bake',
+                'method':('RAW working copy -> configured surface cleanup/preprocess -> Quad Remesher -> UV/Bake from original SOURCE' if preprocess else 'RAW -> conservative Merge by Distance -> warning-only diagnostics -> Quad Remesher -> UV/Bake'),
                 'requested_quads':int(target_quads),'expected_triangles_if_all_quads':int(target_quads)*2,
                 'adaptive_size':float(qr_config['adaptive_size']),'adapt_quad_count':bool(qr_config['adapt_quad_count']),
-                'source':source_stats,'pre_qr_merge_by_distance':merge_report,'pre_qr_diagnostic':diag,
+                'source':source_stats,'import_merge_by_distance':import_merge_report,'pre_qr_merge_by_distance':merge_report,'pre_qr_diagnostic':diag,
                 'post_qr_merge_by_distance':post_merge_report,'post_qr_recalculate_outside':normals_report,'post_qr_diagnostic':post_diag,
                 'quad_remesher_options':qr_options,'quad_remesher_seconds':qr_seconds,
                 'high':final,'deviation':metrics,'quality_gate_passed':True,'pre_qr_diagnostics_are_hard_gate':False,
-                'automatic_geometry_repair':False,'automatic_component_deletion':False,'automatic_hole_fill':False,
+                'alternate_preprocess':preprocess_report,
+                'automatic_geometry_repair':bool(preprocess),'automatic_component_deletion':bool(preprocess and preprocess.get('mode') == 'clean_surface' and preprocess.get('remove_fragments_enabled', True)),'automatic_hole_fill':bool(preprocess and preprocess.get('mode') == 'clean_surface' and preprocess.get('fill_small_holes_enabled', True)),
                 'normal_recalculation_before_qr':False,'normal_recalculation_after_qr':True,
-                'voxel_precondition_used':False,'seconds':time.time()-started,
+                'voxel_precondition_used':bool(preprocess and (preprocess.get('mode') != 'clean_surface' or preprocess.get('voxel_enabled', True))),'seconds':time.time()-started,
             }
             source.hide_render=True; source.hide_set(True); activate(target)
             target['target_quads']=int(target_quads); target['target_triangles']=int(target_quads)*2
@@ -442,14 +521,11 @@ def start_retopology_async(path,output,diagnostics,target_quads=50000,qr_config=
         progress=read_qr_progress()
         if progress is not None:
             print('QUAD_REMESHER_PROGRESS',progress,flush=True)
-            try:
-                val=float(progress.split()[0])
-                if val < 0 and val not in (-2.0,):
-                    return fail('Quad Remesher progress error: '+progress)
-            except Exception:
-                pass
+            error = qr_progress_error(progress)
+            if error is not None:
+                return fail('Quad Remesher progress error: '+error)
         if elapsed > 57200:
-            return fail('Quad Remesher timeout after 14400. Last progress: '+str(progress))
+            return fail('Quad Remesher timeout after 57200 seconds. Last progress: '+str(progress))
         return 0.5
 
     bpy.app.timers.register(poll_qr,first_interval=0.5,persistent=False)
@@ -460,6 +536,7 @@ if __name__=='__main__':
     ap.add_argument('--output',type=Path,default=Path('output')); ap.add_argument('--diagnostics',type=Path,default=Path('diagnostics'))
     ap.add_argument('--quads',type=int,default=50000)
     ap.add_argument('--qr-config-json',default='{}')
+    ap.add_argument('--preprocess-json',default=None)
     args=ap.parse_args(sys.argv[sys.argv.index('--')+1:])
     if args.quads<4: ap.error('--quads ha de ser >= 4')
     try:
@@ -471,14 +548,13 @@ if __name__=='__main__':
         }
         if set(qr_config)!=required:
             raise ValueError('QR config keys incorrectes: '+repr(sorted(set(qr_config)^required)))
-        start_retopology_async(args.input.resolve(),args.output.resolve()/args.input.stem,args.diagnostics.resolve(),args.quads,qr_config)
+        start_retopology_async(args.input.resolve(),args.output.resolve()/args.input.stem,args.diagnostics.resolve(),args.quads,qr_config,json.loads(args.preprocess_json) if args.preprocess_json else None)
     except Exception:
         import traceback
         print('RETOPOLOGY_START_ERROR',traceback.format_exc(),flush=True)
         try: (args.diagnostics.resolve()/'quad_remesher_error.txt').write_text(traceback.format_exc(),encoding='utf-8')
         except Exception: pass
         def _quit_after_error():
-            try: bpy.ops.wm.quit_blender()
-            except Exception: pass
-            return None
+            sys.stdout.flush(); sys.stderr.flush()
+            os._exit(1)
         bpy.app.timers.register(_quit_after_error, first_interval=0.2)

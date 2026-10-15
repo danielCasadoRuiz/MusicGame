@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import argparse, hashlib, json, os, shutil, subprocess, sys, time, uuid
+from retopo_preprocess import select_preprocess
 from incremental_outputs import missing_lods, publish_additions
 from datetime import datetime
 from pathlib import Path
+
+from persistent_logs import TaskLog
+TASK_LOG = TaskLog(Path(__file__).resolve().parent, "retopo")
+TASK_LOG.install_console()
 
 ROOT=Path(__file__).resolve().parent.parent
 SYSTEM=ROOT/"_System"
@@ -66,7 +71,7 @@ def show_failure(result_root):
     logs=sorted(result_root.rglob("*.log"),key=lambda p:p.stat().st_mtime,reverse=True)
     for p in logs:
         txt=p.read_text(encoding="utf-8",errors="replace")
-        if any(x in txt for x in ("Traceback","RuntimeError","AssertionError","Error:")):
+        if any(x in txt for x in ("Traceback","RuntimeError","AssertionError","Error:","QUAD_REMESHER_ASYNC_ERROR")):
             print("\n"+"="*80)
             print("FAIL DETAIL:",p)
             print("-"*80)
@@ -154,6 +159,7 @@ def _clear_work(digest):
         WORK_ROOT.rmdir()   # recreated by the next job
 
 
+@TASK_LOG.scope("retopo", "raw")
 def process_package(package_dir, raw, targets, attempted, asset_name=None, archived=False):
     asset = asset_name or raw.stem
     final_dir = OUTPUT / asset
@@ -172,6 +178,9 @@ def process_package(package_dir, raw, targets, attempted, asset_name=None, archi
         if not saved_raws or sha256(saved_raws[0]) != start_hash:
             log(f"{asset}: el RAW no coincideix amb preProcess; els outputs existents queden protegits.")
             return True, [f"{asset}:raw_mismatch"]
+    print(f"\nAsset: {asset} | RAW: {raw.name}", flush=True)
+    preprocess = select_preprocess(ROOT)
+    TASK_LOG.write("PREPROCESS SELECTION", asset=asset, enabled=bool(preprocess), config=preprocess)
     digest = start_hash[:8]
     staging = WORK_ROOT / (digest + "__publish__" + uuid.uuid4().hex[:8])
     staging.mkdir(parents=True)
@@ -189,8 +198,12 @@ def process_package(package_dir, raw, targets, attempted, asset_name=None, archi
             cmd = [sys.executable, str(ENGINE), str(raw), "--quads", str(quads),
                    "--output", str(result), "--profile", "auto", "--no-resume",
                    "--no-preview", "--blender", str(BLENDER)]
+            if preprocess is not None:
+                cmd += ["--preprocess-json", json.dumps(preprocess, separators=(",", ":"))]
             log(f"{raw.name}: START {label} {quads:,} QUADS FROM ARCHIVED/CURRENT RAW")
-            rc = subprocess.run(cmd, cwd=str(ROOT)).returncode
+            TASK_LOG.asset = asset
+            TASK_LOG.stage = "retopo_" + label
+            rc = TASK_LOG.run(cmd, cwd=str(ROOT)).returncode
             if rc:
                 show_failure(result)
                 raise RuntimeError(f"{label}: exit={rc}")
@@ -221,9 +234,13 @@ def process_package(package_dir, raw, targets, attempted, asset_name=None, archi
                 raw.unlink()
         log(f"{asset}: AFEGITS {len(generated)} LODs; outputs previs i Rigged intactes.")
     except Exception as exc:
+        import traceback
+        TASK_LOG.write(traceback.format_exc(), exception=type(exc).__name__)
         log(f"FAILED {asset}: {exc}; no se sobreescriu cap output existent.")
         failures.append(f"{asset}:{exc}")
     finally:
+        for diagnostic in WORK_ROOT.glob(f"{digest}__*/**/*.log"):
+            TASK_LOG.preserve_tail(diagnostic)
         shutil.rmtree(staging, ignore_errors=True)
         _clear_work(digest)
     return True, failures

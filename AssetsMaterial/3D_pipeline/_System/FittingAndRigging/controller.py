@@ -4,6 +4,10 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
+from persistent_logs import TaskLog
+TASK_LOG = TaskLog(HERE.parent, "fitting_rigging")
+TASK_LOG.install_console()
+
 from incremental_outputs import publish_additions, lod_files, LOD_TARGETS, model_lod_rank
 from garment_profiles import resolve as resolve_garment
 LOD_ORDER = ["ULTRA_50k", "HIGH_30k", "MIDHIGH_20k", "MEDIUM_10k", "LOW_5k"]
@@ -159,6 +163,8 @@ def load_json_or_none(path: Path):
 
 
 def send_command(session_dir: Path, command: str, **payload):
+    TASK_LOG.stage = command
+    TASK_LOG.write("COMMAND", model=payload.get("model"))
     cid = str(uuid.uuid4())
     save_json(session_dir / "command.json", {
         "id": cid, "command": command, "payload": payload, "time": time.time()
@@ -219,6 +225,7 @@ def clear_work(root: Path, config, name: str):
         work_root.rmdir()
 
 
+@TASK_LOG.scope("fitting_rigging", "asset_dir")
 def process_asset(root: Path, config, asset_dir: Path, lods: list[Path], avatar: Path):
     ctx = {}
     try:
@@ -231,7 +238,10 @@ def process_asset(root: Path, config, asset_dir: Path, lods: list[Path], avatar:
                 proc.wait(timeout=15)
             except subprocess.TimeoutExpired:
                 pass
+        if proc is not None:
+            TASK_LOG.finish(proc)
         if ctx.get('work_relative'):
+            TASK_LOG.preserve_tail(root / config['work_dir'] / ctx['work_relative'] / 'fitting_rigging.log')
             clear_work(root, config, ctx['work_relative'])
 
 
@@ -324,7 +334,8 @@ def _process_asset(root: Path, config, asset_dir: Path, lods: list[Path], avatar
 
     if symmetry:
         print("Simetria X activada: ajusta una sola peça; l'altra es reflecteix al pla central fix.")
-    proc = subprocess.Popen(cmd)
+    TASK_LOG.stage = "blender_init"
+    proc = TASK_LOG.popen(cmd)
     ctx["proc"] = proc
     info = wait_blender_ready(session_dir, proc)
     print(f"Body: {info.get('body', '?')} | Rig: {info.get('armature', '?')}")

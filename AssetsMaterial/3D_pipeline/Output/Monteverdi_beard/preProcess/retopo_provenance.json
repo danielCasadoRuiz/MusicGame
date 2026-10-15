@@ -1,0 +1,57 @@
+{
+  "geometry_source": "manual ULTRA retopology",
+  "bake_source": "original RAW Source in untitled.blend",
+  "raw_sha256": "056eaa7fdb6412473f5c33e1c936ebc5d224e0133dafa41eac39555e95ee72bf",
+  "levels": [
+    {
+      "label": "ULTRA",
+      "file": "Monteverdi_beard_ULTRA_50k.glb",
+      "target_quads": 50000,
+      "actual_quads": 48630,
+      "method": "existing manual Quad Remesher ULTRA",
+      "triangles": 96914,
+      "bake_source": "original RAW",
+      "sha256": "983226e7d5d68f6d6f59a623e6b59841418c4a3c13903245ba5ac681bac843d0"
+    },
+    {
+      "label": "HIGH",
+      "file": "Monteverdi_beard_HIGH_30k.glb",
+      "target_quads": 30000,
+      "actual_quads": 0,
+      "method": "ULTRA-derived collapse reduction",
+      "triangles": 59909,
+      "bake_source": "original RAW",
+      "sha256": "546d5eb7fc532c97fb192e6e6e2b627c5b8a22c6756ae195ae4e6f9311f0d853"
+    },
+    {
+      "label": "MIDHIGH",
+      "file": "Monteverdi_beard_MIDHIGH_20k.glb",
+      "target_quads": 20000,
+      "actual_quads": 0,
+      "method": "ULTRA-derived collapse reduction",
+      "triangles": 39938,
+      "bake_source": "original RAW",
+      "sha256": "8b6f57e60c032edd3cf36af396dcd6288edf9417c3a5b5150e587aa5fa2d24f1"
+    },
+    {
+      "label": "MEDIUM",
+      "file": "Monteverdi_beard_MEDIUM_10k.glb",
+      "target_quads": 10000,
+      "actual_quads": 0,
+      "method": "ULTRA-derived collapse reduction",
+      "triangles": 19966,
+      "bake_source": "original RAW",
+      "sha256": "cc908a3e4b2265a6e84939e423e8d61a5fa8f423296cf22dc84e189c882376fa"
+    },
+    {
+      "label": "LOW",
+      "file": "Monteverdi_beard_LOW_5k.glb",
+      "target_quads": 5000,
+      "actual_quads": 0,
+      "method": "ULTRA-derived collapse reduction",
+      "triangles": 9979,
+      "bake_source": "original RAW",
+      "sha256": "d1ee9de8758302da0e127cf8f1aaaf3c074b75f0c1759bfddb76511f496cb879"
+    }
+  ]
+}

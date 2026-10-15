@@ -14,6 +14,10 @@ import traceback
 from pathlib import Path
 from typing import Dict, Optional
 
+from persistent_logs import TaskLog
+TASK_LOG = TaskLog(Path(__file__).resolve().parent, "input_raw3d")
+TASK_LOG.install_console()
+
 import requests
 from PIL import Image
 
@@ -506,7 +510,7 @@ def verify_playwright_mcp(claude: str) -> None:
     server = str(CLAUDE_CFG.get("playwright_server_name") or "playwright")
 
     def _list_mcp():
-        return subprocess.run(
+        return TASK_LOG.run(
             [claude, "mcp", "list"],
             cwd=str(ROOT),
             capture_output=True,
@@ -541,7 +545,7 @@ def verify_playwright_mcp(claude: str) -> None:
     print()
 
     try:
-        add = subprocess.run(
+        add = TASK_LOG.run(
             [claude, "mcp", "add", server, "npx", "@playwright/mcp@latest"],
             cwd=str(ROOT),
             capture_output=True,
@@ -756,7 +760,7 @@ def run_claude_browser(
 
     started = time.time()
     try:
-        proc = subprocess.run(
+        proc = TASK_LOG.run(
             cmd,
             input=prompt,
             cwd=str(ROOT),
@@ -1103,6 +1107,7 @@ def wait_for_manual_leonardo(
         )
 
 
+@TASK_LOG.scope('leonardo_upscale', None)
 def recover_or_generate_upscaled(
     source: Path,
     prepared: Path,
@@ -1404,6 +1409,7 @@ def meshy_signature(views: Dict[str, Path]) -> str:
     return json.dumps(payload, sort_keys=True, separators=(",", ":"))
 
 
+@TASK_LOG.scope('meshy_raw3d', None)
 def ensure_raw3d(
     session: requests.Session,
     meshy_key: str,
@@ -1577,6 +1583,7 @@ def _cleanup_after_failure(asset: str) -> None:
             pass
 
 
+@TASK_LOG.scope('prepare_chroma', None)
 def _prepare_chroma_layout(
     source: Path,
 ) -> tuple[Path, dict]:
@@ -1607,6 +1614,7 @@ def _prepare_chroma_layout(
 
 
 
+@TASK_LOG.scope('package_raw3d', None)
 def _move_raw_package(
     source: Path,
     views: Dict[str, Path],
@@ -1712,6 +1720,7 @@ def _move_raw_package(
     log(f"{asset}: paquet Raw3D tancat -> {final_dir}")
     return final_raw
 
+@TASK_LOG.scope('input_raw3d', 'source')
 def process_one(
     session: requests.Session,
     meshy_key: str,
@@ -1816,6 +1825,7 @@ def process_one(
 
     # --------------------------------------------------------------
     # STEP 3 — CUT VIEWS
+    TASK_LOG.stage = "cut_views"
     # --------------------------------------------------------------
     if not stage_allowed(control, "cut_views"):
         log(

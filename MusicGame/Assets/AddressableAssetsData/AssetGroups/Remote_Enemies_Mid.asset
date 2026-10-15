@@ -31,6 +31,14 @@ MonoBehaviour:
     - Enemy_wagner
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b42434a49ea2154d88d3f6f88006f72
+    m_Address: Enemy_monteverdi/Hair_Monteverdi_hair/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_monteverdi
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a14b03418ad5cf545b4b3e7a468c9351
     m_Address: Enemy_monteverdi/Wearable_Monteverdi_shoes/sharedVariant/qualityPrefabs@Mid
     m_ReadOnly: 0
@@ -43,6 +51,14 @@ MonoBehaviour:
     m_Address: Assets/_Project/Art/Opponents/Monteverdi/Monteverdi_jacket/Mid/Monteverdi_jacket_Mid.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f474d9a1626a03b498b9c67e984cea50
+    m_Address: Enemy_monteverdi/Wearable_Monteverdi_beard/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_monteverdi
+    - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 8a4cc0dfc618f344aaae658dde9bb725, type: 2}

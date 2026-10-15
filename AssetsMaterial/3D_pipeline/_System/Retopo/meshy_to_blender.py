@@ -11,6 +11,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from retopo_preprocess import validate_config
+from persistent_logs import TaskLog
+TASK_LOG = TaskLog(Path(__file__).resolve().parent.parent, "retopo")
+
 PACKAGE = Path(__file__).resolve().parent
 VERSION = '1.5.0-quad-remesher-v101-per-model-config'
 BASE = dict(method='ANGLE_BASED', seed=42, sharp=False, smooth=True, torso=False,
@@ -29,6 +34,26 @@ PROFILES = {
                  smooth=False, attempts=1, normalize_density=True, scaled_bake=True,
                  multi_cage=True, correct_channels=True),
 }
+
+
+def preserve_qr_engine_logs(started):
+    import tempfile
+    locations = [Path(tempfile.gettempdir()) / 'Exoside' / 'QuadRemesher' / 'Blender' / 'progress.txt']
+    base = Path(os.environ.get('PROGRAMDATA', r'C:\ProgramData')) / 'Exoside' / 'QuadRemesher' / 'Datas_Blender'
+    locations.extend(base.glob('QuadRemesherEngine_*/_UserLog_Remesher.txt'))
+    explicit = os.environ.get('QUADREMESHER_ENGINE')
+    if explicit:
+        locations.append(Path(explicit).parent / '_UserLog_Remesher.txt')
+    found = False
+    for path in dict.fromkeys(locations):
+        try:
+            if path.is_file() and path.stat().st_mtime >= started - 2:
+                TASK_LOG.preserve_tail(path)
+                found = True
+        except OSError as exc:
+            TASK_LOG.write('Cannot read native engine log: ' + str(exc), source=str(path))
+    if not found:
+        TASK_LOG.write('No fresh native Quad Remesher diagnostic files found for this stage.')
 
 
 def auto_profile(path):
@@ -181,7 +206,7 @@ def run_asset(src, profile, args, binary, version, helpers_hash):
     if args.local_projection: settings['torso'] = False
     qr_settings, qr_config_path = load_quad_remesher_config(src)
     fingerprint = dict(package=VERSION, source_sha256=sha(src), profile=profile, settings=settings,
-                       quad_remesher=qr_settings,
+                       quad_remesher=qr_settings, preprocess=args.preprocess,
                        quad_remesher_config=(str(qr_config_path) if qr_config_path else None),
                        blender=version, scripts_sha256=helpers_hash, resolution=4096, quads=args.quads,
                        threads=8, preview=not args.no_preview)
@@ -232,7 +257,19 @@ def run_asset(src, profile, args, binary, version, helpers_hash):
         print(f'[{src.name}] {label} — registre: {log}', flush=True)
         with log.open('w', encoding='utf-8') as f:
             prefix = prefix_factory if use_factory else (prefix_user_gui if gui else prefix_user)
-            result = subprocess.run(prefix+[str(job/'scripts'/script), '--']+list(map(str,params)), stdout=f, stderr=subprocess.STDOUT, cwd=job)
+            TASK_LOG.asset = src.stem
+            TASK_LOG.stage = label
+            TASK_LOG.write('SUBPROCESS START')
+            import time
+            native_log_started = time.time()
+            try:
+                result = subprocess.run(prefix+[str(job/'scripts'/script), '--']+list(map(str,params)), stdout=f, stderr=subprocess.STDOUT, cwd=job)
+                TASK_LOG.write('SUBPROCESS END', exit_code=result.returncode)
+            finally:
+                f.flush()
+                TASK_LOG.preserve_tail(log)
+                if script == "retopology.py":
+                    preserve_qr_engine_logs(native_log_started)
         if result.returncode: raise RuntimeError(f'{label} ha fallat ({result.returncode}). Consulta {log}')
 
     def gate(suffix, field):
@@ -269,6 +306,8 @@ def run_asset(src, profile, args, binary, version, helpers_hash):
                     '--quads',str(args.quads),
                     '--qr-config-json',json.dumps(qr_settings,separators=(',',':'))
                 ]
+                if args.preprocess is not None:
+                    params += ['--preprocess-json', json.dumps(args.preprocess, separators=(',', ':'))]
                 run('retopology.py',params,stage,use_factory=False,gui=True)
                 if not (out/'02_retopology.blend').is_file():
                     raise RuntimeError('retopo ha acabat sense generar 02_retopology.blend; consulta retopo.log')
@@ -332,7 +371,9 @@ def main(argv=None):
     p.add_argument('--until',choices=STAGES,default='preview',help='Atura després d’aquest pas; reprèn amb --resume.')
     p.add_argument('--no-preview',action='store_true',help='Omet la comparació visual addicional.')
     p.add_argument('--local-projection',action='store_true',help='Desactiva la projecció exterior del tors del perfil vest.')
+    p.add_argument("--preprocess-json", default=None)
     a=p.parse_args(argv)
+    a.preprocess = validate_config(json.loads(a.preprocess_json)) if a.preprocess_json else None
     if a.quads < 1000: p.error('--quads ha de ser >= 1000.')
     a.input=a.input.expanduser().resolve()
     source_dir = a.input if a.input.is_dir() else a.input.parent
