@@ -4,8 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// The "PLAYER PORTRAIT — VS — OPPONENT PORTRAIT" screen, shown for FightFlowConfig.versusDuration
-/// right after the Opponent Selection roulette settles. Reads GameSession.SelectedOpponent for the
+/// The "PLAYER PORTRAIT — VS — OPPONENT PORTRAIT" screen, shown right after the Opponent Selection
+/// roulette settles. The rival speaks its Intro line here (ComposerDialoguePresentation, typewriter
+/// subtitle): the player's press past that line — or FightFlowConfig.versusDialogueAutoContinueSeconds —
+/// is the ONE thing that advances to RoundIntro. Only when no line can be shown (disabled, missing
+/// content, load error/timeout) does the old FightFlowConfig.versusDuration hold advance instead. Reads GameSession.SelectedOpponent for the
 /// real name and GameSession.SelectedOpponentLevelConfig (cached at selection time — see its own
 /// doc) for the portrait; the player side has no real portrait yet (see this class's own
 /// placeholder, a plain neutral box — not a 3D-model dependency).
@@ -32,6 +35,9 @@ public class VersusScreenController : MonoBehaviour
 
     private FightFlowConfig _config;
     private Coroutine        _routine;
+    private ComposerDialoguePresentation _dialogue;
+    private float            _shownAt;
+    private bool             _advanceRequested;
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
     private System.Action<GameFlowStateChangedEvent>  _onGameFlowChanged;
 
@@ -44,6 +50,9 @@ public class VersusScreenController : MonoBehaviour
         if (registry != null && registry.VersusScreen != null) WireUI(registry.VersusScreen);
         else Build();
 
+        // Built on top of the screen at runtime (prefab or fallback alike), so regenerating
+        // VersusScreen.prefab never removes it.
+        _dialogue = new ComposerDialoguePresentation(ComposerDialogueBox.Create(_root), _config);
         _root.gameObject.SetActive(false);
     }
 
@@ -60,7 +69,14 @@ public class VersusScreenController : MonoBehaviour
         // pause menu) would otherwise stay visible/running forever afterward. Same top-level safety
         // net FightController (the Fight HUD) already uses for exactly this reason — see its own
         // ExitFight/doc.
-        _onGameFlowChanged = e => { if (e.Previous == GameFlowState.Fight) Hide(); };
+        // Leaving Fight is also where the composer dialogue tables are given back (memory only — the
+        // Addressables download cache stays on disk).
+        _onGameFlowChanged = e =>
+        {
+            if (e.Previous != GameFlowState.Fight) return;
+            Hide();
+            ComposerDialogueService.ReleaseAll();
+        };
         EventBus.Subscribe(_onFightFlowChanged);
         EventBus.Subscribe(_onGameFlowChanged);
     }
@@ -70,6 +86,7 @@ public class VersusScreenController : MonoBehaviour
         EventBus.Unsubscribe(_onFightFlowChanged);
         EventBus.Unsubscribe(_onGameFlowChanged);
         if (_routine != null) { StopCoroutine(_routine); _routine = null; }
+        _dialogue?.Cancel(); // a disabled screen never advances the flow from a stale line
     }
 
     // ── Prefab path — see VersusScreenView's own doc ─────────────────────────────
@@ -129,22 +146,45 @@ public class VersusScreenController : MonoBehaviour
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
 
-        if (_routine != null) StopCoroutine(_routine);
-        _routine = StartCoroutine(HoldThenAdvance());
+        if (_routine != null) { StopCoroutine(_routine); _routine = null; }
+        _shownAt = Time.time;
+        _advanceRequested = false;
+
+        // The definitive rival, captured NOW (Fight Again re-enters here with the same one).
+        var opponent = GameSession.Instance?.SelectedOpponent;
+        float autoContinue = _config != null ? _config.versusDialogueAutoContinueSeconds : 0f;
+        _dialogue.Begin(opponent, ComposerDialogueCategory.Intro, shown =>
+        {
+            if (shown) Advance();
+            else _routine = StartCoroutine(HoldThenAdvance()); // no line: the classic timed Versus
+        }, autoContinue);
     }
 
     private void Hide()
     {
+        _dialogue?.Cancel();
         _root.gameObject.SetActive(false);
         if (_routine != null) { StopCoroutine(_routine); _routine = null; }
     }
 
+    /// <summary>Fallback only (no composer line): holds what is left of versusDuration since Show.</summary>
     private IEnumerator HoldThenAdvance()
     {
         float duration = _config != null ? Mathf.Max(0f, _config.versusDuration) : 2.5f;
-        yield return new WaitForSeconds(duration);
+        float remaining = duration - (Time.time - _shownAt);
+        if (remaining > 0f) yield return new WaitForSeconds(remaining);
         _routine = null;
-        FightFlowController.Instance?.RequestState(FightFlowState.RoundIntro);
+        Advance();
+    }
+
+    /// <summary>The single exit of this screen — at most one RoundIntro request per Show, and only
+    /// while the flow is still on the Versus.</summary>
+    private void Advance()
+    {
+        if (_advanceRequested) return;
+        if (FightFlowController.Instance == null || FightFlowController.Instance.CurrentState != FightFlowState.VersusIntro) return;
+        _advanceRequested = true;
+        FightFlowController.Instance.RequestState(FightFlowState.RoundIntro);
     }
 
     private void PopulateInfo()

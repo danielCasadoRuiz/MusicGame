@@ -1,0 +1,148 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: ComposerDialogues_beethoven Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: ComposerDialogues_beethoven
+  m_TableCollectionNameGuidString: b24b9aaea17409d46890dc1415612d58
+  m_Entries:
+  - m_Id: 2467484298437724
+    m_Key: Composer.beethoven.Dialogue.Intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437725
+    m_Key: Composer.beethoven.Dialogue.Intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437726
+    m_Key: Composer.beethoven.Dialogue.Intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437727
+    m_Key: Composer.beethoven.Dialogue.Intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437728
+    m_Key: Composer.beethoven.Dialogue.Intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437729
+    m_Key: Composer.beethoven.Dialogue.Intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437730
+    m_Key: Composer.beethoven.Dialogue.Intro.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437731
+    m_Key: Composer.beethoven.Dialogue.Intro.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437732
+    m_Key: Composer.beethoven.Dialogue.Intro.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437733
+    m_Key: Composer.beethoven.Dialogue.Intro.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437734
+    m_Key: Composer.beethoven.Dialogue.Defeat.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437735
+    m_Key: Composer.beethoven.Dialogue.Defeat.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437736
+    m_Key: Composer.beethoven.Dialogue.Defeat.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437737
+    m_Key: Composer.beethoven.Dialogue.Defeat.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437738
+    m_Key: Composer.beethoven.Dialogue.Defeat.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437739
+    m_Key: Composer.beethoven.Dialogue.Defeat.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437740
+    m_Key: Composer.beethoven.Dialogue.Defeat.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437741
+    m_Key: Composer.beethoven.Dialogue.Defeat.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437742
+    m_Key: Composer.beethoven.Dialogue.Defeat.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437743
+    m_Key: Composer.beethoven.Dialogue.Defeat.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437744
+    m_Key: Composer.beethoven.Dialogue.Victory.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437745
+    m_Key: Composer.beethoven.Dialogue.Victory.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437746
+    m_Key: Composer.beethoven.Dialogue.Victory.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437747
+    m_Key: Composer.beethoven.Dialogue.Victory.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437748
+    m_Key: Composer.beethoven.Dialogue.Victory.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437749
+    m_Key: Composer.beethoven.Dialogue.Victory.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437750
+    m_Key: Composer.beethoven.Dialogue.Victory.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437751
+    m_Key: Composer.beethoven.Dialogue.Victory.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437752
+    m_Key: Composer.beethoven.Dialogue.Victory.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437753
+    m_Key: Composer.beethoven.Dialogue.Victory.010
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3332788327580958721
+  references:
+    version: 2
+    RefIds:
+    - rid: 3332788327580958721
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1792094018509

@@ -183,6 +183,19 @@ public static class MakeHumanBodyBaker
         foreach (var state in result.AllStates())
             result.Report.Add($"  {state.Name,-13} slider {state.HeightSlider:0.0000}  {state.HeightBeforeNormalize:0.00000} m  x{state.NormalizeScale:0.000000}  T x{state.TPoseScale:0.000000}  -> {state.Height:0.00000} m  ground {state.GroundY * 1000f:+0.000;-0.000} mm");
 
+        // Approved final T-pose endpoints override only shape geometry; the original
+        // canonical skeleton, raw weights and coordinate/normal pipeline stay intact.
+        if (MakeHumanApprovedShapes.Apply(result, errors))
+        {
+            foreach (var approved in result.AllStates())
+            {
+                approved.Height = MeasureHeight(approved.Raw, bodyRaw, out approved.GroundY);
+                for (int p = 0; p < source.Parts.Length; p++)
+                    approved.Parts[p] = BuildPartShape(source.Parts[p], approved.Raw, source.RawPositions.Length);
+            }
+        }
+        if (errors.Count > 0) return null;
+
         var bounds = new Bounds(Vector3.zero, Vector3.zero);
         foreach (var state in result.AllStates())
             foreach (var part in state.Parts)

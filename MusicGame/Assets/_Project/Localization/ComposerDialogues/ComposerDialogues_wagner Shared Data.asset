@@ -1,0 +1,148 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: ComposerDialogues_wagner Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: ComposerDialogues_wagner
+  m_TableCollectionNameGuidString: 6dc5990bc991ef149834d19bb7210bbb
+  m_Entries:
+  - m_Id: 2467484298438024
+    m_Key: Composer.wagner.Dialogue.Intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438025
+    m_Key: Composer.wagner.Dialogue.Intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438026
+    m_Key: Composer.wagner.Dialogue.Intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438027
+    m_Key: Composer.wagner.Dialogue.Intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438028
+    m_Key: Composer.wagner.Dialogue.Intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438029
+    m_Key: Composer.wagner.Dialogue.Intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438030
+    m_Key: Composer.wagner.Dialogue.Intro.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438031
+    m_Key: Composer.wagner.Dialogue.Intro.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438032
+    m_Key: Composer.wagner.Dialogue.Intro.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438033
+    m_Key: Composer.wagner.Dialogue.Intro.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438034
+    m_Key: Composer.wagner.Dialogue.Defeat.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438035
+    m_Key: Composer.wagner.Dialogue.Defeat.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438036
+    m_Key: Composer.wagner.Dialogue.Defeat.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438037
+    m_Key: Composer.wagner.Dialogue.Defeat.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438038
+    m_Key: Composer.wagner.Dialogue.Defeat.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438039
+    m_Key: Composer.wagner.Dialogue.Defeat.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438040
+    m_Key: Composer.wagner.Dialogue.Defeat.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438041
+    m_Key: Composer.wagner.Dialogue.Defeat.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438042
+    m_Key: Composer.wagner.Dialogue.Defeat.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438043
+    m_Key: Composer.wagner.Dialogue.Defeat.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438044
+    m_Key: Composer.wagner.Dialogue.Victory.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438045
+    m_Key: Composer.wagner.Dialogue.Victory.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438046
+    m_Key: Composer.wagner.Dialogue.Victory.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438047
+    m_Key: Composer.wagner.Dialogue.Victory.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438048
+    m_Key: Composer.wagner.Dialogue.Victory.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438049
+    m_Key: Composer.wagner.Dialogue.Victory.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438050
+    m_Key: Composer.wagner.Dialogue.Victory.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438051
+    m_Key: Composer.wagner.Dialogue.Victory.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438052
+    m_Key: Composer.wagner.Dialogue.Victory.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438053
+    m_Key: Composer.wagner.Dialogue.Victory.010
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3332788327580958731
+  references:
+    version: 2
+    RefIds:
+    - rid: 3332788327580958731
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1792094019358

@@ -324,6 +324,9 @@ public class OpponentSelectionController : MonoBehaviour
             GameSession.Instance.Run.OpponentId    = finalOpponent != null ? finalOpponent.id : null;
             GameSession.Instance.Run.OpponentLevel = finalLevelConfig != null ? finalLevelConfig.level : 0;
         }
+        // The DEFINITIVE rival only (never the roulette's fakes): its dialogue table loads during the
+        // final hold so the Versus line is usually ready on arrival; other composers' tables are released.
+        if (finalOpponent != null) ComposerDialogueService.Preload(finalOpponent.id);
         Debug.Log($"[OpponentSelectionController] Final pick: " +
                   $"{(finalOpponent != null ? finalOpponent.displayName : "(null)")} — tier {tier} (config tier {resolvedTier}, " +
                   $"{(useAssigned ? "precomputed assignment" : "picked here — no assignment")}) — " +

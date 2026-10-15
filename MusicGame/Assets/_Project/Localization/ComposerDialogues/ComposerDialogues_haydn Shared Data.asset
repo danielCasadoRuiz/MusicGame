@@ -1,0 +1,148 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: ComposerDialogues_haydn Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: ComposerDialogues_haydn
+  m_TableCollectionNameGuidString: 5e56e69155a70b4478571b5c97daa17f
+  m_Entries:
+  - m_Id: 2467484298437844
+    m_Key: Composer.haydn.Dialogue.Intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437845
+    m_Key: Composer.haydn.Dialogue.Intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437846
+    m_Key: Composer.haydn.Dialogue.Intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437847
+    m_Key: Composer.haydn.Dialogue.Intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437848
+    m_Key: Composer.haydn.Dialogue.Intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437849
+    m_Key: Composer.haydn.Dialogue.Intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437850
+    m_Key: Composer.haydn.Dialogue.Intro.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437851
+    m_Key: Composer.haydn.Dialogue.Intro.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437852
+    m_Key: Composer.haydn.Dialogue.Intro.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437853
+    m_Key: Composer.haydn.Dialogue.Intro.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437854
+    m_Key: Composer.haydn.Dialogue.Defeat.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437855
+    m_Key: Composer.haydn.Dialogue.Defeat.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437856
+    m_Key: Composer.haydn.Dialogue.Defeat.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437857
+    m_Key: Composer.haydn.Dialogue.Defeat.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437858
+    m_Key: Composer.haydn.Dialogue.Defeat.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437859
+    m_Key: Composer.haydn.Dialogue.Defeat.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437860
+    m_Key: Composer.haydn.Dialogue.Defeat.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437861
+    m_Key: Composer.haydn.Dialogue.Defeat.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437862
+    m_Key: Composer.haydn.Dialogue.Defeat.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437863
+    m_Key: Composer.haydn.Dialogue.Defeat.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437864
+    m_Key: Composer.haydn.Dialogue.Victory.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437865
+    m_Key: Composer.haydn.Dialogue.Victory.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437866
+    m_Key: Composer.haydn.Dialogue.Victory.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437867
+    m_Key: Composer.haydn.Dialogue.Victory.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437868
+    m_Key: Composer.haydn.Dialogue.Victory.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437869
+    m_Key: Composer.haydn.Dialogue.Victory.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437870
+    m_Key: Composer.haydn.Dialogue.Victory.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437871
+    m_Key: Composer.haydn.Dialogue.Victory.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437872
+    m_Key: Composer.haydn.Dialogue.Victory.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437873
+    m_Key: Composer.haydn.Dialogue.Victory.010
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3332788327580958725
+  references:
+    version: 2
+    RefIds:
+    - rid: 3332788327580958725
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1792094018854

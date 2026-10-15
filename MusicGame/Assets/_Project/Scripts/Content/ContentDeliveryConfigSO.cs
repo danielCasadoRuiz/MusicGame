@@ -16,6 +16,9 @@ public class ContentDeliveryConfigSO : ScriptableObject
     [Header("Addressables (ContentDownloadManager)")]
     [Tooltip("Check the remote catalog for content updates at startup (only does anything when a remote catalog is built).")]
     public bool checkCatalogUpdatesOnStart = true;
+    [Tooltip("Re-check the remote catalog when returning to the Main Menu if at least this many minutes passed " +
+             "since the last check (never during a fight / dialogue). 0 = only at startup.")]
+    [Min(0f)] public float catalogRecheckMinutes = 30f;
     [Min(0)] public int downloadRetries = 2;
     [Min(0f)] public float retryDelaySeconds = 1.5f;
 }

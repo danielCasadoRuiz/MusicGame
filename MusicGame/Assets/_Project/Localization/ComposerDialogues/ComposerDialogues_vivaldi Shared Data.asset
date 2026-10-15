@@ -1,0 +1,148 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: ComposerDialogues_vivaldi Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: ComposerDialogues_vivaldi
+  m_TableCollectionNameGuidString: 85fb33cf4ccd9254aa9d6fc01e51bbf8
+  m_Entries:
+  - m_Id: 2467484298437994
+    m_Key: Composer.vivaldi.Dialogue.Intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437995
+    m_Key: Composer.vivaldi.Dialogue.Intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437996
+    m_Key: Composer.vivaldi.Dialogue.Intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437997
+    m_Key: Composer.vivaldi.Dialogue.Intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437998
+    m_Key: Composer.vivaldi.Dialogue.Intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437999
+    m_Key: Composer.vivaldi.Dialogue.Intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438000
+    m_Key: Composer.vivaldi.Dialogue.Intro.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438001
+    m_Key: Composer.vivaldi.Dialogue.Intro.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438002
+    m_Key: Composer.vivaldi.Dialogue.Intro.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438003
+    m_Key: Composer.vivaldi.Dialogue.Intro.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438004
+    m_Key: Composer.vivaldi.Dialogue.Defeat.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438005
+    m_Key: Composer.vivaldi.Dialogue.Defeat.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438006
+    m_Key: Composer.vivaldi.Dialogue.Defeat.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438007
+    m_Key: Composer.vivaldi.Dialogue.Defeat.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438008
+    m_Key: Composer.vivaldi.Dialogue.Defeat.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438009
+    m_Key: Composer.vivaldi.Dialogue.Defeat.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438010
+    m_Key: Composer.vivaldi.Dialogue.Defeat.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438011
+    m_Key: Composer.vivaldi.Dialogue.Defeat.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438012
+    m_Key: Composer.vivaldi.Dialogue.Defeat.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438013
+    m_Key: Composer.vivaldi.Dialogue.Defeat.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438014
+    m_Key: Composer.vivaldi.Dialogue.Victory.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438015
+    m_Key: Composer.vivaldi.Dialogue.Victory.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438016
+    m_Key: Composer.vivaldi.Dialogue.Victory.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438017
+    m_Key: Composer.vivaldi.Dialogue.Victory.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438018
+    m_Key: Composer.vivaldi.Dialogue.Victory.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438019
+    m_Key: Composer.vivaldi.Dialogue.Victory.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438020
+    m_Key: Composer.vivaldi.Dialogue.Victory.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438021
+    m_Key: Composer.vivaldi.Dialogue.Victory.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438022
+    m_Key: Composer.vivaldi.Dialogue.Victory.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298438023
+    m_Key: Composer.vivaldi.Dialogue.Victory.010
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3332788327580958730
+  references:
+    version: 2
+    RefIds:
+    - rid: 3332788327580958730
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1792094019273

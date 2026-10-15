@@ -1,0 +1,148 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: ComposerDialogues_brahms Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: ComposerDialogues_brahms
+  m_TableCollectionNameGuidString: 4122539a78f5b804a8e39e353dfde614
+  m_Entries:
+  - m_Id: 2467484298437754
+    m_Key: Composer.brahms.Dialogue.Intro.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437755
+    m_Key: Composer.brahms.Dialogue.Intro.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437756
+    m_Key: Composer.brahms.Dialogue.Intro.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437757
+    m_Key: Composer.brahms.Dialogue.Intro.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437758
+    m_Key: Composer.brahms.Dialogue.Intro.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437759
+    m_Key: Composer.brahms.Dialogue.Intro.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437760
+    m_Key: Composer.brahms.Dialogue.Intro.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437761
+    m_Key: Composer.brahms.Dialogue.Intro.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437762
+    m_Key: Composer.brahms.Dialogue.Intro.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437763
+    m_Key: Composer.brahms.Dialogue.Intro.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437764
+    m_Key: Composer.brahms.Dialogue.Defeat.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437765
+    m_Key: Composer.brahms.Dialogue.Defeat.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437766
+    m_Key: Composer.brahms.Dialogue.Defeat.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437767
+    m_Key: Composer.brahms.Dialogue.Defeat.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437768
+    m_Key: Composer.brahms.Dialogue.Defeat.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437769
+    m_Key: Composer.brahms.Dialogue.Defeat.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437770
+    m_Key: Composer.brahms.Dialogue.Defeat.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437771
+    m_Key: Composer.brahms.Dialogue.Defeat.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437772
+    m_Key: Composer.brahms.Dialogue.Defeat.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437773
+    m_Key: Composer.brahms.Dialogue.Defeat.010
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437774
+    m_Key: Composer.brahms.Dialogue.Victory.001
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437775
+    m_Key: Composer.brahms.Dialogue.Victory.002
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437776
+    m_Key: Composer.brahms.Dialogue.Victory.003
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437777
+    m_Key: Composer.brahms.Dialogue.Victory.004
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437778
+    m_Key: Composer.brahms.Dialogue.Victory.005
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437779
+    m_Key: Composer.brahms.Dialogue.Victory.006
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437780
+    m_Key: Composer.brahms.Dialogue.Victory.007
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437781
+    m_Key: Composer.brahms.Dialogue.Victory.008
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437782
+    m_Key: Composer.brahms.Dialogue.Victory.009
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2467484298437783
+    m_Key: Composer.brahms.Dialogue.Victory.010
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3332788327580958722
+  references:
+    version: 2
+    RefIds:
+    - rid: 3332788327580958722
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1792094018594

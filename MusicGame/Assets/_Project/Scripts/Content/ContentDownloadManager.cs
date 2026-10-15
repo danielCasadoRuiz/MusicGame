@@ -77,8 +77,16 @@ public class ContentDownloadManager : MonoBehaviour, IAppModule
     private ContentDeliveryConfigSO _config;
     private readonly Dictionary<string, Task<bool>> _inFlight = new();
     private Task _initTask;
+    private bool _checkingCatalog;
+    private float _lastCatalogCheck = float.NegativeInfinity;
+    private System.Action<GameFlowStateChangedEvent> _onGameFlowChanged;
 
     public void Configure(ContentDeliveryConfigSO config) => _config = config;
+
+    /// <summary>Addressables init + startup catalog check (never faults).</summary>
+    public Task Initialization => _initTask ?? Task.CompletedTask;
+    /// <summary>The startup download of updated composer dialogues (never faults).</summary>
+    public Task UpdatedTextPrefetch { get; private set; } = Task.CompletedTask;
 
     void IAppModule.Initialize(AppContext context)
     {
@@ -87,38 +95,101 @@ public class ContentDownloadManager : MonoBehaviour, IAppModule
         if (_config != null && !string.IsNullOrWhiteSpace(_config.remoteDeviceProfilesUrl))
             StartCoroutine(DeviceQualityResolver.RefreshRemoteRules(_config.remoteDeviceProfilesUrl, _config.remoteProfilesTimeoutSeconds));
         _initTask = InitializeAddressablesAsync();
+        UpdatedTextPrefetch = PrefetchUpdatedTextAsync();
+
+        // Later catalog checks only happen at a SAFE moment: back on the Main Menu, nothing loading,
+        // no composer dialogue table in use (a catalog swap never happens under a live presentation).
+        _onGameFlowChanged = e => { if (e.Current == GameFlowState.MainMenu) _ = RecheckCatalogAtSafeMomentAsync(); };
+        EventBus.Subscribe(_onGameFlowChanged);
     }
 
-    void IAppModule.Shutdown() { if (Instance == this) Instance = null; }
+    void IAppModule.Shutdown()
+    {
+        EventBus.Unsubscribe(_onGameFlowChanged);
+        if (Instance == this) Instance = null;
+    }
 
     private async Task InitializeAddressablesAsync()
     {
         try
         {
-            var init = Addressables.InitializeAsync(false);
-            await init.Task;
-            Addressables.Release(init);
+            // Localization may already have initialized Addressables: the handle returned then can be
+            // an already-released one — never let that skip the catalog check below.
+            try
+            {
+                var init = Addressables.InitializeAsync(false);
+                if (init.IsValid() && !init.IsDone) await init.Task;
+                if (init.IsValid()) Addressables.Release(init);
+            }
+            catch (Exception e)
+            {
+                Debug.Log($"[ContentDownloadManager] Addressables was already initialized elsewhere ({e.Message}).");
+            }
 
             if (_config == null || _config.checkCatalogUpdatesOnStart)
-            {
-                var check = Addressables.CheckForCatalogUpdates(false);
-                await check.Task;
-                var catalogs = check.Status == AsyncOperationStatus.Succeeded ? check.Result : null;
-                Addressables.Release(check);
-                if (catalogs != null && catalogs.Count > 0)
-                {
-                    var update = Addressables.UpdateCatalogs(catalogs, false);
-                    await update.Task;
-                    Debug.Log($"[ContentDownloadManager] Remote catalog updated ({catalogs.Count}).");
-                    Addressables.Release(update);
-                }
-            }
+                await CheckAndApplyCatalogUpdatesAsync();
         }
         catch (Exception e)
         {
             Debug.LogWarning($"[ContentDownloadManager] Addressables init / catalog check failed — continuing with the local catalog: {e.Message}");
         }
         IsInitialized = true;
+    }
+
+    /// <summary>Checks the remote catalog and applies a newer one. Any failure (offline, timeout,
+    /// server error) keeps the catalog already in use — shipped or previously downloaded.</summary>
+    private async Task<bool> CheckAndApplyCatalogUpdatesAsync()
+    {
+        if (_checkingCatalog) return false;
+        _checkingCatalog = true;
+        _lastCatalogCheck = Time.realtimeSinceStartup;
+        try
+        {
+            var check = Addressables.CheckForCatalogUpdates(false);
+            await check.Task;
+            var catalogs = check.Status == AsyncOperationStatus.Succeeded ? check.Result : null;
+            if (check.Status != AsyncOperationStatus.Succeeded)
+                Debug.Log($"[ContentDownloadManager] Catalog check failed (offline?) — keeping the current catalog. {check.OperationException?.Message}");
+            Addressables.Release(check);
+            if (catalogs == null || catalogs.Count == 0) return false;
+
+            var update = Addressables.UpdateCatalogs(catalogs, false);
+            await update.Task;
+            bool ok = update.Status == AsyncOperationStatus.Succeeded;
+            Debug.Log(ok ? $"[ContentDownloadManager] Remote catalog updated ({catalogs.Count})."
+                         : $"[ContentDownloadManager] Catalog update failed — keeping the current catalog. {update.OperationException?.Message}");
+            Addressables.Release(update);
+            return ok;
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[ContentDownloadManager] Catalog check threw — keeping the current catalog: {e.Message}");
+            return false;
+        }
+        finally { _checkingCatalog = false; }
+    }
+
+    /// <summary>Text content that changed in a content update (composer dialogues — label
+    /// ComposerDialogues) is tiny: fetch it right away, while online, so it is already cached the
+    /// next time the game runs offline. Nothing to do (0 bytes) when everything is shipped/cached.</summary>
+    private async Task PrefetchUpdatedTextAsync()
+    {
+        try
+        {
+            await EnsureInitialized();
+            bool ok = await EnsureContentAvailableAsync(ComposerDialogueKeys.AddressableLabel);
+            if (!ok) Debug.LogWarning("[ContentDownloadManager] Updated composer dialogues could not be downloaded now — will retry on the next catalog check / use.");
+        }
+        catch (Exception e) { Debug.LogWarning($"[ContentDownloadManager] Dialogue prefetch failed: {e.Message}"); }
+    }
+
+    private async Task RecheckCatalogAtSafeMomentAsync()
+    {
+        float minutes = _config != null ? _config.catalogRecheckMinutes : 30f;
+        if (minutes <= 0f || !IsInitialized || _checkingCatalog) return;
+        if (Time.realtimeSinceStartup - _lastCatalogCheck < minutes * 60f) return;
+        if (_inFlight.Count > 0 || ComposerDialogueService.IsBusy || ComposerDialogueService.HeldTableCount > 0) return;
+        if (await CheckAndApplyCatalogUpdatesAsync()) await PrefetchUpdatedTextAsync();
     }
 
     private Task EnsureInitialized() => _initTask ?? Task.CompletedTask;

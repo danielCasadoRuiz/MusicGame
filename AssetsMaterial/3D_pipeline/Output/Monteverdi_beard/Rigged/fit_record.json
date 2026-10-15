@@ -2,7 +2,7 @@
   "model": "Monteverdi_beard_ULTRA_50k.glb",
   "model_sha256": "983226e7d5d68f6d6f59a623e6b59841418c4a3c13903245ba5ac681bac843d0",
   "avatar": "MakeHuman_Canonical.fbx",
-  "avatar_sha256": "78e5195836d0caad41e5d2fe553cb33b13d23e01981d417664d1fef21a38dc30",
+  "avatar_sha256": "955d5e83294f03b73868f2c4003afe5f3f5ba1b7d10a33522baa30276ec53153",
   "garment_vertices": 290302,
   "fit_snapshot": {
     "garment_matrix_world": [
@@ -1417,5 +1417,11 @@
   "fit_source": "manual",
   "needs_blendshapes": false,
   "symmetry": false,
-  "committed_at": "2026-10-15 02:36:57"
+  "committed_at": "2026-10-15 02:36:57",
+  "previous_avatar_sha256": "78e5195836d0caad41e5d2fe553cb33b13d23e01981d417664d1fef21a38dc30",
+  "canonical_migration": {
+    "neutral_geometry_and_rig_unchanged": true,
+    "body_shapes": "approved review_v12",
+    "garment_shapes_regenerated": false
+  }
 }

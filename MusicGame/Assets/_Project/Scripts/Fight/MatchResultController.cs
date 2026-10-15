@@ -29,6 +29,11 @@ using UnityEngine.UI;
 ///           new run of the SAME song. Does NOT consume a life.
 ///   BOTH -> Main Menu: unchanged.
 ///
+/// COMPOSER LINE: on arrival the rival speaks ONCE per finished match (ComposerDialoguePresentation) —
+/// its Defeat line when the player won, its Victory line when the player lost. Every result button
+/// stays non-interactable behind the subtitle's own tap catcher until the player continues past the
+/// line (or immediately if no line can be shown); finishing the line never presses anything itself.
+///
 /// Prefers a real MatchResult.prefab instance (wired via UIRegistry, built once via
 /// Tools > MusicGame > Build UI Prefabs) — falls back to a procedural build only if that hasn't been
 /// run yet, same pattern as every other Fight-flow screen.
@@ -71,12 +76,22 @@ public class MatchResultController : MonoBehaviour
     private RivalVersionUnlockedEvent? _pendingUnlock;
     private System.Action<RivalVersionUnlockedEvent> _onRivalUnlocked;
 
+    private ComposerDialoguePresentation _dialogue;
+    private bool _dialogueBlocksButtons;   // true while the composer line is up (or loading)
+    private bool _replaySongLocksButtons;  // true while Replay Song waits for Runner (see OnReplaySongClicked)
+    private bool _dialoguePlayedForThisMatch;
+    private Coroutine _unblockRoutine;
+
     private void Awake()
     {
         var registry = FindFirstObjectByType<UIRegistry>();
         if (registry != null && registry.MatchResult != null) WireUI(registry.MatchResult);
         else Build();
 
+        // Runtime-built on top of the screen (prefab or fallback), so regenerating MatchResult.prefab
+        // never removes it.
+        var appConfig = Resources.Load<AppConfigSO>("AppConfig");
+        _dialogue = new ComposerDialoguePresentation(ComposerDialogueBox.Create(_root), appConfig != null ? appConfig.fightFlow : null);
         _root.gameObject.SetActive(false);
     }
 
@@ -85,7 +100,7 @@ public class MatchResultController : MonoBehaviour
         // Cached the instant it arrives — FightMatchController publishes MatchEndedEvent BEFORE
         // requesting FightFlowState.MatchWon/MatchLost (see its own NotifyRoundEndDisplayComplete),
         // so this data is always ready by the time Show() below actually runs.
-        _onMatchEnded = e => _pendingMatchEnded = e;
+        _onMatchEnded = e => { _pendingMatchEnded = e; _dialoguePlayedForThisMatch = false; };
         _onFightFlowChanged = e =>
         {
             if (e.Current == FightFlowState.MatchWon) Show(true);
@@ -134,10 +149,12 @@ public class MatchResultController : MonoBehaviour
 
     private void OnDisable()
     {
+        EventBus.Unsubscribe(_onRivalUnlocked);
         EventBus.Unsubscribe(_onMatchEnded);
         EventBus.Unsubscribe(_onFightFlowChanged);
         EventBus.Unsubscribe(_onGameStarted);
         EventBus.Unsubscribe(_onGameFlowChanged);
+        EndDialogueGate(cancel: true);
     }
 
     /// <summary>The one real cleanup point for this screen when Fight itself is genuinely being left
@@ -153,6 +170,7 @@ public class MatchResultController : MonoBehaviour
         SetReplaySongButtonsInteractable(true);
         _awaitingReplaySongReady = false;
         _pendingMatchEnded = null;
+        _dialoguePlayedForThisMatch = false;
     }
 
     // ── Prefab path — see MatchResultView's own doc ──────────────────────────────
@@ -350,9 +368,66 @@ public class MatchResultController : MonoBehaviour
         HideRewardAdModal();
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
+
+        // The composer's line — ONE per finished match (a repeated Show for the same MatchEndedEvent
+        // never replays it). The player won → the composer LOST (Defeat), and vice versa.
+        if (!_dialoguePlayedForThisMatch && _pendingMatchEnded.HasValue)
+        {
+            _dialoguePlayedForThisMatch = true;
+            BeginDialogueGate(playerWon ? ComposerDialogueCategory.Defeat : ComposerDialogueCategory.Victory);
+        }
     }
 
-    private void Hide() => _root.gameObject.SetActive(false);
+    private void Hide()
+    {
+        EndDialogueGate(cancel: true);
+        _root.gameObject.SetActive(false);
+    }
+
+    // ── Composer line gate ─────────────────────────────────────────────────────────
+
+    private void BeginDialogueGate(ComposerDialogueCategory category)
+    {
+        if (_unblockRoutine != null) { StopCoroutine(_unblockRoutine); _unblockRoutine = null; }
+        _dialogueBlocksButtons = true;
+        ApplyButtonsInteractable();
+        _dialogue.Begin(GameSession.Instance?.SelectedOpponent, category, _ =>
+        {
+            // Re-enabled on the NEXT frame, with no UI selection, so the very press that dismissed the
+            // line can never also activate a button (or a keyboard Submit on a selected one).
+            if (isActiveAndEnabled) _unblockRoutine = StartCoroutine(UnblockNextFrame());
+            else EndDialogueGate(cancel: false);
+        });
+    }
+
+    private System.Collections.IEnumerator UnblockNextFrame()
+    {
+        yield return null;
+        _unblockRoutine = null;
+        if (UnityEngine.EventSystems.EventSystem.current != null)
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+        EndDialogueGate(cancel: false);
+    }
+
+    /// <summary>Drops the composer line (when `cancel`) and gives the buttons back.</summary>
+    private void EndDialogueGate(bool cancel)
+    {
+        if (cancel) _dialogue?.Cancel();
+        if (_unblockRoutine != null) { StopCoroutine(_unblockRoutine); _unblockRoutine = null; }
+        _dialogueBlocksButtons = false;
+        ApplyButtonsInteractable();
+    }
+
+    private void ApplyButtonsInteractable()
+    {
+        bool free = !_dialogueBlocksButtons;
+        bool freeOfReplay = free && !_replaySongLocksButtons;
+        if (_continueButton != null)   _continueButton.interactable   = free;
+        if (_selectSongButton != null) _selectSongButton.interactable = free;
+        if (_fightAgainButton != null) _fightAgainButton.interactable = freeOfReplay;
+        if (_replaySongButton != null) _replaySongButton.interactable = freeOfReplay;
+        if (_mainMenuButton != null)   _mainMenuButton.interactable   = freeOfReplay;
+    }
 
     /// <summary>Disables Fight Again/Replay Song/Main Menu the instant Replay Song is clicked (see
     /// its own doc — prevents a double-click firing a second scene transition while the first is
@@ -361,9 +436,8 @@ public class MatchResultController : MonoBehaviour
     /// result screen).</summary>
     private void SetReplaySongButtonsInteractable(bool interactable)
     {
-        if (_fightAgainButton != null) _fightAgainButton.interactable = interactable;
-        if (_replaySongButton != null) _replaySongButton.interactable = interactable;
-        if (_mainMenuButton != null) _mainMenuButton.interactable = interactable;
+        _replaySongLocksButtons = !interactable;
+        ApplyButtonsInteractable(); // also respects a composer line still on screen
     }
 
     private void RefreshFightAgainLabel()

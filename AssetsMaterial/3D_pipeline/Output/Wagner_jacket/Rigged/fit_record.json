@@ -2,7 +2,7 @@
   "model": "Wagner_jacket_ULTRA_50k.glb",
   "model_sha256": "c521688aef62da81ee5d957de329e0d420f29e4aa900c067aba51fa3e83942b1",
   "avatar": "MakeHuman_Canonical.fbx",
-  "avatar_sha256": "78e5195836d0caad41e5d2fe553cb33b13d23e01981d417664d1fef21a38dc30",
+  "avatar_sha256": "955d5e83294f03b73868f2c4003afe5f3f5ba1b7d10a33522baa30276ec53153",
   "garment_vertices": 69905,
   "fit_snapshot": {
     "garment_matrix_world": [
@@ -1415,5 +1415,11 @@
   "fit_source": "manual",
   "needs_blendshapes": true,
   "committed_at": "2026-10-09 23:34:50",
-  "migrated_from": "Wagner_jacket_ULTRA_50k_preprocessed.blend"
+  "migrated_from": "Wagner_jacket_ULTRA_50k_preprocessed.blend",
+  "previous_avatar_sha256": "78e5195836d0caad41e5d2fe553cb33b13d23e01981d417664d1fef21a38dc30",
+  "canonical_migration": {
+    "neutral_geometry_and_rig_unchanged": true,
+    "body_shapes": "approved review_v12",
+    "garment_shapes_regenerated": true
+  }
 }

@@ -37,7 +37,28 @@ public class FightFlowConfig : ScriptableObject
     [Min(0f)] public float combatMusicFadeOutSeconds = 1.5f;
 
     [Header("Versus")]
+    [Tooltip("How long the Versus screen holds when there is NO composer line to show (dialogues " +
+             "disabled, missing content, load error/timeout). With a line, the player's own press " +
+             "(or versusDialogueAutoContinueSeconds) advances instead — this timer never cuts a line.")]
     public float versusDuration = 2.5f;
+
+    [Header("Composer dialogues (Versus intro + match result — ComposerDialoguePresentation)")]
+    [Tooltip("Master switch. Off = Versus behaves as before (versusDuration) and the result screen " +
+             "enables its buttons immediately.")]
+    public bool composerDialoguesEnabled = true;
+    [Tooltip("Typewriter speed. 0 shows the whole line at once.")]
+    [Min(0f)] public float dialogueCharactersPerSecond = 40f;
+    [Tooltip("Extra wait after . ! ? , ; : … while typing. 0 = none.")]
+    [Min(0f)] public float dialoguePunctuationPauseSeconds = 0.12f;
+    [Tooltip("A press can only CONTINUE this long after the line appeared (a press while typing " +
+             "always just completes the line).")]
+    [Min(0f)] public float dialogueMinContinueDelaySeconds = 0.6f;
+    [Tooltip("Versus only: continue on its own this many seconds after the line is complete. " +
+             "0 = wait for the player's press. The result screen always waits for a press.")]
+    [Min(0f)] public float versusDialogueAutoContinueSeconds = 0f;
+    [Tooltip("Max seconds to wait for the composer's table (it may need a download). Past it the " +
+             "screen continues without dialogue. 0 = no limit (not recommended).")]
+    [Min(0f)] public float dialogueLoadTimeoutSeconds = 3f;
 
     [Header("Round Intro / Countdown")]
     [Tooltip("How long \"ROUND {n}\" is shown before the 3-2-1 countdown starts.")]

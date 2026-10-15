@@ -1,0 +1,275 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-ComposerDialogues
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Localization-ComposerDialogues
+  m_GUID: 6f282f2aee9566b4ab561b65f207138f
+  m_SerializeEntries:
+  - m_GUID: 017a44000423c4b4f960e59626f1a010
+    m_Address: ComposerDialogues_chopin_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0445abe1cca41f14395233b89f3b85d5
+    m_Address: ComposerDialogues_tchaikovsky_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0a0b07596da7acb4ea3b5e2f3f9f7092
+    m_Address: Assets/_Project/Localization/ComposerDialogues/ComposerDialogues_pachelbel
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1142c14ddfb68e1408d018d01d2c9c5c
+    m_Address: ComposerDialogues_mozart_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 12cb1125e8a16c2499fca637b3f8bc00
+    m_Address: Assets/_Project/Localization/ComposerDialogues/ComposerDialogues_monteverdi
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1d8acd79f4dfb2d44b7cc0ae16685294
+    m_Address: Assets/_Project/Localization/ComposerDialogues/ComposerDialogues_mozart
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1edf5241e433a6141a4cfaa781744ed1
+    m_Address: ComposerDialogues_chopin_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1f1b66390d16e8643a1c2822a55ff667
+    m_Address: ComposerDialogues_brahms_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3694ff4ef2d6492419b14c47df28c645
+    m_Address: ComposerDialogues_haydn_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3e3721f82fe55b84eb0ee0c36712a89a
+    m_Address: ComposerDialogues_mozart_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4006f54526e09634f8952c26eea74cb6
+    m_Address: ComposerDialogues_wagner_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4122539a78f5b804a8e39e353dfde614
+    m_Address: Assets/_Project/Localization/ComposerDialogues/ComposerDialogues_brahms
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 46e93d8b92088a64ebc654188bc5967e
+    m_Address: Assets/_Project/Localization/ComposerDialogues/ComposerDialogues_bach
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4eed205c4004d2a4f8519412167423c9
+    m_Address: ComposerDialogues_bach_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 576e9ba6418901b40bb278f8f9fd957a
+    m_Address: ComposerDialogues_tchaikovsky_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5822da7b038047b4c8454084bf4e91bc
+    m_Address: Assets/_Project/Localization/ComposerDialogues/ComposerDialogues_chopin
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e56e69155a70b4478571b5c97daa17f
+    m_Address: Assets/_Project/Localization/ComposerDialogues/ComposerDialogues_haydn
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f2d9f239e47286468f7640f33324d3a
+    m_Address: ComposerDialogues_pachelbel_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f50e4058df25534aaef204daaac0e66
+    m_Address: Assets/_Project/Localization/ComposerDialogues/ComposerDialogues_tchaikovsky
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 67458a20e250978489dc80aa323b880c
+    m_Address: ComposerDialogues_wagner_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6bdbb94d42d90d84e92ddc0e509f24e9
+    m_Address: ComposerDialogues_brahms_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6dc5990bc991ef149834d19bb7210bbb
+    m_Address: Assets/_Project/Localization/ComposerDialogues/ComposerDialogues_wagner
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 74db82ffa6c171742a5a71bd1ea7ddd6
+    m_Address: ComposerDialogues_handel_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8190e24c983f43545bbc26afbc44f486
+    m_Address: ComposerDialogues_vivaldi_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 85fb33cf4ccd9254aa9d6fc01e51bbf8
+    m_Address: Assets/_Project/Localization/ComposerDialogues/ComposerDialogues_vivaldi
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 88870cf745959154fa7ae1194b182f0a
+    m_Address: ComposerDialogues_pachelbel_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b20ac5c690454bd42bcb33136819e6fe
+    m_Address: ComposerDialogues_handel_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b24b9aaea17409d46890dc1415612d58
+    m_Address: Assets/_Project/Localization/ComposerDialogues/ComposerDialogues_beethoven
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bb3c200b9674fb8488179abedee97b12
+    m_Address: Assets/_Project/Localization/ComposerDialogues/ComposerDialogues_handel
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c50dbfc90a6f65d4e82b420a5b6c03b1
+    m_Address: ComposerDialogues_beethoven_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c51383cf357e3b047b079f930a815128
+    m_Address: ComposerDialogues_vivaldi_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c678c53ea81921f46b6a04db97e46689
+    m_Address: ComposerDialogues_bach_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e5db3c63525224045b4472b6da03f2d1
+    m_Address: ComposerDialogues_beethoven_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e6103a0b30e73aa45beb39931f3452a6
+    m_Address: ComposerDialogues_haydn_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ea63964e88fc1df4a9e8b6eaee1fd7ec
+    m_Address: ComposerDialogues_monteverdi_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee8eac074c710a34d8acd0b86d97dc6a
+    m_Address: ComposerDialogues_monteverdi_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: 8a4cc0dfc618f344aaae658dde9bb725, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: f2ceddc68869343448146ce100e865f8, type: 2}
+    - {fileID: 11400000, guid: 116b6061095606944a6bbc42e9179f49, type: 2}
