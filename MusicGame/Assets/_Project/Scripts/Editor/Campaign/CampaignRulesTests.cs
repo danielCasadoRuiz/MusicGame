@@ -311,7 +311,10 @@ public static class CampaignRulesTests
             if (pick.AssetGUID == last) repeat = true;
             last = pick.AssetGUID; seen.Add(last);
         }
-        Check(!repeat && seen.Count == 3, "3 arenas: random, all used, never the same twice in a row");
+        Check(!repeat && seen.Count == 3, "3 arenas, no version: random, all used, never the same twice in a row");
+        Check(ArenaSelector.Pick(o, 1) == o.arenas[0] && ArenaSelector.Pick(o, 2) == o.arenas[1] && ArenaSelector.Pick(o, 3) == o.arenas[2],
+              "by rival version: v1 → arena 1, v2 → arena 2, v3 → arena 3 (repeatable, no randomness)");
+        Check(ArenaSelector.Pick(o, 4) == o.arenas[2], "a version beyond the list uses the last arena (v4 → arena 3)");
         var one = ScriptableObject.CreateInstance<OpponentDefinition>();
         one.id = "arena_one";
         one.arenas = new List<UnityEngine.AddressableAssets.AssetReferenceGameObject> { o.arenas[0], null, new UnityEngine.AddressableAssets.AssetReferenceGameObject("") };

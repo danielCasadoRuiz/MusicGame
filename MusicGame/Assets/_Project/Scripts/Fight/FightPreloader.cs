@@ -55,7 +55,7 @@ public static class FightPreloader
 
         Release();
         // Arena: chosen now, consumed by the fight (TakeArena) — the preloaded one is the one shown.
-        var arena = stage >= 0 ? session.BossArena : ArenaSelector.Pick(opponent);
+        var arena = stage >= 0 ? session.BossArena : ArenaSelector.Pick(opponent, level.level);
         if (arena != null && arena.RuntimeKeyIsValid())
         {
             s_arena = arena;

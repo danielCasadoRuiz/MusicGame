@@ -125,12 +125,33 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
 
     public void SetAssignedOpponent(OpponentDefinition opponent, OpponentLevelConfig level, int tier)
     {
+        if (!_settingBossFight) ApplyTestForce(ref opponent, ref level, ref tier);
         AssignedOpponent            = opponent;
         AssignedOpponentLevelConfig = level;
         AssignedOpponentTier        = tier;
         CurrentBossStage = -1;       // any normal assignment ends a final-rival setup
         BossSongOverride = null;
         BossArena        = null;
+    }
+
+    private bool _settingBossFight;
+
+    /// <summary>AppConfig.testForceOpponentId / testForceOpponentLevel (TEST ONLY): replaces the assigned rival
+    /// (new match, resumed pending match, free run alike) for the session — saved progress is not rewritten.</summary>
+    private static void ApplyTestForce(ref OpponentDefinition opponent, ref OpponentLevelConfig level, ref int tier)
+    {
+        var app = Resources.Load<AppConfigSO>("AppConfig");
+        if (app == null || string.IsNullOrEmpty(app.testForceOpponentId) || app.opponentRoster == null) return;
+        OpponentDefinition forced = null;
+        foreach (var o in app.opponentRoster.opponents) if (o != null && o.id == app.testForceOpponentId) { forced = o; break; }
+        if (forced == null) { Debug.LogWarning($"[GameSession] TEST FORCE: no roster rival with id '{app.testForceOpponentId}' — ignored."); return; }
+        int wanted = app.testForceOpponentLevel > 0 ? app.testForceOpponentLevel : (level != null ? level.level : tier);
+        OpponentLevelConfig forcedLevel = null;
+        if (forced.levels != null) foreach (var l in forced.levels) if (l != null && l.level == wanted) { forcedLevel = l; break; }
+        if (forcedLevel == null) forcedLevel = forced.GetConfigForTier(Mathf.Max(1, wanted));
+        Debug.LogWarning($"[GameSession] TEST FORCE active (AppConfig.testForceOpponentId): rival {forced.displayName} v{(forcedLevel != null ? forcedLevel.level : 0)} " +
+                         $"instead of {(opponent != null ? opponent.displayName : "none")} — clear it for the real game.");
+        opponent = forced; level = forcedLevel; tier = forcedLevel != null ? forcedLevel.level : tier;
     }
 
     // ── Final rival (CampaignService.PrepareBossStage) — combat-only stages ──
@@ -144,7 +165,9 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
     public void SetBossFight(int stage, OpponentDefinition opponent, OpponentLevelConfig level, AudioClip song,
                              UnityEngine.AddressableAssets.AssetReferenceGameObject arena)
     {
-        SetAssignedOpponent(opponent, level, level != null ? level.level : 0);
+        _settingBossFight = true;
+        try { SetAssignedOpponent(opponent, level, level != null ? level.level : 0); }
+        finally { _settingBossFight = false; }
         CurrentBossStage = stage;
         BossSongOverride = song;
         BossArena        = arena;

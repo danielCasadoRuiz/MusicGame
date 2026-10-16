@@ -86,7 +86,8 @@ public class ArenaEnvironmentLoader : MonoBehaviour
         foreach (var cam in _instance.GetComponentsInChildren<Camera>(true)) cam.enabled = false;
         foreach (var listener in _instance.GetComponentsInChildren<AudioListener>(true)) listener.enabled = false;
         var settings = _instance.GetComponentInChildren<ArenaEnvironmentSettings>(true);
-        if (settings != null) _restore = settings.Apply();
+        if (settings != null) _restore = settings.Apply(FindSceneSun(), FightSceneBootstrap.Instance != null && FightSceneBootstrap.Instance.CameraController != null
+                                                                          ? FightSceneBootstrap.Instance.CameraController.Camera : null);
         ShowPlaceholder(false);
         IsReady = true;
         Debug.Log($"[Arena] Loaded '{_instance.name}' ({_currentKey}).");
@@ -101,6 +102,20 @@ public class ArenaEnvironmentLoader : MonoBehaviour
         _handle = default;
     }
 
+    /// <summary>The Fight scene's own main directional light (RenderSettings.sun, else the first directional
+    /// light of this scene that is not part of the arena) — the one an arena may re-tint for its daylight.</summary>
+    private Light FindSceneSun()
+    {
+        if (RenderSettings.sun != null && (_instance == null || !RenderSettings.sun.transform.IsChildOf(_instance.transform))) return RenderSettings.sun;
+        foreach (var root in gameObject.scene.GetRootGameObjects())
+        {
+            if (_instance != null && root == _instance) continue;
+            foreach (var light in root.GetComponentsInChildren<Light>(true))
+                if (light.type == LightType.Directional) return light;
+        }
+        return null;
+    }
+
     private void ShowPlaceholder(bool show)
     {
         if (_placeholder != null) _placeholder.SetActive(show);
@@ -113,15 +128,17 @@ public class ArenaEnvironmentLoader : MonoBehaviour
     }
 }
 
-/// <summary>Arena choice for a composer: a random valid entry of OpponentDefinition.arenas, avoiding the
-/// last one used for that composer when there is an alternative. Runtime state only (never written into
+/// <summary>Arena choice for a composer, by the rival's VERSION (OpponentLevelConfig.level — the same per-level
+/// logic as the rival's versions): version 1 → the 1st valid entry of OpponentDefinition.arenas, 2 → the 2nd…,
+/// a version beyond the list uses the last one. Only without a version (0) is it a random valid entry, avoiding
+/// the last one used for that composer when there is an alternative. Runtime state only (never written into
 /// the content ScriptableObject).</summary>
 public static class ArenaSelector
 {
     private static readonly Dictionary<string, int> s_last = new();
     private static readonly System.Random s_rng = new();
 
-    public static AssetReferenceGameObject Pick(OpponentDefinition composer)
+    public static AssetReferenceGameObject Pick(OpponentDefinition composer, int version = 0)
     {
         if (composer == null || composer.arenas == null || composer.arenas.Count == 0) return null;
         var valid = new List<int>();
@@ -129,8 +146,13 @@ public static class ArenaSelector
             if (composer.arenas[i] != null && composer.arenas[i].RuntimeKeyIsValid()) valid.Add(i);
         if (valid.Count == 0) return null;
         string id = composer.id ?? composer.name;
-        if (valid.Count > 1 && s_last.TryGetValue(id, out int last)) valid.Remove(last);
-        int chosen = valid[s_rng.Next(valid.Count)];
+        int chosen;
+        if (version >= 1) chosen = valid[Mathf.Min(version - 1, valid.Count - 1)];
+        else
+        {
+            if (valid.Count > 1 && s_last.TryGetValue(id, out int last)) valid.Remove(last);
+            chosen = valid[s_rng.Next(valid.Count)];
+        }
         s_last[id] = chosen;
         return composer.arenas[chosen];
     }

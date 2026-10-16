@@ -197,7 +197,7 @@ public class FightSceneBootstrap : MonoBehaviour
 
         // The arena chosen and preloaded during the runner results (FightPreloader), else chosen now.
         UnityEngine.AddressableAssets.AssetReferenceGameObject arena = FightPreloader.TakeArena(key);
-        if (arena == null) arena = stage >= 0 ? session.BossArena : ArenaSelector.Pick(opponent);
+        if (arena == null) arena = stage >= 0 ? session.BossArena : ArenaSelector.Pick(opponent, version); // per rival version (level)
         if (arena == null || !arena.RuntimeKeyIsValid()) arena = _arenaConfig != null ? _arenaConfig.defaultArena : null;
         _arenaLoader.Request(arena, key);
     }

@@ -43,4 +43,13 @@ public class AppConfigSO : ScriptableObject
              "the Editor, where Application.isMobilePlatform is always false. Ignored in real builds, " +
              "which always use the real platform.")]
     public PlatformMode editorPlatformSimulation = PlatformMode.Desktop;
+
+    [Header("Testing (temporary — leave empty for the real game)")]
+    [Tooltip("TEST ONLY: every normal fight is against this composer id (e.g. \"monteverdi\"), whatever the campaign or " +
+             "the pending match assigned — to review an arena/avatar repeatedly. Saved progress keeps its real data. " +
+             "Final-rival stages are not affected. Empty = off.")]
+    public string testForceOpponentId = "";
+    [Tooltip("TEST ONLY: the rival version (OpponentLevelConfig.level) used with testForceOpponentId — it also picks " +
+             "the arena (version 1 → the composer's arena 01). 0 = the version the game assigned.")]
+    [Min(0)] public int testForceOpponentLevel = 0;
 }
