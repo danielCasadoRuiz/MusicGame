@@ -16,6 +16,9 @@ public static class PlayerProgressStore
 
     public static bool Exists => File.Exists(FilePath);
 
+    /// <summary>Format version of the file last loaded (before migration) — 0 if none.</summary>
+    public static int LoadedVersion { get; private set; }
+
     /// <summary>Loads the save, or null when none exists / it cannot be read.</summary>
     public static PlayerProgressData Load()
     {
@@ -29,6 +32,7 @@ public static class PlayerProgressStore
             Migrate(data);
             // Persist the migrated format once (not if the song-id mapping could not run: no catalog).
             if (loadedVersion < PlayerProgressData.CurrentVersion && SongCatalog.IsAvailable) Save(data);
+            LoadedVersion = loadedVersion;
             return data;
         }
         catch (System.Exception e)
@@ -90,7 +94,8 @@ public static class PlayerProgressStore
         Debug.Log($"[PlayerProgressStore] Migrated save v{data.version} → v4 stable song ids ({mapped} completed id(s) remapped).");
     }
 
-    private static void Migrate(PlayerProgressData data)
+    /// <summary>In-memory migration of a loaded save (also used by the batch rule tests).</summary>
+    public static void Migrate(PlayerProgressData data)
     {
         data.tierProgress ??= new GameProgressionState();
         data.defeatedOpponents ??= new System.Collections.Generic.List<DefeatedOpponentRecord>();
@@ -113,5 +118,23 @@ public static class PlayerProgressStore
         // playable catalog (deterministic). An id already stable or unknown is kept as-is (ignored by
         // readers if it no longer exists). The route is re-keyed and its signature cleared (rebuilt).
         if (data.version < 4) MigrateSongIdsToStable(data);
+        // v4 → v5: campaign + song cycles. The song cycle starts as "every song won so far is consumed
+        // in cycle 1" (exactly the old exclusion rule; it renews itself once all are consumed). The
+        // campaign POSITION placement needs the CampaignConfigSO, so it happens in PlayerProgressService
+        // .Configure (campaign.initialized = false → CampaignModel.MigrateLegacy with the won-match count).
+        data.campaign ??= new CampaignProgressData();
+        data.campaign.positions ??= new System.Collections.Generic.List<PositionRecordData>();
+        data.campaign.currentLevelRivals ??= new System.Collections.Generic.List<string>();
+        data.campaign.boss ??= new BossProgressData();
+        data.campaign.boss.stages ??= new System.Collections.Generic.List<BossStageData>();
+        data.campaign.levelId ??= "";
+        if (data.songCycle == null || data.version < 5)
+        {
+            data.songCycle ??= new SongCycleData();
+            if (data.version < 5) { data.songCycle.cycle = 1; data.songCycle.consumedSongIds = new System.Collections.Generic.List<string>(data.completedSongIds); }
+        }
+        data.songCycle.consumedSongIds ??= new System.Collections.Generic.List<string>();
+        data.pendingRun.levelId ??= "";
+        if (data.version < 5) data.pendingRun.bossStage = -1; // JsonUtility leaves missing ints at 0 = boss stage 0
     }
 }

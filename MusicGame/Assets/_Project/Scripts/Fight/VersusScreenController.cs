@@ -187,7 +187,8 @@ public class VersusScreenController : MonoBehaviour
         float above = _config != null ? _config.bubbleAnchorAboveHead : 0.28f;
         _dialogue.Begin(GameSession.Instance?.SelectedOpponent, ComposerDialogueCategory.Intro,
                         () => ComposerAnchor.Resolve(bootstrap != null ? bootstrap.OpponentActor : null, above),
-                        displayAllowed: false);
+                        displayAllowed: false,
+                        version: GameSession.Instance?.SelectedOpponentLevelConfig != null ? GameSession.Instance.SelectedOpponentLevelConfig.level : 0);
         _skip.Show(SkipIntro);
     }
 

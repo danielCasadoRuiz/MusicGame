@@ -75,6 +75,7 @@ public class MatchResultController : MonoBehaviour
     private RivalVersionUnlockedEvent? _pendingUnlock;
     private System.Action<RivalVersionUnlockedEvent> _onRivalUnlocked;
 
+    private EvaluationPanel _evalPanel;   // campaign evaluation of this attempt + persistent bests
     private bool _inputGuard;              // true for the screen's first frame (see class doc)
     private bool _replaySongLocksButtons;  // true while Replay Song waits for Runner (see OnReplaySongClicked)
     private Coroutine _unblockRoutine;
@@ -84,6 +85,11 @@ public class MatchResultController : MonoBehaviour
         var registry = FindFirstObjectByType<UIRegistry>();
         if (registry != null && registry.MatchResult != null) WireUI(registry.MatchResult);
         else Build();
+        _evalPanel = EvaluationPanel.Create(_root, "Evaluation", 560f);
+        var er = _evalPanel.Rect;
+        er.anchorMin = er.anchorMax = new Vector2(1f, 0.5f);
+        er.pivot = new Vector2(1f, 0.5f);
+        er.anchoredPosition = new Vector2(-40f, 40f);
 
         _root.gameObject.SetActive(false);
     }
@@ -351,17 +357,80 @@ public class MatchResultController : MonoBehaviour
         _levelText.gameObject.SetActive(playerWon);
         if (playerWon) _levelText.text = MasteryLine(data);
 
+        bool boss = GameSession.Instance != null && GameSession.Instance.CurrentBossStage >= 0;
         _continueButton.gameObject.SetActive(playerWon);
-        if (_selectSongButton != null) _selectSongButton.gameObject.SetActive(playerWon);
+        // Final-rival stages are combat-only: no song to choose or replay.
+        if (_selectSongButton != null) _selectSongButton.gameObject.SetActive(playerWon && !boss);
         _fightAgainButton.gameObject.SetActive(!playerWon);
-        _replaySongButton.gameObject.SetActive(!playerWon);
+        _replaySongButton.gameObject.SetActive(!playerWon && !boss);
         if (!playerWon) RefreshFightAgainLabel();
 
         HideRewardAdModal();
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
 
+        PopulateEvaluation(playerWon);
         BeginInputGuard();
+    }
+
+    // ── Campaign evaluation (stars) ─────────────────────────────────────────────
+
+    private void PopulateEvaluation(bool playerWon)
+    {
+        if (_evalPanel == null) return;
+        _evalPanel.Clear();
+        var c = CampaignService.LastCombat;
+        if (c == null) { _evalPanel.gameObject.SetActive(false); return; }
+        _evalPanel.gameObject.SetActive(true);
+        var e = c.Evaluation;
+
+        _evalPanel.AddHeader(Loc.Get(c.Boss ? "Eval.BossStage" : "Eval.ThisCombat", (c.BossStage + 1).ToString()));
+        _evalPanel.AddStars(Loc.Get("Eval.Points", EvaluationPanel.Points(e.Score, e.MaxScore)) + (e.Perfect ? "  " + Loc.Get("Eval.Perfect") : ""), e.HalfStars);
+        _evalPanel.AddLine(EvaluationPanel.Breakdown(e.Metrics), 13, new Color(0.8f, 0.8f, 0.8f));
+        if (!c.Won) _evalPanel.AddLine(Loc.Get("Eval.LossInformative"), 13, new Color(1f, 0.6f, 0.5f));
+
+        if (c.Boss)
+        {
+            if (c.BossBest != null && c.BossBest.has && c.BossBest.valid)
+                _evalPanel.AddStars(Loc.Get("Eval.BestOfStage") + (c.BossNewRecord ? "  " + Loc.Get("Eval.NewRecord") : ""), c.BossBest.halfStars);
+            if (c.BossNextStageAvailable) _evalPanel.AddLine(Loc.Get("Eval.BossNext", (c.BossStage + 2).ToString()), 16, new Color(1f, 0.82f, 0.35f));
+            if (c.BossSequenceCompleted) _evalPanel.AddLine(Loc.Get("Eval.BossDefeated"), 18, new Color(1f, 0.82f, 0.35f));
+            if (CampaignService.Available && CampaignService.Data.boss.sealGranted && !CampaignService.Data.boss.sealCelebrationShown)
+                _evalPanel.AddLine(Loc.Get("Campaign.SealName"), 20, new Color(1f, 0.9f, 0.4f));
+            return;
+        }
+
+        // Runner of THIS attempt + the attempt's own combined note.
+        var runner = c.RunnerOfThisMatch;
+        if (runner != null)
+        {
+            _evalPanel.AddStars(Loc.Get("Eval.ThisRunner", EvaluationPanel.Points(runner.Evaluation.Score, runner.Evaluation.MaxScore)), runner.Evaluation.HalfStars);
+            if (c.Won) _evalPanel.AddStars(Loc.Get("Eval.ThisAttempt"), StarMath.Combine(runner.Evaluation.HalfStars, e.HalfStars));
+        }
+
+        // Persistent bests of the position (each phase may come from a different lap).
+        if (c.Recorded && CampaignService.Available)
+        {
+            var p = CampaignModel.Find(CampaignService.Data, c.PositionId);
+            if (p != null)
+            {
+                _evalPanel.AddHeader(Loc.Get("Eval.PositionBests", PositionLabel(p)));
+                _evalPanel.AddStars(Loc.Get("Eval.BestRunner"), CampaignModel.HasRunner(p) ? p.bestRunner.halfStars : -1);
+                _evalPanel.AddStars(Loc.Get("Eval.BestCombat") + (c.Record.NewRecord ? "  " + Loc.Get("Eval.NewRecord") : ""),
+                                    CampaignModel.HasCombat(p) ? p.bestCombat.halfStars : -1);
+                _evalPanel.AddStars(Loc.Get("Eval.Total"), CampaignModel.CombinedHalfStars(p));
+                if (c.Record.JustMastered) _evalPanel.AddLine(Loc.Get("Eval.JustMastered"), 18, new Color(1f, 0.82f, 0.35f));
+            }
+            if (c.Advance.LevelCompleted && !c.Advance.LapCompleted) _evalPanel.AddLine(Loc.Get("Eval.LevelCompleted"), 16, new Color(0.6f, 1f, 0.6f));
+            if (c.Advance.LapCompleted) _evalPanel.AddLine(Loc.Get("Eval.LapCompleted"), 18, new Color(1f, 0.82f, 0.35f));
+        }
+    }
+
+    private static string PositionLabel(PositionRecordData p)
+    {
+        var cfg = CampaignService.Config;
+        int index = cfg != null ? cfg.IndexOf(p.levelId) : -1;
+        return Loc.Get("Campaign.Position", (index + 1).ToString(), p.matchNumber.ToString());
     }
 
     private void Hide()
@@ -471,6 +540,32 @@ public class MatchResultController : MonoBehaviour
 
     private void OnContinueClicked()
     {
+        // Final rival: next stage right here (same Fight scene, new version / song / arena), or back to the
+        // Main Menu after the last one (the finale is shown there).
+        var lastCombat = CampaignService.LastCombat;
+        if (lastCombat != null && lastCombat.Boss)
+        {
+            Hide();
+            if (lastCombat.BossNextStageAvailable && CampaignService.PrepareBossStage(lastCombat.BossStage + 1))
+            {
+                FightMusicController.Instance?.Lock(GameSession.Instance.SelectedOpponentSong, null);
+                FightFlowController.Instance?.RequestState(FightFlowState.VersusIntro);
+            }
+            else
+            {
+                FightMusicController.Instance?.Stop();
+                AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu);
+            }
+            return;
+        }
+        // Lap just finished: the Main Menu celebrates it / offers a new lap.
+        if (CampaignService.LapFinished)
+        {
+            Hide();
+            FightMusicController.Instance?.Stop();
+            AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu);
+            return;
+        }
         int newLevel = _pendingMatchEnded?.NewPlayerLevel ?? (GameSession.Instance != null ? GameSession.Instance.PlayerLevel : 1);
         Hide();
         NextSongTransitionController.Instance?.BeginWin(newLevel);

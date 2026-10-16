@@ -145,6 +145,15 @@ public class NextSongTransitionController : MonoBehaviour
 
     private IEnumerator RunWinSequence()
     {
+        // Campaign lap over: no next song — the Main Menu celebrates / offers a new lap.
+        if (CampaignService.LapFinished)
+        {
+            yield return new WaitForSeconds(_config != null ? Mathf.Max(0f, _config.nextSongCardHoldDuration) : 1.6f);
+            _root.gameObject.SetActive(false);
+            FightMusicController.Instance?.Stop();
+            AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu);
+            yield break;
+        }
         // The just-played song's own identity — see INextSongSelector's own doc on why this (its
         // Addressables PrimaryKey) is reused as-is rather than inventing a new Song ID scheme.
         // Stable songId of the just-defended song (null for a local file).

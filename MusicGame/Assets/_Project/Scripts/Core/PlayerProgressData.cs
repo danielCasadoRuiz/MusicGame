@@ -15,7 +15,7 @@ using System.Collections.Generic;
 [System.Serializable]
 public class PlayerProgressData
 {
-    public const int CurrentVersion = 4; // 2: song history; 3: pendingRun; 4: song ids = stable songId (was Addressable address)
+    public const int CurrentVersion = 5; // 2: song history; 3: pendingRun; 4: stable songId; 5: campaign + song cycles + records
 
     public int version = CurrentVersion;
 
@@ -50,6 +50,12 @@ public class PlayerProgressData
     /// a lost fight and Fight Again; cleared only by the victory (or replaced by a confirmed manual
     /// SELECT SONG). Ids only — no song/fight state (a resumed run restarts the song).</summary>
     public PendingRunData pendingRun = new();
+
+    // ── Campaign (v5) — see CampaignProgressData / CampaignService ──────────────────────────
+    /// <summary>Lap, current level + position, per-position best records, final rival progress, seal.</summary>
+    public CampaignProgressData campaign = new();
+    /// <summary>Song variety cycle (independent of laps). completedSongIds above stays the all-time history.</summary>
+    public SongCycleData songCycle = new();
 }
 
 [System.Serializable]
@@ -64,7 +70,18 @@ public class PendingRunData
     /// <summary>Tier the assignment was made at (fake roulette rivals use the same tier).</summary>
     public int opponentTier;
 
-    public bool IsSet => !string.IsNullOrEmpty(songId);
+    // v5: WHERE this assignment belongs in the campaign (or which final-rival stage).
+    /// <summary>Campaign lap the assignment was made in.</summary>
+    public int lap;
+    /// <summary>CampaignLevelDefinition.id + 1-based match number = the scorable position ("L2#3").</summary>
+    public string levelId = "";
+    public int matchNumber;
+    /// <summary>≥ 0: a final-rival stage (no song / no runner); -1: a normal campaign match.</summary>
+    public int bossStage = -1;
+
+    public bool IsSet => !string.IsNullOrEmpty(songId) || bossStage >= 0;
+    public bool IsBoss => bossStage >= 0;
+    public string PositionId => string.IsNullOrEmpty(levelId) || matchNumber <= 0 ? "" : CampaignConfigSO.PositionId(levelId, matchNumber);
 }
 
 /// <summary>Ordered song ids (most similar to the seed first) + the signature of the catalog /

@@ -180,7 +180,26 @@ public class RivalCollectionController : MonoBehaviour
             cell.onClick.AddListener(() => OpenDetail(r));
             _spawned.Add(cell.gameObject);
         }
-        Loc.Set(_summaryText, "Rivals.Summary", found.ToString(), total.ToString());
+        // Final rival: its three card slots exist in the collection only once revealed (first campaign
+        // completed); they never count toward the NORMAL collection required to unlock it.
+        var boss = CampaignService.Boss;
+        bool bossShown = CampaignService.Data != null && CampaignService.Data.bossRevealed && boss != null && boss.opponent != null;
+        int rows = Mathf.CeilToInt((rivals.Length + (bossShown ? 1 : 0)) / (float)Columns);
+        _grid.sizeDelta = new Vector2(_grid.sizeDelta.x, rows * CardSize.y + (rows - 1) * CardSpacing.y);
+        if (bossShown)
+        {
+            var o = boss.opponent;
+            var defined = DefinedLevels(o);
+            var defeated = DefeatedDefinedLevels(o);
+            bool discovered = defeated.Length > 0;
+            int shownLevel = discovered ? defeated.Max() : (defined.Length > 0 ? defined.Min() : 0);
+            var cell = BuildCard(_grid, layout.cellSize, boss.silhouette != null && !discovered ? boss.silhouette : PortraitFor(o, shownLevel), discovered,
+                                 discovered ? Loc.Get(boss.nameKey) : "???", $"{defeated.Length} / {defined.Length}");
+            cell.onClick.AddListener(() => OpenDetail(o));
+            _spawned.Add(cell.gameObject);
+            Loc.Set(_summaryText, "Rivals.SummaryBoss", found.ToString(), total.ToString(), defeated.Length.ToString(), defined.Length.ToString());
+        }
+        else Loc.Set(_summaryText, "Rivals.Summary", found.ToString(), total.ToString());
     }
 
     private void OpenDetail(OpponentDefinition rival)

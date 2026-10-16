@@ -77,6 +77,8 @@ public class GameplayHUD : MonoBehaviour
 
     // ── uGUI refs: end screen ───────────────────────────────────────────────
     private RectTransform _endRoot;
+    private EvaluationPanel _runnerEvalPanel;
+    private System.Action<RunnerResultsReadyEvent> _onResultsReady;
     private TextMeshProUGUI  _ratingLabelText;
     private Image _ratingBarFill;
     private TextMeshProUGUI  _scoreSummaryText;
@@ -212,6 +214,9 @@ public class GameplayHUD : MonoBehaviour
         EventBus.Subscribe(_onEnd);
         EventBus.Subscribe(_onProfile);
         EventBus.Subscribe(_onRespawned);
+        // Campaign evaluation of this run (stars) — computed by GameSession right before this event.
+        _onResultsReady = _ => PopulateRunnerEvaluation();
+        EventBus.Subscribe(_onResultsReady);
     }
 
     private void OnDisable()
@@ -221,6 +226,7 @@ public class GameplayHUD : MonoBehaviour
         EventBus.Unsubscribe(_onEnd);
         EventBus.Unsubscribe(_onProfile);
         EventBus.Unsubscribe(_onRespawned);
+        EventBus.Unsubscribe(_onResultsReady);
     }
 
     private bool _loggedNotBuilt;
@@ -565,6 +571,34 @@ public class GameplayHUD : MonoBehaviour
         PauseController.Instance?.Resume();
         var s = _finalStats ?? manager?.Stats;
         EventBus.Publish(new ContinuePressedEvent { Stats = s });
+    }
+
+    /// <summary>Runner phase of the campaign match: points / max, stars, short breakdown, the position's
+    /// stored best and NEW RECORD — the fight comes next (Continue).</summary>
+    private void PopulateRunnerEvaluation()
+    {
+        var o = CampaignService.LastRunner;
+        if (_endRoot == null || o == null) return;
+        if (_runnerEvalPanel == null)
+        {
+            _runnerEvalPanel = EvaluationPanel.Create(_endRoot, "RunnerEvaluation", 520f);
+            var r = _runnerEvalPanel.Rect;
+            r.anchorMin = r.anchorMax = new Vector2(1f, 0.5f);
+            r.pivot = new Vector2(1f, 0.5f);
+            r.anchoredPosition = new Vector2(-30f, 0f);
+        }
+        var p = _runnerEvalPanel;
+        p.Clear();
+        var e = o.Evaluation;
+        p.AddHeader(Loc.Get("Eval.ThisRunnerTitle"));
+        p.AddStars(Loc.Get("Eval.Points", EvaluationPanel.Points(e.Score, e.MaxScore)), e.HalfStars);
+        p.AddLine(EvaluationPanel.Breakdown(e.Metrics), 13, new Color(0.8f, 0.8f, 0.8f));
+        if (o.Recorded)
+        {
+            p.AddStars(Loc.Get("Eval.BestRunner") + (o.Record.NewRecord ? "  " + Loc.Get("Eval.NewRecord") : ""), o.Record.Best != null && o.Record.Best.has ? o.Record.Best.halfStars : -1);
+            p.AddLine(Loc.Get("Eval.NextFight"), 14, new Color(1f, 0.82f, 0.35f));
+        }
+        else p.AddLine(Loc.Get("Eval.NotCampaign"), 13, new Color(0.8f, 0.8f, 0.8f));
     }
 
     private void PopulateEndScreen()

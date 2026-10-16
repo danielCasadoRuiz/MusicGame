@@ -16,6 +16,10 @@ public class AppConfigSO : ScriptableObject
     public FightFlowConfig     fightFlow;
     public OpponentRosterSO    opponentRoster;
     public ProgressionConfigSO progression;
+    [Tooltip("Campaign: levels, matches per level, rival version + runner difficulty per level, final rival.")]
+    public CampaignConfigSO    campaign;
+    [Tooltip("Evaluation (stars) scale, thresholds and weights for runner and combat.")]
+    public EvaluationConfigSO  evaluation;
     public FightArenaConfig    arena;
     public FightCameraConfig   fightCamera;
     public FightCombatBalanceConfig combatBalance;

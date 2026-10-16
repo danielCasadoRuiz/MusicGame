@@ -171,6 +171,8 @@ public class ComposerSpeechBubble : MonoBehaviour
 
     private void Resize(string text)
     {
+        if (_body.font == null) _body.font = TMP_Settings.defaultFontAsset; // a TMP text that never ran Awake has no font yet and cannot be measured
+        if (_name.font == null) _name.font = TMP_Settings.defaultFontAsset;
         float maxInner = Mathf.Max(MinWidth, _layout.MaxWidth) - PadX * 2f;
         Vector2 bodyPref = _body.GetPreferredValues(text ?? "", maxInner, 0f);
         Vector2 namePref = _name.GetPreferredValues(_name.text, maxInner, 0f);

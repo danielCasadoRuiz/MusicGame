@@ -100,6 +100,14 @@ public class FightMatchController : MonoBehaviour
 
     private System.Action<FightFlowStateChangedEvent> _onFlowChanged;
     private System.Action<FighterKOEvent> _onKO;
+
+    // ── Evaluation metrics of the CURRENT match attempt (reset on every VersusIntro: a new match or Fight
+    //    Again; accumulated across its rounds). Damage taken is summed — healing never erases it. ──
+    private readonly CombatAttemptMetrics _attempt = new();
+    public CombatAttemptMetrics CurrentAttempt => _attempt;
+    private System.Action<DamageTakenEvent> _onDamage;
+    private System.Action<HitLandedEvent> _onHit;
+    private System.Action<FightMovePhaseChangedEvent> _onMovePhase;
     private System.Action<GameFlowStateChangedEvent> _onGameFlowChanged;
 
     private void Awake()
@@ -136,6 +144,17 @@ public class FightMatchController : MonoBehaviour
             _pendingResultState = null; // a farewell interrupted by leaving Fight never opens a result later
             AbortMatch("left Fight");
         };
+        _onDamage = e => { if (e.Fighter != null && e.Fighter.Side == FighterSide.Player && e.Amount > 0f) _attempt.DamageTaken += e.Amount; };
+        _onHit = e => { if (e.Attacker != null && e.Attacker.Side == FighterSide.Player) _attempt.HitsLanded++; };
+        _onMovePhase = e =>
+        {
+            if (e.Current != FighterMoveState.Startup || e.Previous == FighterMoveState.Startup) return;
+            var actor = e.Source != null ? e.Source.Actor : null;
+            if (actor != null && actor.Side == FighterSide.Player) _attempt.AttacksStarted++;
+        };
+        EventBus.Subscribe(_onDamage);
+        EventBus.Subscribe(_onHit);
+        EventBus.Subscribe(_onMovePhase);
         EventBus.Subscribe(_onFlowChanged);
         EventBus.Subscribe(_onKO);
         EventBus.Subscribe(_onGameFlowChanged);
@@ -155,6 +174,9 @@ public class FightMatchController : MonoBehaviour
     {
         EventBus.Unsubscribe(_onFlowChanged);
         EventBus.Unsubscribe(_onKO);
+        EventBus.Unsubscribe(_onDamage);
+        EventBus.Unsubscribe(_onHit);
+        EventBus.Unsubscribe(_onMovePhase);
         EventBus.Unsubscribe(_onGameFlowChanged);
     }
 
@@ -181,6 +203,9 @@ public class FightMatchController : MonoBehaviour
     private void BeginMatch()
     {
         _pendingResultState = null;
+        FindActors();
+        _attempt.Reset(_player != null && _player.Health != null ? _player.Health.MaxHealth : 100f,
+                       _config != null ? Mathf.Max(1, _config.roundsToWin) : 2);
         PlayerRoundsWon = 0;
         OpponentRoundsWon = 0;
         MatchPointDifferential = 0f;
@@ -214,6 +239,8 @@ public class FightMatchController : MonoBehaviour
         FindActors();
         RoundActive = true;
         _roundEndProcessed = false;
+        _attempt.RoundsPlayed++;
+        if (_player != null && _player.Health != null) _attempt.PlayerMaxHealth = Mathf.Max(1f, _player.Health.MaxHealth);
         RoundTimeRemaining = _config != null ? Mathf.Max(1f, _config.roundDuration) : 60f;
         EventBus.Publish(new RoundStartedEvent { RoundNumber = CurrentRound });
     }
@@ -355,15 +382,22 @@ public class FightMatchController : MonoBehaviour
             var session = GameSession.Instance;
             var beatenOpponent = session != null ? session.SelectedOpponent : null;
             int beatenLevel = session?.SelectedOpponentLevelConfig != null ? session.SelectedOpponentLevelConfig.level : 0;
+            bool bossStage = session != null && session.CurrentBossStage >= 0;
+            // Campaign evaluation of this attempt: combat record, position advance, music cycle (or the
+            // final-rival stage) — mutated here, persisted by RecordVictory's single save below.
+            _attempt.Won = true;
+            CampaignService.OnMatchDecided(true, _attempt);
             // 2. The song is DEFENDED: completedSongIds + tier progression + pendingRun cleared — not
             //    saved yet (the opponent version above is already captured, so nothing below can shift it).
-            session?.RegisterCompletedSong(save: false);
+            //    A final-rival stage has no song: nothing to defend.
+            if (!bossStage) session?.RegisterCompletedSong(save: false);
             // 3–7. collection unlock (exact version), +1 win, Musical Mastery, XP, then ONE save of
             //      everything (including step 2), then the announcements.
             var progress = PlayerProgressService.Instance;
             var victory = progress != null ? progress.RecordVictory(beatenOpponent, beatenLevel) : default;
             if (progress == null) Debug.LogWarning("[FightMatchController] No PlayerProgressService — victory not persisted.");
             if (session != null) session.Run.XpEarned += victory.Xp;
+            CampaignService.AfterVictorySaved(); // final-rival unlock / seal (cards just saved)
             // MatchEndedEvent's "player level" is the Musical Mastery rank (1-based).
             int oldLevel = victory.OldRank + 1;
             int newLevel = victory.NewRank + 1;
@@ -376,6 +410,10 @@ public class FightMatchController : MonoBehaviour
             // A loss never touches PlayerLevel — Old/New are the same, unchanged value (task's own
             // explicit "si perds, no baixa, no puja" requirement).
             int level = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.MasteryRank + 1 : 1;
+            // Informative evaluation of the lost attempt (never a record: records need a win).
+            _attempt.Won = false;
+            CampaignService.OnMatchDecided(false, _attempt);
+            PlayerProgressService.Instance?.Save();
 
             EventBus.Publish(BuildMatchEndedEvent(FighterSide.Opponent, resolution, level, level));
             BeginFarewell(FightFlowState.MatchLost);

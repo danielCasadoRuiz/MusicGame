@@ -49,6 +49,12 @@ public class ComposerDialogueUpdateProbe : MonoBehaviour
         yield return Wait(content.UpdatedTextPrefetch, 30f);
         Log($"content initialized={content.IsInitialized}");
 
+        if (Environment.GetCommandLineArgs().Contains("-probeCampaign"))
+        {
+            yield return gameObject.AddComponent<CampaignFlowProbe>().Run(_outDir, _phase); // quits the player itself
+            yield break;
+        }
+
         var app = Resources.Load<AppConfigSO>("AppConfig");
         _roster = app != null ? app.opponentRoster : null;
         Check(_roster != null && _roster.opponents.Length == 12, "roster has 12 composers");

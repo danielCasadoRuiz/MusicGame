@@ -132,6 +132,30 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
         AssignedOpponent            = opponent;
         AssignedOpponentLevelConfig = level;
         AssignedOpponentTier        = tier;
+        CurrentBossStage = -1;       // any normal assignment ends a final-rival setup
+        BossSongOverride = null;
+        ArenaOverride    = null;
+    }
+
+    // ── Final rival (CampaignService.PrepareBossStage) — combat-only stages ──
+    /// <summary>≥ 0 while the current fight is a final-rival stage; -1 for normal campaign matches.</summary>
+    public int CurrentBossStage { get; private set; } = -1;
+    /// <summary>The stage's special song (null = the version's own songs).</summary>
+    public AudioClip BossSongOverride { get; private set; }
+    /// <summary>Arena environment for the current fight (null = FightArenaConfig default / placeholder floor).</summary>
+    public GameObject ArenaOverride { get; private set; }
+
+    public void SetBossFight(int stage, OpponentDefinition opponent, OpponentLevelConfig level, AudioClip song, GameObject arena)
+    {
+        SetAssignedOpponent(opponent, level, level != null ? level.level : 0);
+        CurrentBossStage = stage;
+        BossSongOverride = song;
+        ArenaOverride    = arena;
+        // A boss stage is fought directly (no roulette, no runner): commit the pick now.
+        SelectedOpponent            = opponent;
+        SelectedOpponentLevelConfig = level;
+        SelectedOpponentTier        = level != null ? level.level : 0;
+        SelectedOpponentSong        = song != null ? song : (level != null ? level.GetRandomSong(null) : null);
     }
 
     // ── Debug override (never touches progression, bag or history) ──
@@ -290,6 +314,11 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
                 Run.XpEarned = _progressionConfig.XpForRun(e.NormalizedScore);
                 PlayerProgressService.Instance.AddXp(Run.XpEarned, $"run {Run.Index}, score {e.Stats.Score}, {e.NormalizedScore:P0}");
             }
+
+            // Evaluation (stars) of this runner phase for the campaign position it belongs to — separate
+            // from XP and from the gameplay score; recorded at once (it stands whatever the fight does).
+            var song = SelectedSong;
+            CampaignService.OnRunnerFinished(RunnerResults, song.HasValue && string.IsNullOrEmpty(song.Value.LocalFilePath) ? song.Value.SongId : null);
 
             EventBus.Publish(new RunnerResultsReadyEvent { Results = RunnerResults });
         };

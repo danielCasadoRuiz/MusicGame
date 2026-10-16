@@ -157,15 +157,16 @@ public static class ComposerDialogueService
 
     /// <summary>Valid variant keys of (composer, category) in `table`, sorted by index. Gaps, any
     /// count and 4+ digit indices are fine; malformed keys under this composer's prefix are logged once.</summary>
-    public static List<string> GetVariantKeys(StringTable table, string composerId, ComposerDialogueCategory category)
+    public static List<string> GetVariantKeys(StringTable table, string composerId, ComposerDialogueCategory category, int version = 0)
     {
         var found = new List<(int index, string key)>();
+        var forVersion = new List<(int index, string key)>();
         if (table == null || table.SharedData == null) return new List<string>();
 
         string prefix = ComposerDialogueKeys.KeyPrefix(composerId);
         foreach (var shared in table.SharedData.Entries)
         {
-            if (!ComposerDialogueKeys.TryParse(shared.Key, out var id, out var cat, out int index) || id != composerId)
+            if (!ComposerDialogueKeys.TryParse(shared.Key, out var id, out var cat, out int index, out int lineVersion) || id != composerId)
             {
                 if (shared.Key != null && shared.Key.StartsWith(prefix) && s_WarnedKeys.Add(shared.Key))
                     Debug.LogWarning($"[ComposerDialogue] Ignoring malformed dialogue key '{shared.Key}' in {table.TableCollectionName} " +
@@ -175,8 +176,11 @@ public static class ComposerDialogueService
             if (cat != category) continue;
             var entry = table.GetEntry(shared.Id);
             if (entry == null || string.IsNullOrWhiteSpace(entry.Value)) continue; // retired / untranslated in this language
-            found.Add((index, shared.Key));
+            if (lineVersion == 0) found.Add((index, shared.Key));
+            else if (lineVersion == version) forVersion.Add((index, shared.Key));
         }
+        // A version with its own lines (final rival levels) uses only those; otherwise the generic ones.
+        if (forVersion.Count > 0) found = forVersion;
         found.Sort((a, b) => a.index.CompareTo(b.index));
         var keys = new List<string>(found.Count);
         foreach (var f in found) keys.Add(f.key);
@@ -186,14 +190,14 @@ public static class ComposerDialogueService
     /// <summary>Picks a fresh line for (composer, category) in the active language (falls back to the
     /// fallback language when the active one has none). Invalid line = nothing to show.</summary>
     public static async Task<ComposerDialogueLine> PickLineAsync(string composerId, ComposerDialogueCategory category,
-                                                                 CancellationToken cancellation = default)
+                                                                 CancellationToken cancellation = default, int version = 0)
     {
         var locale = await ActiveLocaleAsync();
         if (locale == null || cancellation.IsCancellationRequested) return default;
 
         var table = await LoadTableAsync(composerId, locale);
         if (cancellation.IsCancellationRequested) return default;
-        var keys = GetVariantKeys(table, composerId, category);
+        var keys = GetVariantKeys(table, composerId, category, version);
 
         if (keys.Count == 0)
         {
@@ -202,7 +206,7 @@ public static class ComposerDialogueService
             {
                 var fallbackTable = await LoadTableAsync(composerId, fallback);
                 if (cancellation.IsCancellationRequested) return default;
-                keys = GetVariantKeys(fallbackTable, composerId, category);
+                keys = GetVariantKeys(fallbackTable, composerId, category, version);
                 if (keys.Count > 0)
                 {
                     Debug.LogWarning($"[ComposerDialogue] No {category} lines for '{composerId}' in '{locale.Identifier.Code}' — using '{fallback.Identifier.Code}'.");

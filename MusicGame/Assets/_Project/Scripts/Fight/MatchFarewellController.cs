@@ -79,7 +79,8 @@ public class MatchFarewellController : MonoBehaviour
         float above = _config != null ? _config.bubbleAnchorAboveHead : 0.28f;
         _dialogue.Begin(GameSession.Instance?.SelectedOpponent, category,
                         () => ComposerAnchor.Resolve(bootstrap != null ? bootstrap.OpponentActor : null, above),
-                        displayAllowed: _leadIn <= 0f);
+                        displayAllowed: _leadIn <= 0f,
+                        version: GameSession.Instance?.SelectedOpponentLevelConfig != null ? GameSession.Instance.SelectedOpponentLevelConfig.level : 0);
         _skip.Show(Skip);
     }
 

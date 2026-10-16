@@ -17,6 +17,8 @@ public enum ComposerDialogueCategory
 ///
 ///   String Table Collection  ComposerDialogues_{OpponentDefinition.id}   (one per composer, ca + en)
 ///   Entry key                Composer.{id}.Dialogue.{Category}.{index}   (index = 3+ digits, gaps allowed)
+///                            Composer.{id}.Dialogue.{Category}.L{v}.{index}  (lines for rival VERSION v only —
+///                            used by the final rival; a version with its own lines uses only those)
 ///   Addressables label       ComposerDialogues                           (every table + shared data)
 ///
 /// Variants are DISCOVERED from whatever keys the loaded table contains — nothing here (or anywhere
@@ -29,7 +31,7 @@ public static class ComposerDialogueKeys
     public const string AddressableLabel = "ComposerDialogues";
 
     private static readonly Regex KeyPattern = new(
-        @"^Composer\.(?<id>[a-z0-9_]+)\.Dialogue\.(?<cat>Intro|Defeat|Victory)\.(?<idx>\d{3,6})$",
+        @"^Composer\.(?<id>[a-z0-9_]+)\.Dialogue\.(?<cat>Intro|Defeat|Victory)\.(?:L(?<lv>\d{1,2})\.)?(?<idx>\d{3,6})$",
         RegexOptions.CultureInvariant);
 
     public static string TableName(string composerId) => TablePrefix + composerId;
@@ -40,17 +42,26 @@ public static class ComposerDialogueKeys
     public static string Key(string composerId, ComposerDialogueCategory category, int index) =>
         $"{KeyPrefix(composerId)}{category}.{index:000}";
 
+    /// <summary>Version-specific key ("…Intro.L2.003").</summary>
+    public static string Key(string composerId, ComposerDialogueCategory category, int version, int index) =>
+        $"{KeyPrefix(composerId)}{category}.L{version}.{index:000}";
+
     /// <summary>Strict parse of a dialogue key. Anything else (typos, other composers' prefixes, a
     /// missing index) is NOT a variant.</summary>
-    public static bool TryParse(string key, out string composerId, out ComposerDialogueCategory category, out int index)
+    public static bool TryParse(string key, out string composerId, out ComposerDialogueCategory category, out int index) =>
+        TryParse(key, out composerId, out category, out index, out _);
+
+    /// <summary>`version` = 0 for a generic line, else the rival version the line belongs to.</summary>
+    public static bool TryParse(string key, out string composerId, out ComposerDialogueCategory category, out int index, out int version)
     {
-        composerId = null; category = default; index = 0;
+        composerId = null; category = default; index = 0; version = 0;
         if (string.IsNullOrEmpty(key)) return false;
         var m = KeyPattern.Match(key);
         if (!m.Success) return false;
         composerId = m.Groups["id"].Value;
         category   = (ComposerDialogueCategory)System.Enum.Parse(typeof(ComposerDialogueCategory), m.Groups["cat"].Value);
         index      = int.Parse(m.Groups["idx"].Value, System.Globalization.CultureInfo.InvariantCulture);
+        if (m.Groups["lv"].Success) version = int.Parse(m.Groups["lv"].Value, System.Globalization.CultureInfo.InvariantCulture);
         return true;
     }
 }

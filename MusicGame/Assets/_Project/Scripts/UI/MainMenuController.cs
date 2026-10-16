@@ -48,6 +48,8 @@ public class MainMenuController : MonoBehaviour
 
     // Language selector (Settings) — built at runtime on BOTH the prefab and fallback panels, like the
     // Rivals button, so regenerating MainMenu.prefab never removes it. See LanguagePreference.
+    private CampaignPopup _popup;
+
     private RectTransform _languageRow;
     private readonly System.Collections.Generic.List<(string mode, Button button, Outline outline)> _languageOptions = new();
     private System.Action _onLanguageRefreshed, _onLanguageModeChanged;
@@ -109,9 +111,16 @@ public class MainMenuController : MonoBehaviour
         rivalsRt.anchoredPosition += new Vector2(0f, rivalsRt.sizeDelta.y + 18f) * 0.5f + new Vector2(rivalsRt.sizeDelta.x * 0.55f, 0f);
         var rivalsLabel = rivals.GetComponentInChildren<TextMeshProUGUI>();
         if (rivalsLabel != null) Loc.Set(rivalsLabel, "MainMenu.Rivals");
+        // PROGRESSIÓ, right under COL·LECCIÓ (same runtime-added pattern as the Rivals button).
+        var progression = Instantiate(view.settingsButton, view.settingsButton.transform.parent);
+        progression.name = "ProgressionButton";
+        progression.onClick = new Button.ButtonClickedEvent();
+        progression.onClick.AddListener(OnProgressionClicked);
+        var progressionLabel = progression.GetComponentInChildren<TextMeshProUGUI>();
+        if (progressionLabel != null) Loc.Set(progressionLabel, "MainMenu.Progression");
         BuildProfileText(view.root.GetComponent<RectTransform>());
         BuildMenuStatus(view.root.GetComponent<RectTransform>());
-        _buttonStack.AddRange(new[] { view.playButton.GetComponent<RectTransform>(), rivalsRt,
+        _buttonStack.AddRange(new[] { view.playButton.GetComponent<RectTransform>(), rivalsRt, progression.GetComponent<RectTransform>(),
                                       view.settingsButton.GetComponent<RectTransform>(), view.quitButton.GetComponent<RectTransform>() });
         view.quitButton.onClick.AddListener(OnQuitClicked);
         view.closeButton.onClick.AddListener(() => _settingsPanel.gameObject.SetActive(false));
@@ -182,6 +191,14 @@ public class MainMenuController : MonoBehaviour
         rivalsBtn.onClick.AddListener(OnRivalsClicked);
         rivalsBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
         rivalsLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        y -= btnH + gap;
+
+        var progressionBtn = UIFactory.CreateButton("ProgressionButton", _root, Loc.Get("MainMenu.Progression"), out var progressionLabel); Loc.Track(progressionLabel, "MainMenu.Progression");
+        UIFactory.SetBox(progressionBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, y), new Vector2(btnW, btnH));
+        progressionBtn.onClick.AddListener(OnProgressionClicked);
+        progressionBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
+        progressionLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
         y -= btnH + gap;
 
         var settingsBtn = UIFactory.CreateButton("SettingsButton", _root, Loc.Get("MainMenu.Settings"), out var settingsLabel); Loc.Track(settingsLabel, "MainMenu.Settings");
@@ -372,6 +389,7 @@ public class MainMenuController : MonoBehaviour
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
         _settingsPanel.gameObject.SetActive(false);
+        ShowNextNotice(); // after the menu is up, so the popup sits on top
     }
 
     private void Hide()
@@ -413,7 +431,9 @@ public class MainMenuController : MonoBehaviour
         if (location == null)
         {
             _continuing = false;
-            if (status == NextSongStatus.NoSeed)
+            if (status == NextSongStatus.LapFinished)
+                ShowLapFinished(); // campaign lap over: celebrate / offer a new lap
+            else if (status == NextSongStatus.NoSeed)
                 AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongSelection); // no preference yet (old save): choose one
             else
                 SetMenuStatus(Loc.Get(status == NextSongStatus.CatalogComplete ? "MainMenu.CatalogComplete" : "SongSelection.LoadFailed"));
@@ -434,6 +454,57 @@ public class MainMenuController : MonoBehaviour
     }
 
     private void OnRivalsClicked() => RivalCollectionController.Instance?.Open();
+    private void OnProgressionClicked() => ProgressionScreenController.Instance?.Open();
+
+    // ── Campaign moments (a safe point: nothing is playing) ─────────────────────
+
+    private CampaignPopup Popup => _popup != null ? _popup : _popup = CampaignPopup.Create("CampaignPopup");
+
+    /// <summary>The next one-time campaign notice, if any (reveal, unlock, finale, seal). Marked shown when displayed.</summary>
+    private void ShowNextNotice()
+    {
+        if (Popup.IsOpen) return;
+        var notice = CampaignService.PendingNotice();
+        if (notice == CampaignService.Notice.None) return;
+        CampaignService.MarkShown(notice);
+        var boss = CampaignService.Boss;
+        var silhouette = boss != null ? (boss.silhouette != null ? boss.silhouette : boss.LevelConfig(0)?.portrait) : null;
+        switch (notice)
+        {
+            case CampaignService.Notice.CampaignCompleted:
+                Popup.Show(Loc.Get("Campaign.CompletedTitle"), Loc.Get("Campaign.CompletedBody"), silhouette, Color.black,
+                           Loc.Get("Campaign.NewLap"), StartNewLapAndContinue, Loc.Get("Campaign.Later"), ShowNextNotice);
+                break;
+            case CampaignService.Notice.BossUnlocked:
+                Popup.Show(Loc.Get("Campaign.BossUnlockedTitle"), Loc.Get("Campaign.BossUnlockedBody"), silhouette, Color.white,
+                           Loc.Get("Campaign.Challenge"), OnProgressionClicked, Loc.Get("Campaign.Later"), ShowNextNotice);
+                break;
+            case CampaignService.Notice.Finale:
+                Popup.Show(Loc.Get("Campaign.FinaleTitle"), Loc.Get("Campaign.FinaleBody"), silhouette, Color.white,
+                           Loc.Get("Campaign.Ok"), ShowNextNotice);
+                break;
+            case CampaignService.Notice.Seal:
+                Popup.Show(Loc.Get("Campaign.SealName"), Loc.Get("Campaign.SealBody"), silhouette, new Color(1f, 0.85f, 0.4f),
+                           Loc.Get("Campaign.Ok"), ShowNextNotice);
+                break;
+        }
+    }
+
+    /// <summary>CONTINUE with the lap over: celebrate and offer a new lap (records and cards are kept).</summary>
+    private void ShowLapFinished()
+    {
+        if (CampaignService.PendingNotice() == CampaignService.Notice.CampaignCompleted) { ShowNextNotice(); return; }
+        var data = CampaignService.Data;
+        Popup.Show(Loc.Get("Campaign.LapDoneTitle", data != null ? data.lap.ToString() : "1"), Loc.Get("Campaign.LapDoneBody"), null, Color.white,
+                   Loc.Get("Campaign.NewLap"), StartNewLapAndContinue, Loc.Get("Campaign.Later"), null);
+    }
+
+    private void StartNewLapAndContinue()
+    {
+        CampaignService.StartNewLap();
+        RefreshProgressUI();
+        if (!_continuing) StartCoroutine(ContinueRoutine());
+    }
 
     private void OnSettingsClicked()
     {

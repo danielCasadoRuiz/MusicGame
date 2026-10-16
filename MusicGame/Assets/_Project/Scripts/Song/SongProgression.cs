@@ -5,7 +5,9 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 
-public enum NextSongStatus { Found, NoSeed, CatalogComplete, EmptyCatalog }
+/// <summary>LapFinished: the campaign lap is over — the Main Menu offers a new lap (never "no songs":
+/// songs are recycled in music cycles).</summary>
+public enum NextSongStatus { Found, NoSeed, CatalogComplete, EmptyCatalog, LapFinished }
 
 /// <summary>No uncompleted PLAYABLE song remains. Hook for a future endgame (repeat / new cycle) —
 /// today the flow simply returns to the Main Menu, which shows "catalog complete".</summary>
@@ -91,16 +93,19 @@ public static class SongProgression
         var progress = PlayerProgressService.Instance;
         if (progress == null || catalogIds == null || catalogIds.Count == 0) return NextSongStatus.EmptyCatalog;
 
-        var completed = new HashSet<string>(progress.CompletedSongIds);
+        // Music CYCLE (independent of the campaign lap): songs won in this cycle are out; once every
+        // playable song has been won in it, a new cycle starts with all of them (SongCycleModel).
+        bool renewed = false;
+        var completed = progress.SongCycle != null
+            ? SongCycleModel.Consumed(progress.SongCycle, catalogIds, out renewed)
+            : new HashSet<string>(progress.CompletedSongIds);
         var catalog   = new HashSet<string>(catalogIds);
-        bool anyLeft = false;
-        foreach (var id in catalogIds) if (!completed.Contains(id)) { anyLeft = true; break; }
-        CatalogComplete = !anyLeft;
-        if (CatalogComplete)
+        CatalogComplete = false;
+        if (progress.SongCycle != null && renewed)
         {
-            Debug.Log("[SongProgression] Every playable song is completed — catalog complete.");
+            Debug.Log($"[SongProgression] Every playable song was used — music cycle {progress.SongCycle.cycle} starts.");
+            progress.Save();
             EventBus.Publish(new SongCatalogCompletedEvent());
-            return NextSongStatus.CatalogComplete;
         }
 
         // Seed: the manual preference; if it vanished from the catalog (or an old save has none),

@@ -33,6 +33,7 @@ public sealed class ComposerDialoguePresentation
     private CancellationTokenSource _cts;
     private string _composerId, _speaker, _key, _pendingText;
     private ComposerDialogueCategory _category;
+    private int _version;
     private float  _loadElapsed, _holdLeft;
     private bool   _displayAllowed, _frozen, _localeChangedWhileLoading, _subscribed;
 
@@ -56,7 +57,8 @@ public sealed class ComposerDialoguePresentation
 
     /// <summary>Starts loading a line for (opponent, category); the bubble points at `anchor`.
     /// Nothing is displayed until AllowDisplay() (the owner may still be showing something else).</summary>
-    public void Begin(OpponentDefinition opponent, ComposerDialogueCategory category, Func<Vector3?> anchor, bool displayAllowed = true)
+    /// <param name="version">Rival version (OpponentLevelConfig.level): lines written for that version win.</param>
+    public void Begin(OpponentDefinition opponent, ComposerDialogueCategory category, Func<Vector3?> anchor, bool displayAllowed = true, int version = 0)
     {
         Cancel();
         _bubble.AnchorProvider = anchor;
@@ -72,6 +74,7 @@ public sealed class ComposerDialoguePresentation
         _composerId = opponent.id;
         _speaker = opponent.displayName;
         _category = category;
+        _version = version;
         _key = null; _pendingText = null;
         _loadElapsed = 0f;
         _displayAllowed = displayAllowed;
@@ -186,7 +189,7 @@ public sealed class ComposerDialoguePresentation
         ComposerDialogueLine line;
         try
         {
-            line = await ComposerDialogueService.PickLineAsync(_composerId, _category, ct);
+            line = await ComposerDialogueService.PickLineAsync(_composerId, _category, ct, _version);
             if (token != _token) return;
             if (line.IsValid && _localeChangedWhileLoading)
             {

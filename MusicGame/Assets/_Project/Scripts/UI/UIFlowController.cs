@@ -41,6 +41,7 @@ public class UIFlowController : MonoBehaviour
         AddScreen<IntroScreenController>();
         AddScreen<MainMenuController>();
         AddScreen<RivalCollectionController>();
+        AddScreen<ProgressionScreenController>();
         AddScreen<SongPreviewPlayer>();
         AddScreen<SongSelectionController>();
         AddScreen<CountdownController>();

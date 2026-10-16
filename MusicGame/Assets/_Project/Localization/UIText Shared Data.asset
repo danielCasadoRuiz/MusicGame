@@ -759,6 +759,334 @@ MonoBehaviour:
     m_Key: Settings.LanguageAuto
     m_Metadata:
       m_Items: []
+  - m_Id: 12057460304568320
+    m_Key: MainMenu.Progression
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705664
+    m_Key: Progression.Title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705665
+    m_Key: Progression.Unavailable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705666
+    m_Key: Progression.LapFinished
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705667
+    m_Key: Progression.Summary
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705668
+    m_Key: Progression.Requirements
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705669
+    m_Key: Progression.MasteredOnly
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705670
+    m_Key: Progression.BossLocked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705671
+    m_Key: Progression.BossAvailable
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705672
+    m_Key: Progression.BossDefeated
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705673
+    m_Key: Progression.Challenge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705674
+    m_Key: Progression.LevelLine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705675
+    m_Key: Progression.Runner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705676
+    m_Key: Progression.Combat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705677
+    m_Key: Progression.Total
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705678
+    m_Key: Progression.ColMatch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705679
+    m_Key: Progression.ColRunner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705680
+    m_Key: Progression.ColCombat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705681
+    m_Key: Progression.Match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705682
+    m_Key: Progression.Mastered
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705683
+    m_Key: Progression.Completed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705684
+    m_Key: Progression.Unrated
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705685
+    m_Key: Progression.BossStage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705686
+    m_Key: Progression.DevContent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705687
+    m_Key: Progression.UnratedHint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705688
+    m_Key: Progression.PendingHint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705689
+    m_Key: Progression.Lap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705690
+    m_Key: Progression.LastRunner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705691
+    m_Key: Progression.LastCombat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705692
+    m_Key: Progression.Lost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705693
+    m_Key: Progression.HintMastered
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705694
+    m_Key: Progression.HintRunnerMissing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705695
+    m_Key: Progression.HintRunner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705696
+    m_Key: Progression.HintCombatMissing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705697
+    m_Key: Progression.HintCombat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705698
+    m_Key: Progression.HintNewLap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705699
+    m_Key: Campaign.Position
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705700
+    m_Key: Campaign.Level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705701
+    m_Key: Campaign.CompletedTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705702
+    m_Key: Campaign.CompletedBody
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705703
+    m_Key: Campaign.NewLap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705704
+    m_Key: Campaign.Later
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705705
+    m_Key: Campaign.Ok
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705706
+    m_Key: Campaign.Challenge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705707
+    m_Key: Campaign.LapDoneTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705708
+    m_Key: Campaign.LapDoneBody
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705709
+    m_Key: Campaign.BossUnlockedTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705710
+    m_Key: Campaign.BossUnlockedBody
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705711
+    m_Key: Campaign.FinaleTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705712
+    m_Key: Campaign.FinaleBody
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705713
+    m_Key: Campaign.SealName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705714
+    m_Key: Campaign.SealBody
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705715
+    m_Key: Boss.Name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705716
+    m_Key: Rivals.SummaryBoss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705717
+    m_Key: Eval.Pending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705718
+    m_Key: Eval.ThisCombat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705719
+    m_Key: Eval.BossStage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705720
+    m_Key: Eval.Points
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705721
+    m_Key: Eval.Perfect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705722
+    m_Key: Eval.LossInformative
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705723
+    m_Key: Eval.BestOfStage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705724
+    m_Key: Eval.NewRecord
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705725
+    m_Key: Eval.BossNext
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705726
+    m_Key: Eval.BossDefeated
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705727
+    m_Key: Eval.ThisRunner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705728
+    m_Key: Eval.ThisAttempt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705729
+    m_Key: Eval.PositionBests
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705730
+    m_Key: Eval.BestRunner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705731
+    m_Key: Eval.BestCombat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705732
+    m_Key: Eval.Total
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705733
+    m_Key: Eval.JustMastered
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705734
+    m_Key: Eval.LevelCompleted
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705735
+    m_Key: Eval.LapCompleted
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705736
+    m_Key: Eval.ThisRunnerTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705737
+    m_Key: Eval.NextFight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705738
+    m_Key: Eval.NotCampaign
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705739
+    m_Key: Eval.Collected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705740
+    m_Key: Eval.Timing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705741
+    m_Key: Eval.Falls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705742
+    m_Key: Eval.HealthKept
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705743
+    m_Key: Eval.Accuracy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705744
+    m_Key: Eval.Hits
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

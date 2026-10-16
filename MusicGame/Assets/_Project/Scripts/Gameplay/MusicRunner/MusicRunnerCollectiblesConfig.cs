@@ -289,7 +289,10 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
              "Pickups in the running band (≤ normalCollectHeight) always score x1.")]
     [Min(1f)] public float heightBonusMaxMultiplier = 1.5f;
 
-    public PickupHeightDifficulty Heights => difficulty == RunnerDifficulty.Hard ? hardHeights : normalHeights;
+    /// <summary>The campaign level being played may override `difficulty` (CampaignLevelDefinition.runnerDifficulty,
+    /// applied through RunnerDifficultyOverride when the match is assigned/resumed).</summary>
+    public RunnerDifficulty EffectiveDifficulty => RunnerDifficultyOverride.Current ?? difficulty;
+    public PickupHeightDifficulty Heights => EffectiveDifficulty == RunnerDifficulty.Hard ? hardHeights : normalHeights;
 
     /// <summary>x1 up to the bottom of the elevated band, rising linearly to heightBonusMaxMultiplier
     /// at its top (both from GameplayTimeline.ElevatedBand). `heightAboveSurface` = the pickup's

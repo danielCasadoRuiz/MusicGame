@@ -137,6 +137,7 @@ public class FighterMoveController : MonoBehaviour
     public void SetAnimationDriver(IFighterAnimationDriver driver) => _animationDriver = driver ?? new DebugFighterAnimationDriver();
     public void SetMovementDriver(IFighterMovementDriver driver) => _movementDriver = driver ?? new DebugFighterMovementDriver();
     public void SetActor(FighterActor actor) => _actor = actor;
+    public FighterActor Actor => _actor;
 
     /// <summary>The fighter's moves come from its combat profile's move set (falls back to
     /// AppConfig.fightFlow.defaultMoveSet when the profile has none).</summary>

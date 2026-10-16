@@ -219,11 +219,31 @@ public class OpponentSelectionController : MonoBehaviour
         _skipRequested = false;
         if (_skipButton != null) _skipButton.gameObject.SetActive(true);
         FightMusicController.Instance?.Reset();
+        // A final-rival stage has no roulette: the rival (and its special song) is fixed by
+        // CampaignService.PrepareBossStage — straight to the Versus.
+        var session = GameSession.Instance;
+        if (session != null && session.CurrentBossStage >= 0 && session.SelectedOpponent != null)
+        {
+            _root.gameObject.SetActive(false);
+            FightMusicController.Instance?.Lock(session.SelectedOpponentSong, session.BossSongOverride != null ? null : session.SelectedOpponentLevelConfig);
+            ComposerDialogueService.Preload(session.SelectedOpponent.id);
+            // Next frame: every other listener must finish handling OpponentSelection first.
+            StopRoulette();
+            _rouletteRoutine = StartCoroutine(AdvanceNextFrame());
+            return;
+        }
         ResetHighlights();
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
         StopRoulette();
         _rouletteRoutine = StartCoroutine(RunRoulette());
+    }
+
+    private IEnumerator AdvanceNextFrame()
+    {
+        yield return null;
+        _rouletteRoutine = null;
+        FightFlowController.Instance?.RequestState(FightFlowState.VersusIntro);
     }
 
     private void Hide()

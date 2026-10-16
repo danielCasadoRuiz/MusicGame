@@ -17,6 +17,13 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "FightArenaConfig", menuName = "MusicGame/Fight/Arena Config")]
 public class FightArenaConfig : ScriptableObject
 {
+    [Header("Arena environment (visual only — see FightSceneBootstrap.ApplyArenaEnvironment)")]
+    [Tooltip("Default arena for normal campaign matches: floor, decor, background and its own lights. " +
+             "Empty = the grey placeholder floor. Spawns, bounds and the fight camera stay owned by this config / " +
+             "the bootstrap, so any prefab must be authored around the origin within the bounds below. " +
+             "Final-rival stages use FinalBossStage.arenaPrefab instead (same or different prefabs).")]
+    public GameObject defaultEnvironmentPrefab;
+
     [Header("Spawn points")]
     public Vector3 playerSpawnPosition = new Vector3(-1.5f, 1f, 0f);
     public Vector3 opponentSpawnPosition = new Vector3(1.5f, 1f, 0f);

@@ -73,6 +73,51 @@ public class PlayerProgressService : MonoBehaviour
         // on a win), so the victory count can be repaired safely. Rival versions cannot be — none invented.
         if (_data.fightsWon < _data.tierProgress.completedSongs) _data.fightsWon = _data.tierProgress.completedSongs;
         if (_config != null) _data.playerLevel = _config.LevelForXp(_data.xp); // follow the current thresholds
+        InitializeCampaign();
+    }
+
+    // ── Campaign (v5) ────────────────────────────────────────────────────────
+
+    public CampaignProgressData Campaign => _data.campaign;
+    public SongCycleData SongCycle => _data.songCycle;
+
+    /// <summary>First run of v5 code on this profile: places the pre-campaign history deterministically
+    /// (CampaignModel.MigrateLegacy — one won match per position, in order, completed without stars);
+    /// afterwards only re-anchors the position on the current config.</summary>
+    private void InitializeCampaign()
+    {
+        var app = Resources.Load<AppConfigSO>("AppConfig");
+        var campaign = app != null ? app.campaign : null;
+        if (campaign == null || campaign.LevelCount == 0) { Debug.LogWarning("[PlayerProgress] No CampaignConfigSO (AppConfig.campaign) — campaign disabled."); return; }
+        if (!_data.campaign.initialized)
+        {
+            int legacyWins = HasSave ? Mathf.Max(_data.tierProgress.completedSongs, _data.completedSongIds.Count) : 0;
+            CampaignModel.MigrateLegacy(_data.campaign, campaign, legacyWins);
+            _data.campaign.initialized = true;
+            if (HasSave)
+            {
+                Debug.Log($"[PlayerProgress] Campaign set up from the old save: {legacyWins} won match(es) → {_data.campaign.migratedLegacyPositions} " +
+                          $"position(s) completed without stars; resuming at lap {_data.campaign.lap}, " +
+                          $"{(CampaignModel.IsLapFinished(_data.campaign, campaign) ? "lap finished" : CampaignModel.CurrentPositionId(_data.campaign, campaign))}.");
+                // An old pending assignment keeps its song + rival and simply belongs to the current position.
+                if (_data.pendingRun.IsSet && string.IsNullOrEmpty(_data.pendingRun.levelId) && !CampaignModel.IsLapFinished(_data.campaign, campaign))
+                {
+                    _data.pendingRun.lap = _data.campaign.lap;
+                    _data.pendingRun.levelId = _data.campaign.levelId;
+                    _data.pendingRun.matchNumber = _data.campaign.matchNumber;
+                }
+                Save();
+            }
+        }
+        else CampaignModel.Normalize(_data.campaign, campaign);
+    }
+
+    /// <summary>Owned cards among `required` (non-linear collection: each version on its own).</summary>
+    public int CountOwned(IEnumerable<(string id, int level)> required)
+    {
+        int n = 0;
+        foreach (var (id, level) in required) if (IsDefeated(id, level)) n++;
+        return n;
     }
 
     // ── Save ─────────────────────────────────────────────────────────────────

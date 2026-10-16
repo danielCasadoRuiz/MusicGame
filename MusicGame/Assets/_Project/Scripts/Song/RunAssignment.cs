@@ -27,6 +27,8 @@ public static class RunAssignment
         var progress = PlayerProgressService.Instance;
         var session  = GameSession.Instance;
         if (string.IsNullOrEmpty(songId) || session == null) return null;
+        // A finished lap assigns nothing: the player starts a new lap first (Main Menu offers it).
+        if (CampaignService.LapFinished) { Debug.Log("[RunAssignment] Campaign lap finished — no new assignment until a new lap starts."); return null; }
 
         var (opponent, level, tier) = PickOpponent(session);
         var run = new PendingRunData
@@ -36,6 +38,8 @@ public static class RunAssignment
             opponentLevel = level != null ? level.level : 0,
             opponentTier  = tier,
         };
+        CampaignService.Stamp(run);                 // lap + level + match = the scorable position
+        CampaignService.ApplyRunnerDifficulty(run);
         if (progress != null && progress.PendingRun.IsSet && progress.PendingRun.songId != songId)
             Debug.Log($"[RunAssignment] Unfinished assignment '{progress.PendingRun.songId}' abandoned (NOT completed) for '{songId}'.");
         progress?.SetPendingRun(run); // saved BEFORE gameplay starts
@@ -61,6 +65,7 @@ public static class RunAssignment
     public static NextSongStatus ResolveContinue(IReadOnlyList<string> catalogIds, out string songId)
     {
         if (TryRestorePending(catalogIds, out songId)) return NextSongStatus.Found;
+        if (CampaignService.LapFinished) return NextSongStatus.LapFinished;
         var status = SongProgression.ResolveNext(catalogIds, out songId);
         if (status == NextSongStatus.Found) CreatePendingRun(songId);
         return status;
@@ -75,15 +80,18 @@ public static class RunAssignment
         var progress = PlayerProgressService.Instance;
         var session  = GameSession.Instance;
         if (progress == null || session == null || !progress.PendingRun.IsSet) return false;
+        if (progress.PendingRun.IsBoss) return false; // a final-rival stage is resumed from Progression, not by a song flow
 
         var run = progress.PendingRun;
         string problem = null;
         if (catalogIds == null || !Contains(catalogIds, run.songId)) problem = "song not in the playable catalog";
-        else if (progress.IsSongCompleted(run.songId)) problem = "song already completed";
+        else if (progress.SongCycle != null && progress.SongCycle.consumedSongIds.Contains(run.songId)) problem = "song already won in this music cycle";
         else if (!TryResolveOpponent(run, out var opponent, out var level)) problem = $"rival '{run.opponentId}' v{run.opponentLevel} not available";
         else
         {
             session.SetAssignedOpponent(opponent, level, run.opponentTier);
+            if (string.IsNullOrEmpty(run.levelId) && !CampaignService.LapFinished) { CampaignService.Stamp(run); progress.SetPendingRun(run); }
+            CampaignService.ApplyRunnerDifficulty(run);
             ContentDownloadManager.Instance?.PreloadContentAsync(ContentKeys.Enemy(opponent.id));
             songId = run.songId;
             Debug.Log($"[RunAssignment] Resuming pending run: '{run.songId}' vs {opponent.displayName} v{run.opponentLevel} (same song, same rival).");
@@ -112,6 +120,13 @@ public static class RunAssignment
 
     private static (OpponentDefinition, OpponentLevelConfig, int) PickOpponent(GameSession session)
     {
+        // Campaign: the level's rival VERSION, composer by CampaignRivalPicker (debug force still wins).
+        if (CampaignService.Available && string.IsNullOrEmpty(session.DebugForcedOpponentId) && session.DebugForcedTier <= 0)
+        {
+            var cfg = Resources.Load<AppConfigSO>("AppConfig")?.progression;
+            var picked = CampaignService.PickRival(cfg != null ? cfg.recentOpponentCooldown : 2);
+            if (picked.Item1 != null) return picked;
+        }
         int tier = session.EffectiveOpponentTier;
         var opponent = session.PickNextOpponent(Roster);
         var level = opponent != null ? opponent.GetConfigForTier(tier) : null;

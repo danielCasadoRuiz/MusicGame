@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 139b1a4408cd0e04eaff19d931c9cc48, type: 3}
+  m_Name: FinalBossConfig
+  m_EditorClassIdentifier: Assembly-CSharp::FinalBossConfigSO
+  opponent: {fileID: 11400000, guid: 16eba24937d44874390b9ab67e7ce853, type: 2}
+  nameKey: Boss.Name
+  silhouette: {fileID: 0}
+  stages:
+  - stageId: boss_1
+    opponentLevel: 1
+    song: {fileID: 0}
+    arenaPrefab: {fileID: 0}
+  - stageId: boss_2
+    opponentLevel: 2
+    song: {fileID: 0}
+    arenaPrefab: {fileID: 0}
+  - stageId: boss_3
+    opponentLevel: 3
+    song: {fileID: 0}
+    arenaPrefab: {fileID: 0}
+  specialAbilities: []

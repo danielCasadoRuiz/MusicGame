@@ -36,6 +36,13 @@ MonoBehaviour:
     m_SerializedLabels:
     - ComposerDialogues
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0cadc2dba18ea72479761c12ebce048f
+    m_Address: ComposerDialogues_music_being_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1142c14ddfb68e1408d018d01d2c9c5c
     m_Address: ComposerDialogues_mozart_en
     m_ReadOnly: 1
@@ -176,6 +183,13 @@ MonoBehaviour:
     - ComposerDialogues
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7670edb289b87bb4e9e010a50af82023
+    m_Address: ComposerDialogues_music_being_ca
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
+    - Locale-ca
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8190e24c983f43545bbc26afbc44f486
     m_Address: ComposerDialogues_vivaldi_ca
     m_ReadOnly: 1
@@ -196,6 +210,13 @@ MonoBehaviour:
     m_SerializedLabels:
     - ComposerDialogues
     - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a53db399ebd1bfa40802d506c88e745d
+    m_Address: Assets/_Project/Localization/ComposerDialogues/ComposerDialogues_music_being
+      Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - ComposerDialogues
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b20ac5c690454bd42bcb33136819e6fe
     m_Address: ComposerDialogues_handel_ca
