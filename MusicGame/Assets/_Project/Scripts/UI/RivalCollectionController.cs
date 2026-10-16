@@ -79,7 +79,7 @@ public class RivalCollectionController : MonoBehaviour
         UIFactory.Stretch(dim.rectTransform);
         dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
-        var title = UIFactory.CreateText("Title", _root, Loc.Get("Rivals.Title"), 34, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        var title = Loc.Track(UIFactory.CreateText("Title", _root, Loc.Get("Rivals.Title"), 34, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "Rivals.Title");
         UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -50f), new Vector2(900f, 50f));
         title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
 
@@ -98,7 +98,7 @@ public class RivalCollectionController : MonoBehaviour
         layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         layout.constraintCount = Columns;
 
-        var back = UIFactory.CreateButton("BackButton", _root, Loc.Get("Rivals.Back"), out var backLabel);
+        var back = UIFactory.CreateButton("BackButton", _root, Loc.Get("Rivals.Back"), out var backLabel); Loc.Track(backLabel, "Rivals.Back");
         UIFactory.SetBox(back.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 40f), new Vector2(240f, 52f));
         back.onClick.AddListener(Close);
         back.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
@@ -127,7 +127,7 @@ public class RivalCollectionController : MonoBehaviour
         row.childAlignment = TextAnchor.MiddleCenter;
         row.childControlWidth = row.childControlHeight = false;
         row.childForceExpandWidth = row.childForceExpandHeight = false;
-        var closeDetail = UIFactory.CreateButton("CloseDetail", panel.rectTransform, Loc.Get("Rivals.Back"), out var closeLabel);
+        var closeDetail = UIFactory.CreateButton("CloseDetail", panel.rectTransform, Loc.Get("Rivals.Back"), out var closeLabel); Loc.Track(closeLabel, "Rivals.Back");
         UIFactory.SetBox(closeDetail.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 20f), new Vector2(220f, 48f));
         closeDetail.onClick.AddListener(() => _detail.gameObject.SetActive(false));
         closeDetail.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
@@ -180,7 +180,7 @@ public class RivalCollectionController : MonoBehaviour
             cell.onClick.AddListener(() => OpenDetail(r));
             _spawned.Add(cell.gameObject);
         }
-        _summaryText.text = Loc.Get("Rivals.Summary", found.ToString(), total.ToString());
+        Loc.Set(_summaryText, "Rivals.Summary", found.ToString(), total.ToString());
     }
 
     private void OpenDetail(OpponentDefinition rival)

@@ -36,29 +36,53 @@ public class FightFlowConfig : ScriptableObject
              "Main Menu) instead of stopping abruptly. 0 = immediate stop.")]
     [Min(0f)] public float combatMusicFadeOutSeconds = 1.5f;
 
-    [Header("Versus")]
-    [Tooltip("How long the Versus screen holds when there is NO composer line to show (dialogues " +
-             "disabled, missing content, load error/timeout). With a line, the player's own press " +
-             "(or versusDialogueAutoContinueSeconds) advances instead — this timer never cuts a line.")]
+    [Header("Versus (in-arena presentation — VersusScreenController)")]
+    [Tooltip("LEGACY — no longer read. The Versus now lasts as long as the camera pass " +
+             "(FightCameraConfig.introTravellingSeconds) and the composer's Intro line + reading hold, whichever ends last.")]
     public float versusDuration = 2.5f;
+    [Tooltip("How dark the Versus card dims the arena (0 = fully transparent, 1 = opaque). The arena and " +
+             "both fighters stay visible underneath.")]
+    [Range(0f, 1f)] public float versusBackdropAlpha = 0.15f;
+    [Tooltip("Seconds the Versus card (names, portraits, VS) stays fully visible before fading.")]
+    [Min(0f)] public float versusCardHoldSeconds = 1.2f;
+    [Tooltip("Fade-out of the Versus card. The composer's bubble appears once it is gone. 0 = instant.")]
+    [Min(0f)] public float versusCardFadeSeconds = 0.4f;
+    [Tooltip("Max seconds the presentation waits for the rival's avatar to be on stage " +
+             "(FightSceneBootstrap.OpponentVisualReady) before starting the camera pass anyway.")]
+    [Min(0f)] public float presentationReadyTimeoutSeconds = 4f;
 
-    [Header("Composer dialogues (Versus intro + match result — ComposerDialoguePresentation)")]
-    [Tooltip("Master switch. Off = Versus behaves as before (versusDuration) and the result screen " +
-             "enables its buttons immediately.")]
+    [Header("Composer dialogues (speech bubble — ComposerDialoguePresentation)")]
+    [Tooltip("Master switch. Off = no bubble: the Versus is the camera pass only and the result screen " +
+             "opens right after the match is decided.")]
     public bool composerDialoguesEnabled = true;
     [Tooltip("Typewriter speed. 0 shows the whole line at once.")]
     [Min(0f)] public float dialogueCharactersPerSecond = 40f;
     [Tooltip("Extra wait after . ! ? , ; : … while typing. 0 = none.")]
     [Min(0f)] public float dialoguePunctuationPauseSeconds = 0.12f;
-    [Tooltip("A press can only CONTINUE this long after the line appeared (a press while typing " +
-             "always just completes the line).")]
-    [Min(0f)] public float dialogueMinContinueDelaySeconds = 0.6f;
-    [Tooltip("Versus only: continue on its own this many seconds after the line is complete. " +
-             "0 = wait for the player's press. The result screen always waits for a press.")]
-    [Min(0f)] public float versusDialogueAutoContinueSeconds = 0f;
+    [Tooltip("Reading time AFTER the line is fully revealed, before the flow continues on its own " +
+             "(Intro: to the countdown, once the camera pass is also done; farewell: to the result screen). " +
+             "Restarts when the language changes mid-read. 0 = continue as soon as it is revealed.")]
+    [Min(0f)] public float dialogueReadHoldSeconds = 2f;
+    [Tooltip("Fade-out of the bubble (when Fighting starts, and before the result screen). 0 = instant.")]
+    [Min(0f)] public float dialogueBubbleFadeSeconds = 0.35f;
     [Tooltip("Max seconds to wait for the composer's table (it may need a download). Past it the " +
-             "screen continues without dialogue. 0 = no limit (not recommended).")]
+             "presentation continues without dialogue. 0 = no limit (not recommended).")]
     [Min(0f)] public float dialogueLoadTimeoutSeconds = 3f;
+    [Tooltip("Post-match: seconds the arena stays on screen before the farewell bubble appears.")]
+    [Min(0f)] public float farewellLeadInSeconds = 0.5f;
+
+    [Header("Speech bubble layout (canvas units at 1920x1080 reference)")]
+    [Min(200f)] public float bubbleMaxWidth = 640f;
+    [Tooltip("Safety margin to every screen edge.")]
+    [Min(0f)] public float bubbleScreenMargin = 32f;
+    [Tooltip("Band at the top kept free for the fight HUD (health bars, timer).")]
+    [Min(0f)] public float bubbleTopReserved = 150f;
+    [Tooltip("Gap between the composer's head and the bubble's bottom edge.")]
+    [Min(0f)] public float bubbleGapAboveHead = 26f;
+    [Tooltip("Central area kept free during ROUND n / 3-2-1 / FIGHT! (the bubble moves above it).")]
+    public Vector2 bubbleCountdownBand = new Vector2(760f, 240f);
+    [Tooltip("Metres above the avatar's Head bone the bubble points at.")]
+    [Min(0f)] public float bubbleAnchorAboveHead = 0.28f;
 
     [Header("Round Intro / Countdown")]
     [Tooltip("How long \"ROUND {n}\" is shown before the 3-2-1 countdown starts.")]

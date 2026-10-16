@@ -97,7 +97,7 @@ public class CountdownController : MonoBehaviour
             if (tickDuration > 0f) yield return new WaitForSeconds(tickDuration);
         }
 
-        _numberText.text = Loc.Get("Countdown.Go");
+        Loc.Set(_numberText, "Countdown.Go");
         yield return new WaitForSeconds(GoHoldSeconds);
 
         _root.gameObject.SetActive(false);

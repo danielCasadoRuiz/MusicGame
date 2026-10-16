@@ -130,7 +130,12 @@ public class FightMatchController : MonoBehaviour
         };
         // This controller lives in the persistent UI scene: leaving Fight by ANY path must end the
         // match here too, or the round timer keeps running and could resolve a match nobody plays.
-        _onGameFlowChanged = e => { if (e.Previous == GameFlowState.Fight && e.Current != GameFlowState.Fight) AbortMatch("left Fight"); };
+        _onGameFlowChanged = e =>
+        {
+            if (e.Previous != GameFlowState.Fight || e.Current == GameFlowState.Fight) return;
+            _pendingResultState = null; // a farewell interrupted by leaving Fight never opens a result later
+            AbortMatch("left Fight");
+        };
         EventBus.Subscribe(_onFlowChanged);
         EventBus.Subscribe(_onKO);
         EventBus.Subscribe(_onGameFlowChanged);
@@ -175,6 +180,7 @@ public class FightMatchController : MonoBehaviour
     /// </summary>
     private void BeginMatch()
     {
+        _pendingResultState = null;
         PlayerRoundsWon = 0;
         OpponentRoundsWon = 0;
         MatchPointDifferential = 0f;
@@ -363,7 +369,7 @@ public class FightMatchController : MonoBehaviour
             int newLevel = victory.NewRank + 1;
 
             EventBus.Publish(BuildMatchEndedEvent(FighterSide.Player, resolution, oldLevel, newLevel));
-            FightFlowController.Instance?.RequestState(FightFlowState.MatchWon);
+            BeginFarewell(FightFlowState.MatchWon);
         }
         else
         {
@@ -372,8 +378,34 @@ public class FightMatchController : MonoBehaviour
             int level = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.MasteryRank + 1 : 1;
 
             EventBus.Publish(BuildMatchEndedEvent(FighterSide.Opponent, resolution, level, level));
-            FightFlowController.Instance?.RequestState(FightFlowState.MatchLost);
+            BeginFarewell(FightFlowState.MatchLost);
         }
+    }
+
+    // ── Farewell (decided match → composer line in the arena → result screen) ──────
+
+    /// <summary>MatchWon/MatchLost decided above, held back while the composer's farewell plays.
+    /// Null outside FightFlowState.MatchFarewell.</summary>
+    private FightFlowState? _pendingResultState;
+
+    /// <summary>The result is final here (event published, progression saved) — the farewell only
+    /// DELAYS the result screen; it never re-decides or re-publishes anything.</summary>
+    private void BeginFarewell(FightFlowState resultState)
+    {
+        _pendingResultState = resultState;
+        FightFlowController.Instance?.RequestState(FightFlowState.MatchFarewell);
+    }
+
+    /// <summary>The farewell presentation is over (finished, skipped, or nothing to show) — opens the
+    /// result screen. The ONE exit of MatchFarewell; repeated calls are ignored.</summary>
+    public void NotifyFarewellComplete()
+    {
+        if (_pendingResultState == null) return;
+        var flow = FightFlowController.Instance;
+        if (flow == null || flow.CurrentState != FightFlowState.MatchFarewell) { _pendingResultState = null; return; }
+        var next = _pendingResultState.Value;
+        _pendingResultState = null;
+        flow.RequestState(next);
     }
 
     /// <summary>

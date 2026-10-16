@@ -147,7 +147,7 @@ public class FightController : MonoBehaviour
         var mode = FightCameraController.Instance != null ? FightCameraController.Instance.ViewMode : CameraViewMode.ThirdPerson;
         if (_shownCameraMode == mode || _cameraToggleLabel == null) return;
         _shownCameraMode = mode;
-        _cameraToggleLabel.text = Loc.Get(mode == CameraViewMode.ThirdPerson ? "Pause.ThirdPerson" : "Pause.FirstPerson");
+        Loc.Set(_cameraToggleLabel, mode == CameraViewMode.ThirdPerson ? "Pause.ThirdPerson" : "Pause.FirstPerson");
     }
 
     private void OnEnable()
@@ -163,6 +163,9 @@ public class FightController : MonoBehaviour
             // class doc. Only the interactive controls wait for the real Fighting state.
             if (e.Current == FightFlowState.RoundIntro) ShowHud();
             else if (e.Current == FightFlowState.Fighting) ActivateControls();
+            // Fight Again re-enters the in-arena Versus with the HUD still up from the last match:
+            // hide it again so the presentation (card, camera pass, bubble) is clean.
+            else if (e.Current == FightFlowState.VersusIntro) HideHudForPresentation();
         };
         EventBus.Subscribe(_onFlowStateChanged);
         EventBus.Subscribe(_onFightFlowChanged);
@@ -180,10 +183,12 @@ public class FightController : MonoBehaviour
         if (!_active) return;
 
         var kb = Keyboard.current;
-        // Esc pauses only while the match is being played (not on the result screen).
+        // Esc pauses only while rounds are being played. In VersusIntro / MatchFarewell ESC belongs to
+        // the presentation's Skip (FightPresentationSkip) — never both; on the result screen it does nothing.
         var fightState = FightFlowController.Instance != null ? FightFlowController.Instance.CurrentState : FightFlowState.Fighting;
-        bool matchOver = fightState == FightFlowState.MatchWon || fightState == FightFlowState.MatchLost;
-        if (kb != null && kb.escapeKey.wasPressedThisFrame && (!matchOver || _paused))
+        bool pausable = fightState == FightFlowState.RoundIntro || fightState == FightFlowState.Countdown ||
+                        fightState == FightFlowState.Fighting || fightState == FightFlowState.RoundEnd;
+        if (kb != null && kb.escapeKey.wasPressedThisFrame && (pausable || _paused))
             SetPaused(!_paused);
         // V = the same First/Third Person toggle as the HUD button (one method: FightCameraController.ToggleView).
         if (kb != null && kb.vKey.wasPressedThisFrame && !_paused)
@@ -249,6 +254,14 @@ public class FightController : MonoBehaviour
         _root.SetAsLastSibling(); // RoundIntroController re-asserts its OWN root on top of this right after — see its own doc
     }
 
+    private void HideHudForPresentation()
+    {
+        if (_paused) SetPaused(false);
+        _active = false;
+        if (_root != null) _root.gameObject.SetActive(false);
+        if (_mobileControlsRoot != null) _mobileControlsRoot.gameObject.SetActive(false);
+    }
+
     // The ONE thing that still waits for the real FightFlowState.Fighting — see class doc.
     private void ActivateControls()
     {
@@ -296,17 +309,17 @@ public class FightController : MonoBehaviour
         // every other prefab-backed screen's labels. OpponentName gets overwritten by the very next
         // PopulateInfo() call regardless, but re-setting it here avoids a stale-locale flash before
         // that first call.
-        view.playerNameText.text      = Loc.Get("Fight.PlayerName");
-        view.opponentNameText.text    = Loc.Get("Fight.RivalUnknown");
-        view.pauseTitleText.text      = Loc.Get("Fight.Paused");
-        view.pauseButtonLabel.text    = Loc.Get("Fight.Pause");
-        view.resumeButtonLabel.text   = Loc.Get("Fight.Resume");
-        view.mainMenuButtonLabel.text = Loc.Get("Fight.MainMenu");
+        Loc.Set(view.playerNameText, "Fight.PlayerName");
+        Loc.Set(view.opponentNameText, "Fight.RivalUnknown");
+        Loc.Set(view.pauseTitleText, "Fight.Paused");
+        Loc.Set(view.pauseButtonLabel, "Fight.Pause");
+        Loc.Set(view.resumeButtonLabel, "Fight.Resume");
+        Loc.Set(view.mainMenuButtonLabel, "Fight.MainMenu");
 
         _mobileControlsRoot = view.mobileControlsRoot.GetComponent<RectTransform>();
         WireMobileControls(view.joystickBackground, view.joystickHandle, view.punchButton, view.kickButton);
-        if (view.punchButtonLabel != null) view.punchButtonLabel.text = Loc.Get("Mobile.Punch");
-        if (view.kickButtonLabel  != null) view.kickButtonLabel.text  = Loc.Get("Mobile.Kick");
+        if (view.punchButtonLabel != null) Loc.Set(view.punchButtonLabel, "Mobile.Punch");
+        if (view.kickButtonLabel  != null) Loc.Set(view.kickButtonLabel, "Mobile.Kick");
         _mobileControlsRoot.gameObject.SetActive(false);
 
         _pausePanel.gameObject.SetActive(false);
@@ -378,7 +391,7 @@ public class FightController : MonoBehaviour
         UIFactory.SetBox(button.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f),
             new Vector2(xOffset, 40f), new Vector2(size, size));
 
-        var label = UIFactory.CreateText("Label", button.rectTransform, Loc.Get(locKey), 16, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        var label = Loc.Track(UIFactory.CreateText("Label", button.rectTransform, Loc.Get(locKey), 16, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), locKey);
         UIFactory.Stretch(label.rectTransform);
 
         return button.gameObject;
@@ -392,7 +405,7 @@ public class FightController : MonoBehaviour
         topBar.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
 
         // Player — left.
-        _playerNameText = UIFactory.CreateText("PlayerName", topBar.rectTransform, Loc.Get("Fight.PlayerName"), 18, Color.white, TextAlignmentOptions.TopLeft, FontStyles.Bold);
+        _playerNameText = Loc.Track(UIFactory.CreateText("PlayerName", topBar.rectTransform, Loc.Get("Fight.PlayerName"), 18, Color.white, TextAlignmentOptions.TopLeft, FontStyles.Bold), "Fight.PlayerName");
         UIFactory.SetBox(_playerNameText.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
             new Vector2(20f, -12f), new Vector2(320f, 24f));
         _playerNameText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Display);
@@ -413,7 +426,7 @@ public class FightController : MonoBehaviour
         // Opponent — right (leaves room for the pause button at the far right). Same key as the
         // "unknown style" case in PopulateInfo() — this default is only ever visible for a moment
         // before the first PopulateInfo() call overwrites it, so it doesn't earn its own key.
-        _opponentNameText = UIFactory.CreateText("OpponentName", topBar.rectTransform, Loc.Get("Fight.RivalUnknown"), 18, Color.white, TextAlignmentOptions.TopRight, FontStyles.Bold);
+        _opponentNameText = Loc.Track(UIFactory.CreateText("OpponentName", topBar.rectTransform, Loc.Get("Fight.RivalUnknown"), 18, Color.white, TextAlignmentOptions.TopRight, FontStyles.Bold), "Fight.RivalUnknown");
         UIFactory.SetBox(_opponentNameText.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
             new Vector2(-90f, -12f), new Vector2(320f, 24f));
         _opponentNameText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Display);
@@ -439,7 +452,7 @@ public class FightController : MonoBehaviour
         _timerText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
 
         // Pause — far right.
-        var pauseBtn = UIFactory.CreateButton("PauseButton", topBar.rectTransform, Loc.Get("Fight.Pause"), out var pauseLabel);
+        var pauseBtn = UIFactory.CreateButton("PauseButton", topBar.rectTransform, Loc.Get("Fight.Pause"), out var pauseLabel); Loc.Track(pauseLabel, "Fight.Pause");
         pauseLabel.fontSize = 12;
         UIFactory.SetBox(pauseBtn.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
             new Vector2(-15f, -15f), new Vector2(60f, 60f));
@@ -457,12 +470,12 @@ public class FightController : MonoBehaviour
         UIFactory.Stretch(dim.rectTransform);
         dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
-        var title = UIFactory.CreateText("Title", _pausePanel, Loc.Get("Fight.Paused"), 30, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        var title = Loc.Track(UIFactory.CreateText("Title", _pausePanel, Loc.Get("Fight.Paused"), 30, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "Fight.Paused");
         UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, 60f), new Vector2(400f, 50f));
         title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
 
-        var resumeBtn = UIFactory.CreateButton("ResumeButton", _pausePanel, Loc.Get("Fight.Resume"), out var resumeLabel);
+        var resumeBtn = UIFactory.CreateButton("ResumeButton", _pausePanel, Loc.Get("Fight.Resume"), out var resumeLabel); Loc.Track(resumeLabel, "Fight.Resume");
         UIFactory.SetBox(resumeBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, -10f), new Vector2(220f, 48f));
         resumeBtn.onClick.AddListener(() => SetPaused(false));
@@ -471,7 +484,7 @@ public class FightController : MonoBehaviour
 
         // The equivalent of the old top-level "Back" button — moved into the pause menu, since it's
         // an exit action, not something that belongs permanently on-screen during a match.
-        var mainMenuBtn = UIFactory.CreateButton("MainMenuButton", _pausePanel, Loc.Get("Fight.MainMenu"), out var mainMenuLabel);
+        var mainMenuBtn = UIFactory.CreateButton("MainMenuButton", _pausePanel, Loc.Get("Fight.MainMenu"), out var mainMenuLabel); Loc.Track(mainMenuLabel, "Fight.MainMenu");
         UIFactory.SetBox(mainMenuBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, -70f), new Vector2(220f, 48f));
         mainMenuBtn.onClick.AddListener(OnMainMenuClicked);

@@ -46,6 +46,12 @@ public class MainMenuController : MonoBehaviour
 
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
 
+    // Language selector (Settings) — built at runtime on BOTH the prefab and fallback panels, like the
+    // Rivals button, so regenerating MainMenu.prefab never removes it. See LanguagePreference.
+    private RectTransform _languageRow;
+    private readonly System.Collections.Generic.List<(string mode, Button button, Outline outline)> _languageOptions = new();
+    private System.Action _onLanguageRefreshed, _onLanguageModeChanged;
+
     private void Awake()
     {
         var registry = FindFirstObjectByType<UIRegistry>();
@@ -61,6 +67,12 @@ public class MainMenuController : MonoBehaviour
             else if (e.Previous == GameFlowState.MainMenu) Hide();
         };
         EventBus.Subscribe(_onFlowStateChanged);
+        // Language changed: texts tracked by Loc are already rebuilt; refresh the composite profile
+        // line / status and the selector's highlight (no rebuild, the panel stays open).
+        _onLanguageRefreshed = () => { if (_root != null && _root.gameObject.activeSelf) RefreshProgressUI(); RefreshLanguageSelection(); };
+        _onLanguageModeChanged = RefreshLanguageSelection;
+        Loc.Refreshed += _onLanguageRefreshed;
+        LanguagePreference.ModeChanged += _onLanguageModeChanged;
 
         // Same UI-Scene-loads-asynchronously race as IntroScreenController — catch up once instead
         // of only reacting to the NEXT change, which might never come.
@@ -71,6 +83,8 @@ public class MainMenuController : MonoBehaviour
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onFlowStateChanged);
+        Loc.Refreshed -= _onLanguageRefreshed;
+        LanguagePreference.ModeChanged -= _onLanguageModeChanged;
     }
 
     // ── Prefab path — see MainMenuView's own doc ─────────────────────────────────
@@ -94,7 +108,7 @@ public class MainMenuController : MonoBehaviour
         var rivalsRt = rivals.GetComponent<RectTransform>();
         rivalsRt.anchoredPosition += new Vector2(0f, rivalsRt.sizeDelta.y + 18f) * 0.5f + new Vector2(rivalsRt.sizeDelta.x * 0.55f, 0f);
         var rivalsLabel = rivals.GetComponentInChildren<TextMeshProUGUI>();
-        if (rivalsLabel != null) rivalsLabel.text = Loc.Get("MainMenu.Rivals");
+        if (rivalsLabel != null) Loc.Set(rivalsLabel, "MainMenu.Rivals");
         BuildProfileText(view.root.GetComponent<RectTransform>());
         BuildMenuStatus(view.root.GetComponent<RectTransform>());
         _buttonStack.AddRange(new[] { view.playButton.GetComponent<RectTransform>(), rivalsRt,
@@ -109,13 +123,14 @@ public class MainMenuController : MonoBehaviour
 
         // Baked once at Editor-bake time — re-apply from the current locale here instead of
         // trusting the prefab's value, same reasoning as GameplayHUD/PauseController's own labels.
-        view.titleText.text          = Loc.Get("MainMenu.Title");
-        view.playButtonLabel.text    = Loc.Get("MainMenu.Play");
-        view.settingsButtonLabel.text = Loc.Get("MainMenu.Settings");
-        view.quitButtonLabel.text    = Loc.Get("MainMenu.Quit");
-        view.settingsTitleText.text  = Loc.Get("Settings.Title");
-        view.volumeLabelText.text    = Loc.Get("Settings.Volume");
-        view.closeButtonLabel.text   = Loc.Get("Settings.Close");
+        Loc.Set(view.titleText, "MainMenu.Title");
+        Loc.Set(view.playButtonLabel, "MainMenu.Play");
+        Loc.Set(view.settingsButtonLabel, "MainMenu.Settings");
+        Loc.Set(view.quitButtonLabel, "MainMenu.Quit");
+        Loc.Set(view.settingsTitleText, "Settings.Title");
+        Loc.Set(view.volumeLabelText, "Settings.Volume");
+        Loc.Set(view.closeButtonLabel, "Settings.Close");
+        BuildLanguageRow();
 
         // QUIT is a desktop-only action — never a primary action on mobile (section 7 of the plan).
         _quitButton.gameObject.SetActive(!PlatformService.IsMobile);
@@ -137,7 +152,7 @@ public class MainMenuController : MonoBehaviour
         UIFactory.Stretch(dim.rectTransform);
         dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
-        var title = UIFactory.CreateText("Title", _root, Loc.Get("MainMenu.Title"), 36, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        var title = Loc.Track(UIFactory.CreateText("Title", _root, Loc.Get("MainMenu.Title"), 36, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "MainMenu.Title");
         UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, -100f), new Vector2(900f, 60f));
         title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
@@ -151,7 +166,7 @@ public class MainMenuController : MonoBehaviour
         float btnW = 260f, btnH = 54f, gap = 18f;
         float y = -20f;
 
-        var playBtn = UIFactory.CreateButton("PlayButton", _root, Loc.Get("MainMenu.Play"), out var playLabel);
+        var playBtn = UIFactory.CreateButton("PlayButton", _root, Loc.Get("MainMenu.Play"), out var playLabel); Loc.Track(playLabel, "MainMenu.Play");
         UIFactory.SetBox(playBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, y), new Vector2(btnW, btnH));
         playBtn.onClick.AddListener(OnPlayClicked);
@@ -161,7 +176,7 @@ public class MainMenuController : MonoBehaviour
         y -= btnH + gap;
 
 
-        var rivalsBtn = UIFactory.CreateButton("RivalsButton", _root, Loc.Get("MainMenu.Rivals"), out var rivalsLabel);
+        var rivalsBtn = UIFactory.CreateButton("RivalsButton", _root, Loc.Get("MainMenu.Rivals"), out var rivalsLabel); Loc.Track(rivalsLabel, "MainMenu.Rivals");
         UIFactory.SetBox(rivalsBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, y), new Vector2(btnW, btnH));
         rivalsBtn.onClick.AddListener(OnRivalsClicked);
@@ -169,7 +184,7 @@ public class MainMenuController : MonoBehaviour
         rivalsLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
         y -= btnH + gap;
 
-        var settingsBtn = UIFactory.CreateButton("SettingsButton", _root, Loc.Get("MainMenu.Settings"), out var settingsLabel);
+        var settingsBtn = UIFactory.CreateButton("SettingsButton", _root, Loc.Get("MainMenu.Settings"), out var settingsLabel); Loc.Track(settingsLabel, "MainMenu.Settings");
         UIFactory.SetBox(settingsBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, y), new Vector2(btnW, btnH));
         settingsBtn.onClick.AddListener(OnSettingsClicked);
@@ -177,7 +192,7 @@ public class MainMenuController : MonoBehaviour
         settingsLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
         y -= btnH + gap;
 
-        var quitBtn = UIFactory.CreateButton("QuitButton", _root, Loc.Get("MainMenu.Quit"), out var quitLabel);
+        var quitBtn = UIFactory.CreateButton("QuitButton", _root, Loc.Get("MainMenu.Quit"), out var quitLabel); Loc.Track(quitLabel, "MainMenu.Quit");
         UIFactory.SetBox(quitBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, y), new Vector2(btnW, btnH));
         quitBtn.onClick.AddListener(OnQuitClicked);
@@ -237,7 +252,7 @@ public class MainMenuController : MonoBehaviour
     {
         var progress = PlayerProgressService.Instance;
         bool hasSave = progress != null && progress.HasSave;
-        if (_playLabel != null) _playLabel.text = Loc.Get(hasSave ? "MainMenu.Continue" : "MainMenu.Play");
+        if (_playLabel != null) Loc.Set(_playLabel, hasSave ? "MainMenu.Continue" : "MainMenu.Play");
         LayoutButtons();
         SetMenuStatus(hasSave && SongProgression.CatalogComplete ? Loc.Get("MainMenu.CatalogComplete") : null);
         if (_profileText == null) return;
@@ -258,12 +273,12 @@ public class MainMenuController : MonoBehaviour
         panelBg.color = new Color(0.05f, 0.05f, 0.05f, 0.97f);
         _settingsPanel.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
 
-        var settingsTitle = UIFactory.CreateText("Title", _settingsPanel, Loc.Get("Settings.Title"), 20, Color.white);
+        var settingsTitle = Loc.Track(UIFactory.CreateText("Title", _settingsPanel, Loc.Get("Settings.Title"), 20, Color.white), "Settings.Title");
         UIFactory.SetBox(settingsTitle.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, -16f), new Vector2(380f, 30f));
         settingsTitle.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Display);
 
-        var volumeLabel = UIFactory.CreateText("VolumeLabel", _settingsPanel, Loc.Get("Settings.Volume"), 14, new Color(0.8f, 0.8f, 0.8f), TextAlignmentOptions.Left);
+        var volumeLabel = Loc.Track(UIFactory.CreateText("VolumeLabel", _settingsPanel, Loc.Get("Settings.Volume"), 14, new Color(0.8f, 0.8f, 0.8f), TextAlignmentOptions.Left), "Settings.Volume");
         UIFactory.SetBox(volumeLabel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, 20f), new Vector2(360f, 24f));
         volumeLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
@@ -276,14 +291,77 @@ public class MainMenuController : MonoBehaviour
         _volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
         _volumeSlider.fillRect.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Accent);
 
-        var closeBtn = UIFactory.CreateButton("CloseButton", _settingsPanel, Loc.Get("Settings.Close"), out var closeLabel);
+        var closeBtn = UIFactory.CreateButton("CloseButton", _settingsPanel, Loc.Get("Settings.Close"), out var closeLabel); Loc.Track(closeLabel, "Settings.Close");
         UIFactory.SetBox(closeBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
             new Vector2(0f, 20f), new Vector2(140f, 40f));
         closeBtn.onClick.AddListener(() => _settingsPanel.gameObject.SetActive(false));
         closeBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
         closeLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
+        BuildLanguageRow();
         _settingsPanel.gameObject.SetActive(false);
+    }
+
+    // ── Language selector ─────────────────────────────────────────────────────────
+
+    private const float LanguageRowExtraHeight = 110f;
+
+    /// <summary>"Language" label + one button per option (Automatic + every available Locale) under the
+    /// volume slider. The panel grows by LanguageRowExtraHeight: centre-anchored items stay put, the
+    /// title rises and Close drops with the panel's edges.</summary>
+    private void BuildLanguageRow()
+    {
+        if (_settingsPanel == null || _languageRow != null) return;
+        _settingsPanel.sizeDelta += new Vector2(0f, LanguageRowExtraHeight);
+
+        _languageRow = UIFactory.CreateRect("LanguageRow", _settingsPanel);
+        UIFactory.SetBox(_languageRow, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -62f), new Vector2(380f, 74f));
+        var label = Loc.Track(UIFactory.CreateText("LanguageLabel", _languageRow, Loc.Get("Settings.Language"), 14,
+                                                   new Color(0.8f, 0.8f, 0.8f), TextAlignmentOptions.Left), "Settings.Language");
+        UIFactory.SetBox(label.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, 0f), new Vector2(360f, 24f));
+        label.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
+
+        // The options come from the project's Locales — wait for Localization if it is still starting.
+        var init = UnityEngine.Localization.Settings.LocalizationSettings.InitializationOperation;
+        if (init.IsDone) BuildLanguageButtons();
+        else init.Completed += _ => { if (this != null) BuildLanguageButtons(); };
+    }
+
+    private void BuildLanguageButtons()
+    {
+        if (_languageRow == null || _languageOptions.Count > 0) return;
+        var modes = new System.Collections.Generic.List<string> { LanguagePreference.Auto };
+        modes.AddRange(LanguagePreference.AvailableCodes());
+        const float width = 360f, gap = 10f;
+        float w = (width - gap * (modes.Count - 1)) / modes.Count;
+        for (int i = 0; i < modes.Count; i++)
+        {
+            string mode = modes[i];
+            var btn = UIFactory.CreateButton("Language_" + mode, _languageRow, LanguagePreference.DisplayName(mode), out var btnLabel);
+            if (mode == LanguagePreference.Auto) Loc.Track(btnLabel, "Settings.LanguageAuto"); // "Català"/"English" are proper names
+            UIFactory.SetBox(btn.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 0f),
+                new Vector2(-width * 0.5f + i * (w + gap), 0f), new Vector2(w, 40f));
+            btn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
+            btnLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+            var outline = btn.gameObject.AddComponent<Outline>();
+            outline.effectColor = new Color(1f, 0.82f, 0.35f, 1f);
+            outline.effectDistance = new Vector2(3f, -3f);
+            btn.onClick.AddListener(() => LanguagePreference.SetMode(mode));
+            _languageOptions.Add((mode, btn, outline));
+        }
+        RefreshLanguageSelection();
+    }
+
+    /// <summary>Highlights the CURRENT preference (Automatic stays highlighted even though it resolved
+    /// to a concrete language).</summary>
+    private void RefreshLanguageSelection()
+    {
+        if (_languageOptions.Count == 0) return;
+        string mode = LanguagePreference.Mode;
+        foreach (var o in _languageOptions)
+            if (o.outline != null) o.outline.enabled = o.mode == mode;
     }
 
     // ── Show / hide ─────────────────────────────────────────────────────────────
@@ -357,7 +435,11 @@ public class MainMenuController : MonoBehaviour
 
     private void OnRivalsClicked() => RivalCollectionController.Instance?.Open();
 
-    private void OnSettingsClicked() => _settingsPanel.gameObject.SetActive(true);
+    private void OnSettingsClicked()
+    {
+        _settingsPanel.gameObject.SetActive(true);
+        RefreshLanguageSelection();
+    }
 
     private void OnQuitClicked()
     {

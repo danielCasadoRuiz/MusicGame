@@ -77,7 +77,7 @@ public class IntroScreenController : MonoBehaviour
         _titleText   = view.titleText;
         view.skipButton.onClick.AddListener(RequestSkip);
 
-        _titleText.text = Loc.Get("Intro.Title");
+        Loc.Set(_titleText, "Intro.Title");
         _canvasGroup.alpha = 0f;
         _root.gameObject.SetActive(false);
     }
@@ -103,7 +103,7 @@ public class IntroScreenController : MonoBehaviour
         skipButton.transition = Selectable.Transition.None;
         skipButton.onClick.AddListener(RequestSkip);
 
-        _titleText = UIFactory.CreateText("Title", _root, Loc.Get("Intro.Title"), 42, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        _titleText = Loc.Track(UIFactory.CreateText("Title", _root, Loc.Get("Intro.Title"), 42, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "Intro.Title");
         UIFactory.SetBox(_titleText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             Vector2.zero, new Vector2(1000f, 80f));
         _titleText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
@@ -117,7 +117,7 @@ public class IntroScreenController : MonoBehaviour
     {
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
-        _titleText.text = Loc.Get("Intro.Title");
+        Loc.Set(_titleText, "Intro.Title");
 
         if (_sequence != null) StopCoroutine(_sequence);
         _skipRequested = false;

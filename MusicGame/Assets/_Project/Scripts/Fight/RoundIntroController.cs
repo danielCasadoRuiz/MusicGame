@@ -145,7 +145,7 @@ public class RoundIntroController : MonoBehaviour
 
         SetOverlayAlpha(overlayAlpha); // instant — held flat through ROUND n/3/2/1, only fades during FIGHT! below
 
-        _text.text = Loc.Get("Fight.RoundLabel", _round.ToString());
+        Loc.Set(_text, "Fight.RoundLabel", _round.ToString());
         yield return new WaitForSeconds(roundIntroDuration);
 
         FightFlowController.Instance?.RequestState(FightFlowState.Countdown);
@@ -156,7 +156,7 @@ public class RoundIntroController : MonoBehaviour
             yield return new WaitForSeconds(countdownStep);
         }
 
-        _text.text = Loc.Get("Fight.Banner");
+        Loc.Set(_text, "Fight.Banner");
 
         // The overlay's ENTIRE fade-out happens here, spread across the exact same window "FIGHT!" is
         // shown for — by the time this loop ends, the overlay is already fully transparent, so hiding

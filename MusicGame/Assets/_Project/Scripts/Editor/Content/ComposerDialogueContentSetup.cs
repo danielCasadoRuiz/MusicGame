@@ -316,7 +316,9 @@ public static class ComposerDialogueContentSetup
             int dialogueLeft = ui.SharedData.Entries.Count(e => e.Key != null && e.Key.Contains(".Dialogue."));
             int bios = ui.SharedData.Entries.Count(e => e.Key != null && e.Key.StartsWith("Composer.") && e.Key.EndsWith(".Bio"));
             if (dialogueLeft > 0) Fail($"UIText still has {dialogueLeft} dialogue keys"); else Pass("UIText has no dialogue keys");
-            if (ui.SharedData.Entries.Count != 183) Fail($"UIText has {ui.SharedData.Entries.Count} keys (expected 183)"); else Pass("UIText keeps its 183 general keys");
+            // 183 general keys at the dialogue migration; later UI features only ADD keys.
+            if (ui.SharedData.Entries.Count < 183) Fail($"UIText has {ui.SharedData.Entries.Count} keys (expected at least the 183 general ones)");
+            else Pass($"UIText keeps its general keys ({ui.SharedData.Entries.Count})");
             if (bios != 12) Fail($"UIText has {bios} composer bios (expected 12)"); else Pass("12 composer bios still in UIText");
         }
 

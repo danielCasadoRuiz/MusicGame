@@ -55,7 +55,7 @@ public class FinishBannerController : MonoBehaviour
 
         // Baked once at Editor-bake time — re-apply from the current locale here, same reasoning
         // as every other prefab-backed screen's labels.
-        _text.text = Loc.Get("Countdown.Finish");
+        Loc.Set(_text, "Countdown.Finish");
 
         _root.gameObject.SetActive(false);
     }
@@ -69,7 +69,7 @@ public class FinishBannerController : MonoBehaviour
         UIFactory.Stretch(_root);
         _root.SetAsLastSibling();
 
-        _text = UIFactory.CreateText("Text", _root, Loc.Get("Countdown.Finish"), 96, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        _text = Loc.Track(UIFactory.CreateText("Text", _root, Loc.Get("Countdown.Finish"), 96, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "Countdown.Finish");
         UIFactory.SetBox(_text.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             Vector2.zero, new Vector2(700f, 200f));
         _text.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);

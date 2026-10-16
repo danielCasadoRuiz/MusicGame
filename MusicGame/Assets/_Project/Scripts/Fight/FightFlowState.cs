@@ -19,4 +19,9 @@ public enum FightFlowState
     RoundEnd,
     MatchWon,
     MatchLost,
+    /// <summary>The match is DECIDED (MatchEndedEvent already published, progression already applied)
+    /// but the result screen is not up yet: the composer says goodbye in the arena
+    /// (MatchFarewellController). Only FightMatchController leaves it, to MatchWon/MatchLost.
+    /// Appended last so existing serialized values never shift.</summary>
+    MatchFarewell,
 }

@@ -34,6 +34,18 @@ public class FightSceneBootstrap : MonoBehaviour
 {
     [SerializeField] private Camera arenaCamera;
 
+    /// <summary>The live Fight scene (null outside Fight). Presentation code (Versus intro, composer
+    /// speech bubble) reads the actors and the readiness signal below — never spawns or moves anything.</summary>
+    public static FightSceneBootstrap Instance { get; private set; }
+    public FighterActor PlayerActor => _playerActor;
+    public FighterActor OpponentActor => _opponentActor;
+    public FightCameraController CameraController { get; private set; }
+
+    /// <summary>True once the COMMITTED rival's visual is in place (its avatar applied, or the debug
+    /// capsule after a missing/failed avatar) — the real "the scene can be filmed" signal the Versus
+    /// presentation waits for. False while an avatar build for the current pick is still loading.</summary>
+    public bool OpponentVisualReady { get; private set; }
+
     private Camera _previousMainCamera;
     private FightArenaConfig _arenaConfig;
     private FightCameraConfig _cameraConfig;
@@ -90,9 +102,13 @@ public class FightSceneBootstrap : MonoBehaviour
 
         if (arenaCamera != null) arenaCamera.enabled = true;
 
+        Instance = this;
         BuildArena();
         SpawnFighters();
         SetupCamera();
+        // Direct scene play / tests: the opponent was applied at spawn (or there is no flow at all).
+        bool selectionPending = FightFlowController.Instance != null && FightFlowController.Instance.CurrentState == FightFlowState.OpponentSelection;
+        if (!selectionPending && _opponentBuildToken == 0) OpponentVisualReady = true;
 
         _onFightFlowChanged = e =>
         {
@@ -104,6 +120,7 @@ public class FightSceneBootstrap : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (Instance == this) Instance = null;
         if (_previousMainCamera != null)
             _previousMainCamera.enabled = true;
 
@@ -232,9 +249,10 @@ public class FightSceneBootstrap : MonoBehaviour
         {
             Debug.LogError("[FightSceneBootstrap] Opponent selection committed with no SelectedOpponentLevelConfig — opponent keeps placeholder data.");
             _opponentActor.SetPlaceholderVisible(true);
+            OpponentVisualReady = true;
             return;
         }
-        if (levelConfig == _appliedOpponentConfig) return;
+        if (levelConfig == _appliedOpponentConfig) return; // Fight Again: same rival, already built (or still building)
         _appliedOpponentConfig = levelConfig;
 
         var session = GameSession.Instance;
@@ -257,15 +275,24 @@ public class FightSceneBootstrap : MonoBehaviour
         {
             Debug.LogError($"[FightSceneBootstrap] {who}: no AvatarRecipe on the resolved tier config — production opponents must have one. Showing the debug capsule.");
             _opponentActor.SetPlaceholderVisible(true);
+            OpponentVisualReady = true;
             return;
         }
-        _ = TryBuildAvatar(levelConfig.avatarRecipe, _opponentActor, who, i =>
+        OpponentVisualReady = false;
+        _ = BuildOpponentAvatar(levelConfig, who, token);
+    }
+
+    private async System.Threading.Tasks.Task BuildOpponentAvatar(OpponentLevelConfig levelConfig, string who, int token)
+    {
+        await TryBuildAvatar(levelConfig.avatarRecipe, _opponentActor, who, i =>
         {
             if (token != _opponentBuildToken) return false; // a newer pick superseded this build
             _opponentAvatarInstance?.Dispose();
             _opponentAvatarInstance = i;
             return true;
         });
+        // Applied, or fell back to the capsule — either way the rival is on stage now.
+        if (this != null && token == _opponentBuildToken) OpponentVisualReady = true;
     }
     /// <summary>
     /// Combat side of each fighter (never the avatar): its FighterCombatProfileSO, its five build stats
@@ -419,5 +446,6 @@ public class FightSceneBootstrap : MonoBehaviour
         if (arenaCamera == null) return;
         var camController = arenaCamera.gameObject.AddComponent<FightCameraController>();
         camController.Initialize(_cameraConfig, _playerActor.transform, _opponentActor.transform);
+        CameraController = camController;
     }
 }

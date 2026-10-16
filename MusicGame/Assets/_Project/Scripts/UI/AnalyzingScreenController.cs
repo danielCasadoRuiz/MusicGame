@@ -218,7 +218,7 @@ public class AnalyzingScreenController : MonoBehaviour
     {
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
-        _titleText.text = Loc.Get(TitleKey);
+        Loc.Set(_titleText, TitleKey);
         if (_progressFill != null) _progressFill.fillAmount = 0f;
 
         _isCacheHit = false;
@@ -252,7 +252,7 @@ public class AnalyzingScreenController : MonoBehaviour
         _stylePending = false;
         StopPhaseRoutines();
         if (_progressFill != null) _progressFill.fillAmount = Mathf.Max(_progressFill.fillAmount, StyleDetectedFill);
-        if (_tipText != null) _tipText.text = Loc.Get("Analyzing.StyleDetected", Loc.Get("GameStyle." + style));
+        if (_tipText != null) Loc.Set(_tipText, "Analyzing.StyleDetected", Loc.Key("GameStyle." + style));
 
         _progressRoutine = StartCoroutine(AfterStyleFlash());
     }
@@ -284,7 +284,7 @@ public class AnalyzingScreenController : MonoBehaviour
     {
         while (true)
         {
-            _tipText.text = Loc.Get(NextTipKey());
+            Loc.Set(_tipText, NextTipKey());
             yield return new WaitForSeconds(Random.Range(minTipInterval, maxTipInterval));
         }
     }

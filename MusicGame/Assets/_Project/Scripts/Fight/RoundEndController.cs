@@ -127,7 +127,7 @@ public class RoundEndController : MonoBehaviour
             : 1f;
         float resultDuration  = _config != null ? Mathf.Max(0f, _config.roundResultDuration) : 1.5f;
 
-        _text.text = Loc.Get(isKO ? "Fight.KO" : "Fight.TimeUp");
+        Loc.Set(_text, isKO ? "Fight.KO" : "Fight.TimeUp");
         yield return new WaitForSeconds(reasonDuration);
 
         _text.text = ResultText(data);

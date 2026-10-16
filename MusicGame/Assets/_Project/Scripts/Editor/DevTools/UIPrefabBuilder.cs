@@ -897,9 +897,11 @@ public static class UIPrefabBuilder
         var view = root.gameObject.AddComponent<VersusScreenView>();
         view.root = root.gameObject;
 
-        var dim = UIFactory.CreatePanel("Dim", root, new Color(0.02f, 0.02f, 0.02f, 1f));
+        // A light veil over the LIVE arena (the Versus plays in-scene); VersusScreenController sets its
+        // alpha from FightFlowConfig.versusBackdropAlpha — no theme tint, which would make it opaque.
+        var dim = UIFactory.CreatePanel("Dim", root, new Color(0f, 0f, 0f, 0.15f));
         UIFactory.Stretch(dim.rectTransform);
-        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
+        dim.raycastTarget = false;
 
         (view.playerPortrait, view.playerNameText)     = BuildVersusSide(root, "Player",   new Vector2(0.25f, 0.5f));
         (view.opponentPortrait, view.opponentNameText) = BuildVersusSide(root, "Opponent", new Vector2(0.75f, 0.5f));

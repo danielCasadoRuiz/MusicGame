@@ -109,7 +109,7 @@ public class OpponentSelectionController : MonoBehaviour
     {
         _root     = view.root.GetComponent<RectTransform>();
         _gridRoot = view.gridRoot;
-        view.titleText.text = Loc.Get("OpponentSelection.Title");
+        Loc.Set(view.titleText, "OpponentSelection.Title");
     }
 
     // ── Build (procedural fallback — no UIRegistry in the scene yet) ─────────────
@@ -124,7 +124,7 @@ public class OpponentSelectionController : MonoBehaviour
         UIFactory.Stretch(dim.rectTransform);
         dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
-        var title = UIFactory.CreateText("Title", _root, Loc.Get("OpponentSelection.Title"), 30, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        var title = Loc.Track(UIFactory.CreateText("Title", _root, Loc.Get("OpponentSelection.Title"), 30, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "OpponentSelection.Title");
         UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, -50f), new Vector2(900f, 50f));
         title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
@@ -206,7 +206,7 @@ public class OpponentSelectionController : MonoBehaviour
 
     private void BuildSkipButton()
     {
-        _skipButton = UIFactory.CreateButton("SkipButton", _root, Loc.Get("OpponentSelection.Skip"), out var label);
+        _skipButton = UIFactory.CreateButton("SkipButton", _root, Loc.Get("OpponentSelection.Skip"), out var label); Loc.Track(label, "OpponentSelection.Skip");
         UIFactory.SetBox(_skipButton.GetComponent<RectTransform>(), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f),
             new Vector2(-40f, 40f), new Vector2(170f, 50f));
         _skipButton.onClick.AddListener(() => _skipRequested = true);

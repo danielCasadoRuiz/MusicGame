@@ -29,10 +29,9 @@ using UnityEngine.UI;
 ///           new run of the SAME song. Does NOT consume a life.
 ///   BOTH -> Main Menu: unchanged.
 ///
-/// COMPOSER LINE: on arrival the rival speaks ONCE per finished match (ComposerDialoguePresentation) —
-/// its Defeat line when the player won, its Victory line when the player lost. Every result button
-/// stays non-interactable behind the subtitle's own tap catcher until the player continues past the
-/// line (or immediately if no line can be shown); finishing the line never presses anything itself.
+/// The composer's last words are NOT here: they play in the arena before this screen opens
+/// (FightFlowState.MatchFarewell, MatchFarewellController). On arrival every button stays inert for
+/// one frame, so the press that skipped the farewell can never also activate a result button.
 ///
 /// Prefers a real MatchResult.prefab instance (wired via UIRegistry, built once via
 /// Tools > MusicGame > Build UI Prefabs) — falls back to a procedural build only if that hasn't been
@@ -76,10 +75,8 @@ public class MatchResultController : MonoBehaviour
     private RivalVersionUnlockedEvent? _pendingUnlock;
     private System.Action<RivalVersionUnlockedEvent> _onRivalUnlocked;
 
-    private ComposerDialoguePresentation _dialogue;
-    private bool _dialogueBlocksButtons;   // true while the composer line is up (or loading)
+    private bool _inputGuard;              // true for the screen's first frame (see class doc)
     private bool _replaySongLocksButtons;  // true while Replay Song waits for Runner (see OnReplaySongClicked)
-    private bool _dialoguePlayedForThisMatch;
     private Coroutine _unblockRoutine;
 
     private void Awake()
@@ -88,10 +85,6 @@ public class MatchResultController : MonoBehaviour
         if (registry != null && registry.MatchResult != null) WireUI(registry.MatchResult);
         else Build();
 
-        // Runtime-built on top of the screen (prefab or fallback), so regenerating MatchResult.prefab
-        // never removes it.
-        var appConfig = Resources.Load<AppConfigSO>("AppConfig");
-        _dialogue = new ComposerDialoguePresentation(ComposerDialogueBox.Create(_root), appConfig != null ? appConfig.fightFlow : null);
         _root.gameObject.SetActive(false);
     }
 
@@ -100,7 +93,7 @@ public class MatchResultController : MonoBehaviour
         // Cached the instant it arrives — FightMatchController publishes MatchEndedEvent BEFORE
         // requesting FightFlowState.MatchWon/MatchLost (see its own NotifyRoundEndDisplayComplete),
         // so this data is always ready by the time Show() below actually runs.
-        _onMatchEnded = e => { _pendingMatchEnded = e; _dialoguePlayedForThisMatch = false; };
+        _onMatchEnded = e => _pendingMatchEnded = e;
         _onFightFlowChanged = e =>
         {
             if (e.Current == FightFlowState.MatchWon) Show(true);
@@ -154,7 +147,7 @@ public class MatchResultController : MonoBehaviour
         EventBus.Unsubscribe(_onFightFlowChanged);
         EventBus.Unsubscribe(_onGameStarted);
         EventBus.Unsubscribe(_onGameFlowChanged);
-        EndDialogueGate(cancel: true);
+        EndInputGuard();
     }
 
     /// <summary>The one real cleanup point for this screen when Fight itself is genuinely being left
@@ -170,7 +163,6 @@ public class MatchResultController : MonoBehaviour
         SetReplaySongButtonsInteractable(true);
         _awaitingReplaySongReady = false;
         _pendingMatchEnded = null;
-        _dialoguePlayedForThisMatch = false;
     }
 
     // ── Prefab path — see MatchResultView's own doc ──────────────────────────────
@@ -186,7 +178,7 @@ public class MatchResultController : MonoBehaviour
 
         _continueButton = view.continueButton;
         view.continueButton.onClick.AddListener(OnContinueClicked);
-        view.continueButtonLabel.text = Loc.Get("MatchResult.Continue");
+        Loc.Set(view.continueButtonLabel, "MatchResult.Continue");
 
         _fightAgainButton = view.fightAgainButton;
         _fightAgainButtonLabel = view.fightAgainButtonLabel;
@@ -194,7 +186,7 @@ public class MatchResultController : MonoBehaviour
 
         _replaySongButton = view.replaySongButton;
         view.replaySongButton.onClick.AddListener(OnReplaySongClicked);
-        view.replaySongButtonLabel.text = Loc.Get("MatchResult.ReplaySong");
+        Loc.Set(view.replaySongButtonLabel, "MatchResult.ReplaySong");
 
         // The baked prefab predates SELECT SONG: a secondary-styled copy of Replay Song, in Replay
         // Song's slot (that button only shows after a LOSS, this one only after a WIN).
@@ -203,18 +195,18 @@ public class MatchResultController : MonoBehaviour
         _selectSongButton.onClick = new Button.ButtonClickedEvent();
         _selectSongButton.onClick.AddListener(OnSelectSongClicked);
         var selectLabel = _selectSongButton.GetComponentInChildren<TextMeshProUGUI>();
-        if (selectLabel != null) selectLabel.text = Loc.Get("MatchResult.SelectSong");
+        if (selectLabel != null) Loc.Set(selectLabel, "MatchResult.SelectSong");
 
         _mainMenuButton = view.mainMenuButton;
         view.mainMenuButton.onClick.AddListener(OnMainMenuClicked);
-        view.mainMenuButtonLabel.text = Loc.Get("Fight.MainMenu");
+        Loc.Set(view.mainMenuButtonLabel, "Fight.MainMenu");
 
         _rewardAdModalRoot = view.rewardAdModalRoot;
-        view.rewardAdTitleText.text = Loc.Get("MatchResult.WatchAdTitle");
+        Loc.Set(view.rewardAdTitleText, "MatchResult.WatchAdTitle");
         view.watchAdButton.onClick.AddListener(OnWatchAdClicked);
-        view.watchAdButtonLabel.text = Loc.Get("MatchResult.WatchAd");
+        Loc.Set(view.watchAdButtonLabel, "MatchResult.WatchAd");
         view.cancelButton.onClick.AddListener(OnCancelAdClicked);
-        view.cancelButtonLabel.text = Loc.Get("MatchResult.Cancel");
+        Loc.Set(view.cancelButtonLabel, "MatchResult.Cancel");
         _rewardAdModalRoot.SetActive(false);
     }
 
@@ -255,7 +247,7 @@ public class MatchResultController : MonoBehaviour
             new Vector2(0f, 0f), new Vector2(500f, 34f));
         _levelText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Positive, UIFontToken.Body);
 
-        var continueBtn = UIFactory.CreateButton("ContinueButton", _root, Loc.Get("MatchResult.Continue"), out var continueLabel);
+        var continueBtn = UIFactory.CreateButton("ContinueButton", _root, Loc.Get("MatchResult.Continue"), out var continueLabel); Loc.Track(continueLabel, "MatchResult.Continue");
         UIFactory.SetBox(continueBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, -60f), new Vector2(260f, 52f));
         continueBtn.onClick.AddListener(OnContinueClicked);
@@ -272,7 +264,7 @@ public class MatchResultController : MonoBehaviour
         _fightAgainButton = fightAgainBtn;
         _fightAgainButtonLabel = fightAgainLabel;
 
-        var replaySongBtn = UIFactory.CreateButton("ReplaySongButton", _root, Loc.Get("MatchResult.ReplaySong"), out var replaySongLabel);
+        var replaySongBtn = UIFactory.CreateButton("ReplaySongButton", _root, Loc.Get("MatchResult.ReplaySong"), out var replaySongLabel); Loc.Track(replaySongLabel, "MatchResult.ReplaySong");
         UIFactory.SetBox(replaySongBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, -120f), new Vector2(260f, 52f));
         replaySongBtn.onClick.AddListener(OnReplaySongClicked);
@@ -280,7 +272,7 @@ public class MatchResultController : MonoBehaviour
         replaySongLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
         _replaySongButton = replaySongBtn;
 
-        var selectSongBtn = UIFactory.CreateButton("SelectSongButton", _root, Loc.Get("MatchResult.SelectSong"), out var selectSongLabel);
+        var selectSongBtn = UIFactory.CreateButton("SelectSongButton", _root, Loc.Get("MatchResult.SelectSong"), out var selectSongLabel); Loc.Track(selectSongLabel, "MatchResult.SelectSong");
         UIFactory.SetBox(selectSongBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, -120f), new Vector2(260f, 52f));
         selectSongBtn.onClick.AddListener(OnSelectSongClicked);
@@ -288,7 +280,7 @@ public class MatchResultController : MonoBehaviour
         selectSongLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
         _selectSongButton = selectSongBtn;
 
-        var mainMenuBtn = UIFactory.CreateButton("MainMenuButton", _root, Loc.Get("Fight.MainMenu"), out var mainMenuLabel);
+        var mainMenuBtn = UIFactory.CreateButton("MainMenuButton", _root, Loc.Get("Fight.MainMenu"), out var mainMenuLabel); Loc.Track(mainMenuLabel, "Fight.MainMenu");
         UIFactory.SetBox(mainMenuBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, -180f), new Vector2(260f, 52f));
         mainMenuBtn.onClick.AddListener(OnMainMenuClicked);
@@ -311,17 +303,17 @@ public class MatchResultController : MonoBehaviour
         UIFactory.SetBox(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(420f, 220f));
         panel.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
 
-        var title = UIFactory.CreateText("Title", panel.rectTransform, Loc.Get("MatchResult.WatchAdTitle"), 22, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        var title = Loc.Track(UIFactory.CreateText("Title", panel.rectTransform, Loc.Get("MatchResult.WatchAdTitle"), 22, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "MatchResult.WatchAdTitle");
         UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(380f, 60f));
         title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Display);
 
-        var watchAdBtn = UIFactory.CreateButton("WatchAdButton", panel.rectTransform, Loc.Get("MatchResult.WatchAd"), out var watchAdLabel);
+        var watchAdBtn = UIFactory.CreateButton("WatchAdButton", panel.rectTransform, Loc.Get("MatchResult.WatchAd"), out var watchAdLabel); Loc.Track(watchAdLabel, "MatchResult.WatchAd");
         UIFactory.SetBox(watchAdBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 70f), new Vector2(320f, 46f));
         watchAdBtn.onClick.AddListener(OnWatchAdClicked);
         watchAdBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
         watchAdLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
 
-        var cancelBtn = UIFactory.CreateButton("CancelButton", panel.rectTransform, Loc.Get("MatchResult.Cancel"), out var cancelLabel);
+        var cancelBtn = UIFactory.CreateButton("CancelButton", panel.rectTransform, Loc.Get("MatchResult.Cancel"), out var cancelLabel); Loc.Track(cancelLabel, "MatchResult.Cancel");
         UIFactory.SetBox(cancelBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 16f), new Vector2(320f, 46f));
         cancelBtn.onClick.AddListener(OnCancelAdClicked);
         cancelBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
@@ -344,7 +336,7 @@ public class MatchResultController : MonoBehaviour
         _awaitingReplaySongReady = false;
         SetReplaySongButtonsInteractable(true);
 
-        _titleText.text   = Loc.Get(playerWon ? "Fight.YouWin" : "Fight.YouLose");
+        Loc.Set(_titleText, playerWon ? "Fight.YouWin" : "Fight.YouLose");
         _rivalText.text   = OpponentDisplayName();
         _roundsText.text  = $"{data.PlayerRoundsWon} - {data.OpponentRoundsWon}";
         _summaryText.text = BuildSummary(data);
@@ -369,35 +361,24 @@ public class MatchResultController : MonoBehaviour
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
 
-        // The composer's line — ONE per finished match (a repeated Show for the same MatchEndedEvent
-        // never replays it). The player won → the composer LOST (Defeat), and vice versa.
-        if (!_dialoguePlayedForThisMatch && _pendingMatchEnded.HasValue)
-        {
-            _dialoguePlayedForThisMatch = true;
-            BeginDialogueGate(playerWon ? ComposerDialogueCategory.Defeat : ComposerDialogueCategory.Victory);
-        }
+        BeginInputGuard();
     }
 
     private void Hide()
     {
-        EndDialogueGate(cancel: true);
+        EndInputGuard();
         _root.gameObject.SetActive(false);
     }
 
-    // ── Composer line gate ─────────────────────────────────────────────────────────
+    // ── One-frame input guard ────────────────────────────────────────────────────
 
-    private void BeginDialogueGate(ComposerDialogueCategory category)
+    private void BeginInputGuard()
     {
-        if (_unblockRoutine != null) { StopCoroutine(_unblockRoutine); _unblockRoutine = null; }
-        _dialogueBlocksButtons = true;
+        if (_unblockRoutine != null) StopCoroutine(_unblockRoutine);
+        _inputGuard = true;
         ApplyButtonsInteractable();
-        _dialogue.Begin(GameSession.Instance?.SelectedOpponent, category, _ =>
-        {
-            // Re-enabled on the NEXT frame, with no UI selection, so the very press that dismissed the
-            // line can never also activate a button (or a keyboard Submit on a selected one).
-            if (isActiveAndEnabled) _unblockRoutine = StartCoroutine(UnblockNextFrame());
-            else EndDialogueGate(cancel: false);
-        });
+        _unblockRoutine = isActiveAndEnabled ? StartCoroutine(UnblockNextFrame()) : null;
+        if (_unblockRoutine == null) EndInputGuard();
     }
 
     private System.Collections.IEnumerator UnblockNextFrame()
@@ -406,21 +387,19 @@ public class MatchResultController : MonoBehaviour
         _unblockRoutine = null;
         if (UnityEngine.EventSystems.EventSystem.current != null)
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
-        EndDialogueGate(cancel: false);
+        EndInputGuard();
     }
 
-    /// <summary>Drops the composer line (when `cancel`) and gives the buttons back.</summary>
-    private void EndDialogueGate(bool cancel)
+    private void EndInputGuard()
     {
-        if (cancel) _dialogue?.Cancel();
         if (_unblockRoutine != null) { StopCoroutine(_unblockRoutine); _unblockRoutine = null; }
-        _dialogueBlocksButtons = false;
+        _inputGuard = false;
         ApplyButtonsInteractable();
     }
 
     private void ApplyButtonsInteractable()
     {
-        bool free = !_dialogueBlocksButtons;
+        bool free = !_inputGuard;
         bool freeOfReplay = free && !_replaySongLocksButtons;
         if (_continueButton != null)   _continueButton.interactable   = free;
         if (_selectSongButton != null) _selectSongButton.interactable = free;

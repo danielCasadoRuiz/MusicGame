@@ -107,7 +107,7 @@ public class MobileControlsController : MonoBehaviour
         UIFactory.SetBox(button.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f),
             new Vector2(-40f, 40f), new Vector2(size, size));
 
-        var label = UIFactory.CreateText("Label", button.rectTransform, Loc.Get("Mobile.Jump"), 16, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        var label = Loc.Track(UIFactory.CreateText("Label", button.rectTransform, Loc.Get("Mobile.Jump"), 16, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "Mobile.Jump");
         UIFactory.Stretch(label.rectTransform);
 
         button.gameObject.AddComponent<TouchJumpButton>();
@@ -122,7 +122,7 @@ public class MobileControlsController : MonoBehaviour
         UIFactory.SetBox(button.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f),
             new Vector2(-180f, 30f), new Vector2(size, size));
 
-        var label = UIFactory.CreateText("Label", button.rectTransform, Loc.Get("Mobile.Crouch"), 15, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        var label = Loc.Track(UIFactory.CreateText("Label", button.rectTransform, Loc.Get("Mobile.Crouch"), 15, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "Mobile.Crouch");
         UIFactory.Stretch(label.rectTransform);
 
         button.gameObject.AddComponent<TouchCrouchButton>();

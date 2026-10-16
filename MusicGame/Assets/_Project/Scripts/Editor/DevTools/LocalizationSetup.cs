@@ -250,6 +250,10 @@ public static class LocalizationSetup
         ("SongSelection.Completed", "COMPLETED", "COMPLETADA"),
         ("MatchResult.SelectSong", "SELECT SONG", "TRIA CANÇÓ"),
         ("Mobile.Crouch", "CROUCH", "AJUP"),
+        // ── In-arena presentation + language selector (see LanguageSettingsSetup) ──
+        ("Fight.Skip",            "SKIP",      "SALTA"),
+        ("Settings.Language",     "Language",  "Idioma"),
+        ("Settings.LanguageAuto", "Automatic", "Automàtic"),
     };
 
     [MenuItem("Tools/MusicGame/Setup Localization")]

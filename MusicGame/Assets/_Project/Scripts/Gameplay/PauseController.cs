@@ -248,11 +248,11 @@ public class PauseController : MonoBehaviour
 
         // Same reasoning as GameplayHUD's own label re-set — baked once at Editor-bake time, so
         // re-apply from the current locale here instead of trusting the prefab's value.
-        if (view.pauseButtonLabel   != null) view.pauseButtonLabel.text   = Loc.Get("Pause.PauseButton");
-        if (view.titleText          != null) view.titleText.text          = Loc.Get("Pause.Title");
-        if (view.resumeButtonLabel  != null) view.resumeButtonLabel.text  = Loc.Get("Pause.Resume");
-        if (view.restartButtonLabel != null) view.restartButtonLabel.text = Loc.Get("Pause.RestartSong");
-        if (view.mainMenuButtonLabel != null) view.mainMenuButtonLabel.text = Loc.Get("Pause.MainMenu");
+        if (view.pauseButtonLabel   != null) Loc.Set(view.pauseButtonLabel, "Pause.PauseButton");
+        if (view.titleText          != null) Loc.Set(view.titleText, "Pause.Title");
+        if (view.resumeButtonLabel  != null) Loc.Set(view.resumeButtonLabel, "Pause.Resume");
+        if (view.restartButtonLabel != null) Loc.Set(view.restartButtonLabel, "Pause.RestartSong");
+        if (view.mainMenuButtonLabel != null) Loc.Set(view.mainMenuButtonLabel, "Pause.MainMenu");
 
         RefreshVisibility();
     }
@@ -262,7 +262,7 @@ public class PauseController : MonoBehaviour
     {
         var canvas = UIFactory.RootCanvas();
 
-        var pauseBtn = UIFactory.CreateButton("PauseButton", canvas, Loc.Get("Pause.PauseButton"), out var pauseLabel);
+        var pauseBtn = UIFactory.CreateButton("PauseButton", canvas, Loc.Get("Pause.PauseButton"), out var pauseLabel); Loc.Track(pauseLabel, "Pause.PauseButton");
         UIFactory.SetBox(pauseBtn.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
             new Vector2(-12f, -12f), new Vector2(84f, 28f));
         pauseBtn.onClick.AddListener(Pause);
@@ -290,13 +290,13 @@ public class PauseController : MonoBehaviour
         var content = panel.rectTransform;
         float y = -14f;
 
-        var title = UIFactory.CreateText("Title", content, Loc.Get("Pause.Title"), 18, Color.white);
+        var title = Loc.Track(UIFactory.CreateText("Title", content, Loc.Get("Pause.Title"), 18, Color.white), "Pause.Title");
         UIFactory.StackTop(title.rectTransform, ref y, 28f, 0f);
         title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
 
         y = -60f;
         float btnW = pw - 40f, btnH = 34f;
-        var resumeBtn = UIFactory.CreateButton("ResumeButton", content, Loc.Get("Pause.Resume"), out var resumeLabel);
+        var resumeBtn = UIFactory.CreateButton("ResumeButton", content, Loc.Get("Pause.Resume"), out var resumeLabel); Loc.Track(resumeLabel, "Pause.Resume");
         UIFactory.SetBox(resumeBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, y), new Vector2(btnW, btnH));
         resumeBtn.onClick.AddListener(Resume);
@@ -304,7 +304,7 @@ public class PauseController : MonoBehaviour
         resumeLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
         y -= btnH + 12f;
 
-        var restartBtn = UIFactory.CreateButton("RestartButton", content, Loc.Get("Pause.RestartSong"), out var restartLabel);
+        var restartBtn = UIFactory.CreateButton("RestartButton", content, Loc.Get("Pause.RestartSong"), out var restartLabel); Loc.Track(restartLabel, "Pause.RestartSong");
         UIFactory.SetBox(restartBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, y), new Vector2(btnW, btnH));
         restartBtn.onClick.AddListener(RestartSongFromPause);
@@ -314,7 +314,7 @@ public class PauseController : MonoBehaviour
 
         // Same exit Fight's own pause menu already offers (FightController's MainMenuButton) —
         // Runner had no equivalent way out mid-run before this.
-        var mainMenuBtn = UIFactory.CreateButton("MainMenuButton", content, Loc.Get("Pause.MainMenu"), out var mainMenuLabel);
+        var mainMenuBtn = UIFactory.CreateButton("MainMenuButton", content, Loc.Get("Pause.MainMenu"), out var mainMenuLabel); Loc.Track(mainMenuLabel, "Pause.MainMenu");
         UIFactory.SetBox(mainMenuBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, y), new Vector2(btnW, btnH));
         mainMenuBtn.onClick.AddListener(OnMainMenuClicked);
@@ -354,7 +354,7 @@ public class PauseController : MonoBehaviour
     private void RefreshCameraToggleDisplay(CameraViewMode mode)
     {
         bool isThird = mode == CameraViewMode.ThirdPerson;
-        if (_cameraToggleLabel != null) _cameraToggleLabel.text = Loc.Get(isThird ? "Pause.ThirdPerson" : "Pause.FirstPerson");
+        if (_cameraToggleLabel != null) Loc.Set(_cameraToggleLabel, isThird ? "Pause.ThirdPerson" : "Pause.FirstPerson");
         if (_cameraToggleIcon != null)
         {
             var sprite = isThird ? _thirdPersonIcon : _firstPersonIcon;

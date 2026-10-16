@@ -88,7 +88,7 @@ public class NextSongTransitionController : MonoBehaviour
         _headerText   = view.headerText;
         _songNameText = view.songNameText;
 
-        view.headerText.text = Loc.Get("NextSong.Header");
+        Loc.Set(view.headerText, "NextSong.Header");
     }
 
     // ── Build (procedural fallback — no UIRegistry in the scene yet) ─────────────
@@ -109,7 +109,7 @@ public class NextSongTransitionController : MonoBehaviour
             new Vector2(0f, 70f), new Vector2(700f, 40f));
         _levelText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Secondary, UIFontToken.Body);
 
-        _headerText = UIFactory.CreateText("Header", _root, Loc.Get("NextSong.Header"), 20, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        _headerText = Loc.Track(UIFactory.CreateText("Header", _root, Loc.Get("NextSong.Header"), 20, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "NextSong.Header");
         UIFactory.SetBox(_headerText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, 20f), new Vector2(700f, 34f));
         _headerText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);

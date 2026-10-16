@@ -275,8 +275,8 @@ public class GameplayHUD : MonoBehaviour
         SetLabel(view.beatLabel,   RingType.Beat);
         SetLabel(view.onsetLabel,  RingType.Onset);
         SetLabel(view.impactLabel, RingType.Impact);
-        if (view.scoreLabel != null) view.scoreLabel.text = Loc.Get("HUD.Score");
-        if (view.totalLabel != null) view.totalLabel.text = Loc.Get("HUD.Total");
+        if (view.scoreLabel != null) Loc.Set(view.scoreLabel, "HUD.Score");
+        if (view.totalLabel != null) Loc.Set(view.totalLabel, "HUD.Total");
 
         _tagsStrip    = view.tagsStrip.GetComponent<RectTransform>();
         _tagStyleText = view.tagStyle;
@@ -308,7 +308,7 @@ public class GameplayHUD : MonoBehaviour
             float xMin = i / 8f, xMax = (i + 1) / 8f;
             UIFactory.SetBox(cell, new Vector2(xMin, 0f), new Vector2(xMax, 1f), new Vector2(0f, 1f), new Vector2(6f, 0f), new Vector2(-6f, 0f));
 
-            var label = UIFactory.CreateText("Label", cell, Loc.Get(cells[i].labelKey), 12, RingColorOr(cells[i].type, Color.white), TextAlignmentOptions.TopLeft);
+            var label = Loc.Track(UIFactory.CreateText("Label", cell, Loc.Get(cells[i].labelKey), 12, RingColorOr(cells[i].type, Color.white), TextAlignmentOptions.TopLeft), cells[i].labelKey);
             UIFactory.SetBox(label.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -3f), new Vector2(0f, 20f));
 
             var value = UIFactory.CreateText("Value", cell, "0", 14, Color.white, TextAlignmentOptions.TopLeft);
@@ -435,7 +435,7 @@ public class GameplayHUD : MonoBehaviour
 
     private static void SetLabel(TextMeshProUGUI text, RingType type)
     {
-        if (text != null) text.text = Loc.Get(RingTypeKey(type));
+        if (text != null) Loc.Set(text, RingTypeKey(type));
     }
 
     // ── Wire: end screen (prefab path — see EndScreenView's own doc) ─────────
@@ -453,9 +453,9 @@ public class GameplayHUD : MonoBehaviour
 
         // Same reasoning as WireLiveHud's label re-set — these were baked once at Editor-bake
         // time, so re-apply from the current locale here rather than trusting the prefab's value.
-        if (view.titleText != null) view.titleText.text = Loc.Get("EndScreen.Title");
-        if (view.restartButtonLabel  != null) view.restartButtonLabel.text  = Loc.Get("EndScreen.Restart");
-        if (view.continueButtonLabel != null) view.continueButtonLabel.text = Loc.Get("EndScreen.Continue");
+        if (view.titleText != null) Loc.Set(view.titleText, "EndScreen.Title");
+        if (view.restartButtonLabel  != null) Loc.Set(view.restartButtonLabel, "EndScreen.Restart");
+        if (view.continueButtonLabel != null) Loc.Set(view.continueButtonLabel, "EndScreen.Continue");
 
         view.restartButton.onClick.AddListener(OnRestartClicked);
         view.continueButton.onClick.AddListener(OnContinueClicked);
@@ -484,7 +484,7 @@ public class GameplayHUD : MonoBehaviour
         var content = panel.rectTransform;
         float y = -16f;
 
-        var title = UIFactory.CreateText("Title", content, Loc.Get("EndScreen.Title"), 20, Color.white);
+        var title = Loc.Track(UIFactory.CreateText("Title", content, Loc.Get("EndScreen.Title"), 20, Color.white), "EndScreen.Title");
         UIFactory.StackTop(title.rectTransform, ref y, 30f);
         title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
 
@@ -520,14 +520,14 @@ public class GameplayHUD : MonoBehaviour
 
         y -= 10f;
         float btnW = 150f, btnH = 40f, gap = 16f;
-        var restartBtn = UIFactory.CreateButton("RestartButton", content, Loc.Get("EndScreen.Restart"), out var restartLabel);
+        var restartBtn = UIFactory.CreateButton("RestartButton", content, Loc.Get("EndScreen.Restart"), out var restartLabel); Loc.Track(restartLabel, "EndScreen.Restart");
         UIFactory.SetBox(restartBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(-(btnW + gap) / 2f, y), new Vector2(btnW, btnH));
         restartBtn.onClick.AddListener(OnRestartClicked);
         restartBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
         restartLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
-        var continueBtn = UIFactory.CreateButton("ContinueButton", content, Loc.Get("EndScreen.Continue"), out var continueLabel);
+        var continueBtn = UIFactory.CreateButton("ContinueButton", content, Loc.Get("EndScreen.Continue"), out var continueLabel); Loc.Track(continueLabel, "EndScreen.Continue");
         UIFactory.SetBox(continueBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2((btnW + gap) / 2f, y), new Vector2(btnW, btnH));
         continueBtn.onClick.AddListener(OnContinueClicked);
@@ -599,7 +599,7 @@ public class GameplayHUD : MonoBehaviour
             }
         }
 
-        _fallsText.text = Loc.Get("EndScreen.Falls", _finalFallCount.ToString());
+        Loc.Set(_fallsText, "EndScreen.Falls", _finalFallCount.ToString());
         RefreshRunSummary();
 
         bool noFallBonus = _finalFallCount == 0 && config != null && config.scoring.noFallScoreMultiplier > 1f;
@@ -607,7 +607,7 @@ public class GameplayHUD : MonoBehaviour
         if (noFallBonus)
         {
             int pctBonus = Mathf.RoundToInt((config.scoring.noFallScoreMultiplier - 1f) * 100f);
-            _noFallBonusText.text = Loc.Get("EndScreen.NoFallBonus", pctBonus.ToString());
+            Loc.Set(_noFallBonusText, "EndScreen.NoFallBonus", pctBonus.ToString());
         }
 
         var session = manager?.Session;
@@ -616,7 +616,7 @@ public class GameplayHUD : MonoBehaviour
         if (showSession)
         {
             string key = session.RunsCompleted == 1 ? "EndScreen.SessionSingular" : "EndScreen.SessionPlural";
-            _sessionText.text = Loc.Get(key, session.RunsCompleted.ToString(), (session.NormalizedScore * 100f).ToString("F0"));
+            Loc.Set(_sessionText, key, session.RunsCompleted.ToString(), (session.NormalizedScore * 100f).ToString("F0"));
         }
     }
 

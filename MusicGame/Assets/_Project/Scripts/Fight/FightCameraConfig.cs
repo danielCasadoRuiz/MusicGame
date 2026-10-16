@@ -30,6 +30,18 @@ public class FightCameraConfig : ScriptableObject
              "a sustained change in the combat line's angle actually re-orbits the view.")]
     public float orbitSmoothSpeed = 3f;
 
+    [Header("Intro travelling (Versus presentation — FightCameraController.BeginIntroTravelling)")]
+    [Tooltip("Seconds of the pass from the close shot of the rival to the combat framing. The composer's " +
+             "Intro line is read DURING it; the countdown waits for both (see FightFlowConfig.dialogueReadHoldSeconds). " +
+             "0 = no pass (the camera starts on the combat framing).")]
+    [Min(0f)] public float introTravellingSeconds = 3f;
+    [Tooltip("Start of the pass, relative to the rival's feet: X = metres past the rival along the " +
+             "fighters' line (away from the player), Y = height, Z = metres out to the side the combat " +
+             "camera watches from. Keeps the rival (and its speech bubble) in shot the whole way.")]
+    public Vector3 introStartOffset = new Vector3(0.6f, 1.6f, 2.2f);
+    [Tooltip("Height on the rival the start shot looks at (m above the floor).")]
+    public float introLookHeight = 1.5f;
+
     [Header("First person (near-head, over the player's shoulder) — presentation only")]
     [Tooltip("Camera height above the player's root.")]
     public float firstPersonHeight = 1.85f;

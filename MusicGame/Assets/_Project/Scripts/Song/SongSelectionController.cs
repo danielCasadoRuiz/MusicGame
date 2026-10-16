@@ -118,13 +118,13 @@ public class SongSelectionController : MonoBehaviour
 
         // Baked once at Editor-bake time — re-apply from the current locale here, same reasoning as
         // GameplayHUD/PauseController's own labels.
-        view.titleText.text         = Loc.Get("SongSelection.Title");
-        view.backButtonLabel.text   = Loc.Get("SongSelection.Back");
-        view.playButtonLabel.text   = Loc.Get("SongSelection.Play");
-        view.playYourSongLabel.text = Loc.Get("SongSelection.PlayYourSong");
-        view.spotifyLabel.text      = Loc.Get("SongSelection.Spotify") + " (" + Loc.Get("SongSelection.ComingSoon") + ")";
-        view.youtubeMusicLabel.text = Loc.Get("SongSelection.YouTubeMusic") + " (" + Loc.Get("SongSelection.ComingSoon") + ")";
-        view.amazonMusicLabel.text  = Loc.Get("SongSelection.AmazonMusic") + " (" + Loc.Get("SongSelection.ComingSoon") + ")";
+        Loc.Set(view.titleText, "SongSelection.Title");
+        Loc.Set(view.backButtonLabel, "SongSelection.Back");
+        Loc.Set(view.playButtonLabel, "SongSelection.Play");
+        Loc.Set(view.playYourSongLabel, "SongSelection.PlayYourSong");
+        Loc.Bind(view.spotifyLabel, () => ComingSoonLabel("SongSelection.Spotify"));
+        Loc.Bind(view.youtubeMusicLabel, () => ComingSoonLabel("SongSelection.YouTubeMusic"));
+        Loc.Bind(view.amazonMusicLabel, () => ComingSoonLabel("SongSelection.AmazonMusic"));
         _statusText.text = "";
 
         // The catalog rows stay dynamic runtime population either way (Section 9 of the plan) — the
@@ -147,7 +147,7 @@ public class SongSelectionController : MonoBehaviour
         UIFactory.Stretch(dim.rectTransform);
         dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
-        var title = UIFactory.CreateText("Title", _root, Loc.Get("SongSelection.Title"), 30, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        var title = Loc.Track(UIFactory.CreateText("Title", _root, Loc.Get("SongSelection.Title"), 30, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "SongSelection.Title");
         UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, -50f), new Vector2(900f, 50f));
         title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
@@ -187,7 +187,7 @@ public class SongSelectionController : MonoBehaviour
     // many catalog rows exist would make it easy to miss).
     private void BuildPlayYourSongButton()
     {
-        var btn = UIFactory.CreateButton("PlayYourSongButton", _root, Loc.Get("SongSelection.PlayYourSong"), out var label);
+        var btn = UIFactory.CreateButton("PlayYourSongButton", _root, Loc.Get("SongSelection.PlayYourSong"), out var label); Loc.Track(label, "SongSelection.PlayYourSong");
         UIFactory.SetBox(btn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
             new Vector2(0f, -530f), new Vector2(560f, 50f));
         btn.onClick.AddListener(OnPlayYourSongClicked);
@@ -249,7 +249,7 @@ public class SongSelectionController : MonoBehaviour
             _rowLabels.Add(label);
 
             // Play/Pause on the card itself — selects the song too (see OnCardPlayPause).
-            var play = UIFactory.CreateButton("PlayPause", row.GetComponent<RectTransform>(), Loc.Get("SongSelection.CardPlay"), out var playLabel);
+            var play = UIFactory.CreateButton("PlayPause", row.GetComponent<RectTransform>(), Loc.Get("SongSelection.CardPlay"), out var playLabel); Loc.Track(playLabel, "SongSelection.CardPlay");
             UIFactory.SetBox(play.GetComponent<RectTransform>(), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
                 new Vector2(-8f, 0f), new Vector2(92f, SongRowHeight - 14f));
             playLabel.fontSize = 13;
@@ -257,8 +257,8 @@ public class SongSelectionController : MonoBehaviour
             _cardPlayButtons.Add(play);
 
             // Shown instead of PREVIEW once this song is completed (see RefreshCompletedRows).
-            var badge = UIFactory.CreateText("CompletedBadge", row.GetComponent<RectTransform>(), Loc.Get("SongSelection.Completed"), 13,
-                                             CompletedBadgeColor, TextAlignmentOptions.Right, FontStyles.Bold);
+            var badge = Loc.Track(UIFactory.CreateText("CompletedBadge", row.GetComponent<RectTransform>(), Loc.Get("SongSelection.Completed"), 13,
+                                             CompletedBadgeColor, TextAlignmentOptions.Right, FontStyles.Bold), "SongSelection.Completed");
             UIFactory.SetBox(badge.rectTransform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
                 new Vector2(-12f, 0f), new Vector2(150f, SongRowHeight - 14f));
             _completedBadges.Add(badge);
@@ -309,7 +309,9 @@ public class SongSelectionController : MonoBehaviour
         float w = (560f - 2f * 10f) / 3f;
         for (int i = 0; i < keys.Length; i++)
         {
-            var btn = UIFactory.CreateButton("Streaming_" + keys[i], row, Loc.Get(keys[i]) + " (" + Loc.Get("SongSelection.ComingSoon") + ")", out var label);
+            string streamingKey = keys[i];
+            var btn = UIFactory.CreateButton("Streaming_" + keys[i], row, "", out var label);
+            Loc.Bind(label, () => ComingSoonLabel(streamingKey));
             label.fontSize = 11;
             UIFactory.SetBox(btn.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 0.5f),
                 new Vector2(i * (w + 10f), 0f), new Vector2(w, 0f));
@@ -321,14 +323,14 @@ public class SongSelectionController : MonoBehaviour
 
     private void BuildBottomBar()
     {
-        var backBtn = UIFactory.CreateButton("BackButton", _root, Loc.Get("SongSelection.Back"), out var backLabel);
+        var backBtn = UIFactory.CreateButton("BackButton", _root, Loc.Get("SongSelection.Back"), out var backLabel); Loc.Track(backLabel, "SongSelection.Back");
         UIFactory.SetBox(backBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
             new Vector2(-150f, 40f), new Vector2(180f, 44f));
         backBtn.onClick.AddListener(() => AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu));
         backBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
         backLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
-        var playBtn = UIFactory.CreateButton("PlayButton", _root, Loc.Get("SongSelection.Play"), out _playButtonLabel);
+        var playBtn = UIFactory.CreateButton("PlayButton", _root, Loc.Get("SongSelection.Play"), out _playButtonLabel); Loc.Track(_playButtonLabel, "SongSelection.Play");
         UIFactory.SetBox(playBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
             new Vector2(150f, 40f), new Vector2(180f, 44f));
         playBtn.onClick.AddListener(OnPlayClicked);
@@ -367,7 +369,7 @@ public class SongSelectionController : MonoBehaviour
         string playingId = player != null && player.IsPlaying ? player.PlayingId : null;
         for (int i = 0; i < _cardPlayLabels.Count && i < _entries.Count; i++)
             if (_cardPlayLabels[i] != null)
-                _cardPlayLabels[i].text = Loc.Get(playingId == _entries[i].PrimaryKey ? "SongSelection.CardPause" : "SongSelection.CardPlay");
+                Loc.Set(_cardPlayLabels[i], playingId == _entries[i].PrimaryKey ? "SongSelection.CardPause" : "SongSelection.CardPlay");
 
         // Lightweight range readout in the existing status line while a preview plays.
         bool showing = playingId != null && player.PlayingRange.duration > 0f;
@@ -466,6 +468,8 @@ public class SongSelectionController : MonoBehaviour
     {
         if (_playButton != null) _playButton.interactable = HasSelection && !_isLoading;
     }
+
+    private static string ComingSoonLabel(string serviceKey) => Loc.Get(serviceKey) + " (" + Loc.Get("SongSelection.ComingSoon") + ")";
 
     private void SetStatus(string text, Color? color = null)
     {

@@ -18,6 +18,12 @@ using UnityEngine;
 /// continuar funcionant" even before Fighting) — it only ever reads the two FighterActors'
 /// Transforms, never gameplay state, so there's nothing to gate.
 ///
+/// INTRO TRAVELLING (BeginIntroTravelling / CompleteIntroTravelling): the Versus presentation's short
+/// pass over the arena is driven HERE, by the same component that owns the transform — never a second
+/// camera script. It eases from a configurable close shot of the rival to the live combat framing
+/// computed every frame below, and ends (naturally or skipped) by snapping exactly onto that framing
+/// with the smoothing velocity reset — so both routes reach the identical final state.
+///
 /// Config-driven (FightCameraConfig via AppConfig.fightCamera) — falls back to hardcoded defaults
 /// if unconfigured, same convention as every other Fight controller.
 /// </summary>
@@ -35,6 +41,17 @@ public class FightCameraController : MonoBehaviour
     private Transform _opponent;
 
     private Vector3 _positionVelocity;
+
+    // Intro travelling state (see class doc).
+    private bool _introActive, _introStartCaptured, _snapNextFrame;
+    private float _introElapsed, _introDuration;
+    private Vector3 _introStartPos;
+    private Quaternion _introStartRot;
+    private Vector3 _fpLookPoint;
+    private Camera _camera;
+
+    public Camera Camera => _camera != null ? _camera : _camera = GetComponent<Camera>();
+    public bool IsIntroTravelling => _introActive;
 
     // Camera direction from the fighters' midpoint, as a yaw angle (degrees, XZ plane). Tracks the
     // fighters' line as an UNDIRECTED axis — when they cross, the nearer perpendicular is kept, so
@@ -85,16 +102,104 @@ public class FightCameraController : MonoBehaviour
         _opponent = opponent;
     }
 
+    /// <summary>Starts (or restarts — Fight Again) the intro pass from the configured close shot of the
+    /// rival to the combat framing, over `seconds` (0 or less = no pass: snap at once).</summary>
+    public void BeginIntroTravelling(float seconds)
+    {
+        _introElapsed = 0f;
+        _introDuration = seconds;
+        _introStartCaptured = false;
+        _introActive = seconds > 0f;
+        _snapNextFrame = !_introActive;
+    }
+
+    /// <summary>Ends the pass NOW on the exact combat framing (Skip or cancellation) — the same final
+    /// state as a pass that ran to its end. No-op when no pass is running.</summary>
+    public void CompleteIntroTravelling()
+    {
+        if (!_introActive) return;
+        _introActive = false;
+        SnapToTarget();
+    }
+
     private void LateUpdate()
     {
         if (_player == null || _opponent == null) return;
+        ComputeTarget(out Vector3 targetPos, out Quaternion targetRot, out bool firstPerson);
 
+        if (_introActive) { UpdateIntro(targetPos, targetRot); return; }
+        if (_snapNextFrame)
+        {
+            _snapNextFrame = false;
+            transform.SetPositionAndRotation(targetPos, targetRot);
+            _positionVelocity = Vector3.zero;
+            return;
+        }
+
+        float rotSmooth = _config != null ? _config.rotationSmoothSpeed : 6f;
+        if (firstPerson)
+        {
+            float fpSmooth = _config != null ? _config.firstPersonPositionSmoothTime : 0.08f;
+            transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref _positionVelocity, fpSmooth);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation((_fpLookPoint - transform.position).normalized, Vector3.up),
+                                                  rotSmooth * 1.5f * Time.deltaTime);
+            return;
+        }
+        float posSmooth = _config != null ? _config.positionSmoothTime : 0.15f;
+        transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref _positionVelocity, posSmooth);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotSmooth * Time.deltaTime);
+    }
+
+    private void SnapToTarget()
+    {
+        if (_player == null || _opponent == null) { _snapNextFrame = true; return; }
+        ComputeTarget(out Vector3 pos, out Quaternion rot, out _);
+        transform.SetPositionAndRotation(pos, rot);
+        _positionVelocity = Vector3.zero;
+    }
+
+    private void UpdateIntro(Vector3 targetPos, Quaternion targetRot)
+    {
+        if (!_introStartCaptured)
+        {
+            ComputeIntroStart(out _introStartPos, out _introStartRot);
+            _introStartCaptured = true;
+        }
+        _introElapsed += Time.unscaledDeltaTime;
+        float t = Mathf.Clamp01(_introElapsed / Mathf.Max(0.01f, _introDuration));
+        float e = t * t * (3f - 2f * t); // smoothstep: soft start, soft landing on the combat framing
+        transform.SetPositionAndRotation(Vector3.Lerp(_introStartPos, targetPos, e), Quaternion.Slerp(_introStartRot, targetRot, e));
+        if (t >= 1f)
+        {
+            _introActive = false;
+            transform.SetPositionAndRotation(targetPos, targetRot); // exactly the Skip end state
+            _positionVelocity = Vector3.zero;
+        }
+    }
+
+    /// <summary>Close shot of the rival (FightCameraConfig.introStartOffset / introLookHeight), on the
+    /// same side of the fighters' line the combat framing watches from, so the pass never crosses it.</summary>
+    private void ComputeIntroStart(out Vector3 pos, out Quaternion rot)
+    {
+        Vector3 local = _config != null ? _config.introStartOffset : new Vector3(0.6f, 1.6f, 2.2f);
+        float lookHeight = _config != null ? _config.introLookHeight : 1.5f;
+        Vector3 mid = (_player.position + _opponent.position) * 0.5f;
+        Vector3 toOpp = _opponent.position - mid; toOpp.y = 0f;
+        toOpp = toOpp.sqrMagnitude > 0.0001f ? toOpp.normalized : Vector3.right;
+        Vector3 viewSide = YawToDir(_yaw);
+        Vector3 groundOpp = new Vector3(_opponent.position.x, 0f, _opponent.position.z);
+        pos = groundOpp + toOpp * local.x + Vector3.up * local.y + viewSide * local.z;
+        Vector3 look = groundOpp + Vector3.up * lookHeight;
+        rot = Quaternion.LookRotation((look - pos).normalized, Vector3.up);
+    }
+
+    /// <summary>The framing the camera is heading to this frame (third or first person).</summary>
+    private void ComputeTarget(out Vector3 targetPos, out Quaternion targetRot, out bool firstPerson)
+    {
         Vector3 offset            = _config != null ? _config.offset             : new Vector3(0f, 2.2f, -6f);
         float   minDistance       = _config != null ? _config.minDistance        : 4f;
         float   maxDistance       = _config != null ? _config.maxDistance        : 9f;
         float   separationPadding = _config != null ? _config.separationPadding  : 0.6f;
-        float   posSmoothTime     = _config != null ? _config.positionSmoothTime : 0.15f;
-        float   rotSmoothSpeed    = _config != null ? _config.rotationSmoothSpeed : 6f;
         float   orbitSmoothSpeed  = _config != null ? Mathf.Max(0.01f, _config.orbitSmoothSpeed) : 3f;
 
         Vector3 midpoint = (_player.position + _opponent.position) * 0.5f;
@@ -148,17 +253,17 @@ public class FightCameraController : MonoBehaviour
             float fpBack   = _config != null ? _config.firstPersonBack : 0.9f;
             float fpSide   = _config != null ? _config.firstPersonSide : 0.35f;
             float fpLook   = _config != null ? _config.firstPersonLookHeight : 1.35f;
-            float fpSmooth = _config != null ? _config.firstPersonPositionSmoothTime : 0.08f;
             Vector3 eye = _player.position + Vector3.up * fpHeight - toOpp * fpBack + alongLine * fpSide;
-            Vector3 look = _opponent.position + Vector3.up * fpLook;
-            transform.position = Vector3.SmoothDamp(transform.position, eye, ref _positionVelocity, fpSmooth);
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation((look - transform.position).normalized, Vector3.up),
-                                                  rotSmoothSpeed * 1.5f * Time.deltaTime);
+            _fpLookPoint = _opponent.position + Vector3.up * fpLook;
+            targetPos = eye;
+            targetRot = Quaternion.LookRotation((_fpLookPoint - eye).normalized, Vector3.up);
+            firstPerson = true;
             return;
         }
 
-        transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref _positionVelocity, posSmoothTime);
-        transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, rotSmoothSpeed * Time.deltaTime);
+        targetPos = desiredPosition;
+        targetRot = desiredRotation;
+        firstPerson = false;
     }
 
     private static float DirToYaw(Vector3 dir) => Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
