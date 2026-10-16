@@ -180,13 +180,9 @@ public sealed class UIScreenPrefabContext
             File.WriteAllBytes(WhiteSpritePath, tex.EncodeToPNG());
             Object.DestroyImmediate(tex);
             AssetDatabase.ImportAsset(WhiteSpritePath);
-            var importer = (TextureImporter)AssetImporter.GetAtPath(WhiteSpritePath);
-            importer.textureType = TextureImporterType.Sprite;
-            importer.mipmapEnabled = false;
-            importer.SaveAndReimport();
             Log.AppendLine($"  new   {WhiteSpritePath}");
         }
-        return AssetDatabase.LoadAssetAtPath<Sprite>(WhiteSpritePath);
+        return UIComponentPrefabBuilder.EnsureSingleSprite(WhiteSpritePath, Log);
     }
 
     private static void EnsureFolder(string path)

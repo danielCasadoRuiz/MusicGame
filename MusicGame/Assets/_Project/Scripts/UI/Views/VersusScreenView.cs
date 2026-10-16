@@ -27,6 +27,10 @@ public class VersusScreenView : MonoBehaviour
     public Image           opponentPortrait;
     public TextMeshProUGUI opponentNameText;
 
+    [Header("Loading")]
+    [Tooltip("Small \"Loading…\" line shown only while the stage is still being prepared (card opaque).")]
+    public TextMeshProUGUI loadingText;
+
     [Tooltip("Tint of a portrait slot with no sprite (no art yet).")]
     public Color placeholderPortraitColor = new(1f, 1f, 1f, 0.2f);
 }

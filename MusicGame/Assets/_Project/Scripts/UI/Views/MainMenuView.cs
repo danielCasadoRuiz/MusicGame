@@ -15,7 +15,7 @@ public class MainMenuView : MonoBehaviour
     [Header("Root")]
     public GameObject root;
     public TextMeshProUGUI titleText;
-    [Tooltip("Persistent level / XP / lives summary under the title (hidden until a progression save exists).")]
+    [Tooltip("Campaign status under the title — next match position (big) + lap · mastered matches · extra lives (hidden until a progression save exists).")]
     public TextMeshProUGUI profileText;
     [Tooltip("\"Catalog complete\" / load failure line (hidden while empty).")]
     public TextMeshProUGUI menuStatusText;

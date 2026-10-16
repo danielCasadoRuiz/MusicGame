@@ -363,17 +363,6 @@ public class MusicWorldManager : MonoBehaviour
         return Mathf.Clamp01(1f - (time - fadeStart) / _config.core.fadeOutSeconds);
     }
 
-    // Raw analytic surface height (0..1 normalized), with NO smoothing/slope-clamp — used for
-    // edge-of-window normal finite-differences (see BuildMesh) and for SampleSurface(), both of
-    // which need a value at a distance that may fall outside the currently-built grid array.
-    // Being a pure function of (distance, lateralFrac) — no window state involved — it's exactly
-    // reproducible from either side of a chunk boundary, which is what keeps normals seam-free.
-    private float HeightAt(float distance, float lateralFrac, int numBands)
-    {
-        float time = DistanceToSongTime(distance);
-        return numBands > 0 ? BlendedNormalized(lateralFrac, time, numBands) : 0f;
-    }
-
     // Distance → song-TIME, in the SAME convention CameraFollow already uses for its own
     // profile lookups (clock.SongTime - warmupTime) — MusicDistance = SongTime * UnitsPerSecond,
     // so distance/speed IS SongTime, and subtracting warmupTime here converts it to real,
@@ -803,46 +792,102 @@ public class MusicWorldManager : MonoBehaviour
     }
 
     /// <summary>
-    /// THE single authoritative surface query, shared by mesh generation and collectible
-    /// placement, so they can never disagree about where the ground actually is at a given
-    /// (distance, lateralOffset). Deliberately skips the longitudinal/lateral smoothing passes
-    /// and the slope-clamp (both are windowed-grid operations that don't apply to a one-off
-    /// query) — a very close analytic approximation of the rendered mesh, since the slope
-    /// clamp rarely engages given crossSlopeLimit/longitudinalSlopeLimit's headroom under
-    /// CharacterController.slopeLimit. Callers needing a hard guarantee (e.g. "never below the
-    /// mesh") should still add their own safety clearance on top.
+    /// Height (world units, along the path's up) of the REAL ground — the exact ground mesh/collider
+    /// the player stands on (see SampleSurface) — above the path centreline at (distance, lateralOffset).
     /// </summary>
-    public float SampleSurfaceHeight(float distance, float lateralOffset)
-    {
-        int numBands = _profile?.VisualBandCount ?? 0;
-        if (_profile == null || _bandReference == null || numBands == 0 || Path == null) return 0f;
+    public float SampleSurfaceHeight(float distance, float lateralOffset) => SampleSurface(distance, lateralOffset).height;
 
-        var   sample     = Path.GetSample(distance);
-        float lateralFrac = LateralFracFromOffset(sample, lateralOffset);
-        return ConservativeHeightAt(distance, lateralFrac, numBands) * Mathf.Max(0f, _config.levelGeneration.maxFrequencyHeight);
+    /// <summary>
+    /// THE single authoritative ground query (pickups, Life/Special, spawn, checkpoints, debug HUD):
+    /// the point of the REAL ground mesh — the same triangles the MeshCollider is built from — at
+    /// (distance, lateralOffset). It reads the processed whole-path height grid (_globalGrid: raw
+    /// bands → smoothing → slope clamps → post-pass) and interpolates over the exact triangle the
+    /// mesh uses (FillRows vertices, BuildMesh's v1–v2 diagonal), so it is bit-for-bit where the
+    /// player's capsule rests: on slopes, on raised relief and on the bent (turning / climbing)
+    /// stretches of the path alike, since every vertex is placed through the path's own frame.
+    /// Beyond the track edge (off-track pickups) the height is the edge's, at the real lateral offset.
+    ///
+    /// (Until 2026-10-16 this re-evaluated the RAW band spectrum analytically and took the MAX of
+    /// five samples, skipping the grid's smoothing/slope clamps: on cached songs that sat ~1 m above
+    /// the real ground on average and up to ~3 m on percussive peaks — every pickup placed from it
+    /// floated over the running player's head.)
+    /// </summary>
+    public SurfaceSample SampleSurface(float distance, float lateralOffset)
+    {
+        if (Path == null) return new SurfaceSample(Vector3.zero, Vector3.up, 0f);
+        var sample = Path.GetSample(distance);
+        float halfWidth = sample.width * 0.5f;
+        float onTrack = Mathf.Clamp(lateralOffset, -halfWidth, halfWidth);
+        if (_globalGrid == null || _gridCols < 2 || _globalRows < 2)
+            return new SurfaceSample(sample.position + sample.right * lateralOffset, sample.up, 0f);
+
+        Vector3 point = GroundMeshPoint(distance, LateralFracFromOffset(sample, onTrack), out Vector3 normal);
+        point += sample.right * (lateralOffset - onTrack); // off the edge: edge height, real lateral offset
+        return new SurfaceSample(point, normal, Vector3.Dot(point - sample.position, sample.up));
     }
 
-    // The actual rendered mesh applies longitudinal smoothing (box blur) that this single-point
-    // analytic query deliberately skips (see class doc) — meaning the smoothed mesh at a given
-    // point can end up SLIGHTLY taller than the raw analytic value if neighbouring distances are
-    // taller. Sampling a few neighbours within the smoothing radius and taking the max closes
-    // that gap in the SAFE direction (never underestimates the real surface — floating a touch
-    // high is harmless, embedding is not).
-    private float ConservativeHeightAt(float distance, float lateralFrac, int numBands)
+    /// <summary>
+    /// World position of a pickup: its centre `heightAboveGround` straight above (WORLD up — the
+    /// player's capsule and its jumps are world-vertical) the real ground at (distance, lateralOffset),
+    /// raised if needed so its bottom (centre − `minClearance`) never dips into the ground anywhere
+    /// under its footprint (`footprintRadius` around it, e.g. a slope or a relief ridge next to it).
+    /// </summary>
+    public Vector3 PickupPosition(float distance, float lateralOffset, float heightAboveGround,
+                                  float minClearance, float footprintRadius)
     {
-        // Same radius formula RebuildGroundWindow derives from pathSmoothness — kept in sync so
-        // this single-point query's safety margin always matches what the rendered mesh actually
-        // does, regardless of where pathSmoothness is set.
-        float radius = Mathf.Lerp(1f, 3f, Mathf.Clamp01(_config.levelGeneration.pathSmoothness));
-        float best   = HeightAt(distance, lateralFrac, numBands);
-        if (radius > 0.01f)
+        var ground = SampleSurface(distance, lateralOffset);
+        float highest = ground.position.y;
+        if (footprintRadius > 0f)
         {
-            best = Mathf.Max(best, HeightAt(distance - radius * 0.5f, lateralFrac, numBands));
-            best = Mathf.Max(best, HeightAt(distance + radius * 0.5f, lateralFrac, numBands));
-            best = Mathf.Max(best, HeightAt(distance - radius, lateralFrac, numBands));
-            best = Mathf.Max(best, HeightAt(distance + radius, lateralFrac, numBands));
+            highest = Mathf.Max(highest, SampleSurface(distance - footprintRadius, lateralOffset).position.y);
+            highest = Mathf.Max(highest, SampleSurface(distance + footprintRadius, lateralOffset).position.y);
+            highest = Mathf.Max(highest, SampleSurface(distance, lateralOffset - footprintRadius).position.y);
+            highest = Mathf.Max(highest, SampleSurface(distance, lateralOffset + footprintRadius).position.y);
         }
-        return best;
+        float y = Mathf.Max(ground.position.y + heightAboveGround, highest + minClearance);
+        return new Vector3(ground.position.x, y, ground.position.z);
+    }
+
+    // Point (and face normal) on the ground mesh at a global distance / lateral fraction — the same
+    // vertices FillRows writes and the same triangle split BuildMesh uses ((v0,v2,v1), (v1,v2,v3)).
+    private Vector3 GroundMeshPoint(float distance, float lateralFrac, out Vector3 normal)
+    {
+        float total = Path.TotalLength;
+        float rowF = Mathf.Clamp(distance, 0f, total) / _rowSpacing;
+        int r0 = Mathf.Clamp(Mathf.FloorToInt(rowF), 0, _globalRows - 2);
+        float fz = Mathf.Clamp01(rowF - r0);
+        float colF = Mathf.Clamp01(lateralFrac) * (_gridCols - 1);
+        int c0 = Mathf.Clamp(Mathf.FloorToInt(colF), 0, _gridCols - 2);
+        float fx = Mathf.Clamp01(colF - c0);
+
+        float scale = Mathf.Max(0.001f, _config.levelGeneration.maxFrequencyHeight);
+        var sA = Path.GetSample(Mathf.Min(r0 * _rowSpacing, total));
+        var sB = Path.GetSample(Mathf.Min((r0 + 1) * _rowSpacing, total));
+        Vector3 v0 = GroundVertex(sA, r0, c0, scale),     v1 = GroundVertex(sA, r0, c0 + 1, scale);
+        Vector3 v2 = GroundVertex(sB, r0 + 1, c0, scale), v3 = GroundVertex(sB, r0 + 1, c0 + 1, scale);
+
+        Vector3 point;
+        if (fx + fz <= 1f)
+        {
+            point  = v0 + (v1 - v0) * fx + (v2 - v0) * fz;
+            normal = Vector3.Cross(v2 - v0, v1 - v0);
+        }
+        else
+        {
+            point  = v3 + (v2 - v3) * (1f - fx) + (v1 - v3) * (1f - fz);
+            normal = Vector3.Cross(v3 - v1, v3 - v2);
+        }
+        normal = normal.sqrMagnitude > 1e-10f ? normal.normalized : sA.up;
+        if (Vector3.Dot(normal, sA.up) < 0f) normal = -normal;
+        return point;
+    }
+
+    // Exactly FillRows' vertex for global row g / column c.
+    private Vector3 GroundVertex(in MusicPath.Sample s, int g, int c, float scale)
+    {
+        float hw = s.width * 0.5f;
+        float xOff = -hw + hw * 2f * ((float)c / (_gridCols - 1));
+        return s.position + s.right * xOff + s.up * (Mathf.Clamp01(_globalGrid[g, c]) * scale);
     }
 
     private static float LateralFracFromOffset(MusicPath.Sample sample, float lateralOffset)
@@ -851,40 +896,5 @@ public class MusicWorldManager : MonoBehaviour
         return halfWidth > 0.0001f
             ? Mathf.Clamp01((lateralOffset + halfWidth) / (halfWidth * 2f))
             : 0.5f;
-    }
-
-    /// <summary>
-    /// THE single authoritative surface query used for collectible placement — position AND
-    /// normal, so a tilted section of terrain (e.g. a strong bass bump) tilts the placement
-    /// consistently with what's actually rendered there. Normal comes from the same analytic
-    /// central-difference approach BuildMesh uses (see HeightAt's doc) — a very close match to
-    /// the real rendered mesh, since the slope clamp rarely engages with the current headroom.
-    /// </summary>
-    public SurfaceSample SampleSurface(float distance, float lateralOffset)
-    {
-        int numBands = _profile?.VisualBandCount ?? 0;
-        if (_profile == null || _bandReference == null || numBands == 0 || Path == null)
-            return new SurfaceSample(Vector3.zero, Vector3.up, 0f);
-
-        var   sample = Path.GetSample(distance);
-        float lateralFrac = LateralFracFromOffset(sample, lateralOffset);
-        float scale  = Mathf.Max(0f, _config.levelGeneration.maxFrequencyHeight);
-        float height = ConservativeHeightAt(distance, lateralFrac, numBands) * scale;
-
-        const float d = 0.5f; // finite-difference step, world units
-        float hF = HeightAt(distance + d, lateralFrac, numBands) * scale;
-        float hB = HeightAt(distance - d, lateralFrac, numBands) * scale;
-        float halfWidth = sample.width * 0.5f;
-        float dFrac = halfWidth > 0.0001f ? d / (halfWidth * 2f) : 0f;
-        float hR = HeightAt(distance, Mathf.Clamp01(lateralFrac + dFrac), numBands) * scale;
-        float hL = HeightAt(distance, Mathf.Clamp01(lateralFrac - dFrac), numBands) * scale;
-
-        Vector3 tangentVec = (sample.tangent * (2f * d) + sample.up * (hF - hB)).normalized;
-        Vector3 rightVec   = (sample.right   * (2f * d) + sample.up * (hR - hL)).normalized;
-        Vector3 normal = Vector3.Cross(tangentVec, rightVec).normalized;
-        if (Vector3.Dot(normal, sample.up) < 0f) normal = -normal;
-
-        Vector3 position = sample.position + sample.right * lateralOffset + sample.up * height;
-        return new SurfaceSample(position, normal, height);
     }
 }

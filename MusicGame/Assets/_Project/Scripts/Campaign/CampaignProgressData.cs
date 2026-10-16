@@ -9,7 +9,7 @@ using System.Collections.Generic;
 ///                           identity of a scorable match — its song/rival are only THIS lap's assignment)
 ///   lap                     campaign pass (1, 2, …); a new lap restarts at L1#1 keeping every record
 ///   rival version           OpponentLevelConfig.level (the collectable card)
-///   player level            XP statistic (PlayerProgressData.playerLevel) — unrelated to all of the above
+///   (there is no player level / XP: retired — the campaign above IS the progression)
 ///   song cycle              SongCycleData — independent of laps
 /// </summary>
 [System.Serializable]

@@ -21,6 +21,12 @@ using UnityEngine;
 ///  MacroEventOccurredEvent (fired by GameplayManager at eventTime) by things like
 ///  MusicEnvironmentController.
 ///
+/// ANALYSIS vs DISTRIBUTION: the SongProfile (cached song analysis) only provides the musical events;
+/// everything random here (thinning, patterns, lateral/height rolls, off-track/elevated picks,
+/// Life/Special slots) comes from ONE seeded System.Random — the match's pickup seed
+/// (RunnerPickupLayout, persisted with the pending run). Generated once at match preparation; same
+/// profile + config + seed → the identical distribution, a new match → a new seed → a new layout.
+///
 /// eventTime     = warmupTime + onsetTime   (matches MusicClock.SongTime at the event)
 /// eventDistance = eventTime * unitsPerSecond
 /// World position is computed at ACTIVATION time from MusicPath.GetSample(eventDistance)
@@ -90,7 +96,12 @@ public class GameplayTimeline
         public float    confidence;     // 0..1 — see ClassifyOnset; >= confidenceKeepThreshold bypasses thinning
     }
 
+    /// <summary>Distribution with the config's fixed collectibleSeed (tests / diagnostics).</summary>
     public static GameplayTimeline Generate(SongProfile profile, MusicRunnerGameplayConfig config, MusicPath path)
+        => Generate(profile, config, path, config.collectibles.collectibleSeed);
+
+    /// <summary>The match's pickup distribution for `pickupSeed` (RunnerPickupLayout.SeedFor at match start).</summary>
+    public static GameplayTimeline Generate(SongProfile profile, MusicRunnerGameplayConfig config, MusicPath path, int pickupSeed)
     {
         float warmup = config.core.warmupTime;
         float speed  = config.core.playerSpeed;
@@ -118,7 +129,7 @@ public class GameplayTimeline
         micro.RemoveAll(c => c.confidence < config.collectibles.confidenceKeepThreshold
                            && IsNearMacroImpact(c.time, macroEvents, config));
 
-        var rng  = new System.Random(config.collectibles.collectibleSeed);
+        var rng  = new System.Random(pickupSeed);
         var kept = new List<Candidate>(micro.Count);
         foreach (var c in micro)
         {
@@ -209,8 +220,8 @@ public class GameplayTimeline
         events.Sort((a, b) => a.eventTime.CompareTo(b.eventTime));
 
         // Difficulty reward per pickup, decided once here (GameplayManager.ScoreFor reads it):
-        // off-track = its own x2 category; otherwise a smooth height bonus x1..x1.5 above the
-        // normal running collection height. Never both.
+        // off-track = its own x2 category; a pickup that needs a jump (elevated band) x1.25..x1.5;
+        // everything collectable running on the ground x1. Never both.
         for (int k = 0; k < events.Count; k++)
         {
             var ev = events[k];
@@ -776,6 +787,13 @@ public class GameplayTimeline
             // in the easy/no-jump band, consistent with ordinary collectibles.
             float ceil = elevatedPattern ? ElevatedBand(c.type, config).top : RunningCeiling(config, vFloor, vCeil);
             float vOff = Mathf.Lerp(vFloor, ceil, Mathf.Clamp01(config.collectibles.verticalOffsetCurve.Evaluate(shapeT)));
+            // No ambiguous heights: just under the elevated band would be neither collectable standing
+            // nor rewarded as a jump — lift it into the band (a clear jump, scored as one).
+            if (elevatedPattern)
+            {
+                float bandBottom = ElevatedBand(c.type, config).bottom;
+                if (vOff > StandingReach(c.type, config) - 0.05f && vOff < bandBottom) vOff = bandBottom;
+            }
 
             float half    = LateralHalfRange(path, config, dist);
             float jitter  = half > 0f ? (float)(rng.NextDouble() * 2.0 - 1.0) * half * 0.25f : 0f;
@@ -840,14 +858,19 @@ public class GameplayTimeline
         if (RingTypes.IsResource(e.ringType)) return 1f;
         if (e.isOffTrack) return Mathf.Max(1f, config.collectibles.offTrackBonusScoreMultiplier);
         var (lo, hi) = ElevatedBand(e.ringType, config);
-        return config.collectibles.HeightScoreMultiplier(e.verticalOffset, lo, hi);
+        if (e.verticalOffset < lo) return 1f; // collectable standing: no jump, no bonus
+        // Needs a jump → never less than elevatedMinScoreMultiplier, rising with height.
+        return Mathf.Max(config.collectibles.elevatedMinScoreMultiplier,
+                         config.collectibles.HeightScoreMultiplier(e.verticalOffset, lo, hi));
     }
 
     // ── Reach model: the player's REAL capsule + jump (PlayerController.CapsuleHeight) ─────────
 
-    /// <summary>Highest pickup CENTRE the player collects standing (capsule top + the pickup's half size).</summary>
+    /// <summary>Highest pickup CENTRE (above the real local ground) the player collects standing: the top of
+    /// the standing capsule + the half height of the pickup's TRIGGER volume (what actually overlaps the
+    /// capsule — RingController keeps it at a constant, leeway-enlarged world size, not the visual mesh).</summary>
     public static float StandingReach(RingType type, MusicRunnerGameplayConfig config) =>
-        PlayerController.CapsuleHeight + CollectibleMaxHalfHeight(type, config);
+        PlayerController.CapsuleHeight + CollectibleTriggerHalfHeight(type, config);
 
     /// <summary>The elevated (jump-only) band for ordinary pickups: from just above standing reach to a
     /// comfortable fraction of a full jump.</summary>
@@ -873,7 +896,7 @@ public class GameplayTimeline
         float airTime = 2f * v / g;
         if (t > airTime * 0.5f) return float.NaN;                 // must still be rising/at the peak — room to come back
         float feet = v * t - 0.5f * g * t * t;
-        float half = CollectibleMaxHalfHeight(type, config);
+        float half = CollectibleTriggerHalfHeight(type, config);
         float lo = feet + 0.35f;                                  // inside the airborne capsule, not at its feet
         if (mustBeAboveStanding) lo = Mathf.Max(lo, StandingReach(type, config) + config.collectibles.elevatedClearance);
         float hi = feet + PlayerController.CapsuleHeight + half - 0.15f;
@@ -933,6 +956,19 @@ public class GameplayTimeline
                 halfHeight = mf.sharedMesh.bounds.extents.y * prefab.transform.localScale.y;
         }
         return halfHeight * RingController.MaxPulseScale(type);
+    }
+
+    /// <summary>Half height of this type's TRIGGER volume in world units: the prefab's BoxCollider ×
+    /// root scale × RingController.PickupLeeway (RingController.SetVisualScale keeps exactly that world
+    /// size whatever the visual pulse does). Other collider shapes fall back to the visual half height.</summary>
+    public static float CollectibleTriggerHalfHeight(RingType type, MusicRunnerGameplayConfig config)
+    {
+        var prefab = config.collectibles.ResolvePrefab(type);
+        var box = prefab != null ? prefab.GetComponent<BoxCollider>() : null;
+        if (box == null) return CollectibleMaxHalfHeight(type, config);
+        var ring = prefab.GetComponent<RingController>();
+        float leeway = ring != null ? ring.PickupLeeway : 1f;
+        return box.size.y * 0.5f * Mathf.Abs(prefab.transform.localScale.y) * leeway;
     }
 
     // ── Classification (Micro only — Impact/Drop/Peak are Macro, see BuildMacroEvents) ──────

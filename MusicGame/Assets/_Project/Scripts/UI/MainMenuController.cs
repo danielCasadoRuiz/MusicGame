@@ -39,7 +39,7 @@ public class MainMenuController : MonoBehaviour
     private Button        _quitButton;
     private Slider        _volumeSlider;
     private TextMeshProUGUI _playLabel;     // "PLAY" first launch, "CONTINUE" once a progression save exists
-    private TextMeshProUGUI _profileText;   // persistent level / XP / lives
+    private TextMeshProUGUI _profileText;   // campaign position + extra lives
     private TextMeshProUGUI _menuStatusText;   // "catalog complete" / load failure
     private readonly System.Collections.Generic.List<RectTransform> _buttonStack = new(); // top → bottom
     private SongSelectionService _songService;
@@ -168,10 +168,20 @@ public class MainMenuController : MonoBehaviour
         if (_profileText == null) return;
         _profileText.gameObject.SetActive(hasSave);
         if (!hasSave) return;
-        // Musical Mastery is the prominent identity; victories under it; XP / lives stay subtle.
-        _profileText.text = $"<size=150%><b>{progress.MasteryRankName}</b></size>\n" +
-                            Loc.Get("MainMenu.Victories", progress.FightsWon.ToString()) +
-                            $"<size=80%><alpha=#99>   ·   XP {progress.Xp}   ·   {Loc.Get("HUD.Life")} {progress.ExtraLives}</size>";
+        // The campaign IS the progression: where the next match is (big), then lap · mastered matches ·
+        // extra lives (the Fight Again inventory). No XP / level / rank (retired — see PlayerProgressService).
+        _profileText.text = BuildProfileText(progress);
+    }
+
+    private static string BuildProfileText(PlayerProgressService progress)
+    {
+        string lives = Loc.Get("MainMenu.ExtraLives", progress.ExtraLives.ToString());
+        if (!CampaignService.Available) return lives;
+        var data = CampaignService.Data;
+        var (mastered, total) = CampaignModel.MasteryCount(data, CampaignService.Config);
+        string headline = CampaignService.LapFinished ? Loc.Get("MainMenu.LapDone", data.lap.ToString()) : CampaignService.CurrentPositionLabel;
+        return $"<size=150%><b>{headline}</b></size>\n" +
+               $"<size=85%><alpha=#BB>{Loc.Get("MainMenu.CampaignStatus", data.lap.ToString(), mastered.ToString(), total.ToString())}   ·   {lives}</size>";
     }
 
     // ── Language selector ─────────────────────────────────────────────────────────
@@ -226,7 +236,7 @@ public class MainMenuController : MonoBehaviour
     // ── Actions ─────────────────────────────────────────────────────────────────
 
     // PLAY (first launch) starts a progression save right away, so the next launch says CONTINUE,
-    // and opens the selector (the first song is chosen manually). CONTINUE keeps level / XP / lives /
+    // and opens the selector (the first song is chosen manually). CONTINUE keeps campaign / lives /
     // rival collection / song history and auto-picks the next song — every run still gets a fresh RunSession.
     private void OnPlayClicked()
     {

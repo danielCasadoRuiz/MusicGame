@@ -27,6 +27,9 @@ public class FightHudView : MonoBehaviour
     [Header("Portraits beside each fighter's name / health (the SAME sprites the VS screen shows)")]
     public Image playerPortrait;
     public Image opponentPortrait;
+    [Tooltip("Face-centred crop of each portrait slot (crop parameters live on these components).")]
+    public PortraitCrop playerPortraitCrop;
+    public PortraitCrop opponentPortraitCrop;
     [Tooltip("Tint of a portrait slot with no sprite (no art yet) — same neutral placeholder as the VS screen.")]
     public Color portraitPlaceholderColor = new(1f, 1f, 1f, 0.2f);
 

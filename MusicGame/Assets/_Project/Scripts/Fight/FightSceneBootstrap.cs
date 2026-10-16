@@ -167,7 +167,10 @@ public class FightSceneBootstrap : MonoBehaviour
     private ArenaEnvironmentLoader _arenaLoader;
 
     /// <summary>Rival visual applied AND its arena loaded — the presentation's "the stage is ready" signal.</summary>
-    public bool StageReady => OpponentVisualReady && (_arenaLoader == null || _arenaLoader.IsReady);
+    /// <summary>The player's avatar is fully built (or failed to the capsule) — see TryBuildAvatar.</summary>
+    public bool PlayerVisualReady { get; private set; } = true;
+    /// <summary>Both fighters fully dressed and posed + the arena loaded: what the Versus loading card waits for.</summary>
+    public bool StageReady => PlayerVisualReady && OpponentVisualReady && (_arenaLoader == null || _arenaLoader.IsReady);
     public ArenaEnvironmentLoader ArenaLoader => _arenaLoader;
 
     private void BuildArena()
@@ -189,11 +192,12 @@ public class FightSceneBootstrap : MonoBehaviour
         var opponent = session != null ? session.SelectedOpponent : null;
         int version = session?.SelectedOpponentLevelConfig != null ? session.SelectedOpponentLevelConfig.level : 0;
         int stage = session != null ? session.CurrentBossStage : -1;
-        string key = $"{(opponent != null ? opponent.id : "none")}|v{version}|s{stage}";
+        string key = FightPreloader.ArenaKey(opponent, version, stage);
         if (key == _arenaLoader.CurrentKey) return; // Fight Again: same arena, nothing reloaded
 
-        UnityEngine.AddressableAssets.AssetReferenceGameObject arena =
-            stage >= 0 ? session.BossArena : ArenaSelector.Pick(opponent);
+        // The arena chosen and preloaded during the runner results (FightPreloader), else chosen now.
+        UnityEngine.AddressableAssets.AssetReferenceGameObject arena = FightPreloader.TakeArena(key);
+        if (arena == null) arena = stage >= 0 ? session.BossArena : ArenaSelector.Pick(opponent);
         if (arena == null || !arena.RuntimeKeyIsValid()) arena = _arenaConfig != null ? _arenaConfig.defaultArena : null;
         _arenaLoader.Request(arena, key);
     }
@@ -260,7 +264,8 @@ public class FightSceneBootstrap : MonoBehaviour
         if (playerRecipe != null)
         {
             _playerActor.SetPlaceholderVisible(false);
-            _ = TryBuildAvatar(playerRecipe, _playerActor, "Player", i => { _playerAvatarInstance?.Dispose(); _playerAvatarInstance = i; return true; });
+            PlayerVisualReady = false;
+            _ = BuildPlayerAvatar(playerRecipe);
         }
 
         // Opponent: hidden until the committed selection gives it its avatar (no capsule flash
@@ -314,6 +319,12 @@ public class FightSceneBootstrap : MonoBehaviour
         }
         OpponentVisualReady = false;
         _ = BuildOpponentAvatar(levelConfig, who, token);
+    }
+
+    private async System.Threading.Tasks.Task BuildPlayerAvatar(AvatarRecipeSO playerRecipe)
+    {
+        await TryBuildAvatar(playerRecipe, _playerActor, "Player", i => { _playerAvatarInstance?.Dispose(); _playerAvatarInstance = i; return true; });
+        if (this != null) PlayerVisualReady = true; // built, or fell back to the capsule
     }
 
     private async System.Threading.Tasks.Task BuildOpponentAvatar(OpponentLevelConfig levelConfig, string who, int token)
@@ -385,7 +396,27 @@ public class FightSceneBootstrap : MonoBehaviour
     private async System.Threading.Tasks.Task TryBuildAvatar(AvatarRecipeSO recipeSO, FighterActor opponentActor, string who, System.Func<AvatarInstance, bool> keep)
     {
         var runtimeRecipe = recipeSO.ToRuntime();
-        var instance = await AvatarFactory.CreateAsync(runtimeRecipe, opponentActor.VisualRoot);
+        bool bound = false, applied = false;
+        // Built HIDDEN (AvatarFactory.CreateHiddenAsync): the T-pose body and the garments being put on are never
+        // seen. Everything below runs in the reveal frame — placed, scaled, animator bound and evaluated — so the
+        // fighter appears already standing in its combat pose.
+        var instance = await AvatarFactory.CreateHiddenAsync(runtimeRecipe, opponentActor != null ? opponentActor.VisualRoot : null, built =>
+        {
+            if (this == null || opponentActor == null) return;
+            if (!keep(built)) { built.Dispose(); return; }
+            opponentActor.ReplaceVisual(built.Root);
+            // The actor's gameplay origin sits at spawn height (the capsule's centre); the avatar's feet
+            // must be on the arena floor (y = 0).
+            built.Root.localPosition = new Vector3(0f, -opponentActor.transform.position.y, 0f);
+            built.Root.localRotation = Quaternion.identity;
+            // Composer height (OpponentDefinition.heightMeters, per composer — never per tier): a uniform
+            // scale of the canonical 1.75 m body, pivoting at the feet so they stay on the floor.
+            float height = opponentActor.Side == FighterSide.Opponent && GameSession.Instance?.SelectedOpponent != null
+                ? GameSession.Instance.SelectedOpponent.heightMeters : CanonicalAvatarHeight;
+            built.Root.localScale = Vector3.one * Mathf.Clamp(height / CanonicalAvatarHeight, 0.8f, 1.2f);
+            bound = opponentActor.BindAnimator(built.Animator, _flowConfig != null ? _flowConfig.combatAnimatorController : null);
+            applied = true;
+        });
 
         // The scene/actor may already be gone by the time an Addressables load resolves (Fight
         // exited mid-load — see the Fight-exit lifecycle hardening elsewhere in this project) —
@@ -396,27 +427,14 @@ public class FightSceneBootstrap : MonoBehaviour
             return;
         }
 
-        if (instance.Root == null)
+        if (instance.Root == null && !applied)
         {
             Debug.LogError($"[FightSceneBootstrap] {who}: AvatarRecipe '{recipeSO.name}' failed to build — showing the debug capsule fallback (NOT a valid production visual).");
             instance.Dispose();
             opponentActor.SetPlaceholderVisible(true);
             return;
         }
-
-        if (!keep(instance)) { instance.Dispose(); return; }
-        opponentActor.ReplaceVisual(instance.Root);
-        // The actor's gameplay origin sits at spawn height (the capsule's centre); the avatar's feet
-        // must be on the arena floor (y = 0).
-        instance.Root.localPosition = new Vector3(0f, -opponentActor.transform.position.y, 0f);
-        instance.Root.localRotation = Quaternion.identity;
-        // Composer height (OpponentDefinition.heightMeters, per composer — never per tier): a uniform
-        // scale of the canonical 1.75 m body, pivoting at the feet so they stay on the floor.
-        float height = opponentActor.Side == FighterSide.Opponent && GameSession.Instance?.SelectedOpponent != null
-            ? GameSession.Instance.SelectedOpponent.heightMeters : CanonicalAvatarHeight;
-        instance.Root.localScale = Vector3.one * Mathf.Clamp(height / CanonicalAvatarHeight, 0.8f, 1.2f);
-        bool bound = opponentActor.BindAnimator(instance.Animator, _flowConfig != null ? _flowConfig.combatAnimatorController : null);
-        Debug.Log($"[FightSceneBootstrap] {who} avatar '{recipeSO.name}' built and applied — combat animator {(bound ? "bound" : "NOT bound")}.");
+        if (applied) Debug.Log($"[FightSceneBootstrap] {who} avatar '{recipeSO.name}' built hidden and revealed posed — combat animator {(bound ? "bound" : "NOT bound")}.");
     }
 
     private static FighterActor SpawnActor(string name, FighterSide side, Vector3 position, GameObject visualPrefab, Color debugColor)

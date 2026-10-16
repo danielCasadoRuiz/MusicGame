@@ -8,6 +8,9 @@ public class RunnerPhaseOutcome
     public string PositionId, SongId;
     public bool Recorded;                         // false: side run (local file / no campaign position)
     public CampaignModel.RecordOutcome Record;
+    /// <summary>The run's own gameplay numbers (shown next to its stars): score / reachable maximum, falls.</summary>
+    public int GameScore, GameMaxScore, Falls;
+    public float GameNormalized;
 }
 
 /// <summary>Result of the combat phase just decided (match result screen).</summary>
@@ -60,6 +63,28 @@ public static class CampaignService
 
     public static bool LapFinished => Available && CampaignModel.IsLapFinished(Data, Config);
     public static CampaignLevelDefinition CurrentLevel => Available ? CampaignModel.CurrentLevel(Data, Config) : null;
+
+    // ── Labels (shared by the main menu, the result panels and the next-song card) ──
+
+    /// <summary>"LEVEL 2" (or the level's own name key).</summary>
+    public static string LevelName(int index)
+    {
+        var level = Config != null ? Config.Level(index) : null;
+        if (level == null) return "";
+        return string.IsNullOrEmpty(level.nameKey) ? Loc.Get("Campaign.Level", (index + 1).ToString()) : Loc.Get(level.nameKey);
+    }
+
+    /// <summary>"LEVEL 2 · match 3 of 5" for a position; "" when the level is unknown.</summary>
+    public static string PositionLabel(string levelId, int matchNumber)
+    {
+        int index = Config != null ? Config.IndexOf(levelId) : -1;
+        if (index < 0) return "";
+        return Loc.Get("Campaign.PositionOf", LevelName(index), matchNumber.ToString(), Config.Level(index).matchCount.ToString());
+    }
+
+    /// <summary>The position the NEXT campaign match will be played at ("" when the lap is finished / no campaign).</summary>
+    public static string CurrentPositionLabel =>
+        Available && !LapFinished ? PositionLabel(CurrentLevel.id, Data.matchNumber) : "";
 
     public static void StartNewLap()
     {
@@ -123,7 +148,14 @@ public static class CampaignService
             }
         var eval = PhaseEvaluator.EvaluateRunner(results != null ? results.NormalizedScore : 0f, available, collected,
                                                  timed > 0 ? timingSum / timed : 0f, results != null ? results.FallCount : 0, Evaluation);
-        var outcome = new RunnerPhaseOutcome { Evaluation = eval, SongId = songId };
+        var outcome = new RunnerPhaseOutcome
+        {
+            Evaluation = eval, SongId = songId,
+            GameScore = results?.Stats != null ? results.Stats.Score : 0,
+            GameMaxScore = results != null ? results.MaxPossibleScore : 0,
+            GameNormalized = results != null ? results.NormalizedScore : 0f,
+            Falls = results != null ? results.FallCount : 0,
+        };
 
         var run = P != null ? P.PendingRun : null;
         if (Available && run != null && run.IsSet && !run.IsBoss && run.songId == songId && !string.IsNullOrEmpty(run.PositionId))

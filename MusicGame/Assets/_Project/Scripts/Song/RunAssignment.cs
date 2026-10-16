@@ -40,6 +40,8 @@ public static class RunAssignment
         };
         CampaignService.Stamp(run);                 // lap + level + match = the scorable position
         CampaignService.ApplyRunnerDifficulty(run);
+        RunnerPickupLayout.EnsureSeed(run);         // a NEW match → a new pickup-distribution seed (saved below)
+        RunnerPickupLayout.Apply(run);
         if (progress != null && progress.PendingRun.IsSet && progress.PendingRun.songId != songId)
             Debug.Log($"[RunAssignment] Unfinished assignment '{progress.PendingRun.songId}' abandoned (NOT completed) for '{songId}'.");
         progress?.SetPendingRun(run); // saved BEFORE gameplay starts
@@ -58,6 +60,7 @@ public static class RunAssignment
         if (session == null) return;
         var (opponent, level, tier) = PickOpponent(session);
         session.SetAssignedOpponent(opponent, level, tier);
+        RunnerPickupLayout.ApplySessionOnly(); // new assignment → new (session-only) pickup distribution
     }
 
     /// <summary>CONTINUE / next song: a VALID pending assignment wins (same song + same rival, the
@@ -91,10 +94,13 @@ public static class RunAssignment
         {
             session.SetAssignedOpponent(opponent, level, run.opponentTier);
             if (string.IsNullOrEmpty(run.levelId) && !CampaignService.LapFinished) { CampaignService.Stamp(run); progress.SetPendingRun(run); }
+            // Same match → its STORED pickup seed (an older save gets one now, saved once — RunnerPickupLayout).
+            if (RunnerPickupLayout.EnsureSeed(run)) progress.SetPendingRun(run);
+            RunnerPickupLayout.Apply(run);
             CampaignService.ApplyRunnerDifficulty(run);
             ContentDownloadManager.Instance?.PreloadContentAsync(ContentKeys.Enemy(opponent.id));
             songId = run.songId;
-            Debug.Log($"[RunAssignment] Resuming pending run: '{run.songId}' vs {opponent.displayName} v{run.opponentLevel} (same song, same rival).");
+            Debug.Log($"[RunAssignment] Resuming pending run: '{run.songId}' vs {opponent.displayName} v{run.opponentLevel} (same song, same rival, pickup seed {run.pickupSeed}).");
             return true;
         }
 

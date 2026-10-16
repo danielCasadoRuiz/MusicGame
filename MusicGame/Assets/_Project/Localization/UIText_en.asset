@@ -143,7 +143,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3248318111774
-    m_Localized: "\u2500\u2500\u2500 RESULTS \u2500\u2500\u2500"
+    m_Localized: RACE RESULTS
     m_Metadata:
       m_Items: []
   - m_Id: 3248318111775
@@ -1135,6 +1135,148 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 12057460350705744
     m_Localized: Hits {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705745
+    m_Localized: Race rating
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705746
+    m_Localized: Score {0} / {1} ({2}%)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705747
+    m_Localized: "No falls \u2014 no-fall bonus +{0}%"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705748
+    m_Localized: "Falls {0} \u2014 no-fall bonus (+{1}%) lost"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705749
+    m_Localized: Falls {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705750
+    m_Localized: 'FOR THE FIGHT:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705751
+    m_Localized: '{0} specials'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705752
+    m_Localized: '{0} specials collected, {1} available'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705753
+    m_Localized: "x3 combos {0} \xB7 x4 combos {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705754
+    m_Localized: "Lives +{0}  \xB7  {1} extra lives for Fight Again"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705755
+    m_Localized: "Lives +{0} ({1} collected; the rest were already earned in an earlier
+      attempt of this match)  \xB7  {2} extra lives for Fight Again"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705756
+    m_Localized: Best race of this match
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705757
+    m_Localized: MATCH PASSED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705758
+    m_Localized: MATCH NOT PASSED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705759
+    m_Localized: "FIGHT \xB7 won vs {0} (version {1})"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705760
+    m_Localized: "FIGHT \xB7 lost vs {0} (version {1})"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705761
+    m_Localized: Fight rating
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705762
+    m_Localized: "Rounds {0}\u2013{1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705763
+    m_Localized: "RACE \xB7 {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705764
+    m_Localized: "MATCH \xB7 {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705765
+    m_Localized: "MATCH \xB7 free run (outside the campaign)"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705766
+    m_Localized: 'Not passed: the campaign does not advance. Fight Again (1 extra
+      life) or replay the song.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705767
+    m_Localized: 'Extra lives: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705768
+    m_Localized: Match rating (race + fight)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705769
+    m_Localized: 'Match completed! Next: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705770
+    m_Localized: 'Level completed! Next: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705771
+    m_Localized: 'Match already completed: only its records can improve.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705772
+    m_Localized: Match record improved
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705773
+    m_Localized: Match record
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705774
+    m_Localized: "{0} \xB7 match {1} of {2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705775
+    m_Localized: Extra lives {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705776
+    m_Localized: LAP {0} COMPLETED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12057460350705777
+    m_Localized: "Lap {0}  \xB7  Mastered matches {1}/{2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12267502945492992
+    m_Localized: '{0} s'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12319507021881344
+    m_Localized: "Loading\u2026"
     m_Metadata:
       m_Items: []
   references:

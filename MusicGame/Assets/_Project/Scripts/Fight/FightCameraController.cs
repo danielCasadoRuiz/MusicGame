@@ -47,8 +47,23 @@ public class FightCameraController : MonoBehaviour
     private float _introElapsed, _introDuration;
     private Vector3 _introStartPos;
     private Quaternion _introStartRot;
-    private Vector3 _fpLookPoint;
     private Camera _camera;
+
+    // First person from the player's eye pivot (FirstPersonHeadRig) — see ComputeFirstPersonView.
+    private readonly FirstPersonHeadRig _playerHead = new();
+    private Vector3 _fpEye;              // this frame's eye pivot position (world)
+    private Quaternion _fpRot;           // stabilised head rotation (moderate smoothing + roll damping)
+    private FighterActor _playerActor;   // knockdown state (the downed view turns to the rival), resolved lazily
+    private bool _fpRotInit;
+    private float _fpEnterT = 1f;        // 0 -> 1 blend from the previous view into the eyes, then rigid
+    private Vector3 _fpEnterPos;
+    private Quaternion _fpEnterRot;
+    private float _thirdPersonNearClip = -1f; // the camera's own near plane, restored outside first person
+    private float _thirdPersonFov = -1f;      // the camera's own field of view, restored outside first person
+
+    /// <summary>Diagnostics (FirstPersonCameraCapture): the player's head rig and this frame's eye target.</summary>
+    public FirstPersonHeadRig PlayerHeadRig => _playerHead;
+    public Vector3 FirstPersonEyeTarget => _fpEye;
 
     public Camera Camera => _camera != null ? _camera : _camera = GetComponent<Camera>();
     public bool IsIntroTravelling => _introActive;
@@ -78,6 +93,7 @@ public class FightCameraController : MonoBehaviour
     public void ToggleView()
     {
         ViewMode = ViewMode == CameraViewMode.ThirdPerson ? CameraViewMode.FirstPerson : CameraViewMode.ThirdPerson;
+        if (ViewMode == CameraViewMode.FirstPerson) BeginFirstPersonEnter();
         PlayerPrefs.SetInt(ViewPrefsKey, (int)ViewMode);
         PlayerPrefs.Save();
         ViewModeChanged?.Invoke(ViewMode);
@@ -93,6 +109,7 @@ public class FightCameraController : MonoBehaviour
     private void OnDestroy()
     {
         if (Instance == this) Instance = null;
+        _playerHead.Release(); // never leave the player's head collapsed
     }
 
     public void Initialize(FightCameraConfig config, Transform player, Transform opponent)
@@ -125,6 +142,12 @@ public class FightCameraController : MonoBehaviour
     private void LateUpdate()
     {
         if (_player == null || _opponent == null) return;
+        UpdateCameraPose();
+        UpdateFirstPersonPresentation();
+    }
+
+    private void UpdateCameraPose()
+    {
         ComputeTarget(out Vector3 targetPos, out Quaternion targetRot, out bool firstPerson);
 
         if (_introActive) { UpdateIntro(targetPos, targetRot); return; }
@@ -139,15 +162,51 @@ public class FightCameraController : MonoBehaviour
         float rotSmooth = _config != null ? _config.rotationSmoothSpeed : 6f;
         if (firstPerson)
         {
-            float fpSmooth = _config != null ? _config.firstPersonPositionSmoothTime : 0.08f;
-            transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref _positionVelocity, fpSmooth);
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation((_fpLookPoint - transform.position).normalized, Vector3.up),
-                                                  rotSmooth * 1.5f * Time.deltaTime);
+            // Position: glued to the eye pivot (child of the Head bone) - no lag, ever: advancing, lunging,
+            // being hit or falling moves the view exactly with the head. Only the moment of switching view
+            // blends in (firstPersonEnterBlendTime). Rotation: the head's own, moderately stabilised
+            // (ComputeFirstPersonView) - never disconnected from it.
+            if (_fpEnterT < 1f)
+            {
+                float blend = _config != null ? _config.firstPersonEnterBlendTime : 0.3f;
+                _fpEnterT = Mathf.Min(1f, _fpEnterT + Time.deltaTime / Mathf.Max(0.01f, blend));
+                float e = _fpEnterT * _fpEnterT * (3f - 2f * _fpEnterT);
+                transform.SetPositionAndRotation(Vector3.Lerp(_fpEnterPos, targetPos, e), Quaternion.Slerp(_fpEnterRot, targetRot, e));
+            }
+            else transform.SetPositionAndRotation(targetPos, targetRot);
+            _positionVelocity = Vector3.zero;
             return;
         }
         float posSmooth = _config != null ? _config.positionSmoothTime : 0.15f;
         transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref _positionVelocity, posSmooth);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotSmooth * Time.deltaTime);
+    }
+
+    private void BeginFirstPersonEnter()
+    {
+        _fpEnterT = 0f;
+        _fpEnterPos = transform.position;
+        _fpEnterRot = transform.rotation;
+        _fpRotInit = false;
+    }
+
+    /// <summary>First-person-only presentation: a short near clip plane (the lens is just in front of the
+    /// face; the own hands stay visible) and a slightly wider lens. Nothing of the avatar is hidden.
+    /// Restored in third person.</summary>
+    private void UpdateFirstPersonPresentation()
+    {
+        bool firstPerson = ViewMode == CameraViewMode.FirstPerson;
+        var cam = Camera;
+        if (cam != null)
+        {
+            if (_thirdPersonNearClip < 0f) _thirdPersonNearClip = cam.nearClipPlane;
+            float fpNear = _config != null ? Mathf.Max(0.005f, _config.firstPersonNearClip) : 0.03f;
+            cam.nearClipPlane = firstPerson ? fpNear : _thirdPersonNearClip;
+            if (_thirdPersonFov < 0f) _thirdPersonFov = cam.fieldOfView;
+            float fpFov = _config != null ? _config.firstPersonFieldOfView : 80f;
+            // Eased like the position blend, so the switch never pops the lens.
+            cam.fieldOfView = Mathf.MoveTowards(cam.fieldOfView, firstPerson ? fpFov : _thirdPersonFov, 90f * Time.unscaledDeltaTime);
+        }
     }
 
     private void SnapToTarget()
@@ -246,17 +305,9 @@ public class FightCameraController : MonoBehaviour
 
         if (ViewMode == CameraViewMode.FirstPerson)
         {
-            // Near-head, slightly behind and beside the player, looking at the opponent's chest. The
-            // third-person yaw above keeps running, so switching back is seamless and facing is stable.
-            Vector3 toOpp = separation > 0.0001f ? lineXZ / separation : alongLine;
-            float fpHeight = _config != null ? _config.firstPersonHeight : 1.85f;
-            float fpBack   = _config != null ? _config.firstPersonBack : 0.9f;
-            float fpSide   = _config != null ? _config.firstPersonSide : 0.35f;
-            float fpLook   = _config != null ? _config.firstPersonLookHeight : 1.35f;
-            Vector3 eye = _player.position + Vector3.up * fpHeight - toOpp * fpBack + alongLine * fpSide;
-            _fpLookPoint = _opponent.position + Vector3.up * fpLook;
-            targetPos = eye;
-            targetRot = Quaternion.LookRotation((_fpLookPoint - eye).normalized, Vector3.up);
+            // The player's REAL view: the eye pivot under the Head bone. The third-person yaw above keeps
+            // running, so switching back is seamless.
+            ComputeFirstPersonView(out targetPos, out targetRot);
             firstPerson = true;
             return;
         }
@@ -264,6 +315,66 @@ public class FightCameraController : MonoBehaviour
         targetPos = desiredPosition;
         targetRot = desiredRotation;
         firstPerson = false;
+    }
+
+    /// <summary>
+    /// The player's eye pivot (FirstPersonHeadRig, child of the Head bone): position exact; rotation = the
+    /// head's, smoothed over firstPersonRotationSmoothTime with its roll partly levelled
+    /// (firstPersonRollDamping) - punches and hit reactions don't shake the view, yet it stays the head's
+    /// view (a fall or KO ends looking from the floor, from the eyes).
+    /// </summary>
+    private void ComputeFirstPersonView(out Vector3 position, out Quaternion rotation)
+    {
+        float eyeUp  = _config != null ? _config.firstPersonEyeUp : FirstPersonHeadRig.DefaultEyeUp;
+        float eyeFwd = _config != null ? _config.firstPersonEyeForward : FirstPersonHeadRig.DefaultEyeForward;
+        if (!_playerHead.Resolve(_player, eyeUp, eyeFwd))
+        {
+            float fallbackHeight = _config != null ? _config.firstPersonFallbackEyeHeight : 1.63f; // arena floor is y = 0
+            position = new Vector3(_player.position.x, fallbackHeight, _player.position.z);
+            Vector3 flatToRival = _opponent.position - _player.position; flatToRival.y = 0f;
+            rotation = flatToRival.sqrMagnitude > 0.0001f ? Quaternion.LookRotation(flatToRival.normalized, Vector3.up) : transform.rotation;
+            _fpEye = position;
+            return;
+        }
+
+        position = _fpEye = _playerHead.Pivot.position;
+        Quaternion head = _playerHead.Pivot.rotation;
+        float rollDamping = _config != null ? _config.firstPersonRollDamping : 0.5f;
+        Vector3 forward = head * Vector3.forward;
+
+        // EYES: real eyes turn inside the head toward what the fighter watches — the rival's upper body. The
+        // gaze may deviate from the head's facing by at most firstPersonEyeGazeMaxAngle (a boxing stance
+        // carries the chin down and the head turned), so the view never detaches from the head. Downed (fall /
+        // KO) the head faces the sky: the gaze then turns fully to the rival, still from the eyes on the floor.
+        Vector3 toRival = RivalUpperBody() - position;
+        if (toRival.sqrMagnitude > 0.0001f)
+        {
+            if (_playerActor == null && _player != null) _playerActor = _player.GetComponent<FighterActor>();
+            bool downed = _playerActor != null && ((_playerActor.HitReaction != null && _playerActor.HitReaction.IsInKnockdownFlow)
+                                                   || (_playerActor.Health != null && _playerActor.Health.IsKO));
+            float maxGaze = downed ? 180f : (_config != null ? _config.firstPersonEyeGazeMaxAngle : 25f);
+            forward = Vector3.RotateTowards(forward, toRival.normalized, maxGaze * Mathf.Deg2Rad, 0f);
+        }
+        Vector3 up = Vector3.Slerp(head * Vector3.up, Vector3.up, rollDamping);
+        if (Vector3.Cross(forward, up).sqrMagnitude < 1e-6f) up = head * Vector3.up; // looking straight up/down
+        Quaternion target = Quaternion.LookRotation(forward, up);
+        float tau = _config != null ? _config.firstPersonRotationSmoothTime : 0.1f;
+        _fpRot = !_fpRotInit ? target : Quaternion.Slerp(_fpRot, target, 1f - Mathf.Exp(-Time.deltaTime / Mathf.Max(0.001f, tau)));
+        _fpRotInit = true;
+        rotation = _fpRot;
+    }
+
+    /// <summary>The rival's chest height over its root (Humanoid Chest bone when available).</summary>
+    private Vector3 RivalUpperBody()
+    {
+        var anim = _opponent.GetComponentInChildren<Animator>();
+        Transform chest = null;
+        if (anim != null && anim.isHuman)
+        {
+            chest = anim.GetBoneTransform(HumanBodyBones.UpperChest);
+            if (chest == null) chest = anim.GetBoneTransform(HumanBodyBones.Chest);
+        }
+        return chest != null ? chest.position : _opponent.position + Vector3.up * 1.3f;
     }
 
     private static float DirToYaw(Vector3 dir) => Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;

@@ -8,8 +8,11 @@ using UnityEngine.UI;
 /// Live top-bar HUD + end-of-song results screen. Both are uGUI PREFABS (LiveHud.prefab /
 /// EndScreen.prefab, instanced in Runner.unity and handed over by GameplayManager from the scene's
 /// UIRegistry) — this class only wires their views and fills values; it never builds UI. A missing view
-/// is logged as an error and that part of the HUD simply stays off (no procedural fallback). The
-/// per-ring-type end-screen rows are item prefabs (UIPrefabLibrarySO.runnerPerformanceRow). Real
+/// is logged as an error and that part of the HUD simply stays off (no procedural fallback).
+/// The end screen is ONE results list (EndScreenView.evaluationPanel — see PopulateEndScreen): race stars,
+/// score, pickups/timing, falls + no-fall bonus, the per-ring-type bars (item prefab
+/// UIPrefabLibrarySO.runnerPerformanceRow, appended to the same list), resources for the fight, lives and
+/// the match record — nothing repeated in a second block, nothing debug-only. Real
 /// Button components mean clicks are handled by EventSystem, not by OnGUI's control-ID bookkeeping
 /// (which is what made Restart/Continue occasionally need two clicks with the old IMGUI version).
 /// </summary>
@@ -57,6 +60,7 @@ public class GameplayHUD : MonoBehaviour
     private float            _finalNormalizedScore;
     private int              _finalMaxPossibleScore;
     private GamePerformance  _finalPerformance;
+    private RunnerResourceCounts _finalResources;
 
     private static readonly RingType[] PerformanceRowOrder =
         { RingType.Kick, RingType.Snare, RingType.HiHat, RingType.Beat, RingType.Onset, RingType.Impact, RingType.Peak };
@@ -77,23 +81,16 @@ public class GameplayHUD : MonoBehaviour
 
     // ── uGUI refs: end screen ───────────────────────────────────────────────
     private RectTransform _endRoot;
-    private EvaluationPanel _runnerEvalPanel;
+    private EvaluationPanel _endPanel;          // the ONE results list (EndScreenView.evaluationPanel)
     private System.Action<RunnerResultsReadyEvent> _onResultsReady;
-    private TextMeshProUGUI  _ratingLabelText;
-    private Image _ratingBarFill;
-    private TextMeshProUGUI  _scoreSummaryText;
-    private RectTransform _performanceRows;
-    private TextMeshProUGUI  _fallsText;
-    private TextMeshProUGUI  _noFallBonusText;
-    private TextMeshProUGUI  _sessionText;
+    // Campaign evaluation of THIS run (CampaignService.LastRunner, delivered by RunnerResultsReadyEvent in
+    // the same GameEndedEvent dispatch); null until then and cleared whenever the end screen hides.
+    private RunnerPhaseOutcome _runnerOutcome;
 
     // LIFE / SPECIAL — read straight from the authoritative state (PlayerProgressService.ExtraLives,
     // GameSession.Run): the ints below only detect changes, they are never a second counter.
     private TextMeshProUGUI _lifeValueText, _specialValueText;
-    private TextMeshProUGUI _runSummaryText;
     private int _shownLives = -1, _shownSpecials = -1;
-    private System.Action<PlayerProgressChangedEvent> _onProgressChanged;
-    private readonly List<GameObject> _rowObjects = new();
 
     // ── Lifecycle ────────────────────────────────────────────────────────────
 
@@ -109,27 +106,8 @@ public class GameplayHUD : MonoBehaviour
         _specialValueText.text = specials.ToString();
     }
 
-    // Run statistics (this run) next to the persistent totals — see RunSession / PlayerProgressService.
-    private void RefreshRunSummary()
-    {
-        if (_runSummaryText == null) return;
-        var run = GameSession.Instance != null ? GameSession.Instance.Run : null;
-        var progress = PlayerProgressService.Instance;
-        int score = (_finalStats ?? manager?.Stats)?.Score ?? 0;
-        _runSummaryText.text =
-            Loc.Get("EndScreen.RunScore", score.ToString("N0")) + "\n" +
-            Loc.Get("EndScreen.LivesCollected", (run?.LivesCollectedThisRun ?? 0).ToString()) + "\n" +
-            Loc.Get("EndScreen.TotalLives", (progress != null ? progress.ExtraLives : 0).ToString()) + "\n" +
-            Loc.Get("EndScreen.SpecialsCollected", (run?.SpecialsCollectedThisRun ?? 0).ToString()) + "\n" +
-            Loc.Get("EndScreen.SpecialsAvailable", (run != null ? run.Wallet.Specials : 0).ToString()) + "\n" +
-            Loc.Get("EndScreen.Xp", (run?.XpEarned ?? 0).ToString(), (progress != null ? progress.Level : 1).ToString());
-    }
-
     private void OnEnable()
     {
-        // XP is granted by GameSession on the same GameEndedEvent — refresh once it lands.
-        _onProgressChanged = _ => { if (_endRoot != null && _endRoot.gameObject.activeSelf) RefreshRunSummary(); };
-        EventBus.Subscribe(_onProgressChanged);
         _onLevel = e => _totalRings = e.RingCount;
         _onEnd   = e =>
         {
@@ -149,8 +127,9 @@ public class GameplayHUD : MonoBehaviour
             _finalNormalizedScore  = e.NormalizedScore;
             _finalMaxPossibleScore = e.MaxPossibleScore;
             _finalPerformance      = e.Performance;
-            PopulateEndScreen();
+            _finalResources        = e.Resources;
             SetGameEnded(true);
+            PopulateEndScreen();
         };
         _onProfile = e => { _songDuration = e.Profile.duration; _profile = e.Profile; };
         // A full restart publishes CheckpointIndex == 0 — kept as a safety net (Restart already
@@ -161,14 +140,18 @@ public class GameplayHUD : MonoBehaviour
         EventBus.Subscribe(_onEnd);
         EventBus.Subscribe(_onProfile);
         EventBus.Subscribe(_onRespawned);
-        // Campaign evaluation of this run (stars) — computed by GameSession right before this event.
-        _onResultsReady = _ => PopulateRunnerEvaluation();
+        // Campaign evaluation of this run (stars) — computed by GameSession inside the same GameEndedEvent
+        // dispatch, so it may land before or after _onEnd above: whichever comes second completes the panel.
+        _onResultsReady = _ =>
+        {
+            _runnerOutcome = CampaignService.LastRunner;
+            if (_gameEnded) PopulateEndScreen();
+        };
         EventBus.Subscribe(_onResultsReady);
     }
 
     private void OnDisable()
     {
-        EventBus.Unsubscribe(_onProgressChanged);
         EventBus.Unsubscribe(_onLevel);
         EventBus.Unsubscribe(_onEnd);
         EventBus.Unsubscribe(_onProfile);
@@ -198,6 +181,7 @@ public class GameplayHUD : MonoBehaviour
     private void SetGameEnded(bool ended)
     {
         _gameEnded = ended;
+        if (!ended) _runnerOutcome = null; // a restart / new run: never show the previous run's evaluation
         if (_liveRoot != null) _liveRoot.gameObject.SetActive(!ended);
         if (_endRoot != null) _endRoot.gameObject.SetActive(ended);
     }
@@ -326,14 +310,10 @@ public class GameplayHUD : MonoBehaviour
 
     private void WireEndScreen(EndScreenView view)
     {
-        _endRoot          = view.GetComponent<RectTransform>();
-        _ratingLabelText  = view.ratingLabel;
-        _ratingBarFill    = UIFactory.EnsureFillSprite(view.ratingBarFill);
-        _scoreSummaryText = view.scoreSummary;
-        _performanceRows  = view.performanceRowsContainer;
-        _fallsText        = view.fallsText;
-        _noFallBonusText  = view.noFallBonusText;
-        _sessionText      = view.sessionText;
+        _endRoot  = view.GetComponent<RectTransform>();
+        _endPanel = view.evaluationPanel;
+        if (_endPanel == null)
+            Debug.LogError("[GameplayHUD] EndScreenView.evaluationPanel not assigned — run Tools > MusicGame > UI > Build All UI Prefabs (patches EndScreen.prefab).", view);
 
         // Same reasoning as WireLiveHud's label re-set — these were baked once at Editor-bake
         // time, so re-apply from the current locale here rather than trusting the prefab's value.
@@ -344,9 +324,6 @@ public class GameplayHUD : MonoBehaviour
         view.restartButton.onClick.AddListener(OnRestartClicked);
         view.continueButton.onClick.AddListener(OnContinueClicked);
 
-        _runSummaryText = view.runSummaryText;
-        if (_runSummaryText == null)
-            Debug.LogError("[GameplayHUD] EndScreenView.runSummaryText not assigned — run Tools > MusicGame > UI > Build All UI Prefabs (patches EndScreen.prefab).", view);
     }
 
     // _gameEnded is cleared HERE, synchronously on click — not left to wait for
@@ -381,110 +358,90 @@ public class GameplayHUD : MonoBehaviour
         EventBus.Publish(new ContinuePressedEvent { Stats = s });
     }
 
-    /// <summary>Runner phase of the campaign match: points / max, stars, short breakdown, the position's
-    /// stored best and NEW RECORD — the fight comes next (Continue).</summary>
-    private void PopulateRunnerEvaluation()
-    {
-        var o = CampaignService.LastRunner;
-        if (_endRoot == null || o == null) return;
-        if (_runnerEvalPanel == null)
-        {
-            _runnerEvalPanel = EvaluationPanel.Spawn(_endRoot, "RunnerEvaluation"); // anchoring/size from the prefab
-            if (_runnerEvalPanel == null) return;
-        }
-        var p = _runnerEvalPanel;
-        p.Clear();
-        var e = o.Evaluation;
-        p.AddHeader(Loc.Get("Eval.ThisRunnerTitle"));
-        p.AddStars(Loc.Get("Eval.Points", EvaluationPanel.Points(e.Score, e.MaxScore)), e.HalfStars);
-        p.AddNote(EvaluationPanel.Breakdown(e.Metrics));
-        if (o.Recorded)
-        {
-            p.AddStars(Loc.Get("Eval.BestRunner") + (o.Record.NewRecord ? "  " + Loc.Get("Eval.NewRecord") : ""), o.Record.Best != null && o.Record.Best.has ? o.Record.Best.halfStars : -1);
-            p.AddHighlight(Loc.Get("Eval.NextFight"));
-        }
-        else p.AddNote(Loc.Get("Eval.NotCampaign"));
-    }
-
+    /// <summary>
+    /// The ONE results list, top to bottom (each value once):
+    ///   [campaign position]                      header — where this race counts (omitted for a free run)
+    ///   RACE stars (+ NEW RECORD)                the run's result = its stars (score ÷ reachable maximum)
+    ///   Score a / max (n%)                       the gameplay score behind those stars
+    ///   Pickups · Timing                         what the score is made of
+    ///   Falls (+ no-fall bonus / bonus lost)     only the bonus line when it applies
+    ///   per-type bars                            compact RunnerPerformanceRow items
+    ///   For the fight: specials (once) + x3/x4   the fight wallet this run filled
+    ///   Lives +n · extra lives (Fight Again)     granted once per match (RunRewardRules)
+    ///   Best race of this match / next step      the stored record (when not just beaten) + "the fight is next"
+    /// Rebuilt from scratch on each call (GameEndedEvent and RunnerResultsReadyEvent may arrive in any order).
+    /// </summary>
     private void PopulateEndScreen()
     {
         var s = _finalStats ?? manager?.Stats;
-        if (s == null || _endRoot == null) return;
+        if (s == null || _endPanel == null) return;
+        var p = _endPanel;
+        p.Clear();
+        var o = _runnerOutcome;
+        var run = GameSession.Instance != null ? GameSession.Instance.Run : null;
 
-        float displayRating = config != null
-            ? Mathf.Clamp01(config.scoring.performanceRatingCurve.Evaluate(_finalNormalizedScore))
-            : _finalNormalizedScore;
-        Color ratingColor = Color.Lerp(new Color(0.9f, 0.3f, 0.25f), new Color(0.3f, 0.95f, 0.4f), displayRating);
+        // Result: where it counts + the race's stars.
+        var position = o != null && o.Recorded && CampaignService.Available ? CampaignModel.Find(CampaignService.Data, o.PositionId) : null;
+        if (position != null) p.AddHeader(CampaignService.PositionLabel(position.levelId, position.matchNumber));
+        if (o != null)
+            p.AddStars(Loc.Get("Results.RaceStars") + (o.Recorded && o.Record.NewRecord ? "  " + Loc.Get("Eval.NewRecord") : ""), o.Evaluation.HalfStars);
 
-        _ratingLabelText.text     = RatingLabel(displayRating);
-        _ratingLabelText.color    = ratingColor;
-        _ratingBarFill.fillAmount = displayRating;
-        _ratingBarFill.color      = ratingColor;
+        // Score and what it is made of.
+        p.AddLine(Loc.Get("Results.Score", s.Score.ToString("N0"), _finalMaxPossibleScore.ToString("N0"),
+                          Mathf.RoundToInt(Mathf.Clamp01(_finalNormalizedScore) * 100f).ToString()));
+        if (o != null && o.Evaluation.Metrics != null)
+            p.AddNote(EvaluationPanel.Breakdown(o.Evaluation.Metrics.FindAll(m => m.key == "Collected" || m.key == "Timing")));
 
-        _scoreSummaryText.text = Loc.Get("EndScreen.ScoreSummary",
-            s.Score.ToString(), _finalMaxPossibleScore.ToString(), (_finalNormalizedScore * 100f).ToString("F0"));
+        // Falls and the no-fall bonus (only when the config has one).
+        bool hasBonus = config != null && config.scoring.noFallScoreMultiplier > 1f;
+        int bonusPct = hasBonus ? Mathf.RoundToInt((config.scoring.noFallScoreMultiplier - 1f) * 100f) : 0;
+        if (_finalFallCount == 0 && hasBonus) p.AddHighlight(Loc.Get("Results.NoFallBonus", bonusPct.ToString()));
+        else if (hasBonus) p.AddLine(Loc.Get("Results.FallsBonusLost", _finalFallCount.ToString(), bonusPct.ToString()));
+        else p.AddLine(Loc.Get("Results.Falls", _finalFallCount.ToString()));
 
-        foreach (var go in _rowObjects) Destroy(go);
-        _rowObjects.Clear();
-
-        if (_finalPerformance != null && _performanceRows != null)
+        // Per ring type: compact bars in the same list.
+        if (_finalPerformance != null)
         {
             var lib = UIPrefabLibrarySO.Instance;
             var rowPrefab = lib != null ? lib.runnerPerformanceRow : null;
-            float ry = 0f;
             foreach (var type in PerformanceRowOrder)
             {
                 if (!_finalPerformance.ByType.TryGetValue(type, out var tp)) continue;
-                var row = SpawnPerformanceRow(rowPrefab, ry, type, tp);
-                if (row == null) break; // Spawn already logged the missing prefab
-                _rowObjects.Add(row);
-                ry -= 24f;
+                var row = p.AddItem(rowPrefab, $"Row_{type}");
+                if (row == null) break; // AddItem already logged the missing prefab
+                Color color = config != null ? config.collectibles.RingColor(type) : Color.white;
+                row.Set(RowLabel(type), color, tp.CollectionRate, $"{tp.CollectionRate * 100f:F0}%  {tp.Collected}/{tp.Available}");
             }
         }
 
-        Loc.Set(_fallsText, "EndScreen.Falls", _finalFallCount.ToString());
-        RefreshRunSummary();
+        // What this run gives the fight (the run's wallet; specials are collected == available here).
+        int specialsCollected = run != null ? run.SpecialsCollectedThisRun : _finalResources.Specials;
+        int specialsAvailable = run != null ? run.Wallet.Specials : specialsCollected;
+        string specials = RunRewardRules.SameSpecialCount(specialsCollected, specialsAvailable)
+            ? Loc.Get("Results.Specials", specialsAvailable.ToString())
+            : Loc.Get("Results.SpecialsSplit", specialsCollected.ToString(), specialsAvailable.ToString());
+        string combos = _finalResources.TripleCombos + _finalResources.QuadCombos > 0
+            ? "  ·  " + Loc.Get("Results.Combos", _finalResources.TripleCombos.ToString(), _finalResources.QuadCombos.ToString())
+            : "";
+        p.AddLine(Loc.Get("Results.ForTheFight") + "  " + specials + combos);
 
-        bool noFallBonus = _finalFallCount == 0 && config != null && config.scoring.noFallScoreMultiplier > 1f;
-        _noFallBonusText.gameObject.SetActive(noFallBonus);
-        if (noFallBonus)
+        // Lives: granted once per match; the inventory's one use is Fight Again.
+        int livesCollected = run != null ? run.LivesCollectedThisRun : 0;
+        int livesGranted = run != null ? run.LivesGrantedThisRun : 0;
+        int extraLives = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.ExtraLives : 0;
+        p.AddLine(livesGranted == livesCollected
+            ? Loc.Get("Results.Lives", livesGranted.ToString(), extraLives.ToString())
+            : Loc.Get("Results.LivesCapped", livesGranted.ToString(), livesCollected.ToString(), extraLives.ToString()));
+
+        // The match record and what comes next.
+        if (o != null && o.Recorded)
         {
-            int pctBonus = Mathf.RoundToInt((config.scoring.noFallScoreMultiplier - 1f) * 100f);
-            Loc.Set(_noFallBonusText, "EndScreen.NoFallBonus", pctBonus.ToString());
+            if (!o.Record.NewRecord && o.Record.Best != null && o.Record.Best.has)
+                p.AddStarsSmall(Loc.Get("Results.BestRace"), o.Record.Best.halfStars);
+            p.AddHighlight(Loc.Get("Eval.NextFight"));
         }
-
-        var session = manager?.Session;
-        bool showSession = session != null && session.RunsCompleted > 0;
-        _sessionText.gameObject.SetActive(showSession);
-        if (showSession)
-        {
-            string key = session.RunsCompleted == 1 ? "EndScreen.SessionSingular" : "EndScreen.SessionPlural";
-            Loc.Set(_sessionText, key, session.RunsCompleted.ToString(), (session.NormalizedScore * 100f).ToString("F0"));
-        }
+        else if (o != null) p.AddNote(Loc.Get("Eval.NotCampaign"));
     }
-
-    // One RunnerPerformanceRow item per type, stacked 24 px apart from the container's top (anchoring/size from the prefab).
-    private GameObject SpawnPerformanceRow(RunnerPerformanceRowView prefab, float y, RingType type, TypePerformance tp)
-    {
-        var row = UIPrefabLibrarySO.Spawn(prefab, _performanceRows, "RunnerPerformanceRow");
-        if (row == null) return null;
-        row.name = $"Row_{type}";
-        var rt = (RectTransform)row.transform;
-        rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, y);
-
-        Color color = config != null ? config.collectibles.RingColor(type) : Color.white;
-        row.Set(RowLabel(type), color, tp.CollectionRate, $"{tp.CollectionRate * 100f:F0}%  {tp.Collected}/{tp.Available}");
-        return row.gameObject;
-    }
-
-    private static string RatingLabel(float displayRating) => Loc.Get(displayRating switch
-    {
-        < 0.20f => "EndScreen.RatingPoor",
-        < 0.40f => "EndScreen.RatingWeak",
-        < 0.60f => "EndScreen.RatingDecent",
-        < 0.85f => "EndScreen.RatingGreat",
-        _       => "EndScreen.RatingInsane",
-    });
 
     private static string RowLabel(RingType type) => Loc.Get(RingTypeKey(type));
 }

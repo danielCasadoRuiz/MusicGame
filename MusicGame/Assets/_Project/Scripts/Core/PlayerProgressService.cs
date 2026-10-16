@@ -2,13 +2,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Owner of the PERSISTENT player progression (PlayerProgressData) — level, XP, extra lives,
-/// opponent-tier progress and the rival collection. Separate from GameSession (current-run state, see
+/// Owner of the PERSISTENT player progression (PlayerProgressData) — the campaign (THE progression:
+/// levels / matches / laps / records, see CampaignService), extra lives, opponent-tier progress and the
+/// rival collection. There is no XP or player level any more (retired: it duplicated the campaign; the
+/// old save fields stay as ignored legacy data). Separate from GameSession (current-run state, see
 /// RunSession) and from the per-match combat state (FighterCombatResources): those reset, this never
 /// does except through a future explicit "Reset Progress".
 ///
 /// Every meaningful change is saved IMMEDIATELY (PlayerProgressStore, atomic) — LIFE collected or
-/// consumed, XP / level, a newly defeated rival version, a completed song — so closing the game right
+/// consumed, a newly defeated rival version, a completed song — so closing the game right
 /// after a reward never loses it. Changes are announced with PlayerProgressChangedEvent; a first-time
 /// rival version defeat also publishes RivalVersionUnlockedEvent.
 ///
@@ -20,33 +22,16 @@ public class PlayerProgressService : MonoBehaviour
     public static PlayerProgressService Instance { get; private set; }
 
     private PlayerProgressData _data;
-    private ProgressionConfigSO _config;
 
     /// <summary>True when a save file existed at launch or one has been written since — the main
     /// menu shows Continue instead of Play.</summary>
     public bool HasSave { get; private set; }
 
-    public int Xp => _data.xp;
-    /// <summary>XP-derived level — a secondary statistic now; the player's identity is MasteryRank.</summary>
-    public int Level => _data.playerLevel;
-    /// <summary>Musical Mastery: 0-based rank from total fights won (ProgressionConfigSO.masteryRanks).</summary>
-    public int MasteryRank => _config != null ? _config.MasteryRankForWins(_data.fightsWon) : 0;
-    /// <summary>Localized Musical Mastery rank name (e.g. "VIRTUOSO").</summary>
-    public string MasteryRankName => Loc.Get("Mastery." + (_config != null ? _config.MasteryRankId(MasteryRank) : "ToneDeaf"));
+    /// <summary>Extra lives: the Fight Again inventory (LIFE pickups add, Fight Again consumes).</summary>
     public int ExtraLives => _data.extraLives;
+    /// <summary>Total fights won — a plain statistic (no rank / level is derived from it).</summary>
     public int FightsWon => _data.fightsWon;
     public GameProgressionState TierProgress => _data.tierProgress;
-
-    /// <summary>XP gathered inside the current level, and the XP that level needs in total.</summary>
-    public (int inLevel, int needed) LevelProgress
-    {
-        get
-        {
-            if (_config == null) return (0, 1);
-            int start = _config.TotalXpForLevel(Level), next = _config.TotalXpForLevel(Level + 1);
-            return (_data.xp - start, Mathf.Max(1, next - start));
-        }
-    }
 
     private void Awake()
     {
@@ -56,7 +41,7 @@ public class PlayerProgressService : MonoBehaviour
         HasSave = _data != null;
         _data ??= new PlayerProgressData();
         Debug.Log(HasSave
-            ? $"[PlayerProgress] Loaded save: level {_data.playerLevel}, {_data.xp} XP, {_data.extraLives} extra lives, " +
+            ? $"[PlayerProgress] Loaded save: {_data.extraLives} extra lives, " +
               $"{_data.defeatedOpponents.Count} rivals with defeated versions, {_data.tierProgress.completedSongs} completed songs ({PlayerProgressStore.FilePath})"
             : "[PlayerProgress] No save yet — fresh progression (first launch).");
     }
@@ -66,13 +51,13 @@ public class PlayerProgressService : MonoBehaviour
         if (Instance == this) Instance = null;
     }
 
+    /// <summary>Called once at startup (the progression config only drives the opponent tier, read by
+    /// GameSession) — repairs old data and sets up / re-anchors the campaign.</summary>
     public void Configure(ProgressionConfigSO config)
     {
-        _config = config;
         // Older saves: every completed song IS a won fight (GameSession.RegisterCompletedSong runs only
         // on a win), so the victory count can be repaired safely. Rival versions cannot be — none invented.
         if (_data.fightsWon < _data.tierProgress.completedSongs) _data.fightsWon = _data.tierProgress.completedSongs;
-        if (_config != null) _data.playerLevel = _config.LevelForXp(_data.xp); // follow the current thresholds
         InitializeCampaign();
     }
 
@@ -155,35 +140,46 @@ public class PlayerProgressService : MonoBehaviour
         return true;
     }
 
-    // ── XP / level ───────────────────────────────────────────────────────────
-
-    /// <summary>Adds XP and recomputes the level. Returns the level change (0 = none).</summary>
-    public int AddXp(int amount, string source)
+    /// <summary>A LIFE pickup of the current run (`collectedThisRun` = LIFE pickups this run has collected,
+    /// this one included). For a run of the pending campaign assignment (`songId` matches it) the life is
+    /// granted only beyond what earlier attempts of the SAME match already granted (pendingRun.livesGranted,
+    /// saved in the same write) — replaying, restarting or resuming a match never farms lives. Runs outside
+    /// the assignment (local file) are capped by the caller (GameSession). True when +1 life was granted.</summary>
+    public bool GrantRunLife(string songId, int collectedThisRun, string source)
     {
-        if (amount <= 0) return 0;
-        int old = _data.playerLevel;
-        _data.xp += amount;
-        _data.playerLevel = _config != null ? _config.LevelForXp(_data.xp) : _data.playerLevel;
-        Debug.Log($"[PlayerProgress] +{amount} XP ({source}) → {_data.xp} XP, level {_data.playerLevel}" +
-                  (_data.playerLevel != old ? $" (LEVEL UP from {old})" : ""));
-        Changed("xp");
-        return _data.playerLevel - old;
+        var run = _data.pendingRun;
+        bool ofAssignment = run.IsSet && !run.IsBoss && !string.IsNullOrEmpty(songId) && run.songId == songId;
+        if (ofAssignment)
+        {
+            if (!RunRewardRules.GrantsLife(collectedThisRun, run.livesGranted))
+            {
+                Debug.Log($"[PlayerProgress] LIFE pickup #{collectedThisRun} of '{songId}' not granted — an earlier attempt of this match already earned {run.livesGranted}.");
+                return false;
+            }
+            run.livesGranted = collectedThisRun; // persisted by AddLife's save below (one write)
+        }
+        AddLife(1, source);
+        return true;
     }
+
+    /// <summary>True when `songId` is the song of the pending campaign assignment (lives capped by it).</summary>
+    public bool IsPendingSong(string songId) =>
+        _data.pendingRun.IsSet && !_data.pendingRun.IsBoss && !string.IsNullOrEmpty(songId) && _data.pendingRun.songId == songId;
 
     /// <summary>The tier progression (GameProgression) changed — persist it.</summary>
     public void NotifyTierProgressChanged() => Changed("tier");
 
     // ── Rival collection (non-linear: each version independent) ─────────────
 
-    public struct VictoryResult { public bool NewVersion; public int OldRank, NewRank, Xp; }
+    public struct VictoryResult { public bool NewVersion; }
 
     /// <summary>A fight WON against the EXACT rival version that was fought (the caller passes the
     /// cached OpponentDefinition + OpponentLevelConfig.level — never something re-derived from the
-    /// progression state). Safe order: 1 record the exact version, 2 +1 fight won, 3 recompute the
-    /// Mastery rank, 4 XP, 5 ONE save, 6 announce (unlock event, then the change event).</summary>
+    /// progression state). Safe order: 1 record the exact version, 2 +1 fight won (statistic),
+    /// 3 ONE save, 4 announce (unlock event, then the change event).</summary>
     public VictoryResult RecordVictory(OpponentDefinition opponent, int level)
     {
-        var result = new VictoryResult { OldRank = MasteryRank };
+        var result = new VictoryResult();
 
         // 1. collection — exactly this composer + this version; never lower/higher ones
         if (opponent != null && !string.IsNullOrEmpty(opponent.id) && level > 0)
@@ -195,24 +191,15 @@ public class PlayerProgressService : MonoBehaviour
         }
         else Debug.LogWarning($"[PlayerProgress] Victory without a valid rival version (opponent {(opponent != null ? opponent.id : "null")}, level {level}) — nothing added to the collection.");
 
-        // 2–3. victories → Musical Mastery
+        // 2. victories (statistic)
         _data.fightsWon++;
-        result.NewRank = MasteryRank;
 
-        // 4. XP (statistic)
-        if (_config != null)
-        {
-            result.Xp = _config.xpPerFightWin + (result.NewVersion ? _config.xpFirstRivalVersion : 0);
-            _data.xp += result.Xp;
-            _data.playerLevel = _config.LevelForXp(_data.xp);
-        }
-
-        // 5. persist once
+        // 3. persist once
         Save();
         Debug.Log($"[PlayerProgress] Victory vs {(opponent != null ? opponent.displayName : "?")} level {level}: " +
-                  $"{(result.NewVersion ? "NEW version unlocked, " : "")}{_data.fightsWon} wins, mastery {result.OldRank}→{result.NewRank}, +{result.Xp} XP (saved)");
+                  $"{(result.NewVersion ? "NEW version unlocked, " : "")}{_data.fightsWon} wins (saved)");
 
-        // 6. announce
+        // 4. announce
         if (result.NewVersion) EventBus.Publish(new RivalVersionUnlockedEvent { Opponent = opponent, Level = level });
         EventBus.Publish(new PlayerProgressChangedEvent { Reason = "victory" });
         return result;
@@ -285,7 +272,7 @@ public class PlayerProgressService : MonoBehaviour
     }
 }
 
-/// <summary>Any persistent progression value changed (already saved). Reason: life+, life-, xp, tier, win, rival-unlock.</summary>
+/// <summary>Any persistent progression value changed (already saved). Reason: life+, life-, tier, victory, song, pending….</summary>
 public struct PlayerProgressChangedEvent { public string Reason; }
 
 /// <summary>A rival VERSION was defeated for the first time (already saved).</summary>

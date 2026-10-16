@@ -5,9 +5,10 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Results group: the post-Fight Match Result screen (Prefabs/UI/MatchResult.prefab → MatchResultView,
-/// UIPrefabLibrarySO.matchResult), ported 1:1 from MatchResultController's former procedural Build() —
-/// title/rival/rounds/summary/level texts, Continue/Select Song (win), Fight Again/Replay Song (lose), Main
-/// Menu, the nested EvaluationPanel component prefab and the Rewarded-Ad confirmation modal (hidden).
+/// UIPrefabLibrarySO.matchResult): ONE panel — the title (match outcome) on top, the nested EvaluationPanel
+/// component prefab as the single results list below it (FIGHT / RACE / MATCH sections, filled by
+/// MatchResultController), Continue/Select Song (win), Fight Again/Replay Song (lose) and Main Menu stacked at
+/// the bottom, and the Rewarded-Ad confirmation modal (hidden).
 /// Called by UIScreenPrefabBuilder.
 /// </summary>
 public static class ResultsScreenPrefabs
@@ -34,38 +35,26 @@ public static class ResultsScreenPrefabs
         UIFactory.Stretch(dim.rectTransform);
         dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
 
-        view.titleText = UIFactory.CreateText("Title", root, "", 64, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
-        UIFactory.SetBox(view.titleText.rectTransform, Center, Center, Center, new Vector2(0f, 220f), new Vector2(800f, 90f));
+        var top = new Vector2(0.5f, 1f);
+        view.titleText = UIFactory.CreateText("Title", root, "", 60, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
+        UIFactory.SetBox(view.titleText.rectTransform, top, top, top, new Vector2(0f, -40f), new Vector2(900f, 84f));
         view.titleText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
 
-        view.rivalText = UIFactory.CreateText("Rival", root, "", 20, Color.white);
-        UIFactory.SetBox(view.rivalText.rectTransform, Center, Center, Center, new Vector2(0f, 160f), new Vector2(700f, 30f));
-        view.rivalText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
-
-        view.roundsText = UIFactory.CreateText("Rounds", root, "", 40, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
-        UIFactory.SetBox(view.roundsText.rectTransform, Center, Center, Center, new Vector2(0f, 110f), new Vector2(400f, 50f));
-        view.roundsText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Display);
-
-        view.summaryText = UIFactory.CreateText("Summary", root, "", 16, Color.white);
-        UIFactory.SetBox(view.summaryText.rectTransform, Center, Center, Center, new Vector2(0f, 55f), new Vector2(700f, 50f));
-        view.summaryText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
-
-        view.levelText = UIFactory.CreateText("Level", root, "", 22, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
-        UIFactory.SetBox(view.levelText.rectTransform, Center, Center, Center, new Vector2(0f, 0f), new Vector2(500f, 34f));
-        view.levelText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Positive, UIFontToken.Body);
-
-        view.continueButton = ResultButton(root, "ContinueButton", "MatchResult.Continue", new Vector2(0f, -60f), true, out view.continueButtonLabel);
-        view.fightAgainButton = ResultButton(root, "FightAgainButton", null, new Vector2(0f, -60f), true, out view.fightAgainButtonLabel);
-        view.replaySongButton = ResultButton(root, "ReplaySongButton", "MatchResult.ReplaySong", new Vector2(0f, -120f), false, out view.replaySongButtonLabel);
-        view.selectSongButton = ResultButton(root, "SelectSongButton", "MatchResult.SelectSong", new Vector2(0f, -120f), false, out view.selectSongButtonLabel);
-        view.mainMenuButton = ResultButton(root, "MainMenuButton", "Fight.MainMenu", new Vector2(0f, -180f), false, out view.mainMenuButtonLabel);
-
-        // Evaluation panel BEFORE the reward-ad modal, so the modal (and its dim) draws on top of it.
+        // The single results list under the title (height follows its rows — ContentSizeFitter in the prefab).
         if (evaluationPanelPrefab != null)
         {
             view.evaluationPanel = UIScreenPrefabContext.Nested(evaluationPanelPrefab, root);
-            view.evaluationPanel.name = "Evaluation"; // anchoring/size from the component prefab
+            view.evaluationPanel.name = "Evaluation";
+            UIFactory.SetBox(view.evaluationPanel.Rect, top, top, top, new Vector2(0f, -136f), new Vector2(700f, 0f));
         }
+
+        // Buttons stacked on the bottom edge: primary (Continue / Fight Again), secondary (Select Song /
+        // Replay Song), Main Menu.
+        view.continueButton = ResultButton(root, "ContinueButton", "MatchResult.Continue", new Vector2(0f, 200f), true, out view.continueButtonLabel);
+        view.fightAgainButton = ResultButton(root, "FightAgainButton", null, new Vector2(0f, 200f), true, out view.fightAgainButtonLabel);
+        view.replaySongButton = ResultButton(root, "ReplaySongButton", "MatchResult.ReplaySong", new Vector2(0f, 140f), false, out view.replaySongButtonLabel);
+        view.selectSongButton = ResultButton(root, "SelectSongButton", "MatchResult.SelectSong", new Vector2(0f, 140f), false, out view.selectSongButtonLabel);
+        view.mainMenuButton = ResultButton(root, "MainMenuButton", "Fight.MainMenu", new Vector2(0f, 80f), false, out view.mainMenuButtonLabel);
 
         BuildRewardAdModal(root, view);
 
@@ -98,12 +87,13 @@ public static class ResultsScreenPrefabs
         view.rewardAdModalRoot.SetActive(false);
     }
 
-    /// <summary>A centred 260×52 result button; primary = ButtonPrimary/Accent, else ButtonSecondary/TextPrimary.
+    /// <summary>A bottom-anchored 260×52 result button; primary = ButtonPrimary/Accent, else ButtonSecondary/TextPrimary.
     /// `key` null = data-dependent label (no LocalizedText).</summary>
     private static Button ResultButton(RectTransform parent, string name, string key, Vector2 pos, bool primary, out TextMeshProUGUI label)
     {
         var btn = MakeButton(parent, name, key, primary, out label);
-        UIFactory.SetBox(btn.GetComponent<RectTransform>(), Center, Center, Center, pos, new Vector2(260f, 52f));
+        var bottom = new Vector2(0.5f, 0f);
+        UIFactory.SetBox(btn.GetComponent<RectTransform>(), bottom, bottom, bottom, pos, new Vector2(260f, 52f));
         return btn;
     }
 

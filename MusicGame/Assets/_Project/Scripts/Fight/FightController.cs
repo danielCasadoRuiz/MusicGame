@@ -95,10 +95,13 @@ public class FightController : MonoBehaviour
 
     // ── Portraits beside each fighter's name / health (the SAME sprites the VS screen shows) ─────
     private Image _playerPortrait, _opponentPortrait;
+    private PortraitCrop _playerPortraitCrop, _opponentPortraitCrop;
     private Color _portraitPlaceholderColor = new(1f, 1f, 1f, 0.2f);
 
-    private void SetPortrait(Image img, Sprite sprite)
+    // Face-centred crop when the slot has one (FightHud.prefab's PortraitCrop); plain fit otherwise.
+    private void SetPortrait(PortraitCrop crop, Image img, Sprite sprite)
     {
+        if (crop != null) { crop.Show(sprite, _portraitPlaceholderColor); return; }
         if (img == null) return;
         img.sprite = sprite;
         img.color = sprite != null ? Color.white : _portraitPlaceholderColor; // same neutral placeholder as the VS screen
@@ -113,7 +116,8 @@ public class FightController : MonoBehaviour
         var mode = FightCameraController.Instance != null ? FightCameraController.Instance.ViewMode : CameraViewMode.ThirdPerson;
         if (_shownCameraMode == mode || _cameraToggleLabel == null) return;
         _shownCameraMode = mode;
-        Loc.Set(_cameraToggleLabel, mode == CameraViewMode.ThirdPerson ? "Pause.ThirdPerson" : "Pause.FirstPerson");
+        // The label names the perspective the button SWITCHES TO (the action), not the current one.
+        Loc.Set(_cameraToggleLabel, mode == CameraViewMode.ThirdPerson ? "Pause.FirstPerson" : "Pause.ThirdPerson");
     }
 
     private void OnEnable()
@@ -268,6 +272,8 @@ public class FightController : MonoBehaviour
         _pausePanel         = view.pausePanel.GetComponent<RectTransform>();
         _playerPortrait     = view.playerPortrait;
         _opponentPortrait   = view.opponentPortrait;
+        _playerPortraitCrop   = view.playerPortraitCrop;
+        _opponentPortraitCrop = view.opponentPortraitCrop;
         _portraitPlaceholderColor = view.portraitPlaceholderColor;
         _cameraToggleLabel  = view.cameraToggleLabel;
 
@@ -336,21 +342,26 @@ public class FightController : MonoBehaviour
         _opponentNameText.text = opponent != null ? opponent.displayName : Loc.Get("Fight.RivalUnknown");
         // Same sources as VersusScreenController: the committed rival version's portrait; the player has
         // no portrait art yet (neutral placeholder, exactly like the VS screen).
-        SetPortrait(_opponentPortrait, GameSession.Instance?.SelectedOpponentLevelConfig?.portrait);
-        SetPortrait(_playerPortrait, null);
+        SetPortrait(_opponentPortraitCrop, _opponentPortrait, GameSession.Instance?.SelectedOpponentLevelConfig?.portrait);
+        SetPortrait(_playerPortraitCrop, _playerPortrait, null);
 
         _playerHealthFill.fillAmount   = 1f;
         _opponentHealthFill.fillAmount = 1f;
     }
 
     // Reads FightMatchController's own timer — never maintains its own (see class doc: presents
-    // data, never decides/owns it).
+    // data, never decides/owns it). Shown in plain seconds ("45 s", Fight.TimerSeconds) — rounds are
+    // short, a minutes:seconds clock read as minutes. Re-localized only when the value changes.
+    private int _shownTimerSeconds = -1;
+
     private void UpdateTimerText()
     {
         float remaining = FightMatchController.Instance != null ? FightMatchController.Instance.RoundTimeRemaining
             : (_flowConfig != null ? _flowConfig.roundDuration : 60f);
-        int totalSeconds = Mathf.CeilToInt(remaining);
-        _timerText.text = $"{totalSeconds / 60:00}:{totalSeconds % 60:00}";
+        int totalSeconds = Mathf.Max(0, Mathf.CeilToInt(remaining));
+        if (totalSeconds == _shownTimerSeconds) return;
+        _shownTimerSeconds = totalSeconds;
+        Loc.Set(_timerText, "Fight.TimerSeconds", totalSeconds.ToString());
     }
 
     private void OnMainMenuClicked()

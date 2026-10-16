@@ -42,17 +42,33 @@ public class FightCameraConfig : ScriptableObject
     [Tooltip("Height on the rival the start shot looks at (m above the floor).")]
     public float introLookHeight = 1.5f;
 
-    [Header("First person (near-head, over the player's shoulder) — presentation only")]
-    [Tooltip("Camera height above the player's root.")]
-    public float firstPersonHeight = 1.85f;
-    [Tooltip("How far BEHIND the player's head (away from the opponent) — keeps the player's own body " +
-             "out of the lens while staying close.")]
-    public float firstPersonBack = 0.9f;
-    [Tooltip("Sideways shift (towards screen-right of the third-person view) — an over-the-shoulder look.")]
-    public float firstPersonSide = 0.35f;
-    [Tooltip("Height on the opponent the camera looks at.")]
-    public float firstPersonLookHeight = 1.35f;
-    public float firstPersonPositionSmoothTime = 0.08f;
+    [Header("First person (the player's own eyes — FirstPersonHeadRig) — presentation only")]
+    [Tooltip("Eye point above the player avatar's Head bone (m, canonical 1.75 m body, scaled with the " +
+             "avatar). Used when the rig has no eye bones (MakeHuman).")]
+    public float firstPersonEyeUp = FirstPersonHeadRig.DefaultEyeUp;
+    [Tooltip("Lens in front of the Head bone pivot (m, canonical body, scaled with the avatar): just in front of " +
+             "the face, so the inside of the own head is never in view.")]
+    public float firstPersonEyeForward = FirstPersonHeadRig.DefaultEyeForward;
+    [Tooltip("Rotation stabilisation (s): the view turns WITH the head, smoothed over this time so punches / " +
+             "hit reactions never jerk it. Position is never smoothed (glued to the eye pivot).")]
+    public float firstPersonRotationSmoothTime = 0.1f;
+    [Tooltip("How much of the head's roll (sideways tilt) is levelled toward the horizon: 0 = full head roll, " +
+             "1 = always level. Moderate by default — the view stays the head's.")]
+    [Range(0f, 1f)] public float firstPersonRollDamping = 0.5f;
+    [Tooltip("Eyes inside the head: the gaze turns from the head's facing toward the rival's upper body by at " +
+             "most this many degrees (a boxing stance carries the chin down). 0 = pure head direction. While " +
+             "downed (fall / KO) the gaze turns fully to the rival, from the eyes on the floor.")]
+    [Range(0f, 45f)] public float firstPersonEyeGazeMaxAngle = 25f;
+    [Tooltip("Seconds to blend from the third-person framing into the eyes when switching view (then rigid).")]
+    public float firstPersonEnterBlendTime = 0.3f;
+    [Tooltip("Fallback eye height above the floor (m) while the player has no Humanoid avatar yet.")]
+    public float firstPersonFallbackEyeHeight = 1.63f;
+    [Tooltip("Camera near clip plane while in first person (restored in third person): the lens sits just in " +
+             "front of the face — a short near plane keeps the own hands visible without reaching into the head.")]
+    public float firstPersonNearClip = 0.03f;
+    [Tooltip("Vertical field of view (degrees) in first person (restored in third person): a little wider so " +
+             "the own arms and the arena read naturally.")]
+    [Range(40f, 100f)] public float firstPersonFieldOfView = 80f;
 
     [Header("Side stability — fighters crossing never flips the view")]
     [Tooltip("The camera keeps watching from the SAME side of the fighters' line when they cross " +

@@ -19,11 +19,14 @@ public class PlayerProgressData
 
     public int version = CurrentVersion;
 
-    /// <summary>Persistent progression points (never the run score — see ProgressionConfigSO XP).</summary>
+    /// <summary>LEGACY (saves ≤ v5 written before the XP system was retired): old XP total. Never read or
+    /// written any more — the campaign (CampaignProgressData) is THE progression. Kept so old files
+    /// round-trip unchanged; a stored value is simply ignored.</summary>
     public int xp;
-    /// <summary>Cached level for the stored xp (recomputed from xp + config on load).</summary>
+    /// <summary>LEGACY: old XP-derived level. Ignored (see xp).</summary>
     public int playerLevel = 1;
-    /// <summary>Authoritative extra-life inventory: LIFE pickups add, Fight Again consumes.</summary>
+    /// <summary>Authoritative extra-life inventory: LIFE pickups add, Fight Again consumes. Their ONE
+    /// role: a retry of a lost fight (Fight Again) without replaying the song.</summary>
     public int extraLives;
     /// <summary>The opponent-difficulty tier progression (completed songs) — the existing
     /// GameProgression rules, now kept across restarts.</summary>
@@ -31,7 +34,7 @@ public class PlayerProgressData
     /// <summary>Every rival VERSION ever defeated, independently (non-linear collection: Lv4 does
     /// not imply Lv1–3).</summary>
     public List<DefeatedOpponentRecord> defeatedOpponents = new();
-    /// <summary>Total fights won (informational / future unlocks).</summary>
+    /// <summary>Total fights won (plain statistic; repairs pre-campaign saves — no rank or level is derived from it).</summary>
     public int fightsWon;
 
     // ── Song history (v2) — song ids are the STABLE PlayableSongCatalogSO songId ("song_007") since
@@ -78,6 +81,16 @@ public class PendingRunData
     public int matchNumber;
     /// <summary>≥ 0: a final-rival stage (no song / no runner); -1: a normal campaign match.</summary>
     public int bossStage = -1;
+    /// <summary>LIFE pickups already turned into extra lives by runs of THIS assignment (the best attempt so
+    /// far). A replay / restart / resumed run of the same match only grants lives beyond it, so repeating
+    /// a match never farms lives (RunRewardRules.GrantsLife). Missing in older files → 0 (safe).</summary>
+    public int livesGranted;
+    /// <summary>Seed of THIS match's Runner pickup distribution (RunnerPickupLayout): drawn when the
+    /// assignment is created, reused by every resume / replay / restart of it. 0 = none yet (older
+    /// files) → one is drawn and saved the first time the run is restored.</summary>
+    public int pickupSeed;
+    /// <summary>RunnerPickupLayout.GeneratorVersion the seed was last generated with (0 = unknown).</summary>
+    public int pickupLayoutVersion;
 
     public bool IsSet => !string.IsNullOrEmpty(songId) || bossStage >= 0;
     public bool IsBoss => bossStage >= 0;

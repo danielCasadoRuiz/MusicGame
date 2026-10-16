@@ -22,14 +22,10 @@ public struct TimelineEvent
     public EventType eventType;
     public RingType  ringType;
     public float     lateralOffset;   // continuous, path-local right units (negative = left)
-    public float     verticalOffset;  // path-local up units above the path surface
-    // The portion of verticalOffset that MUST clear the collectible's own max-scale half-height
-    // (see GameplayTimeline.CollectibleMaxHalfHeight) — GameplayManager.ActivateEvent places
-    // exactly this much along the TRUE surface normal (correct even on a tilted/sloped bump),
-    // and only the remainder (verticalOffset - floorClearance, extra jump-gameplay height)
-    // along the path's stable up direction. See ActivateEvent's own comment for why the split
-    // matters: using path-up for the WHOLE offset on a tilted surface can under-clear the real
-    // surface; using surface-normal for the WHOLE offset can shove a tall jump sideways.
+    public float     verticalOffset;  // centre height (m, world up) above the real local ground at this spot
+    // Minimum clearance (pickup bottom above the surface) the generator reserved for this type —
+    // informational since placement became ground-true (GameplayManager.PickupWorldPosition puts the
+    // centre verticalOffset straight above the REAL local ground and keeps the bottom clear itself).
     public float     floorClearance;
     // Decided ONCE at generation time (GameplayTimeline.EmitSingle) — never inferred later from
     // lateralOffset/track width at collection time. Carried through Activate() into

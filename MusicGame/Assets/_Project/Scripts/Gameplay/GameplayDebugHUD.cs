@@ -209,19 +209,13 @@ public class GameplayDebugHUD : MonoBehaviour
         Row(x, ref y, w, $"  lateral={evt.lateralOffset:+0.00;-0.00} heightOffset={evt.verticalOffset:F2}");
         Row(x, ref y, w, $"  str={evt.strength:F2}   Active:{_manager.ActiveEventCount}");
 
-        // Ground-clearance verification — reproduces GameplayManager.ActivateEvent's EXACT
-        // placement math (floorClearance along the true surface normal, the remainder along
-        // path-up) so this is a genuine check of the real final position, not an approximation.
+        // Ground-clearance verification — the EXACT placement GameplayManager.ActivateEvent uses
+        // (GameplayManager.PickupWorldPosition over the real ground mesh), not an approximation.
         var world = MusicWorldManager.Instance;
         if (world != null && _manager.Config != null && world.Path != null)
         {
             var surface = world.SampleSurface(evt.eventDistance, evt.lateralOffset);
-            var sample  = world.Path.GetSample(evt.eventDistance);
-
-            const float baseClearance = 0.05f;
-            float floorPortion = Mathf.Min(evt.verticalOffset, evt.floorClearance);
-            float extraPortion = Mathf.Max(0f, evt.verticalOffset - evt.floorClearance);
-            Vector3 finalPos = surface.position + surface.normal * (baseClearance + floorPortion) + sample.up * extraPortion;
+            Vector3 finalPos = GameplayManager.PickupWorldPosition(evt, _manager.Config);
 
             float halfHeight = GameplayTimeline.CollectibleMaxHalfHeight(evt.ringType, _manager.Config);
             float bottomY    = finalPos.y - halfHeight;

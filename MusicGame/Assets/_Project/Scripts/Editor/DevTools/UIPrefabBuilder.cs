@@ -6,6 +6,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
+/// LEGACY (superseded by UIScreenPrefabBuilder + RunnerScreenPrefabs/ResultsScreenPrefabs; the merged single
+/// results panels are NOT reproduced here — its EndScreen/MatchResult output only keeps the fields that
+/// still exist on the views).
 /// One-shot Editor tool: builds all fifteen runtime UI screens — the three gameplay prefabs
 /// (LiveHud, EndScreen, PauseMenu), the seven Frontend/Fight screens (IntroScreen, MainMenu,
 /// SongSelection, AnalyzingScreen, CountdownScreen, FinishBanner, FightHud), and the five Fight-flow
@@ -305,37 +308,30 @@ public static class UIPrefabBuilder
         // from the SCORE (a red-to-green gradient), not from the Theme.
         var rating = UIFactory.CreateText("Rating", content, "", 22, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
         UIFactory.StackTop(rating.rectTransform, ref y, 32f);
-        view.ratingLabel = rating;
 
         var ratingBar = UIFactory.CreateFillBar("RatingBar", content, new Color(0.12f, 0.12f, 0.12f), Color.white, out var ratingFill);
         UIFactory.StackTop(ratingBar.rectTransform, ref y, 16f, 46f);
-        view.ratingBarFill = ratingFill;
         y -= 6f;
 
         var scoreSummary = UIFactory.CreateText("ScoreSummary", content, "", 12, new Color(0.6f, 0.6f, 0.6f));
         UIFactory.StackTop(scoreSummary.rectTransform, ref y, 20f);
-        view.scoreSummary = scoreSummary;
         scoreSummary.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
         y -= 6f;
 
         var rows = UIFactory.CreateRect("PerformanceRows", content);
         UIFactory.StackTop(rows, ref y, 24f * 7f);
-        view.performanceRowsContainer = rows;
         y -= 6f;
 
         var falls = UIFactory.CreateText("Falls", content, "", 13, Color.white);
         UIFactory.StackTop(falls.rectTransform, ref y, 20f);
-        view.fallsText = falls;
         falls.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         var noFallBonus = UIFactory.CreateText("NoFallBonus", content, "", 13, new Color(1f, 0.85f, 0.2f));
         UIFactory.StackTop(noFallBonus.rectTransform, ref y, 20f);
-        view.noFallBonusText = noFallBonus;
         noFallBonus.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Positive, UIFontToken.Body);
 
         var session = UIFactory.CreateText("Session", content, "", 11, new Color(0.55f, 0.55f, 0.6f));
         UIFactory.StackTop(session.rectTransform, ref y, 22f);
-        view.sessionText = session;
         session.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
 
         y -= 10f;
@@ -996,25 +992,21 @@ public static class UIPrefabBuilder
         UIFactory.SetBox(rival.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, 160f), new Vector2(700f, 30f));
         rival.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
-        view.rivalText = rival;
 
         var rounds = UIFactory.CreateText("Rounds", root, "", 40, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
         UIFactory.SetBox(rounds.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, 110f), new Vector2(400f, 50f));
         rounds.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Display);
-        view.roundsText = rounds;
 
         var summary = UIFactory.CreateText("Summary", root, "", 16, Color.white);
         UIFactory.SetBox(summary.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, 55f), new Vector2(700f, 50f));
         summary.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
-        view.summaryText = summary;
 
         var level = UIFactory.CreateText("Level", root, "", 22, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
         UIFactory.SetBox(level.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, 0f), new Vector2(500f, 34f));
         level.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Positive, UIFontToken.Body);
-        view.levelText = level;
 
         var continueBtn = UIFactory.CreateButton("ContinueButton", root, Loc.Get("MatchResult.Continue"), out var continueLabel);
         UIFactory.SetBox(continueBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),

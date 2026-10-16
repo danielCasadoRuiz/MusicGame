@@ -98,6 +98,20 @@ MonoBehaviour:
   offTrackBonusScoreMultiplier: 2
   offTrackBonusMinJumpHeightFactor: 0.7
   offTrackBonusMaxJumpHeightFactor: 1
+  difficulty: 0
+  normalHeights:
+    elevatedChance: 0.05
+    offTrackChance: 0.04
+    patternElevatedChance: 0.05
+  hardHeights:
+    elevatedChance: 0.1
+    offTrackChance: 0.08
+    patternElevatedChance: 0.15
+  normalCollectHeight: 1
+  elevatedClearance: 0.2
+  elevatedMaxJumpHeightFactor: 0.6
+  heightBonusMaxMultiplier: 1.5
+  elevatedMinScoreMultiplier: 1.25
   poolInitialSize: 8
   poolMaxSize: 40
   spawnLookAhead: 1.5

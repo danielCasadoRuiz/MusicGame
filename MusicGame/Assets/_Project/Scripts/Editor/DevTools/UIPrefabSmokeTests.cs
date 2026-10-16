@@ -90,11 +90,13 @@ public static class UIPrefabSmokeTests
 
             // Progression rows + collection card.
             var screen = Object.Instantiate(lib.progressionScreen, canvas);
-            Check(screen.listContent != null && screen.detailPanel != null && screen.challengeButton != null, "ProgressionScreen references assigned");
+            Check(screen.listContent != null && screen.challengeButton != null, "ProgressionScreen references assigned");
+            Check(screen.GetComponentInChildren<EvaluationPanel>(true) == null, "ProgressionScreen has no detail overlay");
             var header = Object.Instantiate(lib.progressionLevelHeader, screen.listContent);
             header.Set("► NIVELL 1", "Aquesta volta 2/5 · 1 dominades", "Cursa 4,5 · 3/5", 9, "Combat pendent", -1, "Total 4", 8);
             var row = Object.Instantiate(lib.progressionMatchRow, screen.listContent);
-            row.Set(2, true, "PARTIDA 2", "Cursa: Glorious Trainer — I Feel So High", 10, null, "Combat: Bach · Nivell 3", 9, 9);
+            row.Set(2, true, "PARTIDA 2", "Glorious Trainer — I Feel So High", 10, null, "Bach · Nivell 3", 9, 9);
+            Check(row.GetComponentInChildren<Selectable>(true) == null, "match row is informative (no Button / Selectable)");
             Object.Instantiate(lib.progressionColumnHeader, screen.listContent);
             Object.Instantiate(lib.progressionBossHeader, screen.listContent).Set("Ésser de la música · bloquejat");
             Object.Instantiate(lib.progressionBossStage, screen.listContent).Set("Combat final 1 · pendent", -1);

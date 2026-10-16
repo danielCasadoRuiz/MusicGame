@@ -3,7 +3,8 @@ using TMPro;
 using UnityEngine;
 
 /// <summary>
-/// Results block (runner end screen, match result, Progression detail): prefab
+/// Results block — the ONE content list of the Runner end screen and of the match result (and the Progression
+/// detail): prefab
 /// Prefabs/UI/Components/EvaluationPanel.prefab (background + VerticalLayoutGroup + ContentSizeFitter, its
 /// default anchoring) and one prefab per ROW KIND (EvaluationRow_Header / Line / Note / Highlight /
 /// Warning / Stars / StarsSmall — font size, colour, spacing and star size live there). This class only
@@ -49,6 +50,17 @@ public class EvaluationPanel : MonoBehaviour
     /// <summary>A line with stars (halfStars -1 = pending).</summary>
     public void AddStars(string text, int halfStars) => Add(starsRow, "Stars", text, halfStars);
     public void AddStarsSmall(string text, int halfStars) => Add(starsSmallRow, "StarsSmall", text, halfStars);
+
+    /// <summary>Any other row item prefab (e.g. the Runner's per-type RunnerPerformanceRow) appended in order
+    /// and cleared with the rest. The item prefab must carry its own LayoutElement height.</summary>
+    public T AddItem<T>(T prefab, string name) where T : Component
+    {
+        if (prefab == null) { Debug.LogError($"[EvaluationPanel] '{this.name}': item prefab '{name}' not assigned."); return null; }
+        var item = Instantiate(prefab, transform, false);
+        item.name = name;
+        _rows.Add(item.gameObject);
+        return item;
+    }
 
     private void Add(EvaluationRowView prefab, string kind, string text, int halfStars)
     {

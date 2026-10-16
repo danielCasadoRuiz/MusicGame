@@ -81,7 +81,7 @@ public struct RoundEndedEvent
 /// <summary>Fired by FightMatchController exactly once, the instant the MATCH itself is decided — see
 /// FightMatchController.NotifyRoundEndDisplayComplete's own doc. Carries just enough already-available
 /// data (task's own explicit "no inventis un sistema enorme d'estadístiques" scope note) for
-/// MatchResultController to show a small match summary and, on a win, the Level Up line — nothing here
+/// MatchResultController's FIGHT section (rounds, how it ended, final health) — nothing here
 /// is recomputed or re-derived downstream.</summary>
 public struct MatchEndedEvent
 {
@@ -99,12 +99,6 @@ public struct MatchEndedEvent
     public float PlayerHealthPercent;
     public float OpponentHealthPercent;
     public float MatchPointDifferential;
-    /// <summary>Musical Mastery rank (1-based, PlayerProgressService.MasteryRank + 1) immediately BEFORE this match's outcome was applied. Equal
-    /// to NewPlayerLevel when Winner == Opponent (a loss never changes PlayerLevel — see
-    /// GameSession.LevelUp's own doc).</summary>
-    public int OldPlayerLevel;
-    /// <summary>Musical Mastery rank (1-based) immediately AFTER — already decided by the time this event
-    /// fires (see FightMatchController.NotifyRoundEndDisplayComplete's own doc on why the Level Up
-    /// decision itself never waits for Continue).</summary>
-    public int NewPlayerLevel;
+    // (No player level here any more: the progression effect of a match is the campaign's own outcome,
+    //  CampaignService.LastCombat — already decided when this fires.)
 }

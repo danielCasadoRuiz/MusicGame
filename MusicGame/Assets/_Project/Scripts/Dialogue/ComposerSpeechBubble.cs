@@ -59,6 +59,10 @@ public class ComposerSpeechBubble : MonoBehaviour
 
     /// <summary>World point the tail points at (null = none). Re-evaluated every frame.</summary>
     public Func<Vector3?> AnchorProvider;
+    /// <summary>Optional SCREEN-space anchor (pixels) that wins over AnchorProvider while it returns a value — e.g.
+    /// the rival's portrait on the opaque Versus loading card. Cleared (null) → the bubble glides to the world
+    /// anchor (the head) with its usual smoothing.</summary>
+    public Func<Vector2?> ScreenAnchorProvider;
     public bool AvoidCenterBand;
 
     public bool IsVisible => _bubble != null && gameObject.activeSelf;
@@ -229,6 +233,12 @@ public class ComposerSpeechBubble : MonoBehaviour
     private bool TryProjectAnchor(out Vector2 local, out bool onScreen)
     {
         local = default; onScreen = false;
+        var screenAnchor = ScreenAnchorProvider?.Invoke();
+        if (screenAnchor.HasValue)
+        {
+            onScreen = true;
+            return RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRect, screenAnchor.Value, null, out local);
+        }
         var world = AnchorProvider?.Invoke();
         var cam = FightSceneBootstrap.Instance != null && FightSceneBootstrap.Instance.CameraController != null
             ? FightSceneBootstrap.Instance.CameraController.Camera : null;

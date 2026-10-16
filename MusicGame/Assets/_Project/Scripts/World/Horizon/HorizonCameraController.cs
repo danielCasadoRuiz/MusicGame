@@ -182,19 +182,24 @@ public class HorizonCameraController : MonoBehaviour
     /// HorizonMountainLayers' parallax offset) never reads a one-frame-stale value, regardless of
     /// Unity's otherwise-undefined cross-script LateUpdate ordering.
     /// </summary>
+    private CameraFollow _follow; // the gameplay camera's follower (view offset from the player's heading)
+
     public void Tick()
     {
         if (!IsActive || _mainCamera == null || HorizonCamera == null) return;
 
         HorizonCamera.fieldOfView = _mainCamera.fieldOfView;
 
-        // YAW is deliberately NEVER copied — only PITCH (up/down look) does. The gameplay camera's
-        // yaw follows the path's own heading (CameraFollow/ComputeThirdPersonRotation), which can
-        // drift as the path curves; if the Horizon Camera copied that, the whole spectrum arc would
-        // visibly swing off-center every time the path turns, even though the player barely
-        // perceives the turn itself. Roll is always 0 — the horizon must never tilt.
+        // The path's own HEADING is deliberately never copied: the gameplay camera's yaw follows the path
+        // as it curves, and copying that would swing the whole spectrum arc off-center every time the path
+        // turns. What IS copied: pitch, and how the view deviates FROM the player's heading — the first-
+        // person head turning, a 360° spin, its (clamped) roll — so the background turns and tilts with
+        // the view instead of staying put while the foreground spins.
         float pitch = _mainCamera.transform.eulerAngles.x;
-        HorizonCamera.transform.rotation = Quaternion.Euler(pitch, _fixedYaw, 0f);
+        float yawOffset = 0f, roll = 0f;
+        if (_follow == null) _follow = _mainCamera.GetComponent<CameraFollow>();
+        if (_follow != null) _follow.GetViewOffsetFromHeading(out yawOffset, out roll);
+        HorizonCamera.transform.rotation = Quaternion.Euler(pitch, _fixedYaw + yawOffset, roll);
 
         Vector3 delta = _mainCamera.transform.position - _mainCameraStartPos;
         CameraDelta = delta;

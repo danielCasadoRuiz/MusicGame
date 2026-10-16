@@ -26,6 +26,10 @@ public class RingController : MonoBehaviour
 
     public RingType Type { get; private set; }
 
+    /// <summary>World trigger size over the prefab's own collider size (see SetVisualScale) — read by
+    /// GameplayTimeline's reach model (CollectibleTriggerHalfHeight) so placement uses the REAL pickup volume.</summary>
+    public float PickupLeeway => Mathf.Max(1f, pickupLeeway);
+
     private bool     _collected;
     private Vector3  _originalScale;
     private TimelineEvent _sourceEvent;  // the generated event this pooled instance currently represents

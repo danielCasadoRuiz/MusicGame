@@ -270,16 +270,16 @@ public class PauseController : MonoBehaviour
         if (_cameraToggleButtonRoot != null) _cameraToggleButtonRoot.gameObject.SetActive(showPersistentButtons);
     }
 
-    /// <summary>Purely cosmetic — swaps the toggle button's icon/text to reflect the CURRENT
-    /// mode (i.e. "Third Person" is shown while playing in third person, not as a call to
-    /// action). Never touches CameraFollow itself.</summary>
+    /// <summary>Purely cosmetic — the toggle button's icon/text name the perspective it SWITCHES TO
+    /// (a call to action: "First Person" while playing in third person, "Third Person" while in first
+    /// person — same rule as the Fight HUD's toggle). Never touches CameraFollow itself.</summary>
     private void RefreshCameraToggleDisplay(CameraViewMode mode)
     {
         bool isThird = mode == CameraViewMode.ThirdPerson;
-        if (_cameraToggleLabel != null) Loc.Set(_cameraToggleLabel, isThird ? "Pause.ThirdPerson" : "Pause.FirstPerson");
+        if (_cameraToggleLabel != null) Loc.Set(_cameraToggleLabel, isThird ? "Pause.FirstPerson" : "Pause.ThirdPerson");
         if (_cameraToggleIcon != null)
         {
-            var sprite = isThird ? _thirdPersonIcon : _firstPersonIcon;
+            var sprite = isThird ? _firstPersonIcon : _thirdPersonIcon;
             _cameraToggleIcon.sprite = sprite;
             _cameraToggleIcon.enabled = sprite != null;
         }

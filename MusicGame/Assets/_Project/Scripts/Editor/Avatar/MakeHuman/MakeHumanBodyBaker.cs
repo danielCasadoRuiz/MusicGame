@@ -130,6 +130,60 @@ public static class MakeHumanBodyBaker
 
     /// <summary>Returns null and fills `errors` (each naming the offending source) on ANY topology or
     /// data problem — never continues with partially-valid data.</summary>
+    /// <summary>
+    /// Body states never reshape the HANDS: every state's hands are the MaleBase (canonical) hands, where the
+    /// skeleton's finger joints actually sit. The transition runs along the FOREARM (from 30 % of the way
+    /// elbow→wrist to the wrist, plus the hand/finger skin weights), so a smaller/shorter female arm blends
+    /// gradually into the canonical wrist instead of stretching it. Why: the female hand is shaped and placed
+    /// differently, so with its own geometry the finger joints no longer sat inside the fingers — every curl
+    /// (fists!) crumpled them. With the canonical hand the fingers bend cleanly for every Gender/Weight/Muscle.
+    /// </summary>
+    private static void ApplyCanonicalHands(MakeHumanBakeResult result)
+    {
+        var rig = result.Rig;
+        var male = result.Male.Raw;
+        int n = male.Length;
+        var joints = result.TPose.Position;
+        int elbowL = rig.BoneIndex["lowerarm_l"], wristL = rig.BoneIndex["hand_l"];
+        int elbowR = rig.BoneIndex["lowerarm_r"], wristR = rig.BoneIndex["hand_r"];
+        var keep = new float[n]; // 1 = keep the state's own geometry, 0 = canonical (MaleBase) hand
+        for (int i = 0; i < n; i++)
+        {
+            float hand = 0f, forearmL = 0f, forearmR = 0f;
+            foreach (var (bone, weight) in rig.RawTopInfluences(i))
+            {
+                string name = rig.Bones[bone].Name;
+                if (IsHandBone(name)) hand += weight;
+                else if (name.StartsWith("lowerarm")) { if (name.EndsWith("_l")) forearmL += weight; else forearmR += weight; }
+            }
+            float along = 0f;
+            if (forearmL > 0f) along += forearmL * Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.3f, 1f, Along(male[i], joints[elbowL], joints[wristL])));
+            if (forearmR > 0f) along += forearmR * Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.3f, 1f, Along(male[i], joints[elbowR], joints[wristR])));
+            keep[i] = 1f - Mathf.Clamp01(hand + along);
+        }
+
+        foreach (var state in result.AllStates())
+        {
+            if (state == result.Male) continue;
+            var raw = state.Raw;
+            for (int i = 0; i < n; i++) if (keep[i] < 1f) raw[i] = Vector3.Lerp(male[i], raw[i], keep[i]);
+            for (int p = 0; p < result.Source.Parts.Length; p++)
+                state.Parts[p] = BuildPartShape(result.Source.Parts[p], raw, result.Source.RawPositions.Length);
+        }
+    }
+
+    /// <summary>Normalised position of `v` along the segment a→b (0 at a, 1 at b), clamped.</summary>
+    private static float Along(Vector3 v, Vector3 a, Vector3 b)
+    {
+        Vector3 ab = b - a;
+        float len2 = ab.sqrMagnitude;
+        return len2 < 1e-8f ? 0f : Mathf.Clamp01(Vector3.Dot(v - a, ab) / len2);
+    }
+
+    private static bool IsHandBone(string name) =>
+        name.StartsWith("hand_") || name.StartsWith("metacarpal") || name.StartsWith("thumb_") || name.StartsWith("index_")
+        || name.StartsWith("middle_") || name.StartsWith("ring_") || name.StartsWith("pinky_");
+
     public static MakeHumanBakeResult Bake(List<string> errors)
     {
         var source = MakeHumanSourceMesh.Load(BaseMeshPath);
@@ -195,6 +249,9 @@ public static class MakeHumanBodyBaker
             }
         }
         if (errors.Count > 0) return null;
+
+        ApplyCanonicalHands(result);
+        result.Report.Add("Hands: every body state keeps the MaleBase (canonical) hand and finger geometry, blended back in over the wrist by skin weight.");
 
         var bounds = new Bounds(Vector3.zero, Vector3.zero);
         foreach (var state in result.AllStates())

@@ -3,8 +3,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// The Versus INTRO, played over the live arena (no opaque screen any more) for FightFlowState.VersusIntro:
+/// The Versus INTRO for FightFlowState.VersusIntro — also the fight's LOADING screen:
 ///
+///   0. While the stage is not ready (FightSceneBootstrap.StageReady: both fighter avatars fully built + the
+///      arena loaded) the card is OPAQUE (nothing being assembled is ever seen), a small "Loading…" line
+///      shows, and the rival's Intro line already appears next to its portrait (bubble with a screen
+///      anchor). Skip during loading only completes the line — the fight never starts on a half-built stage.
+///      When ready, the veil clears to the light one over versusRevealSeconds and the sequence continues;
+///      a line still being read moves to the bubble over the rival's head (step 3).
 ///   1. Versus card ("PLAYER — VS — RIVAL", portraits) over a light dim (FightFlowConfig.versusBackdropAlpha),
 ///      held then faded (versusCardHoldSeconds / versusCardFadeSeconds).
 ///   2. As soon as the rival is on stage (FightSceneBootstrap.OpponentVisualReady — a real readiness
@@ -36,7 +42,7 @@ public class VersusScreenController : MonoBehaviour
     private CanvasGroup      _cardGroup;
     private Image            _backdrop;
     private Image            _playerPortrait, _opponentPortrait;
-    private TextMeshProUGUI  _playerNameText, _opponentNameText, _vsText;
+    private TextMeshProUGUI  _playerNameText, _opponentNameText, _vsText, _loadingText;
 
     private FightFlowConfig   _config;
     private FightCameraConfig _cameraConfig;
@@ -44,8 +50,8 @@ public class VersusScreenController : MonoBehaviour
     private FightPresentationSkip _skip;
 
     private Step  _step;
-    private float _stageWait, _cardElapsed;
-    private bool  _cardDone, _advanceRequested;
+    private float _stageWait, _cardElapsed, _revealElapsed;
+    private bool  _cardDone, _advanceRequested, _skipAfterLoading;
 
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
     private System.Action<GameFlowStateChangedEvent>  _onGameFlowChanged;
@@ -104,6 +110,7 @@ public class VersusScreenController : MonoBehaviour
             if (e.Previous != GameFlowState.Fight) return;
             StopIntro();
             ComposerDialogueService.ReleaseAll();
+            FightPreloader.Release(); // a preload never outlives the fight it was for
         };
         EventBus.Subscribe(_onFightFlowChanged);
         EventBus.Subscribe(_onGameFlowChanged);
@@ -128,6 +135,7 @@ public class VersusScreenController : MonoBehaviour
         _vsText           = view.vsText;
         _opponentPortrait = view.opponentPortrait;
         _opponentNameText = view.opponentNameText;
+        _loadingText      = view.loadingText;
     }
 
     /// <summary>Makes the prefab's Dim a plain veil whose alpha is FightFlowConfig.versusBackdropAlpha (a
@@ -141,6 +149,21 @@ public class VersusScreenController : MonoBehaviour
         _backdrop.color = new Color(0f, 0f, 0f, _config != null ? _config.versusBackdropAlpha : 0.15f);
     }
 
+    private void SetBackdropAlpha(float alpha)
+    {
+        if (_backdrop == null) return;
+        var c = _backdrop.color; c.a = alpha; _backdrop.color = c;
+    }
+
+    /// <summary>Screen point just above the rival's portrait on the card (the bubble's anchor while loading).</summary>
+    private Vector2? OpponentPortraitTop()
+    {
+        if (_opponentPortrait == null || !_root.gameObject.activeInHierarchy) return null;
+        var corners = new Vector3[4];
+        _opponentPortrait.rectTransform.GetWorldCorners(corners); // overlay canvas: world == screen pixels
+        return new Vector2((corners[1].x + corners[2].x) * 0.5f, corners[1].y);
+    }
+
     // ── Sequence ─────────────────────────────────────────────────────────────────
 
     private void BeginIntro()
@@ -148,13 +171,15 @@ public class VersusScreenController : MonoBehaviour
         StopIntro();
         PopulateInfo();
         MakeBackdropLight();
+        SetBackdropAlpha(1f);      // LOADING: opaque until the stage is ready (step 0)
+        if (_loadingText != null) _loadingText.gameObject.SetActive(true);
         _cardGroup.alpha = 1f;
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
 
         _step = Step.WaitingForStage;
-        _stageWait = _cardElapsed = 0f;
-        _cardDone = _advanceRequested = false;
+        _stageWait = _cardElapsed = _revealElapsed = 0f;
+        _cardDone = _advanceRequested = _skipAfterLoading = false;
 
         // The definitive rival, captured NOW (Fight Again re-enters here with the same one). The line
         // starts loading at once but only shows once the Versus card is gone.
@@ -162,8 +187,10 @@ public class VersusScreenController : MonoBehaviour
         float above = _config != null ? _config.bubbleAnchorAboveHead : 0.28f;
         _dialogue.Begin(GameSession.Instance?.SelectedOpponent, ComposerDialogueCategory.Intro,
                         () => ComposerAnchor.Resolve(bootstrap != null ? bootstrap.OpponentActor : null, above),
-                        displayAllowed: false,
+                        displayAllowed: true,
                         version: GameSession.Instance?.SelectedOpponentLevelConfig != null ? GameSession.Instance.SelectedOpponentLevelConfig.level : 0);
+        // On the card the line points at the rival's portrait; it glides to the head when the card goes (EndCard).
+        if (_dialogue.Bubble != null) _dialogue.Bubble.ScreenAnchorProvider = OpponentPortraitTop;
         _skip?.Show(SkipIntro);
     }
 
@@ -177,13 +204,25 @@ public class VersusScreenController : MonoBehaviour
         if (_step == Step.WaitingForStage)
         {
             _stageWait += dt;
-            float cap = _config != null ? _config.presentationReadyTimeoutSeconds : 4f;
-            bool ready = bootstrap != null && bootstrap.StageReady; // rival visual + arena loaded
+            _dialogue.Tick(dt); // the line is read on the opaque card while everything loads
+            if (_loadingText != null) _loadingText.alpha = 0.55f + 0.45f * Mathf.Abs(Mathf.Sin(_stageWait * 2.2f));
+            float cap = _config != null ? _config.versusLoadingTimeoutSeconds : 30f;
+            bool ready = bootstrap != null && bootstrap.StageReady; // both avatars built + arena loaded
             if (!ready && _stageWait < cap) return;
-            if (!ready) Debug.LogWarning($"[VersusScreenController] Rival not on stage after {cap:0.#}s — starting the presentation anyway.");
+            if (!ready) Debug.LogWarning($"[VersusScreenController] Stage not ready after {cap:0.#}s — starting the presentation anyway.");
+            if (_loadingText != null) _loadingText.gameObject.SetActive(false);
+            FightPreloader.Release(); // the fight now holds its own handles
+            if (_skipAfterLoading) { SkipIntro(); return; }
             cam?.BeginIntroTravelling(_cameraConfig != null ? _cameraConfig.introTravellingSeconds : 3f);
             _step = Step.Presenting;
+            return; // the card timeline starts next frame, from a fully opaque card
         }
+
+        // Reveal: the opaque loading veil clears to the light one over the now-ready arena.
+        float reveal = _config != null ? _config.versusRevealSeconds : 0.5f;
+        float light = _config != null ? _config.versusBackdropAlpha : 0.15f;
+        _revealElapsed += dt;
+        SetBackdropAlpha(reveal > 0f ? Mathf.Lerp(1f, light, Mathf.Clamp01(_revealElapsed / reveal)) : light);
 
         UpdateCard(dt);
         _dialogue.Tick(dt);
@@ -207,6 +246,7 @@ public class VersusScreenController : MonoBehaviour
     {
         _cardDone = true;
         _root.gameObject.SetActive(false);
+        if (_dialogue.Bubble != null) _dialogue.Bubble.ScreenAnchorProvider = null; // glides to the rival's head
         _dialogue.AllowDisplay();
     }
 
@@ -214,13 +254,23 @@ public class VersusScreenController : MonoBehaviour
     private void SkipIntro()
     {
         if (_step != Step.WaitingForStage && _step != Step.Presenting) return;
-        var cam = FightSceneBootstrap.Instance != null ? FightSceneBootstrap.Instance.CameraController : null;
+        var bootstrap = FightSceneBootstrap.Instance;
+        if (_step == Step.WaitingForStage && (bootstrap == null || !bootstrap.StageReady))
+        {
+            // Loading: the line is completed now, the rest of the skip happens the moment the stage is ready.
+            _dialogue.SkipToEnd();
+            _skipAfterLoading = true;
+            return;
+        }
+        var cam = bootstrap != null ? bootstrap.CameraController : null;
         if (cam != null)
         {
             if (cam.IsIntroTravelling) cam.CompleteIntroTravelling();
             else if (_step == Step.WaitingForStage) cam.BeginIntroTravelling(0f); // pass never started: snap
         }
         if (!_cardDone) EndCard();
+        SetBackdropAlpha(_config != null ? _config.versusBackdropAlpha : 0.15f);
+        if (_loadingText != null) _loadingText.gameObject.SetActive(false);
         _dialogue.SkipToEnd();
         Advance();
     }
@@ -252,6 +302,7 @@ public class VersusScreenController : MonoBehaviour
         _step = Step.Inactive;
         _skip?.Hide();
         _dialogue?.Cancel();
+        if (_dialogue?.Bubble != null) _dialogue.Bubble.ScreenAnchorProvider = null;
         var cam = FightSceneBootstrap.Instance != null ? FightSceneBootstrap.Instance.CameraController : null;
         if (cam != null && cam.IsIntroTravelling) cam.CompleteIntroTravelling(); // never leave the camera mid-pass
         if (_root != null) _root.gameObject.SetActive(false);

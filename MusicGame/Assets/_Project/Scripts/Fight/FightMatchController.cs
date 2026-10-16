@@ -369,14 +369,10 @@ public class FightMatchController : MonoBehaviour
 
         if (winner == FighterSide.Player)
         {
-            // Level Up is decided HERE, deterministically, the instant the match is officially won —
-            // never deferred to Continue (task's own explicit "no esperis a Continue per decidir si
-            // ha pujat" requirement) — so MatchEndedEvent already carries the old/new level for
-            // MatchResultController to display.
-            // A won match completes one song cycle; the TIER (PlayerLevel) only changes every
-            // ProgressionConfigSO.songsPerTier completed songs.
-            // The opponent-difficulty TIER (completed songs) keeps its own rules; the PLAYER level shown
-            // to the player is the persistent XP level (PlayerProgressService).
+            // Every consequence of the win is decided HERE, deterministically, the instant the match is
+            // officially won — never deferred to Continue — so the result screen only presents it:
+            // the campaign outcome (record / position advance, CampaignService.LastCombat), the card and
+            // the completed song. The opponent-difficulty TIER (completed songs) keeps its own rules.
             // 1. The EXACT rival version that was fought — captured from the roulette's committed pick
             //    (cached config), BEFORE any progression changes this frame.
             var session = GameSession.Instance;
@@ -391,31 +387,24 @@ public class FightMatchController : MonoBehaviour
             //    saved yet (the opponent version above is already captured, so nothing below can shift it).
             //    A final-rival stage has no song: nothing to defend.
             if (!bossStage) session?.RegisterCompletedSong(save: false);
-            // 3–7. collection unlock (exact version), +1 win, Musical Mastery, XP, then ONE save of
-            //      everything (including step 2), then the announcements.
+            // 3–5. collection unlock (exact version), +1 win (statistic), then ONE save of everything
+            //      (including step 2), then the announcements.
             var progress = PlayerProgressService.Instance;
-            var victory = progress != null ? progress.RecordVictory(beatenOpponent, beatenLevel) : default;
+            if (progress != null) progress.RecordVictory(beatenOpponent, beatenLevel);
             if (progress == null) Debug.LogWarning("[FightMatchController] No PlayerProgressService — victory not persisted.");
-            if (session != null) session.Run.XpEarned += victory.Xp;
             CampaignService.AfterVictorySaved(); // final-rival unlock / seal (cards just saved)
-            // MatchEndedEvent's "player level" is the Musical Mastery rank (1-based).
-            int oldLevel = victory.OldRank + 1;
-            int newLevel = victory.NewRank + 1;
-
-            EventBus.Publish(BuildMatchEndedEvent(FighterSide.Player, resolution, oldLevel, newLevel));
+            EventBus.Publish(BuildMatchEndedEvent(FighterSide.Player, resolution));
             BeginFarewell(FightFlowState.MatchWon);
         }
         else
         {
-            // A loss never touches PlayerLevel — Old/New are the same, unchanged value (task's own
-            // explicit "si perds, no baixa, no puja" requirement).
-            int level = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.MasteryRank + 1 : 1;
-            // Informative evaluation of the lost attempt (never a record: records need a win).
+            // A loss never advances or records anything (task's own explicit "si perds, no baixa, no
+            // puja" requirement). Informative evaluation of the lost attempt (never a record: records need a win).
             _attempt.Won = false;
             CampaignService.OnMatchDecided(false, _attempt);
             PlayerProgressService.Instance?.Save();
 
-            EventBus.Publish(BuildMatchEndedEvent(FighterSide.Opponent, resolution, level, level));
+            EventBus.Publish(BuildMatchEndedEvent(FighterSide.Opponent, resolution));
             BeginFarewell(FightFlowState.MatchLost);
         }
     }
@@ -479,7 +468,7 @@ public class FightMatchController : MonoBehaviour
         return (FighterSide.Player, MatchResolution.ExactTieFallback);
     }
 
-    private MatchEndedEvent BuildMatchEndedEvent(FighterSide winner, MatchResolution resolution, int oldLevel, int newLevel) => new MatchEndedEvent
+    private MatchEndedEvent BuildMatchEndedEvent(FighterSide winner, MatchResolution resolution) => new MatchEndedEvent
     {
         Winner = winner,
         PlayerRoundsWon = PlayerRoundsWon,
@@ -489,8 +478,6 @@ public class FightMatchController : MonoBehaviour
         PlayerHealthPercent = LastRoundPlayerHealthPercent,
         OpponentHealthPercent = LastRoundOpponentHealthPercent,
         MatchPointDifferential = MatchPointDifferential,
-        OldPlayerLevel = oldLevel,
-        NewPlayerLevel = newLevel,
     };
 
     private void StartNextRound()

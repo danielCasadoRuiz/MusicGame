@@ -166,7 +166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThemeTextReceiver
   colorToken: 6
   fontToken: 1
---- !u!1 &49191398978876922
+--- !u!1 &1082840731327600524
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -174,11 +174,47 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3987591026322605154}
-  - component: {fileID: 4556642644045450351}
-  - component: {fileID: 3983759177853561026}
-  - component: {fileID: 6222739979353319706}
-  - component: {fileID: 5832237208020077043}
+  - component: {fileID: 125521443007588282}
+  m_Layer: 0
+  m_Name: VolumeSliderFillArea
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &125521443007588282
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1082840731327600524}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3234059655590188686}
+  m_Father: {fileID: 6693979153120936423}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &2008593182777109187
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3807753003170305013}
+  - component: {fileID: 9113549855981198640}
+  - component: {fileID: 8797472530342553899}
+  - component: {fileID: 8408298889981591345}
+  - component: {fileID: 6577244047394500783}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -186,13 +222,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &3987591026322605154
+--- !u!224 &3807753003170305013
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 49191398978876922}
+  m_GameObject: {fileID: 2008593182777109187}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -205,21 +241,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -16}
   m_SizeDelta: {x: 380, y: 30}
   m_Pivot: {x: 0.5, y: 1}
---- !u!222 &4556642644045450351
+--- !u!222 &9113549855981198640
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 49191398978876922}
+  m_GameObject: {fileID: 2008593182777109187}
   m_CullTransparentMesh: 1
---- !u!114 &3983759177853561026
+--- !u!114 &8797472530342553899
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 49191398978876922}
+  m_GameObject: {fileID: 2008593182777109187}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
@@ -305,26 +341,26 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &6222739979353319706
+--- !u!114 &8408298889981591345
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 49191398978876922}
+  m_GameObject: {fileID: 2008593182777109187}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d9fa60cc072d8542aa7585b8cc5a99f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
   key: Settings.Title
---- !u!114 &5832237208020077043
+--- !u!114 &6577244047394500783
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 49191398978876922}
+  m_GameObject: {fileID: 2008593182777109187}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5573fc8de72c4102b886b13e3dfc6c79, type: 3}
@@ -332,42 +368,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThemeTextReceiver
   colorToken: 6
   fontToken: 0
---- !u!1 &1082840731327600524
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 125521443007588282}
-  m_Layer: 0
-  m_Name: VolumeSliderFillArea
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &125521443007588282
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1082840731327600524}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 3234059655590188686}
-  m_Father: {fileID: 6693979153120936423}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2384522188073067273
 GameObject:
   m_ObjectHideFlags: 0
@@ -1002,7 +1002,7 @@ MonoBehaviour:
   quitButtonLabel: {fileID: 2818188970279855627}
   buttonStackGap: 18
   settingsPanel: {fileID: 5420923578772000276}
-  settingsTitleText: {fileID: 3983759177853561026}
+  settingsTitleText: {fileID: 8797472530342553899}
   volumeLabelText: {fileID: 3993135543540353652}
   volumeSlider: {fileID: 7093755201360063942}
   closeButton: {fileID: 5428943702567920510}
@@ -1773,7 +1773,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3987591026322605154}
+  - {fileID: 3807753003170305013}
   - {fileID: 2484482499676081992}
   - {fileID: 6693979153120936423}
   - {fileID: 6190005777857791017}

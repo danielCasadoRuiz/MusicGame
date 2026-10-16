@@ -41,15 +41,17 @@ public class RunnerResourceTracker
     /// <summary>A musical pickup was collected (songTime = when the player touched it).</summary>
     public void OnMusicalPickup(float songTime) => Track(_combos.Register(songTime));
 
-    /// <summary>A Life/Special pickup was collected. LIFE → persistent extra life (saved at once) +
-    /// run statistic; SPECIAL → the current run's wallet (temporary) + run statistic.</summary>
+    /// <summary>A Life/Special pickup was collected. LIFE → persistent extra life (saved at once; once per
+    /// match — see RunRewardRules / GameSession.GrantRunLife) + run statistic; SPECIAL → the current run's
+    /// wallet (temporary) + run statistic.</summary>
     public void OnResourcePickup(RingType type)
     {
         var run = GameSession.Instance != null ? GameSession.Instance.Run : null;
         if (type == RingType.Life)
         {
-            PlayerProgressService.Instance?.AddLife(1, "Runner LIFE pickup");
-            run?.CountLifeCollected();
+            int nth = (run != null ? run.LivesCollectedThisRun : 0) + 1;
+            bool granted = GameSession.Instance != null && GameSession.Instance.GrantRunLife(nth);
+            run?.CountLifeCollected(granted);
         }
         else if (type == RingType.Special)
         {

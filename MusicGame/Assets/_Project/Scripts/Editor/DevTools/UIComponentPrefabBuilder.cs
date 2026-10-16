@@ -17,8 +17,8 @@ using UnityEngine.UI;
 ///
 /// "Build Component Prefabs" creates ONLY what is missing — prefabs already in the project (and any manual
 /// edits to them) are left untouched. "Rebuild Component Prefabs (overwrite)" regenerates them all from this
-/// code (explicit, destructive: asks for confirmation). Nested prefabs (stars inside rows, the evaluation panel
-/// inside the Progression detail) stay linked, so restyling Star.prefab restyles every star.
+/// code (explicit, destructive: asks for confirmation). Nested prefabs (stars inside rows and evaluation rows)
+/// stay linked, so restyling Star.prefab restyles every star.
 /// Batch: -executeMethod UIComponentPrefabBuilder.BuildFromCommandLine
 /// </summary>
 public static class UIComponentPrefabBuilder
@@ -70,6 +70,7 @@ public static class UIComponentPrefabBuilder
         var star = EnsureStarSprite();
 
         // Components
+        RepairEmptySprites($"{Components}/Star.prefab", star);
         var starPrefab = Prefab<Image>($"{Components}/Star.prefab", () => BuildStar(star));
         var rating = Prefab<StarRatingView>($"{Components}/StarRating.prefab", () => BuildStarRating(starPrefab.gameObject));
         var rHeader = Prefab<EvaluationRowView>($"{Components}/EvaluationRow_Header.prefab", () => BuildRow("EvaluationRow_Header", 20, Gold, FontStyles.Bold, null));
@@ -87,7 +88,7 @@ public static class UIComponentPrefabBuilder
         var selector = Prefab<LanguageSelectorView>($"{Components}/LanguageSelector.prefab", () => BuildLanguageSelector(option));
 
         // Progression
-        var pScreen = Prefab<ProgressionScreenView>($"{ProgressionFolder}/ProgressionScreen.prefab", () => BuildProgressionScreen(panel));
+        var pScreen = Prefab<ProgressionScreenView>($"{ProgressionFolder}/ProgressionScreen.prefab", BuildProgressionScreen);
         var pHeader = Prefab<ProgressionLevelHeaderView>($"{ProgressionFolder}/LevelHeaderRow.prefab", () => BuildLevelHeader(rating));
         var pCols = Prefab<RectTransform>($"{ProgressionFolder}/ColumnHeaderRow.prefab", BuildColumnHeader);
         var pRow = Prefab<ProgressionMatchRowView>($"{ProgressionFolder}/MatchRow.prefab", () => BuildMatchRow(rating));
@@ -194,14 +195,42 @@ public static class UIComponentPrefabBuilder
             File.WriteAllBytes(StarSpritePath, tex.EncodeToPNG());
             Object.DestroyImmediate(tex);
             AssetDatabase.ImportAsset(StarSpritePath);
-            var importer = (TextureImporter)AssetImporter.GetAtPath(StarSpritePath);
+            s_log.AppendLine($"  new   {StarSpritePath}");
+        }
+        return EnsureSingleSprite(StarSpritePath, s_log);
+    }
+
+    /// <summary>Imports `path` as ONE sprite (Sprite, Single, alpha = transparency) and returns it. A "Multiple"
+    /// import with no slices yields no Sprite at all — every Image using it then rendered as a plain block
+    /// (the stars showed as dark squares).</summary>
+    public static Sprite EnsureSingleSprite(string path, StringBuilder log)
+    {
+        var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+        if (importer != null && (importer.textureType != TextureImporterType.Sprite || importer.spriteImportMode != SpriteImportMode.Single || !importer.alphaIsTransparency))
+        {
             importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
             importer.alphaIsTransparency = true;
             importer.mipmapEnabled = false;
             importer.SaveAndReimport();
-            s_log.AppendLine($"  new   {StarSpritePath}");
+            log?.AppendLine($"  fix   {path} imported as a single sprite");
         }
-        return AssetDatabase.LoadAssetAtPath<Sprite>(StarSpritePath);
+        return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+    }
+
+    /// <summary>Kept prefabs saved while the sprite was missing: give every Image of `prefabPath` whose sprite is
+    /// empty the given sprite (Star.prefab back + fill). Only fills EMPTY slots, so manual sprite choices stay.</summary>
+    private static void RepairEmptySprites(string prefabPath, Sprite sprite)
+    {
+        if (sprite == null || AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath) == null) return;
+        var root = PrefabUtility.LoadPrefabContents(prefabPath);
+        try
+        {
+            int n = 0;
+            foreach (var img in root.GetComponentsInChildren<Image>(true)) if (img.sprite == null) { img.sprite = sprite; n++; }
+            if (n > 0) { PrefabUtility.SaveAsPrefabAsset(root, prefabPath); s_log.AppendLine($"  fix   {prefabPath}: {n} empty sprite(s) → {sprite.name}"); }
+        }
+        finally { PrefabUtility.UnloadPrefabContents(root); }
     }
 
     private static bool Inside(Vector2 p, Vector2[] poly)
@@ -376,7 +405,7 @@ public static class UIComponentPrefabBuilder
 
     // ── Progression ──────────────────────────────────────────────────────────
 
-    private static GameObject BuildProgressionScreen(EvaluationPanel panelPrefab)
+    private static GameObject BuildProgressionScreen()
     {
         var root = Root("ProgressionScreen", Vector2.zero);
         UIFactory.Stretch(RT(root));
@@ -401,15 +430,6 @@ public static class UIComponentPrefabBuilder
         view.backButton = Button(root.transform, "BackButton", out var backLabel);
         Localized(backLabel, "Rivals.Back");
         UIFactory.SetBox(view.backButton.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(170f, 36f), new Vector2(240f, 54f));
-        view.detailRoot = UIFactory.CreateRect("Detail", RT(root));
-        UIFactory.Stretch(view.detailRoot);
-        var ddim = UIFactory.CreatePanel("DetailBackdrop", view.detailRoot, new Color(0f, 0f, 0f, 0.82f));
-        UIFactory.Stretch(ddim.rectTransform);
-        view.detailBackdrop = ddim.gameObject.AddComponent<Button>();
-        view.detailPanel = Nested(panelPrefab, view.detailRoot);
-        var dr = view.detailPanel.Rect;
-        dr.anchorMin = dr.anchorMax = dr.pivot = new Vector2(0.5f, 0.5f); dr.anchoredPosition = Vector2.zero; dr.sizeDelta = new Vector2(760f, 0f);
-        view.detailRoot.gameObject.SetActive(false);
         return root;
     }
 
@@ -463,17 +483,18 @@ public static class UIComponentPrefabBuilder
     {
         var root = Root("MatchRow", new Vector2(1500f, 84f));
         var view = root.AddComponent<ProgressionMatchRowView>();
+        // Informative row: no Button (nothing to open). The background stays a raycast target so dragging over
+        // a row still scrolls the list (the drag bubbles up to the ScrollRect).
         view.background = root.AddComponent<Image>(); view.background.color = view.oddColor;
-        view.button = root.AddComponent<Button>(); view.button.targetGraphic = view.background;
         view.numberAndStatus = Text(root.transform, "NumberStatus", "MATCH 1", 17, Color.white);
         UIFactory.SetBox(view.numberAndStatus.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(40f, 0f), new Vector2(170f, 60f));
-        view.runner = Text(root.transform, "Runner", "Race: —", 15, Color.white);
+        view.runner = Text(root.transform, "Runner", "—", 15, Color.white);
         UIFactory.SetBox(view.runner.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(220f, 14f), new Vector2(330f, 40f));
         view.runnerStars = Nested(rating, root.transform); view.runnerStars.name = "RunnerStars"; Place(view.runnerStars, 220f, -22f);
         var portraitRt = UIFactory.CreateRect("Portrait", RT(root));
         UIFactory.SetBox(portraitRt, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(580f, 0f), new Vector2(64f, 76f));
         view.portrait = portraitRt.gameObject.AddComponent<Image>(); view.portrait.preserveAspect = true; view.portrait.raycastTarget = false;
-        view.combat = Text(root.transform, "Combat", "Fight: —", 15, Color.white);
+        view.combat = Text(root.transform, "Combat", "—", 15, Color.white);
         UIFactory.SetBox(view.combat.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(656f, 14f), new Vector2(330f, 40f));
         view.combatStars = Nested(rating, root.transform); view.combatStars.name = "CombatStars"; Place(view.combatStars, 656f, -22f);
         var total = Localized(Text(root.transform, "TotalLabel", "", 15, Color.white), "Progression.Total");

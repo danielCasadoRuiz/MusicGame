@@ -243,7 +243,11 @@ public class GameplayManager : MonoBehaviour
         var path = MusicWorldManager.Instance.Path;
 
         // Generate timeline (no startZ needed — eventDistance is path-relative)
-        _timeline         = GameplayTimeline.Generate(profile, config, path);
+        // The match's pickup distribution: the song's musical events + THIS match's stored seed
+        // (RunnerPickupLayout — a resumed / replayed match gets the same layout, a new match a new one).
+        int pickupSeed    = RunnerPickupLayout.SeedFor(config.collectibles);
+        _timeline         = GameplayTimeline.Generate(profile, config, path, pickupSeed);
+        Debug.Log($"[GameplayManager] Pickup distribution: seed {pickupSeed}, {_timeline.Events.Length} events.");
         // The played window must be known BEFORE counting what's available: pickups outside it
         // (manual play range) can never be met, so they must not exist for scoring/performance.
         (SongPlayStart, SongPlayEnd) = ResolvePlayRange(profile.duration);
@@ -807,47 +811,37 @@ public class GameplayManager : MonoBehaviour
         var go = pool.Get();
         if (go == null) return;
 
-        // World position from the event's own precomputed continuous lateral/vertical offsets
-        // (decided once in GameplayTimeline.Generate — never re-rolled here), placed on the
-        // REAL musical surface at this exact lateral offset (not the path centerline) — same
-        // authoritative surface query the ground mesh itself is built from
-        // (MusicWorldManager.SampleSurface), so a collectible can never end up under a bass
-        // bump that raises the surface above centerline height.
-        //
-        // Split EXACTLY at evt.floorClearance — not an arbitrary fixed fraction — because a
-        // Vector3.Lerp/offset moved along the wrong axis on a TILTED surface (e.g. a steep bass
-        // bump) doesn't clear the real ground by the distance it thinks it does: moving `d`
-        // units along direction `dir` only clears the true surface by `d * dot(dir, surface.normal)`,
-        // which shrinks as the angle between `dir` and the true normal grows. So:
-        //   - The floorClearance portion (guarantees the collectible isn't embedded — see
-        //     GameplayTimeline.CollectibleMaxHalfHeight) goes along the TRUE surface normal,
-        //     correct regardless of tilt.
-        //   - Only the portion ABOVE that (extra jump-gameplay height the curve rolled) goes
-        //     along the path's stable up direction, so a tilted normal on a steep bump can't
-        //     shove a tall jump-height collectible sideways off the path.
+        // World position from the event's own precomputed lateral/vertical offsets (decided once in
+        // GameplayTimeline.Generate — never re-rolled here): verticalOffset metres straight above the
+        // REAL local ground at the pickup's exact distance + lateral offset (the ground mesh/collider the
+        // player stands on — slopes, relief and the bent path included), never sinking into the ground
+        // under its footprint. One shared query (MusicWorldManager.PickupPosition) — the debug HUD and
+        // PickupGroundReachDiagnostic call the same one.
         var     sample  = path.GetSample(evt.eventDistance);
-        Vector3 pos;
-        if (MusicWorldManager.Instance != null)
-        {
-            var surface = MusicWorldManager.Instance.SampleSurface(evt.eventDistance, evt.lateralOffset);
-            const float baseClearance = 0.05f;
-            float floorPortion = Mathf.Min(evt.verticalOffset, evt.floorClearance);
-            float extraPortion = Mathf.Max(0f, evt.verticalOffset - evt.floorClearance);
-            pos = surface.position + surface.normal * (baseClearance + floorPortion) + sample.up * extraPortion;
-        }
-        else
-        {
-            pos = sample.position + sample.right * evt.lateralOffset + sample.up * evt.verticalOffset;
-        }
+        Vector3 pos     = PickupWorldPosition(evt, config);
 
         go.transform.position = pos;
-        go.transform.rotation = Quaternion.LookRotation(sample.tangent, sample.up);
+        // Upright (world up, like the player's capsule) so the trigger's vertical extent is exactly its half height.
+        Vector3 flatForward = Vector3.ProjectOnPlane(sample.tangent, Vector3.up);
+        go.transform.rotation = Quaternion.LookRotation(flatForward.sqrMagnitude > 1e-6f ? flatForward : Vector3.forward, Vector3.up);
         go.SetActive(true);
 
         var rc = go.GetComponent<RingController>();
         if (rc != null) rc.Activate(evt, () => pool.Return(go));
 
         _activeEvents.Add(new ActiveEvent { evt = evt, go = go, pool = pool, index = index });
+    }
+
+    /// <summary>Final world position of a generated pickup (see ActivateEvent) — public + static so
+    /// debug tools verify the exact same placement. Its bottom keeps collectibleSurfaceClearance above
+    /// the ground under its whole (rotating) footprint.</summary>
+    public static Vector3 PickupWorldPosition(in TimelineEvent evt, MusicRunnerGameplayConfig cfg)
+    {
+        var world = MusicWorldManager.Instance;
+        if (world == null || world.Path == null) return Vector3.zero;
+        float half = GameplayTimeline.CollectibleMaxHalfHeight(evt.ringType, cfg);
+        return world.PickupPosition(evt.eventDistance, evt.lateralOffset, evt.verticalOffset,
+                                    half + cfg.collectibles.collectibleSurfaceClearance, half * 1.42f);
     }
 
     // ── Visual reveal (purely spatial, no musical meaning — see Update()'s reveal loop) ───────

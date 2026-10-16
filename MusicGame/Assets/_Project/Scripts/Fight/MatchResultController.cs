@@ -5,10 +5,17 @@ using UnityEngine.UI;
 /// <summary>
 /// The real post-Fight result screen — ONE configurable MatchResultView representing both Win and
 /// Lose (see that class's own doc), never two parallel screens. Shown for FightFlowState.MatchWon/
-/// MatchLost; FightMatchController already decided everything shown here (rounds, reason, health%,
-/// and — for a win — the OLD/NEW PlayerLevel) via MatchEndedEvent, cached the instant it arrives
-/// (same _pendingData pattern as RoundEndController) — this class only presents it and reacts to the
-/// player's own choice:
+/// MatchLost; FightMatchController already decided everything shown here — rounds / reason / health% via
+/// MatchEndedEvent (cached the instant it arrives, same _pendingData pattern as RoundEndController) and the
+/// campaign outcome via CampaignService.LastCombat — this class only presents it and reacts to the
+/// player's own choice. ONE results list, three labelled sections (see PopulateResults):
+///   FIGHT  the fight just decided: won / lost vs whom, its stars, rounds, how it ended, its metrics
+///   RACE   the run that led to this fight (its stars + score) — real values on a loss too
+///   MATCH  the whole match (race + fight): combined stars on a win and its effect on the campaign level
+///          (position completed / next position / level or lap completed / improved record / new card);
+///          on a loss: "not passed" and the extra lives left for Fight Again.
+///
+/// Actions:
 ///
 ///   WIN  -> Continue: hands off entirely to NextSongTransitionController (see its own doc) — this
 ///           class never touches song selection/loading itself.
@@ -21,12 +28,13 @@ using UnityEngine.UI;
 ///        -> Fight Again (no lives): opens the Rewarded Ad confirmation sub-panel instead (see
 ///           IRewardedAdService's own doc) — Watch Ad grants +1 life and immediately starts Fight
 ///           Again on success; Cancel returns to this same Lose screen.
-///        -> Replay Song: GameSession.SelectedSong/Profile already hold the exact song + analysis
-///           that led to this Fight (nothing overwrites them during a Fight session) — requests
-///           GameFlowState.Gameplay DIRECTLY, skipping SongAnalysis/AnalyzingScreen entirely (see
-///           OnReplaySongClicked's own doc on why a cache hit isn't good enough here). A fresh
-///           Runner.unity load (via RunnerSceneBootstrap, same as any normal entry) gives a genuinely
-///           new run of the SAME song. Does NOT consume a life.
+///        -> Replay Song: the SAME match from its start, through the normal full flow — Runner (new run
+///           session) → race results → Fight (roulette reveal of the SAME assigned rival → versus →
+///           rounds) → this screen. The persisted assignment (song + rival + campaign position + runner
+///           difficulty) is re-applied first (RunAssignment.TryRestorePending, exactly what CONTINUE does),
+///           then GameFlowState.Gameplay is requested (the song's analysis is already in GameSession — see
+///           OnReplaySongClicked). Nothing is duplicated: records keep only the best, lives are granted once
+///           per match (RunRewardRules), the specials wallet starts empty. Does NOT consume a life.
 ///   BOTH -> Main Menu: unchanged.
 ///
 /// The composer's last words are NOT here: they play in the arena before this screen opens
@@ -46,10 +54,6 @@ public class MatchResultController : MonoBehaviour
     private MatchResultView _view;   // the spawned MatchResult.prefab instance
     private RectTransform   _root;
     private TextMeshProUGUI _titleText;
-    private TextMeshProUGUI _rivalText;
-    private TextMeshProUGUI _roundsText;
-    private TextMeshProUGUI _summaryText;
-    private TextMeshProUGUI _levelText;
 
     private Button          _continueButton;
     private Button          _selectSongButton; // won match only: choose the next song manually (secondary to CONTINUE)
@@ -77,7 +81,7 @@ public class MatchResultController : MonoBehaviour
     private RivalVersionUnlockedEvent? _pendingUnlock;
     private System.Action<RivalVersionUnlockedEvent> _onRivalUnlocked;
 
-    private EvaluationPanel _evalPanel;   // campaign evaluation of this attempt + persistent bests
+    private EvaluationPanel _evalPanel;   // the ONE results list (FIGHT / RACE / MATCH)
     private bool _inputGuard;              // true for the screen's first frame (see class doc)
     private bool _replaySongLocksButtons;  // true while Replay Song waits for Runner (see OnReplaySongClicked)
     private Coroutine _unblockRoutine;
@@ -184,10 +188,6 @@ public class MatchResultController : MonoBehaviour
     {
         _root        = view.root != null ? view.root.GetComponent<RectTransform>() : (RectTransform)view.transform;
         _titleText   = view.titleText;
-        _rivalText   = view.rivalText;
-        _roundsText  = view.roundsText;
-        _summaryText = view.summaryText;
-        _levelText   = view.levelText;
 
         _continueButton = view.continueButton;
         view.continueButton.onClick.AddListener(OnContinueClicked);
@@ -226,22 +226,10 @@ public class MatchResultController : MonoBehaviour
         _awaitingReplaySongReady = false;
         SetReplaySongButtonsInteractable(true);
 
-        Loc.Set(_titleText, playerWon ? "Fight.YouWin" : "Fight.YouLose");
-        _rivalText.text   = OpponentDisplayName();
-        _roundsText.text  = $"{data.PlayerRoundsWon} - {data.OpponentRoundsWon}";
-        _summaryText.text = BuildSummary(data);
-        if (playerWon && _pendingUnlock.HasValue && _pendingUnlock.Value.Opponent != null)
-        {
-            var u = _pendingUnlock.Value;
-            _summaryText.text += "\n\n<b>" + Loc.Get("MatchResult.NewRival") + "</b>\n" +
-                                 Loc.Get("MatchResult.NewRivalLevel", u.Opponent.displayName, u.Level.ToString());
-        }
-        _pendingUnlock = null; // shown once; a repeat victory over the same version never sets it
-
-        _levelText.gameObject.SetActive(playerWon);
-        if (playerWon) _levelText.text = MasteryLine(data);
-
         bool boss = GameSession.Instance != null && GameSession.Instance.CurrentBossStage >= 0;
+        // The title is the MATCH outcome (a final-rival stage has no race: its title is the fight's).
+        Loc.Set(_titleText, boss ? (playerWon ? "Fight.YouWin" : "Fight.YouLose")
+                                 : (playerWon ? "Results.MatchPassed" : "Results.MatchNotPassed"));
         _continueButton.gameObject.SetActive(playerWon);
         // Final-rival stages are combat-only: no song to choose or replay.
         if (_selectSongButton != null) _selectSongButton.gameObject.SetActive(playerWon && !boss);
@@ -253,68 +241,91 @@ public class MatchResultController : MonoBehaviour
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
 
-        PopulateEvaluation(playerWon);
+        PopulateResults(playerWon, data);
+        _pendingUnlock = null; // shown once; a repeat victory over the same version never sets it
         BeginInputGuard();
     }
 
-    // ── Campaign evaluation (stars) ─────────────────────────────────────────────
+    // ── The ONE results list: FIGHT / RACE / MATCH ─────────────────────────────
 
-    private void PopulateEvaluation(bool playerWon)
+    private void PopulateResults(bool playerWon, MatchEndedEvent data)
     {
         if (_evalPanel == null) return;
         _evalPanel.Clear();
-        var c = CampaignService.LastCombat;
-        if (c == null) { _evalPanel.gameObject.SetActive(false); return; }
         _evalPanel.gameObject.SetActive(true);
-        var e = c.Evaluation;
+        var c = CampaignService.LastCombat;
+        var p = _evalPanel;
 
-        _evalPanel.AddHeader(Loc.Get(c.Boss ? "Eval.BossStage" : "Eval.ThisCombat", (c.BossStage + 1).ToString()));
-        _evalPanel.AddStars(Loc.Get("Eval.Points", EvaluationPanel.Points(e.Score, e.MaxScore)) + (e.Perfect ? "  " + Loc.Get("Eval.Perfect") : ""), e.HalfStars);
-        _evalPanel.AddNote(EvaluationPanel.Breakdown(e.Metrics));
-        if (!c.Won) _evalPanel.AddWarning(Loc.Get("Eval.LossInformative"));
+        // FIGHT — the fight just decided.
+        p.AddHeader(Loc.Get(playerWon ? "Results.FightWon" : "Results.FightLost", OpponentDisplayName(), RivalVersion()));
+        if (c != null)
+            p.AddStars(Loc.Get("Results.FightStars") + (c.Evaluation.Perfect ? "  " + Loc.Get("Eval.Perfect") : "") +
+                       (playerWon && !c.Boss && c.Record.NewRecord ? "  " + Loc.Get("Eval.NewRecord") : ""), c.Evaluation.HalfStars);
+        p.AddLine(FightLine(data));
+        if (c != null) p.AddNote(EvaluationPanel.Breakdown(c.Evaluation.Metrics));
 
-        if (c.Boss)
+        if (c != null && c.Boss) { BossSection(c, playerWon); return; }
+
+        // RACE — the run that led to this fight (its real values, also on a loss).
+        var race = c != null ? (c.RunnerOfThisMatch ?? (!c.Recorded ? CampaignService.LastRunner : null)) : CampaignService.LastRunner;
+        if (race != null)
         {
-            if (c.BossBest != null && c.BossBest.has && c.BossBest.valid)
-                _evalPanel.AddStars(Loc.Get("Eval.BestOfStage") + (c.BossNewRecord ? "  " + Loc.Get("Eval.NewRecord") : ""), c.BossBest.halfStars);
-            if (c.BossNextStageAvailable) _evalPanel.AddHighlight(Loc.Get("Eval.BossNext", (c.BossStage + 2).ToString()));
-            if (c.BossSequenceCompleted) _evalPanel.AddHighlight(Loc.Get("Eval.BossDefeated"));
-            if (CampaignService.Available && CampaignService.Data.boss.sealGranted && !CampaignService.Data.boss.sealCelebrationShown)
-                _evalPanel.AddHighlight(Loc.Get("Campaign.SealName"));
+            p.AddHeader(Loc.Get("Results.RaceHeader", SongDisplayName()));
+            p.AddStars(Loc.Get("Results.RaceStars"), race.Evaluation.HalfStars);
+            p.AddNote(Loc.Get("Results.Score", race.GameScore.ToString("N0"), race.GameMaxScore.ToString("N0"),
+                              Mathf.RoundToInt(Mathf.Clamp01(race.GameNormalized) * 100f).ToString()) +
+                      "  ·  " + Loc.Get("Eval.Falls", race.Falls.ToString()));
+        }
+
+        // MATCH — race + fight together, and what it did to the campaign level.
+        var position = c != null && c.Recorded && CampaignService.Available ? CampaignModel.Find(CampaignService.Data, c.PositionId) : null;
+        string where = position != null ? CampaignService.PositionLabel(position.levelId, position.matchNumber) : "";
+        p.AddHeader(string.IsNullOrEmpty(where) ? Loc.Get("Results.MatchHeaderFree") : Loc.Get("Results.MatchHeader", where));
+        if (!playerWon)
+        {
+            p.AddWarning(Loc.Get("Results.NotPassed"));
+            p.AddNote(Loc.Get("Results.LivesLeft", ExtraLives.ToString()));
             return;
         }
+        if (race != null && c != null)
+            p.AddStars(Loc.Get("Results.MatchStars"), StarMath.Combine(race.Evaluation.HalfStars, c.Evaluation.HalfStars));
+        if (position == null) { p.AddNote(Loc.Get("Eval.NotCampaign")); AddUnlock(p); return; }
 
-        // Runner of THIS attempt + the attempt's own combined note.
-        var runner = c.RunnerOfThisMatch;
-        if (runner != null)
+        var advance = c.Advance;
+        if (!string.IsNullOrEmpty(advance.CompletedPositionId))
         {
-            _evalPanel.AddStars(Loc.Get("Eval.ThisRunner", EvaluationPanel.Points(runner.Evaluation.Score, runner.Evaluation.MaxScore)), runner.Evaluation.HalfStars);
-            if (c.Won) _evalPanel.AddStars(Loc.Get("Eval.ThisAttempt"), StarMath.Combine(runner.Evaluation.HalfStars, e.HalfStars));
+            if (advance.LapCompleted) p.AddHighlight(Loc.Get("Eval.LapCompleted"));
+            else if (advance.LevelCompleted) p.AddHighlight(Loc.Get("Results.LevelCompletedNext", CampaignService.CurrentPositionLabel));
+            else p.AddHighlight(Loc.Get("Results.Advanced", CampaignService.CurrentPositionLabel));
         }
+        else p.AddNote(Loc.Get("Results.ReplayedPosition")); // an earlier position: records only, no advance
 
-        // Persistent bests of the position (each phase may come from a different lap).
-        if (c.Recorded && CampaignService.Available)
-        {
-            var p = CampaignModel.Find(CampaignService.Data, c.PositionId);
-            if (p != null)
-            {
-                _evalPanel.AddHeader(Loc.Get("Eval.PositionBests", PositionLabel(p)));
-                _evalPanel.AddStars(Loc.Get("Eval.BestRunner"), CampaignModel.HasRunner(p) ? p.bestRunner.halfStars : -1);
-                _evalPanel.AddStars(Loc.Get("Eval.BestCombat") + (c.Record.NewRecord ? "  " + Loc.Get("Eval.NewRecord") : ""),
-                                    CampaignModel.HasCombat(p) ? p.bestCombat.halfStars : -1);
-                _evalPanel.AddStars(Loc.Get("Eval.Total"), CampaignModel.CombinedHalfStars(p));
-                if (c.Record.JustMastered) _evalPanel.AddHighlight(Loc.Get("Eval.JustMastered"));
-            }
-            if (c.Advance.LevelCompleted && !c.Advance.LapCompleted) _evalPanel.AddHighlight(Loc.Get("Eval.LevelCompleted"));
-            if (c.Advance.LapCompleted) _evalPanel.AddHighlight(Loc.Get("Eval.LapCompleted"));
-        }
+        bool improved = c.Record.NewRecord || (race != null && race.Recorded && race.Record.NewRecord);
+        p.AddStarsSmall(Loc.Get(improved ? "Results.RecordImproved" : "Results.RecordKept"), CampaignModel.CombinedHalfStars(position));
+        if (c.Record.JustMastered || (race != null && race.Recorded && race.Record.JustMastered)) p.AddHighlight(Loc.Get("Eval.JustMastered"));
+        AddUnlock(p);
     }
 
-    private static string PositionLabel(PositionRecordData p)
+    private void AddUnlock(EvaluationPanel p)
     {
-        var cfg = CampaignService.Config;
-        int index = cfg != null ? cfg.IndexOf(p.levelId) : -1;
-        return Loc.Get("Campaign.Position", (index + 1).ToString(), p.matchNumber.ToString());
+        if (!_pendingUnlock.HasValue || _pendingUnlock.Value.Opponent == null) return;
+        var u = _pendingUnlock.Value;
+        p.AddHighlight(Loc.Get("MatchResult.NewRival") + " — " + Loc.Get("MatchResult.NewRivalLevel", u.Opponent.displayName, u.Level.ToString()));
+    }
+
+    // Final-rival stage: no race; the stage record and the challenge's progress are the "match".
+    private void BossSection(CombatPhaseOutcome c, bool playerWon)
+    {
+        var p = _evalPanel;
+        p.AddHeader(Loc.Get("Eval.BossStage", (c.BossStage + 1).ToString()));
+        if (c.BossBest != null && c.BossBest.has && c.BossBest.valid)
+            p.AddStarsSmall(Loc.Get("Eval.BestOfStage") + (c.BossNewRecord ? "  " + Loc.Get("Eval.NewRecord") : ""), c.BossBest.halfStars);
+        if (!playerWon) { p.AddWarning(Loc.Get("Eval.LossInformative")); p.AddNote(Loc.Get("Results.LivesLeft", ExtraLives.ToString())); return; }
+        if (c.BossNextStageAvailable) p.AddHighlight(Loc.Get("Eval.BossNext", (c.BossStage + 2).ToString()));
+        if (c.BossSequenceCompleted) p.AddHighlight(Loc.Get("Eval.BossDefeated"));
+        if (CampaignService.Available && CampaignService.Data.boss.sealGranted && !CampaignService.Data.boss.sealCelebrationShown)
+            p.AddHighlight(Loc.Get("Campaign.SealName"));
+        AddUnlock(p);
     }
 
     private void Hide()
@@ -383,36 +394,34 @@ public class MatchResultController : MonoBehaviour
     // The persistent life inventory — the same counter the Runner HUD/summary show.
     private static int ExtraLives => PlayerProgressService.Instance != null ? PlayerProgressService.Instance.ExtraLives : 0;
 
-    private static string BuildSummary(MatchEndedEvent data)
+    // "Rounds 2–1 · KO · Health: you 64% / rival 0%" (+ "wins on points" when the tie-break decided it).
+    // The round scoreboard always stays honest about what happened round by round — a points/fallback
+    // decision is only ever surfaced as its own clause, never as a faked round win.
+    private static string FightLine(MatchEndedEvent data)
     {
-        string reason    = Loc.Get(data.LastRoundReason == RoundEndReason.KO ? "Fight.KO" : "Fight.TimeUp");
-        int playerHp     = Mathf.RoundToInt(data.PlayerHealthPercent * 100f);
-        int opponentHp   = Mathf.RoundToInt(data.OpponentHealthPercent * 100f);
-        string summary   = reason + "\n" + Loc.Get("MatchResult.FinalHealth", playerHp.ToString(), opponentHp.ToString());
-
-        // The round scoreboard (_roundsText, e.g. "1-1") always stays honest about what actually
-        // happened round by round — this line is the ONLY place a points/fallback decision is ever
-        // surfaced, deliberately kept separate from that scoreboard (this format's own explicit
-        // "Round result != Match resolution" rule — never fake a Round 3 win to explain this).
+        string reason  = Loc.Get(data.LastRoundReason == RoundEndReason.KO ? "Fight.KO" : "Fight.TimeUp");
+        int playerHp   = Mathf.RoundToInt(data.PlayerHealthPercent * 100f);
+        int opponentHp = Mathf.RoundToInt(data.OpponentHealthPercent * 100f);
+        string line = Loc.Get("Results.Rounds", data.PlayerRoundsWon.ToString(), data.OpponentRoundsWon.ToString()) + "  ·  " + reason +
+                      "  ·  " + Loc.Get("MatchResult.FinalHealth", playerHp.ToString(), opponentHp.ToString());
         if (data.Resolution == MatchResolution.PointsTiebreak || data.Resolution == MatchResolution.ExactTieFallback)
         {
             string winnerName = data.Winner == FighterSide.Player ? Loc.Get("Fight.PlayerName") : OpponentDisplayName();
-            summary += "\n" + Loc.Get("Fight.WinsOnPoints", winnerName);
+            line += "  ·  " + Loc.Get("Fight.WinsOnPoints", winnerName);
         }
-
-        return summary;
+        return line;
     }
 
-    // Musical Mastery after this win: "RANK UP: A → B" when it changed, else "B · N victories".
-    private static string MasteryLine(MatchEndedEvent data)
+    private static string RivalVersion()
     {
-        var progress = PlayerProgressService.Instance;
-        var cfg = Resources.Load<AppConfigSO>("AppConfig")?.progression;
-        if (progress == null || cfg == null) return "";
-        string now = progress.MasteryRankName;
-        if (data.NewPlayerLevel != data.OldPlayerLevel)
-            return Loc.Get("MatchResult.MasteryUp", Loc.Get("Mastery." + cfg.MasteryRankId(data.OldPlayerLevel - 1)), now);
-        return Loc.Get("MatchResult.Mastery", now, progress.FightsWon.ToString());
+        var level = GameSession.Instance != null ? GameSession.Instance.SelectedOpponentLevelConfig : null;
+        return level != null ? level.level.ToString() : "?";
+    }
+
+    private static string SongDisplayName()
+    {
+        var song = GameSession.Instance != null ? GameSession.Instance.SelectedSong : null;
+        return song.HasValue ? song.Value.DisplayName : "";
     }
 
     private static string OpponentDisplayName() =>
@@ -450,9 +459,8 @@ public class MatchResultController : MonoBehaviour
             AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu);
             return;
         }
-        int newLevel = _pendingMatchEnded?.NewPlayerLevel ?? (GameSession.Instance != null ? GameSession.Instance.PlayerLevel : 1);
         Hide();
-        NextSongTransitionController.Instance?.BeginWin(newLevel);
+        NextSongTransitionController.Instance?.BeginWin();
     }
 
     // SELECT SONG (won match): the existing selector instead of the automatic route pick. Confirming a
@@ -508,12 +516,26 @@ public class MatchResultController : MonoBehaviour
     private void OnReplaySongClicked()
     {
         if (_awaitingReplaySongReady) return; // already in flight — ignore a stray extra click
-        Debug.Log("[MatchResultController] Replay Song clicked -> requesting GameFlowState.Gameplay directly (SongAnalysis is never requested here); this screen stays visible until GameStartedEvent.");
+        Debug.Log("[MatchResultController] Replay Song clicked -> same match from the start (assignment re-applied), requesting GameFlowState.Gameplay; this screen stays visible until GameStartedEvent.");
+        ReapplyAssignment();
 
         SetReplaySongButtonsInteractable(false);
         _awaitingReplaySongReady = true;
         FightMusicController.Instance?.Stop();
         AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.Gameplay);
+    }
+
+    /// <summary>Replay = the SAME persisted match again: re-applies its song + rival + campaign position +
+    /// runner difficulty exactly as CONTINUE does (RunAssignment.TryRestorePending), so the replayed run and
+    /// the fight after it are the normal flow of that match — never a stale or different setup. A local-file
+    /// run (no assignment) simply keeps its session rival.</summary>
+    private static void ReapplyAssignment()
+    {
+        var progress = PlayerProgressService.Instance;
+        var song = GameSession.Instance != null ? GameSession.Instance.SelectedSong : null;
+        if (progress == null || !song.HasValue || string.IsNullOrEmpty(song.Value.SongId) || !progress.IsPendingSong(song.Value.SongId)) return;
+        if (!RunAssignment.TryRestorePending(new[] { song.Value.SongId }, out _))
+            Debug.LogWarning("[MatchResultController] Replay Song: the pending assignment could not be restored — replaying with the current session setup.");
     }
 
     private void OnMainMenuClicked()

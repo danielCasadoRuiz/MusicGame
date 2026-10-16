@@ -34,7 +34,7 @@ public static class CampaignRulesTests
         s_report = new StringBuilder("[CampaignRulesTests]\n");
         s_fails = s_passes = 0;
         var eval = ScriptableObject.CreateInstance<EvaluationConfigSO>();
-        Stars(); Runner(eval); Combat(eval); Records(eval); Campaign(); MusicCycle(); RivalCoverage(); FinalRival(); Migration(); VersionDialogues(); Arenas();
+        Stars(); Runner(eval); Combat(eval); Records(eval); Campaign(); MusicCycle(); RivalCoverage(); FinalRival(); Migration(); VersionDialogues(); Arenas(); RewardsAndReplay(eval);
         s_report.AppendLine($"RESULT {(s_fails == 0 ? "PASS" : "FAIL")} — {s_passes} passed, {s_fails} failed");
         return s_report.ToString();
     }
@@ -320,6 +320,63 @@ public static class CampaignRulesTests
         Check(ArenaSelector.Pick(none) == null && ArenaSelector.Pick(null) == null, "no arenas → null (default arena / placeholder floor)");
     }
 
+    // ── Rewards / win / loss / replay (no duplication) ───────────────────────
+
+    private static void RewardsAndReplay(EvaluationConfigSO eval)
+    {
+        s_report.AppendLine("-- rewards, win / loss / replay");
+        // Lives: granted once per match, whatever the number of attempts.
+        Check(RunRewardRules.GrantsLife(1, 0) && RunRewardRules.GrantsLife(2, 1), "first attempt: every LIFE pickup is a new life");
+        Check(!RunRewardRules.GrantsLife(1, 2) && !RunRewardRules.GrantsLife(2, 2), "replay / resume: pickups already earned by an earlier attempt grant nothing");
+        Check(RunRewardRules.GrantsLife(3, 2), "a replay that collects MORE than before grants only the extra one");
+        int granted = 0, total = 0;
+        foreach (int collectedInAttempt in new[] { 2, 2, 1, 3, 3 })            // five attempts of the same match
+            for (int n = 1; n <= collectedInAttempt; n++)
+                if (RunRewardRules.GrantsLife(n, granted)) { granted = n; total++; }
+        Check(total == 3 && granted == 3, $"5 attempts collecting 2/2/1/3/3 lives → 3 lives in total (got {total})");
+        Check(RunRewardRules.SameSpecialCount(2, 2) && !RunRewardRules.SameSpecialCount(2, 1), "specials shown once when collected == available");
+
+        // Specials: the fight wallet starts empty on every run (a replay cannot stack them).
+        var first = new RunSession(1, "song_A");
+        first.CollectSpecial(); first.CollectSpecial();
+        first.CountLifeCollected(true); first.CountLifeCollected(false);
+        var replay = new RunSession(2, "song_A");
+        Check(first.Wallet.Specials == 2 && replay.Wallet.Specials == 0 && replay.SpecialsCollectedThisRun == 0, "replay = new run session: specials wallet starts at 0");
+        Check(first.LivesCollectedThisRun == 2 && first.LivesGrantedThisRun == 1, "run statistics: collected vs actually granted lives");
+
+        // Loss: informative only — no record, no completion, no advance.
+        var c = Config(2, 2);
+        var d = new CampaignProgressData();
+        CampaignModel.Normalize(d, c);
+        var p = CampaignModel.Position(d, "T1", 1);
+        var lostEval = PhaseEvaluator.EvaluateCombat(new CombatAttemptMetrics { Won = false, DamageTaken = 50f, PlayerMaxHealth = 100f, RoundsToWin = 2, AttacksStarted = 10, HitsLanded = 5 }, eval);
+        CampaignModel.RecordRunner(p, Rec(6, 0.6f, song: "song_A"));
+        var loss = CampaignModel.RecordCombat(p, lostEval.ToRecord(1, "song_A", "bach", 1));
+        Check(!loss.NewRecord && !CampaignModel.HasCombat(p) && !p.completed && CampaignModel.CurrentPositionId(d, c) == "T1#1",
+              "lost fight: real result stored as the last attempt, but no record, not completed, no advance");
+        Check(p.lastCombat.has && !p.lastCombat.valid && p.bestRunner.halfStars == 6, "the race of a lost match keeps its own record");
+
+        // Replay (same match): a worse race keeps the best; then the win advances exactly once.
+        var worse = CampaignModel.RecordRunner(p, Rec(4, 0.45f, song: "song_A"));
+        Check(!worse.NewRecord && p.bestRunner.halfStars == 6, "replayed race worse than before → record kept");
+        var won = PhaseEvaluator.EvaluateCombat(new CombatAttemptMetrics { Won = true, DamageTaken = 20f, PlayerMaxHealth = 100f, RoundsToWin = 2, AttacksStarted = 10, HitsLanded = 7 }, eval);
+        var win = CampaignModel.RecordCombat(p, won.ToRecord(1, "song_A", "bach", 1));
+        var advance = CampaignModel.CompleteCurrentMatch(d, c);
+        Check(win.NewRecord && win.FirstRecord && p.completed && advance.CompletedPositionId == "T1#1" && CampaignModel.CurrentPositionId(d, c) == "T1#2",
+              "win after replay: fight record set, T1#1 completed once, next position T1#2");
+        Check(CampaignModel.CombinedHalfStars(p) == StarMath.Combine(6, won.HalfStars), "match stars = best race + best fight combined");
+
+        // A later win on an EARLIER position (old assignment) records but never advances again.
+        var p1 = CampaignModel.Position(d, "T1", 1);
+        var again = CampaignModel.RecordCombat(p1, won.ToRecord(1, "song_A", "bach", 1));
+        Check(!again.NewRecord && CampaignModel.CurrentPositionId(d, c) == "T1#2", "same result again on a completed position: no new record, no advance");
+
+        // Completed songs / cards are sets: a second win with the same song never counts twice.
+        var cycle = new SongCycleData();
+        Check(SongCycleModel.Consume(cycle, "song_A") && !SongCycleModel.Consume(cycle, "song_A") && cycle.consumedSongIds.Count == 1,
+              "the same song won twice is consumed once");
+    }
+
     // ── Save migration ───────────────────────────────────────────────────────
 
     private static void Migration()
@@ -333,7 +390,8 @@ public static class CampaignRulesTests
         var data = JsonUtility.FromJson<PlayerProgressData>(v4);
         PlayerProgressStore.Migrate(data);
         Check(data.xp == 1234 && data.extraLives == 3 && data.fightsWon == 7 && data.defeatedOpponents[0].levels.SequenceEqual(new[] { 1, 2 }),
-              "XP, lives, wins and cards kept");
+              "legacy XP fields round-trip untouched (ignored); lives, wins and cards kept");
+        Check(data.pendingRun.livesGranted == 0, "old pending assignment: no lives granted yet (new field defaults to 0)");
         Check(data.songCycle.cycle == 1 && data.songCycle.consumedSongIds.Count == 7, "won songs become the consumed part of music cycle 1");
         Check(data.pendingRun.IsSet && data.pendingRun.songId == "song_008" && data.pendingRun.bossStage == -1 && !data.pendingRun.IsBoss,
               "pending assignment kept (normal match, not a boss stage)");

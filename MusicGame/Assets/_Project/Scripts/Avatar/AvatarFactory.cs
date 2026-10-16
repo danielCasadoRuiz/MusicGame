@@ -40,6 +40,37 @@ public static class AvatarFactory
         MorphChannel.Gender,
     };
 
+    /// <summary>
+    /// CreateAsync, but never SEEN while it assembles: built under an inactive staging object (the base body in
+    /// T-pose and every garment popping in stay invisible), then moved under `parent` with all its renderers
+    /// off. `beforeReveal` runs right there, in the same frame (place/scale it, bind its animator…); then one
+    /// animator evaluation puts it in its real pose and only then does it render — no T-pose frame, ever.
+    /// If `parent` died meanwhile the instance comes back unfinished (Root null), like CreateAsync.
+    /// </summary>
+    public static async Task<AvatarInstance> CreateHiddenAsync(AvatarRecipe recipe, Transform parent, System.Action<AvatarInstance> beforeReveal = null)
+    {
+        if (parent == null) return await CreateAsync(recipe, parent);
+        var staging = new GameObject("AvatarStaging (hidden while assembling)");
+        staging.SetActive(false);
+        staging.transform.SetParent(parent, false);
+        var instance = await CreateAsync(recipe, staging.transform);
+        bool alive = parent != null && instance.Root != null;
+        if (alive)
+        {
+            foreach (var r in instance.Root.GetComponentsInChildren<Renderer>(true)) r.forceRenderingOff = true;
+            instance.Root.SetParent(parent, false);
+        }
+        if (staging != null) UnityEngine.Object.Destroy(staging);
+        if (!alive) return instance;
+
+        beforeReveal?.Invoke(instance);
+        if (instance.Root == null) return instance; // the caller discarded it
+        var animator = instance.Animator;
+        if (animator != null && animator.isActiveAndEnabled && animator.runtimeAnimatorController != null) animator.Update(0f);
+        foreach (var r in instance.Root.GetComponentsInChildren<Renderer>(true)) r.forceRenderingOff = false;
+        return instance;
+    }
+
     public static async Task<AvatarInstance> CreateAsync(AvatarRecipe recipe, Transform parent)
     {
         var instance = new AvatarInstance
@@ -170,6 +201,22 @@ public static class AvatarFactory
     /// explicit "La Factory ha de detectar conflictes" requirement), never silently double-equipped.
     /// Runs BEFORE any variant is even resolved — a rejected item's Addressables load never
     /// happens.</summary>
+    /// <summary>Every Addressable prefab CreateAsync would load for `recipe` (base body, hair, accepted items —
+    /// same slot-conflict / headwear / gender-variant / quality rules), for preloading (FightPreloader).</summary>
+    public static List<AssetReferenceGameObject> CollectPrefabReferences(AvatarRecipe recipe)
+    {
+        var refs = new List<AssetReferenceGameObject>();
+        if (recipe == null || recipe.Identity == null || recipe.BaseAvatar == null) return refs;
+        void Add(AssetReferenceGameObject r) { if (r != null && r.RuntimeKeyIsValid()) refs.Add(r); }
+        Add(recipe.BaseAvatar.baseAvatarPrefab);
+        var accepted = ResolveSlotConflicts(recipe.Items);
+        BodyBaseType bodyType = recipe.Identity.Body.BaseType;
+        if (recipe.Identity.Hair != null && !HairHiddenByEquippedHeadwear(accepted))
+            Add(recipe.Identity.Hair.GetVariant(bodyType)?.ResolvePrefab());
+        foreach (var item in accepted) Add(item.GetVariant(bodyType)?.ResolvePrefab());
+        return refs;
+    }
+
     private static List<WearableItemSO> ResolveSlotConflicts(List<WearableItemSO> requested)
     {
         var accepted = new List<WearableItemSO>();

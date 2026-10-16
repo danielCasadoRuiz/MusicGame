@@ -109,10 +109,6 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
 
     public ProgressionSnapshot ProgressionInfo => Progression.Snapshot;
 
-    /// <summary>Legacy name kept for existing readers (MatchEndedEvent Old/NewPlayerLevel, Next Song
-    /// screen): it is the current PROGRESSION TIER, not a per-song level.</summary>
-    public int PlayerLevel => Progression.CurrentTier;
-
     /// <summary>Shuffle bag + recent history of opponent ids — see OpponentShuffleBag.</summary>
     public OpponentShuffleBag OpponentBag { get; } = new();
 
@@ -253,6 +249,24 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
         return tier;
     }
 
+    // LIFE pickups already granted by runs OUTSIDE the campaign assignment (local files), per song, for
+    // this app session — the same once-per-match rule the assignment persists (PendingRunData.livesGranted).
+    private readonly System.Collections.Generic.Dictionary<string, int> _freeRunLivesGranted = new();
+
+    /// <summary>The `nthThisRun`-th LIFE pickup of the current run: +1 extra life only when no earlier attempt
+    /// of the same match / song already earned it (RunRewardRules.GrantsLife). True when granted.</summary>
+    public bool GrantRunLife(int nthThisRun)
+    {
+        var progress = PlayerProgressService.Instance;
+        if (progress == null) return false;
+        string songId = Run.SongId ?? "";
+        if (progress.IsPendingSong(songId)) return progress.GrantRunLife(songId, nthThisRun, "Runner LIFE pickup");
+        _freeRunLivesGranted.TryGetValue(songId, out int already);
+        if (!RunRewardRules.GrantsLife(nthThisRun, already)) return false;
+        _freeRunLivesGranted[songId] = nthThisRun;
+        return progress.GrantRunLife(null, nthThisRun, "Runner LIFE pickup (free run)");
+    }
+
     /// <summary>DEBUG ONLY — force the next fights' opponent (by id, null = none) and/or the tier its
     /// content resolves at (0 = real tier). Production progression/bag/history are untouched.</summary>
     public void DebugForce(string opponentId, int tier)
@@ -304,20 +318,15 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
             FightResources ??= new FightResources();
 
             // This run's results + the combos it earned go into the run's own wallet (SPECIALs were
-            // already added at pickup time); XP is persistent progression, derived from the
-            // NORMALIZED score — the run score itself is never kept.
+            // already added at pickup time). The score's only role is the run's stars (below) — it is
+            // never accumulated into any other progression (see RunRewardRules).
             Run.Score = e.Stats.Score;
             Run.NormalizedScore = e.NormalizedScore;
             Run.Wallet.Add(CombatResourceType.TripleCombo, e.Resources.TripleCombos);
             Run.Wallet.Add(CombatResourceType.QuadCombo, e.Resources.QuadCombos);
-            if (_progressionConfig != null && PlayerProgressService.Instance != null)
-            {
-                Run.XpEarned = _progressionConfig.XpForRun(e.NormalizedScore);
-                PlayerProgressService.Instance.AddXp(Run.XpEarned, $"run {Run.Index}, score {e.Stats.Score}, {e.NormalizedScore:P0}");
-            }
 
-            // Evaluation (stars) of this runner phase for the campaign position it belongs to — separate
-            // from XP and from the gameplay score; recorded at once (it stands whatever the fight does).
+            // Evaluation (stars) of this runner phase for the campaign position it belongs to — recorded
+            // at once (it stands whatever the fight does; only a better attempt replaces the best).
             var song = SelectedSong;
             CampaignService.OnRunnerFinished(RunnerResults, song.HasValue && string.IsNullOrEmpty(song.Value.LocalFilePath) ? song.Value.SongId : null);
 

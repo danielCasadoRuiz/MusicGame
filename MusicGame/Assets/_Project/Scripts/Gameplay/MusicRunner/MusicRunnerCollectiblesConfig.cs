@@ -273,8 +273,11 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     [Header("Pickup Height by Difficulty")]
     [Tooltip("Which height distribution the Runner uses (no difficulty selector exists yet — set it here).")]
     public RunnerDifficulty difficulty = RunnerDifficulty.Normal;
-    public PickupHeightDifficulty normalHeights = new() { elevatedChance = 0.02f, offTrackChance = 0.04f, patternElevatedChance = 0.03f };
-    public PickupHeightDifficulty hardHeights   = new() { elevatedChance = 0.30f, offTrackChance = 0.15f, patternElevatedChance = 0.40f };
+    // Both stay a deliberate MINORITY (the user's rule: most points are collected running on the
+    // ground; jumping / leaving the track is the exception that pays more). Hard (campaign L3/L4)
+    // roughly doubles the exceptions — it used to make ~45 % of pickups jump-only.
+    public PickupHeightDifficulty normalHeights = new() { elevatedChance = 0.05f, offTrackChance = 0.04f, patternElevatedChance = 0.05f };
+    public PickupHeightDifficulty hardHeights   = new() { elevatedChance = 0.10f, offTrackChance = 0.08f, patternElevatedChance = 0.15f };
     [Tooltip("Highest pickup CENTRE height (m above the track surface) that ordinary running collects " +
              "without jumping. Non-elevated pickups never go above it; the height score bonus starts " +
              "above it (plus heightBonusDeadZone).")]
@@ -288,6 +291,10 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     [Tooltip("Score multiplier at the top of the elevated band (x1 at its bottom), smoothly in between. " +
              "Pickups in the running band (≤ normalCollectHeight) always score x1.")]
     [Min(1f)] public float heightBonusMaxMultiplier = 1.5f;
+    [Tooltip("Minimum score multiplier of ANY pickup that needs a jump (centre above standing reach) — " +
+             "a jump is always worth more than a pickup collected running (x1). Off-track pickups keep " +
+             "offTrackBonusScoreMultiplier instead (never both).")]
+    [Min(1f)] public float elevatedMinScoreMultiplier = 1.25f;
 
     /// <summary>The campaign level being played may override `difficulty` (CampaignLevelDefinition.runnerDifficulty,
     /// applied through RunnerDifficultyOverride when the match is assigned/resumed).</summary>

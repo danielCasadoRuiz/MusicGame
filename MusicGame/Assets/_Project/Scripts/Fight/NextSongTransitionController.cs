@@ -99,10 +99,10 @@ public class NextSongTransitionController : MonoBehaviour
 
     // ── The Continue hand-off — see class doc ────────────────────────────────────
 
-    /// <summary>Call ONLY from MatchResultController.OnContinueClicked. `newPlayerLevel` is whatever
-    /// FightMatchController already decided (see MatchEndedEvent.NewPlayerLevel's own doc) — this
-    /// only ever DISPLAYS it, never decides it.</summary>
-    public void BeginWin(int newPlayerLevel)
+    /// <summary>Call ONLY from MatchResultController.OnContinueClicked. The top line is the campaign
+    /// position the next song will be played at (already advanced by FightMatchController) — this only
+    /// ever DISPLAYS it, never decides it.</summary>
+    public void BeginWin()
     {
         if (_root == null) return; // prefab missing — already logged in Awake
         if (_routine != null) StopCoroutine(_routine);
@@ -111,9 +111,10 @@ public class NextSongTransitionController : MonoBehaviour
         // behind it while the next song resolves — the song name fills in a moment later, once
         // RunWinSequence's catalog query/load actually completes.
         _canvasGroup.alpha = 1f;
-        // The player's identity is the Musical Mastery rank name (newPlayerLevel = its 1-based number).
-        _levelText.text = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.MasteryRankName
-                                                                 : Loc.Get("NextSong.Level", newPlayerLevel.ToString());
+        // Where the next match sits in the campaign ("LEVEL 2 · match 4 of 5"); empty outside the campaign.
+        string position = CampaignService.CurrentPositionLabel;
+        _levelText.text = position;
+        _levelText.gameObject.SetActive(!string.IsNullOrEmpty(position));
         _songNameText.text = "";
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();

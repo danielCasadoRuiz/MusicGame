@@ -3,8 +3,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>Prefabs/UI/Items/RunnerPerformanceRow.prefab — one per-ring-type row of the Runner end screen
-/// (EndScreenView.performanceRowsContainer): coloured label, collection-rate bar, "NN%  a/b" info. GameplayHUD
-/// spawns one per type the song generated and only positions it (24 px apart) and fills it.</summary>
+/// (an item of EndScreenView.evaluationPanel, the single results list): coloured label, collection-rate bar,
+/// "NN%  a/b" info. GameplayHUD appends one per type the song generated (EvaluationPanel.AddItem; its
+/// LayoutElement gives the height) and fills it.</summary>
 public class RunnerPerformanceRowView : MonoBehaviour
 {
     public TextMeshProUGUI label;

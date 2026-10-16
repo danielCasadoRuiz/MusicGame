@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 7dd7e1d4112dd2c41b360a9596f54ffb, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -222,6 +222,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4059362466501100002}
   - component: {fileID: 7135020506342672998}
+  - component: {fileID: 4110944097967572585}
   m_Layer: 0
   m_Name: RunnerPerformanceRow
   m_TagString: Untagged
@@ -267,6 +268,26 @@ MonoBehaviour:
   barFill: {fileID: 189265761649817328}
   info: {fileID: 1918709248821581427}
   barColorScale: 0.8
+--- !u!114 &4110944097967572585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4329975303733277079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 20
+  m_PreferredWidth: -1
+  m_PreferredHeight: 20
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &8063832626949727234
 GameObject:
   m_ObjectHideFlags: 0

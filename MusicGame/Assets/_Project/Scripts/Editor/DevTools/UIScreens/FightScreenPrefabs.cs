@@ -119,18 +119,25 @@ public static class FightScreenPrefabs
         view.pauseButtonLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
 
         // Portraits — each at its group's outer x (the SAME sprites the VS screen shows; set at runtime).
-        view.playerPortrait   = BuildPortrait("PlayerPortrait",   bar, topLeft,  new Vector2(0f, 1f), 20f,  view.portraitPlaceholderColor);
-        view.opponentPortrait = BuildPortrait("OpponentPortrait", bar, topRight, new Vector2(1f, 1f), -90f, view.portraitPlaceholderColor);
+        (view.playerPortrait, view.playerPortraitCrop)     = BuildPortrait("PlayerPortrait",   bar, topLeft,  new Vector2(0f, 1f), 20f,  view.portraitPlaceholderColor);
+        (view.opponentPortrait, view.opponentPortraitCrop) = BuildPortrait("OpponentPortrait", bar, topRight, new Vector2(1f, 1f), -90f, view.portraitPlaceholderColor);
     }
 
-    private static Image BuildPortrait(string name, RectTransform parent, Vector2 anchor, Vector2 pivot, float x, Color placeholder)
+    // Square slot masking (RectMask2D) a child "Face" Image that PortraitCrop scales/offsets onto the face
+    // of the composer portrait (half-body cut-outs) — crop parameters editable on the PortraitCrop.
+    private static (Image image, PortraitCrop crop) BuildPortrait(string name, RectTransform parent, Vector2 anchor, Vector2 pivot, float x, Color placeholder)
     {
         var rt = UIFactory.CreateRect(name, parent);
         UIFactory.SetBox(rt, anchor, anchor, pivot, new Vector2(x, -8f), new Vector2(PortraitSize, PortraitSize));
-        var img = rt.gameObject.AddComponent<Image>();
-        img.preserveAspect = true;
+        rt.gameObject.AddComponent<RectMask2D>();
+        var faceRt = UIFactory.CreateRect("Face", rt);
+        UIFactory.Stretch(faceRt);
+        var img = faceRt.gameObject.AddComponent<Image>();
         img.color = placeholder;
-        return img;
+        img.raycastTarget = false;
+        var crop = rt.gameObject.AddComponent<PortraitCrop>();
+        crop.image = img;
+        return (img, crop);
     }
 
     private static void BuildPauseMenu(RectTransform root, FightHudView view)
@@ -308,6 +315,12 @@ public static class FightScreenPrefabs
             UIFactory.CreateText("VS", root, "", 72, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "Fight.Versus");
         UIFactory.SetBox(view.vsText.rectTransform, Center, Center, Center, Vector2.zero, new Vector2(300f, 150f));
         view.vsText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
+
+        // "Loading…" — only while the stage is being prepared (VersusScreenController step 0).
+        view.loadingText = UIScreenPrefabContext.Localized(
+            UIFactory.CreateText("Loading", root, "", 22, new Color(1f, 1f, 1f, 0.8f), TextAlignmentOptions.Center), "Fight.Loading");
+        UIFactory.SetBox(view.loadingText.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 60f), new Vector2(600f, 40f));
+        view.loadingText.gameObject.SetActive(false);
 
         root.gameObject.SetActive(false);
         return root.gameObject;

@@ -10,24 +10,32 @@ using UnityEngine;
 /// the elements GameplayHUD/PauseController used to add at runtime — each patch adds a child only when it is
 /// missing and (re)assigns the matching view field, so running it again changes nothing.
 ///   LiveHud.prefab    Cell_Life / Cell_Special in the TopBar (existing 8 cells squeezed into its left 70 %)
-///   EndScreen.prefab  RunResources box (run summary text) right of the panel
+///   EndScreen.prefab  ONE results panel: the old separate blocks (rating word + bar, raw score, per-type rows
+///                     container, falls / no-fall / session texts, the right-hand RunResources box) are removed
+///                     and a nested EvaluationPanel ("Evaluation") becomes the single list GameplayHUD fills;
+///                     panel resized, Restart / Continue moved to its bottom edge
 ///   PauseMenu.prefab  CameraToggleButton (First/Third Person) below the Pause button
-///   Items/RunnerPerformanceRow.prefab   one end-screen row per ring type (library slot runnerPerformanceRow)
+///   Items/RunnerPerformanceRow.prefab   one end-screen row per ring type (library slot runnerPerformanceRow) —
+///                     appended to that list, so it carries a LayoutElement (patched in when missing)
 /// </summary>
 public static class RunnerScreenPrefabs
 {
     private const string LiveHudPath = UIScreenPrefabContext.ScreensFolder + "/LiveHud.prefab";
     private const string EndScreenPath = UIScreenPrefabContext.ScreensFolder + "/EndScreen.prefab";
     private const string PauseMenuPath = UIScreenPrefabContext.ScreensFolder + "/PauseMenu.prefab";
+    private const string PerformanceRowPath = UIScreenPrefabContext.ItemsFolder + "/RunnerPerformanceRow.prefab";
+    private const float RowHeight = 20f;
 
     public static void Build(UIScreenPrefabContext ctx)
     {
-        ctx.Library.runnerPerformanceRow = ctx.Prefab<RunnerPerformanceRowView>(
-            $"{UIScreenPrefabContext.ItemsFolder}/RunnerPerformanceRow.prefab", BuildPerformanceRow);
+        ctx.Library.runnerPerformanceRow = ctx.Prefab<RunnerPerformanceRowView>(PerformanceRowPath, BuildPerformanceRow);
+        ctx.Patch(PerformanceRowPath, EnsureRowLayout); // a row generated before it lived in a layout list
 
         var collectibles = FindCollectiblesConfig();
         ctx.Patch(LiveHudPath, root => PatchLiveHud(root, collectibles));
-        ctx.Patch(EndScreenPath, PatchEndScreen);
+        var evaluationPanel = ctx.Library.evaluationPanel;
+        if (evaluationPanel == null) ctx.Log.AppendLine("  FAIL  Runner: library evaluationPanel missing — EndScreen keeps no results list");
+        ctx.Patch(EndScreenPath, root => PatchEndScreen(root, evaluationPanel));
         ctx.Patch(PauseMenuPath, PatchPauseMenu);
     }
 
@@ -60,7 +68,16 @@ public static class RunnerScreenPrefabs
         view.label = label;
         view.barFill = barFill;
         view.info = info;
+        EnsureRowLayout(go);
         return go;
+    }
+
+    // Height inside the end screen's results list (a VerticalLayoutGroup that controls child heights).
+    private static void EnsureRowLayout(GameObject row)
+    {
+        var le = row.GetComponent<UnityEngine.UI.LayoutElement>();
+        if (le == null) le = row.AddComponent<UnityEngine.UI.LayoutElement>();
+        le.minHeight = le.preferredHeight = RowHeight;
     }
 
     // ── LiveHud: LIFE / SPECIAL cells ───────────────────────────────────────────
@@ -110,26 +127,60 @@ public static class RunnerScreenPrefabs
         value.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
     }
 
-    // ── EndScreen: run resources box ────────────────────────────────────────────
+    // ── EndScreen: ONE results panel ────────────────────────────────────────────
 
-    private static void PatchEndScreen(GameObject root)
+    private const float EndPanelWidth = 600f, EndPanelHeight = 780f;
+
+    // Blocks merged into the single list (deleted when present; nothing in Runner.unity overrides them).
+    private static readonly string[] LegacyEndScreenBlocks =
+        { "Rating", "RatingBarBg", "RatingBar", "ScoreSummary", "PerformanceRows", "Falls", "NoFallBonus", "Session" };
+
+    private static void PatchEndScreen(GameObject root, EvaluationPanel evaluationPrefab)
     {
         var view = root.GetComponent<EndScreenView>();
         if (view == null) return;
         var rt = (RectTransform)root.transform;
+        var panel = rt.Find("Panel") as RectTransform;
+        if (panel == null) return;
 
-        if (rt.Find("RunResources") == null)
+        foreach (var block in LegacyEndScreenBlocks)
         {
-            var box = UIFactory.CreatePanel("RunResources", rt, new Color(0.04f, 0.04f, 0.04f, 0.95f));
-            UIFactory.SetBox(box.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 0.5f), new Vector2(230f, 0f), new Vector2(300f, 210f));
-            box.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
-            var summary = UIFactory.CreateText("Summary", box.rectTransform, "", 15, Color.white, TextAlignmentOptions.TopLeft);
-            UIFactory.SetBox(summary.rectTransform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(-28f, -24f));
-            summary.textWrappingMode = TextWrappingModes.Normal;
-            summary.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+            var t = panel.Find(block);
+            if (t != null) Object.DestroyImmediate(t.gameObject);
+        }
+        var box = rt.Find("RunResources");
+        if (box != null) Object.DestroyImmediate(box.gameObject);
+
+        panel.sizeDelta = new Vector2(EndPanelWidth, EndPanelHeight);
+
+        // The single results list, right under the title.
+        var list = panel.Find("Evaluation");
+        if (list == null && evaluationPrefab != null)
+        {
+            var nested = UIScreenPrefabContext.Nested(evaluationPrefab, panel);
+            nested.name = "Evaluation";
+            list = nested.transform;
+        }
+        if (list != null)
+        {
+            var lrt = (RectTransform)list;
+            UIFactory.SetBox(lrt, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -54f), new Vector2(-32f, 0f));
+            var bg = list.GetComponent<UnityEngine.UI.Image>();
+            if (bg != null) bg.color = new Color(0f, 0f, 0f, 0f); // the panel is the background
+            view.evaluationPanel = list.GetComponent<EvaluationPanel>();
         }
 
-        view.runSummaryText = Text(rt, "RunResources/Summary");
+        // Buttons on the panel's bottom edge.
+        BottomButton(panel, "RestartButton", -83f);
+        BottomButton(panel, "ContinueButton", 83f);
+    }
+
+    private static void BottomButton(RectTransform panel, string name, float x)
+    {
+        var b = panel.Find(name) as RectTransform;
+        if (b == null) return;
+        var bottom = new Vector2(0.5f, 0f);
+        UIFactory.SetBox(b, bottom, bottom, bottom, new Vector2(x, 20f), new Vector2(150f, 40f));
     }
 
     // ── PauseMenu: First/Third Person toggle ────────────────────────────────────

@@ -3,7 +3,7 @@
 /// A new RunSession starts every time a Runner run starts (GameStartedEvent — a new song, Replay Song,
 /// or a restart), so everything here resets then — and only then (Runner → Fight keeps it).
 ///
-/// Holds temporary state only; persistent progression (lives, XP, level, rival collection) lives in
+/// Holds temporary state only; persistent progression (campaign, lives, rival collection) lives in
 /// PlayerProgressService. Statistics (…CollectedThisRun) are for results screens and are NEVER the
 /// inventory: the SPECIAL inventory is `Wallet.Specials`, the life inventory is
 /// PlayerProgressService.ExtraLives.
@@ -24,10 +24,11 @@ public class RunSession
 
     public int Score { get; set; }
     public float NormalizedScore { get; set; }
-    public int XpEarned { get; set; }
 
     // ── Statistics only (never inventory) ────────────────────────────────────
     public int LivesCollectedThisRun { get; private set; }
+    /// <summary>Of those, the ones that became a NEW extra life (see RunRewardRules.GrantsLife).</summary>
+    public int LivesGrantedThisRun { get; private set; }
     public int SpecialsCollectedThisRun { get; private set; }
 
     public RunSession(int index, string songId)
@@ -44,6 +45,10 @@ public class RunSession
     }
 
     /// <summary>A LIFE pickup was collected: statistic only — the inventory is persistent
-    /// (PlayerProgressService.AddLife, called by the same pickup).</summary>
-    public void CountLifeCollected() => LivesCollectedThisRun++;
+    /// (PlayerProgressService.GrantRunLife, called by the same pickup, decides `granted`).</summary>
+    public void CountLifeCollected(bool granted)
+    {
+        LivesCollectedThisRun++;
+        if (granted) LivesGrantedThisRun++;
+    }
 }

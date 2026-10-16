@@ -3,10 +3,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>MatchRow.prefab — one campaign position: number + status, race record (song + stars), fight record
-/// (rival portrait + name · version + stars) and total. Row colours (current / even / odd) are prefab fields.</summary>
+/// (rival portrait + name · version + stars) and total. Purely informative: no Button, opens nothing.
+/// Row colours (current / even / odd) are prefab fields.</summary>
 public class ProgressionMatchRowView : MonoBehaviour
 {
-    public Button button;
     public Image background;
     public TextMeshProUGUI numberAndStatus;
     public TextMeshProUGUI runner;

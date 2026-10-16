@@ -126,7 +126,7 @@ public static class FrontendScreenPrefabs
         view.settingsButton = StackButton("SettingsButton", "MainMenu.Settings", out view.settingsButtonLabel, UIColorToken.ButtonPrimary, UIColorToken.TextPrimary);
         view.quitButton = StackButton("QuitButton", "MainMenu.Quit", out view.quitButtonLabel, UIColorToken.ButtonSecondary, UIColorToken.TextSecondary);
 
-        // Persistent progression summary under the title (PlayerProgressService is the only source).
+        // Campaign status under the title (MainMenuController: next match position + lap · mastered · extra lives).
         view.profileText = UIFactory.CreateText("ProfileText", root, "", 18, Color.white, TextAlignmentOptions.Center);
         UIFactory.SetBox(view.profileText.rectTransform, Top, Top, Top, new Vector2(0f, -160f), new Vector2(900f, 70f));
         view.profileText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);

@@ -43,10 +43,14 @@ public static class PickupPlacementDiagnostic
         sb.AppendLine($"limits: air time {airTime:0.00}s, max jump {maxJump:0.00} m, beyond-edge reach {maxBeyond:0.00} m, from-centre reach {maxFromCenter:0.00} m");
 
         string cacheDir = Path.Combine(Application.persistentDataPath, "SongCache");
-        foreach (var pattern in new[] { "BillieJean*.json", "Jamiroquai*.json", "Daft Punk*.json" })
+        // The songs this was written for are no longer cached — use the smallest cached profiles (and
+        // FAIL when there are none: zero checked songs used to report ALL PASSED).
+        var files = Directory.Exists(cacheDir)
+            ? Directory.GetFiles(cacheDir, "*.json").OrderBy(f => new FileInfo(f).Length).Take(3).ToArray()
+            : new string[0];
+        Check(sb, "cached song profiles found", files.Length > 0, cacheDir);
+        foreach (var file in files)
         {
-            string file = Directory.GetFiles(cacheDir, pattern).FirstOrDefault();
-            if (file == null) continue;
             var profile = JsonUtility.FromJson<SongProfileData>(File.ReadAllText(file)).ToProfile();
             var path = new SnakeWayWorldGenerator().Generate(profile, config, new Vector3(0f, config.levelGeneration.pathBaseHeight, 0f));
             var tl = GameplayTimeline.Generate(profile, config, path);
@@ -66,7 +70,9 @@ public static class PickupPlacementDiagnostic
                               $"height {e.verticalOffset:0.00}/{maxJump:0.00} m  nearest Life/Special {gap:0.0}s, {near.Length} off-track bonus(es) within {c.difficultPickupMinSpacing:0}s all same side {sameSide}  reach {reachTime:0.00}s/{c.spawnLookAhead:0.00}s");
                 Check(sb, $"{e.ringType} @{e.eventTime:0.0}s outside the racing line, reachable, spaced, consistent side",
                       edge > 0f && edge <= maxBeyond + 1e-3f && reachTime <= c.spawnLookAhead + 1e-3f &&
-                      gap >= c.difficultPickupMinSpacing - 1e-3f && sameSide && e.verticalOffset <= maxJump + 1e-3f);
+                      gap >= c.difficultPickupMinSpacing - 1e-3f && sameSide &&
+                      // centre within the jumping capsule's reach (feet at most maxJump up, + capsule + trigger half)
+                      e.verticalOffset <= maxJump + PlayerController.CapsuleHeight + GameplayTimeline.CollectibleTriggerHalfHeight(e.ringType, config) + 1e-3f);
             }
 
             var offTrack = tl.Events.Where(e => e.isOffTrack).ToArray();

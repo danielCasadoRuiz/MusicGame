@@ -72,7 +72,9 @@ public static class RunnerAnimationSetup
     private static readonly E JumpSeg = C(Seg(Jump1, "RunnerJump"), "PROVISIONAL generic hurdle jump — replace with a style-specific jump.");
     private static readonly E LandSeg = C(Seg(Jump1, "RunnerLand"), "PROVISIONAL hurdle landing.");
     private static readonly E Spin    = C(Seg("Fight_RoundHouseKick_mixamo", "RunnerSpin360"), "PROVISIONAL spinning roundhouse as a 360 turn.");
-    private static readonly E CrouchSeg = C(Seg("Superhero_SuperHeroLanding_Takeoff_mixamo", "RunnerCrouch"), "Superhero-landing crouch hold (looped) — duck pose; a dedicated slide/duck clip would be better.");
+    // Generated additive crouched run (RunnerCrouchRunClip): no suitable mocap clip exists. The old superhero
+    // landing segment minus CMU Idle folded the body to one knee and offset it metres away.
+    private static readonly E CrouchSeg = C("gen:RunnerCrouchRun", "Generated additive crouched run (bent knees/hips, forward lean, legs keep running) — see RunnerCrouchRunClip.", upper: false);
 
     private static readonly StyleDef[] Styles =
     {
@@ -195,8 +197,10 @@ public static class RunnerAnimationSetup
                 style.locomotionSpeedRange = def.locoRange;
                 EditorUtility.SetDirty(style);
             }
-            // Roles added after a style was authored (e.g. Crouch) are filled in without overwriting the rest.
-            if (!created && !overwriteStyles && (style.crouch == null || style.crouch.Length == 0) && def.crouch != null)
+            // Roles added after a style was authored (e.g. Crouch) are filled in without overwriting the rest;
+            // the old superhero-landing crouch is replaced by the generated crouched run.
+            bool legacyCrouch = style.crouch != null && style.crouch.Any(c => c.clip != null && c.clip.name.Contains("SuperHeroLanding"));
+            if (!created && !overwriteStyles && (style.crouch == null || style.crouch.Length == 0 || legacyCrouch) && def.crouch != null)
             {
                 style.crouch = Entries(def.crouch, library, sb, def.asset);
                 EditorUtility.SetDirty(style);
@@ -262,7 +266,8 @@ public static class RunnerAnimationSetup
         var list = new List<RunnerAnimationEntry>();
         foreach (var d in defs)
         {
-            AnimationClip clip = d.key.StartsWith("cmu:")
+            AnimationClip clip = d.key == "gen:RunnerCrouchRun" ? RunnerCrouchRunClip.Build(sb)
+                : d.key.StartsWith("cmu:")
                 ? AssetDatabase.LoadAssetAtPath<AnimationClip>(CmuDir + d.key.Substring(4) + ".anim")
                 : library.entries.FirstOrDefault(e => e.name == d.key)?.inPlaceClip;
             if (clip == null) { sb.AppendLine($"  ERROR  {style}: clip '{d.key}' not found"); continue; }
@@ -362,6 +367,7 @@ public static class RunnerAnimationSetup
             {
                 if (!done.Add(e.clip)) continue;
                 var settings = AnimationUtility.GetAnimationClipSettings(e.clip);
+                if (e.clip.name == "RunnerCrouchRun_Additive") { sb.AppendLine($"  PASS  {e.clip.name}: own neutral reference (generated)"); continue; }
                 settings.hasAdditiveReferencePose = true;
                 settings.additiveReferencePoseClip = idle;
                 settings.additiveReferencePoseTime = 0f;

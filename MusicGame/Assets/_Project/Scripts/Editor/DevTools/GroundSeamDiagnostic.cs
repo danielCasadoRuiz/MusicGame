@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEditor;
@@ -32,7 +33,7 @@ public static class GroundSeamDiagnostic
     private static void Run(StringBuilder sb)
     {
         string cacheDir = Path.Combine(Application.persistentDataPath, "SongCache");
-        string file = Directory.GetFiles(cacheDir, "BillieJean*.json")[0];
+        string file = Directory.GetFiles(cacheDir, "*.json").OrderBy(f => new FileInfo(f).Length).First(); // smallest cached song
         var profile = JsonUtility.FromJson<SongProfileData>(File.ReadAllText(file)).ToProfile();
         var config = AssetDatabase.LoadAssetAtPath<MusicRunnerGameplayConfig>(ConfigPath);
         sb.AppendLine($"profile {Path.GetFileName(file)}, duration {profile.duration:0.0}s");

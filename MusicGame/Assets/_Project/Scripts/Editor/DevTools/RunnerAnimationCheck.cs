@@ -164,6 +164,51 @@ public static class RunnerAnimationCheck
             if (cap != null) await cap;
         }
 
+        // Crouched run (no music path in this scene, so PlayerController's crouch update doesn't tick: the state the
+        // animator reads — IsCrouching + CrouchBlend — is set directly): the legs keep running underneath, the head
+        // drops clearly but it is no fold, no horizontal offset, feet stay on the floor.
+        foreach (var r in runners) r.anim.DebugForceStyle(0);
+        await WaitUntil(() => runners.All(r => IsState(r, "Locomotion_0")), 2f, track);
+        float HeadY(Runner r) => r.animator.GetBoneTransform(HumanBodyBones.Head).position.y;
+        float[] standHead = new float[runners.Length];
+        await Wait(1f, () => { for (int i = 0; i < runners.Length; i++) standHead[i] = Mathf.Max(standHead[i], HeadY(runners[i])); track(); });
+        var crouchingProp = typeof(PlayerController).GetProperty(nameof(PlayerController.IsCrouching));
+        var blendProp = typeof(PlayerController).GetProperty(nameof(PlayerController.CrouchBlend));
+        void SetCrouch(bool on, float blend) { foreach (var r in runners) { crouchingProp.SetValue(r.pc, on); blendProp.SetValue(r.pc, blend); } }
+        float crouchT = 0f;
+        System.Action easeIn = () => { crouchT = Mathf.Min(1f, crouchT + Time.deltaTime / 0.25f); SetCrouch(true, crouchT); track(); };
+        SetCrouch(true, 0f);
+        Task crouchCap = Capture("RunnerAnim_Crouch", 3f, 12);
+        await Wait(0.8f, easeIn); // eased blend in
+        float[] crouchHead = new float[runners.Length];
+        float crouchDrift = 0f, crouchFoot = float.MaxValue;
+        bool legsRunning = true;
+        await Wait(1.5f, () =>
+        {
+            easeIn();
+            for (int i = 0; i < runners.Length; i++)
+            {
+                var r = runners[i];
+                crouchHead[i] = Mathf.Max(crouchHead[i], HeadY(r));
+                var hips = r.animator.GetBoneTransform(HumanBodyBones.Hips).position;
+                crouchDrift = Mathf.Max(crouchDrift, new Vector2(hips.x - r.pc.transform.position.x, hips.z - r.pc.transform.position.z).magnitude);
+                crouchFoot = Mathf.Min(crouchFoot, Mathf.Min(r.animator.GetBoneTransform(HumanBodyBones.LeftFoot).position.y, r.animator.GetBoneTransform(HumanBodyBones.RightFoot).position.y));
+                legsRunning &= IsState(r, "Locomotion_0") && r.pc.IsCrouching;
+            }
+        });
+        await crouchCap;
+        SetCrouch(false, 0f);
+        for (int i = 0; i < runners.Length; i++)
+            Log.AppendLine($"  INFO  crouch {runners[i].label}: head top {standHead[i]:0.00} → {crouchHead[i]:0.00} m");
+        Check("crouch: legs keep running (base layer stays Locomotion, PlayerController crouching)", legsRunning);
+        Check("crouch: head clearly lower but no fold (drop 0.2–0.65 m on every body)",
+              runners.Select((r, i) => standHead[i] - crouchHead[i]).All(d => d > 0.2f && d < 0.65f),
+              string.Join(", ", runners.Select((r, i) => $"{standHead[i] - crouchHead[i]:0.00}")));
+        Check("crouch: hips stay over the runner (horizontal drift < 0.35 m)", crouchDrift < 0.35f, $"max drift {crouchDrift:0.00} m");
+        Check("crouch: feet not below the floor", crouchFoot > -0.1f, $"lowest foot {crouchFoot:0.00}");
+        bool stoodUp = await WaitUntil(() => runners.All(r => !r.pc.IsCrouching), 2f, track);
+        Check("crouch released → standing run again", stoodUp);
+
         Check("roots never moved by the animation", runners.All(r => (r.pc.transform.position - r.start).sqrMagnitude < 1e-6f));
         Check("hips stay over the root (horizontal drift < 0.35 m) on slim/heavy/female", _maxHipsDrift < 0.35f, $"max drift {_maxHipsDrift:0.00} m");
         float feet = runners.Min(r => Mathf.Min(r.animator.GetBoneTransform(HumanBodyBones.LeftFoot).position.y, r.animator.GetBoneTransform(HumanBodyBones.RightFoot).position.y));

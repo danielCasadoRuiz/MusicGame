@@ -5,7 +5,11 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// Path-based third-person camera, now with an optional First Person view — same single
 /// authority over the Main Camera transform either way (see ViewMode). Third Person is exactly
-/// the original always-on behavior; First Person just rigidly follows firstPersonCameraTarget.
+/// the original always-on behavior; First Person is the avatar's REAL view: the camera is fixed to the eye
+/// pivot under the Head bone (FirstPersonHeadRig) — position AND rotation, so it moves, bobs and turns with
+/// the head, 360° spins included; no smoothing, no track-direction compensation. The lens sits just in front
+/// of the face (nothing of the head in view, nothing hidden); body, arms and shadow stay visible.
+/// firstPersonCameraTarget is only for the placeholder capsule.
 /// A short position/rotation blend runs whenever the view mode changes.
 ///
 /// Stability principles (Third Person):
@@ -86,6 +90,25 @@ public class CameraFollow : MonoBehaviour
              "colliders and all gameplay logic are left completely untouched.")]
     [SerializeField] private Renderer[] hideInFirstPerson;
 
+    [Header("View Mode — First Person on the real avatar (FirstPersonHeadRig)")]
+    [Tooltip("With a Humanoid avatar the First Person camera sits at the avatar's REAL eyes (Head bone + " +
+             "this offset, metres for the canonical 1.75 m body, scaled with the avatar) instead of " +
+             "firstPersonCameraTarget — which stays only as the fallback for the placeholder capsule.")]
+    [SerializeField] private float firstPersonEyeUp = FirstPersonHeadRig.DefaultEyeUp;
+    [SerializeField] private float firstPersonEyeForward = FirstPersonHeadRig.DefaultEyeForward;
+    [Tooltip("Vertical field of view (degrees) in first person; third person keeps the camera's own value. " +
+             "A little wider than third person, so the own arms/body and the surroundings read naturally.")]
+    [SerializeField] private float firstPersonFieldOfView = 80f;
+    [Tooltip("Camera near clip plane in first person (restored in third person): the lens is just in front of " +
+             "the face, a short near plane keeps the own hands visible without ever reaching into the head.")]
+    [SerializeField] private float firstPersonNearClip = 0.03f;
+    [Tooltip("Max sideways tilt (roll, degrees) the first-person view takes from the head: side-on clips (the " +
+             "jump) would otherwise show the world tilted.")]
+    [SerializeField] private float firstPersonMaxRoll = 8f;
+    [Tooltip("Max yaw (degrees) the first-person view may turn away from the player's heading — side-on clips " +
+             "(the jump) turn the head; the 360° AutoReturn spin is exempt and turns freely.")]
+    [SerializeField] private float firstPersonMaxYaw = 25f;
+
     [Header("View Mode — Transition")]
     [SerializeField] private float viewTransitionDuration = 0.4f;
 
@@ -121,6 +144,40 @@ public class CameraFollow : MonoBehaviour
     private float      _transitionT;
     private Vector3    _transitionStartPos;
     private Quaternion _transitionStartRot;
+
+    // ── Runtime: First Person on the real avatar ────────────────────────────────────────────
+    private readonly FirstPersonHeadRig _headRig = new();
+
+    /// <summary>Diagnostics (FirstPersonCameraCapture): the avatar head rig the First Person camera uses.</summary>
+    public FirstPersonHeadRig HeadRig => _headRig;
+
+    /// <summary>The head pivot's rotation relative to the player's heading, with roll clamped to
+    /// firstPersonMaxRoll and yaw to firstPersonMaxYaw (except during the 360° AutoReturn spin). Pitch is free.</summary>
+    private Quaternion LimitHeadRotation(Quaternion head)
+    {
+        Quaternion frame = playerController.transform.rotation;
+        Vector3 e = (Quaternion.Inverse(frame) * head).eulerAngles;
+        float pitch = Mathf.DeltaAngle(0f, e.x), yaw = Mathf.DeltaAngle(0f, e.y), roll = Mathf.DeltaAngle(0f, e.z);
+        if (_runnerAnimator == null) _runnerAnimator = playerController.GetComponent<RunnerAvatarAnimator>();
+        bool spinning = _runnerAnimator != null && _runnerAnimator.CurrentRole == RunnerAnimationRole.AutoReturn;
+        if (!spinning) yaw = Mathf.Clamp(yaw, -firstPersonMaxYaw, firstPersonMaxYaw);
+        roll = Mathf.Clamp(roll, -firstPersonMaxRoll, firstPersonMaxRoll);
+        return frame * Quaternion.Euler(pitch, yaw, roll);
+    }
+
+    private RunnerAvatarAnimator _runnerAnimator;
+
+    /// <summary>How the view deviates from the player's own heading this frame: yaw (degrees, signed — the head
+    /// turning, a 360° spin) and roll (signed tilt). The Horizon camera copies exactly this, so the distant
+    /// background turns and tilts WITH the view, while path curves (heading changes) still never swing it.</summary>
+    public void GetViewOffsetFromHeading(out float yaw, out float roll)
+    {
+        Vector3 fwd = transform.forward;
+        Vector3 heading = playerController != null ? playerController.transform.forward : fwd;
+        fwd.y = 0f; heading.y = 0f;
+        yaw = fwd.sqrMagnitude > 1e-6f && heading.sqrMagnitude > 1e-6f ? Vector3.SignedAngle(heading, fwd, Vector3.up) : 0f;
+        roll = Mathf.DeltaAngle(0f, transform.eulerAngles.z);
+    }
 
     private Action<SongProfileReadyEvent> _onProfile;
     private Action<GameStartedEvent>      _onStart;
@@ -244,12 +301,20 @@ public class CameraFollow : MonoBehaviour
             foreach (var r in hideInFirstPerson)
                 if (r != null) r.enabled = !hide;
 
-        // Also hide whatever the player's OWN visual currently is (the provisional capsule today,
-        // a real avatar later) — auto-discovered via PlayerController, not hardcoded here, so
-        // swapping in the future avatar needs no change to this script.
+        // The player's OWN visual (auto-discovered via PlayerController, never hardcoded): a real
+        // Humanoid avatar stays fully VISIBLE in First Person — the lens sits in front of the face, so
+        // body, arms and shadow ground the view. Only a visual without a head rig (the placeholder
+        // capsule) is hidden whole.
+        bool hideWholeBody = hide && !TryResolveHeadRig();
         if (playerController != null && playerController.VisualRenderers != null)
             foreach (var r in playerController.VisualRenderers)
-                if (r != null) r.enabled = !hide;
+                if (r != null) r.enabled = !hideWholeBody;
+    }
+
+    private bool TryResolveHeadRig()
+    {
+        if (playerController == null) return false;
+        return _headRig.Resolve(playerController.transform, firstPersonEyeUp, firstPersonEyeForward);
     }
 
     private void OnEnable()
@@ -287,9 +352,26 @@ public class CameraFollow : MonoBehaviour
         if (kb != null && kb.vKey.wasPressedThisFrame) ToggleView();
     }
 
+    private Camera _camera;
+    private float _thirdPersonFov = -1f; // the camera's own field of view, restored outside first person
+    private float _thirdPersonNear = 0.3f;
+
+    /// <summary>First person widens the lens (firstPersonFieldOfView) so the own arms/body show; eased so
+    /// the Third↔First switch never pops.</summary>
+    private void UpdateFieldOfView()
+    {
+        if (_camera == null) _camera = GetComponent<Camera>();
+        if (_camera == null) return;
+        if (_thirdPersonFov < 0f) { _thirdPersonFov = _camera.fieldOfView; _thirdPersonNear = _camera.nearClipPlane; }
+        bool firstPerson = _viewMode == CameraViewMode.FirstPerson && _headRig.IsValid;
+        _camera.nearClipPlane = firstPerson ? firstPersonNearClip : _thirdPersonNear;
+        _camera.fieldOfView = Mathf.MoveTowards(_camera.fieldOfView, firstPerson ? firstPersonFieldOfView : _thirdPersonFov, 90f * Time.deltaTime);
+    }
+
     private void LateUpdate()
     {
         if (!_running) return;
+        UpdateFieldOfView();
 
         var clock = MusicClock.Instance;
         var path  = MusicWorldManager.Instance?.Path;
@@ -334,9 +416,17 @@ public class CameraFollow : MonoBehaviour
 
         bool       hasFPTarget    = firstPersonCameraTarget != null;
         Vector3    firstPersonPos = hasFPTarget ? firstPersonCameraTarget.position : thirdPersonPos;
-        // Crouch: the eyes go down with the body, over the same eased transition (and back up).
-        if (hasFPTarget && playerController != null) firstPersonPos -= playerController.transform.up * playerController.CrouchEyeDrop;
         Quaternion firstPersonRot = hasFPTarget ? firstPersonCameraTarget.rotation : transform.rotation;
+        bool       hasAvatarEyes  = TryResolveHeadRig();
+        if (hasAvatarEyes)
+        {
+            // The avatar's REAL view: the eye pivot under the Head bone, position and rotation, unfiltered —
+            // run bob, crouch, jumps and the 360° AutoReturn spin all move the view exactly as the head does.
+            firstPersonPos = _headRig.Pivot.position;
+            firstPersonRot = LimitHeadRotation(_headRig.Pivot.rotation);
+        }
+        // Placeholder capsule: the eyes go down with the body, over the same eased transition (and back up).
+        else if (hasFPTarget && playerController != null) firstPersonPos -= playerController.transform.up * playerController.CrouchEyeDrop;
 
         // ── Apply ────────────────────────────────────────────────────────────────────────────
         if (!_initialized)
@@ -392,7 +482,7 @@ public class CameraFollow : MonoBehaviour
         }
         else
         {
-            // Rigidly attached to the head target — no lag, it IS the player's viewpoint.
+            // Rigidly attached to the eyes — no lag, it IS the player's viewpoint.
             transform.position = firstPersonPos;
             transform.rotation = firstPersonRot;
         }

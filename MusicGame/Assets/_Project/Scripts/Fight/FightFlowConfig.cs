@@ -43,6 +43,12 @@ public class FightFlowConfig : ScriptableObject
     [Tooltip("How dark the Versus card dims the arena (0 = fully transparent, 1 = opaque). The arena and " +
              "both fighters stay visible underneath.")]
     [Range(0f, 1f)] public float versusBackdropAlpha = 0.15f;
+    [Tooltip("LOADING: while the stage is not ready (fighter avatars + arena), the Versus card is fully OPAQUE " +
+             "(nothing being assembled is ever seen) and the rival's Intro line is shown next to its portrait. " +
+             "Seconds the opaque veil takes to clear to versusBackdropAlpha once everything is ready.")]
+    [Min(0f)] public float versusRevealSeconds = 0.5f;
+    [Tooltip("Safety cap (s) of the loading wait: past it the presentation starts anyway (logged).")]
+    [Min(1f)] public float versusLoadingTimeoutSeconds = 30f;
     [Tooltip("Seconds the Versus card (names, portraits, VS) stays fully visible before fading.")]
     [Min(0f)] public float versusCardHoldSeconds = 1.2f;
     [Tooltip("Fade-out of the Versus card. The composer's bubble appears once it is gone. 0 = instant.")]
