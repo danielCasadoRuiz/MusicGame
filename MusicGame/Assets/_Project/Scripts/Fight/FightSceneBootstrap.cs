@@ -160,14 +160,15 @@ public class FightSceneBootstrap : MonoBehaviour
     }
 
     // ── Arena environment ─────────────────────────────────────────────────────
-    // OWNERSHIP: the environment prefab owns floor, decor, background and its own lights; this bootstrap
-    // owns the fight camera, the spawns and the movement bounds (FightArenaConfig) — environments never
-    // move fighters or add cameras (any Camera / AudioListener inside one is disabled on load).
-    // ONE environment instance at a time: replaced when the fight's environment changes (a new final-rival
-    // stage, a normal match after a boss), kept on Fight Again, destroyed with the Fight scene.
+    // ArenaEnvironmentLoader owns the arena instance + its Addressables handle (see its doc for who owns
+    // floor / lights / camera / spawns). The placeholder floor is built here once and only shown while no
+    // arena is loaded (none assigned, loading failed).
     private GameObject _placeholderFloor;
-    private GameObject _environmentInstance;
-    private GameObject _environmentSource;
+    private ArenaEnvironmentLoader _arenaLoader;
+
+    /// <summary>Rival visual applied AND its arena loaded — the presentation's "the stage is ready" signal.</summary>
+    public bool StageReady => OpponentVisualReady && (_arenaLoader == null || _arenaLoader.IsReady);
+    public ArenaEnvironmentLoader ArenaLoader => _arenaLoader;
 
     private void BuildArena()
     {
@@ -175,32 +176,26 @@ public class FightSceneBootstrap : MonoBehaviour
         _placeholderFloor.name = "ArenaFloorPlaceholder";
         _placeholderFloor.transform.position   = Vector3.zero;
         _placeholderFloor.transform.localScale = new Vector3(2f, 1f, 2f);
-        ApplyArenaEnvironment();
+        _arenaLoader = gameObject.AddComponent<ArenaEnvironmentLoader>();
+        _arenaLoader.Initialize(_placeholderFloor);
     }
 
-    /// <summary>The environment for the CURRENT fight: GameSession.ArenaOverride (final-rival stage) or
-    /// FightArenaConfig.defaultEnvironmentPrefab; none → the placeholder floor.</summary>
+    /// <summary>Arena for the CONFIRMED fight (never the roulette's passing candidates): the final-rival stage's
+    /// own arena, else one of the composer's arenas (random, not the previous one), else the default. The same
+    /// rival + version + stage keeps its arena (Fight Again).</summary>
     public void ApplyArenaEnvironment()
     {
-        var wanted = GameSession.Instance != null && GameSession.Instance.ArenaOverride != null
-            ? GameSession.Instance.ArenaOverride
-            : (_arenaConfig != null ? _arenaConfig.defaultEnvironmentPrefab : null);
-        if (wanted == _environmentSource && (wanted == null || _environmentInstance != null)) return;
+        var session = GameSession.Instance;
+        var opponent = session != null ? session.SelectedOpponent : null;
+        int version = session?.SelectedOpponentLevelConfig != null ? session.SelectedOpponentLevelConfig.level : 0;
+        int stage = session != null ? session.CurrentBossStage : -1;
+        string key = $"{(opponent != null ? opponent.id : "none")}|v{version}|s{stage}";
+        if (key == _arenaLoader.CurrentKey) return; // Fight Again: same arena, nothing reloaded
 
-        if (_environmentInstance != null) Destroy(_environmentInstance);
-        _environmentInstance = null;
-        _environmentSource = wanted;
-        if (wanted != null)
-        {
-            _environmentInstance = Instantiate(wanted, Vector3.zero, Quaternion.identity);
-            _environmentInstance.name = "ArenaEnvironment_" + wanted.name;
-            _environmentInstance.SetActive(true); // a prefab saved inactive must still show
-            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(_environmentInstance, gameObject.scene);
-            foreach (var cam in _environmentInstance.GetComponentsInChildren<Camera>(true)) cam.enabled = false;
-            foreach (var listener in _environmentInstance.GetComponentsInChildren<AudioListener>(true)) listener.enabled = false;
-        }
-        if (_placeholderFloor != null) _placeholderFloor.SetActive(_environmentInstance == null);
-        Debug.Log($"[FightSceneBootstrap] Arena environment: {(wanted != null ? wanted.name : "placeholder floor")}.");
+        UnityEngine.AddressableAssets.AssetReferenceGameObject arena =
+            stage >= 0 ? session.BossArena : ArenaSelector.Pick(opponent);
+        if (arena == null || !arena.RuntimeKeyIsValid()) arena = _arenaConfig != null ? _arenaConfig.defaultArena : null;
+        _arenaLoader.Request(arena, key);
     }
 
     // ── Fighters ──────────────────────────────────────────────────────────────

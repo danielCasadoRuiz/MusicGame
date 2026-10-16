@@ -10,13 +10,14 @@ GameObject:
   m_Component:
   - component: {fileID: 8113767606076402623}
   - component: {fileID: 1641684891848989559}
+  - component: {fileID: 5561496180749450753}
   m_Layer: 0
   m_Name: VersusScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8113767606076402623
 RectTransform:
   m_ObjectHideFlags: 0
@@ -55,11 +56,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VersusScreenView
   root: {fileID: 2986511561360683955}
+  cardGroup: {fileID: 5561496180749450753}
+  backdrop: {fileID: 3929744843763694399}
   playerPortrait: {fileID: 9085423612690330490}
   playerNameText: {fileID: 8346760337136018362}
   vsText: {fileID: 8957054099054667464}
   opponentPortrait: {fileID: 8257898277592762607}
   opponentNameText: {fileID: 7912427976020419298}
+  placeholderPortraitColor: {r: 1, g: 1, b: 1, a: 0.2}
+--- !u!225 &5561496180749450753
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2986511561360683955}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &3588371161973164070
 GameObject:
   m_ObjectHideFlags: 0
@@ -71,6 +87,7 @@ GameObject:
   - component: {fileID: 6031070635347014931}
   - component: {fileID: 2422813403663816793}
   - component: {fileID: 8957054099054667464}
+  - component: {fileID: 6552088804760400643}
   - component: {fileID: 9016748585064615933}
   m_Layer: 0
   m_Name: VS
@@ -198,6 +215,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &6552088804760400643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3588371161973164070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d9fa60cc072d8542aa7585b8cc5a99f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: Fight.Versus
 --- !u!114 &9016748585064615933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,7 +253,6 @@ GameObject:
   - component: {fileID: 4941103679413168920}
   - component: {fileID: 6952889389778334506}
   - component: {fileID: 3929744843763694399}
-  - component: {fileID: 6018380470648235231}
   m_Layer: 0
   m_Name: Dim
   m_TagString: Untagged
@@ -271,8 +300,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.02, g: 0.02, b: 0.02, a: 1}
-  m_RaycastTarget: 1
+  m_Color: {r: 0, g: 0, b: 0, a: 0.15}
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -288,19 +317,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6018380470648235231
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3768301759163939801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b15e9c8b6f748979d206f8b4c7ce778, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ThemeColorReceiver
-  token: 3
 --- !u!1 &4667911659570640648
 GameObject:
   m_ObjectHideFlags: 0
@@ -359,7 +375,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.2}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -586,7 +602,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.2}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

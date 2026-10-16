@@ -150,9 +150,8 @@ public class GameplayManager : MonoBehaviour
         _fallRespawn = GetComponent<FallRespawnSystem>()  ?? gameObject.AddComponent<FallRespawnSystem>();
         _fallRespawn.Initialize(audioSource, playerController, this, config.core);
 
-        // Pre-built UI prefab instances (Tools > MusicGame > Build UI Prefabs), if the tool has
-        // been run — GameplayHUD/PauseController fall back to building their UI procedurally
-        // when this is absent, so the game works either way.
+        // The Runner scene's UI prefab instances (LiveHud/EndScreen/PauseMenu) — there is no procedural
+        // fallback: GameplayHUD/PauseController log an error and leave that part off if one is missing.
         var uiRegistry = FindFirstObjectByType<UIRegistry>();
 
         var hud = GetComponent<GameplayHUD>() ?? gameObject.AddComponent<GameplayHUD>();

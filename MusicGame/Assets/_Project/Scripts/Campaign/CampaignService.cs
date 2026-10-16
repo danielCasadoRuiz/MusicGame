@@ -229,7 +229,7 @@ public static class CampaignService
         Data.boss.challengeInProgress = true;
         var run = new PendingRunData { opponentId = Boss.opponent.id, opponentLevel = config.level, opponentTier = config.level, bossStage = stage, lap = Data.lap };
         P.SetPendingRun(run);
-        session.SetBossFight(stage, Boss.opponent, config, Boss.Stage(stage).song, Boss.Stage(stage).arenaPrefab);
+        session.SetBossFight(stage, Boss.opponent, config, Boss.Stage(stage).song, Boss.Stage(stage).arena);
         Debug.Log($"[Campaign] Final rival stage {stage + 1}/{Boss.StageCount} ({Boss.Stage(stage).stageId}) prepared.");
         return true;
     }

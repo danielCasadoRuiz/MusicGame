@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 /// <summary>
 /// The final rival — "Ésser de la música" (Boss.Name) — and its three consecutive fights.
@@ -56,7 +57,7 @@ public class FinalBossConfigSO : ScriptableObject
             if (string.IsNullOrEmpty(s.stageId)) sb.AppendLine($"stage {i + 1}: empty stageId");
             if (LevelConfig(i) == null) sb.AppendLine($"stage {i + 1}: opponent has no version {s.opponentLevel}");
             if (s.song == null) sb.AppendLine($"stage {i + 1}: special song not assigned yet (uses the version's songs)");
-            if (s.arenaPrefab == null) sb.AppendLine($"stage {i + 1}: arena not assigned (default arena)");
+            if (s.arena == null || !s.arena.RuntimeKeyIsValid()) sb.AppendLine($"stage {i + 1}: arena not assigned (default arena)");
         }
         return sb.ToString();
     }
@@ -71,6 +72,7 @@ public class FinalBossStage
     [Min(1)] public int opponentLevel = 1;
     [Tooltip("Special fight song. Empty = the version's own songs[].")]
     public AudioClip song;
-    [Tooltip("Arena environment prefab (floor, decor, lights). Empty = FightArenaConfig.defaultEnvironment / placeholder floor.")]
-    public GameObject arenaPrefab;
+    [Tooltip("Arena of this stage (Addressable prefab — same loader as composer arenas). Several stages may share one. " +
+             "Empty = FightArenaConfig.defaultArena / placeholder floor.")]
+    public AssetReferenceGameObject arena;
 }

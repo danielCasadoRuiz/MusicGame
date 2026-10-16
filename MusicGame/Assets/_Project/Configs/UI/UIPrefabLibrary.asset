@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77cb24ab4b3105b49973aa2d2ad38f8b, type: 3}
+  m_Name: UIPrefabLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::UIPrefabLibrarySO
+  rootCanvas: {fileID: 985528806843813543, guid: 12e84e68fb188964f8c3a353a6caf93b, type: 3}
+  starRating: {fileID: 6577262067677898810, guid: 864281f502514be48b9f736eb39744ec, type: 3}
+  evaluationPanel: {fileID: 7258156618643478474, guid: c537dbafca5d9e3428f850542949e985, type: 3}
+  speechBubble: {fileID: 3882514675321654671, guid: 490b9c1b78e14734f97d3be916627d57, type: 3}
+  skipButton: {fileID: 6961064231504251649, guid: b804480ec4660564b810095d431b278e, type: 3}
+  campaignPopup: {fileID: 6174031148940031040, guid: e1c22fe3d8c018645a9cb3d146f914a1, type: 3}
+  languageSelector: {fileID: 6303678872994276092, guid: e59e417293d565341b08d40c10b91645, type: 3}
+  progressionScreen: {fileID: 8020292541142843235, guid: 0a10b24879bd03e4cbd92de5ff049099, type: 3}
+  progressionLevelHeader: {fileID: 5916672265488919561, guid: d9f8aa1365a29a5478c51cff7bb678fe, type: 3}
+  progressionColumnHeader: {fileID: 2899521499856938661, guid: a4308dd33d0954c43b9812d75bfdd448, type: 3}
+  progressionMatchRow: {fileID: 7566519472229451158, guid: 5d6b0c191af358340b15230c01a39431, type: 3}
+  progressionBossHeader: {fileID: 511536192123334492, guid: 7253313688319714ba32c82c2f1dfa10, type: 3}
+  progressionBossStage: {fileID: 6867796057448543131, guid: e99f87ecda03c6546889584ae5ffdc8c, type: 3}
+  collectionScreen: {fileID: 9071929218338760430, guid: dd8afff67f78d244fb2cc5b0f0ea5fc3, type: 3}
+  rivalCard: {fileID: 993400160775447342, guid: 2c26f9d161b18534092e96d3501b6fa0, type: 3}
+  fightHud: {fileID: 5232912336989549837, guid: ea4cfd234736f1f4997884c9c2c15489, type: 3}
+  opponentSelection: {fileID: 245414349781729134, guid: 222b4ac95c668fd44b443b66720f5360, type: 3}
+  opponentCell: {fileID: 640604822050926471, guid: e4ed6e9bdc5e3814c835ba3048b6af8e, type: 3}
+  versusScreen: {fileID: 1641684891848989559, guid: 53c6243a8a95ec34cb8ba01a3189ab01, type: 3}
+  introScreen: {fileID: 6421948091815579836, guid: 6daaf60e2d16b2d449cb5eca080544b9, type: 3}
+  mainMenu: {fileID: 1871279813275353399, guid: 4691d659ca1700e41bc7ac7789421bb5, type: 3}
+  songSelection: {fileID: 7019648910739942381, guid: 9ae92a20bc017694db904af0673208b1, type: 3}
+  songRow: {fileID: 2991900736487815940, guid: c0ea3dbc99d0f0b4e9a3ad003fa5429d, type: 3}
+  analyzingScreen: {fileID: 2457283559265868426, guid: 01ceeca46870b45429031a0a9fd1feed, type: 3}
+  countdownScreen: {fileID: 9116737051381806422, guid: 3137299e7297c7b419b84c9dfcf06338, type: 3}
+  finishBanner: {fileID: 8858721370062545102, guid: fbb2391b0e4acc14395a718feec41708, type: 3}
+  mobileControls: {fileID: 5479958185208051107, guid: 14ad0ecf3ce1fbd4195eb6d0092b72dc, type: 3}
+  nextSongTransition: {fileID: 7122212497721609847, guid: 612b81c735221ed4796df4dd846f7b0a, type: 3}
+  roundIntro: {fileID: 1474652698206884167, guid: 89f5c1739856b7c48a2fd4cf0dc95968, type: 3}
+  roundEnd: {fileID: 6143259322753016751, guid: 3a9b5672749209d46b19fb651a5632d5, type: 3}
+  matchResult: {fileID: 1811160636407647596, guid: 7947a83a469de5d45a19980c7fc402a4, type: 3}
+  runnerPerformanceRow: {fileID: 7135020506342672998, guid: 0e3c0800195cd7e419932603a4143275, type: 3}

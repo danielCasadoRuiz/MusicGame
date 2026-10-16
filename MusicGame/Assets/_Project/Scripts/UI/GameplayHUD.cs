@@ -5,11 +5,13 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Live top-bar HUD + end-of-song results screen. Built entirely with uGUI (Canvas/Image/Text/
-/// Button via UIFactory), not IMGUI — real Button components mean clicks are handled by
-/// EventSystem, not by OnGUI's control-ID bookkeeping (which is what made Restart/Continue
-/// occasionally need two clicks: a GUI.Button whose branch stopped being drawn between MouseDown
-/// and MouseUp left GUIUtility.hotControl stuck on a control that would never be drawn again).
+/// Live top-bar HUD + end-of-song results screen. Both are uGUI PREFABS (LiveHud.prefab /
+/// EndScreen.prefab, instanced in Runner.unity and handed over by GameplayManager from the scene's
+/// UIRegistry) — this class only wires their views and fills values; it never builds UI. A missing view
+/// is logged as an error and that part of the HUD simply stays off (no procedural fallback). The
+/// per-ring-type end-screen rows are item prefabs (UIPrefabLibrarySO.runnerPerformanceRow). Real
+/// Button components mean clicks are handled by EventSystem, not by OnGUI's control-ID bookkeeping
+/// (which is what made Restart/Continue occasionally need two clicks with the old IMGUI version).
 /// </summary>
 public class GameplayHUD : MonoBehaviour
 {
@@ -17,10 +19,10 @@ public class GameplayHUD : MonoBehaviour
     [SerializeField] private MusicRunnerGameplayConfig  config;
     [SerializeField] private GameplayManager manager;
 
-    // Built from Initialize() (NOT Awake()) — Awake() fires synchronously the instant
+    // Wired from Initialize() (NOT Awake()) — Awake() fires synchronously the instant
     // GameplayManager.Awake() calls AddComponent<GameplayHUD>(), which is BEFORE Initialize()
-    // supplies `config` (needed for per-ring-type colors); building here instead guarantees
-    // config/manager are already set the first time the UI is constructed.
+    // supplies `config` (needed for per-ring-type colors); wiring here instead guarantees
+    // config/manager are already set the first time the UI is touched.
     private bool _built;
 
     public void Initialize(AudioSource source, MusicRunnerGameplayConfig cfg, GameplayManager mgr,
@@ -33,16 +35,14 @@ public class GameplayHUD : MonoBehaviour
         if (_built) return;
         _built = true;
 
-        // Prefer the prefab instances (Tools > MusicGame > Build UI Prefabs) — hand-tunable in
-        // the Prefab editor. Fall back to the old procedural build only if that tool hasn't been
-        // run yet — LOUDLY, so a broken/missing wiring is never silently invisible.
+        // The prefab instances in Runner.unity (UIRegistry) — hand-tunable in the Prefab editor.
+        // No procedural fallback: a missing view is logged and that part stays off.
         if (liveHudView != null) WireLiveHud(liveHudView);
-        else { Debug.LogWarning("[GameplayHUD] No LiveHudView wired (UIRegistry missing/empty) — building the live HUD procedurally instead."); BuildLiveHud(); }
+        else Debug.LogError("[GameplayHUD] No LiveHudView wired (UIRegistry in Runner.unity missing/empty) — the live HUD is disabled.", this);
 
         if (endScreenView != null) WireEndScreen(endScreenView);
-        else { Debug.LogWarning("[GameplayHUD] No EndScreenView wired (UIRegistry missing/empty) — building the end screen procedurally instead."); BuildEndScreen(); }
+        else Debug.LogError("[GameplayHUD] No EndScreenView wired (UIRegistry in Runner.unity missing/empty) — the end screen is disabled.", this);
 
-        BuildResourceElements();
         SetGameEnded(false);
     }
 
@@ -97,62 +97,9 @@ public class GameplayHUD : MonoBehaviour
 
     // ── Lifecycle ────────────────────────────────────────────────────────────
 
-    // Extra elements both the prefab and the procedural HUD get (the prefabs predate them).
-    private void BuildResourceElements()
-    {
-        if (_lifeValueText == null && _scoreValueText != null)
-        {
-            // The top bar's existing cells move into its left 70 %; LIFE and SPECIAL become two more
-            // cells of the SAME bar; the right end stays free for Pause + First/Third Person
-            // (PauseController). Works for both the prefab and the procedural HUD (same cell layout).
-            var cells = new List<RectTransform>();
-            foreach (var v in _counterValues.Values) if (v != null) cells.Add((RectTransform)v.rectTransform.parent);
-            cells.Add((RectTransform)_scoreValueText.rectTransform.parent);
-            if (_totalValueText != null) cells.Add((RectTransform)_totalValueText.rectTransform.parent);
-            cells.Sort((x, y) => x.anchorMin.x.CompareTo(y.anchorMin.x));
-            var bar = cells.Count > 0 ? cells[0].parent as RectTransform : null;
-            if (bar != null)
-            {
-                const float existingShare = 0.70f, resourceCell = 0.075f;
-                for (int i = 0; i < cells.Count; i++)
-                {
-                    cells[i].anchorMin = new Vector2(existingShare * i / cells.Count, cells[i].anchorMin.y);
-                    cells[i].anchorMax = new Vector2(existingShare * (i + 1) / cells.Count, cells[i].anchorMax.y);
-                }
-                var lifeColor    = config != null ? config.collectibles.lifeColor : Color.white;
-                var specialColor = config != null ? config.collectibles.specialColor : new Color(1f, 0.15f, 0.85f);
-                _lifeValueText    = BuildBarCell(bar, "Cell_Life", Loc.Get("HUD.Life"), lifeColor, existingShare, existingShare + resourceCell);
-                _specialValueText = BuildBarCell(bar, "Cell_Special", Loc.Get("HUD.Special"), specialColor, existingShare + resourceCell, existingShare + 2f * resourceCell);
-            }
-        }
-        if (_runSummaryText == null && _endRoot != null)
-        {
-            var box = UIFactory.CreatePanel("RunResources", _endRoot, new Color(0.04f, 0.04f, 0.04f, 0.95f));
-            UIFactory.SetBox(box.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 0.5f), new Vector2(230f, 0f), new Vector2(300f, 210f));
-            box.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
-            _runSummaryText = UIFactory.CreateText("Summary", box.rectTransform, "", 15, Color.white, TextAlignmentOptions.TopLeft);
-            UIFactory.SetBox(_runSummaryText.rectTransform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(-28f, -24f));
-            _runSummaryText.textWrappingMode = TextWrappingModes.Normal;
-            _runSummaryText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-        }
-    }
-
-    // Same Label/Value structure and offsets as the bar's existing cells (UIPrefabBuilder.BuildLiveHud).
-    private static TextMeshProUGUI BuildBarCell(RectTransform bar, string name, string labelText, Color labelColor, float xMin, float xMax)
-    {
-        var cell = UIFactory.CreateRect(name, bar);
-        UIFactory.SetBox(cell, new Vector2(xMin, 0f), new Vector2(xMax, 1f), new Vector2(0f, 1f), new Vector2(6f, 0f), new Vector2(-6f, 0f));
-        var label = UIFactory.CreateText("Label", cell, labelText, 12, labelColor, TextAlignmentOptions.TopLeft);
-        UIFactory.SetBox(label.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -3f), new Vector2(0f, 20f));
-        var value = UIFactory.CreateText("Value", cell, "0", 14, Color.white, TextAlignmentOptions.TopLeft);
-        UIFactory.SetBox(value.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -22f), new Vector2(0f, 20f));
-        value.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-        return value;
-    }
-
     private void UpdateResourceHud()
     {
-        if (_lifeValueText == null) return;
+        if (_lifeValueText == null || _specialValueText == null) return;
         int lives = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.ExtraLives : 0;
         int specials = GameSession.Instance != null ? GameSession.Instance.Run.Wallet.Specials : 0;
         if (lives == _shownLives && specials == _shownSpecials) return;
@@ -243,7 +190,7 @@ public class GameplayHUD : MonoBehaviour
             }
             return;
         }
-        if (_gameEnded) return;
+        if (_gameEnded || _liveRoot == null) return;
         UpdateLiveHud();
         UpdateResourceHud();
     }
@@ -251,8 +198,8 @@ public class GameplayHUD : MonoBehaviour
     private void SetGameEnded(bool ended)
     {
         _gameEnded = ended;
-        _liveRoot.gameObject.SetActive(!ended);
-        _endRoot.gameObject.SetActive(ended);
+        if (_liveRoot != null) _liveRoot.gameObject.SetActive(!ended);
+        if (_endRoot != null) _endRoot.gameObject.SetActive(ended);
     }
 
     // ── Wire: live top bar (prefab path — see LiveHudView's own doc) ─────────
@@ -272,8 +219,8 @@ public class GameplayHUD : MonoBehaviour
         _progressFill   = UIFactory.EnsureFillSprite(view.progressFill);
 
         // Static column-header labels are baked into the prefab at Editor-bake time (whatever
-        // locale was active then) — re-set them here from the CURRENT locale so the prefab path
-        // behaves identically to the procedural one regardless of when/in what language the
+        // locale was active then) — re-set them here from the CURRENT locale so they always
+        // follow the language regardless of when/in what language the
         // prefab was last built.
         SetLabel(view.kickLabel,   RingType.Kick);
         SetLabel(view.snareLabel,  RingType.Snare);
@@ -289,82 +236,15 @@ public class GameplayHUD : MonoBehaviour
         _tagVibeText  = view.tagVibe;
         _tagOtherText = view.tagOther;
         _tagsStrip.gameObject.SetActive(false);
-    }
 
-    // ── Build: live top bar (procedural fallback — no UIRegistry in the scene yet) ───────────
-
-    private void BuildLiveHud()
-    {
-        var canvas = UIFactory.RootCanvas();
-        _liveRoot = UIFactory.CreateRect("LiveHUD", canvas);
-        UIFactory.SetBox(_liveRoot, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, new Vector2(0f, 100f));
-
-        var topBar = UIFactory.CreatePanel("TopBar", _liveRoot, new Color(0.03f, 0.03f, 0.03f, 0.88f));
-        UIFactory.SetBox(topBar.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, new Vector2(0f, 44f));
-        topBar.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
-
-        var cells = new (string labelKey, RingType? type)[]
-        {
-            ("HUD.Kick",   RingType.Kick),   ("HUD.Snare",  RingType.Snare), ("HUD.HiHat", RingType.HiHat), ("HUD.Beat", RingType.Beat),
-            ("HUD.Onset",  RingType.Onset),  ("HUD.Impact", RingType.Impact),("HUD.Score",  null),           ("HUD.Total", null),
-        };
-        for (int i = 0; i < cells.Length; i++)
-        {
-            var cell = UIFactory.CreateRect($"Cell_{cells[i].labelKey}", topBar.rectTransform);
-            float xMin = i / 8f, xMax = (i + 1) / 8f;
-            UIFactory.SetBox(cell, new Vector2(xMin, 0f), new Vector2(xMax, 1f), new Vector2(0f, 1f), new Vector2(6f, 0f), new Vector2(-6f, 0f));
-
-            var label = Loc.Track(UIFactory.CreateText("Label", cell, Loc.Get(cells[i].labelKey), 12, RingColorOr(cells[i].type, Color.white), TextAlignmentOptions.TopLeft), cells[i].labelKey);
-            UIFactory.SetBox(label.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -3f), new Vector2(0f, 20f));
-
-            var value = UIFactory.CreateText("Value", cell, "0", 14, Color.white, TextAlignmentOptions.TopLeft);
-            UIFactory.SetBox(value.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(0f, -22f), new Vector2(0f, 20f));
-
-            if (cells[i].labelKey == "HUD.Score")
-            {
-                _scoreValueText = value;
-                value.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-            }
-            else if (cells[i].labelKey == "HUD.Total")
-            {
-                _totalValueText = value;
-                value.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-            }
-            else
-            {
-                // Counter VALUES stay plain white (not ring-colored — only their LABEL above is,
-                // via RingColorOr/MusicRunnerCollectiblesConfig, a separate data-driven color system
-                // unrelated to the UI Theme tokens).
-                _counterValues[cells[i].type.Value] = value;
-            }
-        }
-
-        var progressBg = UIFactory.CreateFillBar("SongProgress", _liveRoot, new Color(0.10f, 0.10f, 0.10f), new Color(0.18f, 0.75f, 0.95f), out _progressFill);
-        UIFactory.SetBox(progressBg.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -45f), new Vector2(0f, 4f));
-        _progressFill.fillAmount = 0f;
-        _progressFill.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Accent);
-
-        // Semantic tags strip (STYLE/VIBE/OTHER) — shown only when the song was tagged.
-        _tagsStrip = UIFactory.CreateRect("TagsStrip", _liveRoot);
-        UIFactory.SetBox(_tagsStrip, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -50f), new Vector2(0f, 54f));
-        var tagsBg = _tagsStrip.gameObject.AddComponent<Image>();
-        tagsBg.color = new Color(0.03f, 0.03f, 0.03f, 0.75f);
-        _tagsStrip.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
-
-        // Style/Vibe/Other keep their own distinctive tint (a data-category indicator, not UI
-        // chrome) — left as-is rather than forced onto a token that doesn't really fit.
-        _tagStyleText = UIFactory.CreateText("Style", _tagsStrip, "", 11, new Color(0.55f, 0.8f, 1f), TextAlignmentOptions.TopLeft);
-        UIFactory.SetBox(_tagStyleText.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(8f, -3f), new Vector2(-8f, 16f));
-
-        _tagVibeText = UIFactory.CreateText("Vibe", _tagsStrip, "", 11, Color.white, TextAlignmentOptions.TopLeft);
-        UIFactory.SetBox(_tagVibeText.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(8f, -19f), new Vector2(-8f, 16f));
-        _tagVibeText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-
-        _tagOtherText = UIFactory.CreateText("Other", _tagsStrip, "", 11, Color.white, TextAlignmentOptions.TopLeft);
-        UIFactory.SetBox(_tagOtherText.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f), new Vector2(8f, -35f), new Vector2(-8f, 16f));
-        _tagOtherText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-
-        _tagsStrip.gameObject.SetActive(false);
+        // LIFE / SPECIAL cells: static label from the prefab (LocalizedText), tint from the collectibles
+        // config — the same colour the pickups have in the world.
+        _lifeValueText    = view.lifeValue;
+        _specialValueText = view.specialValue;
+        if (view.lifeLabel != null && config != null)    view.lifeLabel.color    = config.collectibles.lifeColor;
+        if (view.specialLabel != null && config != null) view.specialLabel.color = config.collectibles.specialColor;
+        if (_lifeValueText == null || _specialValueText == null)
+            Debug.LogError("[GameplayHUD] LiveHudView.lifeValue/specialValue not assigned — run Tools > MusicGame > UI > Build All UI Prefabs (patches LiveHud.prefab).", view);
     }
 
     private void UpdateLiveHud()
@@ -432,8 +312,6 @@ public class GameplayHUD : MonoBehaviour
         return parts.Count > 0 ? string.Join(" · ", parts) : null;
     }
 
-    private Color RingColorOr(RingType? type, Color fallback) => type.HasValue && config != null ? config.collectibles.RingColor(type.Value) : fallback;
-
     // Single source of truth for "which localization key does this RingType's short HUD label
     // use" — shared by the top-bar column headers and the end-screen performance rows (RowLabel)
     // so there's exactly one place mapping RingType → text, never two that could drift apart.
@@ -465,80 +343,10 @@ public class GameplayHUD : MonoBehaviour
 
         view.restartButton.onClick.AddListener(OnRestartClicked);
         view.continueButton.onClick.AddListener(OnContinueClicked);
-    }
 
-    // ── Build: end screen (procedural fallback — no UIRegistry in the scene yet) ─────────────
-
-    private void BuildEndScreen()
-    {
-        var canvas = UIFactory.RootCanvas();
-        _endRoot = UIFactory.CreateRect("EndScreen", canvas);
-        UIFactory.Stretch(_endRoot);
-
-        var dim = UIFactory.CreatePanel("Dim", _endRoot, new Color(0f, 0f, 0f, 0.55f));
-        UIFactory.Stretch(dim.rectTransform);
-        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
-
-        float pw = 420f, ph = 720f;
-        var panel = UIFactory.CreatePanel("Panel", _endRoot, new Color(0.04f, 0.04f, 0.04f, 0.97f));
-        UIFactory.SetBox(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(pw, ph));
-        var border = panel.gameObject.AddComponent<Outline>();
-        border.effectColor    = new Color(0.2f, 0.2f, 0.2f, 1f);
-        border.effectDistance = new Vector2(2f, -2f);
-        panel.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
-
-        var content = panel.rectTransform;
-        float y = -16f;
-
-        var title = Loc.Track(UIFactory.CreateText("Title", content, Loc.Get("EndScreen.Title"), 20, Color.white), "EndScreen.Title");
-        UIFactory.StackTop(title.rectTransform, ref y, 30f);
-        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
-
-        // Rating label/bar are deliberately NOT theme receivers — PopulateEndScreen colors them
-        // from the SCORE (a red-to-green gradient), not from the Theme.
-        _ratingLabelText = UIFactory.CreateText("Rating", content, "", 22, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
-        UIFactory.StackTop(_ratingLabelText.rectTransform, ref y, 32f);
-
-        var ratingBar = UIFactory.CreateFillBar("RatingBar", content, new Color(0.12f, 0.12f, 0.12f), Color.white, out _ratingBarFill);
-        UIFactory.StackTop(ratingBar.rectTransform, ref y, 16f, 46f);
-        y -= 6f;
-
-        _scoreSummaryText = UIFactory.CreateText("ScoreSummary", content, "", 12, new Color(0.6f, 0.6f, 0.6f));
-        UIFactory.StackTop(_scoreSummaryText.rectTransform, ref y, 20f);
-        _scoreSummaryText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
-        y -= 6f;
-
-        _performanceRows = UIFactory.CreateRect("PerformanceRows", content);
-        UIFactory.StackTop(_performanceRows, ref y, 24f * 7f);
-        y -= 6f;
-
-        _fallsText = UIFactory.CreateText("Falls", content, "", 13, Color.white);
-        UIFactory.StackTop(_fallsText.rectTransform, ref y, 20f);
-        _fallsText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-
-        _noFallBonusText = UIFactory.CreateText("NoFallBonus", content, "", 13, new Color(1f, 0.85f, 0.2f));
-        UIFactory.StackTop(_noFallBonusText.rectTransform, ref y, 20f);
-        _noFallBonusText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Positive, UIFontToken.Body);
-
-        _sessionText = UIFactory.CreateText("Session", content, "", 11, new Color(0.55f, 0.55f, 0.6f));
-        UIFactory.StackTop(_sessionText.rectTransform, ref y, 22f);
-        _sessionText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
-
-        y -= 10f;
-        float btnW = 150f, btnH = 40f, gap = 16f;
-        var restartBtn = UIFactory.CreateButton("RestartButton", content, Loc.Get("EndScreen.Restart"), out var restartLabel); Loc.Track(restartLabel, "EndScreen.Restart");
-        UIFactory.SetBox(restartBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-            new Vector2(-(btnW + gap) / 2f, y), new Vector2(btnW, btnH));
-        restartBtn.onClick.AddListener(OnRestartClicked);
-        restartBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
-        restartLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-
-        var continueBtn = UIFactory.CreateButton("ContinueButton", content, Loc.Get("EndScreen.Continue"), out var continueLabel); Loc.Track(continueLabel, "EndScreen.Continue");
-        UIFactory.SetBox(continueBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-            new Vector2((btnW + gap) / 2f, y), new Vector2(btnW, btnH));
-        continueBtn.onClick.AddListener(OnContinueClicked);
-        continueBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
-        continueLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
+        _runSummaryText = view.runSummaryText;
+        if (_runSummaryText == null)
+            Debug.LogError("[GameplayHUD] EndScreenView.runSummaryText not assigned — run Tools > MusicGame > UI > Build All UI Prefabs (patches EndScreen.prefab).", view);
     }
 
     // _gameEnded is cleared HERE, synchronously on click — not left to wait for
@@ -581,30 +389,27 @@ public class GameplayHUD : MonoBehaviour
         if (_endRoot == null || o == null) return;
         if (_runnerEvalPanel == null)
         {
-            _runnerEvalPanel = EvaluationPanel.Create(_endRoot, "RunnerEvaluation", 520f);
-            var r = _runnerEvalPanel.Rect;
-            r.anchorMin = r.anchorMax = new Vector2(1f, 0.5f);
-            r.pivot = new Vector2(1f, 0.5f);
-            r.anchoredPosition = new Vector2(-30f, 0f);
+            _runnerEvalPanel = EvaluationPanel.Spawn(_endRoot, "RunnerEvaluation"); // anchoring/size from the prefab
+            if (_runnerEvalPanel == null) return;
         }
         var p = _runnerEvalPanel;
         p.Clear();
         var e = o.Evaluation;
         p.AddHeader(Loc.Get("Eval.ThisRunnerTitle"));
         p.AddStars(Loc.Get("Eval.Points", EvaluationPanel.Points(e.Score, e.MaxScore)), e.HalfStars);
-        p.AddLine(EvaluationPanel.Breakdown(e.Metrics), 13, new Color(0.8f, 0.8f, 0.8f));
+        p.AddNote(EvaluationPanel.Breakdown(e.Metrics));
         if (o.Recorded)
         {
             p.AddStars(Loc.Get("Eval.BestRunner") + (o.Record.NewRecord ? "  " + Loc.Get("Eval.NewRecord") : ""), o.Record.Best != null && o.Record.Best.has ? o.Record.Best.halfStars : -1);
-            p.AddLine(Loc.Get("Eval.NextFight"), 14, new Color(1f, 0.82f, 0.35f));
+            p.AddHighlight(Loc.Get("Eval.NextFight"));
         }
-        else p.AddLine(Loc.Get("Eval.NotCampaign"), 13, new Color(0.8f, 0.8f, 0.8f));
+        else p.AddNote(Loc.Get("Eval.NotCampaign"));
     }
 
     private void PopulateEndScreen()
     {
         var s = _finalStats ?? manager?.Stats;
-        if (s == null) return;
+        if (s == null || _endRoot == null) return;
 
         float displayRating = config != null
             ? Mathf.Clamp01(config.scoring.performanceRatingCurve.Evaluate(_finalNormalizedScore))
@@ -622,13 +427,17 @@ public class GameplayHUD : MonoBehaviour
         foreach (var go in _rowObjects) Destroy(go);
         _rowObjects.Clear();
 
-        if (_finalPerformance != null)
+        if (_finalPerformance != null && _performanceRows != null)
         {
+            var lib = UIPrefabLibrarySO.Instance;
+            var rowPrefab = lib != null ? lib.runnerPerformanceRow : null;
             float ry = 0f;
             foreach (var type in PerformanceRowOrder)
             {
                 if (!_finalPerformance.ByType.TryGetValue(type, out var tp)) continue;
-                _rowObjects.Add(BuildPerformanceRow(_performanceRows, ry, type, tp));
+                var row = SpawnPerformanceRow(rowPrefab, ry, type, tp);
+                if (row == null) break; // Spawn already logged the missing prefab
+                _rowObjects.Add(row);
                 ry -= 24f;
             }
         }
@@ -654,23 +463,17 @@ public class GameplayHUD : MonoBehaviour
         }
     }
 
-    private GameObject BuildPerformanceRow(RectTransform parent, float y, RingType type, TypePerformance tp)
+    // One RunnerPerformanceRow item per type, stacked 24 px apart from the container's top (anchoring/size from the prefab).
+    private GameObject SpawnPerformanceRow(RunnerPerformanceRowView prefab, float y, RingType type, TypePerformance tp)
     {
-        var row = UIFactory.CreateRect($"Row_{type}", parent);
-        UIFactory.SetBox(row, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, y), new Vector2(0f, 20f));
+        var row = UIPrefabLibrarySO.Spawn(prefab, _performanceRows, "RunnerPerformanceRow");
+        if (row == null) return null;
+        row.name = $"Row_{type}";
+        var rt = (RectTransform)row.transform;
+        rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, y);
 
         Color color = config != null ? config.collectibles.RingColor(type) : Color.white;
-
-        var label = UIFactory.CreateText("Label", row, RowLabel(type), 12, color, TextAlignmentOptions.Left);
-        UIFactory.SetBox(label.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 0.5f), new Vector2(0f, 0f), new Vector2(70f, 0f));
-
-        var barBg = UIFactory.CreateFillBar("Bar", row, new Color(0.12f, 0.12f, 0.12f), color * 0.8f, out var barFill);
-        UIFactory.SetBox(barBg.rectTransform, new Vector2(0f, 0.2f), new Vector2(1f, 0.8f), new Vector2(0f, 0.5f), new Vector2(74f, 0f), new Vector2(-150f, 0f));
-        barFill.fillAmount = Mathf.Clamp01(tp.CollectionRate);
-
-        var info = UIFactory.CreateText("Info", row, $"{tp.CollectionRate * 100f:F0}%  {tp.Collected}/{tp.Available}", 10, Color.white, TextAlignmentOptions.Right);
-        UIFactory.SetBox(info.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(1f, 0.5f), new Vector2(0f, 0f), new Vector2(70f, 0f));
-
+        row.Set(RowLabel(type), color, tp.CollectionRate, $"{tp.CollectionRate * 100f:F0}%  {tp.Collected}/{tp.Available}");
         return row.gameObject;
     }
 

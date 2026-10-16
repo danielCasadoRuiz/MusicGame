@@ -39,4 +39,10 @@ public class LiveHudView : MonoBehaviour
     public TextMeshProUGUI tagStyle;
     public TextMeshProUGUI tagVibe;
     public TextMeshProUGUI tagOther;
+
+    [Header("LIFE / SPECIAL cells (top bar, right of the counters; label colour comes from the collectibles config)")]
+    public TextMeshProUGUI lifeLabel;
+    public TextMeshProUGUI lifeValue;
+    public TextMeshProUGUI specialLabel;
+    public TextMeshProUGUI specialValue;
 }

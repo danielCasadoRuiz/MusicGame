@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,29 +25,21 @@ using UnityEngine.UI;
 /// class has no idea HOW an opponent's content varies by level, only that it might; wiring in a
 /// real Player Level later is a one-line change (CurrentPlayerLevel's own doc).
 ///
-/// Prefers a real OpponentSelection.prefab instance (wired via UIRegistry, built once via
-/// Tools > MusicGame > Build UI Prefabs) for the STATIC chrome only — the grid cells stay dynamic
-/// runtime population either way, same split as SongSelectionView/SongSelectionController.
+/// Structure and look: OpponentSelection.prefab (UIPrefabLibrarySO.opponentSelection — title, grid with its
+/// GridLayoutGroup, Skip button, highlight colours) plus one OpponentCell.prefab instance
+/// (UIPrefabLibrarySO.opponentCell) per roster entry; this class only fills data and sizes the grid.
+/// A missing prefab is logged by UIPrefabLibrarySO.Spawn — no procedural fallback.
 ///
 /// Lives in the always-loaded UI Scene (added by UIFlowController) — reacts to
 /// FightFlowStateChangedEvent directly.
 /// </summary>
 public class OpponentSelectionController : MonoBehaviour
 {
-    private static readonly Color NormalCellColor = new(1f, 1f, 1f, 0.10f);
-
-    // 6 columns × 2 rows for the 12-composer roster (rows grow with the roster) — fits 1920×1080
-    // between the title and the Skip button. Applied at runtime to both the procedural and the
-    // baked-prefab grid (ApplyGridLayout), so the prefab's old 4-column bake is overridden.
-    private const float DefaultCellWidth  = 190f;
-    private const float DefaultCellHeight = 240f;
-    private const float CellSpacing       = 18f;
-    private const int   PreferredColumns  = 6;
-
     // The tier opponent content resolves at (GameSession.EffectiveOpponentTier: the real progression
     // tier, or a debug-forced one). Falls back to 1 only if GameSession doesn't exist.
     private static int CurrentTier => GameSession.Instance != null ? GameSession.Instance.EffectiveOpponentTier : 1;
 
+    private OpponentSelectionView _view;
     private RectTransform _root;
     private RectTransform _gridRoot;
 
@@ -73,13 +64,22 @@ public class OpponentSelectionController : MonoBehaviour
         if (_roster == null)
             Debug.LogWarning("[OpponentSelectionController] No OpponentRosterSO (AppConfig.opponentRoster) configured — the grid will be empty.");
 
-        var registry = FindFirstObjectByType<UIRegistry>();
-        if (registry != null && registry.OpponentSelection != null) WireUI(registry.OpponentSelection);
-        else Build();
+        var lib = UIPrefabLibrarySO.Instance;
+        _view = UIPrefabLibrarySO.Spawn(lib != null ? lib.opponentSelection : null, UIFactory.RootCanvas(), "OpponentSelection");
+        if (_view == null) { enabled = false; return; }
+        UIFactory.Stretch((RectTransform)_view.transform);
+        _root     = _view.root.GetComponent<RectTransform>();
+        _gridRoot = _view.gridRoot;
+        _skipButton = _view.skipButton;
+        if (_skipButton != null) _skipButton.onClick.AddListener(() => _skipRequested = true);
 
-        PopulateGrid();
-        BuildSkipButton();
+        PopulateGrid(lib.opponentCell);
         _root.gameObject.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
+        if (_view != null) Destroy(_view.gameObject);
     }
 
     private void OnEnable()
@@ -103,116 +103,41 @@ public class OpponentSelectionController : MonoBehaviour
         StopRoulette();
     }
 
-    // ── Prefab path — see OpponentSelectionView's own doc ────────────────────────
-
-    private void WireUI(OpponentSelectionView view)
-    {
-        _root     = view.root.GetComponent<RectTransform>();
-        _gridRoot = view.gridRoot;
-        Loc.Set(view.titleText, "OpponentSelection.Title");
-    }
-
-    // ── Build (procedural fallback — no UIRegistry in the scene yet) ─────────────
-
-    private void Build()
-    {
-        var canvas = UIFactory.RootCanvas();
-        _root = UIFactory.CreateRect("OpponentSelectionScreen", canvas);
-        UIFactory.Stretch(_root);
-
-        var dim = UIFactory.CreatePanel("Dim", _root, new Color(0.02f, 0.02f, 0.02f, 1f));
-        UIFactory.Stretch(dim.rectTransform);
-        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
-
-        var title = Loc.Track(UIFactory.CreateText("Title", _root, Loc.Get("OpponentSelection.Title"), 30, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "OpponentSelection.Title");
-        UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-            new Vector2(0f, -50f), new Vector2(900f, 50f));
-        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
-
-        _gridRoot = UIFactory.CreateRect("Grid", _root);
-        UIFactory.SetBox(_gridRoot, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            Vector2.zero, Vector2.zero); // sized by ApplyGridLayout from the roster count
-        BuildGridLayout(_gridRoot);
-    }
-
-    private static void BuildGridLayout(RectTransform gridRoot)
-    {
-        var layout = gridRoot.gameObject.AddComponent<GridLayoutGroup>();
-        layout.cellSize       = new Vector2(DefaultCellWidth, DefaultCellHeight);
-        layout.spacing        = new Vector2(CellSpacing, CellSpacing);
-        layout.childAlignment = TextAnchor.MiddleCenter;
-        layout.constraint     = GridLayoutGroup.Constraint.FixedColumnCount;
-        layout.constraintCount = PreferredColumns;
-    }
-
     // ── Grid population — one cell per OpponentRosterSO entry, never a hardcoded count ───────
 
-    private void PopulateGrid()
+    private void PopulateGrid(OpponentCellView cellPrefab)
     {
-        if (_gridRoot.GetComponent<GridLayoutGroup>() == null) BuildGridLayout(_gridRoot); // baked prefab safety net
         var opponents = _roster != null ? _roster.opponents : System.Array.Empty<OpponentDefinition>();
-        ApplyGridLayout(_gridRoot.GetComponent<GridLayoutGroup>(), opponents.Length);
-        var cellSize = _gridRoot.GetComponent<GridLayoutGroup>().cellSize;
+        SizeGrid(opponents.Length);
 
         _cellBackgrounds.Clear();
         for (int i = 0; i < opponents.Length; i++)
-            BuildCell(i, opponents[i], cellSize);
+        {
+            var cell = UIPrefabLibrarySO.Spawn(cellPrefab, _gridRoot, "OpponentCell");
+            if (cell == null) break;
+            var opponent = opponents[i];
+            cell.name = $"Opponent_{i}";
+            // No portrait art assigned yet on a fresh placeholder OpponentDefinition/level entry — a
+            // plain dim box reads clearly as "no art yet" without any special-case handling downstream.
+            cell.Set(opponent != null ? opponent.displayName : "?", ResolveLevel(opponent)?.portrait);
+            if (cell.background != null) cell.background.color = _view.normalCellColor;
+            _cellBackgrounds.Add(cell.background); // indexed like the roster (HighlightOnly) — even if null
+        }
     }
 
-    // Same cells for every path: fixed column count, container sized to exactly columns × rows.
-    private void ApplyGridLayout(GridLayoutGroup layout, int count)
+    // The prefab's GridLayoutGroup (fixed column count, cell size, spacing) lays the cells out; the
+    // container is sized to exactly columns × rows (rows grow with the roster).
+    private void SizeGrid(int count)
     {
-        int rows = Mathf.Max(1, Mathf.CeilToInt(count / (float)PreferredColumns));
-        layout.cellSize        = new Vector2(DefaultCellWidth, DefaultCellHeight);
-        layout.spacing         = new Vector2(CellSpacing, CellSpacing);
-        layout.childAlignment  = TextAnchor.MiddleCenter;
-        layout.constraint      = GridLayoutGroup.Constraint.FixedColumnCount;
-        layout.constraintCount = PreferredColumns;
-        layout.padding         = new RectOffset();
-
-        _gridRoot.anchorMin = _gridRoot.anchorMax = _gridRoot.pivot = new Vector2(0.5f, 0.5f);
-        _gridRoot.sizeDelta = new Vector2(PreferredColumns * DefaultCellWidth + (PreferredColumns - 1) * CellSpacing,
-                                          rows * DefaultCellHeight + (rows - 1) * CellSpacing);
-    }
-
-    private void BuildCell(int index, OpponentDefinition opponent, Vector2 cellSize)
-    {
-        // Real Button component (for its Image + color-tint machinery), left fully interactable
-        // but with no onClick wired — display-only during the roulette; no manual picking in V1.
-        string name = opponent != null ? opponent.displayName : "?";
-        var cellBtn = UIFactory.CreateButton($"Opponent_{index}", _gridRoot, name, out var nameLabel);
-
-        float nameHeight = 26f;
-        UIFactory.SetBox(nameLabel.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f),
-            new Vector2(0f, 4f), new Vector2(-10f, nameHeight));
-        nameLabel.fontSize = 13;
-
-        var portraitRt = UIFactory.CreateRect("Portrait", cellBtn.GetComponent<RectTransform>());
-        var portrait = portraitRt.gameObject.AddComponent<Image>();
-        UIFactory.SetBox(portraitRt, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-            new Vector2(0f, -8f), new Vector2(-10f, cellSize.y - nameHeight - 20f));
-        // No portrait art assigned yet on a fresh placeholder OpponentDefinition/level entry — a
-        // plain dim box reads clearly as "no art yet" without any special-case handling downstream.
-        portrait.sprite = ResolveLevel(opponent)?.portrait;
-        portrait.preserveAspect = true; // portraits are tall cut-outs, the cell is square
-        portrait.color  = portrait.sprite != null ? Color.white : new Color(1f, 1f, 1f, 0.2f);
-
-        var background = cellBtn.GetComponent<Image>();
-        background.color = NormalCellColor;
-        _cellBackgrounds.Add(background);
+        var layout = _gridRoot.GetComponent<GridLayoutGroup>();
+        if (layout == null) { Debug.LogError("[OpponentSelectionController] OpponentSelection.prefab Grid has no GridLayoutGroup."); return; }
+        int columns = layout.constraint == GridLayoutGroup.Constraint.FixedColumnCount ? Mathf.Max(1, layout.constraintCount) : Mathf.Max(1, count);
+        int rows = Mathf.Max(1, Mathf.CeilToInt(count / (float)columns));
+        _gridRoot.sizeDelta = new Vector2(columns * layout.cellSize.x + (columns - 1) * layout.spacing.x + layout.padding.horizontal,
+                                          rows * layout.cellSize.y + (rows - 1) * layout.spacing.y + layout.padding.vertical);
     }
 
     // ── Show / hide ───────────────────────────────────────────────────────────────
-
-    private void BuildSkipButton()
-    {
-        _skipButton = UIFactory.CreateButton("SkipButton", _root, Loc.Get("OpponentSelection.Skip"), out var label); Loc.Track(label, "OpponentSelection.Skip");
-        UIFactory.SetBox(_skipButton.GetComponent<RectTransform>(), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f),
-            new Vector2(-40f, 40f), new Vector2(170f, 50f));
-        _skipButton.onClick.AddListener(() => _skipRequested = true);
-        _skipButton.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
-        label.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-    }
 
     private void Show()
     {
@@ -400,13 +325,13 @@ public class OpponentSelectionController : MonoBehaviour
     private void HighlightOnly(int index)
     {
         Color accent = CurrentAccentColor();
-        Color highlighted = new(accent.r, accent.g, accent.b, 0.55f);
+        Color highlighted = new(accent.r, accent.g, accent.b, _view.highlightAlpha);
         for (int i = 0; i < _cellBackgrounds.Count; i++)
-            _cellBackgrounds[i].color = i == index ? highlighted : NormalCellColor;
+            if (_cellBackgrounds[i] != null) _cellBackgrounds[i].color = i == index ? highlighted : _view.normalCellColor;
     }
 
-    private static Color CurrentAccentColor() =>
+    private Color CurrentAccentColor() =>
         ThemeManager.Instance != null && ThemeManager.Instance.CurrentTheme != null && ThemeManager.Instance.CurrentTheme.UI != null
             ? ThemeManager.Instance.CurrentTheme.UI.accentColor
-            : new Color(0.18f, 0.75f, 0.95f);
+            : _view.fallbackAccentColor;
 }

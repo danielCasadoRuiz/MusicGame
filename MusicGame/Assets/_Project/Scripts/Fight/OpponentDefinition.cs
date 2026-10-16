@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 /// <summary>
 /// A single Fight rival's IDENTITY — id (stable, used by selection history/saves) and displayName
@@ -28,6 +30,12 @@ public class OpponentDefinition : ScriptableObject
 
     /// <summary>Localization key of this composer's biography (UIText table).</summary>
     public string BiographyKey => string.IsNullOrEmpty(biographyKey) ? $"Composer.{id}.Bio" : biographyKey;
+
+    [Header("Fight arenas (shared by every version of this composer)")]
+    [Tooltip("Possible fight arenas (Addressable prefabs, one bundle each — Art/Arenas/<Composer>/). One is picked at " +
+             "random when this composer's fight is confirmed, avoiding the previous one; only that one is downloaded. " +
+             "Add entries freely. Empty = FightArenaConfig.defaultArena / placeholder floor.")]
+    public List<AssetReferenceGameObject> arenas = new();
 
     [Tooltip("One entry per PROGRESSION TIER this opponent has content for (entry.level = tier, " +
              "1-based). Entries may share the same assets. Extensible from the Inspector — " +

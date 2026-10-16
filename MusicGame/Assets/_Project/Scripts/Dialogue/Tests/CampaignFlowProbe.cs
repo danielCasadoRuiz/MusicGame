@@ -121,7 +121,7 @@ public class CampaignFlowProbe : MonoBehaviour
         Check(RunAssignment.ResolveContinue(catalog, out _) == NextSongStatus.LapFinished, "CONTINUE with the lap over → LapFinished (Main Menu offers a new lap)");
         Log($"music cycle now {P.SongCycle.cycle} ({(cycleRenewed ? "renewed during the lap" : "not renewed")})");
 
-        var popup = CampaignPopup.Create("ProbePopup");
+        var popup = CampaignPopup.Spawn("ProbePopup");
         popup.Show(Loc.Get("Campaign.CompletedTitle"), Loc.Get("Campaign.CompletedBody"), CampaignService.Boss.LevelConfig(0)?.portrait, Color.black,
                    Loc.Get("Campaign.NewLap"), null, Loc.Get("Campaign.Later"), null);
         yield return Screenshot("popup_completed");
@@ -153,9 +153,6 @@ public class CampaignFlowProbe : MonoBehaviour
         CampaignService.MarkShown(CampaignService.Notice.BossUnlocked);
 
         // ── 8. The three final fights (real flow, boss path: no roulette) ──
-        var testArena = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        testArena.name = "TestArena"; testArena.transform.localScale = new Vector3(8f, 0.1f, 4f); testArena.SetActive(false);
-        CampaignService.Boss.stages[1].arenaPrefab = testArena; // runtime-only: stage 2 uses a custom arena
         Check(CampaignService.PrepareBossStage(CampaignService.NextBossStage), "challenge prepared at stage 1");
         flow.RequestState(FightFlowState.OpponentSelection);
         yield return Until(() => flow.CurrentState == FightFlowState.VersusIntro, 5f);
@@ -163,9 +160,8 @@ public class CampaignFlowProbe : MonoBehaviour
         for (int stage = 0; stage < 3; stage++)
         {
             if (stage > 0) Check(flow.CurrentState == FightFlowState.VersusIntro, $"Continue → final fight {stage + 1}");
-            bool customArena = GameObject.Find("ArenaEnvironment_TestArena") != null;
-            Check(customArena == (stage == 1) && (GameObject.Find("ArenaFloorPlaceholder")?.activeSelf ?? false) == (stage != 1),
-                  $"stage {stage + 1}: arena = {(stage == 1 ? "custom environment" : "placeholder floor")}, no duplicates ({GameObject.FindObjectsByType<Transform>(FindObjectsSortMode.None).Count(t => t.name.StartsWith("ArenaEnvironment_"))} env)");
+            Check(FightSceneBootstrap.Instance.StageReady && FindObjectsByType<ArenaEnvironment>(FindObjectsSortMode.None).Length <= 1,
+                  $"stage {stage + 1}: stage ready, at most one arena instance");
             yield return PlayFight(flow, true, alreadyInVersus: true);
             var bc = CampaignService.LastCombat;
             Check(bc.Boss && bc.BossStage == stage && P.IsDefeated(CampaignService.Boss.opponent.id, CampaignService.Boss.Stage(stage).opponentLevel), $"final fight {stage + 1} won → card v{CampaignService.Boss.Stage(stage).opponentLevel}");
@@ -175,7 +171,6 @@ public class CampaignFlowProbe : MonoBehaviour
         }
         Check(data.boss.finalDefeated && CampaignService.PendingNotice() == CampaignService.Notice.Finale, "three in order → final rival defeated, finale pending");
         Check(data.boss.sealGranted == CampaignModel.SealEarned(data.boss, CampaignService.Boss), "seal granted exactly when every stage best is 5★");
-        Check(GameObject.Find("ArenaEnvironment_TestArena") == null, "custom arena released after its stage");
 
         collection.Open();
         yield return null; yield return null;

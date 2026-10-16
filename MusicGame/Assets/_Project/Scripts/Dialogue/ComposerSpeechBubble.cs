@@ -34,12 +34,22 @@ public class ComposerSpeechBubble : MonoBehaviour
                            Gap = c.bubbleGapAboveHead, CenterBand = c.bubbleCountdownBand };
     }
 
-    private const float PadX = 26f, PadTop = 16f, PadBottom = 20f, Spacing = 4f, MinWidth = 240f, TailSize = 22f;
+    [Header("Prefab parts (Prefabs/UI/Components/ComposerSpeechBubble.prefab)")]
+    [SerializeField] private RectTransform _bubble;
+    [SerializeField] private RectTransform _tail;
+    [SerializeField] private CanvasGroup   _group;
+    [SerializeField] private TextMeshProUGUI _name;
+    [SerializeField] private TextMeshProUGUI _body;
+    [SerializeField] private TypewriterText  _typewriter;
+    [Header("Inner layout (canvas units)")]
+    [SerializeField] private float PadX = 26f;
+    [SerializeField] private float PadTop = 16f;
+    [SerializeField] private float PadBottom = 20f;
+    [SerializeField] private float Spacing = 4f;
+    [SerializeField] private float MinWidth = 240f;
+    [SerializeField] private float TailSize = 22f;
 
-    private RectTransform   _canvasRect, _bubble, _tail;
-    private CanvasGroup     _group;
-    private TextMeshProUGUI _name, _body;
-    private TypewriterText  _typewriter;
+    private RectTransform   _canvasRect;
     private Layout          _layout;
     private Vector2         _size;
     private Vector2         _smoothed;
@@ -59,56 +69,26 @@ public class ComposerSpeechBubble : MonoBehaviour
     public bool TailVisible => _tail != null && _tail.gameObject.activeSelf;
     public Func<bool> IsPaused { set { if (_typewriter != null) _typewriter.IsPaused = value; } }
 
-    // ── Build ────────────────────────────────────────────────────────────────────
+    // ── Spawn ────────────────────────────────────────────────────────────────────
 
-    public static ComposerSpeechBubble Create(RectTransform rootCanvas, FightFlowConfig config)
+    /// <summary>Instantiates the library's ComposerSpeechBubble prefab on the root canvas (hidden). Placement
+    /// limits come from FightFlowConfig (gameplay tuning); the bubble's look from the prefab.</summary>
+    public static ComposerSpeechBubble Spawn(RectTransform rootCanvas, FightFlowConfig config)
     {
-        var root = UIFactory.CreateRect("ComposerSpeechBubble", rootCanvas);
-        UIFactory.Stretch(root);
-        var canvas = root.gameObject.AddComponent<Canvas>();
-        canvas.overrideSorting = true;
-        canvas.sortingOrder = 150; // above the RoundIntro curtain + HUD; no raycaster: never takes input
-        var bubble = root.gameObject.AddComponent<ComposerSpeechBubble>();
+        var bubble = UIPrefabLibrarySO.Spawn(UIPrefabLibrarySO.Instance != null ? UIPrefabLibrarySO.Instance.speechBubble : null, rootCanvas, "ComposerSpeechBubble");
+        if (bubble == null) return null;
+        var rt = (RectTransform)bubble.transform;
+        UIFactory.Stretch(rt);
         bubble._canvasRect = rootCanvas;
         bubble._layout = Layout.From(config);
-        bubble._group = root.gameObject.AddComponent<CanvasGroup>();
-        bubble._group.interactable = false;
-        bubble._group.blocksRaycasts = false;
-
-        var body = UIFactory.CreatePanel("Bubble", root, new Color(0.07f, 0.07f, 0.09f, 0.94f));
-        body.raycastTarget = false;
-        bubble._bubble = body.rectTransform;
-        bubble._bubble.anchorMin = bubble._bubble.anchorMax = new Vector2(0.5f, 0.5f);
-        bubble._bubble.pivot = new Vector2(0.5f, 0f);
-        var outline = body.gameObject.AddComponent<Outline>();
-        outline.effectColor = new Color(1f, 0.82f, 0.35f, 0.85f);
-        outline.effectDistance = new Vector2(2f, -2f);
-
-        // Tail: a rotated square half-hidden under the bubble's bottom edge.
-        var tail = UIFactory.CreatePanel("Tail", root, new Color(0.07f, 0.07f, 0.09f, 0.94f));
-        tail.raycastTarget = false;
-        bubble._tail = tail.rectTransform;
-        bubble._tail.anchorMin = bubble._tail.anchorMax = new Vector2(0.5f, 0.5f);
-        bubble._tail.pivot = new Vector2(0.5f, 0.5f);
-        bubble._tail.sizeDelta = new Vector2(TailSize, TailSize);
-        bubble._tail.localRotation = Quaternion.Euler(0f, 0f, 45f);
-        bubble._tail.SetAsFirstSibling();
-
-        bubble._name = UIFactory.CreateText("Speaker", bubble._bubble, "", 24, new Color(1f, 0.82f, 0.35f), TextAlignmentOptions.TopLeft, FontStyles.Bold);
-        bubble._name.raycastTarget = false;
-        bubble._body = UIFactory.CreateText("Line", bubble._bubble, "", 30, Color.white, TextAlignmentOptions.TopLeft);
-        bubble._body.enableWordWrapping = true;
-        bubble._body.overflowMode = TextOverflowModes.Overflow;
-        bubble._body.raycastTarget = false;
-        foreach (var t in new[] { bubble._name.rectTransform, bubble._body.rectTransform })
-        {
-            t.anchorMin = t.anchorMax = new Vector2(0f, 1f);
-            t.pivot = new Vector2(0f, 1f);
-        }
-        bubble._typewriter = bubble._body.gameObject.AddComponent<TypewriterText>();
-
-        root.gameObject.SetActive(false);
+        bubble.gameObject.SetActive(false);
         return bubble;
+    }
+
+    /// <summary>Editor builder hook.</summary>
+    public void Bind(RectTransform bubble, RectTransform tail, CanvasGroup group, TextMeshProUGUI speaker, TextMeshProUGUI body, TypewriterText typewriter)
+    {
+        _bubble = bubble; _tail = tail; _group = group; _name = speaker; _body = body; _typewriter = typewriter;
     }
 
     // ── Content ──────────────────────────────────────────────────────────────────
@@ -116,6 +96,9 @@ public class ComposerSpeechBubble : MonoBehaviour
     /// <summary>Shows the bubble (instantly opaque) and starts revealing `text`.</summary>
     public void Show(string speaker, string text, float charsPerSecond, float punctuationPause)
     {
+        // Spawn sets these; a bubble placed by hand in a scene/prefab falls back to its parent canvas + defaults.
+        if (_canvasRect == null) _canvasRect = transform.parent as RectTransform;
+        if (_layout.MaxWidth <= 0f) _layout = Layout.From(null);
         CancelFade();
         _group.alpha = 1f;
         _name.text = speaker ?? "";

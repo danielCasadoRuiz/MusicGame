@@ -23,15 +23,15 @@ using UnityEngine.UI;
 /// Everything is one Update-driven timeline with one cancellation (StopIntro), so nothing stale can
 /// move the camera, show a bubble or request a transition after leaving Fight / Fight Again.
 ///
-/// Never touches the music (FightMusicController keeps playing). Prefers VersusScreen.prefab (UIRegistry);
-/// procedural fallback otherwise — either way its dim is turned into a plain, configurable light veil.
+/// Never touches the music (FightMusicController keeps playing). Structure and look: VersusScreen.prefab
+/// (UIPrefabLibrarySO.versusScreen), instantiated once in Awake — its backdrop is turned into a plain,
+/// configurable light veil here. A missing prefab is logged by UIPrefabLibrarySO.Spawn — no fallback.
 /// </summary>
 public class VersusScreenController : MonoBehaviour
 {
-    private static readonly Color PlaceholderPortraitColor = new(1f, 1f, 1f, 0.2f);
-
     private enum Step { Inactive, WaitingForStage, Presenting, Countdown }
 
+    private VersusScreenView _view;
     private RectTransform    _root;
     private CanvasGroup      _cardGroup;
     private Image            _backdrop;
@@ -59,18 +59,29 @@ public class VersusScreenController : MonoBehaviour
         _config = appConfig != null ? appConfig.fightFlow : null;
         _cameraConfig = appConfig != null ? appConfig.fightCamera : null;
 
-        var registry = FindFirstObjectByType<UIRegistry>();
-        if (registry != null && registry.VersusScreen != null) WireUI(registry.VersusScreen);
-        else Build();
+        var lib = UIPrefabLibrarySO.Instance;
+        _view = UIPrefabLibrarySO.Spawn(lib != null ? lib.versusScreen : null, UIFactory.RootCanvas(), "VersusScreen");
+        if (_view == null) { enabled = false; return; }
+        UIFactory.Stretch((RectTransform)_view.transform);
+        WireUI(_view);
+        if (_cardGroup == null)
+        {
+            Debug.LogError("[VersusScreenController] VersusScreen.prefab: cardGroup (CanvasGroup) not assigned.");
+            enabled = false;
+            return;
+        }
         MakeBackdropLight();
-        _cardGroup = _root.gameObject.GetComponent<CanvasGroup>();
-        if (_cardGroup == null) _cardGroup = _root.gameObject.AddComponent<CanvasGroup>();
         _cardGroup.blocksRaycasts = false; // the arena presentation never eats clicks; Skip is its own button
 
-        // Built at runtime (prefab or fallback alike), so regenerating VersusScreen.prefab never removes them.
-        _dialogue = new ComposerDialoguePresentation(ComposerSpeechBubble.Create(UIFactory.RootCanvas(), _config), _config);
-        _skip = FightPresentationSkip.Create("VersusSkipButton");
+        // Separate component prefabs (speech bubble, skip button), spawned after the card as before.
+        _dialogue = new ComposerDialoguePresentation(ComposerSpeechBubble.Spawn(UIFactory.RootCanvas(), _config), _config);
+        _skip = FightPresentationSkip.Spawn("VersusSkipButton");
         _root.gameObject.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
+        if (_view != null) Destroy(_view.gameObject);
     }
 
     private void OnEnable()
@@ -81,7 +92,7 @@ public class VersusScreenController : MonoBehaviour
             {
                 case FightFlowState.VersusIntro:  BeginIntro(); break;
                 case FightFlowState.RoundIntro:
-                case FightFlowState.Countdown:    if (_dialogue != null) _dialogue.Bubble.AvoidCenterBand = true; break;
+                case FightFlowState.Countdown:    if (_dialogue?.Bubble != null) _dialogue.Bubble.AvoidCenterBand = true; break;
                 case FightFlowState.Fighting:     FadeBubble(); break;
                 default:                          StopIntro(); break; // OpponentSelection, RoundEnd, results…
             }
@@ -105,58 +116,22 @@ public class VersusScreenController : MonoBehaviour
         StopIntro(); // a disabled screen never advances the flow from a stale sequence
     }
 
-    // ── Prefab path — see VersusScreenView's own doc ─────────────────────────────
+    // ── Prefab wiring — see VersusScreenView's own doc ───────────────────────────
 
     private void WireUI(VersusScreenView view)
     {
         _root             = view.root.GetComponent<RectTransform>();
+        _cardGroup        = view.cardGroup;
+        _backdrop         = view.backdrop;
         _playerPortrait   = view.playerPortrait;
         _playerNameText   = view.playerNameText;
         _vsText           = view.vsText;
         _opponentPortrait = view.opponentPortrait;
         _opponentNameText = view.opponentNameText;
-        var dim = _root.Find("Dim");
-        _backdrop = dim != null ? dim.GetComponent<Image>() : null;
-
-        Loc.Set(view.vsText, "Fight.Versus");
     }
 
-    // ── Build (procedural fallback — no UIRegistry in the scene yet) ─────────────
-
-    private void Build()
-    {
-        var canvas = UIFactory.RootCanvas();
-        _root = UIFactory.CreateRect("VersusScreen", canvas);
-        UIFactory.Stretch(_root);
-
-        _backdrop = UIFactory.CreatePanel("Dim", _root, new Color(0f, 0f, 0f, 0f));
-        UIFactory.Stretch(_backdrop.rectTransform);
-
-        (_playerPortrait, _playerNameText)     = BuildSide("Player",   new Vector2(0.25f, 0.5f));
-        (_opponentPortrait, _opponentNameText) = BuildSide("Opponent", new Vector2(0.75f, 0.5f));
-
-        _vsText = Loc.Track(UIFactory.CreateText("VS", _root, Loc.Get("Fight.Versus"), 72, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "Fight.Versus");
-        UIFactory.SetBox(_vsText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(300f, 150f));
-        _vsText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
-    }
-
-    // anchor.x picks left/right half of the screen; portrait sits above its name, both centered
-    // on that anchor.
-    private (Image portrait, TextMeshProUGUI nameText) BuildSide(string label, Vector2 anchor)
-    {
-        var portraitRt = UIFactory.CreateRect(label + "Portrait", _root);
-        var portrait = portraitRt.gameObject.AddComponent<Image>();
-        UIFactory.SetBox(portraitRt, anchor, anchor, new Vector2(0.5f, 0.5f), new Vector2(0f, 40f), new Vector2(280f, 280f));
-
-        var nameText = UIFactory.CreateText(label + "Name", _root, "", 24, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
-        UIFactory.SetBox(nameText.rectTransform, anchor, anchor, new Vector2(0.5f, 0.5f), new Vector2(0f, -130f), new Vector2(320f, 40f));
-        nameText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-
-        return (portrait, nameText);
-    }
-
-    /// <summary>The baked prefab's Dim is an opaque, theme-tinted screen: make it a plain veil whose
-    /// alpha is FightFlowConfig.versusBackdropAlpha (the theme receiver would re-tint it opaque).</summary>
+    /// <summary>Makes the prefab's Dim a plain veil whose alpha is FightFlowConfig.versusBackdropAlpha (a
+    /// theme receiver, if one was added to it by hand, would re-tint it opaque — removed).</summary>
     private void MakeBackdropLight()
     {
         if (_backdrop == null) return;
@@ -189,7 +164,7 @@ public class VersusScreenController : MonoBehaviour
                         () => ComposerAnchor.Resolve(bootstrap != null ? bootstrap.OpponentActor : null, above),
                         displayAllowed: false,
                         version: GameSession.Instance?.SelectedOpponentLevelConfig != null ? GameSession.Instance.SelectedOpponentLevelConfig.level : 0);
-        _skip.Show(SkipIntro);
+        _skip?.Show(SkipIntro);
     }
 
     private void Update()
@@ -203,7 +178,7 @@ public class VersusScreenController : MonoBehaviour
         {
             _stageWait += dt;
             float cap = _config != null ? _config.presentationReadyTimeoutSeconds : 4f;
-            bool ready = bootstrap != null && bootstrap.OpponentVisualReady;
+            bool ready = bootstrap != null && bootstrap.StageReady; // rival visual + arena loaded
             if (!ready && _stageWait < cap) return;
             if (!ready) Debug.LogWarning($"[VersusScreenController] Rival not on stage after {cap:0.#}s — starting the presentation anyway.");
             cam?.BeginIntroTravelling(_cameraConfig != null ? _cameraConfig.introTravellingSeconds : 3f);
@@ -257,9 +232,9 @@ public class VersusScreenController : MonoBehaviour
         if (_advanceRequested) return;
         _advanceRequested = true;
         _step = Step.Countdown;
-        _skip.Hide();               // the countdown itself is not skippable
+        _skip?.Hide();               // the countdown itself is not skippable
         _dialogue.Freeze();         // line stays as it is (no late load, no timers) until Fighting
-        _dialogue.Bubble.AvoidCenterBand = true;
+        if (_dialogue.Bubble != null) _dialogue.Bubble.AvoidCenterBand = true;
         var flow = FightFlowController.Instance;
         if (flow != null && flow.CurrentState == FightFlowState.VersusIntro) flow.RequestState(FightFlowState.RoundIntro);
     }
@@ -267,7 +242,7 @@ public class VersusScreenController : MonoBehaviour
     private void FadeBubble()
     {
         _step = Step.Inactive;
-        _skip.Hide();
+        _skip?.Hide();
         _dialogue?.FadeOut(_config != null ? _config.dialogueBubbleFadeSeconds : 0.35f);
     }
 
@@ -288,7 +263,7 @@ public class VersusScreenController : MonoBehaviour
         Loc.Set(_playerNameText, "Fight.PlayerName");
         // No real player portrait yet — a clean neutral placeholder box, not a 3D-model dependency.
         _playerPortrait.sprite = null;
-        _playerPortrait.color  = PlaceholderPortraitColor;
+        _playerPortrait.color  = _view.placeholderPortraitColor;
 
         var opponent = GameSession.Instance?.SelectedOpponent;
         _opponentNameText.text = opponent != null ? opponent.displayName : Loc.Get("Fight.RivalUnknown");
@@ -296,7 +271,7 @@ public class VersusScreenController : MonoBehaviour
         // always matches what the roulette just showed.
         _opponentPortrait.sprite = GameSession.Instance?.SelectedOpponentLevelConfig?.portrait;
         _opponentPortrait.preserveAspect = true; // portraits are tall cut-outs, the slot is square
-        _opponentPortrait.color  = _opponentPortrait.sprite != null ? Color.white : PlaceholderPortraitColor;
+        _opponentPortrait.color  = _opponentPortrait.sprite != null ? Color.white : _view.placeholderPortraitColor;
     }
 
     /// <summary>Re-applies this screen's localized texts (language changed while it is up).</summary>

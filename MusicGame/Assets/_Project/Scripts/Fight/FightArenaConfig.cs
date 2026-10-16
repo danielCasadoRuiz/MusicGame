@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 /// <summary>
 /// Every physical/tunable fact about the Fight arena itself — spawn points, the main combat axis'
@@ -18,11 +19,10 @@ using UnityEngine;
 public class FightArenaConfig : ScriptableObject
 {
     [Header("Arena environment (visual only — see FightSceneBootstrap.ApplyArenaEnvironment)")]
-    [Tooltip("Default arena for normal campaign matches: floor, decor, background and its own lights. " +
-             "Empty = the grey placeholder floor. Spawns, bounds and the fight camera stay owned by this config / " +
-             "the bootstrap, so any prefab must be authored around the origin within the bounds below. " +
-             "Final-rival stages use FinalBossStage.arenaPrefab instead (same or different prefabs).")]
-    public GameObject defaultEnvironmentPrefab;
+    [Tooltip("Arena used when the rival has no OpponentDefinition.arenas (final-rival stages use FinalBossStage.arena). " +
+             "Empty = the grey placeholder floor. Spawns, bounds and the fight camera stay owned by this config / the " +
+             "bootstrap: arenas are authored around the origin (see ArenaEnvironment / Art/Arenas/_Base).")]
+    public AssetReferenceGameObject defaultArena;
 
     [Header("Spawn points")]
     public Vector3 playerSpawnPosition = new Vector3(-1.5f, 1f, 0f);

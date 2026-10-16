@@ -39,8 +39,8 @@ public class MatchFarewellController : MonoBehaviour
     {
         var appConfig = Resources.Load<AppConfigSO>("AppConfig");
         _config = appConfig != null ? appConfig.fightFlow : null;
-        _dialogue = new ComposerDialoguePresentation(ComposerSpeechBubble.Create(UIFactory.RootCanvas(), _config), _config);
-        _skip = FightPresentationSkip.Create("FarewellSkipButton");
+        _dialogue = new ComposerDialoguePresentation(ComposerSpeechBubble.Spawn(UIFactory.RootCanvas(), _config), _config);
+        _skip = FightPresentationSkip.Spawn("FarewellSkipButton");
     }
 
     private void OnEnable()
@@ -81,7 +81,7 @@ public class MatchFarewellController : MonoBehaviour
                         () => ComposerAnchor.Resolve(bootstrap != null ? bootstrap.OpponentActor : null, above),
                         displayAllowed: _leadIn <= 0f,
                         version: GameSession.Instance?.SelectedOpponentLevelConfig != null ? GameSession.Instance.SelectedOpponentLevelConfig.level : 0);
-        _skip.Show(Skip);
+        _skip?.Show(Skip);
     }
 
     private void Update()
@@ -108,8 +108,8 @@ public class MatchFarewellController : MonoBehaviour
     {
         if (_finishing) return;
         _finishing = true;
-        _skip.Hide();
-        float seconds = fade && _dialogue.Bubble.IsVisible && _config != null ? _config.dialogueBubbleFadeSeconds : 0f;
+        _skip?.Hide();
+        float seconds = fade && _dialogue.Bubble != null && _dialogue.Bubble.IsVisible && _config != null ? _config.dialogueBubbleFadeSeconds : 0f;
         _dialogue.FadeOut(seconds, Complete);
     }
 

@@ -20,6 +20,8 @@ public class AppConfigSO : ScriptableObject
     public CampaignConfigSO    campaign;
     [Tooltip("Evaluation (stars) scale, thresholds and weights for runner and combat.")]
     public EvaluationConfigSO  evaluation;
+    [Tooltip("Editable UI prefabs the controllers instantiate (Tools > MusicGame > UI > Build Component Prefabs).")]
+    public UIPrefabLibrarySO   uiPrefabs;
     public FightArenaConfig    arena;
     public FightCameraConfig   fightCamera;
     public FightCombatBalanceConfig combatBalance;

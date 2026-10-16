@@ -47,7 +47,7 @@ public sealed class ComposerDialoguePresentation
     {
         _bubble = bubble;
         _config = config;
-        _bubble.IsPaused = () => FightController.IsPaused;
+        if (_bubble != null) _bubble.IsPaused = () => FightController.IsPaused;
     }
 
     private float CharsPerSecond => _config != null ? _config.dialogueCharactersPerSecond : 40f;
@@ -61,6 +61,7 @@ public sealed class ComposerDialoguePresentation
     public void Begin(OpponentDefinition opponent, ComposerDialogueCategory category, Func<Vector3?> anchor, bool displayAllowed = true, int version = 0)
     {
         Cancel();
+        if (_bubble == null) { CurrentPhase = Phase.Unavailable; return; } // no bubble prefab: logged by Spawn; never blocks the flow
         _bubble.AnchorProvider = anchor;
         _bubble.AvoidCenterBand = false;
         if ((_config != null && !_config.composerDialoguesEnabled) || opponent == null || string.IsNullOrEmpty(opponent.id))
@@ -145,6 +146,7 @@ public sealed class ComposerDialoguePresentation
     {
         int token = _token;
         StopLoading();
+        if (_bubble == null) { Reset(); done?.Invoke(); return; }
         _bubble.FadeOut(seconds, () =>
         {
             if (token == _token) Reset();

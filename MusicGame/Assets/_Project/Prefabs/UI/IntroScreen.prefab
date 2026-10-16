@@ -143,15 +143,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6154318631435424839}
-  - component: {fileID: 6421948091815579836}
   - component: {fileID: 3103656141733063448}
+  - component: {fileID: 6421948091815579836}
   m_Layer: 0
   m_Name: IntroScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6154318631435424839
 RectTransform:
   m_ObjectHideFlags: 0
@@ -173,6 +173,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &3103656141733063448
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4770948200825780886}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &6421948091815579836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,18 +201,6 @@ MonoBehaviour:
   canvasGroup: {fileID: 3103656141733063448}
   skipButton: {fileID: 4299220461588754031}
   titleText: {fileID: 1113723951980674924}
---- !u!225 &3103656141733063448
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4770948200825780886}
-  m_Enabled: 1
-  m_Alpha: 0
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
 --- !u!1 &9093049311103160737
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,6 +212,7 @@ GameObject:
   - component: {fileID: 1551115728321383040}
   - component: {fileID: 2186620698608177795}
   - component: {fileID: 1113723951980674924}
+  - component: {fileID: 8013302707909508745}
   - component: {fileID: 5358198920849472709}
   m_Layer: 0
   m_Name: Title
@@ -339,6 +340,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8013302707909508745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9093049311103160737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d9fa60cc072d8542aa7585b8cc5a99f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: Intro.Title
 --- !u!114 &5358198920849472709
 MonoBehaviour:
   m_ObjectHideFlags: 0

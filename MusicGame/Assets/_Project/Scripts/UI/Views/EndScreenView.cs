@@ -10,8 +10,9 @@ using UnityEngine.UI;
 /// to the right child objects, GameplayHUD keeps working unchanged.
 ///
 /// performanceRowsContainer is the one part still populated dynamically (RESULTS rows depend on
-/// which ring types this particular song's timeline actually generated) — GameplayHUD instantiates
-/// a row per type into this container each time the results screen is shown.
+/// which ring types this particular song's timeline actually generated) — GameplayHUD spawns a
+/// RunnerPerformanceRow item prefab (UIPrefabLibrarySO.runnerPerformanceRow) per type into this
+/// container each time the results screen is shown.
 /// </summary>
 public class EndScreenView : MonoBehaviour
 {
@@ -36,4 +37,7 @@ public class EndScreenView : MonoBehaviour
     public TextMeshProUGUI restartButtonLabel;
     public Button continueButton;
     public TextMeshProUGUI continueButtonLabel;
+
+    [Header("Run resources box (this run's score / lives / specials / XP, right of the panel)")]
+    public TextMeshProUGUI runSummaryText;
 }

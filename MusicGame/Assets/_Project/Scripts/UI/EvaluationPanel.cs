@@ -1,47 +1,36 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
-/// Provisional, functional results block: a vertical list of rows, each a text line with an optional
-/// StarRatingView on its right. Rebuilt per Show (Clear + Add*) — used by the runner end screen, the
-/// match result screen and the Progression detail. Text goes through Loc where it is UI text.
-///
-/// LAYOUT is Unity's own (VerticalLayoutGroup + ContentSizeFitter on the panel, HorizontalLayoutGroup per
-/// row): a line that wraps simply makes its row taller, and the panel grows with its rows. Nothing is
-/// measured by hand, so building the panel while its screen is still hidden is fine — Unity lays it out
-/// when it is shown.
+/// Results block (runner end screen, match result, Progression detail): prefab
+/// Prefabs/UI/Components/EvaluationPanel.prefab (background + VerticalLayoutGroup + ContentSizeFitter, its
+/// default anchoring) and one prefab per ROW KIND (EvaluationRow_Header / Line / Note / Highlight /
+/// Warning / Stars / StarsSmall — font size, colour, spacing and star size live there). This class only
+/// instantiates rows and fills texts/stars; Unity's layout sizes them (a wrapped line makes its row taller),
+/// so building it while the screen is still hidden is safe.
 /// </summary>
 public class EvaluationPanel : MonoBehaviour
 {
-    private RectTransform _root;
-    private readonly List<GameObject> _rows = new();
-    private const float RowMinHeight = 30f;
-    private static readonly Vector2 StarsSize = new(22f * 5f + 3f * 4f, 22f);
+    [SerializeField] private EvaluationRowView headerRow;
+    [SerializeField] private EvaluationRowView lineRow;
+    [SerializeField] private EvaluationRowView noteRow;
+    [SerializeField] private EvaluationRowView highlightRow;
+    [SerializeField] private EvaluationRowView warningRow;
+    [SerializeField] private EvaluationRowView starsRow;
+    [SerializeField] private EvaluationRowView starsSmallRow;
 
-    public static EvaluationPanel Create(RectTransform parent, string name, float width)
+    private readonly List<GameObject> _rows = new();
+
+    public RectTransform Rect => (RectTransform)transform;
+
+    /// <summary>Instantiates the library's EvaluationPanel prefab under `parent` (its anchoring comes from the prefab).</summary>
+    public static EvaluationPanel Spawn(Transform parent, string name)
     {
-        var rt = UIFactory.CreateRect(name, parent);
-        rt.sizeDelta = new Vector2(width, 0f);
-        var bg = rt.gameObject.AddComponent<Image>();
-        bg.color = new Color(0f, 0f, 0f, 0.55f);
-        bg.raycastTarget = false;
-        var layout = rt.gameObject.AddComponent<VerticalLayoutGroup>();
-        layout.padding = new RectOffset(10, 10, 10, 10);
-        layout.spacing = 4f;
-        layout.childControlWidth = true;
-        layout.childControlHeight = true;
-        layout.childForceExpandWidth = true;
-        layout.childForceExpandHeight = false;
-        var fitter = rt.gameObject.AddComponent<ContentSizeFitter>();
-        fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize; // the width stays the given one
-        var panel = rt.gameObject.AddComponent<EvaluationPanel>();
-        panel._root = rt;
+        var panel = UIPrefabLibrarySO.Spawn(UIPrefabLibrarySO.Instance != null ? UIPrefabLibrarySO.Instance.evaluationPanel : null, parent, "EvaluationPanel");
+        if (panel != null) panel.name = name;
         return panel;
     }
-
-    public RectTransform Rect => _root;
 
     public void Clear()
     {
@@ -50,39 +39,30 @@ public class EvaluationPanel : MonoBehaviour
         _rows.Clear();
     }
 
-    public void AddHeader(string text, Color? color = null) => AddRow(text, -2, 20, color ?? new Color(1f, 0.82f, 0.35f), FontStyles.Bold);
-
-    public void AddLine(string text, int fontSize = 16, Color? color = null) => AddRow(text, -2, fontSize, color ?? Color.white, FontStyles.Normal);
-
+    public void AddHeader(string text) => Add(headerRow, "Header", text, -2);
+    public void AddLine(string text) => Add(lineRow, "Line", text, -2);
+    /// <summary>Small secondary text (metric breakdown, explanations).</summary>
+    public void AddNote(string text) => Add(noteRow, "Note", text, -2);
+    /// <summary>Emphasised line (new record, mastered, level completed…).</summary>
+    public void AddHighlight(string text) => Add(highlightRow, "Highlight", text, -2);
+    public void AddWarning(string text) => Add(warningRow, "Warning", text, -2);
     /// <summary>A line with stars (halfStars -1 = pending).</summary>
-    public void AddStars(string text, int halfStars, int fontSize = 16) => AddRow(text, halfStars, fontSize, Color.white, FontStyles.Normal);
+    public void AddStars(string text, int halfStars) => Add(starsRow, "Stars", text, halfStars);
+    public void AddStarsSmall(string text, int halfStars) => Add(starsSmallRow, "StarsSmall", text, halfStars);
 
-    private void AddRow(string text, int halfStars, int fontSize, Color color, FontStyles style)
+    private void Add(EvaluationRowView prefab, string kind, string text, int halfStars)
     {
-        var row = UIFactory.CreateRect("Row", _root);
-        var h = row.gameObject.AddComponent<HorizontalLayoutGroup>();
-        h.spacing = 10f;
-        h.childAlignment = TextAnchor.MiddleLeft;
-        h.childControlWidth = true;
-        h.childControlHeight = true;
-        h.childForceExpandWidth = false;
-        h.childForceExpandHeight = false;
-        row.gameObject.AddComponent<LayoutElement>().minHeight = Mathf.Max(RowMinHeight, fontSize + 10f);
-
-        var label = UIFactory.CreateText("Label", row, text, fontSize, color, TextAlignmentOptions.MidlineLeft, style);
-        label.enableWordWrapping = true;
-        label.raycastTarget = false;
-        label.gameObject.AddComponent<LayoutElement>().flexibleWidth = 1f; // takes the rest of the row and wraps inside it
-
-        if (halfStars >= -1)
-        {
-            var view = StarRatingView.Create(row, 22f, 3f);
-            var le = view.gameObject.AddComponent<LayoutElement>();
-            le.minWidth = le.preferredWidth = StarsSize.x;
-            le.minHeight = le.preferredHeight = StarsSize.y;
-            view.SetHalfStars(halfStars);
-        }
+        if (string.IsNullOrEmpty(text) && halfStars < -1) return;
+        if (prefab == null) { Debug.LogError($"[EvaluationPanel] '{name}': row prefab '{kind}' not assigned."); return; }
+        var row = Instantiate(prefab, transform, false);
+        row.Set(text, halfStars);
         _rows.Add(row.gameObject);
+    }
+
+    public void BindRows(EvaluationRowView header, EvaluationRowView line, EvaluationRowView note, EvaluationRowView highlight,
+                         EvaluationRowView warning, EvaluationRowView stars, EvaluationRowView starsSmall)
+    {
+        headerRow = header; lineRow = line; noteRow = note; highlightRow = highlight; warningRow = warning; starsRow = stars; starsSmallRow = starsSmall;
     }
 
     // ── Shared text helpers ──────────────────────────────────────────────────────

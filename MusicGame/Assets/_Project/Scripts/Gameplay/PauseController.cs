@@ -4,8 +4,11 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
-/// Basic pause menu: RESUME and RESTART SONG only. Built with uGUI (Canvas/Button via
-/// UIFactory) — real Button components instead of IMGUI's GUI.Button, which is what let the
+/// Basic pause menu: RESUME, RESTART SONG and MAIN MENU, plus the live Pause and First/Third Person
+/// buttons. The UI is the PauseMenu.prefab instance in Runner.unity (handed over by GameplayManager
+/// from the scene's UIRegistry) — this class only wires PauseView and toggles visibility; it never
+/// builds UI. A missing view is logged as an error and the menu simply stays off (no procedural
+/// fallback). Real uGUI Button components instead of IMGUI's GUI.Button, which is what let the
 /// old Restart button's click occasionally get eaten (GUIUtility.hotControl left stuck when a
 /// button's branch stopped being drawn between MouseDown and MouseUp).
 ///
@@ -35,9 +38,9 @@ public class PauseController : MonoBehaviour
 
     public bool IsPaused => _paused;
 
-    // Built from Initialize() (NOT Awake()) — Awake() fires synchronously the instant
+    // Wired from Initialize() (NOT Awake()) — Awake() fires synchronously the instant
     // GameplayManager.Awake() calls AddComponent<PauseController>(), which is BEFORE
-    // Initialize() supplies `_manager`; RefreshVisibility() (called from BuildUI) needs it.
+    // Initialize() supplies `_manager`; RefreshVisibility() (called from WireUI) needs it.
     private bool _built;
 
     public void Initialize(AudioSource audio, GameplayManager manager, PauseView view = null)
@@ -48,11 +51,11 @@ public class PauseController : MonoBehaviour
         if (_built) return;
         _built = true;
 
-        // Prefer the prefab instance (Tools > MusicGame > Build UI Prefabs) — hand-tunable in the
-        // Prefab editor. Fall back to the old procedural build only if that tool hasn't been run
-        // yet — LOUDLY, so a broken/missing wiring is never silently invisible.
+        // The prefab instance in Runner.unity (UIRegistry) — hand-tunable in the Prefab editor.
+        // No procedural fallback: a missing view is logged and the pause UI stays off (Pause/Resume
+        // logic itself still works).
         if (view != null) WireUI(view);
-        else { Debug.LogWarning("[PauseController] No PauseView wired (UIRegistry missing/empty) — building the pause menu procedurally instead."); BuildUI(); }
+        else Debug.LogError("[PauseController] No PauseView wired (UIRegistry in Runner.unity missing/empty) — the pause menu is disabled.", this);
     }
 
     // ── uGUI refs ────────────────────────────────────────────────────────────
@@ -238,12 +241,12 @@ public class PauseController : MonoBehaviour
         _cameraToggleLabel      = view.cameraToggleLabel;
         _thirdPersonIcon        = view.thirdPersonIcon;
         _firstPersonIcon        = view.firstPersonIcon;
+        // First/Third Person toggle — OUTSIDE the Runner's 44 px top bar, directly below the Pause button,
+        // right-aligned (CameraToggleButton in PauseMenu.prefab). Button and V key share ToggleView().
         if (view.cameraToggleButton != null)
             view.cameraToggleButton.onClick.AddListener(() => CameraFollow.Instance?.ToggleView());
         else
-            // The baked PauseMenu prefab lost its camera toggle (cameraToggleButton was never assigned),
-            // which is why First/Third Person disappeared from the Runner — rebuild it below the bar.
-            BuildCameraToggle(_pauseButtonRoot.parent as RectTransform);
+            Debug.LogError("[PauseController] PauseView.cameraToggleButton not assigned — run Tools > MusicGame > UI > Build All UI Prefabs (patches PauseMenu.prefab).", view);
         RefreshCameraToggleDisplay(CameraFollow.Instance != null ? CameraFollow.Instance.ViewMode : CameraViewMode.ThirdPerson);
 
         // Same reasoning as GameplayHUD's own label re-set — baked once at Editor-bake time, so
@@ -257,95 +260,14 @@ public class PauseController : MonoBehaviour
         RefreshVisibility();
     }
 
-    // Procedural fallback — no UIRegistry in the scene yet.
-    private void BuildUI()
-    {
-        var canvas = UIFactory.RootCanvas();
-
-        var pauseBtn = UIFactory.CreateButton("PauseButton", canvas, Loc.Get("Pause.PauseButton"), out var pauseLabel); Loc.Track(pauseLabel, "Pause.PauseButton");
-        UIFactory.SetBox(pauseBtn.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
-            new Vector2(-12f, -12f), new Vector2(84f, 28f));
-        pauseBtn.onClick.AddListener(Pause);
-        _pauseButtonRoot = pauseBtn.GetComponent<RectTransform>();
-        pauseBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
-        pauseLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-
-        BuildCameraToggle(canvas);
-
-        _overlayRoot = UIFactory.CreateRect("PausedOverlay", canvas);
-        UIFactory.Stretch(_overlayRoot);
-
-        var dim = UIFactory.CreatePanel("Dim", _overlayRoot, new Color(0f, 0f, 0f, 0.6f));
-        UIFactory.Stretch(dim.rectTransform);
-        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
-
-        float pw = 240f, ph = 216f; // +46 over the original 2-button height, room for MainMenu below Restart
-        var panel = UIFactory.CreatePanel("Panel", _overlayRoot, new Color(0.04f, 0.04f, 0.04f, 0.97f));
-        UIFactory.SetBox(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(pw, ph));
-        var border = panel.gameObject.AddComponent<Outline>();
-        border.effectColor    = new Color(0.15f, 0.15f, 0.15f, 1f);
-        border.effectDistance = new Vector2(3f, -3f);
-        panel.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
-
-        var content = panel.rectTransform;
-        float y = -14f;
-
-        var title = Loc.Track(UIFactory.CreateText("Title", content, Loc.Get("Pause.Title"), 18, Color.white), "Pause.Title");
-        UIFactory.StackTop(title.rectTransform, ref y, 28f, 0f);
-        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
-
-        y = -60f;
-        float btnW = pw - 40f, btnH = 34f;
-        var resumeBtn = UIFactory.CreateButton("ResumeButton", content, Loc.Get("Pause.Resume"), out var resumeLabel); Loc.Track(resumeLabel, "Pause.Resume");
-        UIFactory.SetBox(resumeBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-            new Vector2(0f, y), new Vector2(btnW, btnH));
-        resumeBtn.onClick.AddListener(Resume);
-        resumeBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
-        resumeLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
-        y -= btnH + 12f;
-
-        var restartBtn = UIFactory.CreateButton("RestartButton", content, Loc.Get("Pause.RestartSong"), out var restartLabel); Loc.Track(restartLabel, "Pause.RestartSong");
-        UIFactory.SetBox(restartBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-            new Vector2(0f, y), new Vector2(btnW, btnH));
-        restartBtn.onClick.AddListener(RestartSongFromPause);
-        restartBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
-        restartLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-        y -= btnH + 12f;
-
-        // Same exit Fight's own pause menu already offers (FightController's MainMenuButton) —
-        // Runner had no equivalent way out mid-run before this.
-        var mainMenuBtn = UIFactory.CreateButton("MainMenuButton", content, Loc.Get("Pause.MainMenu"), out var mainMenuLabel); Loc.Track(mainMenuLabel, "Pause.MainMenu");
-        UIFactory.SetBox(mainMenuBtn.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-            new Vector2(0f, y), new Vector2(btnW, btnH));
-        mainMenuBtn.onClick.AddListener(OnMainMenuClicked);
-        mainMenuBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
-        mainMenuLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-
-        RefreshVisibility();
-    }
-
     private void RefreshVisibility()
     {
+        if (_overlayRoot == null || _pauseButtonRoot == null) return; // no PauseView wired (already logged)
         _overlayRoot.gameObject.SetActive(!_ended && _paused);
 
         bool showPersistentButtons = !_ended && !_paused && _manager != null && _manager.IsRunning;
         _pauseButtonRoot.gameObject.SetActive(showPersistentButtons);
         if (_cameraToggleButtonRoot != null) _cameraToggleButtonRoot.gameObject.SetActive(showPersistentButtons);
-    }
-
-    // First/Third Person toggle — OUTSIDE the Runner's 44 px top bar, directly below it, right-aligned
-    // (its original placement). LIFE/SPECIAL stay inside the bar. Button and V key share ToggleView().
-    private void BuildCameraToggle(RectTransform parent)
-    {
-        var cameraToggleBtn = UIFactory.CreateButton("CameraToggleButton", parent, "", out _cameraToggleLabel);
-        _cameraToggleLabel.fontSize = 12;
-        UIFactory.SetBox(cameraToggleBtn.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
-            new Vector2(-12f, -46f), new Vector2(120f, 28f));
-        cameraToggleBtn.onClick.AddListener(() => CameraFollow.Instance?.ToggleView());
-        _cameraToggleButtonRoot = cameraToggleBtn.GetComponent<RectTransform>();
-        RefreshCameraToggleDisplay(CameraFollow.Instance != null ? CameraFollow.Instance.ViewMode : CameraViewMode.ThirdPerson);
-        cameraToggleBtn.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
-        _cameraToggleLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
     }
 
     /// <summary>Purely cosmetic — swaps the toggle button's icon/text to reflect the CURRENT

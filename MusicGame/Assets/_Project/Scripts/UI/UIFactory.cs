@@ -6,9 +6,10 @@ using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Minimal uGUI construction helpers — the one place that knows how to build a Text/Button/etc. at
-/// runtime, still used for screens that haven't been converted to real prefabs yet, and for
-/// dynamic, per-item content within a prefab-based screen (e.g. SongCard instances). Text is
+/// The root UI Canvas/EventSystem owner plus small uGUI construction helpers. At runtime only
+/// RootCanvas/EventSystem/Stretch/SetBox are used — every screen and list item is a prefab
+/// (UIPrefabLibrarySO). The Create* helpers are used by the editor prefab generators
+/// (Tools > MusicGame > UI > Build All UI Prefabs), never to build UI in the running game. Text is
 /// TextMeshProUGUI — this project's ONE UI text technology (Section 2 of the "UI unification"
 /// plan); nothing here builds legacy UnityEngine.UI.Text.
 ///
@@ -28,17 +29,15 @@ public static class UIFactory
     {
         if (_canvasInstance == null)
         {
-            var go = new GameObject("[UI Canvas]", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
-            _canvasInstance = go.GetComponent<Canvas>();
-            _canvasInstance.renderMode   = RenderMode.ScreenSpaceOverlay;
-            _canvasInstance.sortingOrder = 100;
+            // The canvas is a prefab too (UIPrefabLibrarySO.rootCanvas → Prefabs/UI/UIRootCanvas.prefab):
+            // render mode, sorting order and CanvasScaler reference resolution are edited there.
+            var lib = UIPrefabLibrarySO.Instance;
+            var canvas = UIPrefabLibrarySO.Spawn(lib != null ? lib.rootCanvas : null, null, "UIRootCanvas");
+            if (canvas == null) return null;
+            canvas.name = "[UI Canvas]";
+            _canvasInstance = canvas;
 
-            var scaler = go.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode         = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
-            scaler.matchWidthOrHeight  = 0.5f;
-
-            MoveToUiSceneIfLoaded(go);
+            MoveToUiSceneIfLoaded(canvas.gameObject);
             EnsureEventSystem();
         }
         return _canvasInstance.GetComponent<RectTransform>();

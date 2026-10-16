@@ -267,6 +267,7 @@ GameObject:
   - component: {fileID: 5020995068461904926}
   - component: {fileID: 865732626544706687}
   - component: {fileID: 2265411781774885879}
+  - component: {fileID: 1846673990025168534}
   - component: {fileID: 6604110821130317562}
   m_Layer: 0
   m_Name: Title
@@ -394,6 +395,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1846673990025168534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1473055960885144360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d9fa60cc072d8542aa7585b8cc5a99f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: SongSelection.Title
 --- !u!114 &6604110821130317562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -609,7 +623,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SongSelection.AmazonMusic (SongSelection.ComingSoon)
+  m_text: SongSelection.AmazonMusic
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1209,6 +1223,7 @@ GameObject:
   - component: {fileID: 4671865006473506913}
   - component: {fileID: 6147500943163138294}
   - component: {fileID: 1965421229550404160}
+  - component: {fileID: 687614933391656072}
   - component: {fileID: 4226122911930071639}
   m_Layer: 0
   m_Name: PlayYourSongButtonLabel
@@ -1336,6 +1351,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &687614933391656072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5179950480682679134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d9fa60cc072d8542aa7585b8cc5a99f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: SongSelection.PlayYourSong
 --- !u!114 &4226122911930071639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1496,6 +1524,7 @@ GameObject:
   - component: {fileID: 1083925704611159454}
   - component: {fileID: 7095694328552920569}
   - component: {fileID: 7561848107286010855}
+  - component: {fileID: 1985323565373976402}
   - component: {fileID: 3251723541538517077}
   m_Layer: 0
   m_Name: BackButtonLabel
@@ -1623,6 +1652,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1985323565373976402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5398225213200866622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d9fa60cc072d8542aa7585b8cc5a99f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: SongSelection.Back
 --- !u!114 &3251723541538517077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1648,6 +1690,7 @@ GameObject:
   - component: {fileID: 7487871424162090524}
   - component: {fileID: 7675231344463348987}
   - component: {fileID: 3092333804983852121}
+  - component: {fileID: 5239577826432618975}
   - component: {fileID: 4735885677938078590}
   m_Layer: 0
   m_Name: PlayButtonLabel
@@ -1775,6 +1818,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5239577826432618975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5534293681296717618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d9fa60cc072d8542aa7585b8cc5a99f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: SongSelection.Play
 --- !u!114 &4735885677938078590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1942,7 +1998,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &245760696290624746
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1998,6 +2054,11 @@ MonoBehaviour:
   playButton: {fileID: 6475364239725596700}
   playButtonLabel: {fileID: 3092333804983852121}
   statusText: {fileID: 1895944559336033227}
+  rowUnselectedColor: {r: 1, g: 1, b: 1, a: 0.12}
+  rowSelectedAlpha: 0.35
+  fallbackAccentColor: {r: 0.18, g: 0.75, b: 0.95, a: 1}
+  neutralStatusColor: {r: 0.75, g: 0.75, b: 0.75, a: 1}
+  errorStatusColor: {r: 0.85, g: 0.35, b: 0.3, a: 1}
 --- !u!1 &6291043818219952530
 GameObject:
   m_ObjectHideFlags: 0
@@ -2153,7 +2214,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SongSelection.Spotify (SongSelection.ComingSoon)
+  m_text: SongSelection.Spotify
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2305,7 +2366,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SongSelection.YouTubeMusic (SongSelection.ComingSoon)
+  m_text: SongSelection.YouTubeMusic
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

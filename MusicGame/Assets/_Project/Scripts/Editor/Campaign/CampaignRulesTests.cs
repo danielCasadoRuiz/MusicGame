@@ -34,7 +34,7 @@ public static class CampaignRulesTests
         s_report = new StringBuilder("[CampaignRulesTests]\n");
         s_fails = s_passes = 0;
         var eval = ScriptableObject.CreateInstance<EvaluationConfigSO>();
-        Stars(); Runner(eval); Combat(eval); Records(eval); Campaign(); MusicCycle(); RivalCoverage(); FinalRival(); Migration(); VersionDialogues();
+        Stars(); Runner(eval); Combat(eval); Records(eval); Campaign(); MusicCycle(); RivalCoverage(); FinalRival(); Migration(); VersionDialogues(); Arenas();
         s_report.AppendLine($"RESULT {(s_fails == 0 ? "PASS" : "FAIL")} — {s_passes} passed, {s_fails} failed");
         return s_report.ToString();
     }
@@ -293,6 +293,31 @@ public static class CampaignRulesTests
         Check(ComposerDialogueKeys.TryParse("Composer.boss.Dialogue.Victory.L3.007", out var id, out var cat, out int idx, out int ver) &&
               id == "boss" && cat == ComposerDialogueCategory.Victory && idx == 7 && ver == 3, "key Composer.boss.Dialogue.Victory.L3.007 parses (version 3, index 7)");
         Check(ComposerDialogueKeys.TryParse("Composer.bach.Dialogue.Intro.001", out _, out _, out _, out int gv) && gv == 0, "normal composer keys stay generic");
+    }
+
+    // ── Arena selection ──────────────────────────────────────────────────────
+
+    private static void Arenas()
+    {
+        s_report.AppendLine("-- arenas");
+        var o = ScriptableObject.CreateInstance<OpponentDefinition>();
+        o.id = "arena_test";
+        o.arenas = new List<UnityEngine.AddressableAssets.AssetReferenceGameObject>();
+        for (int i = 0; i < 3; i++) o.arenas.Add(new UnityEngine.AddressableAssets.AssetReferenceGameObject(System.Guid.NewGuid().ToString("N")));
+        var seen = new HashSet<string>(); string last = null; bool repeat = false;
+        for (int i = 0; i < 300; i++)
+        {
+            var pick = ArenaSelector.Pick(o);
+            if (pick.AssetGUID == last) repeat = true;
+            last = pick.AssetGUID; seen.Add(last);
+        }
+        Check(!repeat && seen.Count == 3, "3 arenas: random, all used, never the same twice in a row");
+        var one = ScriptableObject.CreateInstance<OpponentDefinition>();
+        one.id = "arena_one";
+        one.arenas = new List<UnityEngine.AddressableAssets.AssetReferenceGameObject> { o.arenas[0], null, new UnityEngine.AddressableAssets.AssetReferenceGameObject("") };
+        Check(ArenaSelector.Pick(one) == o.arenas[0] && ArenaSelector.Pick(one) == o.arenas[0], "single valid arena (null / empty entries ignored) is reused");
+        var none = ScriptableObject.CreateInstance<OpponentDefinition>();
+        Check(ArenaSelector.Pick(none) == null && ArenaSelector.Pick(null) == null, "no arenas → null (default arena / placeholder floor)");
     }
 
     // ── Save migration ───────────────────────────────────────────────────────

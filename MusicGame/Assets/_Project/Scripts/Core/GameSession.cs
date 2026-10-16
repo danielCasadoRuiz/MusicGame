@@ -134,7 +134,7 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
         AssignedOpponentTier        = tier;
         CurrentBossStage = -1;       // any normal assignment ends a final-rival setup
         BossSongOverride = null;
-        ArenaOverride    = null;
+        BossArena        = null;
     }
 
     // ── Final rival (CampaignService.PrepareBossStage) — combat-only stages ──
@@ -142,15 +142,16 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
     public int CurrentBossStage { get; private set; } = -1;
     /// <summary>The stage's special song (null = the version's own songs).</summary>
     public AudioClip BossSongOverride { get; private set; }
-    /// <summary>Arena environment for the current fight (null = FightArenaConfig default / placeholder floor).</summary>
-    public GameObject ArenaOverride { get; private set; }
+    /// <summary>Arena of the current final-rival stage (null for normal fights: the composer's own arenas).</summary>
+    public UnityEngine.AddressableAssets.AssetReferenceGameObject BossArena { get; private set; }
 
-    public void SetBossFight(int stage, OpponentDefinition opponent, OpponentLevelConfig level, AudioClip song, GameObject arena)
+    public void SetBossFight(int stage, OpponentDefinition opponent, OpponentLevelConfig level, AudioClip song,
+                             UnityEngine.AddressableAssets.AssetReferenceGameObject arena)
     {
         SetAssignedOpponent(opponent, level, level != null ? level.level : 0);
         CurrentBossStage = stage;
         BossSongOverride = song;
-        ArenaOverride    = arena;
+        BossArena        = arena;
         // A boss stage is fought directly (no roulette, no runner): commit the pick now.
         SelectedOpponent            = opponent;
         SelectedOpponentLevelConfig = level;

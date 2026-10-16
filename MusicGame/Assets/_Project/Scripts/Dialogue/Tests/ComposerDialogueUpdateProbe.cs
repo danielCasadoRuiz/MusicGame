@@ -183,7 +183,7 @@ public class ComposerDialogueUpdateProbe : MonoBehaviour
 
     private IEnumerator BubbleChecks()
     {
-        var bubble = ComposerSpeechBubble.Create(_canvas, null);
+        var bubble = ComposerSpeechBubble.Spawn(_canvas, null);
         const string text = "Una melodia tota sola? <b>Això</b> és contrapunt en vaga! Amb accents: àèéíïòóúüç·l";
         bubble.Show("Bach", text, 30f, 0.1f);
         yield return null; yield return null;
@@ -211,7 +211,7 @@ public class ComposerDialogueUpdateProbe : MonoBehaviour
         config.dialogueCharactersPerSecond = 40f;
         config.dialogueReadHoldSeconds = 1f;
         config.dialogueLoadTimeoutSeconds = 3f;
-        var bubble = ComposerSpeechBubble.Create(_canvas, config);
+        var bubble = ComposerSpeechBubble.Spawn(_canvas, config);
         var p = new ComposerDialoguePresentation(bubble, config);
         var bach = Opponent("bach"); var mozart = Opponent("mozart");
         Func<Vector3?> noAnchor = () => null;

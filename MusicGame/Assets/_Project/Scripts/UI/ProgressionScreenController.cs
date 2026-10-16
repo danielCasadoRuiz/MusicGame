@@ -1,29 +1,26 @@
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
-/// "PROGRESSIÓ" (Main Menu, under COL·LECCIÓ): the campaign by level, each level collapsible into its
-/// matches, with the persistent BEST runner / combat records of every position (each with the song /
-/// rival it came from), level averages, mastery counters, the final-rival requirements and challenge,
-/// and the seal. Provisional procedural UI (same pattern as RivalCollectionController); read-only
-/// except for the final-rival challenge button.
+/// "PROGRESSIÓ" (Main Menu, under COL·LECCIÓ): the campaign as a scrollable table, level by level, each level
+/// collapsible into its matches, with the persistent BEST runner / combat records of every position (each with
+/// the song / rival it came from), level averages, mastery counters, the final-rival requirements and
+/// challenge, and the seal.
 ///
-/// Averages: half-star means over the RATED positions of the level, shown with their base
-/// ("4,5 ★ · 3/5") and floored to a half step for the stars; pending positions stay visible as "pending",
-/// and the mastered counter checks every position individually.
+/// Structure and look: prefabs (UIPrefabLibrarySO — ProgressionScreen, LevelHeaderRow, ColumnHeaderRow, MatchRow,
+/// BossHeaderRow, BossStageRow, plus the EvaluationPanel inside the screen's detail overlay). This controller only
+/// instantiates rows and fills data.
+///
+/// Averages: half-star means over the RATED positions of the level, shown with their base ("4,5 · 3/5") and
+/// floored to a half step for the stars; pending positions stay visible, and the mastered counter checks every
+/// position individually.
 /// </summary>
 public class ProgressionScreenController : MonoBehaviour
 {
     public static ProgressionScreenController Instance { get; private set; }
 
-    private RectTransform _root, _content, _detail;
-    private TextMeshProUGUI _summaryText, _requirementsText, _sealText;
-    private Button _challengeButton;
-    private TextMeshProUGUI _challengeLabel;
-    private EvaluationPanel _detailPanel;
+    private ProgressionScreenView _view;
     private readonly List<GameObject> _spawned = new();
     private readonly HashSet<string> _expanded = new();
     private System.Action<GameFlowStateChangedEvent> _onFlow;
@@ -33,8 +30,16 @@ public class ProgressionScreenController : MonoBehaviour
     {
         if (Instance != null && Instance != this) { Destroy(this); return; }
         Instance = this;
-        Build();
-        _root.gameObject.SetActive(false);
+        var lib = UIPrefabLibrarySO.Instance;
+        _view = UIPrefabLibrarySO.Spawn(lib != null ? lib.progressionScreen : null, UIFactory.RootCanvas(), "ProgressionScreen");
+        if (_view == null) return;
+        UIFactory.Stretch((RectTransform)_view.transform);
+        if (_view.backButton != null) _view.backButton.onClick.AddListener(Close);
+        if (_view.challengeButton != null) _view.challengeButton.onClick.AddListener(OnChallengeClicked);
+        if (_view.detailBackdrop != null) _view.detailBackdrop.onClick.AddListener(() => _view.detailRoot.gameObject.SetActive(false));
+        if (_view.listContent == null || _view.detailRoot == null || _view.detailPanel == null)
+            Debug.LogError("[ProgressionScreenController] ProgressionScreen.prefab references missing (listContent / detailRoot / detailPanel).");
+        _view.gameObject.SetActive(false);
     }
 
     private void OnDestroy() { if (Instance == this) Instance = null; }
@@ -42,7 +47,7 @@ public class ProgressionScreenController : MonoBehaviour
     private void OnEnable()
     {
         _onFlow = e => { if (e.Previous == GameFlowState.MainMenu) Close(); };
-        _onLanguage = () => { if (_root != null && _root.gameObject.activeSelf) Refresh(); };
+        _onLanguage = () => { if (_view != null && _view.gameObject.activeSelf) Refresh(); };
         EventBus.Subscribe(_onFlow);
         Loc.Refreshed += _onLanguage;
     }
@@ -55,87 +60,32 @@ public class ProgressionScreenController : MonoBehaviour
 
     public void Open()
     {
-        var data = CampaignService.Data;
-        if (_expanded.Count == 0 && data != null && CampaignService.Config != null)
-        {
-            var current = CampaignService.CurrentLevel; // open the level being played
-            if (current != null) _expanded.Add(current.id);
-        }
+        if (_view == null) return;
+        if (_expanded.Count == 0 && CampaignService.CurrentLevel != null) _expanded.Add(CampaignService.CurrentLevel.id);
         Refresh();
-        _detail.gameObject.SetActive(false);
-        _root.gameObject.SetActive(true);
-        _root.SetAsLastSibling();
+        if (_view.detailRoot != null) _view.detailRoot.gameObject.SetActive(false);
+        _view.gameObject.SetActive(true);
+        _view.transform.SetAsLastSibling();
     }
 
-    public void Close() { if (_root != null) _root.gameObject.SetActive(false); }
+    public void Close() { if (_view != null) _view.gameObject.SetActive(false); }
 
     /// <summary>Opens a level's match list (also used by tests).</summary>
     public void Expand(string levelId) { if (!string.IsNullOrEmpty(levelId)) _expanded.Add(levelId); }
-
-    // ── Build ────────────────────────────────────────────────────────────────
-
-    private void Build()
-    {
-        var canvas = UIFactory.RootCanvas();
-        _root = UIFactory.CreateRect("ProgressionScreen", canvas);
-        UIFactory.Stretch(_root);
-        var dim = UIFactory.CreatePanel("Dim", _root, new Color(0.02f, 0.02f, 0.02f, 1f));
-        UIFactory.Stretch(dim.rectTransform);
-        dim.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Background);
-
-        var title = Loc.Track(UIFactory.CreateText("Title", _root, Loc.Get("Progression.Title"), 34, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), "Progression.Title");
-        UIFactory.SetBox(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -36f), new Vector2(1000f, 46f));
-        title.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Primary, UIFontToken.Display);
-
-        _summaryText = UIFactory.CreateText("Summary", _root, "", 18, Color.white);
-        UIFactory.SetBox(_summaryText.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -86f), new Vector2(1500f, 28f));
-        _requirementsText = UIFactory.CreateText("Requirements", _root, "", 17, new Color(1f, 0.85f, 0.45f));
-        UIFactory.SetBox(_requirementsText.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -116f), new Vector2(1500f, 28f));
-        _sealText = UIFactory.CreateText("Seal", _root, "", 20, new Color(1f, 0.9f, 0.4f), TextAlignmentOptions.Center, FontStyles.Bold);
-        UIFactory.SetBox(_sealText.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -146f), new Vector2(1500f, 30f));
-
-        var scroll = UIFactory.CreateScrollRect("Levels", _root, out _content, 6f);
-        var srt = scroll.GetComponent<RectTransform>();
-        UIFactory.SetBox(srt, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(0.5f, 0.5f), new Vector2(0f, -30f), new Vector2(1500f, -330f));
-
-        _challengeButton = UIFactory.CreateButton("ChallengeButton", _root, "", out _challengeLabel);
-        UIFactory.SetBox(_challengeButton.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-170f, 36f), new Vector2(420f, 54f));
-        _challengeButton.onClick.AddListener(OnChallengeClicked);
-        _challengeButton.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonPrimary);
-        _challengeLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Body);
-
-        var back = UIFactory.CreateButton("BackButton", _root, Loc.Get("Rivals.Back"), out var backLabel); Loc.Track(backLabel, "Rivals.Back");
-        UIFactory.SetBox(back.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(170f, 36f), new Vector2(240f, 54f));
-        back.onClick.AddListener(Close);
-        back.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
-        backLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-
-        // Detail overlay (one position).
-        _detail = UIFactory.CreateRect("Detail", _root);
-        UIFactory.Stretch(_detail);
-        var ddim = UIFactory.CreatePanel("DetailDim", _detail, new Color(0f, 0f, 0f, 0.82f));
-        UIFactory.Stretch(ddim.rectTransform);
-        ddim.gameObject.AddComponent<Button>().onClick.AddListener(() => _detail.gameObject.SetActive(false));
-        _detailPanel = EvaluationPanel.Create(_detail, "DetailPanel", 760f);
-        var dr = _detailPanel.Rect;
-        dr.anchorMin = dr.anchorMax = new Vector2(0.5f, 0.5f);
-        dr.pivot = new Vector2(0.5f, 0.5f);
-        _detail.gameObject.SetActive(false);
-    }
 
     // ── Content ──────────────────────────────────────────────────────────────
 
     private void Refresh()
     {
-        foreach (var go in _spawned) if (go != null) Destroy(go);
+        foreach (var go in _spawned) if (go != null) { go.SetActive(false); Destroy(go); }
         _spawned.Clear();
         var data = CampaignService.Data;
         var config = CampaignService.Config;
         if (data == null || config == null)
         {
-            Loc.Set(_summaryText, "Progression.Unavailable");
-            _requirementsText.text = ""; _sealText.text = "";
-            _challengeButton.gameObject.SetActive(false);
+            if (_view.summary != null) Loc.Set(_view.summary, "Progression.Unavailable");
+            SetText(_view.requirements, ""); SetText(_view.seal, "");
+            if (_view.challengeButton != null) _view.challengeButton.gameObject.SetActive(false);
             return;
         }
 
@@ -143,61 +93,46 @@ public class ProgressionScreenController : MonoBehaviour
             ? Loc.Get("Progression.LapFinished")
             : Loc.Get("Campaign.Position", (data.levelIndex + 1).ToString(), data.matchNumber.ToString());
         var cycle = PlayerProgressService.Instance?.SongCycle;
-        _summaryText.text = Loc.Get("Progression.Summary", data.lap.ToString(), where, (cycle != null ? cycle.cycle : 1).ToString());
+        SetText(_view.summary, Loc.Get("Progression.Summary", data.lap.ToString(), where, (cycle != null ? cycle.cycle : 1).ToString()));
 
-        // Final rival requirements (always visible once revealed; a short hint before).
         var req = CampaignService.BossRequirements();
-        string state = data.boss.finalDefeated ? Loc.Get("Progression.BossDefeated")
-                     : data.bossUnlocked ? Loc.Get("Progression.BossAvailable") : Loc.Get("Progression.BossLocked");
-        _requirementsText.text = data.bossRevealed
+        string state = BossState(data);
+        SetText(_view.requirements, data.bossRevealed
             ? Loc.Get("Progression.Requirements", req.Mastered.ToString(), req.TotalPositions.ToString(), req.Cards.ToString(), req.CardsRequired.ToString(), state)
-            : Loc.Get("Progression.MasteredOnly", req.Mastered.ToString(), req.TotalPositions.ToString());
-        _sealText.text = data.boss.sealGranted ? "— " + Loc.Get("Campaign.SealName") + " —" : "";
+            : Loc.Get("Progression.MasteredOnly", req.Mastered.ToString(), req.TotalPositions.ToString()));
+        SetText(_view.seal, data.boss.sealGranted ? "— " + Loc.Get("Campaign.SealName") + " —" : "");
 
         bool canChallenge = CampaignService.CanChallengeBoss;
-        _challengeButton.gameObject.SetActive(canChallenge);
-        if (canChallenge)
-            _challengeLabel.text = Loc.Get("Progression.Challenge", (CampaignService.NextBossStage + 1).ToString(), CampaignService.Boss.StageCount.ToString());
+        if (_view.challengeButton != null) _view.challengeButton.gameObject.SetActive(canChallenge);
+        if (canChallenge) SetText(_view.challengeLabel, Loc.Get("Progression.Challenge", (CampaignService.NextBossStage + 1).ToString(), CampaignService.Boss.StageCount.ToString()));
 
         for (int i = 0; i < config.LevelCount; i++) BuildLevel(data, config, i);
         if (data.bossRevealed && CampaignService.Boss != null) BuildBossSection(data);
-        LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
     }
 
     private void BuildLevel(CampaignProgressData data, CampaignConfigSO config, int index)
     {
+        var lib = UIPrefabLibrarySO.Instance;
         var level = config.Level(index);
         var s = CampaignModel.Summarize(data, config, index);
         bool open = _expanded.Contains(level.id);
 
-        var header = UIFactory.CreateButton("Level_" + level.id, _content, "", out var label);
-        header.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.12f);
-        var hrt = header.GetComponent<RectTransform>();
-        hrt.sizeDelta = new Vector2(0f, 74f);
-        label.alignment = TextAlignmentOptions.MidlineLeft;
-        label.fontSize = 18;
-        label.enableWordWrapping = true;
-        UIFactory.SetBox(label.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 0.5f), new Vector2(16f, 0f), new Vector2(560f, 0f));
-        string name = string.IsNullOrEmpty(level.nameKey) ? Loc.Get("Campaign.Level", (index + 1).ToString()) : Loc.Get(level.nameKey);
-        label.text = $"{(open ? "▼" : "►")} <b>{name}</b>\n<size=80%>{Loc.Get("Progression.LevelLine", s.CompletedThisLap.ToString(), s.MatchCount.ToString(), s.Mastered.ToString())}</size>";
-        AddStarsAt(hrt, 600f, Loc.Get("Progression.Runner"), Avg(s.AvgRunner), $"{s.RatedRunner}/{s.MatchCount}");
-        AddStarsAt(hrt, 900f, Loc.Get("Progression.Combat"), Avg(s.AvgCombat), $"{s.RatedCombat}/{s.MatchCount}");
-        AddStarsAt(hrt, 1200f, Loc.Get("Progression.Total"), Avg(s.AvgTotal), $"{s.RatedTotal}/{s.MatchCount}");
-        string id = level.id;
-        header.onClick.AddListener(() => { if (!_expanded.Remove(id)) _expanded.Add(id); Refresh(); });
-        _spawned.Add(header.gameObject);
-
+        var header = Spawn(lib != null ? lib.progressionLevelHeader : null, "LevelHeaderRow");
+        if (header != null)
+        {
+            string name = string.IsNullOrEmpty(level.nameKey) ? Loc.Get("Campaign.Level", (index + 1).ToString()) : Loc.Get(level.nameKey);
+            int r = Avg(s.AvgRunner), c = Avg(s.AvgCombat), t = Avg(s.AvgTotal);
+            header.Set($"{(open ? "▼" : "►")} {name}",
+                       Loc.Get("Progression.LevelLine", s.CompletedThisLap.ToString(), s.MatchCount.ToString(), s.Mastered.ToString()),
+                       $"{Loc.Get("Progression.Runner")}  {EvaluationPanel.Stars(r)} · {s.RatedRunner}/{s.MatchCount}", r,
+                       $"{Loc.Get("Progression.Combat")}  {EvaluationPanel.Stars(c)} · {s.RatedCombat}/{s.MatchCount}", c,
+                       $"{Loc.Get("Progression.Total")}  {EvaluationPanel.Stars(t)} · {s.RatedTotal}/{s.MatchCount}", t);
+            string id = level.id;
+            if (header.button != null) header.button.onClick.AddListener(() => { if (!_expanded.Remove(id)) _expanded.Add(id); Refresh(); });
+        }
         if (!open) return;
-        // Table column titles for this level's matches.
-        var cols = UIFactory.CreatePanel("Columns", _content, new Color(1f, 1f, 1f, 0.03f));
-        var crt = cols.rectTransform;
-        crt.sizeDelta = new Vector2(0f, 30f);
-        var dimText = new Color(1f, 1f, 1f, 0.6f);
-        Text(crt, Loc.Get("Progression.ColMatch"), 40f, 170f, 13, 0f).color = dimText;
-        Text(crt, Loc.Get("Progression.ColRunner"), 220f, 330f, 13, 0f).color = dimText;
-        Text(crt, Loc.Get("Progression.ColCombat"), 580f, 400f, 13, 0f).color = dimText;
-        Text(crt, Loc.Get("Progression.Total"), 1060f, 160f, 13, 0f).color = dimText;
-        _spawned.Add(cols.gameObject);
+
+        if (lib != null && lib.progressionColumnHeader != null) _spawned.Add(Instantiate(lib.progressionColumnHeader, _view.listContent, false));
         for (int m = 1; m <= level.matchCount; m++)
             BuildRow(CampaignModel.Find(data, CampaignConfigSO.PositionId(level.id, m)), index, m,
                      data.levelIndex == index && data.matchNumber == m && !CampaignModel.IsLapFinished(data, config));
@@ -205,85 +140,60 @@ public class ProgressionScreenController : MonoBehaviour
 
     private void BuildRow(PositionRecordData p, int levelIndex, int match, bool current)
     {
-        var row = UIFactory.CreateButton("Match", _content, "", out var label);
-        row.GetComponent<Image>().color = current ? new Color(1f, 0.82f, 0.35f, 0.16f)
-                                        : match % 2 == 0 ? new Color(1f, 1f, 1f, 0.07f) : new Color(1f, 1f, 1f, 0.03f); // zebra rows
-        var rt = row.GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(0f, 84f);
-        label.text = "";
-
-        // Match number + status
+        var lib = UIPrefabLibrarySO.Instance;
+        var row = Spawn(lib != null ? lib.progressionMatchRow : null, "MatchRow");
+        if (row == null) return;
         string status = p == null ? Loc.Get("Eval.Pending")
                       : CampaignModel.IsMastered(p) ? Loc.Get("Progression.Mastered")
                       : p.completed ? (p.legacyUnrated && !CampaignModel.HasRunner(p) && !CampaignModel.HasCombat(p) ? Loc.Get("Progression.Unrated") : Loc.Get("Progression.Completed"))
                       : Loc.Get("Eval.Pending");
-        Text(rt, $"<b>{Loc.Get("Progression.Match", match.ToString())}</b>\n<size=80%>{status}</size>", 40f, 170f, 17);
-
-        // Runner best: song of THAT record
-        string song = p != null && CampaignModel.HasRunner(p) ? SongName(p.bestRunner.songId) : "—";
-        Text(rt, $"{Loc.Get("Progression.Runner")}: {song}", 220f, 330f, 15);
-        Stars(rt, 220f, -22f, p != null && CampaignModel.HasRunner(p) ? p.bestRunner.halfStars : -1);
-
-        // Combat best: rival + version of THAT record
-        var rival = p != null && CampaignModel.HasCombat(p) ? Rival(p.bestCombat.opponentId) : null;
-        int version = p != null && CampaignModel.HasCombat(p) ? p.bestCombat.opponentLevel : 0;
-        var portraitRt = UIFactory.CreateRect("Portrait", rt);
-        UIFactory.SetBox(portraitRt, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(580f, 0f), new Vector2(64f, 76f));
-        var img = portraitRt.gameObject.AddComponent<Image>();
-        img.sprite = rival != null ? Portrait(rival, version) : null;
-        img.preserveAspect = true;
-        img.color = img.sprite != null ? Color.white : new Color(1f, 1f, 1f, 0.08f);
-        img.raycastTarget = false;
-        string rivalText = rival != null ? $"{rival.displayName} · {Loc.Get("Rivals.Level", version.ToString())}" : "—";
-        Text(rt, $"{Loc.Get("Progression.Combat")}: {rivalText}", 656f, 330f, 15);
-        Stars(rt, 656f, -22f, p != null && CampaignModel.HasCombat(p) ? p.bestCombat.halfStars : -1);
-
-        // Total
-        Text(rt, Loc.Get("Progression.Total"), 1060f, 120f, 15);
-        Stars(rt, 1060f, -22f, p != null ? CampaignModel.CombinedHalfStars(p) : -1);
-
+        bool hasRunner = p != null && CampaignModel.HasRunner(p);
+        bool hasCombat = p != null && CampaignModel.HasCombat(p);
+        var rival = hasCombat ? Rival(p.bestCombat.opponentId) : null;
+        int version = hasCombat ? p.bestCombat.opponentLevel : 0;
+        row.Set(match, current,
+                $"<b>{Loc.Get("Progression.Match", match.ToString())}</b>\n<size=80%>{status}</size>",
+                $"{Loc.Get("Progression.Runner")}: {(hasRunner ? SongName(p.bestRunner.songId) : "—")}", hasRunner ? p.bestRunner.halfStars : -1,
+                rival != null ? Portrait(rival, version) : null,
+                $"{Loc.Get("Progression.Combat")}: {(rival != null ? $"{rival.displayName} · {Loc.Get("Rivals.Level", version.ToString())}" : "—")}",
+                hasCombat ? p.bestCombat.halfStars : -1,
+                p != null ? CampaignModel.CombinedHalfStars(p) : -1);
         var pos = p;
-        row.onClick.AddListener(() => OpenDetail(pos, levelIndex, match));
-        _spawned.Add(row.gameObject);
+        if (row.button != null) row.button.onClick.AddListener(() => OpenDetail(pos, levelIndex, match));
     }
 
     private void BuildBossSection(CampaignProgressData data)
     {
+        var lib = UIPrefabLibrarySO.Instance;
         var boss = CampaignService.Boss;
-        var header = UIFactory.CreatePanel("BossHeader", _content, new Color(0.35f, 0.25f, 0.05f, 0.35f));
-        var hrt = header.rectTransform;
-        hrt.sizeDelta = new Vector2(0f, 56f);
-        Text(hrt, $"<b>{Loc.Get(boss.nameKey)}</b>  ·  {(data.boss.finalDefeated ? Loc.Get("Progression.BossDefeated") : data.bossUnlocked ? Loc.Get("Progression.BossAvailable") : Loc.Get("Progression.BossLocked"))}", 16f, 1400f, 18);
-        _spawned.Add(header.gameObject);
+        var header = Spawn(lib != null ? lib.progressionBossHeader : null, "BossHeaderRow");
+        if (header != null) header.Set($"<b>{Loc.Get(boss.nameKey)}</b>  ·  {BossState(data)}");
         for (int i = 0; i < boss.StageCount; i++)
         {
             var stage = CampaignService.BossStage(i);
-            var row = UIFactory.CreatePanel("BossStage", _content, new Color(1f, 1f, 1f, 0.05f));
-            var rt = row.rectTransform;
-            rt.sizeDelta = new Vector2(0f, 60f);
             string st = stage != null && stage.defeated ? Loc.Get("Progression.Completed") : Loc.Get("Eval.Pending");
-            Text(rt, $"{Loc.Get("Progression.BossStage", (i + 1).ToString())} · {st}", 40f, 600f, 16);
-            Stars(rt, 656f, 0f, stage != null && stage.bestCombat.has && stage.bestCombat.valid ? stage.bestCombat.halfStars : -1);
-            _spawned.Add(row.gameObject);
+            var row = Spawn(lib != null ? lib.progressionBossStage : null, "BossStageRow");
+            if (row != null)
+                row.Set($"{Loc.Get("Progression.BossStage", (i + 1).ToString())} · {st}",
+                        stage != null && stage.bestCombat.has && stage.bestCombat.valid ? stage.bestCombat.halfStars : -1);
         }
     }
 
     private void OpenDetail(PositionRecordData p, int levelIndex, int match)
     {
-        var panel = _detailPanel;
+        var panel = _view.detailPanel;
+        if (panel == null) return;
         panel.Clear();
         panel.AddHeader(Loc.Get("Campaign.Position", (levelIndex + 1).ToString(), match.ToString()));
         if (p == null || (!CampaignModel.HasRunner(p) && !CampaignModel.HasCombat(p)))
-        {
             panel.AddLine(p != null && p.legacyUnrated ? Loc.Get("Progression.UnratedHint") : Loc.Get("Progression.PendingHint"));
-        }
         if (p != null)
         {
             if (CampaignModel.HasRunner(p))
             {
                 var r = p.bestRunner;
                 panel.AddStars($"{Loc.Get("Eval.BestRunner")} — {SongName(r.songId)} ({Loc.Get("Progression.Lap", r.lap.ToString())})", r.halfStars);
-                panel.AddLine(Loc.Get("Eval.Points", EvaluationPanel.Points(r.score, r.maxScore)) + "  ·  " + EvaluationPanel.Breakdown(r.metrics), 13, new Color(0.8f, 0.8f, 0.8f));
+                panel.AddNote(Loc.Get("Eval.Points", EvaluationPanel.Points(r.score, r.maxScore)) + "  ·  " + EvaluationPanel.Breakdown(r.metrics));
             }
             else panel.AddStars(Loc.Get("Eval.BestRunner"), -1);
             if (CampaignModel.HasCombat(p))
@@ -291,20 +201,17 @@ public class ProgressionScreenController : MonoBehaviour
                 var c = p.bestCombat;
                 var rival = Rival(c.opponentId);
                 panel.AddStars($"{Loc.Get("Eval.BestCombat")} — {(rival != null ? rival.displayName : c.opponentId)} · {Loc.Get("Rivals.Level", c.opponentLevel.ToString())} ({Loc.Get("Progression.Lap", c.lap.ToString())})", c.halfStars);
-                panel.AddLine(Loc.Get("Eval.Points", EvaluationPanel.Points(c.score, c.maxScore)) + "  ·  " + EvaluationPanel.Breakdown(c.metrics), 13, new Color(0.8f, 0.8f, 0.8f));
+                panel.AddNote(Loc.Get("Eval.Points", EvaluationPanel.Points(c.score, c.maxScore)) + "  ·  " + EvaluationPanel.Breakdown(c.metrics));
             }
             else panel.AddStars(Loc.Get("Eval.BestCombat"), -1);
             panel.AddStars(Loc.Get("Eval.Total"), CampaignModel.CombinedHalfStars(p));
-
-            if (p.lastRunner != null && p.lastRunner.has)
-                panel.AddStars(Loc.Get("Progression.LastRunner"), p.lastRunner.halfStars, 14);
+            if (p.lastRunner != null && p.lastRunner.has) panel.AddStarsSmall(Loc.Get("Progression.LastRunner"), p.lastRunner.halfStars);
             if (p.lastCombat != null && p.lastCombat.has)
-                panel.AddStars(Loc.Get("Progression.LastCombat") + (p.lastCombat.valid ? "" : "  " + Loc.Get("Progression.Lost")), p.lastCombat.halfStars, 14);
-
-            panel.AddLine(ImprovementHint(p), 15, new Color(1f, 0.82f, 0.35f));
+                panel.AddStarsSmall(Loc.Get("Progression.LastCombat") + (p.lastCombat.valid ? "" : "  " + Loc.Get("Progression.Lost")), p.lastCombat.halfStars);
+            panel.AddHighlight(ImprovementHint(p));
         }
-        _detail.gameObject.SetActive(true);
-        _detail.SetAsLastSibling();
+        _view.detailRoot.gameObject.SetActive(true);
+        _view.detailRoot.SetAsLastSibling();
     }
 
     /// <summary>What is missing to master the position, concretely.</summary>
@@ -320,8 +227,6 @@ public class ProgressionScreenController : MonoBehaviour
         return string.Join("\n", hints);
     }
 
-    // ── Final rival challenge ────────────────────────────────────────────────
-
     private void OnChallengeClicked()
     {
         if (!CampaignService.PrepareBossStage(CampaignService.NextBossStage)) return;
@@ -331,32 +236,20 @@ public class ProgressionScreenController : MonoBehaviour
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
+    private T Spawn<T>(T prefab, string what) where T : Component
+    {
+        if (_view == null || _view.listContent == null) return null;
+        var row = UIPrefabLibrarySO.Spawn(prefab, _view.listContent, what);
+        if (row != null) _spawned.Add(row.gameObject);
+        return row;
+    }
+
+    private static string BossState(CampaignProgressData data) =>
+        data.boss.finalDefeated ? Loc.Get("Progression.BossDefeated") : data.bossUnlocked ? Loc.Get("Progression.BossAvailable") : Loc.Get("Progression.BossLocked");
+
+    private static void SetText(TMPro.TMP_Text t, string s) { if (t != null) t.text = s; }
+
     private static int Avg(float exactHalfStars) => float.IsNaN(exactHalfStars) ? -1 : StarMath.AverageDown(exactHalfStars);
-
-    private void AddStarsAt(RectTransform parent, float x, string label, int halfStars, string basis)
-    {
-        Text(parent, $"{label}  <size=80%>{EvaluationPanel.Stars(halfStars)} · {basis}</size>", x, 290f, 14, 14f);
-        Stars(parent, x, -16f, halfStars);
-    }
-
-    private static TextMeshProUGUI Text(RectTransform parent, string text, float x, float width, int size, float y = 14f)
-    {
-        var t = UIFactory.CreateText("Text", parent, text, size, Color.white, TextAlignmentOptions.MidlineLeft);
-        t.raycastTarget = false;
-        t.enableWordWrapping = true;
-        UIFactory.SetBox(t.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(x, y), new Vector2(width, 40f));
-        return t;
-    }
-
-    private static void Stars(RectTransform parent, float x, float y, int halfStars)
-    {
-        var v = StarRatingView.Create(parent, 22f, 3f);
-        var r = (RectTransform)v.transform;
-        r.anchorMin = r.anchorMax = new Vector2(0f, 0.5f);
-        r.pivot = new Vector2(0f, 0.5f);
-        r.anchoredPosition = new Vector2(x, y);
-        v.SetHalfStars(halfStars);
-    }
 
     private static string SongName(string songId)
     {
