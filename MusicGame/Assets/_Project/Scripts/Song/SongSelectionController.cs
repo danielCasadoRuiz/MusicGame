@@ -423,7 +423,11 @@ public class SongSelectionController : MonoBehaviour
 
         if (_selectedLocalInfo.HasValue)
         {
-            if (GameSession.Instance != null) GameSession.Instance.SelectedSong = _selectedLocalInfo;
+            if (GameSession.Instance != null)
+            {
+                GameSession.Instance.SelectedSong = _selectedLocalInfo;
+                GameSession.Instance.MarkManualChoice(GameSession.SongKey(_selectedLocalInfo));   // a manual pick: its style counts
+            }
             RunAssignment.AssignSessionOnly(); // rival decided now; nothing persisted, catalog pendingRun untouched
             AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongAnalysis);
             return;
@@ -442,6 +446,7 @@ public class SongSelectionController : MonoBehaviour
         // abandoned song is NOT completed. Re-confirming the pending song itself keeps its rival.
         var catalogIds = SongProgression.Ids(_entries);
         string songId = SongProgression.IdOf(location); // stable id; the address is only how it loads
+        GameSession.Instance?.MarkManualChoice(songId);   // a manual pick: its style counts for the player profile
         SongProgression.OnManualSelection(songId, catalogIds);
         var pending = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.PendingRun : null;
         if (pending == null || pending.songId != songId || !RunAssignment.TryRestorePending(catalogIds, out _))

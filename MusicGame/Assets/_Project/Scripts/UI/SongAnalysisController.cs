@@ -301,6 +301,7 @@ public class SongAnalysisController : MonoBehaviour
         {
             GameSession.Instance.DetectedMusicStyleId = res.ThemeStyle;
             GameSession.Instance.DetectedGameStyle = res.Style;
+            GameSession.Instance.RecordStyleIfManual(res.Style);   // player profile: only songs the player chose
         }
         EventBus.Publish(new MusicStyleDetectedEvent { Style = res.ThemeStyle, GameStyle = res.Style, Profile = profile });
     }

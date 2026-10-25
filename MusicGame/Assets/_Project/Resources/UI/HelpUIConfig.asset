@@ -48,9 +48,6 @@ MonoBehaviour:
   - stat: 10
     sprite: {fileID: 21300000, guid: 50bcd02bd75545a4cbba785b425cb31c, type: 3}
     color: {r: 0.5, g: 0.85, b: 0.4, a: 1}
-  - stat: 11
-    sprite: {fileID: 21300000, guid: 37bad9cc06433a946ab1b0a5e27cd284, type: 3}
-    color: {r: 1, g: 0.82, b: 0.3, a: 1}
   gameplay: {fileID: 11400000, guid: c797592768f344c4b43bf7b0cc29d8b8, type: 2}
   tripleComboColor: {r: 0.95, g: 0.75, b: 0.25, a: 1}
   quadComboColor: {r: 1, g: 0.45, b: 0.15, a: 1}
@@ -63,6 +60,7 @@ MonoBehaviour:
   tipFadeSeconds: 0.25
   trayInSeconds: 0.35
   sourceStagger: 0.22
+  splitPieceScale: 0.6
   flightSeconds: 0.6
   flightArc: 0.22
   arrivalScale: 0.25

@@ -9,6 +9,8 @@ public readonly struct MusicalTypeResult
     public readonly int Available;
     /// <summary>Physically collected (monotonic — never reduced by the fall penalty).</summary>
     public readonly int Collected;
+    /// <summary>Still held at the end (Collected minus what falls took): the live counter — what the combat build uses.</summary>
+    public readonly int Kept;
     /// <summary>Collected / Available (0..1). Meaningless when !IsApplicable.</summary>
     public readonly float CollectionRate;
     /// <summary>Mean timing quality of the collected ones (0..1), for a future quality-aware blend.</summary>
@@ -19,11 +21,12 @@ public readonly struct MusicalTypeResult
     /// <summary>False = this song's gameplay never generated this type: NOT APPLICABLE, never "0%".</summary>
     public bool IsApplicable => Available > 0;
 
-    public MusicalTypeResult(RingType type, int available, int collected, float collectionRate, float timingAccuracy, float performance)
+    public MusicalTypeResult(RingType type, int available, int collected, float collectionRate, float timingAccuracy, float performance, int kept = -1)
     {
         Type           = type;
         Available      = available;
         Collected      = collected;
+        Kept           = kept >= 0 ? Mathf.Min(kept, collected) : collected;
         CollectionRate = collectionRate;
         TimingAccuracy = timingAccuracy;
         Performance    = performance;
@@ -91,7 +94,7 @@ public static class MusicalPerformanceBuilder
             if (performance != null && performance.ByType.TryGetValue(type, out var tp) && tp.HasData)
             {
                 float perf = Mathf.Clamp01(tp.CollectionRate * Mathf.Lerp(1f, tp.TimingAccuracy, timingInfluence));
-                summary.Add(new MusicalTypeResult(type, tp.Available, tp.Collected, tp.CollectionRate, tp.TimingAccuracy, perf));
+                summary.Add(new MusicalTypeResult(type, tp.Available, tp.Collected, tp.CollectionRate, tp.TimingAccuracy, perf, tp.Kept));
             }
             else
             {

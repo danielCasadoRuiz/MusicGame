@@ -1,0 +1,22 @@
+song | real cache JSON MB (STJ parse ms) | same-content JSON MB (write/parse ms) | binary f32 MB (write/read ms) deflate MB brotli MB | f16 MB
+All But Water - Zero Nine            |  31.7 (  116) |  18.8 ( 147/ 133) |  3.65 ( 3.8/ 3.1; no-CRC  0.5; header    0 æs)  3.24  3.23 |  1.85 | round-trip lossless OK
+      f16 energy       max rel err 4.87E-004  max |err|/max 4.29E-004  values flushed to 0: 0
+      f16 centroid     max rel err 4.87E-004  max |err|/max 3.74E-004  values flushed to 0: 0
+      f16 flux         max rel err 4.83E-004  max |err|/max 2.77E-004  values flushed to 0: 0
+      f16 flatness     max rel err 4.82E-004  max |err|/max 2.63E-004  values flushed to 0: 0
+      f16 voice        max rel err 4.82E-004  max |err|/max 2.44E-004  values flushed to 0: 0
+      f16 chroma       max rel err 4.86E-004  max |err|/max 3.59E-004  values flushed to 0: 0
+      f16 band0        max rel err 1.05E-002  max |err|/max 2.48E-004  values flushed to 0: 0
+      f16 band5        max rel err 2.47E-002  max |err|/max 2.91E-004  values flushed to 0: 0
+      f16 visual0      max rel err 1.53E-002  max |err|/max 2.54E-004  values flushed to 0: 0
+      f16 visual23     max rel err 2.78E-002  max |err|/max 2.87E-004  values flushed to 0: 0
+Caribbean Machines - Milonga_Candidate |  37.4 (  135) |  22.1 ( 140/ 109) |  4.31 ( 4.8/ 4.2; no-CRC  1.3; header    0 æs)  3.83  3.81 |  2.18 | round-trip lossless OK
+DeepVoice Redhead - Still Holding On |  31.4 (  124) |  18.6 ( 120/  93) |  3.62 ( 3.5/ 2.9; no-CRC  0.6; header    0 æs)  3.22  3.21 |  1.83 | round-trip lossless OK
+Glorious Trainer - I Feel So High    |  43.6 (  155) |  25.9 ( 154/ 127) |  5.03 ( 4.7/ 3.8; no-CRC  0.5; header    0 æs)  4.47  4.45 |  2.54 | round-trip lossless OK
+TOTAL binary 16.6 MB vs real cache JSON 144.1 MB for the same songs
+corrupt body byte   InvalidDataException: profile body CRC mismatch (corrupt)
+truncated           InvalidDataException: truncated or padded profile
+bad magic           InvalidDataException: not a MusicGame profile (bad magic)
+future format ver   InvalidDataException: unsupported profile format 99
+compat same params/audio: True; other audio: False; other params: False
+params hash default 42A783A1590FD2E6; same settings again 42A783A1590FD2E6

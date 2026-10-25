@@ -1,0 +1,25 @@
+Analysis benchmark — mode old, Unity 6000.3.2f1, 12th Gen Intel(R) Core(TM) i7-12650H (16 logical), 32388 MB RAM, batch True, editor play mode, scripting backend Mono (editor).
+
+## Low Megas — Combo Master Tribe: 154,0 s, 48000 Hz, 2 ch, loadType DecompressOnLoad, native clip size 28,2 MB
+OLD cache MISS: total 14557 ms | GetData+mono+tagging (until tags) 6673 ms | FFT loop + onsets/BPM + JSON save + derived 7885 ms
+  window 14559 ms, 132 frames, max main-thread frame 2726,2 ms | GC allocated n/a | peak GC heap use +397,9 MB | Mono heap growth +144,2 MB | peak native (Unity allocators) +11,7 MB
+  onsets 740, bpm 164, frames 14431, progress events 97
+  JSON written 22,7 MB (bench file deleted)
+OLD cache HIT: total 2002 ms (incl. 2000 ms fixed delay) | JSON read+parse+derived (until PreAnalysisStarted) 303 ms
+  window 2004 ms, 1672 frames, max main-thread frame 303,2 ms | GC allocated n/a | peak GC heap use +99,5 MB | Mono heap growth +0,0 MB | peak native (Unity allocators) +0,1 MB
+
+## Gym Bros  - Dyin' Alive: 206,0 s, 48000 Hz, 2 ch, loadType DecompressOnLoad, native clip size 37,7 MB
+OLD cache MISS: total 19011 ms | GetData+mono+tagging (until tags) 7868 ms | FFT loop + onsets/BPM + JSON save + derived 11143 ms
+  window 19012 ms, 174 frames, max main-thread frame 3302,6 ms | GC allocated n/a | peak GC heap use +419,1 MB | Mono heap growth +93,0 MB | peak native (Unity allocators) +0,0 MB
+  onsets 861, bpm 104, frames 19306, progress events 129
+  JSON written 30,5 MB (bench file deleted)
+OLD cache HIT: total 2119 ms (incl. 2000 ms fixed delay) | JSON read+parse+derived (until PreAnalysisStarted) 449 ms
+  window 2119 ms, 1694 frames, max main-thread frame 449,2 ms | GC allocated n/a | peak GC heap use +129,1 MB | Mono heap growth +0,0 MB | peak native (Unity allocators) +0,3 MB
+
+## Older New — Azure WeekStart: 359,6 s, 48000 Hz, 2 ch, loadType DecompressOnLoad, native clip size 65,8 MB
+OLD cache MISS: total 33720 ms | GetData+mono+tagging (until tags) 14936 ms | FFT loop + onsets/BPM + JSON save + derived 18784 ms
+  window 33720 ms, 302 frames, max main-thread frame 7311,2 ms | GC allocated n/a | peak GC heap use +553,5 MB | Mono heap growth +0,0 MB | peak native (Unity allocators) +0,0 MB
+  onsets 1717, bpm 135, frames 33710, progress events 225
+  JSON written 53,1 MB (bench file deleted)
+OLD cache HIT: total 2374 ms (incl. 2000 ms fixed delay) | JSON read+parse+derived (until PreAnalysisStarted) 706 ms
+  window 2376 ms, 1738 frames, max main-thread frame 705,7 ms | GC allocated n/a | peak GC heap use +215,5 MB | Mono heap growth +0,0 MB | peak native (Unity allocators) +0,1 MB

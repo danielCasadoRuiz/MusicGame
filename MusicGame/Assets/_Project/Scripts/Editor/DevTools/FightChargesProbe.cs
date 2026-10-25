@@ -167,6 +167,32 @@ public static class FightChargesProbe
             Combo(f); Combo(f); Combo(f);
         }),
         (0f, "rapid finishers resolved", () => Idle, () => Check("rapid repeated finishers with 1 x3: exactly 1 spent, never negative", W.TripleCombos == 0, $"{Snap()}")),
+        // ── REAL input (touch, like a player): triple punch while advancing, triple kick standing, lunge = tap → + punch ──
+        (0.3f, "input: walk forward…", () => Fighting && Idle, () => { Set(0, 1, 0); FightTouchInputState.Horizontal = Fwd; }),
+        (0.6f, "  …P P P while still holding forward", null, () => FightTouchInputState.PunchRequested = true),
+        (0.25f, "  2nd punch", null, () => FightTouchInputState.PunchRequested = true),
+        (0.25f, "  3rd punch", null, () => FightTouchInputState.PunchRequested = true),
+        (0.12f, "  powered?", null, () =>
+        {
+            Check("real input: triple punch WHILE ADVANCING is the powered finisher and spends 1 x3", W.TripleCombos == 0 && MC.CurrentTag == FighterMoveController.AttackTag.Finisher,
+                  $"x3 {W.TripleCombos}, tag {MC.CurrentTag}, move {MC.CurrentMove?.debugName}");
+            FightTouchInputState.Horizontal = 0f;
+        }),
+        (0.3f, "input: K K K standing", () => Fighting && Idle, () => { Set(0, 1, 0); FightTouchInputState.KickRequested = true; }),
+        (0.25f, "  2nd kick", null, () => FightTouchInputState.KickRequested = true),
+        (0.25f, "  3rd kick", null, () => FightTouchInputState.KickRequested = true),
+        (0.12f, "  powered?", null, () =>
+            Check("real input: triple kick is the powered finisher and spends 1 x3", W.TripleCombos == 0 && MC.CurrentTag == FighterMoveController.AttackTag.Finisher,
+                  $"x3 {W.TripleCombos}, tag {MC.CurrentTag}")),
+        (0.3f, "input: tap forward then punch", () => Fighting && Idle, () => { Set(0, 0, 0); FightTouchInputState.Horizontal = 0f; }),
+        (0.1f, "  tap forward", null, () => FightTouchInputState.Horizontal = Fwd),
+        (0.08f, "  punch", null, () => FightTouchInputState.PunchRequested = true),
+        (0.12f, "  lunge?", null, () =>
+        {
+            Check("real input: a forward TAP + punch is still the lunge punch", MC.CurrentMove != null && MC.CurrentMove == MoveSet.GetByMoveId("move_forward_a"),
+                  $"move {MC.CurrentMove?.debugName}");
+            FightTouchInputState.Horizontal = 0f;
+        }),
         // ── Rejections ──
         (0f, "rejected requests spend nothing", () => Fighting && Idle, () =>
         {
@@ -238,6 +264,8 @@ public static class FightChargesProbe
         W.TryConsume(CombatResourceType.QuadCombo, W.QuadCombos);
         W.DebugGrant(triple, quad, special);
     }
+
+    private static float Fwd => Player != null && Player.FacingRight ? 1f : -1f;
 
     private static void Signature() => Combo(Combos.combos.First(c => c.moveId == MoveSet.signatureSpecial.id));
     private static int s_string = 1000;

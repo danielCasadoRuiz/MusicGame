@@ -123,12 +123,16 @@ public class OpponentLevelConfig
              "independent (a strong fighter can have weak AI, or the reverse). Null is tolerated — " +
              "FightSceneBootstrap falls back to a flat 100-everywhere FighterStats.")]
     public FighterStatsProfileSO combatStats;
+    [Tooltip("Fine-tunes THIS version's strength: multiplies the build size the match difficulty gives it " +
+             "(FightCombatBalanceConfig.RivalTuningAt — campaign level + match inside the level). 1 = the curve as is.")]
+    [Range(0.5f, 2f)] public float difficultyScale = 1f;
 
     [Header("Combat (how this tier FIGHTS — never on the avatar)")]
     [Tooltip("Moves + animation style for this tier. Tiers may share one profile. Null = " +
              "FightFlowConfig.defaultOpponentCombatProfile.")]
     public FighterCombatProfileSO combatProfile;
-    [Tooltip("Resources this tier's opponent can spend in a match (its own rule — the Player's come from the Runner).")]
+    [Tooltip("LEGACY — no longer read: a rival's charges are set PER ROUND by the match difficulty " +
+             "(FightCombatBalanceConfig.RivalTuningAt). Kept so existing assets keep their values.")]
     [Min(0)] public int specials = 1;
     [Min(0)] public int tripleCombos;
     [Min(0)] public int quadCombos;

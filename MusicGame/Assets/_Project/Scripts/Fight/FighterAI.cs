@@ -127,8 +127,10 @@ public class FighterAI : MonoBehaviour
     {
         _onFlowChanged = e =>
         {
+            bool wasActive = _active;
             _active = e.Current == FightFlowState.Fighting;
             if (_active) _nextDecisionTime = Time.time + EffectiveReactionTime();
+            if (_active && !wasActive && e.Previous == FightFlowState.Countdown) { _roundStartTime = Time.time; _lastSpecialTime = -999f; }
         };
         EventBus.Subscribe(_onFlowChanged);
     }
@@ -153,12 +155,14 @@ public class FighterAI : MonoBehaviour
 
         if (!ctx.SelfCanAct)
         {
+            _wasStunned |= ctx.SelfHitStun || ctx.SelfBlockStun;   // remembered for the anticipation guard (ReflexGuard)
             StopExecuting();
             _inputSource.SetDirection(0f, 0f);
             _nextDecisionTime = Time.time + EffectiveReactionTime();
             return;
         }
 
+        if (ReflexGuard(ctx)) return;           // a seen attack: guard now, whatever was running
         if (_executionRoutine != null) return; // committed to whatever was last decided
         if (Time.time < _nextDecisionTime) return; // still "reacting"
 
@@ -174,8 +178,24 @@ public class FighterAI : MonoBehaviour
     /// spawn (see FightSceneBootstrap.ApplySelectedOpponent).</summary>
     public void SetProfile(AIDifficultyProfile profile) => _profile = profile;
 
+    // ── Special pacing (difficulty: FightSceneBootstrap → FightCombatBalanceConfig.RivalTuningAt) ──
+    // Specials are thrown on openings (ComputeScores); this only keeps a short delay after the round start and between
+    // two throws. Its Specials refill every round (FightSceneBootstrap).
+    private float _firstSpecialDelay, _specialCooldown, _roundStartTime, _lastSpecialTime = -999f;
+
+    public void SetSpecialPacing(float firstSpecialDelay, float specialCooldown)
+    {
+        _firstSpecialDelay = Mathf.Max(0f, firstSpecialDelay);
+        _specialCooldown = Mathf.Max(0f, specialCooldown);
+    }
+
+    private bool HasSpecial => _actor != null && _actor.CombatResources != null && _actor.CombatResources.Specials > 0;
+    private bool SpecialReady => Time.time - _roundStartTime >= _firstSpecialDelay && Time.time - _lastSpecialTime >= _specialCooldown;
+
     public void ResetForRound()
     {
+        _roundStartTime = Time.time;
+        _lastSpecialTime = -999f;
         StopExecuting();
         if (_inputSource != null) _inputSource.SetDirection(0f, 0f);
         CurrentIntention = FightAIIntention.Wait;
@@ -221,6 +241,79 @@ public class FighterAI : MonoBehaviour
     /// no separate, parallel "which way is forward" computation exists to drift out of sync with
     /// what FighterInputController will actually resolve this exact value against.</summary>
     private float ApproachSign() => _actor.FacingRight ? 1f : -1f;
+
+    // ── Reflex guard ─────────────────────────────────────────────────────────
+    // Independent of the decision tick (which a stream of hits would otherwise never let run): every NEW attack the
+    // rival can see (a melee move starting in range, a blockable projectile on its way) is decided ONCE — guarded
+    // with probability defenseProbability, after a reflex delay (60 % of its reaction time) — with the guard height
+    // the attack needs. A weak rival often reacts too late or not at all; a strong one stops a punch spam cold and
+    // then punishes the recovery (Punish intention). Unblockable hits (the Special) are never "guarded".
+    private FightMoveDefinition _seenMove;
+    private bool _seenProjectile, _reflexWillGuard;
+    private float _reflexAt = -1f, _guardHoldUntil;
+
+    private bool _wasStunned, _counterTried;
+
+    private bool ReflexGuard(FightAIContext ctx)
+    {
+        // Anticipation: coming out of a hit (or block) stun with the attacker still on top, a skilled rival raises its
+        // guard at once instead of waiting to SEE the next hit — what breaks a mashed jab chain.
+        bool stunned = ctx.SelfHitStun || ctx.SelfBlockStun;
+        if (_wasStunned && !stunned && ctx.Distance <= _meleeRange * 1.6f && _actor.Guard != null && _actor.Guard.CanGuard()
+            && RollChance(_profile != null ? _profile.defenseProbability : 0.5f))
+        {
+            _wasStunned = false;
+            StopExecuting();
+            _inputSource.SetDirection(-ApproachSign(), 0f);
+            CurrentIntention = FightAIIntention.Guard;
+            _guardHoldUntil = Time.time + 0.35f;
+            _nextDecisionTime = Time.time + EffectiveReactionTime() * 0.5f;
+            return true;
+        }
+        _wasStunned = stunned;
+
+        // Counter: the attack it just guarded is now recovering point-blank — punish it at once (punishSkill), instead
+        // of waiting for the next decision tick (by then the next attack has started).
+        if (Time.time < _guardHoldUntil + 0.15f && ctx.OpponentMovePhase == FighterMoveState.Recovery && ctx.Distance <= _meleeRange * 1.3f
+            && _actor.Guard != null && _actor.Guard.CanGuard() && !_counterTried)
+        {
+            _counterTried = true;
+            if (RollChance(_profile != null ? _profile.punishSkill : 0.5f))
+            {
+                _guardHoldUntil = 0f;
+                CurrentIntention = FightAIIntention.Punish;
+                BeginIntention(FightAIIntention.Punish, ctx);
+                _nextDecisionTime = Time.time + EffectiveReactionTime();
+                return true;
+            }
+        }
+        if (ctx.OpponentMovePhase != FighterMoveState.Recovery) _counterTried = false;
+
+        var inc = DetectIncomingAttack(ctx);
+        bool projectile = ctx.IncomingProjectile != null;
+        bool threat = inc.present && inc.guardType != GuardType.Unblockable && (projectile || ctx.Distance <= _meleeRange * 1.6f);
+        if (!threat) { _seenMove = null; _seenProjectile = false; _reflexAt = -1f; }
+        else if (ctx.OpponentCurrentMove != _seenMove || projectile != _seenProjectile)
+        {
+            _seenMove = ctx.OpponentCurrentMove;
+            _seenProjectile = projectile;
+            _reflexWillGuard = RollChance(_profile != null ? _profile.defenseProbability : 0.5f);
+            _reflexAt = Time.time + EffectiveReactionTime() * 0.6f;
+        }
+
+        if (threat && _reflexWillGuard && Time.time >= _reflexAt && _actor.Guard != null && _actor.Guard.CanGuard())
+        {
+            StopExecuting();
+            float v = inc.height == AttackHeight.Low ? -1f : inc.height == AttackHeight.High ? 1f : 0f;
+            _inputSource.SetDirection(-ApproachSign(), v);
+            CurrentIntention = inc.height == AttackHeight.Low ? FightAIIntention.CrouchGuard
+                             : inc.height == AttackHeight.High ? FightAIIntention.HighGuard : FightAIIntention.Guard;
+            _guardHoldUntil = Time.time + 0.2f;                       // hold it a moment past the hit
+            _nextDecisionTime = Time.time + EffectiveReactionTime() * 0.5f;
+            return true;
+        }
+        return Time.time < _guardHoldUntil;
+    }
 
     // ── Decision ──────────────────────────────────────────────────────────────
 
@@ -365,9 +458,27 @@ public class FighterAI : MonoBehaviour
             ? Mathf.Lerp(0.02f, 0.16f, aggression) * (oppGuarding ? 2.2f : 1f) * (_aiConfig != null ? _aiConfig.grabScoreMultiplier : 1f)
             : 0f;
         scores[FightAIIntention.ComboAttack] = inMeleeRange ? Mathf.Lerp(0.05f, 0.65f, comboSkill) * Mathf.Lerp(0.4f, 1f, aggression) : 0f;
-        scores[FightAIIntention.SpecialAttack] = (inProjectileRange || inMeleeRange)
-            ? Mathf.Lerp(0.05f, 0.55f, specialUsage) * (ctx.Distance > meleeRange ? 1.3f : 0.7f)
-            : 0f;
+        // The Special (unblockable, dodgeable) is thrown on an OPENING, never on a timer: the player recovering from a
+        // move or stunned (cannot dodge), in the air, closing in from range without attacking — plus some desperation
+        // when losing. SpecialReady only avoids a double throw. Without a Special the same input is the basic heavy
+        // Signature, a rare option.
+        float specialScore = 0f;
+        if (inProjectileRange || inMeleeRange)
+        {
+            if (HasSpecial)
+            {
+                if (SpecialReady)
+                {
+                    bool exposed = ctx.OpponentMovePhase == FighterMoveState.Recovery || ctx.OpponentHitStun || ctx.OpponentBlockStun;
+                    bool closingIn = ctx.Distance > meleeRange * 2f && !opponentAttacking;
+                    float opening = (exposed ? 1.3f : 0f) + (ctx.OpponentPosture == FighterPosture.Airborne ? 0.6f : 0f)
+                                  + (closingIn ? 0.45f : 0f) + (ctx.SelfHealthPercent < 0.35f ? 0.35f : 0f);
+                    specialScore = Mathf.Lerp(0.1f, 1f, specialUsage) * opening;
+                }
+            }
+            else specialScore = Mathf.Lerp(0.05f, 0.55f, specialUsage) * (ctx.Distance > meleeRange ? 1.3f : 0.7f) * 0.3f;
+        }
+        scores[FightAIIntention.SpecialAttack] = specialScore;
 
         // Punish
         bool punishWindow = ctx.OpponentMovePhase == FighterMoveState.Recovery &&
@@ -708,6 +819,7 @@ public class FighterAI : MonoBehaviour
 
     private IEnumerator SpecialRoutine(float dirSign)
     {
+        if (HasSpecial) _lastSpecialTime = Time.time;
         _inputSource.SetDirection(dirSign, -1f);
         yield return new WaitForSeconds(0.05f);
         _inputSource.RequestPunch();

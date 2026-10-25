@@ -1,0 +1,7 @@
+FFT n=    4: max |new - naiveDFT| = 9.26E-017 (rel 4.26E-017), max |new mag/n - legacy mag/n| = 0.00E+000
+FFT n=    8: max |new - naiveDFT| = 1.23E-007 (rel 5.35E-008), max |new mag/n - legacy mag/n| = 5.00E-008
+FFT n=   64: max |new - naiveDFT| = 6.52E-007 (rel 8.62E-008), max |new mag/n - legacy mag/n| = 5.03E-008
+FFT n=  512: max |new - naiveDFT| = 3.43E-006 (rel 1.27E-007), max |new mag/n - legacy mag/n| = 1.34E-007
+FFT n= 1024: max |new - naiveDFT| = 4.63E-006 (rel 9.65E-008), max |new mag/n - legacy mag/n| = 1.16E-007
+FFT n= 2048: max |new - naiveDFT| = 1.04E-005 (rel 1.39E-007), max |new mag/n - legacy mag/n| = 1.03E-007
+FFT n= 4096: max |new - naiveDFT| = 1.49E-005 (rel 1.39E-007), max |new mag/n - legacy mag/n| = 4.81E-007

@@ -239,3 +239,37 @@ MonoBehaviour:
     m_RotationOrder: 4
   fallCountForZeroBalance: 5
   balanceFallWeight: 0.7
+  performanceTimingInfluence: 0
+  baseStatPoints: 2
+  maxStatPoints: 40
+  contributions:
+  - source: 2
+    punchPower: 0.35
+    kickPower: 0
+    resistance: 0
+    agility: 0
+  - source: 1
+    punchPower: 0
+    kickPower: 0.33
+    resistance: 0
+    agility: 0
+  - source: 3
+    punchPower: 0
+    kickPower: 0
+    resistance: 0
+    agility: 1.5
+  - source: 0
+    punchPower: 0
+    kickPower: 0
+    resistance: 0.35
+    agility: 0
+  - source: 4
+    punchPower: 0.25
+    kickPower: 0.25
+    resistance: 0.25
+    agility: 0.25
+  - source: 6
+    punchPower: 1.5
+    kickPower: 1.5
+    resistance: 0
+    agility: 0

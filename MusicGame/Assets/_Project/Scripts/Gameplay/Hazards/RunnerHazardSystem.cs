@@ -25,7 +25,8 @@ public class RunnerHazardSystem : MonoBehaviour
 
     private readonly Dictionary<RunnerObstacleKind, Stack<RunnerObstacle>> _pool = new();
     private readonly List<(RunnerObstacle obstacle, HazardPlacement placement)> _active = new();
-    private RunnerChaser _chaser;
+    // Several chasers may run at once (harder levels place them closer together); each is pooled and reused.
+    private readonly List<RunnerChaser> _chasers = new();
     private readonly RunnerPlayerTrail _trail = new();
 
     private float _trapTimer, _protectedUntil;
@@ -33,7 +34,17 @@ public class RunnerHazardSystem : MonoBehaviour
     private int _testKind;
 
     public IReadOnlyList<HazardPlacement> Placements => _placements;
-    public RunnerChaser Chaser => _chaser;
+    /// <summary>The first chaser that is not idle (tests / debug), else the first pooled one.</summary>
+    public RunnerChaser Chaser
+    {
+        get
+        {
+            foreach (var c in _chasers) if (c != null && c.Current != RunnerChaser.State.Inactive) return c;
+            return _chasers.Count > 0 ? _chasers[0] : null;
+        }
+    }
+    public int ActiveChaserCount { get { int n = 0; foreach (var c in _chasers) if (c != null && c.Current != RunnerChaser.State.Inactive) n++; return n; } }
+    private void DeactivateChasers() { foreach (var c in _chasers) if (c != null) c.Deactivate(); }
     public int ActiveObstacleCount => _active.Count;
     public bool IsProtected => Time.time < _protectedUntil;
     /// <summary>The obstacles currently built (tests / debug).</summary>
@@ -52,7 +63,7 @@ public class RunnerHazardSystem : MonoBehaviour
 
     private void OnEnable()
     {
-        _onFell = _ => { _trapTimer = 0f; if (_chaser != null) _chaser.Deactivate(); };
+        _onFell = _ => { _trapTimer = 0f; DeactivateChasers(); };
         _onRespawned = e =>
         {
             _protectedUntil = Time.time + (_cfg != null ? _cfg.respawnProtectionSeconds : 1.5f);
@@ -107,15 +118,18 @@ public class RunnerHazardSystem : MonoBehaviour
         if (!_player.IsFalling && dt > 0f)
             _trail.Record(Time.time, _player.LateralOffset, PlayerHeightAboveGround(world));
 
-        if (_chaser != null && _chaser.Current != RunnerChaser.State.Inactive && !processing)
-            _chaser.Tick(dt, _player, path, world, _trail, _speed);
+        if (!processing)
+            foreach (var c in _chasers)
+                if (c != null && c.Current != RunnerChaser.State.Inactive) c.Tick(dt, _player, path, world, _trail, _speed);
 
         if (processing || _player.IsFalling || dt <= 0f) { _trapTimer = 0f; return; }
 
         // Trapped: blocked at the back limit for long enough (voluntarily standing at the limit is never this).
         _trapTimer = _player.BlockedAtBackLimit ? _trapTimer + dt : 0f;
         if (_trapTimer >= _cfg.trapGraceSeconds) Penalize(RunnerPenaltyCause.Trapped);
-        else if (_chaser != null && _chaser.IsDangerous && _chaser.Touches(_player)) Penalize(RunnerPenaltyCause.ChaserContact);
+        else
+            foreach (var c in _chasers)
+                if (c != null && c.IsDangerous && c.Touches(_player)) { Penalize(RunnerPenaltyCause.ChaserContact); break; }
     }
 
     /// <summary>The single penalty gate (also used by tests): ignored while protected or while a respawn runs.</summary>
@@ -169,10 +183,13 @@ public class RunnerHazardSystem : MonoBehaviour
     private void SpawnChaser(in HazardPlacement p)
     {
         if (_cfg.chaserPrefab == null) return;
-        if (_chaser == null) _chaser = Instantiate(_cfg.chaserPrefab, transform);
-        if (_chaser.Current != RunnerChaser.State.Inactive) return; // only one at a time
+        // An idle pooled chaser, or a new one: several may chase at once.
+        RunnerChaser chaser = null;
+        foreach (var c in _chasers) if (c != null && c.Current == RunnerChaser.State.Inactive) { chaser = c; break; }
+        if (chaser == null) { chaser = Instantiate(_cfg.chaserPrefab, transform); _chasers.Add(chaser); }
+        _lastArmed = chaser;
         float d = _difficulty;
-        _chaser.Arm(new RunnerChaser.Params
+        chaser.Arm(new RunnerChaser.Params
         {
             distance = p.distance, side = p.lateral >= 0f ? 1 : -1,
             activation   = _cfg.chaserActivationDistance,
@@ -197,8 +214,10 @@ public class RunnerHazardSystem : MonoBehaviour
     private void ClearAll()
     {
         for (int i = _active.Count - 1; i >= 0; i--) Recycle(i);
-        if (_chaser != null) _chaser.Deactivate();
+        DeactivateChasers();
     }
+
+    private RunnerChaser _lastArmed;
 
     /// <summary>Despawns everything and continues with the first placement beyond `fromDistance`.</summary>
     private void Resync(float fromDistance)
@@ -230,9 +249,9 @@ public class RunnerHazardSystem : MonoBehaviour
         var path = MusicWorldManager.Instance != null ? MusicWorldManager.Instance.Path : null;
         if (path == null || _cfg == null) return null;
         float dist = _player.ActualDistance + ahead;
-        if (_chaser != null) _chaser.Deactivate();
+        DeactivateChasers();
         SpawnChaser(new HazardPlacement { distance = dist, isChaser = true, lateral = side, trackWidth = path.GetWidth(dist) });
-        return _chaser;
+        return _lastArmed;
     }
 
     private void TestHotkeys(MusicPath path)

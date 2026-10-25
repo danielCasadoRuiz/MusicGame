@@ -12,7 +12,7 @@ public enum CombatResourceType
 /// (FighterMoveController.TryExecuteMove):
 ///   Player   — the CURRENT RunSession's own wallet (GameSession.Run.Wallet): SPECIALs collected in the
 ///              Runner are added to it directly, so Runner, HUD and fight share one counter;
-///   Opponent — a fresh wallet from its tier config (OpponentLevelConfig.specials/tripleCombos/quadCombos).
+///   Opponent — refilled every round with its allowance for the match difficulty (FightCombatBalanceConfig.RivalTuningAt).
 /// Lives are not here: the life inventory is persistent (PlayerProgressService.ExtraLives).
 /// </summary>
 public class FighterCombatResources

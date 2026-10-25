@@ -42,6 +42,10 @@ public class FightMoveDefinition : ScriptableObject
     [Min(0)] public int resourceAmount = 1;
     [Tooltip("A landed hit of this move knocks the defender down (Knockdown -> Downed -> GetUp).")]
     public bool knockdownOnHit;
+    [Tooltip("> 0: a landed hit of this move removes EXACTLY this fraction of the defender's MAX health — a fixed rule, " +
+             "not scaled by any build stat, resistance, finisher or Power bonus (the Special: 0.3). Make its hit Unblockable " +
+             "if guard must not stop it; a dodge (invulnerability) still avoids it.")]
+    [Range(0f, 1f)] public float damageAsMaxHealthFraction;
 
     [Header("Defensive windows (seconds from move start)")]
     [Tooltip("Dodge: incoming hits are ignored while MoveElapsed is inside [invulnerableStart, invulnerableStart + invulnerableDuration]. 0 duration = none.")]

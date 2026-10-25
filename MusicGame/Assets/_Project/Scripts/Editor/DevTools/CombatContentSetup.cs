@@ -97,7 +97,7 @@ public static class CombatContentSetup
             Move("Move_Block", "block", "Block", CombatRole.Block, FighterBuildStat.None, 0.02f, 0.7f, 0.12f, 0f, 0f, 0f, hits: false),
             Move("Move_Dodge", "dodge", "Dodge (provisional anim)", CombatRole.Dodge, FighterBuildStat.Agility, 0.05f, 0.4f, 0.25f, 0f, 0f, 0f, hits: false,
                  invulnStart: 0.05f, invulnDuration: 0.4f),
-            Move("Move_Special_Test", "special_test", "Special (TEST)", CombatRole.Special, FighterBuildStat.ImpactPower, 0.3f, 0.15f, 0.6f, 25f, 0.6f, 2.2f,
+            Move("Move_Special_Test", "special_test", "Special (TEST)", CombatRole.Special, FighterBuildStat.None, 0.3f, 0.15f, 0.6f, 25f, 0.6f, 2.2f,
                  cost: CombatResourceType.Special, knockdown: true),
             Move("Move_TripleTechnique_Test", "triple_technique_test", "Triple Technique (TEST)", CombatRole.HeavyAttack, FighterBuildStat.PunchPower, 0.2f, 0.12f, 0.4f, 20f, 0.5f, 1.8f,
                  cost: CombatResourceType.TripleCombo),

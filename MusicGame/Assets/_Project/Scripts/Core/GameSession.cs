@@ -97,6 +97,23 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
     /// visual-theme key. The raw tags stay untouched on SongProfile.musicTags.</summary>
     public GameMusicStyle DetectedGameStyle { get; set; } = GameMusicStyle.Unknown;
 
+    /// <summary>The song the player CHOSE themselves in Song Selection (catalog id or local file) — its style counts
+    /// for the profile once analysed (RecordStyleIfManual). Automatic choices (CONTINUE, next song) never set it.</summary>
+    public string ManualChoiceKey { get; private set; }
+    public void MarkManualChoice(string key) => ManualChoiceKey = key;
+    public static string SongKey(SelectedSongInfo? s) =>
+        !s.HasValue ? null : !string.IsNullOrEmpty(s.Value.SongId) ? s.Value.SongId : !string.IsNullOrEmpty(s.Value.LocalFilePath) ? s.Value.LocalFilePath : s.Value.DisplayName;
+
+    /// <summary>Called when the style of the selected song is known: counts it in the player profile if the player
+    /// picked that song themselves (once).</summary>
+    public void RecordStyleIfManual(GameMusicStyle style)
+    {
+        string key = SongKey(SelectedSong);
+        if (string.IsNullOrEmpty(key) || key != ManualChoiceKey) return;
+        ManualChoiceKey = null;
+        PlayerProgressService.Instance?.RecordStylePick(style);
+    }
+
     /// <summary>This run's final performance — the copy Fight (and any future post-Gameplay system)
     /// reads. Filled automatically here whenever GameEndedEvent fires, in addition to whatever else
     /// already subscribes to that same event directly (e.g. GameplayHUD) — existing subscribers are
@@ -409,6 +426,11 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
             var song = SelectedSong;
             CampaignService.OnRunnerFinished(RunnerResults, song.HasValue && string.IsNullOrEmpty(song.Value.LocalFilePath) ? song.Value.SongId : null);
 
+            // Player profile: this run's CONVERTED build (what the fight receives) joins the long-term average — once per
+            // run (Fight Again replays the same run and never counts twice).
+            var cb = RunnerResults.CombatBuild;
+            if (cb != null) PlayerProgressService.Instance?.RecordRunBuild(cb.PunchPower, cb.KickPower, cb.Resistance, cb.Agility);
+
             EventBus.Publish(new RunnerResultsReadyEvent { Results = RunnerResults });
         };
         // A Runner run starting = a NEW run session (new song, Replay Song or restart): SPECIAL,
@@ -417,6 +439,8 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
         {
             var s = SelectedSong;
             Run = new RunSession(++_runCounter, s.HasValue && !string.IsNullOrEmpty(s.Value.SongId) ? s.Value.SongId : s?.DisplayName);
+            // The previous run's preparation is discarded with its charges: this run builds its own when it ends.
+            RunnerResults = null;
             Debug.Log($"[GameSession] New run session #{Run.Index} — song '{Run.SongId}'");
         };
         EventBus.Subscribe(_onProfileReady);

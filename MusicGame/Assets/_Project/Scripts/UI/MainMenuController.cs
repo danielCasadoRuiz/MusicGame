@@ -114,6 +114,7 @@ public class MainMenuController : MonoBehaviour
         view.playButton.onClick.AddListener(OnPlayClicked);
         view.rivalsButton.onClick.AddListener(OnRivalsClicked);
         view.progressionButton.onClick.AddListener(OnProgressionClicked);
+        if (view.profileButton != null) view.profileButton.onClick.AddListener(() => ProfileScreenController.Instance?.Open());
         view.settingsButton.onClick.AddListener(OnSettingsClicked);
         view.quitButton.onClick.AddListener(OnQuitClicked);
         view.closeButton.onClick.AddListener(() => _settingsPanel.gameObject.SetActive(false));

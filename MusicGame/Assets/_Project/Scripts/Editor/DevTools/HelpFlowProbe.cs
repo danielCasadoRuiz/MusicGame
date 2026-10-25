@@ -292,9 +292,19 @@ public static class HelpFlowProbe
                   $"flights {Conv.FlightsLaunched} (plan {plan.StatFlights.Count}+{plan.ResourceFlights.Count}), max in air {Conv.MaxFlightsSeenInAir}");
             var stats = Resources.Load<AppConfigSO>("AppConfig").fightStats;
             Check("every icon flies to a stat its bonus really feeds (no invented destination); Peak (score only) never flies",
-                  plan.StatFlights.All(f => BonusHelpCatalog.Feeds(f.Source, stats).Any(x => x.stat == f.Stat) || IsFallback(f.Stat)) && plan.StatFlights.All(f => f.Source != BonusKind.Peak)
+                  plan.StatFlights.All(f => BonusHelpCatalog.Feeds(f.Source, stats).Any(x => x.stat == f.Stat)) && plan.StatFlights.All(f => f.Source != BonusKind.Peak)
                   && plan.Sources.Where(c => c.Kind == BonusKind.Peak).All(c => !c.HasDestination),
                   string.Join(", ", plan.StatFlights.Select(f => $"{f.Source}->{f.Stat} {f.Points:0.#}")));
+            // Four-attribute mapping: Onset splits to all four bars, Impact to Punch + Kick (when collected).
+            bool onset = !plan.Sources.Any(c => c.Kind == BonusKind.Onset) || plan.Destinations(BonusKind.Onset) == 4;
+            bool impact = !plan.Sources.Any(c => c.Kind == BonusKind.Impact)
+                          || plan.StatFlights.Where(f => f.Source == BonusKind.Impact).Select(f => f.Stat).OrderBy(x => x).SequenceEqual(new[] { FightStatId.PunchPower, FightStatId.KickPower }.OrderBy(x => x));
+            Check("Onset flies to the four bars, Impact to Punch + Kick; no bar for the retired ImpactPower",
+                  onset && impact && plan.StatFlights.All(f => f.Stat != FightStatId.LegacyImpactPower) && panel.stats.Length == 4,
+                  $"onset → {plan.Destinations(BonusKind.Onset)}, impact → {plan.Destinations(BonusKind.Impact)}, bars {panel.stats.Length}");
+            Check("each bar = its base + every icon that flew into it (several bonuses on one bar add up)",
+                  BonusHelpCatalog.BuildStats.All(st => Mathf.Abs(plan.StartPoints(st) + plan.StatFlights.Where(f => f.Stat == st).Sum(f => f.Points) - plan.FinalPoints[st]) < 1e-3f
+                                                        && Mathf.Abs(plan.StartPoints(st) - plan.BasePoints[st]) < 1e-3f));
             Check("resources fly to their counters (Special, x4, Life)",
                   new[] { BonusKind.Special, BonusKind.QuadCombo, BonusKind.Life }.All(k => plan.ResourceFlights.Any(r => r.Source == k)),
                   string.Join(",", plan.ResourceFlights.Select(r => $"{r.Source} {r.From}->{r.To}")));
@@ -419,10 +429,6 @@ public static class HelpFlowProbe
         (1f, "done", null, null),
     };
 
-    // The build's own fallback: none of the stat's sources existed in the song (MusicCombatBuild.Stat.UsedFallback).
-    private static bool IsFallback(FightStatId stat) =>
-        GameSession.Instance.RunnerResults.CombatBuild.TryGet(stat, out var s) && s.UsedFallback;
-
     private static int Value(BonusKind k)
     {
         var w = Actor(FighterSide.Player).CombatResources;
@@ -433,7 +439,7 @@ public static class HelpFlowProbe
     private static float Real(FighterBuildStats b, FightStatId s) => s switch
     {
         FightStatId.PunchPower => b.punchPower, FightStatId.KickPower => b.kickPower, FightStatId.Agility => b.agility,
-        FightStatId.Resistance => b.resistance, FightStatId.ImpactPower => b.impactPower, _ => 0f,
+        FightStatId.Resistance => b.resistance, _ => 0f,
     };
 
     // The panel's shown points (value text) — what the player reads.

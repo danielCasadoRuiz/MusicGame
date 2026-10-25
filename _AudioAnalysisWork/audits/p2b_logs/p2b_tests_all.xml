@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="38" result="Passed" total="38" passed="38" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:46:17Z" duration="36,3166934">
+  <test-suite type="TestSuite" id="1000" name="MusicGame" fullname="MusicGame" runstate="Runnable" testcasecount="39" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:46:17Z" duration="36.316693" total="38" passed="38" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1042" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/VISYON/Documents/MusicGame/MusicGame/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="38" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:46:17Z" duration="36.301022" total="38" passed="38" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="19400" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestFixture" id="1001" name="MusicSyncTests" fullname="MusicSyncTests" classname="MusicSyncTests" runstate="Runnable" testcasecount="24" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.128547" total="24" passed="24" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1025" name="Analyzer_ResetsDetectorsOnDiscontinuityEventAndClipJump" fullname="MusicSyncTests.Analyzer_ResetsDetectorsOnDiscontinuityEventAndClipJump" methodname="Analyzer_ResetsDetectorsOnDiscontinuityEventAndClipJump" classname="MusicSyncTests" runstate="Runnable" seed="329600100" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.041371" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1024" name="ClipTimeContinuity_DetectsJumpsOnly" fullname="MusicSyncTests.ClipTimeContinuity_DetectsJumpsOnly" methodname="ClipTimeContinuity_DetectsJumpsOnly" classname="MusicSyncTests" runstate="Runnable" seed="1354089189" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.001858" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1020" name="Clock_Filter_EasesSmallDrift_SnapsLargeError" fullname="MusicSyncTests.Clock_Filter_EasesSmallDrift_SnapsLargeError" methodname="Clock_Filter_EasesSmallDrift_SnapsLargeError" classname="MusicSyncTests" runstate="Runnable" seed="329704180" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.010242" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1007" name="Clock_Hold_FreezesWhileAudioStopped_NoWallClockAdvance" fullname="MusicSyncTests.Clock_Hold_FreezesWhileAudioStopped_NoWallClockAdvance" methodname="Clock_Hold_FreezesWhileAudioStopped_NoWallClockAdvance" classname="MusicSyncTests" runstate="Runnable" seed="725802734" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.003717" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1008" name="Clock_HoldDuringWarmup_IsNoOp" fullname="MusicSyncTests.Clock_HoldDuringWarmup_IsNoOp" methodname="Clock_HoldDuringWarmup_IsNoOp" classname="MusicSyncTests" runstate="Runnable" seed="2124001777" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.000858" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1005" name="Clock_MidSongStart_CountdownLeadsIntoStartOffset_NoJump" fullname="MusicSyncTests.Clock_MidSongStart_CountdownLeadsIntoStartOffset_NoJump" methodname="Clock_MidSongStart_CountdownLeadsIntoStartOffset_NoJump" classname="MusicSyncTests" runstate="Runnable" seed="892918630" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.001263" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1006" name="Clock_MidSongStart_CursorFastForward_FiresNoEarlierEvent" fullname="MusicSyncTests.Clock_MidSongStart_CursorFastForward_FiresNoEarlierEvent" methodname="Clock_MidSongStart_CursorFastForward_FiresNoEarlierEvent" classname="MusicSyncTests" runstate="Runnable" seed="1867334086" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.003538" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1016" name="Clock_NaturalEnd_AfterLongHitch" fullname="MusicSyncTests.Clock_NaturalEnd_AfterLongHitch" methodname="Clock_NaturalEnd_AfterLongHitch" classname="MusicSyncTests" runstate="Runnable" seed="1388908390" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.000928" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1011" name="Clock_NaturalEnd_RequiresEvidence" fullname="MusicSyncTests.Clock_NaturalEnd_RequiresEvidence" methodname="Clock_NaturalEnd_RequiresEvidence" classname="MusicSyncTests" runstate="Runnable" seed="1367066977" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.001869" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1015" name="Clock_NaturalEnd_WhateverPositionTheStoppedSourceReports" fullname="MusicSyncTests.Clock_NaturalEnd_WhateverPositionTheStoppedSourceReports" classname="MusicSyncTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.007288" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1012" name="Clock_NaturalEnd_WhateverPositionTheStoppedSourceReports(0.0d)" fullname="MusicSyncTests.Clock_NaturalEnd_WhateverPositionTheStoppedSourceReports(0.0d)" methodname="Clock_NaturalEnd_WhateverPositionTheStoppedSourceReports" classname="MusicSyncTests" runstate="Runnable" seed="360904388" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.000978" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1013" name="Clock_NaturalEnd_WhateverPositionTheStoppedSourceReports(10.0d)" fullname="MusicSyncTests.Clock_NaturalEnd_WhateverPositionTheStoppedSourceReports(10.0d)" methodname="Clock_NaturalEnd_WhateverPositionTheStoppedSourceReports" classname="MusicSyncTests" runstate="Runnable" seed="1410896552" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.000477" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1014" name="Clock_NaturalEnd_WhateverPositionTheStoppedSourceReports(5.0d)" fullname="MusicSyncTests.Clock_NaturalEnd_WhateverPositionTheStoppedSourceReports(5.0d)" methodname="Clock_NaturalEnd_WhateverPositionTheStoppedSourceReports" classname="MusicSyncTests" runstate="Runnable" seed="662350374" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.000484" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1017" name="Clock_NotPlayingBeforeFirstObservation_Waits" fullname="MusicSyncTests.Clock_NotPlayingBeforeFirstObservation_Waits" methodname="Clock_NotPlayingBeforeFirstObservation_Waits" classname="MusicSyncTests" runstate="Runnable" seed="1038873479" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.000813" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1018" name="Clock_Pause_FreezesAndResumeResyncs" fullname="MusicSyncTests.Clock_Pause_FreezesAndResumeResyncs" methodname="Clock_Pause_FreezesAndResumeResyncs" classname="MusicSyncTests" runstate="Runnable" seed="1542379779" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.001088" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1019" name="Clock_PauseNearEnd_IsNotNaturalEnd_AndPauseDuringHoldStaysHeld" fullname="MusicSyncTests.Clock_PauseNearEnd_IsNotNaturalEnd_AndPauseDuringHoldStaysHeld" methodname="Clock_PauseNearEnd_IsNotNaturalEnd_AndPauseDuringHoldStaysHeld" classname="MusicSyncTests" runstate="Runnable" seed="184847497" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.000783" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1010" name="Clock_StopWithPositionReset_MidSong_IsNotNaturalEnd" fullname="MusicSyncTests.Clock_StopWithPositionReset_MidSong_IsNotNaturalEnd" methodname="Clock_StopWithPositionReset_MidSong_IsNotNaturalEnd" classname="MusicSyncTests" runstate="Runnable" seed="1625330684" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.000606" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1009" name="Clock_UnexplainedStop_StallsFrozen_NotNaturalEnd_ThenResyncs" fullname="MusicSyncTests.Clock_UnexplainedStop_StallsFrozen_NotNaturalEnd_ThenResyncs" methodname="Clock_UnexplainedStop_StallsFrozen_NotNaturalEnd_ThenResyncs" classname="MusicSyncTests" runstate="Runnable" seed="1026939343" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.000978" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1004" name="Clock_WarmupCapsAtHandoff_LoadWaitNeverOverrunsOrSnapsBack" fullname="MusicSyncTests.Clock_WarmupCapsAtHandoff_LoadWaitNeverOverrunsOrSnapsBack" methodname="Clock_WarmupCapsAtHandoff_LoadWaitNeverOverrunsOrSnapsBack" classname="MusicSyncTests" runstate="Runnable" seed="2122063997" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.003379" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1023" name="Kick_QueriesProfileWithClipTime" fullname="MusicSyncTests.Kick_QueriesProfileWithClipTime" methodname="Kick_QueriesProfileWithClipTime" classname="MusicSyncTests" runstate="Runnable" seed="351229084" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.003330" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1022" name="Kick_ResetForgetsCooldownAndHistory" fullname="MusicSyncTests.Kick_ResetForgetsCooldownAndHistory" methodname="Kick_ResetForgetsCooldownAndHistory" classname="MusicSyncTests" runstate="Runnable" seed="1375300074" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.000792" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1021" name="Kick_UpdatesHistoryDuringCooldown" fullname="MusicSyncTests.Kick_UpdatesHistoryDuringCooldown" methodname="Kick_UpdatesHistoryDuringCooldown" classname="MusicSyncTests" runstate="Runnable" seed="1972334865" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.000941" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1002" name="MusicTime_ConversionsRoundTrip" fullname="MusicSyncTests.MusicTime_ConversionsRoundTrip" methodname="MusicTime_ConversionsRoundTrip" classname="MusicSyncTests" runstate="Runnable" seed="158948996" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.001026" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1003" name="MusicTime_FirstEventAtOrAfter" fullname="MusicSyncTests.MusicTime_FirstEventAtOrAfter" methodname="MusicTime_FirstEventAtOrAfter" classname="MusicSyncTests" runstate="Runnable" seed="1247999233" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.000689" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1026" name="PulseDedup_SameEventOrSameOnsetMerges_DistinctTimesAdd" fullname="MusicSyncTests.PulseDedup_SameEventOrSameOnsetMerges_DistinctTimesAdd" methodname="PulseDedup_SameEventOrSameOnsetMerges_DistinctTimesAdd" classname="MusicSyncTests" runstate="Runnable" seed="1942452817" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:41Z" duration="0.003993" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1027" name="SongAnalysisTests" fullname="SongAnalysisTests" classname="SongAnalysisTests" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:46:17Z" duration="36.168562" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1031" name="Binary_RoundTrip_IsLossless_AndHeaderBindsAudioAndParams" fullname="SongAnalysisTests.Binary_RoundTrip_IsLossless_AndHeaderBindsAudioAndParams" methodname="Binary_RoundTrip_IsLossless_AndHeaderBindsAudioAndParams" classname="SongAnalysisTests" runstate="Runnable" seed="742429486" result="Passed" start-time="2026-10-17 10:45:41Z" end-time="2026-10-17 10:45:48Z" duration="7.772986" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1041" name="Blocking_Cancellation_ThrowsAndReleasesGate" fullname="SongAnalysisTests.Blocking_Cancellation_ThrowsAndReleasesGate" methodname="Blocking_Cancellation_ThrowsAndReleasesGate" classname="SongAnalysisTests" runstate="Runnable" seed="867971736" result="Passed" start-time="2026-10-17 10:45:48Z" end-time="2026-10-17 10:45:49Z" duration="0.189822" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1037" name="Bpm_WithoutEvidence_IsZeroNotArbitrary" fullname="SongAnalysisTests.Bpm_WithoutEvidence_IsZeroNotArbitrary" methodname="Bpm_WithoutEvidence_IsZeroNotArbitrary" classname="SongAnalysisTests" runstate="Runnable" seed="372139490" result="Passed" start-time="2026-10-17 10:45:49Z" end-time="2026-10-17 10:45:49Z" duration="0.261629" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1035" name="Capture_ChunkedGetData_MatchesCoreMixdown" fullname="SongAnalysisTests.Capture_ChunkedGetData_MatchesCoreMixdown" methodname="Capture_ChunkedGetData_MatchesCoreMixdown" classname="SongAnalysisTests" runstate="Runnable" seed="1903985131" result="Passed" start-time="2026-10-17 10:45:49Z" end-time="2026-10-17 10:46:11Z" duration="22.583450" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1034" name="Capture_SilentClip_IsNotAnalysedSilently" fullname="SongAnalysisTests.Capture_SilentClip_IsNotAnalysedSilently" methodname="Capture_SilentClip_IsNotAnalysedSilently" classname="SongAnalysisTests" runstate="Runnable" seed="1291871615" result="Passed" start-time="2026-10-17 10:46:11Z" end-time="2026-10-17 10:46:11Z" duration="0.011555" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1033" name="Capture_StreamingClip_FailsExplicitly" fullname="SongAnalysisTests.Capture_StreamingClip_FailsExplicitly" methodname="Capture_StreamingClip_FailsExplicitly" classname="SongAnalysisTests" runstate="Runnable" seed="282678896" result="Passed" start-time="2026-10-17 10:46:11Z" end-time="2026-10-17 10:46:11Z" duration="0.010884" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Can't get data from streamed samples for audio clip "p2b_stream". If you created the audio clip with AudioClip.Create, set the 'stream' argument to false, so you can access the data with 'AudioClip.GetData'. For a disk-based audio clip, change the load type to 'DecompressOnLoad', so you can access the data with 'AudioClip.GetData'.
+]]></output>
+        </test-case>
+        <test-case id="1040" name="ChunkedInference_MatchesSingleBatch" fullname="SongAnalysisTests.ChunkedInference_MatchesSingleBatch" methodname="ChunkedInference_MatchesSingleBatch" classname="SongAnalysisTests" runstate="Runnable" seed="1462882918" result="Passed" start-time="2026-10-17 10:46:12Z" end-time="2026-10-17 10:46:14Z" duration="2.310484" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1030" name="Derived_NeverMutatesRaw_AndDoesNotCompound" fullname="SongAnalysisTests.Derived_NeverMutatesRaw_AndDoesNotCompound" methodname="Derived_NeverMutatesRaw_AndDoesNotCompound" classname="SongAnalysisTests" runstate="Runnable" seed="131197828" result="Passed" start-time="2026-10-17 10:46:14Z" end-time="2026-10-17 10:46:14Z" duration="0.291726" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1036" name="FirstFullWindow_IsAnalysed_AndAttackAtZeroDetected" fullname="SongAnalysisTests.FirstFullWindow_IsAnalysed_AndAttackAtZeroDetected" methodname="FirstFullWindow_IsAnalysed_AndAttackAtZeroDetected" classname="SongAnalysisTests" runstate="Runnable" seed="1780047211" result="Passed" start-time="2026-10-17 10:46:14Z" end-time="2026-10-17 10:46:14Z" duration="0.090973" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1029" name="Identity_SameLengthDifferentAudio_Differs" fullname="SongAnalysisTests.Identity_SameLengthDifferentAudio_Differs" methodname="Identity_SameLengthDifferentAudio_Differs" classname="SongAnalysisTests" runstate="Runnable" seed="487448148" result="Passed" start-time="2026-10-17 10:46:14Z" end-time="2026-10-17 10:46:14Z" duration="0.056410" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1038" name="OnsetTimes_AreTheDetectedEvents_Ascending" fullname="SongAnalysisTests.OnsetTimes_AreTheDetectedEvents_Ascending" methodname="OnsetTimes_AreTheDetectedEvents_Ascending" classname="SongAnalysisTests" runstate="Runnable" seed="286300972" result="Passed" start-time="2026-10-17 10:46:14Z" end-time="2026-10-17 10:46:15Z" duration="0.324168" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1032" name="RetagPath_KeepsRawVoiceRaw_AndReusesRhythm" fullname="SongAnalysisTests.RetagPath_KeepsRawVoiceRaw_AndReusesRhythm" methodname="RetagPath_KeepsRawVoiceRaw_AndReusesRhythm" classname="SongAnalysisTests" runstate="Runnable" seed="1980615145" result="Passed" start-time="2026-10-17 10:46:15Z" end-time="2026-10-17 10:46:15Z" duration="0.609077" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1039" name="SequentialAndParallel_ProduceIdenticalProfiles_InUnity" fullname="SongAnalysisTests.SequentialAndParallel_ProduceIdenticalProfiles_InUnity" methodname="SequentialAndParallel_ProduceIdenticalProfiles_InUnity" classname="SongAnalysisTests" runstate="Runnable" seed="2141393444" result="Passed" start-time="2026-10-17 10:46:15Z" end-time="2026-10-17 10:46:17Z" duration="1.642379" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1028" name="Snapshot_MapsConfig_AndHashTracksResultAffectingSwitches" fullname="SongAnalysisTests.Snapshot_MapsConfig_AndHashTracksResultAffectingSwitches" methodname="Snapshot_MapsConfig_AndHashTracksResultAffectingSwitches" classname="SongAnalysisTests" runstate="Runnable" seed="972690123" result="Passed" start-time="2026-10-17 10:46:17Z" end-time="2026-10-17 10:46:17Z" duration="0.002313" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: C:/Users/VISYON/AppData/LocalLow/DefaultCompany/MusicGame\TestResults.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

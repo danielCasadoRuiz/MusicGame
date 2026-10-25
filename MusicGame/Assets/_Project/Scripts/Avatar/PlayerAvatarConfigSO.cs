@@ -23,6 +23,25 @@ public class PlayerAvatarConfigSO : ScriptableObject
     [Tooltip("Music style → RunnerAnimationStyleSO (clips per role) used by RunnerAvatarAnimator.")]
     public RunnerAnimationStyleLibrarySO runnerAnimationStyles;
 
-    public static AvatarRecipeSO ResolveRecipe(AppConfigSO appConfig) =>
-        appConfig != null && appConfig.playerAvatar != null ? appConfig.playerAvatar.avatarRecipe : null;
+    [System.Serializable]
+    public class StyleRecipe
+    {
+        public GameMusicStyle style;
+        public AvatarRecipeSO recipe;
+    }
+
+    [Tooltip("How the player looks for their PREFERRED style (the music style they pick most, PlayerProgressService." +
+             "PreferredStyle). Empty for now — no outfits authored yet: the fixed avatarRecipe above is used.")]
+    public StyleRecipe[] styleRecipes = System.Array.Empty<StyleRecipe>();
+
+    /// <summary>The player's look: their preferred style's recipe when one is authored, else the fixed recipe.</summary>
+    public static AvatarRecipeSO ResolveRecipe(AppConfigSO appConfig)
+    {
+        var cfg = appConfig != null ? appConfig.playerAvatar : null;
+        if (cfg == null) return null;
+        var preferred = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.PreferredStyle : GameMusicStyle.Unknown;
+        if (preferred != GameMusicStyle.Unknown && cfg.styleRecipes != null)
+            foreach (var r in cfg.styleRecipes) if (r != null && r.style == preferred && r.recipe != null) return r.recipe;
+        return cfg.avatarRecipe;
+    }
 }

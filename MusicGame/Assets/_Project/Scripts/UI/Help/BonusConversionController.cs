@@ -291,8 +291,17 @@ public class BonusConversionController : MonoBehaviour
         {
             if (_skip) yield break;
             if (!chip.HasDestination) continue;
-            foreach (var f in plan.StatFlights)
-                if (f.Source == chip.Kind) { yield return WaitForRoom(maxInAir); if (_skip) yield break; LaunchStat(f, panel, cfg); }
+            // A bonus that feeds several stats (Onset → 4, Impact → 2) SPLITS: its smaller pieces leave together,
+            // one per destination — one bonus, several bars, never shown as several pickups.
+            int pieces = plan.Destinations(chip.Kind);
+            if (pieces > 0)
+            {
+                yield return WaitForRoom(Mathf.Max(1, maxInAir - pieces + 1));
+                if (_skip) yield break;
+                float size = pieces > 1 ? (cfg != null ? cfg.splitPieceScale : 0.6f) : 1f;
+                foreach (var f in plan.StatFlights)
+                    if (f.Source == chip.Kind) LaunchStat(f, panel, cfg, size);
+            }
             foreach (var r in plan.ResourceFlights)
                 if (r.Source == chip.Kind) { yield return WaitForRoom(maxInAir); if (_skip) yield break; LaunchResource(r, panel, cfg); }
             for (float t = 0f; t < stagger && !_skip; t += Time.deltaTime) yield return null;
@@ -354,7 +363,8 @@ public class BonusConversionController : MonoBehaviour
         BuildTray(plan, Cfg);
         Loc.Set(_view.titleText, "Help.Conv.Title");
         Loc.Set(_view.skipLabel, "Fight.Skip");
-        Loc.Set(_view.budgetText, "Help.Conv.Budget", Mathf.RoundToInt(plan.Budget).ToString(), Mathf.RoundToInt(plan.MaxBudget).ToString());
+        // Summary only: the four attributes added up (nothing is shared out of it).
+        Loc.Set(_view.budgetText, "Help.Conv.Total", Mathf.RoundToInt(plan.Budget).ToString());
         _view.skipButton.gameObject.SetActive(false);
         if (_view.group != null) _view.group.alpha = 1f;
         _view.root.gameObject.SetActive(true);
@@ -482,12 +492,12 @@ public class BonusConversionController : MonoBehaviour
 
     // ── Flights ──────────────────────────────────────────────────────────────
 
-    private void LaunchStat(BonusConversionPlan.Flight f, FightBuildPanelView panel, HelpUIConfigSO cfg)
+    private void LaunchStat(BonusConversionPlan.Flight f, FightBuildPanelView panel, HelpUIConfigSO cfg, float size = 1f)
     {
         var row = Row(panel, f.Stat);
         if (row == null || !_chips.TryGetValue(f.Source, out var chip)) return;
         Departed(f.Source, ChipOf(f.Source));
-        Launch(f.Source, chip.icon.rectTransform, row.icon != null ? row.icon.rectTransform : row.root, cfg, () =>
+        Launch(f.Source, chip.icon.rectTransform, row.icon != null ? row.icon.rectTransform : row.root, cfg, size, () =>
         {
             float from = _shownPoints.TryGetValue(f.Stat, out var p) ? p : 0f;
             StartCoroutine(Grow(panel, f.Stat, from, from + f.Points, cfg));
@@ -500,20 +510,20 @@ public class BonusConversionController : MonoBehaviour
         var cell = Cell(panel, r.Source);
         if (cell == null || !_chips.TryGetValue(r.Source, out var chip)) return;
         Departed(r.Source, ChipOf(r.Source));
-        Launch(r.Source, chip.icon.rectTransform, cell.icon != null ? cell.icon.rectTransform : cell.root, cfg, () =>
+        Launch(r.Source, chip.icon.rectTransform, cell.icon != null ? cell.icon.rectTransform : cell.root, cfg, 1f, () =>
         {
             SetResource(panel, r.Source, r.To);
             Pulse(cell.root, cfg);
         });
     }
 
-    private void Launch(BonusKind kind, RectTransform from, RectTransform to, HelpUIConfigSO cfg, System.Action arrive)
+    private void Launch(BonusKind kind, RectTransform from, RectTransform to, HelpUIConfigSO cfg, float size, System.Action arrive)
     {
         var img = Instantiate(_view.flyerPrefab, _view.flightLayer, false);
         img.gameObject.SetActive(true);
         img.sprite = cfg != null ? cfg.Icon(kind) : null;
         img.color = cfg != null ? cfg.Tint(kind) : Color.white;
-        img.rectTransform.sizeDelta = from.rect.size;
+        img.rectTransform.sizeDelta = from.rect.size * size;
         var flyer = new Flyer { image = img };
         _flyers.Add(flyer);
         FlightsLaunched++;
@@ -608,7 +618,8 @@ public class BonusConversionController : MonoBehaviour
         var row = Row(panel, stat);
         if (row == null) return;
         var cfg = HelpUIConfigSO.Instance;
-        float full = cfg != null ? cfg.statBarFullPoints : 40f;
+        var stats = Resources.Load<AppConfigSO>("AppConfig")?.fightStats;   // a bar is full at the real per-stat cap
+        float full = stats != null ? stats.maxStatPoints : cfg != null ? cfg.statBarFullPoints : 40f;
         if (row.fill != null) row.fill.fillAmount = Mathf.Clamp01(points / full);
         if (row.value != null) row.value.text = Mathf.RoundToInt(points).ToString();
     }

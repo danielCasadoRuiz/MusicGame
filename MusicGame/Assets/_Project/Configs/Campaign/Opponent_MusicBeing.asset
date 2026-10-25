@@ -17,6 +17,7 @@ MonoBehaviour:
   heightMeters: 2
   heightIsEstimate: 1
   biographyKey: Boss.Bio
+  arenas: []
   levels:
   - level: 1
     portrait: {fileID: 21300000, guid: c5f446baa1ad2664ba76c7eb48a8a9de, type: 3}
@@ -29,7 +30,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: a9e86e3585e74d9d96b48ba74566e7b4, type: 3}
     - {fileID: 8300000, guid: aac165e0ce974980b92139f99a89801c, type: 3}
     difficultyProfile: {fileID: 11400000, guid: 3cfb716fd22745c59f76622efab21062, type: 2}
-    combatStats: {fileID: 11400000, guid: f39f20c127c94a10857a177b92c13646, type: 2}
+    combatStats: {fileID: 11400000, guid: 1a7e265a0859e6f48937b6445f9f5a6d, type: 2}
+    difficultyScale: 1
     combatProfile: {fileID: 11400000, guid: c3c81cda0e47f894da30557f687c737e, type: 2}
     specials: 1
     tripleCombos: 0
@@ -45,7 +47,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: a9e86e3585e74d9d96b48ba74566e7b4, type: 3}
     - {fileID: 8300000, guid: aac165e0ce974980b92139f99a89801c, type: 3}
     difficultyProfile: {fileID: 11400000, guid: a58332e0edb04d1ca8b616bf65963617, type: 2}
-    combatStats: {fileID: 11400000, guid: f39f20c127c94a10857a177b92c13646, type: 2}
+    combatStats: {fileID: 11400000, guid: 1a7e265a0859e6f48937b6445f9f5a6d, type: 2}
+    difficultyScale: 1
     combatProfile: {fileID: 11400000, guid: c3c81cda0e47f894da30557f687c737e, type: 2}
     specials: 1
     tripleCombos: 0
@@ -61,7 +64,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: a9e86e3585e74d9d96b48ba74566e7b4, type: 3}
     - {fileID: 8300000, guid: aac165e0ce974980b92139f99a89801c, type: 3}
     difficultyProfile: {fileID: 11400000, guid: a58332e0edb04d1ca8b616bf65963617, type: 2}
-    combatStats: {fileID: 11400000, guid: f39f20c127c94a10857a177b92c13646, type: 2}
+    combatStats: {fileID: 11400000, guid: 1a7e265a0859e6f48937b6445f9f5a6d, type: 2}
+    difficultyScale: 1
     combatProfile: {fileID: 11400000, guid: c3c81cda0e47f894da30557f687c737e, type: 2}
     specials: 1
     tripleCombos: 0
@@ -73,7 +77,8 @@ MonoBehaviour:
     avatarRecipe: {fileID: 0}
     songs: []
     difficultyProfile: {fileID: 0}
-    combatStats: {fileID: 0}
+    combatStats: {fileID: 11400000, guid: 1a7e265a0859e6f48937b6445f9f5a6d, type: 2}
+    difficultyScale: 1
     combatProfile: {fileID: 0}
     specials: 1
     tripleCombos: 0

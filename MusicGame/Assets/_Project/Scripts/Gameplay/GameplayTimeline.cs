@@ -14,9 +14,7 @@ using UnityEngine;
 ///  MACRO — structural moments (Impact/Drop/BuildupStart/Peak), built independently of Micro
 ///  in BuildMacroEvents. A Kick classified with confidence at the same instant as an Impact
 ///  keeps BOTH — Impact never displaces or merges with whatever Micro event(s) share its
-///  moment; the only "composition" rule this iteration needs is that Impact spawns centered
-///  on the path (lateralOffset = 0) so it reads as visually distinct from Micro's scattered
-///  placement, even while both are still plain primitives. Drop/BuildupStart/standalone-Peak
+///  moment; Impact spawns at a seeded random point across the track (no preferred spot). Drop/BuildupStart/standalone-Peak
 ///  are pure signals (MacroEvent[]) — not spawned as objects — consumed via
 ///  MacroEventOccurredEvent (fired by GameplayManager at eventTime) by things like
 ///  MusicEnvironmentController.
@@ -220,13 +218,13 @@ public class GameplayTimeline
         }
 
         // ── MACRO-as-collectible ──────────────────────────────────────────────────────
-        // Impact spawns its own centered, always-kept pickup — entirely independent of
+        // Impact spawns its own (randomly placed across the track), always-kept pickup — entirely independent of
         // Micro's thinning/pattern logic. It never competes with or replaces whatever Micro
         // event(s) happen to land at the same instant; both simply coexist.
         if (config.collectibles.IsSpawnEnabled(RingType.Impact))
             foreach (var m in macroEvents)
                 if (m.type == MacroEventType.Impact)
-                    EmitMacroCollectible(m, RingType.Impact, config, path, vFloorDesign, vCeil, events);
+                    EmitMacroCollectible(m, RingType.Impact, config, path, vFloorDesign, vCeil, events, rng);
 
         // Peak no longer auto-spawns a collectible — it's climax-tagging metadata on
         // MacroEvents (see BuildMacroEvents). config.collectibles.spawnPeak (default OFF) opts back into a
@@ -235,7 +233,7 @@ public class GameplayTimeline
         if (config.collectibles.spawnPeak)
             foreach (var m in macroEvents)
                 if (m.type == MacroEventType.Peak)
-                    EmitMacroCollectible(m, RingType.Peak, config, path, vFloorDesign, vCeil, events);
+                    EmitMacroCollectible(m, RingType.Peak, config, path, vFloorDesign, vCeil, events, rng);
 
         events.Sort((a, b) => a.eventTime.CompareTo(b.eventTime));
 
@@ -409,6 +407,7 @@ public class GameplayTimeline
         var impactAndDrops = new List<(float time, MacroEventType type)>();
         if (profile.impactTimes != null) foreach (var t in profile.impactTimes) impactAndDrops.Add((t, MacroEventType.Impact));
         if (profile.dropTimes   != null) foreach (var t in profile.dropTimes)   impactAndDrops.Add((t, MacroEventType.Drop));
+        foreach (var t in AccentImpacts(profile, config, impactAndDrops)) impactAndDrops.Add((t, MacroEventType.Impact));
         impactAndDrops.Sort((a, b) => a.time.CompareTo(b.time));
 
         float lastTime = -999f;
@@ -452,6 +451,40 @@ public class GameplayTimeline
         return result.ToArray();
     }
 
+    /// <summary>
+    /// Accent Impacts: the analysis' intensity-peak Impacts are rare (its threshold is shared with style / similarity /
+    /// world generation, so it is not lowered here), so the runner also takes the song's STRONGEST detected hits —
+    /// accentImpactsPerMinute of them, at least accentImpactMinGap apart (from each other and from existing
+    /// Impacts / Drops), strong enough and in a passage at or above the average energy. Each becomes a normal macro
+    /// Impact: its centered pickup, and the detection at the same instant merges into it (impactMergeWindow).
+    /// </summary>
+    private static List<float> AccentImpacts(SongProfile profile, MusicRunnerGameplayConfig config, List<(float time, MacroEventType type)> existing)
+    {
+        var result = new List<float>();
+        var sel = config.collectibles != null ? config.collectibles.selection : null;
+        if (sel == null || sel.accentImpactsPerMinute <= 0f || profile.onsetEvents == null || profile.duration <= 0f) return result;
+        int quota = Mathf.FloorToInt(sel.accentImpactsPerMinute * profile.duration / 60f);
+        var taken = new List<float>();
+        foreach (var e in existing) if (e.type == MacroEventType.Impact || e.type == MacroEventType.Drop) taken.Add(e.time);
+        var candidates = new List<(float time, float strength)>();
+        foreach (var e in profile.onsetEvents)
+        {
+            if (e.origin != MusicGame.Audio.Analysis.OnsetOrigin.Detected || e.strength < sel.accentImpactMinStrength) continue;
+            if (e.time < 1f || e.time > profile.duration - 1f) continue;
+            if (profile.GetEnergyAt(e.time) < profile.averageEnergy) continue;
+            candidates.Add((e.time, e.strength));
+        }
+        candidates.Sort((a, b) => b.strength != a.strength ? b.strength.CompareTo(a.strength) : a.time.CompareTo(b.time));
+        foreach (var (time, _) in candidates)
+        {
+            if (result.Count >= quota) break;
+            if (NearAny(taken, time, sel.accentImpactMinGap)) continue;
+            taken.Add(time);
+            result.Add(time);
+        }
+        return result;
+    }
+
     // Used only for the ambiguous/filler-absorption rule above — deliberately a tighter window
     // (config.collectibles.ambiguousAbsorptionWindow) than ClimaxTagTolerance, which is about "is this THE
     // song's climax", a different question from "is this Micro candidate redundant right here".
@@ -466,14 +499,17 @@ public class GameplayTimeline
         return false;
     }
 
-    // Places a Macro moment as its own collectible — centered on the path (lateralOffset = 0),
+    // Places a Macro moment as its own collectible — at a random point across the track (seeded),
     // a simple, deliberate composition rule that keeps it visually distinct from the
     // scattered Micro collectibles even while both are still plain primitives, and keeps it
     // reachable regardless of whatever Micro event(s) share this exact instant.
     private static void EmitMacroCollectible(MacroEvent m, RingType type, MusicRunnerGameplayConfig config,
                                              MusicPath path, float vFloorDesign, float vCeil,
-                                             List<TimelineEvent> events)
+                                             List<TimelineEvent> events, System.Random rng)
     {
+        // Anywhere across the track (seeded — the layout stays reproducible), never a fixed preferred spot.
+        float half = LateralHalfRange(path, config, m.eventDistance) * 0.85f;
+        float lateral = half > 0f && rng != null ? (float)(rng.NextDouble() * 2.0 - 1.0) * half : 0f;
         float vFloor = CollectibleFloor(type, config, vFloorDesign, vCeil);
         float vOff   = Mathf.Lerp(vFloor, vCeil, 0.5f);
         if (config.collectibles.DevOverrides != null && config.collectibles.DevOverrides.noJumps)
@@ -485,7 +521,7 @@ public class GameplayTimeline
             eventDistance  = m.eventDistance,
             eventType      = EventType.Ring,
             ringType       = type,
-            lateralOffset  = 0f,
+            lateralOffset  = lateral,
             verticalOffset = vOff,
             floorClearance = vFloor,
             strength       = m.strength,
@@ -776,6 +812,10 @@ public class GameplayTimeline
         {
             var e = ev[k];
             var (type, conf, families, familyCount) = FamilyOf(e, sel.familyMinConfidence);
+            // A hit with no confident family (it would be a generic Onset) landing ON a tracked beat IS the beat:
+            // it becomes a Beat bonus (no extra object — the same moment, its musical role).
+            if (type == RingType.Onset && sel.onBeatGenericAsBeat && profile.beatTimes != null && NearSorted(profile.beatTimes, e.time, sel.onBeatWindow))
+                type = RingType.Beat;
             switch (type)
             {
                 case RingType.Kick:  stats.kick++;  break;
@@ -811,6 +851,15 @@ public class GameplayTimeline
             }
         }
         return list;
+    }
+
+    // `sorted` ascending: some value within `window` of `t`.
+    private static bool NearSorted(float[] sorted, float t, float window)
+    {
+        int i = System.Array.BinarySearch(sorted, t);
+        if (i >= 0) return true;
+        i = ~i;
+        return (i < sorted.Length && sorted[i] - t <= window) || (i > 0 && t - sorted[i - 1] <= window);
     }
 
     // `sorted` ascending: true when `t` keeps `gap` from both neighbours; `pos` = its insertion index.

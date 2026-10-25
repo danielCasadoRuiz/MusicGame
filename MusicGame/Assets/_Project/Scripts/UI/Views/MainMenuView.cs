@@ -26,6 +26,8 @@ public class MainMenuView : MonoBehaviour
     public TextMeshProUGUI playButtonLabel;
     public Button      rivalsButton;
     public Button      progressionButton;
+    [Tooltip("The top-right profile icon — opens the player profile (ProfileScreenController).")]
+    public Button      profileButton;
     public Button      settingsButton;
     public TextMeshProUGUI settingsButtonLabel;
     public Button      quitButton;

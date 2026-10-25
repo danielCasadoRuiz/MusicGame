@@ -1,0 +1,95 @@
+
+=== Synthetic onset tests @ 44100 Hz ===
+PASS kicks                                            | omissions 0/12 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 12/12 | timing mean -1.69 |mean| 1.69 max 2.57 ms (limit 6) | optional events 0/0
+     labels: kickKick:12
+PASS snares                                           | omissions 0/12 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 12/12 | timing mean 0.30 |mean| 0.35 max 0.66 ms (limit 6) | optional events 0/0
+     labels: snareSnare:12
+PASS hihats                                           | omissions 0/12 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 12/12 | timing mean 0.10 |mean| 0.24 max 0.82 ms (limit 6) | optional events 0/0
+     labels: hihatHiHat:12
+PASS clicks (must be Generic)                         | omissions 0/12 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 12/12 | timing mean -2.90 |mean| 2.90 max 3.66 ms (limit 6) | optional events 0/0
+     labels: clickGeneric:12
+PASS kick+hat simultaneous                            | omissions 0/12 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 12/12 | timing mean -0.02 |mean| 0.30 max 0.69 ms (limit 6) | optional events 0/0
+     labels: hihat+kickKick, HiHat:1, kick+hihatKick, HiHat:11
+FAIL kick+snare simultaneous                          | omissions 0/12 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 1 ok 11/12 | timing mean -0.20 |mean| 0.32 max 1.07 ms (limit 6) | optional events 0/0
+     labels: kick+snareKick, Snare:10, kick+snareKick, Snare, HiHat:1, snare+kickKick, Snare:1
+     FAILED: extra family
+PASS plucks (tonal, must be Generic)                  | omissions 0/8 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 8/8 | timing mean 1.98 |mean| 1.98 max 2.60 ms (limit 6) | optional events 0/0
+     labels: pluckGeneric:8
+PASS sustained bass (1 Generic start, nothing else)   | omissions 0/1 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 1/1 | timing mean 3.84 |mean| 3.84 max 3.84 ms (limit 15) | optional events 0/0
+     labels: bass-startGeneric:1
+     justified relaxation: timing limit 15 ms: the note fades in over 20 ms, its attack instant is not sharper than that
+PASS bass notes detached (Generic, not Kick)          | omissions 0/8 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 8/8 | timing mean 4.27 |mean| 4.27 max 7.18 ms (limit 15) | optional events 0/0
+     labels: bass-startGeneric:8
+     justified relaxation: timing limit 15 ms: 20 ms fade-in per note
+INFO bass notes legato                                | omissions 0/0 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 1/1 | timing mean 0.00 |mean| 0.00 max 0.00 ms (limit 6) | optional events 1/8
+     labels: bass-startGeneric:1
+     INFORMATIONAL: pitch changes without an energy rise (measured, see stimulus report): no attack by construction; detections are optional and must not be Kick
+PASS pad crescendo (no event at all)                  | omissions 0/0 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 0/0 | timing mean 0.00 |mean| 0.00 max 0.00 ms (limit 6) | optional events 0/0
+PASS quiet(-36dB) then loud(-6dB) + floor -70         | omissions 0/32 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 32/32 | timing mean 0.96 |mean| 1.65 max 4.32 ms (limit 6) | optional events 0/0
+     labels: hihatHiHat:16, kickKick:16
+PASS silence gaps                                     | omissions 0/8 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 8/8 | timing mean -0.75 |mean| 0.95 max 2.00 ms (limit 6) | optional events 0/0
+     labels: kickKick:4, snareSnare:4
+PASS 16th hats @180bpm (83ms)                         | omissions 0/48 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 48/48 | timing mean 0.97 |mean| 0.97 max 2.34 ms (limit 6) | optional events 0/0
+     labels: hihatHiHat:48
+PASS 32nd hats @120bpm (62.5ms), accents              | omissions 0/64 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 64/64 | timing mean 1.31 |mean| 1.31 max 2.46 ms (limit 6) | optional events 0/0
+     labels: hihatHiHat:64
+PASS drum loop 120bpm + bass + floor                  | omissions 0/64 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 64/64 | timing mean 0.38 |mean| 0.47 max 1.42 ms (limit 6) | optional events 0/0
+     labels: hihatHiHat:32, kick+hihatKick, HiHat:16, snare+(hihat)Snare:12, snare+(hihat)Snare, HiHat:4
+     justified relaxation: hi-hats under the snare hits: HiHat family optional (not required) on those events - measured masking: the hat adds well under 1 dB to the snare's own 5-16 kHz power (see masking report)
+PASS edge: kick at t=0                                | omissions 0/1 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 1/1 | timing mean 0.11 |mean| 0.11 max 0.11 ms (limit 6) | optional events 0/0
+     labels: kickKick:1
+PASS edge: kick 5ms before end                        | omissions 0/1 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 1/1 | timing mean 0.39 |mean| 0.39 max 0.39 ms (limit 6) | optional events 0/0
+     labels: kickGeneric:1
+     justified relaxation: family relaxed to Kick-or-Generic: only 5 ms of the kick exist, its ring/decay (the kick evidence) is not in the signal
+PASS edge: 500 samples, click@100                     | omissions 0/1 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 1/1 | timing mean -1.02 |mean| 1.02 max 1.02 ms (limit 6) | optional events 0/0
+     labels: clickGeneric:1
+PASS edge: 10 samples                                 | omissions 0/0 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 0/0 | timing mean 0.00 |mean| 0.00 max 0.00 ms (limit 6) | optional events 0/0
+PASS edge: empty                                      | omissions 0/0 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 0/0 | timing mean 0.00 |mean| 0.00 max 0.00 ms (limit 6) | optional events 0/0
+
+=== Synthetic onset tests @ 48000 Hz ===
+PASS kicks                                            | omissions 0/12 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 12/12 | timing mean -1.56 |mean| 1.56 max 1.74 ms (limit 6) | optional events 0/0
+     labels: kickKick:12
+PASS snares                                           | omissions 0/12 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 12/12 | timing mean 0.39 |mean| 0.39 max 0.72 ms (limit 6) | optional events 0/0
+     labels: snareSnare:12
+PASS hihats                                           | omissions 0/12 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 12/12 | timing mean 0.24 |mean| 0.27 max 0.55 ms (limit 6) | optional events 0/0
+     labels: hihatHiHat:12
+PASS clicks (must be Generic)                         | omissions 0/12 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 12/12 | timing mean -1.91 |mean| 1.91 max 1.94 ms (limit 6) | optional events 0/0
+     labels: clickGeneric:12
+PASS kick+hat simultaneous                            | omissions 0/12 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 12/12 | timing mean 0.16 |mean| 0.17 max 0.36 ms (limit 6) | optional events 0/0
+     labels: hihat+kickKick, HiHat:1, kick+hihatKick, HiHat:11
+PASS kick+snare simultaneous                          | omissions 0/12 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 12/12 | timing mean 0.26 |mean| 0.26 max 0.68 ms (limit 6) | optional events 0/0
+     labels: kick+snareKick, Snare:11, snare+kickKick, Snare:1
+PASS plucks (tonal, must be Generic)                  | omissions 0/8 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 8/8 | timing mean 1.94 |mean| 1.94 max 2.58 ms (limit 6) | optional events 0/0
+     labels: pluckGeneric:8
+PASS sustained bass (1 Generic start, nothing else)   | omissions 0/1 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 1/1 | timing mean 3.45 |mean| 3.45 max 3.45 ms (limit 15) | optional events 0/0
+     labels: bass-startGeneric:1
+     justified relaxation: timing limit 15 ms: the note fades in over 20 ms, its attack instant is not sharper than that
+PASS bass notes detached (Generic, not Kick)          | omissions 0/8 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 8/8 | timing mean 4.93 |mean| 4.93 max 9.43 ms (limit 15) | optional events 0/0
+     labels: bass-startGeneric:8
+     justified relaxation: timing limit 15 ms: 20 ms fade-in per note
+INFO bass notes legato                                | omissions 0/0 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 2/2 | timing mean 0.00 |mean| 0.00 max 0.00 ms (limit 6) | optional events 2/8
+     labels: bass-startGeneric:2
+     INFORMATIONAL: pitch changes without an energy rise (measured, see stimulus report): no attack by construction; detections are optional and must not be Kick
+PASS pad crescendo (no event at all)                  | omissions 0/0 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 0/0 | timing mean 0.00 |mean| 0.00 max 0.00 ms (limit 6) | optional events 0/0
+PASS quiet(-36dB) then loud(-6dB) + floor -70         | omissions 0/32 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 32/32 | timing mean 1.07 |mean| 1.69 max 4.49 ms (limit 6) | optional events 0/0
+     labels: hihatHiHat:16, kickKick:16
+PASS silence gaps                                     | omissions 0/8 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 8/8 | timing mean -0.73 |mean| 1.22 max 3.44 ms (limit 6) | optional events 0/0
+     labels: kickKick:4, snareSnare:4
+PASS 16th hats @180bpm (83ms)                         | omissions 0/48 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 48/48 | timing mean 0.88 |mean| 0.89 max 1.87 ms (limit 6) | optional events 0/0
+     labels: hihatHiHat:48
+PASS 32nd hats @120bpm (62.5ms), accents              | omissions 0/64 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 64/64 | timing mean 1.35 |mean| 1.36 max 3.28 ms (limit 6) | optional events 0/0
+     labels: hihatHiHat:64
+PASS drum loop 120bpm + bass + floor                  | omissions 0/64 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 64/64 | timing mean 0.43 |mean| 0.50 max 1.71 ms (limit 6) | optional events 0/0
+     labels: hihatHiHat:32, kick+hihatKick, HiHat:16, snare+(hihat)Snare:14, snare+(hihat)Snare, HiHat:2
+     justified relaxation: hi-hats under the snare hits: HiHat family optional (not required) on those events - measured masking: the hat adds well under 1 dB to the snare's own 5-16 kHz power (see masking report)
+PASS edge: kick at t=0                                | omissions 0/1 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 1/1 | timing mean 0.09 |mean| 0.09 max 0.09 ms (limit 6) | optional events 0/0
+     labels: kickKick:1
+PASS edge: kick 5ms before end                        | omissions 0/1 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 1/1 | timing mean 1.01 |mean| 1.01 max 1.01 ms (limit 6) | optional events 0/0
+     labels: kickGeneric:1
+     justified relaxation: family relaxed to Kick-or-Generic: only 5 ms of the kick exist, its ring/decay (the kick evidence) is not in the signal
+PASS edge: 500 samples, click@100                     | omissions 0/1 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 1/1 | timing mean -1.00 |mean| 1.00 max 1.00 ms (limit 6) | optional events 0/0
+     labels: clickGeneric:1
+PASS edge: 10 samples                                 | omissions 0/0 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 0/0 | timing mean 0.00 |mean| 0.00 max 0.00 ms (limit 6) | optional events 0/0
+PASS edge: empty                                      | omissions 0/0 | extra events 0 | stimulus artefacts 0 (events on them 0) | families: missing 0 extra 0 ok 0/0 | timing mean 0.00 |mean| 0.00 max 0.00 ms (limit 6) | optional events 0/0
+
+SYNTH: 1 mandatory case(s) failed -> exit code 1

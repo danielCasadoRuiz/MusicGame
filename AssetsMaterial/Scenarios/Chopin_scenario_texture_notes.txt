@@ -1,0 +1,7 @@
+Chopin - textures de l'escenari
+
+Skybox: panorama RGB de proporcio 2:1, per a projeccio panoramica equirectangular. Es una imatge LDR, no un HDRI. Comprovar la costura i els pols en el visor del motor abans d'utilitzar-lo com a entorn complet.
+Floor basecolor: textura de color de marbre amb patro de 8 x 8 rajoles; assignar al color base del material.
+Floor bump: mapa d'alcada en gris, amb les juntes alineades amb el color base; negre = baix, blanc = alt. Fer servir amb intensitat baixa. No es un mapa normal RGB; convertir-lo a normals si el motor ho requereix.
+Color base i bump han d'utilitzar les mateixes UV, repeticio i rotacio. El marbre es polit: afegir brillantor i reflexos al material. La repeticio de les vores es generativa i requereix comprovacio visual en el motor.
+Creat amb l'eina integrada d'imatges; prompts inclosos a prompts.json.

@@ -1,0 +1,8 @@
+--- 44100 Hz (threshold 0.50)
+  Kick   min conf where required 0.83 [drum loop 120bpm + bass + floor @11.50] | max conf where not permitted 0.25 [sustained bass (1 Generic start, nothing else) @0.50]
+  Snare  min conf where required 1.00 [] | max conf where not permitted 0.07 [kicks @0.50]
+  HiHat  min conf where required 0.73 [32nd hats @120bpm (62.5ms), accents @1.24] | max conf where not permitted 0.31 [quiet(-36dB) then loud(-6dB) + floor -70 @5.00]
+--- 48000 Hz (threshold 0.50)
+  Kick   min conf where required 0.85 [drum loop 120bpm + bass + floor @5.50] | max conf where not permitted 0.25 [sustained bass (1 Generic start, nothing else) @0.50]
+  Snare  min conf where required 1.00 [] | max conf where not permitted 0.33 [drum loop 120bpm + bass + floor @7.50]
+  HiHat  min conf where required 0.50 [32nd hats @120bpm (62.5ms), accents @2.99] | max conf where not permitted 0.33 [quiet(-36dB) then loud(-6dB) + floor -70 @7.50]

@@ -1,0 +1,36 @@
+-- boot → song selection (songTime=0,000, state=)
+-- select first playable (songTime=0,000, state=)
+-- play (songTime=0,000, state=)
+-- wait for warmup (songTime=0,000, state=Warmup)
+song running: playStart=0,00 playEnd=60,00 warmup=3,00 events=1217 lead=0,050
+PASS  warmup counts from the play-range start  t=0,000 start=0,00 handoff=3,00
+-- wait for playback (songTime=3,000, state=Playing)
+PASS  no musical pulse during the warmup  pulses=0
+PASS  handoff at warmup + start  t=3,000
+-- playing → pause (songTime=7,009, state=Playing)
+PASS  warmup + 4 s of play: no SongTime jump vs game time (<100 ms)  max deviation 3,2 ms
+PASS  ClipTime tracks the AudioSource (<60 ms)  clock=4,009 audio=4,011
+PASS  pulses fired while playing  pulses=21
+-- resume (songTime=7,009, state=Paused)
+PASS  pause freezes SongTime + no pulses  t=7,009 vs 7,009 state=Paused
+-- force a fall (songTime=10,024, state=Playing)
+PASS  after resume: no SongTime jump vs game time (<100 ms)  max deviation 16,5 ms
+-- wait for hold (songTime=10,625, state=Held)
+-- held (songTime=10,625, state=Held)
+PASS  held: SongTime frozen while the audio is stopped (no wall-clock jump)  t=10,6248 vs 10,6248 state=Held
+PASS  no pulses while held  
+-- wait for respawn (songTime=10,024, state=Playing)
+PASS  respawn resumes at the fall moment  t=10,024 fall=10,024
+-- after respawn → restart (songTime=13,056, state=Playing)
+PASS  after respawn: no SongTime jump vs game time (<100 ms)  max deviation 1,0 ms
+PASS  no burst of pre-fall moments after the respawn  18 pulses, earliest eventTime 10,086 vs fall 10,024
+-- restart warmup (songTime=0,503, state=Warmup)
+PASS  restart → Warmup from the play-range start  state=Warmup t=0,503
+-- wait for restart playback (songTime=3,000, state=Playing)
+PASS  no pulses during the restart countdown  0
+-- wait for the song end (songTime=63,004, state=Farewell)
+PASS  SongFinishedEvent at the play-range end  state=Farewell clip=60,004 end=60,000 natural=False
+-- wait for GameEnded (songTime=67,999, state=Stopped)
+PASS  GameEndedEvent after the farewell  ended=1 state=Stopped
+FAIL  every pulse arrived at its own musical moment (|receipt − (eventTime − lead)| < 0.1 s)  409 pulses, worst 0,128 s
+RESULT: 17 passed, 1 failed, 0 errors/exceptions logged (exit 1)

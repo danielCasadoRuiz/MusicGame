@@ -118,6 +118,8 @@ public class FightSceneBootstrap : MonoBehaviour
             }
         };
         EventBus.Subscribe(_onFightFlowChanged);
+        _onRoundStarted = _ => RefillRivalCharges();   // the rival's allowance is per round
+        EventBus.Subscribe(_onRoundStarted);
         if (!selectionPending) _ = PrepareStageAsync();
     }
 
@@ -129,6 +131,7 @@ public class FightSceneBootstrap : MonoBehaviour
             _previousMainCamera.enabled = true;
 
         if (_onFightFlowChanged != null) EventBus.Unsubscribe(_onFightFlowChanged);
+        if (_onRoundStarted != null) EventBus.Unsubscribe(_onRoundStarted);
         _opponentAvatarInstance?.Dispose();
         _opponentAvatarInstance = null;
         _playerAvatarInstance?.Dispose();
@@ -418,16 +421,25 @@ public class FightSceneBootstrap : MonoBehaviour
 
     private void ApplyOpponentCombatSetup(OpponentLevelConfig opponentLevelConfig)
     {
-        // Difficulty, not the player's run: the rival's profile gives its proportions (identity), its version / tier
-        // sizes the total (FightCombatBalanceConfig.rivalBuildBudgetByLevel).
+        // Difficulty, never the player's run (FightDifficulty: the campaign position — level AND match inside it):
+        // the rival's profile gives its proportions (identity), the difficulty sizes the total and its per-round
+        // charges (FightCombatBalanceConfig.RivalTuningAt). The rival's charges refill at every round start.
         float neutral = NeutralBuildBudget;
         var profileBuild = opponentLevelConfig?.combatStats != null ? opponentLevelConfig.combatStats.buildStats : FighterBuildStats.Even(neutral);
-        _opponentActor.SetBuildStats(_combatBalanceConfig != null && opponentLevelConfig != null
-            ? _combatBalanceConfig.RivalBuild(profileBuild, opponentLevelConfig.level)
-            : profileBuild);
-        _opponentActor.SetCombatResources(opponentLevelConfig != null
-            ? new FighterCombatResources(opponentLevelConfig.tripleCombos, opponentLevelConfig.quadCombos, opponentLevelConfig.specials)
-            : new FighterCombatResources(0, 0, 0));
+        float difficulty = FightDifficulty.Resolve(opponentLevelConfig, out int bossStage);
+        var tuning = _combatBalanceConfig != null ? _combatBalanceConfig.RivalTuningAt(difficulty, bossStage) : default;
+        if (opponentLevelConfig != null) tuning.Budget *= Mathf.Max(0f, opponentLevelConfig.difficultyScale);   // per-version fine-tuning
+        RivalTuning = tuning;
+        _opponentActor.SetBuildStats(_combatBalanceConfig != null ? _combatBalanceConfig.RivalBuild(profileBuild, RivalTuning.Budget) : profileBuild);
+        _opponentActor.SetCombatResources(new FighterCombatResources(0, 0, 0));
+        RefillRivalCharges();
+        foreach (var ai in _opponentActor.GetComponentsInChildren<FighterAI>(true))
+        {
+            ai.SetSpecialPacing(RivalTuning.FirstSpecialDelay, RivalTuning.SpecialCooldown);
+            // Fighting skill grows with the match difficulty; the version's own profile keeps its personality.
+            if (_combatBalanceConfig != null)
+                ai.SetProfile(_combatBalanceConfig.RivalAIProfile(bossStage >= 0 ? 1f : difficulty, opponentLevelConfig != null ? opponentLevelConfig.difficultyProfile : null));
+        }
         var opponentProfile = opponentLevelConfig != null && opponentLevelConfig.combatProfile != null
             ? opponentLevelConfig.combatProfile
             : (_flowConfig != null ? _flowConfig.defaultOpponentCombatProfile : null);
@@ -435,7 +447,26 @@ public class FightSceneBootstrap : MonoBehaviour
 
         Debug.Log($"[FightSceneBootstrap] Combat — Player profile '{(_playerActor.CombatProfile != null ? _playerActor.CombatProfile.name : "(none)")}' " +
                   $"build [{_playerActor.BuildStats}] resources [{_playerActor.CombatResources}] | Opponent profile " +
-                  $"'{(opponentProfile != null ? opponentProfile.name : "(none)")}' build [{_opponentActor.BuildStats}]");
+                  $"'{(opponentProfile != null ? opponentProfile.name : "(none)")}' build [{_opponentActor.BuildStats}] — difficulty {RivalTuning.Difficulty:0.00}" +
+                  $"{(bossStage >= 0 ? $" (final stage {bossStage})" : "")}, per round: {RivalTuning.SpecialsPerRound} Special, {RivalTuning.TriplesPerRound} x3, {RivalTuning.QuadsPerRound} x4");
+    }
+
+    /// <summary>What difficulty set on the current rival (build size, per-round charges, Special pacing).</summary>
+    public FightCombatBalanceConfig.RivalTuning RivalTuning { get; private set; }
+    private System.Action<RoundStartedEvent> _onRoundStarted;
+
+    /// <summary>The rival's charges at the start of every round: exactly its per-round allowance (never the player's
+    /// rule — the player's charges come from the runner and are never refilled).</summary>
+    private void RefillRivalCharges()
+    {
+        var w = _opponentActor != null ? _opponentActor.CombatResources : null;
+        if (w == null) return;
+        w.TryConsume(CombatResourceType.Special, w.Specials);
+        w.TryConsume(CombatResourceType.TripleCombo, w.TripleCombos);
+        w.TryConsume(CombatResourceType.QuadCombo, w.QuadCombos);
+        w.Add(CombatResourceType.Special, RivalTuning.SpecialsPerRound);
+        w.Add(CombatResourceType.TripleCombo, RivalTuning.TriplesPerRound);
+        w.Add(CombatResourceType.QuadCombo, RivalTuning.QuadsPerRound);
     }
 
 

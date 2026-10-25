@@ -18,6 +18,10 @@ public class TypePerformance
     public int Available;  // how many of this type this song's ACTUAL timeline generated
     public int Collected;  // physically picked up over the run — NEVER decremented by fall penalty
                             // (that's a score mechanic; this is "did you reach it")
+    /// <summary>Still HELD at the end — Collected minus what falls took away (the live HUD counter). What the combat
+    /// build converts (the player's mental model: the counter on screen is what they bring to the fight).
+    /// −1 = not tracked (older callers / tests): same as Collected.</summary>
+    public int Kept = -1;
     public int Missed => Available - Collected;
 
     // Collected / Available. 0 if Available == 0 (see HasData).

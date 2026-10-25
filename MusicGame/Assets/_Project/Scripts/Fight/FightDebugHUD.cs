@@ -422,7 +422,7 @@ public class FightDebugHUD : MonoBehaviour
         Row(x, ref y, w, $"    Profile {profile}   Reaction {reaction}{(actor.IsInvulnerable ? " INVULN" : "")}{(mc != null && mc.IsMatchLocked ? " MATCH-LOCK" : "")}");
         Row(x, ref y, w, $"    Move {(mc?.CurrentMove != null ? mc.CurrentMove.debugName : "-")} ({mc?.CurrentMove?.role})  Phase {mc?.CurrentPhase}  Anim {actor.AnimationDriver?.CurrentState}");
         var b = actor.BuildStats;
-        Row(x, ref y, w, $"    Punch {b.punchPower:F1}  Kick {b.kickPower:F1}  Agi {b.agility:F1}  Res {b.resistance:F1}  Imp {b.impactPower:F1}");
+        Row(x, ref y, w, $"    Punch {b.punchPower:F1}  Kick {b.kickPower:F1}  Res {b.resistance:F1}  Agi {b.agility:F1}");
         Row(x, ref y, w, $"    Resources {actor.CombatResources}   last reject: {mc?.LastRejection}");
         if (mc != null)
         {
@@ -454,7 +454,7 @@ public class FightDebugHUD : MonoBehaviour
         {
             var mods = _balanceConfig.ComputeModifiers(actor.BuildStats, mc?.CurrentMove != null ? mc.CurrentMove.scalingStat : FighterBuildStat.None);
             Row(x, ref y, w, $"    dmgDealt x{mods.DamageDealtMultiplier:F2}  dmgTaken x{mods.DamageTakenMultiplier:F2}  " +
-                              $"impact x{mods.KnockbackDealtMultiplier:F2}  res x{mods.ResistanceMultiplier:F2}  timing x{mods.TimingScale:F2}");
+                              $"reaction x{mods.ReactionDealtMultiplier:F2}  res x{mods.ResistanceMultiplier:F2}  move x{mods.MoveSpeedMultiplier:F2}");
         }
     }
 

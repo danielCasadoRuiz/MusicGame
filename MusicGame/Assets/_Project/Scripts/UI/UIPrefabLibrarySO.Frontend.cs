@@ -8,6 +8,8 @@ public partial class UIPrefabLibrarySO
     public IntroScreenView introScreen;
     public MainMenuView mainMenu;
     public SongSelectionView songSelection;
+    [Tooltip("Player profile (Main Menu → profile icon) — ProfileScreenPrefabs.")]
+    public ProfileScreenView profileScreen;
 
     [Header("Frontend items")]
     [Tooltip("One Song Selection catalog row (Prefabs/UI/Items/SongRow.prefab).")]

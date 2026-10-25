@@ -134,9 +134,8 @@ public static class MoveHelpCatalog
         if (special != null)
             list.Add(new Entry { Group = Group.Special, Keys = FightInputGlyphs.Sequence(special), Name = ComboName(special), Essential = true,
                                  Cost = signatureCost,
-                                 Short = Loc.Get("Help.Move.SpecialSpend", specials.ToString()),
-                                 Detail = Loc.Get("Help.Move.SpecialReq", specials.ToString(),
-                                                  BonusHelpCatalog.Num(balance != null ? balance.signatureSpecial.damage : 1.8f)) });
+                                 Short = Loc.Get("Help.Move.SpecialSpendFixed", specials.ToString(), BonusHelpCatalog.Num(BonusHelpCatalog.SpecialPercent(moveSet))),
+                                 Detail = Loc.Get("Help.Move.SpecialFixed", specials.ToString(), BonusHelpCatalog.Num(BonusHelpCatalog.SpecialPercent(moveSet))) });
         // Power state: hold Down + Punch + Kick (FighterInputController), paid with EVERY x4 held — longer the more.
         float hold = balance != null ? balance.powerActivationHoldTime : 1f;
         list.Add(new Entry { Group = Group.Special, Keys = $"{down}+{punch}+{kick}", Name = Loc.Get("Help.Move.Power"), Essential = true,

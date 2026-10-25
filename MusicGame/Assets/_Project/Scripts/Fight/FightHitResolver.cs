@@ -27,7 +27,7 @@ public struct FightHitResult
     public float FinalHitStun;              // 0 while IsBlocked — see FinalBlockStun instead
 
     public float BaseKnockback;
-    public float KnockbackModifier; // attacker ImpactPower
+    public float KnockbackModifier; // attacker's attack power (move.scalingStat) on the reaction curve
     public float FinalKnockback;    // also folds in defender Resistance; reduced further while IsBlocked
 
     /// <summary>Only meaningful while IsBlocked — the flat chip damage still applied.</summary>
@@ -67,9 +67,16 @@ public static class FightHitResolver
             Attacker = attacker, Defender = defender, Move = move, HitDef = hitDef, IsBlocked = isBlocked,
             BaseDamage = hitDef.baseDamage, DamageModifier = attackerMods.DamageDealtMultiplier, DefenseModifier = defenderMods.DamageTakenMultiplier,
             BaseHitStun = hitDef.baseHitStun, HitStunResistanceModifier = defenderMods.ResistanceMultiplier,
-            BaseKnockback = hitDef.baseKnockback, KnockbackModifier = attackerMods.KnockbackDealtMultiplier,
+            BaseKnockback = hitDef.baseKnockback, KnockbackModifier = attackerMods.ReactionDealtMultiplier,
             Bonus = bonus,
         };
+        // The reaction a hit causes: the move's own baseHitStun / baseKnockback (its character) × the attack power
+        // (the move's scaling stat, reaction curve) × the defender's Resistance × the finisher / Power bonus — bounded
+        // (FightCombatBalanceConfig.ReactionScale) so a strong build never stun-locks and a weak one still reacts.
+        float stunScale = config != null ? config.ReactionScale(attackerMods.ReactionDealtMultiplier, defenderMods.ResistanceMultiplier, bonus.stagger)
+                                         : attackerMods.ReactionDealtMultiplier * defenderMods.ResistanceMultiplier * bonus.stagger;
+        float pushScale = config != null ? config.ReactionScale(attackerMods.ReactionDealtMultiplier, defenderMods.ResistanceMultiplier, bonus.knockback)
+                                         : attackerMods.ReactionDealtMultiplier * defenderMods.ResistanceMultiplier * bonus.knockback;
 
         if (isBlocked)
         {
@@ -83,15 +90,18 @@ public static class FightHitResolver
             float chipBase = UnityEngine.Mathf.Max(hitDef.chipDamage, hitDef.baseDamage * attackerMods.DamageDealtMultiplier * blockDamageMult);
             result.FinalChipDamage = UnityEngine.Mathf.Max(0f, chipBase * defenderMods.DamageTakenMultiplier * bonus.damage);
             result.FinalBlockStun  = UnityEngine.Mathf.Max(0f, hitDef.baseHitStun * blockStunMult * defenderMods.ResistanceMultiplier * bonus.stagger);
-            result.FinalKnockback  = UnityEngine.Mathf.Max(0f, hitDef.baseKnockback * blockKnockbackMult * attackerMods.KnockbackDealtMultiplier * defenderMods.ResistanceMultiplier * bonus.knockback);
+            result.FinalKnockback  = UnityEngine.Mathf.Max(0f, hitDef.baseKnockback * blockKnockbackMult * pushScale);
             // FinalDamage/FinalHitStun stay 0 — a blocked hit never applies normal damage/hit stun.
         }
         else
         {
             result.FinalDamage    = UnityEngine.Mathf.Max(0f, hitDef.baseDamage * attackerMods.DamageDealtMultiplier * defenderMods.DamageTakenMultiplier * bonus.damage);
-            result.FinalHitStun   = UnityEngine.Mathf.Max(0f, hitDef.baseHitStun * attackerMods.KnockbackDealtMultiplier * defenderMods.ResistanceMultiplier * bonus.stagger);
+            // Fixed-fraction moves (the Special): exactly that share of the defender's max health, whoever throws it.
+            if (move != null && move.damageAsMaxHealthFraction > 0f && defender != null && defender.Health != null)
+                result.FinalDamage = defender.Health.MaxHealth * move.damageAsMaxHealthFraction;
+            result.FinalHitStun   = UnityEngine.Mathf.Max(0f, hitDef.baseHitStun * stunScale);
             result.CausesKnockdown = move != null && move.knockdownOnHit;
-            result.FinalKnockback = UnityEngine.Mathf.Max(0f, hitDef.baseKnockback * attackerMods.KnockbackDealtMultiplier * defenderMods.ResistanceMultiplier * bonus.knockback);
+            result.FinalKnockback = UnityEngine.Mathf.Max(0f, hitDef.baseKnockback * pushScale);
         }
 
         return result;

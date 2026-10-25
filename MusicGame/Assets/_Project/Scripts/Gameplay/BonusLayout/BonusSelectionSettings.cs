@@ -37,9 +37,22 @@ public class BonusSelectionSettings
     [Header("Synthetic fill (identifiable, off by default)")]
     [Tooltip("Fill long gaps with TRACKED beats (profile.beatTimes — never a rigid 60/BPM grid). Synthetic " +
              "items are RingType.Beat, sourceFeature \"Grid\", origin SyntheticGrid — never shown as detected hits.")]
-    public bool syntheticFill = false;
-    [Tooltip("A beat is only added when no selected bonus is within this time.")]
-    [Min(0.1f)] public float syntheticMinGap = 0.7f;
+    public bool syntheticFill = true;
+    [Tooltip("A beat is only added when no selected bonus is within this time — the larger, the fewer Beat bonuses " +
+             "(they only fill the song's emptier stretches, on its real tracked beats).")]
+    [Min(0.1f)] public float syntheticMinGap = 0.8f;
+    [Tooltip("A detection with no confident family (a generic Onset) that falls on a tracked beat (onBeatWindow) is a " +
+             "Beat bonus — the same object, its musical role. No extra pickups.")]
+    public bool onBeatGenericAsBeat = true;
+
+    [Header("Accent Impacts (the song's strongest hits)")]
+    [Tooltip("Impact pickups per minute taken from the song's STRONGEST detected hits (on top of any analysis Impact). " +
+             "A few, well spaced: a punctual reward, never a flood. 0 = only the analysis' own Impacts.")]
+    [Min(0f)] public float accentImpactsPerMinute = 4f;
+    [Tooltip("Minimum seconds between two Impacts (accents and analysis ones).")]
+    [Min(0.5f)] public float accentImpactMinGap = 7f;
+    [Tooltip("Only hits at least this strong (0..1) — and in a passage at or above the song's average energy — can be accents.")]
+    [Range(0f, 1f)] public float accentImpactMinStrength = 0.45f;
 
     public float MinInterval(float difficulty) => minInterval;
     public float Share(float difficulty) => Mathf.Lerp(easyShare, hardShare, Mathf.Clamp01(difficulty));

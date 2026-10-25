@@ -19,11 +19,11 @@ public struct HazardPlacement
 /// bonusClearance of its faces. Few, gentle hazards at low difficulty; more frequent and more demanding kinds
 /// (portal → crawl wall → window) as the difficulty rises. Every obstacle keeps a passage that the player's
 /// real controls can use (block: a free side ≥ minPassage; walls/frames: their opening). No obstacle while a
-/// chase may be running, and never two hazards closer than the difficulty's gap.
+/// fresh chase, never two obstacles closer than the difficulty's gap; on hard levels chasers may overlap.
 /// </summary>
 public static class HazardLayout
 {
-    public const int Version = 1;
+    public const int Version = 2;   // 2: harder kinds preferred with difficulty, chaser timing by difficulty
 
     public static List<HazardPlacement> Generate(RunnerHazardsConfig cfg, TimelineEvent[] events, MusicPath path,
                                                  int layoutSeed, float difficulty, float playStartSongTime, float playEndSongTime, float speed)
@@ -44,21 +44,23 @@ public static class HazardLayout
             if (d >= cfg.UnlockFor(k) && cfg.PrefabFor(k) != null) kinds.Add(k);
 
         float t = playStartSongTime + cfg.firstHazardAfterSeconds;
-        float nextChaser = playStartSongTime + cfg.firstChaserAfterSeconds;
+        float nextChaser = playStartSongTime + RunnerHazardsConfig.Lerp(cfg.firstChaserAfterSeconds, cfg.hardFirstChaserAfterSeconds, d);
         float chaseBusyUntil = float.MinValue;
         while (t < end)
         {
-            // A chaser when its own gap allows it (only one at a time; the next obstacle waits for its chase).
+            // A chaser when its own gap allows it. The gap counts from its START, so on hard levels (gap shorter than a
+            // chase) a new chaser can join one still running. Obstacles keep clear of a fresh chase — the whole chase
+            // on easy levels, only its first seconds on hard ones.
             if (cfg.chaserPrefab != null && t >= nextChaser && rng.NextDouble() < 0.5)
             {
                 float dist = t * speed;
                 list.Add(new HazardPlacement { distance = dist, songTime = t, isChaser = true, lateral = rng.NextDouble() < 0.5 ? -1f : 1f, trackWidth = path.GetWidth(dist) });
-                chaseBusyUntil = t + chaserDuration + 3f;
-                nextChaser = t + chaserDuration + chaserGap;
-                t = chaseBusyUntil;
+                chaseBusyUntil = t + Mathf.Lerp(chaserDuration + 3f, 3f, d);
+                nextChaser = t + chaserGap;
+                t = Mathf.Max(t + 0.5f, Mathf.Min(chaseBusyUntil, nextChaser));
                 continue;
             }
-            if (kinds.Count > 0 && t >= chaseBusyUntil && TryPlaceObstacle(cfg, events, path, rng, kinds, t, speed, out var placed))
+            if (kinds.Count > 0 && t >= chaseBusyUntil && TryPlaceObstacle(cfg, events, path, rng, kinds, t, speed, d, out var placed))
             {
                 list.Add(placed);
                 t = placed.songTime + gap * (1f + cfg.gapJitter * (float)rng.NextDouble());
@@ -70,10 +72,10 @@ public static class HazardLayout
 
     // Searches the next ~2 s for a spot whose clearance window is free of bonuses and whose track is wide enough.
     private static bool TryPlaceObstacle(RunnerHazardsConfig cfg, TimelineEvent[] events, MusicPath path, System.Random rng,
-                                         List<RunnerObstacleKind> kinds, float t0, float speed, out HazardPlacement placed)
+                                         List<RunnerObstacleKind> kinds, float t0, float speed, float d, out HazardPlacement placed)
     {
         placed = default;
-        var kind = kinds[rng.Next(kinds.Count)];
+        var kind = PickKind(cfg, kinds, rng, d);
         var prefab = cfg.PrefabFor(kind);
         for (float t = t0; t < t0 + 2f; t += 0.1f)
         {
@@ -87,6 +89,20 @@ public static class HazardLayout
             return true;
         }
         return false;
+    }
+
+    // The harder a kind (the later it unlocks), the likelier it gets as the difficulty rises: weight 1 + pref × d × unlock.
+    private static RunnerObstacleKind PickKind(RunnerHazardsConfig cfg, List<RunnerObstacleKind> kinds, System.Random rng, float d)
+    {
+        float total = 0f;
+        foreach (var k in kinds) total += 1f + cfg.hardKindPreference * d * cfg.UnlockFor(k);
+        float r = (float)rng.NextDouble() * total;
+        foreach (var k in kinds)
+        {
+            r -= 1f + cfg.hardKindPreference * d * cfg.UnlockFor(k);
+            if (r <= 0f) return k;
+        }
+        return kinds[kinds.Count - 1];
     }
 
     // Block: on one side or the centre (the rest of the track stays free); window: centred; openings: anywhere

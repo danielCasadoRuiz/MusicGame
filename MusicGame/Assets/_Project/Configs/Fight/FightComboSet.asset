@@ -70,10 +70,15 @@ MonoBehaviour:
   - id: forward_a
     debugName: Forward + A
     steps:
+    - button: 2
+      horizontal: 1
+      vertical: 0
+      anyDirection: 0
     - button: 0
       horizontal: 1
       vertical: 0
-    maxTimeBetweenInputs: 0.5
+      anyDirection: 1
+    maxTimeBetweenInputs: 0.3
     maxTotalDuration: 0
     attackBonus: 0
     priority: 0
@@ -151,12 +156,15 @@ MonoBehaviour:
     - button: 0
       horizontal: 0
       vertical: 0
+      anyDirection: 1
     - button: 0
       horizontal: 0
       vertical: 0
+      anyDirection: 1
     - button: 0
       horizontal: 0
       vertical: 0
+      anyDirection: 1
     maxTimeBetweenInputs: 0.6
     maxTotalDuration: 0
     attackBonus: 1
@@ -168,12 +176,15 @@ MonoBehaviour:
     - button: 1
       horizontal: 0
       vertical: 0
+      anyDirection: 1
     - button: 1
       horizontal: 0
       vertical: 0
+      anyDirection: 1
     - button: 1
       horizontal: 0
       vertical: 0
+      anyDirection: 1
     maxTimeBetweenInputs: 0.6
     maxTotalDuration: 0
     attackBonus: 2

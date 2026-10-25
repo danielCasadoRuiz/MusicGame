@@ -745,6 +745,7 @@ public class GameplayManager : MonoBehaviour
                 Type                = type,
                 Available           = available,
                 Collected           = collected,
+                Kept                = Mathf.Min(collected, _stats.Get(type)),   // what falls left — the live counter
                 CollectionRate      = available > 0 ? (float)collected / available : 0f,
                 EarnedScore         = earned,
                 MaxPossibleScore    = maxScore,

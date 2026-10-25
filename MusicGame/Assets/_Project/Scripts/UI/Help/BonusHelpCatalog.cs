@@ -5,7 +5,7 @@ using UnityEngine;
 
 /// <summary>
 /// What each bonus does, built from the REAL rules every time (never a hand-written table that could drift):
-/// the build mapping of FightStatsConfig (musical pickup → stats + weights), the resource rules
+/// the direct build contributions of FightStatsConfig (musical pickup → points per stat), the resource rules
 /// (MusicRunnerCollectiblesConfig / MusicRunnerScoringConfig) and the fight values that consume them
 /// (FightMoveSetSO signature Special, FightCombatBalanceConfig power state). Used by the preRun tip card (short
 /// effect) and the pause help (full text) — one source for both.
@@ -18,19 +18,25 @@ public static class BonusHelpCatalog
         public string Name;
         public string ShortEffect;
         public string FullText;
-        /// <summary>The build stats this bonus feeds, strongest first (empty: it changes no fight attribute).</summary>
+        /// <summary>The build stats this bonus feeds and the points ONE collected bonus adds to each, in the HUD's order
+        /// (empty: it changes no fight attribute).</summary>
         public List<(FightStatId stat, float weight)> Feeds;
     }
 
-    /// <summary>The five build stats, in the build panel's order.</summary>
-    public static readonly FightStatId[] BuildStats =
-        { FightStatId.PunchPower, FightStatId.KickPower, FightStatId.Agility, FightStatId.Resistance, FightStatId.ImpactPower };
+    /// <summary>The four build stats, in the build panel's order.</summary>
+    public static readonly FightStatId[] BuildStats = MusicCombatBuildConverter.Stats;
 
     public static string StatName(FightStatId stat) => Loc.Get($"Help.Stat.{stat}");
     public static string StatShortName(FightStatId stat) => Loc.Get($"Help.Stat.Short.{stat}");
-    // Agility drives movement speed as well as attack timing since the 2026-10-25 rebalance (new key; tables never overwritten).
-    public static string StatDescription(FightStatId stat) =>
-        Loc.Get(stat == FightStatId.Agility ? "Help.Stat.Agility.Speed" : $"Help.Stat.{stat}.Full");
+    // Four-attribute model (2026-10-25): Agility = movement AND attack speed; punch / kick power also drive their hit reaction.
+    // New keys where the meaning changed (tables are never overwritten).
+    public static string StatDescription(FightStatId stat) => Loc.Get(stat switch
+    {
+        FightStatId.Agility => "Help.Stat.Agility.MoveAndHit",
+        FightStatId.PunchPower => "Help.Stat.PunchPower.Hit",
+        FightStatId.KickPower => "Help.Stat.KickPower.Hit",
+        _ => $"Help.Stat.{stat}.Full",
+    });
 
     public static string BonusName(BonusKind kind) => kind switch
     {
@@ -39,20 +45,15 @@ public static class BonusHelpCatalog
         _ => Loc.Get($"HUD.{kind}"),
     };
 
-    /// <summary>Musical pickup → (stat, normalised weight) from the configured build mapping.</summary>
+    /// <summary>Musical pickup → (stat, points per collected bonus) from FightStatsConfig.contributions.</summary>
     public static List<(FightStatId stat, float weight)> Feeds(BonusKind kind, FightStatsConfig stats)
     {
         var list = new List<(FightStatId, float)>();
         var ring = BonusKinds.Ring(kind);
-        if (!ring.HasValue || stats == null || stats.buildStats == null) return list;
-        foreach (var m in stats.buildStats)
-        {
-            if (m?.sources == null) continue;
-            float total = m.sources.Sum(s => Mathf.Max(0f, s.weight));
-            foreach (var s in m.sources)
-                if (s.source == ring.Value && s.weight > 0f && total > 0f) list.Add((m.statId, s.weight / total));
-        }
-        list.Sort((a, b) => b.Item2.CompareTo(a.Item2));
+        var row = ring.HasValue && stats != null ? stats.Contribution(ring.Value) : null;
+        if (row == null) return list;
+        foreach (var stat in BuildStats)
+            if (row.Get(stat) > 0f) list.Add((stat, row.Get(stat)));
         return list;
     }
 
@@ -75,8 +76,9 @@ public static class BonusHelpCatalog
             {
                 if (e.Feeds.Count > 0)
                 {
-                    e.ShortEffect = string.Join(" · ", e.Feeds.Select(f => StatShortName(f.stat)));
-                    e.FullText = Loc.Get("Help.Bonus.Feeds", string.Join(" · ", e.Feeds.Select(f => $"{StatName(f.stat)} {f.weight * 100f:0}%")));
+                    // Direct wording per bonus (Help.Effect.Bonus.<Kind>) + what one collected bonus adds — never shares.
+                    e.ShortEffect = Loc.Get($"Help.Effect.Bonus.{kind}");
+                    e.FullText = e.ShortEffect + ". " + Loc.Get("Help.Bonus.Adds", string.Join(" · ", e.Feeds.Select(f => $"{StatName(f.stat)} +{Num(f.weight)}")));
                 }
                 else
                 {
@@ -92,7 +94,7 @@ public static class BonusHelpCatalog
                     break;
                 case BonusKind.Special:
                     e.ShortEffect = Loc.Get("Help.Effect.Special");
-                    e.FullText = Loc.Get("Help.Bonus.SpecialFull", Num(balance != null ? balance.signatureSpecial.damage : 1.8f));
+                    e.FullText = Loc.Get("Help.Bonus.SpecialFixed", Num(SpecialPercent(moveSet)));
                     break;
                 case BonusKind.TripleCombo:
                     e.ShortEffect = Loc.Get("Help.Effect.Triple", (scoring != null ? scoring.tripleComboPickups : 3).ToString());
@@ -115,13 +117,17 @@ public static class BonusHelpCatalog
         return entries;
     }
 
-    /// <summary>The intro paragraph of the full help: total power from how well the bonuses were collected.</summary>
+    /// <summary>The intro paragraph of the full help: every bonus adds straight to the attributes it feeds.</summary>
     public static string Intro()
     {
         var app = Resources.Load<AppConfigSO>("AppConfig");
-        float budget = app != null && app.fightStats != null ? app.fightStats.maxCombatBudget : 100f;
-        return Loc.Get("Help.Bonus.Intro", Num(budget));
+        var stats = app != null ? app.fightStats : null;
+        return Loc.Get("Help.Bonus.IntroDirect", Num(stats != null ? stats.baseStatPoints : 2f), Num(stats != null ? stats.maxStatPoints : 40f));
     }
+
+    /// <summary>The Special's fixed share of the rival's max health, in % (FightMoveDefinition.damageAsMaxHealthFraction).</summary>
+    public static float SpecialPercent(FightMoveSetSO moveSet) =>
+        moveSet != null && moveSet.signatureSpecial != null ? moveSet.signatureSpecial.damageAsMaxHealthFraction * 100f : 30f;
 
     public static string Num(float v) => v.ToString(Mathf.Approximately(v, Mathf.Round(v)) ? "0" : "0.##", CultureInfo.InvariantCulture);
 }

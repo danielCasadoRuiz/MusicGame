@@ -1,0 +1,10 @@
+progress w=1: 41 updates, monotonic True, last 1.000 -> OK
+progress w=4: 41 updates, monotonic True, last 1.000 -> OK
+cancel w=1 after   0 ms: OperationCanceledException (no result), returned     5 ms after Cancel() -> OK
+cancel w=1 after  50 ms: OperationCanceledException (no result), returned     0 ms after Cancel() -> OK
+cancel w=1 after 200 ms: OperationCanceledException (no result), returned    39 ms after Cancel() -> OK
+cancel w=1 after 400 ms: OperationCanceledException (no result), returned     4 ms after Cancel() -> OK
+cancel w=4 after   0 ms: OperationCanceledException (no result), returned     0 ms after Cancel() -> OK
+cancel w=4 after  50 ms: OperationCanceledException (no result), returned     2 ms after Cancel() -> OK
+cancel w=4 after 200 ms: OperationCanceledException (no result), returned    29 ms after Cancel() -> OK
+cancel w=4 after 400 ms: OperationCanceledException (no result), returned    58 ms after Cancel() -> OK

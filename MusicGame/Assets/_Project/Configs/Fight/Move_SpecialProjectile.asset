@@ -20,6 +20,7 @@ MonoBehaviour:
   resourceCost: 3
   resourceAmount: 1
   knockdownOnHit: 0
+  damageAsMaxHealthFraction: 0.3
   invulnerableStart: 0
   invulnerableDuration: 0
   animationState: Fireball
@@ -49,7 +50,7 @@ MonoBehaviour:
       baseHitStun: 0.35
       baseKnockback: 1.3
       attackHeight: 1
-      guardType: 0
+      guardType: 1
       chipDamage: 1
       tracking: 0
     destroyOnHit: 1

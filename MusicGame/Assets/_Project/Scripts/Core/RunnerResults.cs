@@ -29,9 +29,10 @@ public class RunnerResults
     /// (nothing else stores them). Never part of musical performance or the combat build.</summary>
     public RunnerResourceCounts Resources;
 
-    /// <summary>The Runner's canonical combat-build output — PunchPower, KickPower, Agility,
-    /// Resistance, ImpactPower, summing to CombatBuild.Budget. Built from musical performance ONLY
-    /// (never from Life/Special/combos). The ONE copy; later systems read it, never recompute it.
+    /// <summary>The Runner's canonical combat-build output — PunchPower, KickPower, Resistance, Agility, each a low
+    /// base plus what the collected musical bonuses that feed it added (MusicCombatBuildConverter). Built from the
+    /// collected musical bonuses ONLY (never from Life/Special/combos, never from the score). The ONE copy; later
+    /// systems read it, never recompute it.
     /// Null when no FightStatsConfig is configured.</summary>
     public MusicCombatBuild CombatBuild;
 }

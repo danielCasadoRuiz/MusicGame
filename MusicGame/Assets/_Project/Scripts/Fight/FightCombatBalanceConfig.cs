@@ -2,17 +2,19 @@ using UnityEngine;
 
 /// <summary>
 /// The single place every combat-build stat's effect is defined — no formulas scattered across
-/// FighterAttack/FightHitResolver/FighterMoveController. Each curve's X axis is the RAW build stat in
-/// budget points (FighterBuildStats — the Runner's own scale: a 100-point budget split over five stats,
-/// ~16 each for a typical 80% run); Y is a multiplier where 1 = neutral. PLACEHOLDER balance values.
+/// FighterAttack/FightHitResolver/FighterMoveController. Each curve's X axis is the RAW build stat in points
+/// (FighterBuildStats — the Runner's direct build: a low base plus what the collected bonuses added, capped at
+/// FightStatsConfig.maxStatPoints); Y is a multiplier where 1 = neutral. FOUR stats since 2026-10-25:
 ///
-///   attacker <move.scalingStat> (PunchPower / KickPower / ...) → damage dealt
-///   defender Resistance                                          → damage taken + hit-stun resistance
-///   attacker ImpactPower                                         → knockback + hit stun dealt
-///   own Agility                                                  → Startup/Recovery timing scale (attack speed)
-///                                                                   + walk/run/side-walk speed (movement speed)
-/// Rivals: rivalBuildBudgetByLevel sizes their build by difficulty level, independent of the player.
-///
+///   attacker <move.scalingStat> (PunchPower / KickPower) → damage dealt AND (milder curve) the hit reaction it causes
+///   defender Resistance                                  → damage taken + hit-stun / knockback taken
+///   own Agility                                          → movement speed (walk / backpedal / run / side-walk)
+///                                                          + attack speed: the WHOLE move plays faster (every phase,
+///                                                          cancel and dodge window and the animation alike — never
+///                                                          start-up alone, which drifted the visual impact off the hit)
+/// Moves with
+/// scalingStat None (block, taunt, specials with explicit rules…) scale with nothing.
+/// Rivals: RivalTuningAt(fight difficulty) sizes their build and their per-round charges — independent of the player.
 /// Legacy FighterStats (Strength/Defense/...) are no longer read by combat.
 /// </summary>
 [CreateAssetMenu(fileName = "FightCombatBalanceConfig", menuName = "MusicGame/Fight/Combat Balance Config")]
@@ -25,25 +27,32 @@ public class FightCombatBalanceConfig : ScriptableObject
     // over five stats: ~4 each for a poor run, ~10 for a middling one, ~16–18 for a very good one, 30+ when a run
     // specialises). 16 points = the old neutral 1.0. Curves clamp at their ends (no runaway values).
     [Header("Build stats → combat multipliers (X = stat points, Y = multiplier)")]
-    [Tooltip("Attacker's move.scalingStat (PunchPower for punches, KickPower for kicks…) → damage DEALT.")]
+    [Tooltip("Attacker's move.scalingStat (PunchPower for punches, KickPower for kicks) → damage DEALT.")]
     public AnimationCurve buildStatToDamage = new AnimationCurve(
         new Keyframe(0f, 0.25f), new Keyframe(5f, 0.45f), new Keyframe(10f, 0.70f), new Keyframe(16f, 1.00f),
         new Keyframe(25f, 1.40f), new Keyframe(40f, 1.90f));
+    [Tooltip("Attacker's move.scalingStat → knockback and hit stun DEALT (the move's own baseKnockback / baseHitStun " +
+             "keep its character: a kick can push more than a punch). A separate, milder curve than damage — the attack " +
+             "power is counted once per effect, never compounded.")]
+    public AnimationCurve attackPowerToReaction = new AnimationCurve(
+        new Keyframe(0f, 0.70f), new Keyframe(16f, 1.00f), new Keyframe(40f, 1.35f));
     [Tooltip("Defender Resistance → damage TAKEN (lower = tankier).")]
     public AnimationCurve resistanceToDamageTaken = new AnimationCurve(
         new Keyframe(0f, 1.50f), new Keyframe(8f, 1.25f), new Keyframe(16f, 1.00f), new Keyframe(25f, 0.80f), new Keyframe(40f, 0.60f));
     [Tooltip("Defender Resistance → incoming hit stun AND knockback (lower = shrugs hits off).")]
     public AnimationCurve resistanceToStagger = new AnimationCurve(
         new Keyframe(0f, 1.25f), new Keyframe(16f, 1.00f), new Keyframe(40f, 0.75f));
-    [Tooltip("Attacker ImpactPower → knockback and hit stun DEALT.")]
-    public AnimationCurve impactToStagger = new AnimationCurve(
-        new Keyframe(0f, 0.60f), new Keyframe(16f, 1.00f), new Keyframe(40f, 1.45f));
-    [Tooltip("Own Agility → ATTACK speed: Startup/Recovery duration scale (lower = faster). Active never scales, so hit " +
-             "windows, combo input windows and cancels keep their meaning.")]
-    public AnimationCurve agilityToTimingScale = new AnimationCurve(
-        new Keyframe(0f, 1.25f), new Keyframe(8f, 1.12f), new Keyframe(16f, 1.00f), new Keyframe(25f, 0.90f), new Keyframe(40f, 0.80f));
-    public float minTimingScale = 0.78f;
-    public float maxTimingScale = 1.28f;
+    [Tooltip("Bounds of the WHOLE reaction scale (attack power × defender resistance × finisher/Power bonus) applied to " +
+             "a move's baseHitStun / baseKnockback: no stun-lock, never a weightless hit.")]
+    public float minReactionScale = 0.55f;
+    public float maxReactionScale = 1.6f;
+    [Tooltip("Own Agility → ATTACK speed: how fast the whole move plays (move time per real second). Uniform over " +
+             "startup, active, recovery, cancel and dodge windows AND the animation, so hits stay in sync; combo input " +
+             "windows are not touched. 1.25 = a move takes 80 % of its authored time.")]
+    public AnimationCurve agilityToAttackSpeed = new AnimationCurve(
+        new Keyframe(0f, 0.82f), new Keyframe(8f, 0.9f), new Keyframe(16f, 1.0f), new Keyframe(25f, 1.1f), new Keyframe(40f, 1.25f));
+    public float minAttackSpeed = 0.8f;
+    public float maxAttackSpeed = 1.3f;
     [Tooltip("Own Agility → MOVEMENT speed: walk / backpedal / run / side-walk (FighterMovement.SpeedMultiplier). " +
              "Dashes, lunges and knockback keep their own fixed speeds.")]
     public AnimationCurve agilityToMoveSpeed = new AnimationCurve(
@@ -53,22 +62,90 @@ public class FightCombatBalanceConfig : ScriptableObject
     public float maxMoveSpeedMultiplier = 1.35f;
 
     [Header("Rival progression (difficulty — never the player's run)")]
-    [Tooltip("Total build points of a rival by its version / tier (OpponentLevelConfig.level). Its FighterStatsProfileSO " +
-             "keeps the rival's PROPORTIONS (identity); this sets the size. Independent of the player's build on purpose.")]
-    public AnimationCurve rivalBuildBudgetByLevel = new AnimationCurve(
-        new Keyframe(1f, 45f), new Keyframe(2f, 60f), new Keyframe(3f, 75f), new Keyframe(4f, 90f));
+    // X of every curve below = the FIGHT DIFFICULTY of the match (0..1, FightDifficulty.Resolve): the campaign position
+    // (level + match inside the level, the same continuous scale the runner uses), so a rival gets harder level after
+    // level AND after every opponent beaten inside a level. Final-rival stages sit at 1 + stage bonus.
+    [Tooltip("Total build points of a rival (its FighterStatsProfileSO keeps the PROPORTIONS — its identity — this sets the size).")]
+    public AnimationCurve rivalBudgetByDifficulty = new AnimationCurve(
+        new Keyframe(0f, 40f), new Keyframe(0.15f, 48f), new Keyframe(0.5f, 80f), new Keyframe(0.85f, 112f), new Keyframe(1f, 125f));
+    [Tooltip("Extra build points per final-rival stage (stage 0, 1, 2) on top of difficulty 1.")]
+    public float rivalBossBudgetPerStage = 10f;
+    [Tooltip("Specials the rival has EACH ROUND (refilled at every round start; floor of the curve).")]
+    public AnimationCurve rivalSpecialsPerRound = new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(0.6f, 1.99f), new Keyframe(1f, 3f));
+    [Tooltip("x3 charges (powered triple punch / kick) the rival has each round.")]
+    public AnimationCurve rivalTriplesPerRound = new AnimationCurve(new Keyframe(0f, 0f), new Keyframe(0.25f, 1f), new Keyframe(0.6f, 2f), new Keyframe(1f, 4f));
+    [Tooltip("x4 charges (Power state) the rival has each round.")]
+    public AnimationCurve rivalQuadsPerRound = new AnimationCurve(new Keyframe(0f, 0f), new Keyframe(0.7f, 0.99f), new Keyframe(1f, 1.5f));
+    [Tooltip("Seconds into a round before the rival may throw a Special at all (just so it never opens with it).")]
+    public AnimationCurve rivalFirstSpecialDelay = new AnimationCurve(new Keyframe(0f, 4f), new Keyframe(1f, 2f));
+    [Tooltip("Minimum seconds between two rival Specials (it throws them on OPENINGS — FighterAI — this only avoids a double).")]
+    public AnimationCurve rivalSpecialCooldown = new AnimationCurve(new Keyframe(0f, 5f), new Keyframe(1f, 2.5f));
 
-    /// <summary>A rival's build for its level: the profile's proportions scaled to rivalBuildBudgetByLevel.</summary>
-    public FighterBuildStats RivalBuild(FighterBuildStats profile, int level)
+    [Header("Rival fighting skill (AI) by difficulty — X = fight difficulty (0.15 first match … 0.85 last, 1 final rival)")]
+    [Tooltip("Seconds the rival needs to react (decisions AND its reflex guard).")]
+    public AnimationCurve rivalReactionTime = new AnimationCurve(new Keyframe(0.15f, 0.42f), new Keyframe(0.5f, 0.26f), new Keyframe(0.85f, 0.15f), new Keyframe(1f, 0.11f));
+    [Tooltip("Chance it sees an attack coming and guards it with the right height.")]
+    public AnimationCurve rivalDefense = new AnimationCurve(new Keyframe(0.15f, 0.35f), new Keyframe(0.5f, 0.62f), new Keyframe(0.85f, 0.85f), new Keyframe(1f, 0.92f));
+    [Tooltip("How well it punishes an attack it blocked or the player's recovery.")]
+    public AnimationCurve rivalPunish = new AnimationCurve(new Keyframe(0.15f, 0.25f), new Keyframe(0.85f, 0.88f), new Keyframe(1f, 0.95f));
+    [Tooltip("How long / reliable its combos are.")]
+    public AnimationCurve rivalComboSkill = new AnimationCurve(new Keyframe(0.15f, 0.25f), new Keyframe(0.85f, 0.85f), new Keyframe(1f, 0.92f));
+    [Tooltip("How often it picks a deliberately poor action.")]
+    public AnimationCurve rivalErrorRate = new AnimationCurve(new Keyframe(0.15f, 0.4f), new Keyframe(0.85f, 0.06f), new Keyframe(1f, 0.03f));
+    [Tooltip("How keen it is to use its Special on an opening.")]
+    public AnimationCurve rivalSpecialUsage = new AnimationCurve(new Keyframe(0.15f, 0.35f), new Keyframe(0.85f, 0.85f), new Keyframe(1f, 0.95f));
+
+    /// <summary>The rival's fighting skill for this difficulty (a runtime profile): skill fields from the curves above,
+    /// personality (aggression, spacing) from the version's own AIDifficultyProfile.</summary>
+    public AIDifficultyProfile RivalAIProfile(float difficulty, AIDifficultyProfile personality)
     {
-        float budget = Mathf.Max(0f, rivalBuildBudgetByLevel.Evaluate(Mathf.Max(1, level)));
+        float d = Mathf.Clamp01(difficulty);
+        var p = CreateInstance<AIDifficultyProfile>();
+        p.name = $"RivalAI_d{d:0.00}";
+        p.reactionTime = Mathf.Max(0.05f, rivalReactionTime.Evaluate(d));
+        p.defenseProbability = Mathf.Clamp01(rivalDefense.Evaluate(d));
+        p.punishSkill = Mathf.Clamp01(rivalPunish.Evaluate(d));
+        p.comboSkill = Mathf.Clamp01(rivalComboSkill.Evaluate(d));
+        p.errorRate = Mathf.Clamp01(rivalErrorRate.Evaluate(d));
+        p.specialUsage = Mathf.Clamp01(rivalSpecialUsage.Evaluate(d));
+        p.aggression = personality != null ? personality.aggression : 0.5f;
+        p.spacingAccuracy = personality != null ? Mathf.Max(personality.spacingAccuracy, Mathf.Lerp(0.3f, 0.9f, d)) : Mathf.Lerp(0.3f, 0.9f, d);
+        return p;
+    }
+
+    /// <summary>Everything difficulty sets on a rival for one match.</summary>
+    public struct RivalTuning
+    {
+        public float Difficulty, Budget, FirstSpecialDelay, SpecialCooldown;
+        public int SpecialsPerRound, TriplesPerRound, QuadsPerRound;
+    }
+
+    public RivalTuning RivalTuningAt(float difficulty, int bossStage = -1)
+    {
+        float d = Mathf.Clamp01(difficulty);
+        return new RivalTuning
+        {
+            Difficulty = d,
+            Budget = Mathf.Max(0f, rivalBudgetByDifficulty.Evaluate(d)) + (bossStage >= 0 ? rivalBossBudgetPerStage * (bossStage + 1) : 0f),
+            SpecialsPerRound = Mathf.Max(0, Mathf.FloorToInt(rivalSpecialsPerRound.Evaluate(d))) + (bossStage >= 0 ? 1 : 0),
+            TriplesPerRound = Mathf.Max(0, Mathf.FloorToInt(rivalTriplesPerRound.Evaluate(d))),
+            QuadsPerRound = Mathf.Max(0, Mathf.FloorToInt(rivalQuadsPerRound.Evaluate(d))),
+            FirstSpecialDelay = Mathf.Max(0f, rivalFirstSpecialDelay.Evaluate(d)),
+            SpecialCooldown = Mathf.Max(0f, rivalSpecialCooldown.Evaluate(d)),
+        };
+    }
+
+    /// <summary>A rival's build: its profile's proportions scaled to `budget` points.</summary>
+    public FighterBuildStats RivalBuild(FighterBuildStats profile, float budget)
+    {
+        budget = Mathf.Max(0f, budget);
         float total = profile.Total;
         if (total <= 0f) return FighterBuildStats.Even(budget);
         float k = budget / total;
         return new FighterBuildStats
         {
             punchPower = profile.punchPower * k, kickPower = profile.kickPower * k, agility = profile.agility * k,
-            resistance = profile.resistance * k, impactPower = profile.impactPower * k,
+            resistance = profile.resistance * k,
         };
     }
 
@@ -144,34 +221,41 @@ public class FightCombatBalanceConfig : ScriptableObject
     public FightAttackBonus PowerMultipliers => new(powerDamageMultiplier, powerStaggerMultiplier, powerKnockbackMultiplier);
 
     /// <summary>Evaluates every curve against one fighter's build — the SAME computation FightHitResolver
-    /// (real combat), FighterMoveController (timing) and FightDebugHUD use, so they can never drift.</summary>
+    /// (real combat), FighterMovement (speed) and FightDebugHUD use, so they can never drift. `scalingStat` = the
+    /// attacking move's stat (None / retired → no attack scaling).</summary>
     public FightCombatModifiers ComputeModifiers(FighterBuildStats stats, FighterBuildStat scalingStat = FighterBuildStat.None)
     {
+        bool scales = scalingStat != FighterBuildStat.None && scalingStat != FighterBuildStat.LegacyImpactPower;
+        float power = scales ? stats.Get(scalingStat) : 0f;
         return new FightCombatModifiers
         {
-            DamageDealtMultiplier    = scalingStat == FighterBuildStat.None ? 1f : buildStatToDamage.Evaluate(stats.Get(scalingStat)),
-            DamageTakenMultiplier    = resistanceToDamageTaken.Evaluate(stats.resistance),
-            KnockbackDealtMultiplier = impactToStagger.Evaluate(stats.impactPower),
-            ResistanceMultiplier     = resistanceToStagger.Evaluate(stats.resistance),
-            TimingScale              = Mathf.Clamp(agilityToTimingScale.Evaluate(stats.agility), minTimingScale, maxTimingScale),
-            MoveSpeedMultiplier      = Mathf.Clamp(agilityToMoveSpeed.Evaluate(stats.agility), minMoveSpeedMultiplier, maxMoveSpeedMultiplier),
+            DamageDealtMultiplier   = scales ? buildStatToDamage.Evaluate(power) : 1f,
+            ReactionDealtMultiplier = scales ? attackPowerToReaction.Evaluate(power) : 1f,
+            DamageTakenMultiplier   = resistanceToDamageTaken.Evaluate(stats.resistance),
+            ResistanceMultiplier    = resistanceToStagger.Evaluate(stats.resistance),
+            MoveSpeedMultiplier     = Mathf.Clamp(agilityToMoveSpeed.Evaluate(stats.agility), minMoveSpeedMultiplier, maxMoveSpeedMultiplier),
+            AttackSpeedMultiplier   = Mathf.Clamp(agilityToAttackSpeed.Evaluate(stats.agility), minAttackSpeed, maxAttackSpeed),
         };
     }
+
+    /// <summary>The bounded reaction scale of one hit (see minReactionScale / maxReactionScale).</summary>
+    public float ReactionScale(float attackerReaction, float defenderResistance, float bonus) =>
+        Mathf.Clamp(attackerReaction * defenderResistance * bonus, minReactionScale, maxReactionScale);
 }
 
 /// <summary>One fighter's fully-evaluated combat modifiers — see FightCombatBalanceConfig.ComputeModifiers.</summary>
 public struct FightCombatModifiers
 {
-    public float DamageDealtMultiplier;    // attacker, from the move's scaling stat
+    public float DamageDealtMultiplier;    // attacker, from the move's scaling stat (PunchPower / KickPower)
+    public float ReactionDealtMultiplier;  // attacker, same stat, milder curve (hit stun + knockback dealt)
     public float DamageTakenMultiplier;    // defender Resistance
-    public float KnockbackDealtMultiplier; // attacker ImpactPower (knockback + hit stun)
-    public float ResistanceMultiplier;     // defender Resistance (hit stun + knockback)
-    public float TimingScale;              // own Agility (attack speed)
+    public float ResistanceMultiplier;     // defender Resistance (hit stun + knockback taken)
     public float MoveSpeedMultiplier;      // own Agility (movement speed)
+    public float AttackSpeedMultiplier;    // own Agility (move time per real second — whole move, uniform)
 
     public static FightCombatModifiers Identity => new FightCombatModifiers
     {
-        DamageDealtMultiplier = 1f, DamageTakenMultiplier = 1f, KnockbackDealtMultiplier = 1f,
-        ResistanceMultiplier = 1f, TimingScale = 1f, MoveSpeedMultiplier = 1f,
+        DamageDealtMultiplier = 1f, ReactionDealtMultiplier = 1f, DamageTakenMultiplier = 1f,
+        ResistanceMultiplier = 1f, MoveSpeedMultiplier = 1f, AttackSpeedMultiplier = 1f,
     };
 }

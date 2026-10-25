@@ -22,8 +22,8 @@ MonoBehaviour:
   chaserPrefab: {fileID: 7165882988800283576, guid: c35f7ce60ff7a074ba21bc57f46deadc, type: 3}
   firstHazardAfterSeconds: 8
   endClearSeconds: 4
-  easyObstacleGapSeconds: 11
-  hardObstacleGapSeconds: 4
+  easyObstacleGapSeconds: 14
+  hardObstacleGapSeconds: 3.5
   gapJitter: 0.5
   bonusClearance: 0.8
   minTrackWidth: 4.5
@@ -35,9 +35,9 @@ MonoBehaviour:
   portalFrom: 0.3
   crawlWallFrom: 0.45
   windowWallFrom: 0.6
-  firstChaserAfterSeconds: 15
-  easyChaserGapSeconds: 35
-  hardChaserGapSeconds: 15
+  firstChaserAfterSeconds: 25
+  easyChaserGapSeconds: 50
+  hardChaserGapSeconds: 7
   chaserActivationDistance: 9
   easyChaserWarning: 0.9
   hardChaserWarning: 0.5

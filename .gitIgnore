@@ -106,3 +106,7 @@ local.properties
 *.mobileprovision
 # Addressables remote build output (upload to the content server; never committed)
 [Ss]erver[Dd]ata/
+
+# Large local assets: backed up separately, excluded from Git
+/AssetsMaterial/3D_pipeline/
+/MusicGame/Assets/_Project/Art/Arenas/

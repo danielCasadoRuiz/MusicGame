@@ -1,0 +1,8 @@
+filterbank: 24672 floats, 502 non-zero (2.0 %), hash 9C43BC5AE206BE77
+synthetic 48000 Hz 7.3 s                 patches 2/2 | log-mel max|?| 6.81E-005 mean|?| 6.26E-007 (value range 5.95) max rel 4.36E-003 | par==seq bitwise True | ref     22 ms    3.5 MB | new seq     9 ms   0.1 MB | new 4w     4 ms
+synthetic 44100 Hz 7.3 s                 patches 2/2 | log-mel max|?| 1.54E-004 mean|?| 6.56E-007 (value range 5.95) max rel 4.06E-003 | par==seq bitwise True | ref     17 ms    3.5 MB | new seq     4 ms   0.1 MB | new 4w     4 ms
+synthetic 16000 Hz 7.3 s                 patches 2/2 | log-mel max|?| 7.56E-005 mean|?| 5.86E-007 (value range 5.96) max rel 4.16E-003 | par==seq bitwise True | ref     16 ms    3.0 MB | new seq     4 ms   0.1 MB | new 4w     3 ms
+synthetic 22050 Hz 7.3 s                 patches 2/2 | log-mel max|?| 1.36E-004 mean|?| 7.13E-007 (value range 5.95) max rel 7.54E-003 | par==seq bitwise True | ref     16 ms    3.5 MB | new seq     4 ms   0.1 MB | new 4w     4 ms
+too short (2.9 s @48k)                   ref patches 0 new 0/0 (null batches: ref True new True)
+All But Water - Zero Nine                patches 71/71 | log-mel max|?| 1.54E-004 mean|?| 8.40E-007 (value range 6.42) max rel 9.62E-004 | par==seq bitwise True | ref    385 ms  102.6 MB | new seq    73 ms   4.9 MB | new 4w    32 ms
+Caribbean Machines - Milonga_Candidate   patches 84/84 | log-mel max|?| 1.15E-004 mean|?| 8.52E-007 (value range 6.36) max rel 1.91E-003 | par==seq bitwise True | ref    415 ms  121.2 MB | new seq    86 ms   5.8 MB | new 4w    28 ms

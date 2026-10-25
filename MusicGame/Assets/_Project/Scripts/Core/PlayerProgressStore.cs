@@ -152,5 +152,8 @@ public static class PlayerProgressStore
         data.playedSongIds ??= new System.Collections.Generic.List<string>();
         if (data.version < 7) SeedPlayedHistory(data);
         data.playedSongIds.RemoveAll(string.IsNullOrEmpty);
+        // v7 → v8: the player profile starts empty (no build was ever saved before).
+        data.profile ??= new PlayerProfileData();
+        data.profile.stylePicks ??= new System.Collections.Generic.List<StylePickData>();
     }
 }

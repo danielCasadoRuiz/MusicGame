@@ -357,7 +357,7 @@ public static class HelpScreenPrefabs
 
     // The build panel INSIDE the top bar, on the player's side: right of the health bar (portrait 70 + gap 12 + bar
     // 320 from x 20 → 422), ending before the centred timer. Two compact zones split by thin rules: the five build
-    // stats (power attributes: icon, short name, bar, points) and the 2×2 consumable charges (Special, x3, x4, lives).
+    // stats (the four attributes: icon, short name, bar, points) and the 2×2 consumable charges (Special, x3, x4, lives).
     // No background of its own: it is part of the bar. Re-applied on every run (layout only; references kept).
     private const float PanelLeft = 436f, PanelWidth = 440f, BarHeight = 90f;
 
@@ -377,24 +377,35 @@ public static class HelpScreenPrefabs
         Rule(rt, "RuleStats", 0f);
         Rule(rt, "RuleCharges", 206f);
 
-        const float rowH = 14.5f;
+        // Four build stats since 2026-10-25: a row whose stat is no longer built (the retired ImpactPower) goes.
+        var keep = new System.Collections.Generic.List<FightBuildPanelView.StatRow>();
+        foreach (var row in panel.stats)
+        {
+            if (row == null) continue;
+            if (System.Array.IndexOf(BonusHelpCatalog.BuildStats, row.stat) >= 0) keep.Add(row);
+            else if (row.root != null) Object.DestroyImmediate(row.root.gameObject, true);
+        }
+        keep.Sort((a, b) => System.Array.IndexOf(BonusHelpCatalog.BuildStats, a.stat).CompareTo(System.Array.IndexOf(BonusHelpCatalog.BuildStats, b.stat)));
+        panel.stats = keep.ToArray();
+
+        float rowH = (BarHeight - 16f) / Mathf.Max(1, panel.stats.Length);
         for (int i = 0; i < panel.stats.Length; i++)
         {
             var row = panel.stats[i];
             if (row?.root == null) continue;
             UIFactory.SetBox(row.root, TopLeft, TopLeft, TopLeft, new Vector2(10f, -8f - i * rowH), new Vector2(190f, rowH));
-            if (row.icon != null) UIFactory.SetBox(row.icon.rectTransform, MidLeft, MidLeft, MidLeft, Vector2.zero, new Vector2(10f, 10f));
+            if (row.icon != null) UIFactory.SetBox(row.icon.rectTransform, MidLeft, MidLeft, MidLeft, Vector2.zero, new Vector2(12f, 12f));
             if (row.label != null)
             {
                 UIFactory.SetBox(row.label.rectTransform, MidLeft, MidLeft, MidLeft, new Vector2(14f, 0f), new Vector2(54f, rowH));
-                row.label.fontSize = 10;
+                row.label.fontSize = 11;
             }
             if (row.fill != null)
-                UIFactory.SetBox((RectTransform)row.fill.transform.parent, MidLeft, MidLeft, MidLeft, new Vector2(70f, 0f), new Vector2(90f, 6f));
+                UIFactory.SetBox((RectTransform)row.fill.transform.parent, MidLeft, MidLeft, MidLeft, new Vector2(70f, 0f), new Vector2(90f, 8f));
             if (row.value != null)
             {
                 UIFactory.SetBox(row.value.rectTransform, MidLeft, MidLeft, MidLeft, new Vector2(162f, 0f), new Vector2(28f, rowH));
-                row.value.fontSize = 11;
+                row.value.fontSize = 12;
             }
         }
         for (int i = 0; i < panel.resources.Length; i++)

@@ -63,9 +63,8 @@ public class HelpUIConfigSO : ScriptableObject
     public Color quadComboColor = new(1f, 0.45f, 0.15f);
 
     [Header("Build panel (fight HUD)")]
-    [Tooltip("Stat points that fill a build bar completely. PENDING: the game defines no per-stat maximum (the " +
-             "budget is shared, maxCombatBudget = 100); 40 = the last point of FightCombatBalanceConfig's " +
-             "buildStatToDamage curve, where the damage bonus tops out.")]
+    [Tooltip("Fallback only: a build bar is full at FightStatsConfig.maxStatPoints (the real per-stat cap); this is used " +
+             "when no FightStatsConfig is configured.")]
     [Min(1f)] public float statBarFullPoints = 40f;
 
     [Header("Tip cards (preRun / preFight)")]
@@ -84,6 +83,8 @@ public class HelpUIConfigSO : ScriptableObject
     [Min(0f)] public float trayInSeconds = 0.35f;
     [Tooltip("Delay between one source's departure and the next (sources leave one after another).")]
     [Min(0f)] public float sourceStagger = 0.22f;
+    [Tooltip("Size of each piece when one bonus splits towards several attributes (Onset → 4, Impact → 2), relative to a whole icon.")]
+    [Range(0.2f, 1f)] public float splitPieceScale = 0.6f;
     [Tooltip("Flight time of one icon to its destination (accelerating).")]
     [Min(0.05f)] public float flightSeconds = 0.6f;
     [Tooltip("Sideways bow of the flight, as a fraction of its length.")]

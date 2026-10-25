@@ -81,7 +81,7 @@ public static class FightCombatTests
         var stats = new CollectionStats(); stats.AddScore(3000);
         EventBus.Publish(new GameEndedEvent { Stats = stats, Performance = perf, Resources = new RunnerResourceCounts { TripleCombos = 0, QuadCombos = 0, Lives = 2, Specials = 0 } });
         var results = session.RunnerResults;
-        Check("setup: GameSession finalized RunnerResults with a CombatBuild", results?.CombatBuild != null && results.CombatBuild.Budget > 0f);
+        Check("setup: GameSession finalized RunnerResults with a CombatBuild", results?.CombatBuild != null && results.CombatBuild.TotalPoints > 0f);
 
         var roster = appConfig.opponentRoster;
         var mozart = roster.opponents.First(o => o != null && o.id == "mozart");
@@ -143,7 +143,7 @@ public static class FightCombatTests
         Check($"G: player build = RunnerResults.CombatBuild [{player.BuildStats}]",
               Mathf.Approximately(player.BuildStats.punchPower, expected.punchPower) && Mathf.Approximately(player.BuildStats.kickPower, expected.kickPower) &&
               Mathf.Approximately(player.BuildStats.agility, expected.agility) && Mathf.Approximately(player.BuildStats.resistance, expected.resistance) &&
-              Mathf.Approximately(player.BuildStats.impactPower, expected.impactPower) && player.BuildStats.Total > 0f);
+              player.BuildStats.Total > 0f);
         Check($"G: player resources from RunnerResults.Resources [{player.CombatResources}]", player.CombatResources.Specials == 0 && player.CombatResources.Lives == 2);
 
         var mc = player.MoveController;

@@ -1,0 +1,36 @@
+
+--- raw peak bias @ 48000 Hz (center-time convention, no offset) ---
+kick   group Low : n=24/24  bias   -9.63 ms  sd  0.34  min  -10.08 max   -9.14
+kick   group Mid : n=24/24  bias   -1.23 ms  sd  0.37  min   -1.72 max   -0.59
+kick   group High: n=24/24  bias    0.37 ms  sd  0.64  min   -0.51 max    1.39
+snare  group Low : n=24/24  bias   -9.21 ms  sd  0.24  min   -9.61 max   -8.83
+snare  group Mid : n=24/24  bias    0.11 ms  sd  0.40  min   -0.82 max    0.76
+snare  group High: n=24/24  bias    3.21 ms  sd  0.32  min    2.52 max    3.99
+hihat  group Low : no peaks
+hihat  group Mid : n=24/24  bias    1.67 ms  sd  0.76  min    0.58 max    3.72
+hihat  group High: n=24/24  bias    2.83 ms  sd  0.24  min    2.47 max    3.36
+click  group Low : n=24/24  bias   -6.40 ms  sd  0.14  min   -6.60 max   -6.20
+click  group Mid : n=24/24  bias   -1.20 ms  sd  0.29  min   -1.52 max   -0.69
+click  group High: n=24/24  bias   -0.02 ms  sd  0.68  min   -0.89 max    0.91
+LEGACY kick  : n=24/24 extra= 0  bias   -8.39 ms  sd  2.74  min  -13.77 max   -3.73
+LEGACY snare : n=24/24 extra= 0  bias   -7.05 ms  sd  2.69  min  -11.90 max   -1.85
+LEGACY hihat : n=24/24 extra= 0  bias   -7.05 ms  sd  2.69  min  -11.90 max   -1.85
+LEGACY click : n=24/24 extra= 0  bias  -10.61 ms  sd  3.25  min  -16.33 max   -6.21
+
+--- raw peak bias @ 44100 Hz (center-time convention, no offset) ---
+kick   group Low : n=24/24  bias   -9.73 ms  sd  0.36  min  -10.27 max   -9.21
+kick   group Mid : n=24/24  bias   -1.26 ms  sd  0.36  min   -1.76 max   -0.61
+kick   group High: n=24/24  bias    0.43 ms  sd  0.71  min   -0.53 max    1.41
+snare  group Low : n=24/24  bias   -9.36 ms  sd  0.29  min   -9.83 max   -8.86
+snare  group Mid : n=24/24  bias    0.02 ms  sd  0.36  min   -0.48 max    0.78
+snare  group High: n=24/24  bias    3.20 ms  sd  0.26  min    2.73 max    3.71
+hihat  group Low : no peaks
+hihat  group Mid : n=24/24  bias    1.70 ms  sd  0.64  min    0.59 max    2.84
+hihat  group High: n=24/24  bias    2.89 ms  sd  0.29  min    2.39 max    3.60
+click  group Low : n=24/24  bias   -6.51 ms  sd  0.20  min   -6.90 max   -6.18
+click  group Mid : n=24/24  bias   -1.26 ms  sd  0.29  min   -1.56 max   -0.73
+click  group High: n=24/24  bias   -0.04 ms  sd  0.68  min   -0.87 max    0.90
+LEGACY kick  : n=24/24 extra= 0  bias   -9.09 ms  sd  3.32  min  -14.33 max   -3.74
+LEGACY snare : n=24/24 extra= 0  bias   -7.64 ms  sd  3.35  min  -12.86 max   -2.24
+LEGACY hihat : n=24/24 extra= 0  bias   -7.64 ms  sd  3.35  min  -12.86 max   -2.24
+LEGACY click : n=24/24 extra= 0  bias  -12.00 ms  sd  3.30  min  -17.30 max   -6.69

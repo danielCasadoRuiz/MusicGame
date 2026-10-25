@@ -6,11 +6,11 @@ using UnityEngine;
 /// built RunnerResults.CombatBuild and filled the run wallet when the run ended). Pure read-only presentation data:
 /// building or playing it never grants, recomputes or re-applies anything.
 ///
-/// Stat destinations: the five build stats go from 0 to the build's real points (MusicCombatBuild). Each stat's
-/// points are split between the musical pickups that fed it in proportion to their real contribution to its quality
-/// (weight × performance, MusicCombatBuildConverter) — so a pickup that feeds two stats sends one icon to each, and
-/// the pieces of every bar add up exactly to its points. A stat whose sources the song did not have (fallback to
-/// the overall performance) is split over all the musical pickups by performance, the same mean the fallback uses.
+/// Stat destinations: the four build stats start at their base and grow by exactly the points every collected bonus
+/// gave them (MusicCombatBuild.Contributions — direct, after the cap): Snare → Punch, Kick → Kick, HiHat → Agility,
+/// Beat → Resistance, Onset → all four, Impact → Punch + Kick. A bonus that feeds several stats sends one smaller icon
+/// to each (one bonus, several destinations — never shown as several pickups); the pieces of a bar add up exactly to
+/// its final points, whichever bonuses fed it.
 /// Resource destinations: Special / x3 / x4 counters (the run wallet) and the persistent extra-life counter.
 /// Peak (score only) has no destination and never flies.
 /// </summary>
@@ -27,7 +27,10 @@ public class BonusConversionPlan
     public readonly List<ResourceFlight> ResourceFlights = new();
     /// <summary>The build's real final points per stat (the bars' end values).</summary>
     public readonly Dictionary<FightStatId, float> FinalPoints = new();
+    /// <summary>Summary indicator: the four final stats added up (never used to redistribute anything).</summary>
     public float Budget, MaxBudget;
+    /// <summary>Each stat's starting value (its base): what a bar shows before any icon arrives.</summary>
+    public readonly Dictionary<FightStatId, float> BasePoints = new();
 
     public bool IsEmpty => StatFlights.Count == 0 && ResourceFlights.Count == 0;
 
@@ -37,41 +40,29 @@ public class BonusConversionPlan
         var build = results?.CombatBuild;
         var musical = results?.Musical;
         if (build == null || musical == null || config == null) return plan;
-        plan.Budget = build.Budget;
-        plan.MaxBudget = build.MaxBudget;
-        foreach (var stat in BonusHelpCatalog.BuildStats) plan.FinalPoints[stat] = build.Get(stat);
+        plan.Budget = build.TotalPoints;
+        plan.MaxBudget = build.MaxStatPoints * BonusHelpCatalog.BuildStats.Length;
+        foreach (var stat in BonusHelpCatalog.BuildStats)
+        {
+            plan.FinalPoints[stat] = build.Get(stat);
+            plan.BasePoints[stat] = build.TryGet(stat, out var st) ? st.BasePoints : 0f;
+        }
 
         // Source chips: what was collected, in display order.
         foreach (var t in musical.Types)
         {
             var kind = BonusKinds.FromRing(t.Type);
-            if (!kind.HasValue || t.Collected <= 0) continue;
-            plan.Sources.Add(new SourceChip { Kind = kind.Value, Count = t.Collected, HasDestination = BonusHelpCatalog.Feeds(kind.Value, config).Count > 0 });
+            if (!kind.HasValue || t.Kept <= 0) continue;   // the counts the player saw at the end (after falls)
+            plan.Sources.Add(new SourceChip { Kind = kind.Value, Count = t.Kept, HasDestination = false });
         }
 
-        // Stat flights: split each stat's real points over its sources' real contributions.
-        if (config.buildStats != null)
-            foreach (var mapping in config.buildStats)
-            {
-                float points = build.Get(mapping.statId);
-                if (points <= 1e-4f || mapping.sources == null) continue;
-                var parts = new List<(BonusKind kind, float w)>();
-                foreach (var src in mapping.sources)
-                    if (src.weight > 0f && musical.TryGet(src.source, out var r) && r.IsApplicable && BonusKinds.FromRing(src.source).HasValue)
-                        parts.Add((BonusKinds.FromRing(src.source).Value, src.weight * r.Performance));
-                if (parts.Count == 0)   // fallback stat (none of its sources in the song): the overall performance's mean
-                    foreach (var t in musical.Types)
-                        if (t.IsApplicable && BonusKinds.FromRing(t.Type).HasValue) parts.Add((BonusKinds.FromRing(t.Type).Value, t.Performance));
-                float sum = 0f;
-                foreach (var p in parts) sum += p.w;
-                foreach (var p in parts)
-                {
-                    float share = sum > 1e-6f ? p.w / sum : 1f / parts.Count;
-                    if (share * points < 1e-3f) continue;
-                    if (!HasChip(plan, p.kind)) continue;   // nothing collected of it: nothing to fly (its share stays in the bar)
-                    plan.StatFlights.Add(new Flight { Source = p.kind, Stat = mapping.statId, Points = share * points });
-                }
-            }
+        // Stat flights: the build's own per-(bonus, stat) points — nothing recomputed or re-split here.
+        foreach (var c in build.Contributions)
+        {
+            var kind = BonusKinds.FromRing(c.Source);
+            if (!kind.HasValue || c.Points < 1e-3f || !HasChip(plan, kind.Value)) continue;
+            plan.StatFlights.Add(new Flight { Source = kind.Value, Stat = c.Stat, Points = c.Points });
+        }
 
         // Resources: the wallet / lives are already final; the counters animate from (final - this run's gain).
         if (run != null)
@@ -104,12 +95,20 @@ public class BonusConversionPlan
         plan.ResourceFlights.Add(new ResourceFlight { Source = kind, From = Mathf.Max(0, finalValue - gained), To = finalValue });
     }
 
-    /// <summary>Stat points shown before any icon arrived (the part of a bar no collected pickup accounts for,
-    /// e.g. a source the player never collected that still had a share). Bars start here, never jump past the end.</summary>
+    /// <summary>Stat points shown before any icon arrived: final − everything that flies in (= the base).
+    /// Bars start here and end exactly on the final value.</summary>
     public float StartPoints(FightStatId stat)
     {
         float flown = 0f;
         foreach (var f in StatFlights) if (f.Stat == stat) flown += f.Points;
         return Mathf.Max(0f, (FinalPoints.TryGetValue(stat, out var p) ? p : 0f) - flown);
+    }
+
+    /// <summary>How many stats one bonus of `kind` flies to (Onset 4, Impact 2, specialists 1).</summary>
+    public int Destinations(BonusKind kind)
+    {
+        int n = 0;
+        foreach (var f in StatFlights) if (f.Source == kind) n++;
+        return n;
     }
 }

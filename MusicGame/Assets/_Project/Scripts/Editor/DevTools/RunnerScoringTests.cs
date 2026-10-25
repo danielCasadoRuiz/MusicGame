@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -69,53 +70,77 @@ public static class RunnerScoringTests
         if (gameplay == null || fight == null) return log.Finish(out ok);
         var scoring = gameplay.scoring;
         log.Info($"combo window {scoring.comboWindowSeconds:0.00} s, triple {scoring.tripleComboPickups}, quad {scoring.quadComboPickups}, " +
-                 $"budget {fight.maxCombatBudget}, compositionInfluence {fight.compositionInfluence}");
+                 $"build base {fight.baseStatPoints}, cap {fight.maxStatPoints}");
 
-        // ── TEST A — normal song, all six types ──────────────────────────────────
-        var songA = Song((RingType.Kick, 50, 40), (RingType.Snare, 40, 32), (RingType.HiHat, 100, 80),
-                         (RingType.Beat, 70, 56), (RingType.Onset, 30, 24), (RingType.Impact, 10, 8));
-        var musA = MusicalPerformanceBuilder.Build(songA, fight.performanceTimingInfluence);
-        var buildA = MusicCombatBuildConverter.Build(musA, fight);
-        int applicableA = 0;
-        foreach (var t in musA.Types) if (t.IsApplicable && t.Type != RingType.Peak) applicableA++;
-        log.Check("A: all six musical types applicable", applicableA == 6, $"{applicableA}");
-        log.Check($"A: overall performance = 0.80 ({musA.OverallPerformance:0.000})", Mathf.Abs(musA.OverallPerformance - 0.8f) < 1e-4f);
-        log.Check($"A: five build stats, points sum to budget ({buildA.TotalPoints:0.00} / {buildA.Budget:0.00})",
-                  buildA.Stats.Count == 5 && Mathf.Abs(buildA.TotalPoints - buildA.Budget) < 1e-3f);
-        log.Info("A build: " + Describe(buildA));
+        // ── TEST A — direct correspondences (one bonus type at a time vs none) ───────────
+        var none = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song()), fight);
+        foreach (var st in MusicCombatBuildConverter.Stats)
+            log.Check($"A: no bonus -> {st} at its base {fight.baseStatPoints}", Mathf.Approximately(none.Get(st), fight.baseStatPoints));
+        var expected = new (RingType type, FightStatId[] feeds)[]
+        {
+            (RingType.Kick,   new[] { FightStatId.KickPower }),
+            (RingType.Snare,  new[] { FightStatId.PunchPower }),
+            (RingType.HiHat,  new[] { FightStatId.Agility }),
+            (RingType.Beat,   new[] { FightStatId.Resistance }),
+            (RingType.Onset,  new[] { FightStatId.PunchPower, FightStatId.KickPower, FightStatId.Resistance, FightStatId.Agility }),
+            (RingType.Impact, new[] { FightStatId.PunchPower, FightStatId.KickPower }),
+            (RingType.Peak,   new FightStatId[0]),
+        };
+        foreach (var (type, feeds) in expected)
+        {
+            var one = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song((type, 10, 10))), fight);
+            var wrong = new List<string>();
+            foreach (var st in MusicCombatBuildConverter.Stats)
+            {
+                bool shouldGrow = System.Array.IndexOf(feeds, st) >= 0;
+                float gain = one.Get(st) - none.Get(st);
+                float per = fight.Contribution(type)?.Get(st) ?? 0f;
+                if (shouldGrow ? !(gain > 0f && Mathf.Abs(gain - 10f * per) < 1e-3f) : Mathf.Abs(gain) > 1e-5f) wrong.Add($"{st} {gain:+0.00;-0.00;0}");
+            }
+            log.Check($"A: 10 x {type} feeds only [{string.Join(", ", feeds)}] by exactly 10 x its points", wrong.Count == 0, string.Join(", ", wrong));
+        }
+        log.Check("A: Onset and Impact are musical bonuses, never charges / lives",
+                  RingTypes.IsMusical(RingType.Onset) && RingTypes.IsMusical(RingType.Impact) && !RingTypes.IsResource(RingType.Onset) && !RingTypes.IsResource(RingType.Impact));
 
-        // ── TEST B — no HiHat ────────────────────────────────────────────────────
+        // ── TEST B — cumulative, independent, monotonic ──────────────────────────────
+        var withoutKick = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song((RingType.Snare, 20, 12), (RingType.Beat, 20, 10))), fight);
+        var plusKick = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song((RingType.Snare, 20, 12), (RingType.Beat, 20, 10), (RingType.Kick, 30, 25))), fight);
+        log.Check("B: adding Kick never lowers or redistributes Punch / Resistance / Agility",
+                  Mathf.Approximately(withoutKick.PunchPower, plusKick.PunchPower) && Mathf.Approximately(withoutKick.Resistance, plusKick.Resistance)
+                  && Mathf.Approximately(withoutKick.Agility, plusKick.Agility) && plusKick.KickPower > withoutKick.KickPower);
+        var rng = new System.Random(7);
+        int nonMonotonic = 0;
+        RingType[] musicalTypes = { RingType.Kick, RingType.Snare, RingType.HiHat, RingType.Beat, RingType.Onset, RingType.Impact };
+        for (int trial = 0; trial < 300; trial++)
+        {
+            var picks = musicalTypes.Select(_ => rng.Next(0, 120)).ToArray();
+            int bump = rng.Next(musicalTypes.Length);
+            var before = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song(musicalTypes.Select((t, i) => (t, 150, picks[i])).ToArray())), fight);
+            picks[bump] = Mathf.Min(150, picks[bump] + 1 + rng.Next(20));
+            var after = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song(musicalTypes.Select((t, i) => (t, 150, picks[i])).ToArray())), fight);
+            foreach (var st in MusicCombatBuildConverter.Stats) if (after.Get(st) < before.Get(st) - 1e-5f) nonMonotonic++;
+        }
+        log.Check("B: 300 random builds - collecting more never lowers any stat (cap included)", nonMonotonic == 0, $"{nonMonotonic} decreases");
+        var huge = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song((RingType.Snare, 900, 900), (RingType.Onset, 300, 300))), fight);
+        float flownPunch = huge.Contributions.Where(c => c.Stat == FightStatId.PunchPower).Sum(c => c.Points);
+        log.Check($"B: a huge haul stops at the cap ({huge.PunchPower:0.0} = {fight.maxStatPoints}) and its contributions still add up exactly",
+                  Mathf.Approximately(huge.PunchPower, fight.maxStatPoints) && Mathf.Abs(flownPunch - (huge.PunchPower - fight.baseStatPoints)) < 1e-3f);
+
+        // ── TEST C — no fallback: a missing bonus type adds nothing ──────────────────
+        var noHat = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song((RingType.Kick, 40, 30), (RingType.Snare, 40, 30), (RingType.Beat, 40, 30))), fight);
+        log.Check("C: a song without HiHat / Onset leaves Agility at its base (never borrowed from other types or the overall)",
+                  Mathf.Approximately(noHat.Agility, fight.baseStatPoints));
+        var sameCountsLowerRate = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song((RingType.Kick, 400, 30), (RingType.Snare, 400, 30), (RingType.Beat, 400, 30))), fight);
+        log.Check("C: the build counts what was collected (same pickups -> same build, whatever the song offered)",
+                  MusicCombatBuildConverter.Stats.All(st => Mathf.Approximately(noHat.Get(st), sameCountsLowerRate.Get(st))));
+        // Falls take bonuses away (the live counter): the build converts what is still HELD, never what was lost.
+        var held = new GamePerformance();
+        held.ByType[RingType.Kick] = new TypePerformance { Type = RingType.Kick, Available = 40, Collected = 23, Kept = 12, CollectionRate = 23f / 40f, TimingAccuracy = 0.9f };
+        var heldBuild = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(held), fight);
+        log.Check("C: after falls the build uses the HELD count (12 of 23 collected), the same number the HUD showed",
+                  Mathf.Abs(heldBuild.KickPower - (fight.baseStatPoints + 12 * fight.Contribution(RingType.Kick).kickPower)) < 1e-3f, $"{heldBuild.KickPower:0.00}");
         var songB = Song((RingType.Kick, 40, 32), (RingType.Snare, 30, 24), (RingType.HiHat, 0, 0),
                          (RingType.Beat, 70, 56), (RingType.Onset, 20, 16), (RingType.Impact, 8, 6));
-        var musB = MusicalPerformanceBuilder.Build(songB, fight.performanceTimingInfluence);
-        var buildB = MusicCombatBuildConverter.Build(musB, fight);
-        musB.TryGet(RingType.HiHat, out var hihatB);
-        musB.TryGet(RingType.Onset, out var onsetB);
-        log.Check("B: HiHat is N/A (not applicable), never a 0% entry", !hihatB.IsApplicable && hihatB.Available == 0);
-        float expectedOverallB = (0.8f + 0.8f + 0.8f + 0.8f + 0.75f) / 5f;
-        log.Check($"B: overall averages only the 5 existing types ({musB.OverallPerformance:0.0000} == {expectedOverallB:0.0000})",
-                  Mathf.Abs(musB.OverallPerformance - expectedOverallB) < 1e-4f);
-        buildB.TryGet(FightStatId.Agility, out var agilityB);
-        log.Check($"B: Agility quality reweights to 100% Onset ({agilityB.Quality:0.000} == {onsetB.Performance:0.000}), sources '{agilityB.Sources}'",
-                  Mathf.Abs(agilityB.Quality - onsetB.Performance) < 1e-4f && !agilityB.UsedFallback);
-        // Same player skill (every existing type 80%) with vs. without HiHat -> same total power.
-        var songB2 = Song((RingType.Kick, 40, 32), (RingType.Snare, 30, 24), (RingType.Beat, 70, 56), (RingType.Onset, 20, 16), (RingType.Impact, 10, 8));
-        var songA2 = Song((RingType.Kick, 40, 32), (RingType.Snare, 30, 24), (RingType.HiHat, 90, 72), (RingType.Beat, 70, 56), (RingType.Onset, 20, 16), (RingType.Impact, 10, 8));
-        var bB2 = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(songB2), fight);
-        var bA2 = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(songA2), fight);
-        log.Check($"B: missing HiHat does not make the fighter globally weaker (budget {bB2.Budget:0.00} == {bA2.Budget:0.00})",
-                  Mathf.Abs(bB2.Budget - bA2.Budget) < 1e-3f);
-        log.Info("B build: " + Describe(buildB));
-
-        // ── TEST C — event density ───────────────────────────────────────────────
-        var c1 = MusicalPerformanceBuilder.Build(Song((RingType.Kick, 20, 16)));
-        var c2 = MusicalPerformanceBuilder.Build(Song((RingType.Kick, 65, 52)));
-        c1.TryGet(RingType.Kick, out var k1);
-        c2.TryGet(RingType.Kick, out var k2);
-        log.Check($"C: 16/20 Kick == 52/65 Kick ({k1.Performance:0.000} == {k2.Performance:0.000})", Mathf.Abs(k1.Performance - k2.Performance) < 1e-5f);
-        var dense  = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song((RingType.Kick, 20, 16), (RingType.HiHat, 300, 240), (RingType.Snare, 20, 16))), fight);
-        var sparse = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song((RingType.Kick, 20, 16), (RingType.HiHat, 20, 16), (RingType.Snare, 20, 16))), fight);
-        log.Check($"C: 300 HiHats give no free combat power (budget {dense.Budget:0.00} == {sparse.Budget:0.00})", Mathf.Abs(dense.Budget - sparse.Budget) < 1e-3f);
 
         // ── TEST D — combos ──────────────────────────────────────────────────────
         float w = scoring.comboWindowSeconds;
@@ -154,20 +179,14 @@ public static class RunnerScoringTests
         log.Check($"D: TotalScore is NOT multiplied by combos ({stats.Score} == 100); resources tracked (quad {counts.QuadCombos}, life {counts.Lives}, special {counts.Specials})",
                   stats.Score == 100 && counts.QuadCombos == 1 && counts.TripleCombos == 0 && counts.Lives == 1 && counts.Specials == 1);
 
-        // ── TEST E — fair combat power ───────────────────────────────────────────
+        // ── TEST E — different songs, different specialisations (no normalisation) ──────
         var e1 = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song(
             (RingType.Kick, 80, 64), (RingType.Snare, 10, 8), (RingType.HiHat, 200, 160), (RingType.Beat, 60, 48), (RingType.Onset, 15, 12), (RingType.Impact, 5, 4))), fight);
         var e2 = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song(
-            (RingType.Kick, 15, 12), (RingType.Snare, 90, 72), (RingType.Beat, 40, 32), (RingType.Onset, 60, 48), (RingType.Impact, 20, 16))), fight);
-        log.Check($"E: both songs at 80% -> same total budget ({e1.Budget:0.00} == {e2.Budget:0.00}), totals {e1.TotalPoints:0.00} / {e2.TotalPoints:0.00}",
-                  Mathf.Abs(e1.Budget - e2.Budget) < 1e-3f && Mathf.Abs(e1.TotalPoints - e2.TotalPoints) < 1e-3f);
-        float diff = 0f;
-        foreach (var s in e1.Stats) diff = Mathf.Max(diff, Mathf.Abs(s.Points - e2.Get(s.StatId)));
-        log.Check($"E: different songs give different builds (largest stat difference {diff:0.00} points)", diff > 1f);
+            (RingType.Kick, 15, 12), (RingType.Snare, 90, 72), (RingType.Beat, 40, 32), (RingType.Onset, 60, 48), (RingType.Impact, 3, 2))), fight);
+        log.Check("E: a kick-heavy song favours KickPower, a snare-heavy one PunchPower", e1.KickPower > e2.KickPower && e2.PunchPower > e1.PunchPower);
         log.Info("E song 1 (kick/hihat heavy): " + Describe(e1));
         log.Info("E song 2 (snare/onset heavy, no hihat): " + Describe(e2));
-        var low = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song((RingType.Kick, 50, 20), (RingType.Snare, 40, 16))), fight);
-        log.Check($"E: playing worse earns less total power (40% -> {low.Budget:0.00} < 80% -> {e1.Budget:0.00})", low.Budget < e1.Budget);
 
         // ── TEST F — data persistence through the session model ──────────────────
         stats = new CollectionStats();
@@ -184,25 +203,24 @@ public static class RunnerScoringTests
         log.Check("F: RunnerResults carries resources (x3 4, x4 2, lives 3, specials 1)",
                   results.Resources.TripleCombos == 4 && results.Resources.QuadCombos == 2 && results.Resources.Lives == 3 && results.Resources.Specials == 1);
         var cb = results.CombatBuild;
-        log.Check($"F: CombatBuild exposes the five stats, summing to the budget ({cb.PunchPower:0.0}+{cb.KickPower:0.0}+{cb.Agility:0.0}+{cb.Resistance:0.0}+{cb.ImpactPower:0.0} = {cb.Budget:0.00})",
-                  Mathf.Abs(cb.PunchPower + cb.KickPower + cb.Agility + cb.Resistance + cb.ImpactPower - cb.Budget) < 1e-3f && cb.BudgetInvariantHolds);
+        log.Check($"F: CombatBuild exposes the four stats ({cb.PunchPower:0.0} / {cb.KickPower:0.0} / {cb.Resistance:0.0} / {cb.Agility:0.0})",
+                  cb.Stats.Count == 4 && MusicCombatBuildConverter.Stats.All(st => cb.TryGet(st, out _)));
         var sameMusicNoResources = RunnerResultsBuilder.Build(new GameEndedEvent { Stats = stats, Performance = songB }, fight);
         log.Check("F: resources/combos never change musical performance or the build",
                   Mathf.Approximately(sameMusicNoResources.OverallPerformance, results.OverallPerformance) &&
-                  Mathf.Approximately(sameMusicNoResources.CombatBuild.PunchPower, cb.PunchPower) &&
-                  Mathf.Approximately(sameMusicNoResources.CombatBuild.Budget, cb.Budget));
+                  MusicCombatBuildConverter.Stats.All(st => Mathf.Approximately(sameMusicNoResources.CombatBuild.Get(st), cb.Get(st))));
+        var otherScore = new CollectionStats(); otherScore.AddScore(99999);
+        var scored = RunnerResultsBuilder.Build(new GameEndedEvent { Stats = otherScore, Performance = songB }, fight);
+        log.Check("F: the runner score never enters the build", MusicCombatBuildConverter.Stats.All(st => Mathf.Approximately(scored.CombatBuild.Get(st), cb.Get(st))));
 
-        // ── Sparse song / invariant everywhere ───────────────────────────────────
+        // ── Sparse / empty songs ─────────────────────────────────────────────────
         var sparse1 = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song((RingType.Kick, 3, 1))), fight);
         var empty   = MusicCombatBuildConverter.Build(MusicalPerformanceBuilder.Build(Song()), fight);
         bool noNaN = true;
         foreach (var b2 in new[] { sparse1, empty })
-            foreach (var st in b2.Stats) noNaN &= !float.IsNaN(st.Points) && !float.IsNaN(st.Share);
-        log.Check($"Sparse: only Kick (1/3) -> no NaN, budget from overall ({sparse1.Budget:0.00} == {fight.maxCombatBudget / 3f:0.00}), sums to budget",
-                  noNaN && Mathf.Abs(sparse1.Budget - fight.maxCombatBudget * fight.performanceToBudget.Evaluate(1f / 3f)) < 1e-3f && sparse1.BudgetInvariantHolds);
-        log.Check($"Sparse: no musical type at all -> budget {empty.Budget:0.00}, no NaN, invariant holds", noNaN && empty.BudgetInvariantHolds);
-        log.Check("Invariant: every build above sums to its budget",
-                  buildA.BudgetInvariantHolds && buildB.BudgetInvariantHolds && e1.BudgetInvariantHolds && e2.BudgetInvariantHolds && low.BudgetInvariantHolds && dense.BudgetInvariantHolds);
+            foreach (var st in b2.Stats) noNaN &= !float.IsNaN(st.Points);
+        log.Check("Sparse: one Kick / nothing at all -> no NaN, every stat >= its base",
+                  noNaN && sparse1.Stats.All(x => x.Points >= fight.baseStatPoints) && empty.Stats.All(x => Mathf.Approximately(x.Points, fight.baseStatPoints)));
 
         // ── TEST G — real generated timelines (cached SongProfiles of real songs) ───────
         RealTimelines(log, gameplay);
@@ -210,7 +228,7 @@ public static class RunnerScoringTests
         // ── Config sanity ─────────────────────────────────────────────────────────
         log.Check("Config: Life/Special are resources, not musical", RingTypes.IsResource(RingType.Life) && RingTypes.IsResource(RingType.Special) &&
                   !System.Array.Exists(RingTypes.Musical, t => RingTypes.IsResource(t)));
-        log.Check("Config: build weights reference only musical sources", AllBuildSourcesMusical(fight));
+        log.Check("Config: build contributions reference only musical sources", AllBuildSourcesMusical(fight));
         return log.Finish(out ok);
     }
 
@@ -305,16 +323,15 @@ public static class RunnerScoringTests
 
     private static bool AllBuildSourcesMusical(FightStatsConfig fight)
     {
-        foreach (var m in fight.buildStats)
-            foreach (var s in m.sources)
-                if (RingTypes.IsResource(s.source)) return false;
+        foreach (var c in fight.contributions)
+            if (c != null && RingTypes.IsResource(c.source)) return false;
         return true;
     }
 
     private static string Describe(MusicCombatBuild b)
     {
-        var sb = new StringBuilder($"budget {b.Budget:0.0} (overall {b.OverallPerformance:0.00}) —");
-        foreach (var s in b.Stats) sb.Append($" {s.StatId} {s.Points:0.0} [{s.Sources}];");
+        var sb = new StringBuilder($"total {b.TotalPoints:0.0} —");
+        foreach (var s in b.Stats) sb.Append($" {s.StatId} {s.Points:0.0}{(s.Capped ? " (cap)" : "")};");
         return sb.ToString();
     }
 }

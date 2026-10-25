@@ -15,7 +15,7 @@ using System.Collections.Generic;
 [System.Serializable]
 public class PlayerProgressData
 {
-    public const int CurrentVersion = 7; // 2: song history; 3: pendingRun; 4: stable songId; 5: campaign + song cycles + records; 6: song use per lap; 7: played history
+    public const int CurrentVersion = 8; // 2: song history; 3: pendingRun; 4: stable songId; 5: campaign + song cycles + records; 6: song use per lap; 7: played history; 8: player profile
 
     public int version = CurrentVersion;
 
@@ -63,6 +63,42 @@ public class PlayerProgressData
     public CampaignProgressData campaign = new();
     /// <summary>Song variety cycle (independent of laps). completedSongIds above stays the all-time history.</summary>
     public SongCycleData songCycle = new();
+
+    // ── Player profile (v8) — see PlayerProfileData ─────────────────────────────────────────────
+    /// <summary>How strong the player usually arrives at a fight (running mean of every run's converted build) and
+    /// which music styles they choose themselves. Missing in older files → empty (nothing to reconstruct: builds
+    /// were never saved).</summary>
+    public PlayerProfileData profile = new();
+}
+
+/// <summary>
+/// The player's long-term combat profile, built from what they collect: every finished run's CONVERTED build (the
+/// four attributes the fight receives, MusicCombatBuild) is averaged in, so the profile says how strong this
+/// player typically is — the seed of a future matchmaking (online / other players) that rewards practising offline.
+/// Plus the music styles they pick THEMSELVES (manual Song Selection choices, never the automatic ones), the base for
+/// how their avatar should look. Display only for now.
+/// </summary>
+[System.Serializable]
+public class PlayerProfileData
+{
+    /// <summary>Runs averaged in.</summary>
+    public int runs;
+    public float avgPunchPower, avgKickPower, avgResistance, avgAgility;
+    /// <summary>Best single run (sum of the four) and the last run's four values.</summary>
+    public float bestTotal;
+    public float lastPunchPower, lastKickPower, lastResistance, lastAgility;
+    public long lastUtcTicks;
+    /// <summary>Manual song choices per GameMusicStyle (int value of the enum).</summary>
+    public List<StylePickData> stylePicks = new();
+
+    public float AverageTotal => avgPunchPower + avgKickPower + avgResistance + avgAgility;
+}
+
+[System.Serializable]
+public class StylePickData
+{
+    public int style;
+    public int count;
 }
 
 [System.Serializable]

@@ -56,14 +56,16 @@ public static class HelpUISetup
         }
         cfg.bonusIcons = bonusIcons.ToArray();
 
-        // Placeholder tints of the five destinations (the bars): editable in the asset.
+        // Placeholder tints of the four destinations (the bars): editable in the asset.
         var statColors = new[]
         {
             (FightStatId.PunchPower, new Color(0.95f, 0.62f, 0.25f)), (FightStatId.KickPower, new Color(0.92f, 0.3f, 0.25f)),
             (FightStatId.Agility, new Color(0.3f, 0.78f, 1f)), (FightStatId.Resistance, new Color(0.5f, 0.85f, 0.4f)),
-            (FightStatId.ImpactPower, new Color(1f, 0.82f, 0.3f)),
         };
         var statIcons = cfg.statIcons.ToList();
+        // The retired ImpactPower stat has no bar any more (its placeholder PNG is left on disk, unused).
+        int retired = statIcons.RemoveAll(s => s.stat == FightStatId.LegacyImpactPower);
+        if (retired > 0) log.AppendLine("  fix   HelpUIConfig: retired ImpactPower stat icon entry removed");
         foreach (var (stat, color) in statColors)
         {
             var sprite = EnsurePlaceholder($"Stat_{stat}", log);
@@ -82,7 +84,10 @@ public static class HelpUISetup
         EditorUtility.SetDirty(cfg);
         AssetDatabase.SaveAssets();
 
-        int added = LocalizationSetup.AddMissingEntries(LocalizationSetup.Entries.Where(e => e.key.StartsWith("Help.")).Select(e => e.key));
+        MigrateBuildAssets(log);
+        RivalProfileSetup.Apply(log);   // one combat identity per rival (four-attribute proportions)
+
+        int added = LocalizationSetup.AddMissingEntries(LocalizationSetup.Entries.Where(e => e.key.StartsWith("Help.") || e.key.StartsWith("Profile.")).Select(e => e.key));
         log.AppendLine($"  loc   {added} Help.* entr(ies) added");
 
         log.Append(UIScreenPrefabBuilder.Build(rebuild: false));
@@ -94,6 +99,24 @@ public static class HelpUISetup
             if (cfg.StatSprite(stat) == null) log.AppendLine($"  FAIL  HelpUIConfig has no icon for {stat}");
         log.AppendLine("  done");
         return log.ToString();
+    }
+
+    // Four-attribute model (2026-10-25): re-serialise the build / balance / rival-profile assets with their CURRENT
+    // fields, so the retired ones (global budget + 65/35 weights, ImpactPower, agility timing) leave the files and the
+    // active values become visible / editable. Nothing is redistributed: the new fields take their designed defaults.
+    private static void MigrateBuildAssets(StringBuilder log)
+    {
+        foreach (var type in new[] { "t:FightStatsConfig", "t:FightCombatBalanceConfig", "t:FighterStatsProfileSO" })
+            foreach (var guid in AssetDatabase.FindAssets(type))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var asset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
+                if (asset == null) continue;
+                string before = File.ReadAllText(path);
+                EditorUtility.SetDirty(asset);
+                AssetDatabase.SaveAssetIfDirty(asset);
+                if (File.ReadAllText(path) != before) log.AppendLine($"  migr  {path} re-serialised on the four-attribute model");
+            }
     }
 
     // 64×64: an opaque white 48×48 square centred on a transparent background (tintable, clearly a placeholder).

@@ -283,7 +283,6 @@ public class FightController : MonoBehaviour
         FightStatId.KickPower => b.kickPower,
         FightStatId.Agility => b.agility,
         FightStatId.Resistance => b.resistance,
-        FightStatId.ImpactPower => b.impactPower,
         _ => 0f,
     };
 

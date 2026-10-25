@@ -258,6 +258,48 @@ public class PlayerProgressService : MonoBehaviour
         return true;
     }
 
+    // ── Player profile (v8) ─────────────────────────────────────────────────────────────────
+
+    public PlayerProfileData Profile => _data.profile;
+
+    /// <summary>Averages one run's CONVERTED build (what the fight receives) into the profile — once per run.</summary>
+    public void RecordRunBuild(float punch, float kick, float resistance, float agility)
+    {
+        var p = _data.profile;
+        int n = p.runs + 1;
+        p.avgPunchPower += (punch - p.avgPunchPower) / n;
+        p.avgKickPower += (kick - p.avgKickPower) / n;
+        p.avgResistance += (resistance - p.avgResistance) / n;
+        p.avgAgility += (agility - p.avgAgility) / n;
+        p.runs = n;
+        p.lastPunchPower = punch; p.lastKickPower = kick; p.lastResistance = resistance; p.lastAgility = agility;
+        p.bestTotal = Mathf.Max(p.bestTotal, punch + kick + resistance + agility);
+        p.lastUtcTicks = System.DateTime.UtcNow.Ticks;
+        Changed("profile build");
+    }
+
+    /// <summary>One MANUAL song choice of `style` (Song Selection; automatic choices are never counted).</summary>
+    public void RecordStylePick(GameMusicStyle style)
+    {
+        if (style == GameMusicStyle.Unknown) return;
+        var picks = _data.profile.stylePicks;
+        var entry = picks.Find(x => x.style == (int)style);
+        if (entry == null) picks.Add(entry = new StylePickData { style = (int)style });
+        entry.count++;
+        Changed("profile style");
+    }
+
+    /// <summary>The style the player picks most (Unknown until they chose one).</summary>
+    public GameMusicStyle PreferredStyle
+    {
+        get
+        {
+            StylePickData best = null;
+            foreach (var x in _data.profile.stylePicks) if (best == null || x.count > best.count) best = x;
+            return best != null ? (GameMusicStyle)best.style : GameMusicStyle.Unknown;
+        }
+    }
+
     /// <summary>New preference seed (a manual catalog choice) — the cached route is invalidated.</summary>
     public void SetSongSeed(string songId)
     {

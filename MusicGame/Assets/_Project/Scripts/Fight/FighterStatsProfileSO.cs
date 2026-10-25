@@ -32,9 +32,9 @@ public class FighterStatsProfileSO : ScriptableObject
         new StatEntry { statId = FightStatId.Balance,      value = 100f },
     };
 
-    [Tooltip("The opponent's five combat-build stats (same budget-point scale as the Player's " +
-             "RunnerResults.CombatBuild). This is what combat reads.")]
-    public FighterBuildStats buildStats = new FighterBuildStats { punchPower = 16f, kickPower = 16f, agility = 16f, resistance = 16f, impactPower = 16f };
+    [Tooltip("The opponent's four combat-build stats — their PROPORTIONS are the rival's identity (e.g. a kicker); the " +
+             "total is set by its level (FightCombatBalanceConfig.rivalBuildBudgetByLevel). This is what combat reads.")]
+    public FighterBuildStats buildStats = new FighterBuildStats { punchPower = 20f, kickPower = 20f, agility = 20f, resistance = 20f };
 
     /// <summary>A fresh FighterStats built from this profile's authored values — any statId with no
     /// entry here simply stays at FighterStats.Get's own default (0), so an incomplete profile is

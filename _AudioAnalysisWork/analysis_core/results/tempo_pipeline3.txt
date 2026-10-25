@@ -1,0 +1,26 @@
+pattern | true BPM | offset s | est BPM | conf | ratio | phase s | phase err ms (mod beat) | legacy BPM
+4floor    |    84 | 0.237 |  84.00 | 0.99 |  1.00 | 0.235 |    -1.7 |  172 | tracked beats 41/41 within 15 ms (max 5.8 ms), extra 1
+4floor    |    97 | 0.237 |  97.00 | 1.00 |  1.00 | 0.235 |    -2.1 |  192 | tracked beats 48/48 within 15 ms (max 5.1 ms), extra 1
+4floor    |   120 | 0.237 | 120.00 | 0.96 |  1.00 | 0.236 |    -1.0 |  164 | tracked beats 59/59 within 15 ms (max 2.1 ms), extra 1
+4floor    |   128 | 0.237 | 128.00 | 0.99 |  1.00 | 0.236 |    -1.2 |  172 | tracked beats 63/63 within 15 ms (max 3.5 ms), extra 1
+4floor    |   140 | 0.237 | 140.00 | 0.94 |  1.00 | 0.236 |    -0.9 |  141 | tracked beats 69/69 within 15 ms (max 3.4 ms), extra 1
+4floor    |   174 | 0.237 |  87.00 | 0.94 |  0.50 | 0.236 |    -1.2 |  177 | tracked beats 43/43 within 15 ms (max 3.9 ms), extra 1
+rock      |    84 | 0.237 |  84.00 | 0.93 |  1.00 | 0.237 |     0.0 |  172 | tracked beats 41/41 within 15 ms (max 3.0 ms), extra 1
+rock      |    97 | 0.237 |  97.00 | 0.93 |  1.00 | 0.237 |    -0.0 |  192 | tracked beats 48/48 within 15 ms (max 2.7 ms), extra 1
+rock      |   120 | 0.237 | 120.00 | 0.91 |  1.00 | 0.237 |     0.1 |  164 | tracked beats 59/59 within 15 ms (max 3.0 ms), extra 1
+rock      |   128 | 0.237 | 128.00 | 0.91 |  1.00 | 0.237 |    -0.2 |  172 | tracked beats 63/63 within 15 ms (max 2.9 ms), extra 1
+rock      |   140 | 0.237 | 140.00 | 0.88 |  1.00 | 0.237 |     0.1 |  141 | tracked beats 69/69 within 15 ms (max 2.7 ms), extra 1
+rock      |   174 | 0.237 |  87.00 | 0.96 |  0.50 | 0.237 |     0.2 |  177 | tracked beats 43/43 within 15 ms (max 2.5 ms), extra 1
+halftime  |    84 | 0.237 |  84.00 | 0.34 |  1.00 | 0.237 |     0.1 |  168 | tracked beats 41/41 within 15 ms (max 3.0 ms), extra 1
+halftime  |    97 | 0.237 |  97.00 | 0.34 |  1.00 | 0.237 |     0.0 |  192 | tracked beats 48/48 within 15 ms (max 2.5 ms), extra 1
+halftime  |   120 | 0.237 | 120.00 | 0.29 |  1.00 | 0.237 |     0.2 |  119 | tracked beats 59/59 within 15 ms (max 3.0 ms), extra 1
+halftime  |   128 | 0.237 |  64.00 | 0.93 |  0.50 | 0.237 |    -0.0 |  127 | tracked beats 32/32 within 15 ms (max 2.8 ms), extra 0
+halftime  |   140 | 0.237 |  70.00 | 0.92 |  0.50 | 0.237 |     0.0 |  141 | tracked beats 35/35 within 15 ms (max 2.2 ms), extra 0
+halftime  |   174 | 0.237 |  87.00 | 0.91 |  0.50 | 0.237 |     0.2 |  177 | tracked beats 43/43 within 15 ms (max 2.8 ms), extra 1
+hats16    |    84 | 0.237 |  84.00 | 0.16 |  1.00 | 0.237 |    -0.4 |  164 | tracked beats 41/41 within 15 ms (max 2.9 ms), extra 1
+hats16    |    97 | 0.237 |  97.00 | 0.16 |  1.00 | 0.237 |    -0.2 |  186 | tracked beats 48/48 within 15 ms (max 2.7 ms), extra 1
+hats16    |   120 | 0.237 | 120.00 | 0.13 |  1.00 | 0.236 |    -0.6 |  164 | tracked beats 59/59 within 15 ms (max 3.0 ms), extra 1
+hats16    |   128 | 0.237 | 128.00 | 0.12 |  1.00 | 0.237 |    -0.2 |  127 | tracked beats 63/63 within 15 ms (max 2.1 ms), extra 1
+hats16    |   140 | 0.237 | 140.00 | 0.12 |  1.00 | 0.237 |    -0.2 |  186 | tracked beats 69/69 within 15 ms (max 3.3 ms), extra 1
+hats16    |   174 | 0.237 |  87.00 | 0.13 |  0.50 | 0.237 |    -0.4 |  117 | tracked beats 43/43 within 15 ms (max 3.6 ms), extra 1
+exact tempo (ñ2%) 18/24; up to octave (ž«, ž2) 24/24; phase within ñ15 ms of a true beat 24/24; tracked beats on true beats 1227/1227

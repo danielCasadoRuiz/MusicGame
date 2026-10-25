@@ -1,0 +1,48 @@
+-- setup (t=165,65, songTime=0,0000)
+setup: clip 8s @48000Hz, output 48000Hz, dsp buffer 256x4, batch=True
+-- warmup start (t=165,84, songTime=0,0000)
+PASS  Initialize → Warmup, SongTime 0  state=Warmup t=0,000
+PASS  MusicTimeDiscontinuityEvent NewRun  last=NewRun
+-- load wait after warmup (t=167,44, songTime=1,0000)
+PASS  warmup capped at warmup+start during load wait  t=1,0000 state=Warmup
+PASS  handoff without snap-back  before=1,0000 after=1,0000
+PASS  MusicTimeDiscontinuityEvent PlaybackStarted  last=PlaybackStarted
+PASS  AudioSource playing after StartPlayback  
+-- playing tracks audio (t=168,44, songTime=1,9890)
+PASS  audio advanced (~1 s)  clip=0,987
+PASS  ClipTime tracks AudioSource.timeSamples (<60 ms)  clock.ClipTime=0,9890 audio=0,9867
+PASS  live analyzer ran on clip time  analyses=693
+PASS  warmup→playing: |SongTime step − game-time step| < 100 ms (no time jump)  max deviation 3,4 ms, max raw step 322,1 ms
+-- pause (t=169,44, songTime=1,9890)
+PASS  paused: SongTime frozen  t=1,9890 vs 1,9890
+-- resume (t=169,84, songTime=2,3879)
+PASS  resume continues from the paused moment (no 1 s jump)  advanced 0,399 s in 0.4 s
+PASS  resume: |SongTime step − game-time step| < 100 ms (no time jump)  max deviation 5,0 ms, max raw step 4,5 ms
+-- fall hold (t=170,84, songTime=2,3879)
+PASS  held: no wall-clock advance while the audio is stopped  t=2,3879 vs 2,3879 state=Held
+PASS  respawn seek: clock at warmup + seek  t=1,8879 expected=1,8879 audio=0,8879
+PASS  MusicTimeDiscontinuityEvent Seek  last=Seek
+PASS  live detectors reset on the seek  resets 2→3
+-- unexplained stop (t=171,34, songTime=2,3929)
+-- stalled (t=171,84, songTime=2,3929)
+PASS  unexplained stop → Stalled, frozen, NOT natural end  state=Stalled t=2,3929 vs 2,3929
+PASS  ReachedPlaybackEnd false while stalled  
+-- auto resync (t=172,14, songTime=2,6905)
+PASS  source playing again → Playing + Resync event  state=Playing events=1
+-- external seek (t=172,44, songTime=4,9923)
+PASS  analyzer reset on an unannounced clip-time jump  resets 4→5
+PASS  clock snapped to the external seek  clock=3,992 audio=3,987
+PASS  restart mid-song: clock starts at the offset  t=5,000 state=Warmup
+PASS  MusicTimeDiscontinuityEvent NewRun  last=NewRun
+-- mid-song handoff (t=173,64, songTime=6,0000)
+PASS  mid-song warmup capped at warmup + start  t=6,0000
+PASS  mid-song handoff without jump  t=6,0000
+-- mid-song playing (t=174,14, songTime=6,5063)
+PASS  restart/mid-start: |SongTime step − game-time step| < 100 ms (no time jump)  max deviation 2,7 ms, max raw step 3,8 ms
+-- farewell (t=176,64, songTime=9,0000)
+PASS  natural end detected with evidence  state=Ended natural=True playing=False
+PASS  SongTime at the clip end  t=9,0000 expected 9,00
+PASS  ReachedPlaybackEnd(clip length) true  
+-- farewell advance (t=177,14, songTime=9,5011)
+PASS  farewell advances by game time from the end  advanced 0,501
+RESULT: 31 passed, 0 failed (exit 0)

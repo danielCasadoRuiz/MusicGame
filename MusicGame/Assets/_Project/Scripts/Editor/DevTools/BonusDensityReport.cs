@@ -50,6 +50,11 @@ public static class BonusDensityReport
         sb.AppendLine("song      pos   diff  window   | inWin  -str  -energy -impact -spacing -quota | selected emitted  /s");
 
         var totals = new System.Collections.Generic.Dictionary<string, (int win, int str, int en, int imp, int sp, int q, int sel, int emit, float secs)>();
+        // Per musical type actually emitted in the window (what the runner offers to collect — the combat build's inputs).
+        var types = new System.Text.StringBuilder();
+        RingType[] musicalTypes = { RingType.Kick, RingType.Snare, RingType.HiHat, RingType.Beat, RingType.Onset, RingType.Impact, RingType.Peak };
+        types.AppendLine("PER TYPE (emitted in the played window)");
+        types.AppendLine($"song      pos   | {string.Join(" ", musicalTypes.Select(t => $"{t,6}"))}");
         foreach (string file in Directory.GetFiles(SongContentKeys.ProfileFolder, "*.mgsp.bytes").OrderBy(f => f))
         {
             string songId = Path.GetFileName(file).Replace(".mgsp.bytes", "");
@@ -64,6 +69,14 @@ public static class BonusDensityReport
                 var r = Count(profile, config, path, d, range.Start, range.End, pos);
                 float secs = range.End - range.Start;
                 sb.AppendLine($"{songId,-9} {pos,-5} {d:0.00}  {range.Start,3:0}-{range.End,3:0}s | {r.win,5} {r.str,5} {r.en,7} {r.imp,7} {r.sp,8} {r.q,6} | {r.sel,8} {r.emit,7} {r.emit / secs,4:0.00}");
+                var timeline = GameplayTimeline.Generate(profile, config, path, BonusLayoutProvider.KeyFor(profile, config, d, pos, 0).Seed, d);
+                var counts = musicalTypes.Select(rt => timeline.Events.Count(e => e.ringType == rt && e.eventTime - config.core.warmupTime >= range.Start
+                                                                                && e.eventTime - config.core.warmupTime < range.End)).ToArray();
+                int impactsAll = profile.impactTimes?.Length ?? 0;
+                int impactsWin = profile.impactTimes?.Count(t => t >= range.Start && t < range.End) ?? 0;
+                int macroWin = timeline.MacroEvents.Count(m => m.type == MacroEventType.Impact && m.eventTime - config.core.warmupTime >= range.Start && m.eventTime - config.core.warmupTime < range.End);
+                types.AppendLine($"{songId,-9} {pos,-5} | {string.Join(" ", counts.Select(c => $"{c,6}"))} | impactTimes {impactsAll} (window {impactsWin}), macro Impact in window {macroWin}, " +
+                                 $"beats {profile.beatTimes?.Length ?? 0}, syntheticFill {sel.syntheticFill}, impactThreshold {app.audioAnalysis?.impactThreshold}");
                 totals.TryGetValue(pos, out var t);
                 totals[pos] = (t.win + r.win, t.str + r.str, t.en + r.en, t.imp + r.imp, t.sp + r.sp, t.q + r.q, t.sel + r.sel, t.emit + r.emit, t.secs + secs);
             }
@@ -75,6 +88,48 @@ public static class BonusDensityReport
             sb.AppendLine($"  {kv.Key,-5} inWin={t.win} -strength={t.str} -energy={t.en} -impact={t.imp} -spacing={t.sp} -quota={t.q} " +
                           $"selected={t.sel} emitted={t.emit} ({t.emit / Mathf.Max(1f, t.secs):0.00}/s)");
         }
+        sb.Append(types);
+        sb.Append(HazardsAndImpacts(app, config));
+        return sb.ToString();
+    }
+
+    // Hazards per difficulty (obstacles, chasers, overlapping chasers, hard kinds) + Impact lateral spread.
+    private static string HazardsAndImpacts(AppConfigSO app, MusicRunnerGameplayConfig config)
+    {
+        var sb = new StringBuilder();
+        var hz = AssetDatabase.FindAssets("t:RunnerHazardsConfig").Select(g => AssetDatabase.LoadAssetAtPath<RunnerHazardsConfig>(AssetDatabase.GUIDToAssetPath(g))).FirstOrDefault();
+        if (hz == null) return "HAZARDS: no RunnerHazardsConfig" + System.Environment.NewLine;
+        float[] ds = { 0.15f, 0.5f, 0.85f };
+        var sums = new (int obstacles, int chasers, int overlaps, int hard)[ds.Length];
+        var lateral = new System.Collections.Generic.List<float>();
+        int songs = 0;
+        foreach (string file in Directory.GetFiles(SongContentKeys.ProfileFolder, "*.mgsp.bytes").OrderBy(f => f))
+        {
+            var profile = SongAnalysisPipeline.LoadProfile(File.ReadAllBytes(file), new DerivedAnalysisSettings(app.audioAnalysis), out _);
+            if (profile?.onsetEvents == null || profile.onsetEvents.Length == 0) continue;
+            songs++;
+            var path = new SnakeWayWorldGenerator().Generate(profile, config, new Vector3(0f, config.levelGeneration.pathBaseHeight, 0f));
+            var range = PlayRangeResolver.Resolve(config.core, profile.duration);
+            float warm = config.core.warmupTime, speed = config.core.playerSpeed;
+            for (int i = 0; i < ds.Length; i++)
+            {
+                var tl = GameplayTimeline.Generate(profile, config, path, 1234, ds[i]);
+                if (i == 1) foreach (var e in tl.Events) if (e.ringType == RingType.Impact) lateral.Add(e.lateralOffset);
+                var placements = HazardLayout.Generate(hz, tl.Events.ToArray(), path, 1234, ds[i], range.Start + warm, range.End + warm, speed);
+                var chasers = placements.Where(p => p.isChaser).Select(p => p.songTime).OrderBy(t => t).ToList();
+                float dur = RunnerHazardsConfig.Lerp(hz.easyChaserDuration, hz.hardChaserDuration, ds[i]);
+                int overlaps = 0;
+                for (int k = 1; k < chasers.Count; k++) if (chasers[k] - chasers[k - 1] < dur) overlaps++;
+                int hard = placements.Count(p => !p.isChaser && hz.UnlockFor(p.kind) >= 0.3f);
+                sums[i].obstacles += placements.Count(p => !p.isChaser); sums[i].chasers += chasers.Count; sums[i].overlaps += overlaps; sums[i].hard += hard;
+            }
+        }
+        sb.AppendLine($"HAZARDS per played window, mean over {songs} songs:");
+        for (int i = 0; i < ds.Length; i++)
+            sb.AppendLine($"  difficulty {ds[i]:0.00}: obstacles {sums[i].obstacles / (float)Mathf.Max(1, songs):0.0} (hard kinds {sums[i].hard / (float)Mathf.Max(1, songs):0.0}), " +
+                          $"chasers {sums[i].chasers / (float)Mathf.Max(1, songs):0.0}, overlapping chasers {sums[i].overlaps}");
+        if (lateral.Count > 0)
+            sb.AppendLine($"IMPACT lateral offsets (difficulty 0.5): n {lateral.Count}, min {lateral.Min():0.00}, max {lateral.Max():0.00}, centred (|x|<0.05) {lateral.Count(x => Mathf.Abs(x) < 0.05f)}");
         return sb.ToString();
     }
 

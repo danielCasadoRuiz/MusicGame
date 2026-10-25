@@ -1,0 +1,91 @@
+Analysis benchmark — Unity 6000.3.2f1, 12th Gen Intel(R) Core(TM) i7-12650H (16 logical), 32388 MB RAM, batch True, editor play mode (Mono, not IL2CPP), worker budget 4 (overlap 3).
+
+## Low Megas — Combo Master Tribe: 154,0 s, 48000 Hz, 2 ch, loadType DecompressOnLoad; resident PCM: clip native 28,2 MB (whole song, held by the clip itself) + transient mono copy 28,2 MB during capture→rhythm
+  stages: total 30204 | gate 0 | identity 798 | cacheProbe 3 | capture 472 (max main-thread slice 12,2) | pcmId 0 | tagPrep 298 | inference (chunks of 8) main-thread schedule 22539,7 total, max 22483,4 per frame, wall 2098 | rhythm 6055 | compose 58 (derived 54) | serialize 20 | cacheWrite 13 ms
+      core: decimate 1296,8 ms | features 1735,0 ms | onsetODF 2823,0 ms | pick+classify 32,6 ms | tempo 163,9 ms | segments 2,1 ms | total 6053,5 ms
+RUNTIME full analysis (cache miss): request→profile 30299 ms, request→tags 26250 ms
+  window 30301 ms, 2769 frames, max main-thread frame 22493,6 ms | GC allocated (profiler counter) 275,2 MB, 1 GCs | peak GC heap use +125,3 MB | Mono heap growth +56,4 MB | peak native (Unity allocators, per frame) +372,8 MB
+    frames > 50 ms: [596 ms Identity→Identity] [22494 ms TagPreprocess→Inference] [74 ms Inference→Inference]
+  onsets 982 (Kick 334, Snare 420, HiHat 105, Generic 300, multi-label 177), BPM 84,65 conf 0,53, beats 217, frames 14434, hop 10,667 ms, tags 8 [electronic 0,28], key F# maj, voice zones 1
+  [PASS] RUNTIME full analysis (cache miss): exactly one SongProfileReadyEvent — events 1
+  [PASS] RUNTIME full analysis (cache miss): progress monotonic, ends at 1 — 59 events, last 1,000
+  [PASS] RUNTIME full analysis (cache miss): raw voice kept raw (smoothed copy separate)
+  stages: total 67 | gate 0 | identity 2 | cacheProbe 22 | capture 0 (max main-thread slice 0,0) | pcmId 0 | tagPrep 0 | inference (chunks of 0) main-thread schedule 0,0 total, max 0,0 per frame, wall 0 | rhythm 0 | compose 42 (derived 42) | serialize 0 | cacheWrite 0 ms
+RUNTIME cache HIT: request→profile 69 ms, request→tags 25 ms
+  window 71 ms, 55 frames, max main-thread frame 1,8 ms | GC allocated (profiler counter) 6,7 MB, 0 GCs | peak GC heap use +6,5 MB | Mono heap growth +0,0 MB | peak native (Unity allocators, per frame) +0,0 MB
+  onsets 982 (Kick 334, Snare 420, HiHat 105, Generic 300, multi-label 177), BPM 84,65 conf 0,53, beats 217, frames 14434, hop 10,667 ms, tags 8 [electronic 0,28], key F# maj, voice zones 1
+  [PASS] RUNTIME cache HIT: exactly one SongProfileReadyEvent — events 1
+  [PASS] RUNTIME cache HIT: progress monotonic, ends at 1 — 4 events, last 1,000
+  [PASS] RUNTIME cache HIT: raw voice kept raw (smoothed copy separate)
+  [PASS] cache HIT reported as such
+
+## Gym Bros  - Dyin' Alive: 206,0 s, 48000 Hz, 2 ch, loadType DecompressOnLoad; resident PCM: clip native 37,7 MB (whole song, held by the clip itself) + transient mono copy 37,7 MB during capture→rhythm
+  stages: total 9478 | gate 0 | identity 344 | cacheProbe 2 | capture 743 (max main-thread slice 14,0) | pcmId 0 | tagPrep 359 | inference (chunks of 8) main-thread schedule 123,7 total, max 24,5 per frame, wall 3373 | rhythm 7935 | compose 57 (derived 57) | serialize 16 | cacheWrite 10 ms
+      core: decimate 1886,4 ms | features 2618,9 ms | onsetODF 3245,4 ms | pick+classify 17,4 ms | tempo 166,1 ms | segments 0,1 ms | total 7934,4 ms
+RUNTIME full analysis (cache miss): request→profile 9480 ms, request→tags 4834 ms
+  window 9482 ms, 4048 frames, max main-thread frame 65,9 ms | GC allocated (profiler counter) 95,7 MB, 0 GCs | peak GC heap use +79,9 MB | Mono heap growth +69,7 MB | peak native (Unity allocators, per frame) +354,6 MB
+    frames > 50 ms: [66 ms Inference→Inference]
+  onsets 1279 (Kick 477, Snare 485, HiHat 180, Generic 361, multi-label 220), BPM 102,79 conf 0,54, beats 353, frames 19309, hop 10,667 ms, tags 8 [electronic 0,20], key F# maj, voice zones 7
+  [PASS] RUNTIME full analysis (cache miss): exactly one SongProfileReadyEvent — events 1
+  [PASS] RUNTIME full analysis (cache miss): progress monotonic, ends at 1 — 77 events, last 1,000
+  [PASS] RUNTIME full analysis (cache miss): raw voice kept raw (smoothed copy separate)
+  stages: total 81 | gate 0 | identity 2 | cacheProbe 19 | capture 0 (max main-thread slice 0,0) | pcmId 0 | tagPrep 0 | inference (chunks of 0) main-thread schedule 0,0 total, max 0,0 per frame, wall 0 | rhythm 0 | compose 60 (derived 60) | serialize 0 | cacheWrite 0 ms
+RUNTIME cache HIT: request→profile 82 ms, request→tags 21 ms
+  window 84 ms, 64 frames, max main-thread frame 4,6 ms | GC allocated (profiler counter) 9,0 MB, 0 GCs | peak GC heap use +8,5 MB | Mono heap growth +0,0 MB | peak native (Unity allocators, per frame) +0,0 MB
+  onsets 1279 (Kick 477, Snare 485, HiHat 180, Generic 361, multi-label 220), BPM 102,79 conf 0,54, beats 353, frames 19309, hop 10,667 ms, tags 8 [electronic 0,20], key F# maj, voice zones 7
+  [PASS] RUNTIME cache HIT: exactly one SongProfileReadyEvent — events 1
+  [PASS] RUNTIME cache HIT: progress monotonic, ends at 1 — 4 events, last 1,000
+  [PASS] RUNTIME cache HIT: raw voice kept raw (smoothed copy separate)
+  [PASS] cache HIT reported as such
+
+## Older New — Azure WeekStart: 359,6 s, 48000 Hz, 2 ch, loadType DecompressOnLoad; resident PCM: clip native 65,8 MB (whole song, held by the clip itself) + transient mono copy 65,8 MB during capture→rhythm
+  stages: total 17335 | gate 0 | identity 536 | cacheProbe 1 | capture 1179 (max main-thread slice 13,9) | pcmId 0 | tagPrep 782 | inference (chunks of 8) main-thread schedule 183,3 total, max 19,6 per frame, wall 6256 | rhythm 14661 | compose 127 (derived 127) | serialize 23 | cacheWrite 9 ms
+      core: decimate 3603,1 ms | features 4901,9 ms | onsetODF 5849,4 ms | pick+classify 59,7 ms | tempo 246,8 ms | segments 0,3 ms | total 14661,3 ms
+RUNTIME full analysis (cache miss): request→profile 17337 ms, request→tags 8769 ms
+  window 17339 ms, 6357 frames, max main-thread frame 83,4 ms | GC allocated (profiler counter) 158,6 MB, 1 GCs | peak GC heap use +120,5 MB | Mono heap growth +0,0 MB | peak native (Unity allocators, per frame) +354,6 MB
+    frames > 50 ms: [83 ms Inference→Inference]
+  onsets 2565 (Kick 728, Snare 936, HiHat 612, Generic 652, multi-label 320), BPM 131,63 conf 0,72, beats 788, frames 33713, hop 10,667 ms, tags 8 [electronic 0,51], key F# maj, voice zones 8
+  [PASS] RUNTIME full analysis (cache miss): exactly one SongProfileReadyEvent — events 1
+  [PASS] RUNTIME full analysis (cache miss): progress monotonic, ends at 1 — 111 events, last 1,000
+  [PASS] RUNTIME full analysis (cache miss): raw voice kept raw (smoothed copy separate)
+  stages: total 106 | gate 0 | identity 0 | cacheProbe 24 | capture 0 (max main-thread slice 0,0) | pcmId 0 | tagPrep 0 | inference (chunks of 0) main-thread schedule 0,0 total, max 0,0 per frame, wall 0 | rhythm 0 | compose 81 (derived 81) | serialize 0 | cacheWrite 0 ms
+RUNTIME cache HIT: request→profile 107 ms, request→tags 25 ms
+  window 108 ms, 103 frames, max main-thread frame 2,9 ms | GC allocated (profiler counter) 15,5 MB, 0 GCs | peak GC heap use +14,8 MB | Mono heap growth +0,0 MB | peak native (Unity allocators, per frame) +0,1 MB
+  onsets 2565 (Kick 728, Snare 936, HiHat 612, Generic 652, multi-label 320), BPM 131,63 conf 0,72, beats 788, frames 33713, hop 10,667 ms, tags 8 [electronic 0,51], key F# maj, voice zones 8
+  [PASS] RUNTIME cache HIT: exactly one SongProfileReadyEvent — events 1
+  [PASS] RUNTIME cache HIT: progress monotonic, ends at 1 — 3 events, last 1,000
+  [PASS] RUNTIME cache HIT: raw voice kept raw (smoothed copy separate)
+  [PASS] cache HIT reported as such
+
+## Sentis patches-per-chunk sweep on Low Megas — Combo Master Tribe (runtime path, full analysis each)
+  stages: total 5985 | gate 0 | identity 2 | cacheProbe 1 | capture 487 (max main-thread slice 9,1) | pcmId 0 | tagPrep 321 | inference (chunks of 8) main-thread schedule 74,2 total, max 19,1 per frame, wall 2184 | rhythm 5108 | compose 32 (derived 32) | serialize 8 | cacheWrite 4 ms
+      core: decimate 1164,1 ms | features 1726,7 ms | onsetODF 2080,8 ms | pick+classify 18,2 ms | tempo 118,4 ms | segments 0,1 ms | total 5108,4 ms
+  chunk  8: window 5988 ms, 2816 frames, max main-thread frame 55,9 ms | GC allocated (profiler counter) 69,4 MB, 0 GCs | peak GC heap use +55,3 MB | Mono heap growth +0,0 MB | peak native (Unity allocators, per frame) +354,6 MB
+    frames > 50 ms: [56 ms Inference→Inference]
+  stages: total 6797 | gate 0 | identity 2 | cacheProbe 1 | capture 471 (max main-thread slice 7,7) | pcmId 0 | tagPrep 279 | inference (chunks of 2) main-thread schedule 296,6 total, max 39,0 per frame, wall 2494 | rhythm 5966 | compose 44 (derived 44) | serialize 11 | cacheWrite 5 ms
+      core: decimate 1053,9 ms | features 2084,7 ms | onsetODF 2671,5 ms | pick+classify 12,9 ms | tempo 142,9 ms | segments 0,1 ms | total 5966,1 ms
+  chunk  2: window 6799 ms, 2766 frames, max main-thread frame 40,8 ms | GC allocated (profiler counter) 68,5 MB, 0 GCs | peak GC heap use +54,5 MB | Mono heap growth +0,0 MB | peak native (Unity allocators, per frame) +88,8 MB
+  [PASS] tags identical with chunk 2 vs 8
+  stages: total 6756 | gate 0 | identity 2 | cacheProbe 1 | capture 509 (max main-thread slice 8,3) | pcmId 0 | tagPrep 318 | inference (chunks of 4) main-thread schedule 120,2 total, max 16,2 per frame, wall 2441 | rhythm 5862 | compose 38 (derived 38) | serialize 11 | cacheWrite 5 ms
+      core: decimate 1286,5 ms | features 1934,4 ms | onsetODF 2492,4 ms | pick+classify 13,6 ms | tempo 134,4 ms | segments 0,1 ms | total 5861,5 ms
+  chunk  4: window 6760 ms, 2710 frames, max main-thread frame 25,5 ms | GC allocated (profiler counter) 68,3 MB, 0 GCs | peak GC heap use +54,3 MB | Mono heap growth +0,0 MB | peak native (Unity allocators, per frame) +177,3 MB
+  [PASS] tags identical with chunk 4 vs 8
+  stages: total 6509 | gate 0 | identity 2 | cacheProbe 2 | capture 478 (max main-thread slice 8,2) | pcmId 0 | tagPrep 278 | inference (chunks of 16) main-thread schedule 44,8 total, max 18,1 per frame, wall 2292 | rhythm 5674 | compose 38 (derived 38) | serialize 11 | cacheWrite 6 ms
+      core: decimate 1346,0 ms | features 1697,5 ms | onsetODF 2479,4 ms | pick+classify 14,2 ms | tempo 136,7 ms | segments 0,1 ms | total 5673,8 ms
+  chunk 16: window 6513 ms, 2788 frames, max main-thread frame 112,0 ms | GC allocated (profiler counter) 69,7 MB, 0 GCs | peak GC heap use +55,6 MB | Mono heap growth +0,0 MB | peak native (Unity allocators, per frame) +709,0 MB
+    frames > 50 ms: [112 ms Inference→Inference]
+  [PASS] tags identical with chunk 16 vs 8
+
+## EDITOR blocking entry (AnalyzeClipBlocking, no cache) on Low Megas — Combo Master Tribe: total 5294 | gate 0 | identity 16 | cacheProbe 0 | capture 391 (max main-thread slice 390,7) | pcmId 0 | tagPrep 255 | inference (chunks of 8) main-thread schedule 64,0 total, max 15,4 per frame, wall 2168 | rhythm 4562 | compose 30 (derived 30) | serialize 4 | cacheWrite 0 ms
+    core: decimate 1337,6 ms | features 1428,8 ms | onsetODF 1678,0 ms | pick+classify 10,3 ms | tempo 106,9 ms | segments 0,1 ms | total 4561,7 ms
+  window 5297 ms, 0 frames, max main-thread frame 0,0 ms | GC allocated (profiler counter) 0,0 MB, 0 GCs | peak GC heap use +48,5 MB | Mono heap growth +0,0 MB | peak native (Unity allocators, per frame) +0,0 MB  (the whole call blocks the main thread by design — editor tools only)
+  [PASS] editor blocking profile is byte-identical to the runtime (worker budget, overlap) profile — runtime 2743776 bytes vs editor 2743776 bytes
+  [PASS] binary round-trip: onsets/beats/frames identical
+  binary profile 2,6 MB; header: format 1, pipeline 3, params 260d0ac16dac052c, tagModel 1, tagKey 1ef86f93788a041a, songId 'clip_Low Megas — Combo Master Tribe', audio 07b02b55c00a1562, clip 7390081/2/48000
+  [PASS] duplicate Begin (same clip/selection) joins the running request — 11 vs 11
+  stages: total 67 | gate 2 | identity 1 | cacheProbe 18 | capture 0 (max main-thread slice 0,0) | pcmId 0 | tagPrep 0 | inference (chunks of 0) main-thread schedule 0,0 total, max 0,0 per frame, wall 0 | rhythm 0 | compose 46 (derived 46) | serialize 0 | cacheWrite 0 ms
+  [PASS] superseded request publishes nothing; the newest publishes once — A False, B True, events 1
+  [PASS] cancel: no profile published, gate released, Sentis resources disposed — gate released 2 ms after Cancel(), deferred inference drained 8 ms later
+  cancel→gate released 2 ms
+
+RESULT: 29 checks passed, 0 failed (exit 0)

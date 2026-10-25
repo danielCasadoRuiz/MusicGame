@@ -33,7 +33,7 @@ public static class RunnerPickupLayout
     /// reused — the match identity is kept — and the stamp is updated with a log line).</summary>
     // 3 (P4): selection from the detected attacks (onsetEvents) at a continuous difficulty, layout seed
     //    derived from the BonusLayoutKey (no longer this per-match seed), layouts stored per combination.
-    public const int GeneratorVersion = 4; // 2: ground-true placement (real mesh) + trigger-volume reach model; 4: track-margin (edgeChance) progression
+    public const int GeneratorVersion = 6; // 2: ground-true placement (real mesh) + trigger-volume reach model; 4: track-margin (edgeChance) progression; 5: accent Impacts + Beat fill; 6: Impact placed randomly across the track
 
     /// <summary>The seed of the match being played (null = no assignment → config seed).</summary>
     public static int? CurrentSeed { get; private set; }

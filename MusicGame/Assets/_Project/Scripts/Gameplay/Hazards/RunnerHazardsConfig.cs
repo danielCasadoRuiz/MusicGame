@@ -53,8 +53,11 @@ public class RunnerHazardsConfig : ScriptableObject
     [Range(0f, 1f)] public float windowWallFrom = 0.6f;
 
     [Header("Chaser")]
-    [Tooltip("Seconds of play before the first chaser can appear.")]
-    [Min(0f)] public float firstChaserAfterSeconds = 15f;
+    [Tooltip("Seconds of play before the first chaser can appear (difficulty 0 / 1).")]
+    [Min(0f)] public float firstChaserAfterSeconds = 25f;
+    [Min(0f)] public float hardFirstChaserAfterSeconds = 8f;
+    [Tooltip("How strongly the harder obstacle kinds are preferred as the difficulty rises (0 = every unlocked kind equally likely).")]
+    [Min(0f)] public float hardKindPreference = 4f;
     [Tooltip("Minimum seconds between two chasers at difficulty 0 / 1 (only one is ever active).")]
     [Min(5f)] public float easyChaserGapSeconds = 35f;
     [Min(5f)] public float hardChaserGapSeconds = 15f;
