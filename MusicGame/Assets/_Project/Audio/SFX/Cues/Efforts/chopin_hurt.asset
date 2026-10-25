@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a7f43baddb4e274eb9596c7a7db1113, type: 3}
+  m_Name: chopin_hurt
+  m_EditorClassIdentifier: Assembly-CSharp::SfxCue
+  clips:
+  - {fileID: 8300000, guid: 291b7c4078cd72442b79e3bf4a6c29e3, type: 3}
+  - {fileID: 8300000, guid: 79d016a873868b041819956dee7f2285, type: 3}
+  - {fileID: 8300000, guid: 18e88a82bbedca64e9647ae7d6ce1512, type: 3}
+  - {fileID: 8300000, guid: f491b4cdbf3365a41bbb15f5d6f15265, type: 3}
+  - {fileID: 8300000, guid: cc9c68df0a88f7e4a90c856672814751, type: 3}
+  - {fileID: 8300000, guid: 3eb59a6b81004804e9f4ddf0bd2a541a, type: 3}
+  channel: 2
+  volume: 0.55
+  volumeJitter: 0.06
+  pitch: {x: 1.015, y: 1.045}
+  maxInstances: 1
+  cooldown: 0.55
+  credits: "HaelDB, \"Male Grunt/Yelling sounds\" (OpenGameArt) \u2014 CC0 1.0. Audio/Sfx/Vocal/HaelDB/LICENSE.txt"

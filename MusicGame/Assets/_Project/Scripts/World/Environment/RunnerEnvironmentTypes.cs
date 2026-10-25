@@ -56,9 +56,12 @@ public class RunnerEnvironmentContext
     public HorizonWater Water;
     /// <summary>The module instance's own transform — generated content goes under it.</summary>
     public Transform ModuleRoot;
-    /// <summary>Per-frame: the path/world and the song clock time.</summary>
+    /// <summary>Per-frame: the path/world and the song clock time — SongTime (MusicClock domain,
+    /// warmup included) and ClipTime (SongProfile/MusicWorldManager.NormalizedBandValue domain,
+    /// negative during a countdown from clip 0). See MusicTime.</summary>
     public MusicWorldManager World;
     public float SongTime;
+    public float ClipTime;
 }
 
 /// <summary>

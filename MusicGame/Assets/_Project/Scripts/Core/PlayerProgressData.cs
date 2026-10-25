@@ -15,7 +15,7 @@ using System.Collections.Generic;
 [System.Serializable]
 public class PlayerProgressData
 {
-    public const int CurrentVersion = 5; // 2: song history; 3: pendingRun; 4: stable songId; 5: campaign + song cycles + records
+    public const int CurrentVersion = 7; // 2: song history; 3: pendingRun; 4: stable songId; 5: campaign + song cycles + records; 6: song use per lap; 7: played history
 
     public int version = CurrentVersion;
 
@@ -42,6 +42,10 @@ public class PlayerProgressData
     /// <summary>Playable catalog songs completed (Runner → Fight WON), in completion order. Never
     /// repeated in normal progression. Ids no longer in the catalog are kept and simply ignored.</summary>
     public List<string> completedSongIds = new();
+    /// <summary>Playable catalog songs PLAYED at least once (the Runner finished, whatever the fight did), in first-play
+    /// order (v7). All-time history for the Song Selection check only — never decides availability (that is
+    /// songCycle, per lap) and never cleared by a new lap.</summary>
+    public List<string> playedSongIds = new();
     /// <summary>The player's current preference reference: the last MANUALLY chosen catalog song.</summary>
     public string seedSongId = "";
     /// <summary>Cached similarity route around seedSongId (remaining songs at build time) — see SongProgression.</summary>

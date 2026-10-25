@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1abea45d9a53b43b33e8c4a5bd67f9, type: 3}
+  m_Name: VoicePack_tchaikovsky_en
+  m_EditorClassIdentifier: Assembly-CSharp::ComposerVoicePack
+  composerId: tchaikovsky
+  language: en
+  engine: qwen3-tts
+  voiceDefinitionHash: ae2bc040e33f216e
+  lines:
+  - key: Composer.tchaikovsky.Dialogue.Defeat.001
+    clip: {fileID: 8300000, guid: e751972740beba340acc910c23a90b98, type: 3}
+    textHash: 2c80848e479a6b15
+    duration: 4.104
+  - key: Composer.tchaikovsky.Dialogue.Defeat.002
+    clip: {fileID: 8300000, guid: 7a1baa2e7dab65848b5105895742ba24, type: 3}
+    textHash: 810fdfc657d26416
+    duration: 3.899
+  - key: Composer.tchaikovsky.Dialogue.Defeat.003
+    clip: {fileID: 8300000, guid: a7590e004eb2da54f9b9330bcac2bc23, type: 3}
+    textHash: 0319ab3a3ed047ba
+    duration: 4.493
+  - key: Composer.tchaikovsky.Dialogue.Defeat.004
+    clip: {fileID: 8300000, guid: 0ec4fd33ff07f194c800e0076fc90231, type: 3}
+    textHash: 3fa5333f8096e2c2
+    duration: 4.064
+  - key: Composer.tchaikovsky.Dialogue.Defeat.005
+    clip: {fileID: 8300000, guid: f3a2ead13c0b18349b0f7c9a4e50954f, type: 3}
+    textHash: a6ab89585dea4a6d
+    duration: 4.46
+  - key: Composer.tchaikovsky.Dialogue.Defeat.006
+    clip: {fileID: 8300000, guid: 18425f6fe9f5b8f49b548d22098804ab, type: 3}
+    textHash: bd8791a8cdee1e0c
+    duration: 4.076
+  - key: Composer.tchaikovsky.Dialogue.Defeat.007
+    clip: {fileID: 8300000, guid: 97f85ada4e0603e44b30b4dec818a32e, type: 3}
+    textHash: ab10d762ad5ee526
+    duration: 4.084
+  - key: Composer.tchaikovsky.Dialogue.Defeat.008
+    clip: {fileID: 8300000, guid: 77f87ba200e7bc5459b5330fd4451ceb, type: 3}
+    textHash: efc966ab0d5d672f
+    duration: 4.016
+  - key: Composer.tchaikovsky.Dialogue.Defeat.009
+    clip: {fileID: 8300000, guid: d97e6d519461591438dc07eb80025997, type: 3}
+    textHash: 50127b4564cccff2
+    duration: 5.526
+  - key: Composer.tchaikovsky.Dialogue.Defeat.010
+    clip: {fileID: 8300000, guid: 5a7d7e1f99f49c34ea1cd0a94cc5aec7, type: 3}
+    textHash: adc2a8d937299f08
+    duration: 4.873
+  - key: Composer.tchaikovsky.Dialogue.Intro.001
+    clip: {fileID: 8300000, guid: 073a3ffc599e2144ca93c12236fdd403, type: 3}
+    textHash: f185f36dd29fc5bb
+    duration: 4.596
+  - key: Composer.tchaikovsky.Dialogue.Intro.002
+    clip: {fileID: 8300000, guid: 57f505f57b1ad2d48b93c79e47f7d1cb, type: 3}
+    textHash: 3ec5d10d8a4c290f
+    duration: 4.763
+  - key: Composer.tchaikovsky.Dialogue.Intro.003
+    clip: {fileID: 8300000, guid: cba2ee3387eaf25449fa76ad5f11e53e, type: 3}
+    textHash: 3d6a0baa9254ad8a
+    duration: 2.757
+  - key: Composer.tchaikovsky.Dialogue.Intro.004
+    clip: {fileID: 8300000, guid: f149d19b23116c14c9f456666b64a39d, type: 3}
+    textHash: dcffe182143d1c29
+    duration: 4.108
+  - key: Composer.tchaikovsky.Dialogue.Intro.005
+    clip: {fileID: 8300000, guid: b9a90c378dac5984dbc900eb7e3d8f1f, type: 3}
+    textHash: 7747140b0a4e5cb5
+    duration: 6.072
+  - key: Composer.tchaikovsky.Dialogue.Intro.006
+    clip: {fileID: 8300000, guid: c5d0916b8d2c4d648ab65e29d395507c, type: 3}
+    textHash: 77319ec2e4b25678
+    duration: 4.522
+  - key: Composer.tchaikovsky.Dialogue.Intro.007
+    clip: {fileID: 8300000, guid: 5f1a14a4c63dcd048aafadea84d44c52, type: 3}
+    textHash: b7805d2fef8fb62a
+    duration: 4.28
+  - key: Composer.tchaikovsky.Dialogue.Intro.008
+    clip: {fileID: 8300000, guid: 32553df1151be8049a00f1f0cf5bb226, type: 3}
+    textHash: f0ff439f6ba13dee
+    duration: 3.582
+  - key: Composer.tchaikovsky.Dialogue.Intro.009
+    clip: {fileID: 8300000, guid: 26b53eb6e9bd72440abb23ee04289a0d, type: 3}
+    textHash: ca2b660714ebf22b
+    duration: 3.569
+  - key: Composer.tchaikovsky.Dialogue.Intro.010
+    clip: {fileID: 8300000, guid: 20b924ac88339e5459ff72379d92fd6a, type: 3}
+    textHash: 20a6b5f7e58c5ec5
+    duration: 3.005
+  - key: Composer.tchaikovsky.Dialogue.Victory.001
+    clip: {fileID: 8300000, guid: 32dc38a95d2343940889e460c6ab63f3, type: 3}
+    textHash: 3b5547cd94c0b670
+    duration: 3.186
+  - key: Composer.tchaikovsky.Dialogue.Victory.002
+    clip: {fileID: 8300000, guid: 797c5ca7f5e79b14485ee3de26f88b35, type: 3}
+    textHash: 6e47908c2de819d7
+    duration: 4.128
+  - key: Composer.tchaikovsky.Dialogue.Victory.003
+    clip: {fileID: 8300000, guid: bb2b7ece6fcfe2746bbbcf072cb8980d, type: 3}
+    textHash: 061e784c2342adef
+    duration: 4.701
+  - key: Composer.tchaikovsky.Dialogue.Victory.004
+    clip: {fileID: 8300000, guid: c8a09401bdc022e4b89c086be8c2da0a, type: 3}
+    textHash: 555af142030f0cc6
+    duration: 2.945
+  - key: Composer.tchaikovsky.Dialogue.Victory.005
+    clip: {fileID: 8300000, guid: 0f97ef7bc37181240a4306551d29cc46, type: 3}
+    textHash: 74b1b3bf42d839fd
+    duration: 2.53
+  - key: Composer.tchaikovsky.Dialogue.Victory.006
+    clip: {fileID: 8300000, guid: 8a1746cfeb46da242b1f8aced7f489f5, type: 3}
+    textHash: fcde457a1ca617ae
+    duration: 5.017
+  - key: Composer.tchaikovsky.Dialogue.Victory.007
+    clip: {fileID: 8300000, guid: 561052c7a2deb3740aa6635dca2481e3, type: 3}
+    textHash: 59c9b55506c2420a
+    duration: 3.326
+  - key: Composer.tchaikovsky.Dialogue.Victory.008
+    clip: {fileID: 8300000, guid: 07abb256293391d4ea8fde0bc24d8715, type: 3}
+    textHash: 90e9c9ee12536c54
+    duration: 4.286
+  - key: Composer.tchaikovsky.Dialogue.Victory.009
+    clip: {fileID: 8300000, guid: 668cee1055364db49bfb26a6973d135d, type: 3}
+    textHash: 1aa960977cd1309c
+    duration: 4.285
+  - key: Composer.tchaikovsky.Dialogue.Victory.010
+    clip: {fileID: 8300000, guid: ccbd1a098b801574c9fa3e119858eda3, type: 3}
+    textHash: cf837fded71e1e15
+    duration: 4.34
+  efforts:
+    hurt: {fileID: 0}
+    special: {fileID: 0}
+    defeat: {fileID: 0}

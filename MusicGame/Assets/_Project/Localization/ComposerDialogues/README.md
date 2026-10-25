@@ -67,3 +67,13 @@ Executa **Composer Dialogues > Configure Addressables**. Torna a moure les taule
   - grup `Localization-ComposerDialogues` (local, *Cannot Change Post Release*, un paquet per taula, etiqueta `ComposerDialogues`);
   - regles de grup de Localization a `Assets/_Project/Localization/LocalizationAddressableGroupRules.asset`;
   - perfils `DevelopmentLocal` (tot local), `LocalContentServer` (proves, `http://localhost:8765`) i `ProductionCCD` (pendent de dades del servidor).
+
+## Veus (àudio de les frases)
+
+- **D'on surten.** Cada frase pot tenir àudio generat. Està a `Assets/_Project/Content/Voices/{id}/{idioma}/` i es genera amb **Tools > MusicGame > Audio > Voice Production** (instal·lació: `Tools/VoiceGen/README.md`).
+- **Paquets.** Hi ha un paquet d'Addressables per compositor i idioma: grup `Voice_{id}_{idioma}`, adreça `VoicePack/{id}/{idioma}`. Les vocalitzacions (cops, especial, derrota) van al paquet `fx`.
+- **Text i àudio.** Cada clip guarda el hash del text del qual s'ha generat.
+  - Si corregeixes una frase i publiques només el text, el joc mostra el subtítol nou i no reprodueix l'àudio antic.
+  - L'eina marca aquella frase com a pendent. Quan la regeneres, només canvia el paquet `Voice_{id}_{idioma}`; publica'l amb el mateix *Build Content Update*.
+- **Català.** Encara no hi ha motor de veu: les frases en català es mostren només com a subtítol.
+- **Si falta un àudio** (paquet no descarregat, frase nova sense veu, error), la frase es mostra igualment i el joc continua.

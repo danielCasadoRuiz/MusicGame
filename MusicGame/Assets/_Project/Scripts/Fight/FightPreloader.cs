@@ -6,10 +6,10 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 /// <summary>
 /// Prepares the coming fight in the BACKGROUND while the player is still on the runner's results panel: the
 /// rival is already decided (GameSession.AssignedOpponent — the roulette only reveals it), so its avatar
-/// parts (base body, hair, clothes), the player's avatar parts and the chosen arena are LOADED (Addressables
-/// LoadAssetAsync — into memory, nothing instantiated, no scene work) on a low background-loading priority so
-/// the results UI keeps its frame rate. When the Fight scene then builds the fighters and the arena, those
-/// assets are already resident and the Versus loading card is short.
+/// parts and the player's avatar parts are loaded with LoadAssetAsync. For scene-backed arenas only the
+/// selected quality's dependencies are downloaded; activation waits until Fight commits the rival.
+/// Legacy arena prefabs keep their asset preload. No scene is left waiting for activation, which would
+/// block Unity's async queue. Background priority is restored on completion or cancellation.
 ///
 ///   Prepare   on GameEndedEvent (runner song finished) when a rival is assigned; a new Prepare replaces the
 ///             previous one. The arena is CHOSEN here (ArenaSelector) and handed to the fight
@@ -23,7 +23,7 @@ public static class FightPreloader
     private static readonly List<AsyncOperationHandle> s_handles = new();
     private static string s_arenaKey;
     private static AssetReferenceGameObject s_arena;
-    private static int s_pending;
+    private static int s_pending, s_generation;
     private static ThreadPriority s_previousPriority = ThreadPriority.Normal;
     private static bool s_priorityLowered;
     private static System.Action<GameEndedEvent> s_onGameEnded;
@@ -43,7 +43,7 @@ public static class FightPreloader
 
     /// <summary>The fight key FightSceneBootstrap.ApplyArenaEnvironment uses for the same rival/version/stage.</summary>
     public static string ArenaKey(OpponentDefinition opponent, int version, int stage) =>
-        $"{(opponent != null ? opponent.id : "none")}|v{version}|s{stage}";
+        $"{(opponent != null ? opponent.id : "none")}|v{version}|s{stage}|q{QualityAssetResolver.CurrentQualityName}";
 
     public static void PrepareAssignedFight()
     {
@@ -60,7 +60,9 @@ public static class FightPreloader
         {
             s_arena = arena;
             s_arenaKey = ArenaKey(opponent, level.level, stage);
-            Load(arena.RuntimeKey);
+            var scene = ArenaSceneCatalog.Resolve(arena, out _);
+            if (scene != null) Track(Addressables.DownloadDependenciesAsync(scene.RuntimeKey, false), scene.RuntimeKey);
+            else Load(arena.RuntimeKey);
         }
         if (level.avatarRecipe != null)
             foreach (var r in AvatarFactory.CollectPrefabReferences(level.avatarRecipe.ToRuntime())) Load(r.RuntimeKey);
@@ -81,6 +83,7 @@ public static class FightPreloader
 
     public static void Release()
     {
+        ++s_generation; s_arena = null; s_arenaKey = null;
         foreach (var h in s_handles) if (h.IsValid()) Addressables.Release(h);
         s_handles.Clear();
         s_pending = 0;
@@ -89,17 +92,23 @@ public static class FightPreloader
 
     private static void Load(object key)
     {
+        Track(Addressables.LoadAssetAsync<GameObject>(key), key);
+    }
+
+    private static void Track(AsyncOperationHandle handle, object key)
+    {
+        int generation = s_generation;
         if (!s_priorityLowered)
         {
             s_previousPriority = Application.backgroundLoadingPriority;
             Application.backgroundLoadingPriority = ThreadPriority.Low; // results UI stays smooth
             s_priorityLowered = true;
         }
-        var handle = Addressables.LoadAssetAsync<GameObject>(key);
         s_handles.Add(handle);
         s_pending++;
         handle.Completed += h =>
         {
+            if (generation != s_generation) return;
             s_pending = Mathf.Max(0, s_pending - 1);
             if (h.Status != AsyncOperationStatus.Succeeded) Debug.LogWarning($"[FightPreloader] Could not preload '{key}' — the fight will load it itself.");
             if (s_pending == 0) RestorePriority();

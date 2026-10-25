@@ -60,7 +60,7 @@ public class SongSimilarityVector
             Clamp(p.tempoStability),                                             // 0..1
             Clamp(p.beatConfidence),                                             // 0..1
             keyed ? (p.isMajorMode ? Clamp(p.modeConfidence) : 1f - Clamp(p.modeConfidence)) : 0.5f, // 1 = clearly major
-            Mean(p.voiceProbability, 0.5f),                                      // 0..1
+            Mean(p.VoiceForFeatures, 0.5f),                                      // 0..1
             Brightness(p.spectralCentroid),                                      // log 250 Hz..4 kHz
             Mean(p.spectralFlatness, 0.5f),                                      // 0 tonal .. 1 noise
             Mean(p.timbralChange),                                               // 0..1

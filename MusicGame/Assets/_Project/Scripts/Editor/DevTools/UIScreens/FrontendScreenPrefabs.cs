@@ -1,5 +1,7 @@
 #if UNITY_EDITOR
+using System.IO;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +12,8 @@ using UnityEngine.UI;
 ///   Prefabs/UI/MainMenu.prefab        MainMenuView        (MainMenuController) — nests Components/LanguageSelector
 ///   Prefabs/UI/SongSelection.prefab   SongSelectionView   (SongSelectionController)
 ///   Prefabs/UI/Items/SongRow.prefab   SongRowView         one catalog row of Song Selection
+/// and an idempotent PATCH of SongRow.prefab: the old text badge (drawn over PREVIEW, catching its clicks) is
+/// replaced by a non-interactive "played" check in its own column (name | check | PREVIEW).
 /// Static captions carry a LocalizedText; data-dependent texts (PLAY/CONTINUE, card PLAY/PAUSE, streaming
 /// "Coming Soon" lines, status/profile lines) are filled by the controllers.
 /// </summary>
@@ -24,6 +28,7 @@ public static class FrontendScreenPrefabs
     {
         // Items first, so the screens can reference them.
         ctx.Library.songRow = ctx.Prefab<SongRowView>($"{UIScreenPrefabContext.ItemsFolder}/SongRow.prefab", BuildSongRow);
+        ctx.Patch($"{UIScreenPrefabContext.ItemsFolder}/SongRow.prefab", PatchSongRow);
 
         ctx.Library.introScreen = ctx.Prefab<IntroScreenView>($"{UIScreenPrefabContext.ScreensFolder}/IntroScreen.prefab", BuildIntroScreen);
         ctx.Library.mainMenu = ctx.Prefab<MainMenuView>($"{UIScreenPrefabContext.ScreensFolder}/MainMenu.prefab", () => BuildMainMenu(ctx));
@@ -140,6 +145,31 @@ public static class FrontendScreenPrefabs
         return go;
     }
 
+    public const float ChannelRowsHeight = 170f;
+
+    /// <summary>Music / Effects / Voices sliders under the language row: grows the panel by ChannelRowsHeight and
+    /// moves the existing centred rows up by half of it. Also used on the existing prefab (AudioSettingsUISetup).</summary>
+    public static void AddChannelVolumeRows(RectTransform panel, MainMenuView view)
+    {
+        var size = panel.sizeDelta; size.y += ChannelRowsHeight; panel.sizeDelta = size;
+        foreach (RectTransform child in panel)
+            if (child.anchorMin == Center && child.anchorMax == Center) child.anchoredPosition += new Vector2(0f, ChannelRowsHeight * 0.5f);
+        var rows = new (string key, string name)[] { ("Settings.MusicVolume", "Music"), ("Settings.SfxVolume", "Sfx"), ("Settings.VoiceVolume", "Voice") };
+        var sliders = new UnityEngine.UI.Slider[3];
+        for (int i = 0; i < rows.Length; i++)
+        {
+            float y = -30f - i * 46f;
+            var label = UIScreenPrefabContext.Localized(UIFactory.CreateText(rows[i].name + "VolumeLabel", panel, "", 13, new Color(0.8f, 0.8f, 0.8f), TextAlignmentOptions.Left), rows[i].key);
+            Box(label.rectTransform, Center, new Vector2(0f, y), new Vector2(360f, 20f));
+            label.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextSecondary, UIFontToken.Body);
+            var s = UIFactory.CreateSlider(rows[i].name + "VolumeSlider", panel, 1f, new Color(0.18f, 0.75f, 0.95f));
+            Box(s.GetComponent<RectTransform>(), Center, new Vector2(0f, y - 18f), new Vector2(360f, 12f));
+            s.fillRect.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Accent);
+            sliders[i] = s;
+        }
+        view.musicVolumeSlider = sliders[0]; view.sfxVolumeSlider = sliders[1]; view.voiceVolumeSlider = sliders[2];
+    }
+
     private static void BuildSettingsPanel(UIScreenPrefabContext ctx, RectTransform root, MainMenuView view)
     {
         var selectorPrefab = ctx.Library.languageSelector;
@@ -177,6 +207,7 @@ public static class FrontendScreenPrefabs
         }
         else ctx.Log.AppendLine("  FAIL  MainMenu: UIPrefabLibrary.languageSelector missing — settings panel built without the language row");
 
+        AddChannelVolumeRows(panel, view);
         panel.gameObject.SetActive(false);
     }
 
@@ -237,7 +268,7 @@ public static class FrontendScreenPrefabs
     }
 
     /// <summary>One catalog row: UIFactory.CreateButton (its Image = selection background, no theme receiver),
-    /// left-aligned name, Play/Pause card button and the COMPLETED badge (hidden until the song is completed).</summary>
+    /// left-aligned name, the played check and the Play/Pause card button — three separate columns.</summary>
     private static GameObject BuildSongRow()
     {
         const float rowHeight = 56f;
@@ -260,13 +291,6 @@ public static class FrontendScreenPrefabs
         UIFactory.SetBox(play.GetComponent<RectTransform>(), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
             new Vector2(-8f, 0f), new Vector2(92f, rowHeight - 14f));
 
-        // Shown instead of PREVIEW once this song is completed.
-        var badge = UIScreenPrefabContext.Localized(UIFactory.CreateText("CompletedBadge", rt, "", 13, new Color(0.45f, 0.85f, 0.5f, 0.9f),
-                                                                         TextAlignmentOptions.Right, FontStyles.Bold), "SongSelection.Completed");
-        UIFactory.SetBox(badge.rectTransform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
-            new Vector2(-12f, 0f), new Vector2(150f, rowHeight - 14f));
-        badge.gameObject.SetActive(false);
-
         UIFactory.SetBox(label.rectTransform, Vector2.zero, Vector2.one, Center, new Vector2(-50f, 0f), new Vector2(-124f, 0f));
 
         var view = go.AddComponent<SongRowView>();
@@ -275,8 +299,73 @@ public static class FrontendScreenPrefabs
         view.label = label;
         view.playPauseButton = play;
         view.playPauseLabel = playLabel;
-        view.completedBadge = badge;
+        PatchSongRow(go);
         return go;
+    }
+
+    // Columns, right to left: PREVIEW (8 px margin, 92 wide) · 8 px · check (28) · 14 px · name (12 px left inset).
+    private const float CheckSize = 28f, CheckRight = -108f, NameRightInset = 150f;
+    public const string CheckSpritePath = HelpUISetup.PlaceholderFolder + "/Icon_PlayedCheck.png";
+
+    public static void PatchSongRow(GameObject root)
+    {
+        var view = root.GetComponent<SongRowView>();
+        if (view == null) return;
+        var rt = (RectTransform)root.transform;
+
+        // The old status text: a raycast-target TMP drawn after PREVIEW, over it — removed, not hidden.
+        var badge = rt.Find("CompletedBadge");
+        if (badge != null) Object.DestroyImmediate(badge.gameObject, true);
+
+        if (view.playedCheck == null)
+        {
+            var check = UIFactory.CreatePanel("PlayedCheck", rt, view.playedOffColor);
+            UIFactory.SetBox(check.rectTransform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
+                new Vector2(CheckRight, 0f), new Vector2(CheckSize, CheckSize));
+            check.preserveAspect = true;
+            view.playedCheck = check;
+        }
+        if (view.playedCheck.sprite == null) view.playedCheck.sprite = EnsureCheckSprite();
+        view.playedCheck.raycastTarget = false; // informative only: never catches a click meant for the row / PREVIEW
+
+        // The name ends before the check's column; a long name is cut with an ellipsis instead of running under it.
+        if (view.label != null)
+        {
+            var l = view.label.rectTransform;
+            l.offsetMax = new Vector2(-NameRightInset, l.offsetMax.y);
+            view.label.overflowMode = TextOverflowModes.Ellipsis;
+        }
+    }
+
+    // Placeholder tick (white, tinted by SongRowView's on/off colours) — swap the PNG or the Image's sprite for final art.
+    private static Sprite EnsureCheckSprite()
+    {
+        if (!File.Exists(CheckSpritePath))
+        {
+            const int size = 64;
+            var a = new Vector2(14f, 33f); var b = new Vector2(27f, 19f); var c = new Vector2(51f, 46f);
+            const float half = 4.5f;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            for (int y = 0; y < size; y++)
+                for (int x = 0; x < size; x++)
+                {
+                    var p = new Vector2(x + 0.5f, y + 0.5f);
+                    float d = Mathf.Min(SegmentDistance(p, a, b), SegmentDistance(p, b, c));
+                    tex.SetPixel(x, y, new Color(1f, 1f, 1f, Mathf.Clamp01(half + 0.5f - d)));
+                }
+            Directory.CreateDirectory(Path.GetDirectoryName(CheckSpritePath));
+            File.WriteAllBytes(CheckSpritePath, tex.EncodeToPNG());
+            Object.DestroyImmediate(tex);
+            AssetDatabase.ImportAsset(CheckSpritePath);
+        }
+        return UIComponentPrefabBuilder.EnsureSingleSprite(CheckSpritePath, null);
+    }
+
+    private static float SegmentDistance(Vector2 p, Vector2 a, Vector2 b)
+    {
+        var ab = b - a;
+        float t = Mathf.Clamp01(Vector2.Dot(p - a, ab) / ab.sqrMagnitude);
+        return Vector2.Distance(p, a + ab * t);
     }
 }
 #endif

@@ -1,5 +1,10 @@
 using UnityEngine;
 
+/// <summary>
+/// Expects a beat every 60/estimatedBPM seconds of CLIP time and fires when energy is high near
+/// that expectation. Note: the phase is anchored at the first frame it sees (after a reset), not to
+/// the music's real beat phase — a heuristic for the debug overlay, not a beat tracker.
+/// </summary>
 public class BeatDetector : IAudioDetector
 {
     public bool IsEnabled => true;
@@ -8,7 +13,8 @@ public class BeatDetector : IAudioDetector
     private float _cooldown;
     private float _beatPeriod  = 0.5f; // default 120 BPM
     private float _nextBeatTime;
-    private float _lastTime;
+    private bool  _hasPhase;           // false right after a Reset
+    private float _lastTime = float.NegativeInfinity;
 
     public void Initialize(AudioAnalysisConfig config)
     {
@@ -22,24 +28,37 @@ public class BeatDetector : IAudioDetector
             _beatPeriod = 60f / profile.estimatedBPM;
     }
 
+    public void Reset()
+    {
+        _hasPhase = false;
+        _lastTime = float.NegativeInfinity;
+    }
+
     public void Analyze(AudioData data)
     {
-        if (data.timestamp - _lastTime < _cooldown) return;
-        if (_nextBeatTime <= 0f) _nextBeatTime = data.timestamp + _beatPeriod;
+        float t = data.clipTime;
+        if (!_hasPhase)
+        {
+            _nextBeatTime = t + _beatPeriod;
+            _hasPhase     = true;
+            return;
+        }
 
         float tolerance = _beatPeriod * 0.15f;
+        bool  canFire   = t - _lastTime >= _cooldown;
 
-        if (data.timestamp >= _nextBeatTime - tolerance && data.smoothedEnergy > _threshold)
+        if (canFire && t >= _nextBeatTime - tolerance && data.smoothedEnergy > _threshold)
         {
-            _lastTime     = data.timestamp;
-            _nextBeatTime = data.timestamp + _beatPeriod;
+            _lastTime     = t;
+            _nextBeatTime = t + _beatPeriod;
             float conf    = Mathf.Clamp01(data.smoothedEnergy / Mathf.Max(_threshold, 0.001f));
-            EventBus.Publish(new BeatDetectedEvent { Confidence = conf, Time = data.timestamp });
+            EventBus.Publish(new BeatDetectedEvent { Confidence = conf, Time = t });
         }
-        else if (data.timestamp > _nextBeatTime + tolerance)
+        else
         {
-            // Missed beat (silence/rest): advance clock without firing
-            _nextBeatTime += _beatPeriod;
+            // Missed beat(s) (silence/rest, or cooldown): advance the expectation without firing —
+            // also during the cooldown, so the phase never goes stale.
+            while (t > _nextBeatTime + tolerance) _nextBeatTime += _beatPeriod;
         }
     }
 }

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a7f43baddb4e274eb9596c7a7db1113, type: 3}
+  m_Name: beethoven_defeat
+  m_EditorClassIdentifier: Assembly-CSharp::SfxCue
+  clips:
+  - {fileID: 8300000, guid: ac6ff287f1faebc4ba63c067a8f449e8, type: 3}
+  - {fileID: 8300000, guid: 89b1793eb29a7854587c281d14387d1c, type: 3}
+  - {fileID: 8300000, guid: c9e9fbfbd7f39f04c962c474ccc6d34c, type: 3}
+  - {fileID: 8300000, guid: 3e7bcf5550e4d6c4cac187a48d737349, type: 3}
+  channel: 2
+  volume: 0.75
+  volumeJitter: 0.06
+  pitch: {x: 0.95500004, y: 0.985}
+  maxInstances: 1
+  cooldown: 2
+  credits: "HaelDB, \"Male Grunt/Yelling sounds\" (OpenGameArt) \u2014 CC0 1.0. Audio/Sfx/Vocal/HaelDB/LICENSE.txt"

@@ -8,7 +8,7 @@ public class RingController : MonoBehaviour
     [Tooltip("Fractional scale a ring sits at from spawn until its beat pulse fires — kept " +
              "small so upcoming rings read as a faint hint rather than cluttering the view; " +
              "the pulse then grows it into full existence exactly on its musical moment.")]
-    [SerializeField] private float ghostScale = 0.35f;
+    [SerializeField] private float ghostScale = 0.4f;
 
     [Tooltip("Trigger size multiplier over the VISUAL mesh's own size, applied once fully " +
              "materialized (factor=1). Authored prefabs can be small/cute (e.g. 0.3 scale) and " +
@@ -16,6 +16,11 @@ public class RingController : MonoBehaviour
              "have to match the visual size 1:1. Increase if a type still feels hard to hit; " +
              "1 = exactly the visual mesh's size, no leeway.")]
     [SerializeField] private float pickupLeeway = 2f;
+
+    [Tooltip("MUSICAL cubes: seconds a cube the player passed without collecting takes to shrink away before it is recycled.")]
+    [SerializeField] private float missShrinkDuration = 0.25f;
+    [Tooltip("MUSICAL cubes: the cube counts as passed (missed) once it is this far BEHIND the player along the path.")]
+    [SerializeField] private float missedBehindDistance = 1.5f;
 
     [Header("Collection Feedback")]
     [Tooltip("Played the instant this collectible is collected — assign a clip per prefab so " +
@@ -31,8 +36,11 @@ public class RingController : MonoBehaviour
     public float PickupLeeway => Mathf.Max(1f, pickupLeeway);
 
     private bool     _collected;
+    private bool     _hit;      // musical cube: its musical moment has happened (full size)
+    private bool     _missing;  // musical cube: passed without collecting, shrinking away
     private Vector3  _originalScale;
     private TimelineEvent _sourceEvent;  // the generated event this pooled instance currently represents
+    private float    _encounterDelay; // seconds after eventTime the player is expected to meet it (see Activate)
     private Action   _returnCallback; // set by ObjectPool owner via Activate()
     private Coroutine _pulseRoutine;
     private Collider  _collider;
@@ -62,13 +70,18 @@ public class RingController : MonoBehaviour
     /// The COLLIDER is full-size and collectible from this very first frame regardless — see
     /// SetVisualScale — only the visual "materialize" grows with the beat pulse.
     /// </summary>
-    public void Activate(TimelineEvent evt, Action onReturn)
+    /// <param name="encounterDelay">PlayerController.TrailSeconds: the player (without surge) meets this pickup that
+    /// long AFTER its musical moment, so timing is scored against eventTime + encounterDelay (the hit stays at eventTime).</param>
+    public void Activate(TimelineEvent evt, Action onReturn, float encounterDelay = 0f)
     {
         Type            = evt.ringType;
+        _encounterDelay = Mathf.Max(0f, encounterDelay);
         _sourceEvent    = evt;
         _returnCallback = onReturn;
         _collected      = false;
-        _pulseRoutine   = null; // SetActive(false) already killed any running coroutine
+        _hit            = false;
+        _missing        = false;
+        _pulseRoutine   = null; // SetActive(false) already killed any running coroutine — no state is inherited from the pool
         SetVisualScale(ghostScale);
         if (_collider != null) _collider.enabled = true; // undo the disable a previous collection did
         if (_renderer != null) _renderer.enabled = true; // undo the hide a previous collection did
@@ -114,16 +127,23 @@ public class RingController : MonoBehaviour
         // clip keeps playing even though this GameObject returns to the pool (and potentially
         // gets moved/reused) on the very same frame.
         if (collectSound != null)
-            AudioSource.PlayClipAtPoint(collectSound, transform.position, collectVolume);
+        {
+            // On the Sfx channel (its own volume); a loose one-shot only without GameAudio (isolated test scenes).
+            if (GameAudio.Instance != null) GameAudio.Instance.PlayClip(collectSound, collectVolume, GameAudioScope.Runner);
+            else AudioSource.PlayClipAtPoint(collectSound, transform.position, collectVolume);
+        }
 
-        float actualTime   = MusicClock.Instance != null ? MusicClock.Instance.SongTime : _sourceEvent.eventTime;
-        float timingError  = Mathf.Abs(actualTime - _sourceEvent.eventTime);
+        // Expected = when the player, running its intentional trail behind the musical front, meets it —
+        // not the hit moment itself (that would penalise every normal, non-surge pickup by the trail).
+        float expectedTime = _sourceEvent.eventTime + _encounterDelay;
+        float actualTime   = MusicClock.Instance != null ? MusicClock.Instance.SongTime : expectedTime;
+        float timingError  = Mathf.Abs(actualTime - expectedTime);
         EventBus.Publish(new RingCollectedEvent
         {
             Type         = Type,
             Position     = transform.position,
             TimingError  = timingError,
-            ExpectedTime = _sourceEvent.eventTime,
+            ExpectedTime = expectedTime,
             ActualTime   = actualTime,
             Strength     = _sourceEvent.strength,
             Confidence   = _sourceEvent.confidence,
@@ -137,8 +157,61 @@ public class RingController : MonoBehaviour
         cb?.Invoke(); // → pool.Return(this.gameObject) → SetActive(false)
     }
 
+    /// <summary>Distance behind the player (along the path) at which a musical cube counts as passed.</summary>
+    public float MissedBehindDistance => missedBehindDistance;
+    /// <summary>eventTime of the event this pooled instance currently represents.</summary>
+    public float SourceEventTime => _sourceEvent.eventTime;
+    public bool IsMusical => RingTypes.IsMusical(Type);
+    public bool IsMissing => _missing;
+    public bool IsHit => _hit;
+    public bool IsCollected => _collected;
+    /// <summary>Diagnostics: current visual size relative to the prefab (ghost before the hit, 1 after).</summary>
+    public float VisualScaleFactor => _originalScale.x != 0f ? transform.localScale.x / _originalScale.x : 1f;
+    public float GhostScale => ghostScale;
+
     /// <summary>
-    /// Beat-synced "materialize" — fired by GameplayManager the instant MusicClock.SongTime
+    /// MUSICAL cube, its musical moment (MusicClock.SongTime reached eventTime — no lead, no proximity):
+    /// small → full size INSTANTLY, no growth ramp and no overshoot that would shrink it back. It then stays
+    /// full size while it is collectable. A cube already collected is gone and is not brought back.
+    /// The collider is untouched (constant world-size trigger, see SetVisualScale).
+    /// </summary>
+    public void Hit()
+    {
+        if (_collected || _missing || _hit) return;
+        if (_pulseRoutine != null) { StopCoroutine(_pulseRoutine); _pulseRoutine = null; }
+        _hit = true;
+        SetVisualScale(1f);
+    }
+
+    /// <summary>MUSICAL cube the player passed without collecting: no longer collectable, shrinks smoothly from
+    /// its current size to nothing, then returns to the pool (the same callback a collection uses).</summary>
+    public void Miss()
+    {
+        if (_collected || _missing) return;
+        _missing = true;
+        if (_collider != null) _collider.enabled = false;
+        if (_pulseRoutine != null) StopCoroutine(_pulseRoutine);
+        _pulseRoutine = StartCoroutine(MissAnimation());
+    }
+
+    private IEnumerator MissAnimation()
+    {
+        float from = _originalScale.x != 0f ? transform.localScale.x / _originalScale.x : 1f;
+        float t = 0f;
+        while (t < missShrinkDuration)
+        {
+            t += Time.deltaTime;
+            transform.localScale = _originalScale * Mathf.Lerp(from, 0f, Mathf.Clamp01(t / missShrinkDuration));
+            yield return null;
+        }
+        _pulseRoutine = null;
+        var cb = _returnCallback;
+        _returnCallback = null;
+        cb?.Invoke(); // → pool.Return → SetActive(false)
+    }
+
+    /// <summary>
+    /// RESOURCE pickups (Life / Special) only — unchanged visual. Beat-synced "materialize" — fired by GameplayManager the instant MusicClock.SongTime
     /// reaches this ring's musical moment, independent of collision. The ring is already
     /// visible in advance at ghost scale (anticipation); THIS is the actual musical hit, and
     /// the attack must land on the exact frame it's called — any eased ramp-up here reads as
@@ -184,7 +257,9 @@ public class RingController : MonoBehaviour
 
     /// <summary>
     /// The largest scale factor this type's pulse punch can ever reach (strength=1, worst case)
-    /// — single source of truth so GameplayTimeline.CollectibleFloor can reserve enough surface
+    /// — kept as the generator's clearance reservation even though musical cubes no longer overshoot (Hit
+    /// stops at 1.0): changing it would move every placement and the stored layouts (BonusLayoutProvider).
+    /// Single source of truth so GameplayTimeline.CollectibleFloor can reserve enough surface
     /// clearance for the PEAK of the animation, not just the resting scale=1 size. Without this,
     /// a collectible placed using only its resting half-height could have the bottom of its
     /// scaled-up mesh dip below the surface for the instant its punch is at full overshoot.
@@ -208,7 +283,7 @@ public class RingController : MonoBehaviour
 
     private void Update()
     {
-        if (!_collected)
+        if (!_collected && !_missing)
             transform.Rotate(0f, 55f * Time.deltaTime, 0f);
     }
 }

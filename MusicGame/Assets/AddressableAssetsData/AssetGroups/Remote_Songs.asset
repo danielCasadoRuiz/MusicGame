@@ -1,0 +1,289 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Remote_Songs
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Remote_Songs
+  m_GUID: 871e1b78f0f5b9f4a892c23de91cdb5a
+  m_SerializeEntries:
+  - m_GUID: 0337bb5e6b8b5f94ebff37b0ad7678a5
+    m_Address: SongAudio/song_008
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_008
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 06c817176aae7c24ba7971f939f2a6e6
+    m_Address: SongProfile/song_016
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_016
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0e14e4f8dd8c4cd43836d46d37357989
+    m_Address: SongProfile/song_010
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_010
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0f79e366191cabf4985af32a782f528c
+    m_Address: SongAudio/song_019
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_019
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 130dff2d0a1683741b9faf90c9c51835
+    m_Address: SongAudio/song_001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_001
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 17cbe1ab4f2abe349b10c0c78edc24be
+    m_Address: SongProfile/song_014
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_014
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1b7fc4e84c73b1f48b356a13717dc0d8
+    m_Address: SongAudio/song_009
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_009
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ccad945d423c2b4aaba38e81a1cb502
+    m_Address: SongAudio/song_002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_002
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 284447022b6ad2141b8935ecfe5c3c18
+    m_Address: SongProfile/song_018
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_018
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2d2d0f97be867e14cab8a3d0a376dd70
+    m_Address: SongAudio/song_005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_005
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 360ad5fb1239f1b44acadcc989b5c9c5
+    m_Address: SongCatalogIndex
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - SongIndex
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37244ff76c97f964b968c14f0cec13be
+    m_Address: SongAudio/song_004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_004
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3ecec02e60f47fb4a8d0b15026aecba8
+    m_Address: SongAudio/song_017
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_017
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 42727729b9970f545be77dcf288b1876
+    m_Address: SongProfile/song_012
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_012
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 48f9b0a4abb7355409145fb3888bc179
+    m_Address: SongProfile/song_007
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_007
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 498754dcae0a78b40901e6cb1a5dba38
+    m_Address: SongAudio/song_016
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_016
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4de0eb29e853f414caf622a8761f8f84
+    m_Address: SongProfile/song_013
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_013
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4e147811f43019d43af588d841a93522
+    m_Address: SongProfile/song_020
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_020
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 521c5bc8225c6234693bd81a5701db9f
+    m_Address: SongProfile/song_019
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_019
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 53fcdd215acf44a4a9979bd906605b99
+    m_Address: SongProfile/song_005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_005
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5fa61e70620c5d84dbcf0262584f6e63
+    m_Address: SongAudio/song_013
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_013
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 63172a5d8c41f8d4fbf21c194da595e0
+    m_Address: SongAudio/song_020
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_020
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 80f762c9a323b2e40bd04c509c0d7d23
+    m_Address: SongProfile/song_011
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_011
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 84befe36b1060dd4581b4feeefb137ed
+    m_Address: SongProfile/song_015
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_015
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a349260b563cfe543aa8f00fbcafe71d
+    m_Address: SongProfile/song_017
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_017
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a36bbcbca3a3b714fa1ef7435231e0a5
+    m_Address: SongAudio/song_018
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_018
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a72d2a19db6048f4a82ea76a39b4fe74
+    m_Address: SongProfile/song_009
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_009
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad19a3f4efa400c4d87026f1f6cc2b4d
+    m_Address: SongAudio/song_011
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_011
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b77b95693304e8f498a78c019f8bae10
+    m_Address: SongAudio/song_003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_003
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc0f2ac6da770664b82064ac0ccf66da
+    m_Address: SongProfile/song_008
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_008
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c0fc97c1d0801344da9081ba7880a827
+    m_Address: SongProfile/song_001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_001
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c11d347659c84c64ba219df5d5e69492
+    m_Address: SongAudio/song_012
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_012
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c50c1aa502b113042b872d0c279befaf
+    m_Address: SongProfile/song_002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_002
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c6275c2d2220f8848b412fb099228f76
+    m_Address: SongProfile/song_004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_004
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c6f34526cfe3efb4ba1021b8f8f48ee5
+    m_Address: SongAudio/song_007
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_007
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d1036d9764f29ba4b9c7f09ceabf1c78
+    m_Address: SongProfile/song_006
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_006
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d49ff8f1b503b4148a5207497c063b06
+    m_Address: SongProfile/song_003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song_song_003
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e0cf713220f5a614ab47cc747c57b598
+    m_Address: SongAudio/song_015
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_015
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e26b0c682b3f5c042966ffed3ca7b383
+    m_Address: SongAudio/song_014
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_014
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e8c89b45f08842340a6b68bd2f0b2795
+    m_Address: SongAudio/song_006
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_006
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee3d843bedfd09546a884bab48d38243
+    m_Address: SongAudio/song_010
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Song
+    - Song_song_010
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a4cc0dfc618f344aaae658dde9bb725, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: e270aa9c9a8c6974d908ea62da14fb05, type: 2}
+    - {fileID: 11400000, guid: 0efe83bb41238bc44b4bc0da5029b460, type: 2}

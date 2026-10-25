@@ -30,7 +30,7 @@ public class MusicRunnerScoringConfig : ScriptableObject
              "(the floor value on timingQualityCurve applies from here on). Also defines the " +
              "curve's x-axis scale: fraction = timingError / maxUsefulTimingWindow.")]
     public float maxUsefulTimingWindow = 0.8f;
-    [Tooltip("X = |collectionSongTime - ring's eventTime| / maxUsefulTimingWindow (0..1). " +
+    [Tooltip("X = |collectionSongTime - (ring's eventTime + playerTrailSeconds)| / maxUsefulTimingWindow (0..1). " +
              "Y = fraction of (rarity-adjusted) points awarded. Default: flat 100% up to ~0.12s " +
              "off, then eases down to a 55% floor by maxUsefulTimingWindow — never zero, a late/" +
              "early pickup still counts, just for less.")]

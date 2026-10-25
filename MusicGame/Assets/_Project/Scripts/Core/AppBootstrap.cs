@@ -80,6 +80,9 @@ public static class AppBootstrap
         var themeManager = go.AddComponent<ThemeManager>();
         var sceneFlow    = go.AddComponent<SceneFlowController>();
         var content      = go.AddComponent<ContentDownloadManager>();
+        // Sound effects / voice channels (preloads its library at once) + the game-event → sound mapping.
+        go.AddComponent<GameAudio>();
+        go.AddComponent<GameSfxEvents>();
 
         // 2. configure (only modules that actually have config)
         appFlow.Configure(appConfig != null ? appConfig.flow : null);

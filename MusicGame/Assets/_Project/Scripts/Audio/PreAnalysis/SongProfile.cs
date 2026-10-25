@@ -1,5 +1,17 @@
+using MusicGame.Audio.Analysis;
 using UnityEngine;
 
+/// <summary>
+/// One song's analysis as every runtime system reads it. Two kinds of data, never mixed:
+///   RAW     — exactly what the analysis core produced (MusicAnalyzer → AnalysisResult) plus the
+///             semantic tags. Persisted (binary profile, see SongProfileSerializer) and never
+///             written after construction: no consumer or derived analyzer may mutate these arrays.
+///   DERIVED — recomputed from the raw data whenever a profile is built or loaded
+///             (SongProfileDerived.Compute — fast, measured), never persisted, so a derived-analyzer
+///             change takes effect without re-analysing and nothing is ever smoothed twice.
+/// Frame arrays are centre-aligned: frame f describes the window centred on clip time f·analysisHopTime.
+/// All times are CLIP time (no warmup) — see MusicTime for the gameplay conversions.
+/// </summary>
 [System.Serializable]
 public class SongProfile
 {
@@ -14,6 +26,8 @@ public class SongProfile
     public float[]   energyEnvelope;
     public float[]   spectralCentroid;
     public float[]   spectralFlux;
+    /// <summary>Every detected attack time (= onsetEvents[i].time, ascending) — the single-list input
+    /// GameplayTimeline consumes; the multi-label events themselves are in onsetEvents.</summary>
     public float[]   onsetTimes;
     public float[][] bandEnvelopes;      // 6 classification bands (Kick/Snare/HiHat) — fixed layout, indices matter
     public float[][] visualBandEnvelopes; // higher-resolution, log-spaced — ground mesh + debug spectrum
@@ -22,7 +36,32 @@ public class SongProfile
     // ── Per-frame spectrum-derived (cached; needs raw FFT to compute) ─────────
     public float[]   spectralFlatness;   // 0=tonal, 1=noise
     public float[]   chromaFlat;         // numFrames×12 chromagram
-    public float[]   voiceProbability;   // 0..1 raw → smoothed by VoiceAnalyzer
+    public float[]   voiceProbability;   // 0..1 RAW per frame (never smoothed in place)
+
+    // ── Analysis core output (raw; null on a legacy JSON profile) ─────────────
+    /// <summary>Every detected attack with its possible families (multi-label) and heuristic
+    /// confidences, ascending by time. Gameplay consumption + selection policy is phase P4.</summary>
+    public OnsetEvent[] onsetEvents;
+    /// <summary>Tracked beat times (s), following tempo drift; empty when there is no tempo evidence.</summary>
+    public float[]   beatTimes;
+    public float     beatPhase;          // s, first position of the constant 60/BPM grid
+    public float     bpmConfidence;      // heuristic 0..1; estimatedBPM is 0 when there is no evidence
+
+    // ── Identity (which audio + which analysis produced this profile) ─────────
+    public string    songKey;            // catalog songId, or the import/clip key of the cache entry
+    public ulong     audioIdentity;      // SongAudioIdentity.Hash of the analysed audio revision
+    public ulong     paramsHash;         // AnalysisParams.Hash
+    public int       pipelineVersion;    // AnalysisVersions.Pipeline
+    public uint      profileCrc;         // body CRC of the published/cached binary profile (0 = not loaded from one)
+    public ulong     playbackRevision;   // published profiles: the bound playback representation (0 = none)
+
+    // ── Derived voice ─────────────────────────────────────────────────────────
+    /// <summary>voiceProbability smoothed (~0.3 s) by VoiceAnalyzer — derived, rebuilt from the raw
+    /// array on every build/load. Null when the voice analyzer is disabled.</summary>
+    public float[]   voiceProbabilitySmoothed;
+
+    /// <summary>The voice curve feature consumers read: smoothed when available, else raw.</summary>
+    public float[] VoiceForFeatures => voiceProbabilitySmoothed ?? voiceProbability;
 
     // ── Loudness ──────────────────────────────────────────────────────────────
     public float[]   loudnessDb;         // 20·log10(rms) per frame
@@ -104,7 +143,7 @@ public class SongProfile
     public float GetAgressAt(float time)          => Sample(aggressiveness,   time);
     public float GetBuildupAt(float time)         => Sample(buildupCurve,     time);
     public float GetGradientAt(float time)        => Sample(energyGradient,   time);
-    public float GetVoiceProbAt(float time)       => Sample(voiceProbability, time);
+    public float GetVoiceProbAt(float time)       => Sample(VoiceForFeatures, time);
     public float GetMelodicContourAt(float time)  => Sample(melodicContour,   time);
     public float GetTimbralChangeAt(float time)   => Sample(timbralChange,    time);
 

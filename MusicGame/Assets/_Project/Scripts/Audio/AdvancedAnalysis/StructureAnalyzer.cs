@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class StructureAnalyzer : IOfflineAnalyzer
 {
-    public bool IsEnabled(AudioAnalysisConfig config)
+    public bool IsEnabled(DerivedAnalysisSettings config)
         => config.advancedEnabled && config.advancedStructure;
 
     public void Analyze(OfflineAnalysisContext ctx, SongProfile profile)

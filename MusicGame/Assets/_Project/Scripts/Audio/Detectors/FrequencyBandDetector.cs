@@ -4,6 +4,7 @@ public class FrequencyBandDetector : IAudioDetector
 
     public void Initialize(AudioAnalysisConfig config) { }
     public void SetSongProfile(SongProfile profile) { }
+    public void Reset() { }
 
     public void Analyze(AudioData data)
     {

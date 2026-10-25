@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// song's audio; this just maps its STYLE-category tags (see MusicTagClassifier) onto the game's
 /// own MusicStyleId vocabulary. Picks the highest-scoring Style tag with a known mapping, above a
 /// modest confidence floor — profile.musicTags is already sorted by descending score (see
-/// IMusicTagger's own doc), so the first match found IS the best one; no sorting/aggregation
+/// SentisMusicTagger.SelectTags), so the first match found IS the best one; no sorting/aggregation
 /// needed here.
 ///
 /// Tags with no real genre meaning (e.g. "instrumental", "guitar") are intentionally left

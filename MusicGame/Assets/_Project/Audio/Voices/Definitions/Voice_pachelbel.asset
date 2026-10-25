@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29e0d69184de5364fafafebaaec86b7f, type: 3}
+  m_Name: Voice_pachelbel
+  m_EditorClassIdentifier: Assembly-CSharp::VoiceDefinition
+  voiceId: pachelbel
+  engine: qwen3-tts
+  description: Male, forties, calm patient very even voice, soft-spoken, methodical
+    and serene, slow steady rhythm, quietly confident.
+  referenceText: The same eight notes. Again. And again. You may tire of them. I
+    never will. Patience is a canon, and the canon always returns.
+  referenceLanguage: en
+  seed: 1296
+  languageOverrides: []
+  hurtTexts:
+  - Hm!
+  - Ugh!
+  - Oof!
+  specialTexts:
+  - Again!
+  - Haaah!
+  defeatTexts:
+  - Mm... the circle closes.
+  - Nooo...

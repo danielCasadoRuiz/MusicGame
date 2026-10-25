@@ -1,39 +1,36 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
+using MusicGame.Audio.Analysis;
 using Unity.InferenceEngine;
+using UnityEngine;
 
 /// <summary>
-/// IMusicTagger implementation backed by musicnn's "MSD_musicnn" model (Jordi Pons, ISC
-/// License — https://github.com/jordipons/musicnn), converted offline to ONNX and run locally
-/// via Unity Sentis / Inference Engine (com.unity.ai.inference). 100% on-device: no server, no
-/// network call, no per-inference cost.
+/// Semantic music tagging with musicnn's "MSD_musicnn" model (Jordi Pons, ISC License —
+/// https://github.com/jordipons/musicnn), converted offline to ONNX and run locally via Unity
+/// Inference Engine (com.unity.ai.inference), CPU backend. 100% on-device, no network.
 ///
-/// Everything here is a byte-for-byte reproduction of musicnn's own preprocessing
-/// (musicnn/extractor.py's batch_data): resample to 16 kHz, centered STFT (reflect-padded,
-/// periodic Hann, n_fft=512, hop=256), project through the model's own trained 96-band mel
-/// filterbank (baked from librosa.filters.mel — see mel_filterbank_96x257.bytes — so its exact
-/// triangular-filter/normalization math never has to be reimplemented), then
-/// log10(10000*mel+1) compression, batched into non-overlapping 187-frame (~3s) patches exactly
-/// like musicnn's own extractor. The ONLY deliberate deviation from bit-exact parity is the
-/// initial resample step, which uses simple linear interpolation instead of librosa's
-/// higher-order resampler — negligible after mel-band averaging over many 3s patches, and
-/// verified against real songs (see conversion notes) to produce sensible, stable tags.
+/// Split by thread affinity (the song analysis pipeline drives it, see SongAnalysisPipeline):
+///   - preprocessing (resample to 16 kHz, centred STFT, the model's own 96×257 mel filterbank,
+///     log10(10000·mel+1), non-overlapping 187-frame patches) is pure C#: MusicnnPreprocessor, run on
+///     a WORKER thread;
+///   - the Model is loaded ONCE and cached for the app lifetime (<see cref="TryGetModel"/>);
+///   - each request creates its OWN Worker + input tensor on the MAIN thread (<see cref="Inference"/>),
+///     schedules it and polls the readback without blocking (IsReadbackRequestDone); the Worker,
+///     input and output are disposed once the result is read — or, when the request is cancelled
+///     while the jobs still run, handed to a deferred-disposal list pumped every frame, so
+///     cancelling never blocks the main thread on in-flight jobs;
+///   - tag selection (mean over patches, top-N, min score) is pure and runs anywhere.
+/// The only deliberate deviation from musicnn's preprocessing is the linear-interpolation resample
+/// (instead of librosa's), negligible after mel averaging over 3 s patches.
 /// </summary>
-public class SentisMusicTagger : IMusicTagger
+public static class SentisMusicTagger
 {
-    /// <summary>Bump this when the model or preprocessing changes, so SongCache knows to
-    /// re-tag a song even though its other cached analysis is still perfectly valid.</summary>
+    /// <summary>Bump when the model or the tag post-processing changes: part of the tag reuse key, so
+    /// cached tags are recomputed (without re-running the rhythm analysis).</summary>
     public const int ModelVersion = 1;
 
-    private const int TargetSampleRate = 16000;
-    private const int FftSize          = 512;
-    private const int HopSize          = 256;
-    private const int MelBins          = 96;
-    private const int FreqBins         = FftSize / 2 + 1; // 257
-    private const int PatchFrames      = 187;             // 3s @ 16kHz/hop256 — MSD_musicnn/config.json "n_frames"
+    private const string ModelResource      = "MusicTagging/msd_musicnn";
+    private const string FilterbankResource = "MusicTagging/mel_filterbank_96x257";
 
     // MSD_musicnn's own 50-tag vocabulary (musicnn/configuration.py MSD_LABELS), trained on the
     // Million Song Dataset's community tags — NOT the same vocabulary as MTT_musicnn.
@@ -48,209 +45,260 @@ public class SentisMusicTagger : IMusicTagger
     };
 
     /// <summary>The fixed 50-tag vocabulary, in model order (SongSimilarityVector's tag block).</summary>
-    public static System.Collections.Generic.IReadOnlyList<string> TagLabels => Labels;
+    public static IReadOnlyList<string> TagLabels => Labels;
 
-    private readonly AudioAnalysisConfig _config;
-    private readonly float[]  _melFilterbank; // flattened [MelBins * FreqBins], row-major
-    private readonly Model    _model;
-    private readonly Worker   _worker;
+    /// <summary>Diagnostics: model loads / Workers created in this process (probes assert that loading a
+    /// published catalog song never touches the semantic model).</summary>
+    public static int ModelLoadCount { get; private set; }
+    public static int WorkerCreateCount { get; private set; }
 
-    public bool IsAvailable { get; }
+    private static Model               s_model;
+    private static bool                s_modelFailed;
+    private static MusicnnPreprocessor s_preprocessor;
+    private static bool                s_preprocessorFailed;
+    private static readonly List<Inference> s_deferred = new();
 
-    public SentisMusicTagger(AudioAnalysisConfig config)
+    /// <summary>MAIN THREAD. The cached model (loaded on first use, kept for the app lifetime: a
+    /// few MB, reused by every analysis). False if the asset is missing or failed to load.</summary>
+    public static bool TryGetModel(out Model model)
     {
-        _config = config;
-
+        model = s_model;
+        if (model != null) return true;
+        if (s_modelFailed) return false;
         try
         {
-            var modelAsset      = Resources.Load<ModelAsset>("MusicTagging/msd_musicnn");
-            var filterbankAsset = Resources.Load<TextAsset>("MusicTagging/mel_filterbank_96x257");
-
-            if (modelAsset == null || filterbankAsset == null)
+            var asset = Resources.Load<ModelAsset>(ModelResource);
+            if (asset == null)
             {
-                Debug.LogWarning("[MUSIC TAGGER] Model or mel-filterbank asset missing under " +
-                                 "Resources/MusicTagging — semantic tagging disabled.");
-                IsAvailable = false;
-                return;
+                Debug.LogWarning($"[MUSIC TAGGER] Resources/{ModelResource} missing — semantic tagging disabled.");
+                s_modelFailed = true;
+                return false;
             }
-
-            _melFilterbank = LoadFilterbank(filterbankAsset.bytes);
-            _model         = ModelLoader.Load(modelAsset);
-            _worker        = new Worker(_model, BackendType.CPU);
-            IsAvailable    = true;
+            s_model = model = ModelLoader.Load(asset);
+            ModelLoadCount++;
+            return true;
         }
         catch (Exception e)
         {
-            Debug.LogWarning($"[MUSIC TAGGER] Failed to initialize Sentis model: {e}");
-            IsAvailable = false;
+            Debug.LogWarning($"[MUSIC TAGGER] Failed to load the Sentis model: {e}");
+            s_modelFailed = true;
+            return false;
         }
     }
 
-    private static float[] LoadFilterbank(byte[] bytes)
+    /// <summary>MAIN THREAD. The (immutable, thread-safe) preprocessor built from the model's mel
+    /// filterbank asset, cached. Null if the asset is missing.</summary>
+    public static MusicnnPreprocessor GetPreprocessor()
     {
-        int count = MelBins * FreqBins;
-        var flat  = new float[count];
-        Buffer.BlockCopy(bytes, 0, flat, 0, count * sizeof(float));
-        return flat;
-    }
-
-    public void Dispose()
-    {
-        _worker?.Dispose();
-    }
-
-    // ── Main pipeline ─────────────────────────────────────────────────────────
-
-    public IEnumerator Tag(float[] monoSamples, int sourceSampleRate, Action<MusicTagScore[]> onComplete)
-    {
-        if (!IsAvailable)
+        if (s_preprocessor != null || s_preprocessorFailed) return s_preprocessor;
+        try
         {
-            onComplete?.Invoke(Array.Empty<MusicTagScore>());
-            yield break;
-        }
-
-        float t0 = Time.realtimeSinceStartup;
-
-        float[] resampled = Resample(monoSamples, sourceSampleRate, TargetSampleRate);
-
-        int pad    = FftSize / 2;
-        float[] padded    = ReflectPad(resampled, pad);
-        int numFrames     = 1 + Mathf.Max(0, (padded.Length - FftSize) / HopSize);
-
-        if (numFrames < PatchFrames)
-        {
-            onComplete?.Invoke(Array.Empty<MusicTagScore>()); // song too short for a single 3s patch
-            yield break;
-        }
-
-        var melLog = new float[numFrames * MelBins];
-        var frame  = new float[FftSize];
-
-        const int yieldEveryFrames = 300;
-        for (int f = 0; f < numFrames; f++)
-        {
-            Array.Copy(padded, f * HopSize, frame, 0, FftSize);
-            float[] power = OfflineFFT.ComputePowerSpectrum(frame, FFTWindowType.HannPeriodic);
-
-            int rowOffset = f * MelBins;
-            for (int m = 0; m < MelBins; m++)
+            var fb = Resources.Load<TextAsset>(FilterbankResource);
+            if (fb == null)
             {
-                float sum       = 0f;
-                int   fbOffset = m * FreqBins;
-                for (int b = 0; b < FreqBins; b++)
-                    sum += _melFilterbank[fbOffset + b] * power[b];
-                melLog[rowOffset + m] = Mathf.Log10(10000f * sum + 1f);
+                Debug.LogWarning($"[MUSIC TAGGER] Resources/{FilterbankResource} missing — semantic tagging disabled.");
+                s_preprocessorFailed = true;
+                return null;
             }
-
-            if (f % yieldEveryFrames == 0) yield return null;
+            s_preprocessor = new MusicnnPreprocessor(MusicnnPreprocessor.ParseFilterbank(fb.bytes));
+            Resources.UnloadAsset(fb);
         }
-
-        // Non-overlapping 187-frame patches — matches musicnn's own batch_data (overlap == n_frames)
-        var patchStarts = new List<int>();
-        int lastFrame   = numFrames - PatchFrames + 1;
-        for (int t = 0; t < lastFrame; t += PatchFrames) patchStarts.Add(t);
-
-        int numPatches = patchStarts.Count;
-        if (numPatches == 0)
+        catch (Exception e)
         {
-            onComplete?.Invoke(Array.Empty<MusicTagScore>());
-            yield break;
+            Debug.LogWarning($"[MUSIC TAGGER] Invalid mel filterbank: {e.Message}");
+            s_preprocessorFailed = true;
         }
+        return s_preprocessor;
+    }
 
-        var batch = new float[numPatches * PatchFrames * MelBins];
-        for (int p = 0; p < numPatches; p++)
-            Array.Copy(melLog, patchStarts[p] * MelBins, batch, p * PatchFrames * MelBins, PatchFrames * MelBins);
+    /// <summary>
+    /// One inference request: its own Worker, created on the MAIN thread, running the patches in
+    /// CHUNKS of at most `patchesPerChunk` (one Schedule per chunk). Sentis' CPU backend keeps every
+    /// intermediate tensor of a scheduled batch alive until the batch completes (~44 MB per musicnn
+    /// patch, measured), so a whole-song batch held 2–5 GB of native memory while running; a chunk
+    /// bounds that peak to the chunk's activations. Poll <see cref="IsDone"/> once per frame: it never
+    /// blocks — it collects a finished chunk (DownloadToArray of a completed tensor) and schedules the
+    /// next one — then call <see cref="TakeTaggram"/>.
+    /// </summary>
+    public sealed class Inference : IPipelineWait
+    {
+        private const int NumLabels = 50;
 
-        yield return null;
+        private Worker        _worker;
+        private Tensor<float> _input;
+        private Tensor<float> _output;
+        private float[]       _batch;      // [patches × 187 × 96], released when the last chunk is scheduled
+        private float[]       _slice;      // one chunk of _batch (reused)
+        private readonly float[] _taggram; // [patches × 50]
+        private readonly int  _numPatches, _chunk;
+        private int  _next, _curStart, _curCount;
+        private bool _abandoned;
 
-        float tInferStart = Time.realtimeSinceStartup;
-        float[] taggram;
-        using (var input = new Tensor<float>(new TensorShape(numPatches, PatchFrames, MelBins), batch))
+        public int    NumPatches => _numPatches;
+        public int    PatchesPerChunk => _chunk;
+        /// <summary>Main-thread time spent creating the worker and scheduling chunks: total and the
+        /// largest single frame (ms).</summary>
+        public double ScheduleMs { get; private set; }
+        public double MaxScheduleMs { get; private set; }
+
+        /// <summary>MAIN THREAD. Takes ownership of `batch` (not copied; dropped once scheduled).</summary>
+        public Inference(Model model, float[] batch, int numPatches, int patchesPerChunk)
         {
-            _worker.Schedule(input);
-            // PeekOutput() returns a tensor owned by the worker itself — must NOT Dispose it
-            // here (that's only for ReadbackAndClone()'d/TakeOwnership()'d tensors); it lives
-            // and dies with _worker, which the caller disposes once tagging is fully done.
-            var output = _worker.PeekOutput() as Tensor<float>;
-            taggram = output.DownloadToArray();
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            _numPatches = numPatches;
+            _chunk = Math.Max(1, Math.Min(patchesPerChunk, numPatches));
+            _batch = batch;
+            _taggram = new float[numPatches * NumLabels];
+            _worker = new Worker(model, BackendType.CPU);
+            WorkerCreateCount++;
+            ScheduleNext(sw);
         }
-        float inferenceTime = Time.realtimeSinceStartup - tInferStart;
 
+        private void ScheduleNext(System.Diagnostics.Stopwatch sw = null)
+        {
+            sw ??= System.Diagnostics.Stopwatch.StartNew();
+            const int patchSize = MusicnnPreprocessor.PatchFrames * MusicnnPreprocessor.MelBins;
+            _curStart = _next;
+            _curCount = Math.Min(_chunk, _numPatches - _next);
+            _next += _curCount;
+            // Exact-size slice: Inference Engine 2.6.1's Tensor(shape, T[], dataStartIndex) copies every
+            // element after dataStartIndex (not just the shape's), so an offset into the batch overflows.
+            int len = _curCount * patchSize;
+            if (_slice == null || _slice.Length != len) _slice = new float[len];
+            Array.Copy(_batch, _curStart * patchSize, _slice, 0, len);
+            _input = new Tensor<float>(new TensorShape(_curCount, MusicnnPreprocessor.PatchFrames, MusicnnPreprocessor.MelBins), _slice);
+            if (_next >= _numPatches) { _batch = null; _slice = null; }
+            _worker.Schedule(_input);
+            // PeekOutput() is owned by the worker (disposed with it), never disposed here.
+            _output = _worker.PeekOutput() as Tensor<float>;
+            _output.ReadbackRequest(); // no-op on CPU; keeps the non-blocking contract on GPU backends
+            double ms = sw.Elapsed.TotalMilliseconds;
+            ScheduleMs += ms;
+            MaxScheduleMs = Math.Max(MaxScheduleMs, ms);
+        }
+
+        /// <summary>The current chunk's jobs are finished (or nothing is scheduled). Never blocks.</summary>
+        private bool ChunkIdle => _output == null || _output.IsReadbackRequestDone();
+
+        private void Collect()
+        {
+            var data = _output.DownloadToArray(); // completed: a copy, no wait
+            Array.Copy(data, 0, _taggram, _curStart * NumLabels, Math.Min(data.Length, _curCount * NumLabels));
+            _input.Dispose();
+            _input = null;
+            _output = null;
+        }
+
+        /// <summary>MAIN THREAD, never blocks: advances finished chunks; true once every patch is scored.</summary>
+        public bool IsDone
+        {
+            get
+            {
+                if (_worker == null) return true;
+                if (_output != null && _output.IsReadbackRequestDone())
+                {
+                    Collect();
+                    if (!_abandoned && _next < _numPatches) ScheduleNext();
+                }
+                return _output == null && (_abandoned || _next >= _numPatches);
+            }
+        }
+
+        /// <summary>Blocking completion — ONLY for the editor's synchronous entry point.</summary>
+        public void WaitBlocking()
+        {
+            while (_worker != null && !_abandoned)
+            {
+                if (_output == null) { if (_next >= _numPatches) return; ScheduleNext(); }
+                _output.CompleteAllPendingOperations();
+                Collect();
+            }
+        }
+
+        /// <summary>MAIN THREAD, after IsDone (or WaitBlocking): the [patches × 50] scores; disposes the worker.</summary>
+        public float[] TakeTaggram()
+        {
+            Dispose();
+            return _taggram;
+        }
+
+        /// <summary>MAIN THREAD. Release without waiting: no further chunk is scheduled; disposed now if the
+        /// running chunk is done, otherwise on the first frame it is (see PumpDeferred) — disposing
+        /// in-flight Sentis data would complete its jobs synchronously, i.e. block the main thread.</summary>
+        public void Abandon()
+        {
+            if (_worker == null) return;
+            _abandoned = true;
+            _batch = null;
+            if (ChunkIdle) Dispose();
+            else if (!s_deferred.Contains(this)) s_deferred.Add(this);
+        }
+
+        internal bool CanDisposeWithoutBlocking => ChunkIdle;
+
+        internal void Dispose()
+        {
+            _input?.Dispose();
+            _worker?.Dispose();
+            _input = null; _worker = null; _output = null; _batch = null; _slice = null;
+        }
+    }
+
+
+    /// <summary>MAIN THREAD, once per frame (AudioPreAnalyzer.Update): disposes abandoned inferences
+    /// whose jobs have finished. `force` disposes all of them now (shutdown), blocking if needed.</summary>
+    public static void PumpDeferred(bool force = false)
+    {
+        for (int i = s_deferred.Count - 1; i >= 0; i--)
+        {
+            if (!force && !s_deferred[i].CanDisposeWithoutBlocking) continue;
+            s_deferred[i].Dispose();
+            s_deferred.RemoveAt(i);
+        }
+    }
+
+    public static int DeferredCount => s_deferred.Count;
+
+    /// <summary>Pure (any thread): mean score per label over all patches, sorted descending, top-N above
+    /// minScore. Same selection as the previous implementation.</summary>
+    public static MusicTagScore[] SelectTags(float[] taggram, int numPatches, int topN, float minScore)
+    {
         int numLabels = Labels.Length;
-        var meanScores = new float[numLabels];
+        if (taggram == null || numPatches <= 0 || taggram.Length < numPatches * numLabels) return Array.Empty<MusicTagScore>();
+        var mean = new float[numLabels];
         for (int p = 0; p < numPatches; p++)
             for (int l = 0; l < numLabels; l++)
-                meanScores[l] += taggram[p * numLabels + l];
-        for (int l = 0; l < numLabels; l++) meanScores[l] /= numPatches;
+                mean[l] += taggram[p * numLabels + l];
+        for (int l = 0; l < numLabels; l++) mean[l] /= numPatches;
 
         var order = new int[numLabels];
         for (int l = 0; l < numLabels; l++) order[l] = l;
-        Array.Sort(order, (a, b) => meanScores[b].CompareTo(meanScores[a]));
+        Array.Sort(order, (a, b) => mean[b].CompareTo(mean[a]));
 
-        int   topN     = Mathf.Clamp(_config.semanticTagTopN, 1, numLabels);
-        float minScore = _config.semanticTagMinScore;
-
+        topN = Math.Max(1, Math.Min(topN, numLabels));
         var result = new List<MusicTagScore>(topN);
         for (int i = 0; i < topN; i++)
         {
             int idx = order[i];
-            if (meanScores[idx] < minScore) continue;
-            result.Add(new MusicTagScore(Labels[idx], meanScores[idx]));
+            if (mean[idx] < minScore) continue;
+            result.Add(new MusicTagScore(Labels[idx], mean[idx]));
         }
-
-        float totalTime = Time.realtimeSinceStartup - t0;
-        LogResult(result, numPatches, inferenceTime, totalTime);
-
-        onComplete?.Invoke(result.ToArray());
+        return result.ToArray();
     }
 
-    private static void LogResult(List<MusicTagScore> tags, int numPatches, float inferenceTime, float totalTime)
+    public static TagScore[] ToCore(MusicTagScore[] tags)
     {
-        var sb = new StringBuilder();
-        sb.AppendLine("[MUSIC TAGGER]");
-        sb.AppendLine();
-        sb.AppendLine("Model: musicnn MSD_musicnn (Sentis/ONNX, CPU backend)");
-        sb.AppendLine();
-        for (int i = 0; i < tags.Count; i++)
-            sb.AppendLine($"{i + 1}. {tags[i].tag,-15} {tags[i].score:F3}");
-        sb.AppendLine();
-        sb.AppendLine($"Patches: {numPatches}   Inference: {inferenceTime * 1000f:F0} ms   " +
-                       $"Total (incl. preprocessing): {totalTime * 1000f:F0} ms");
-        Debug.Log(sb.ToString());
+        if (tags == null) return null;
+        var o = new TagScore[tags.Length];
+        for (int i = 0; i < tags.Length; i++) o[i] = new TagScore(tags[i].tag, tags[i].score);
+        return o;
     }
 
-    // ── Preprocessing helpers ─────────────────────────────────────────────────
-
-    private static float[] Resample(float[] input, int srcRate, int dstRate)
+    public static MusicTagScore[] FromCore(TagScore[] tags)
     {
-        if (srcRate == dstRate || input.Length == 0) return input;
-
-        int dstLen = (int)((long)input.Length * dstRate / srcRate);
-        var output = new float[dstLen];
-        double ratio = (double)srcRate / dstRate;
-
-        for (int i = 0; i < dstLen; i++)
-        {
-            double srcPos = i * ratio;
-            int    i0     = Mathf.Clamp((int)srcPos, 0, input.Length - 1);
-            int    i1     = Mathf.Min(i0 + 1, input.Length - 1);
-            float  frac   = (float)(srcPos - i0);
-            output[i] = Mathf.Lerp(input[i0], input[i1], frac);
-        }
-        return output;
-    }
-
-    /// <summary>numpy/librosa "reflect" padding — output[i] = x[pad-i] on the left and the
-    /// mirrored equivalent on the right, i.e. the edge sample itself is not duplicated.</summary>
-    private static float[] ReflectPad(float[] x, int pad)
-    {
-        int n = x.Length;
-        var padded = new float[n + 2 * pad];
-        for (int i = 0; i < pad; i++)
-            padded[i] = x[Mathf.Clamp(pad - i, 0, n - 1)];
-        Array.Copy(x, 0, padded, pad, n);
-        for (int i = 0; i < pad; i++)
-            padded[pad + n + i] = x[Mathf.Clamp(n - 2 - i, 0, n - 1)];
-        return padded;
+        if (tags == null) return null;
+        var o = new MusicTagScore[tags.Length];
+        for (int i = 0; i < tags.Length; i++) o[i] = new MusicTagScore(tags[i].tag, tags[i].score);
+        return o;
     }
 }

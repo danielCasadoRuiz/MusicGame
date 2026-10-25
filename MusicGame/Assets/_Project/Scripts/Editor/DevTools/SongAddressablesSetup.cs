@@ -15,7 +15,7 @@ using UnityEngine;
 /// Cloud Content Delivery without reorganizing anything), tagged with the "Song" label.
 ///
 /// SongSelectionController lists whatever this label currently resolves to at runtime — there is no
-/// hand-authored catalog ScriptableObject to keep in sync any more (see AddressableSongSource's own
+/// hand-authored catalog ScriptableObject to keep in sync any more (see CatalogSongSource's own
 /// doc). Adding a new song is: drop the audio file in this folder, re-run this tool (or push it as
 /// part of a future Addressables content release once Remote/CCD is wired up) — nothing else to
 /// touch. Removing one (e.g. a copyright takedown) is the same in reverse.
@@ -36,7 +36,7 @@ using UnityEngine;
 /// </summary>
 public static class SongAddressablesSetup
 {
-    private const string GroupName    = "Songs";
+    private const string GroupName    = SongContentKeys.GroupName; // P3: remote, PackSeparately (RemoteSongContentSetup)
     private const string Label        = "Song";
     private const string MusicFolder  = PlayableSongScope.MusicRoot;
 
@@ -65,16 +65,8 @@ public static class SongAddressablesSetup
         if (!settings.GetLabels().Contains(Label))
             settings.AddLabel(Label);
 
-        var group = settings.FindGroup(GroupName);
-        if (group == null)
-        {
-            group = settings.CreateGroup(GroupName, false, false, true, null,
-                typeof(ContentUpdateGroupSchema), typeof(BundledAssetGroupSchema));
-            var schema = group.GetSchema<BundledAssetGroupSchema>();
-            schema.BuildPath.SetVariableByName(settings, AddressableAssetSettings.kLocalBuildPath);
-            schema.LoadPath.SetVariableByName(settings, AddressableAssetSettings.kLocalLoadPath);
-            schema.BundleMode = BundledAssetGroupSchema.BundlePackingMode.PackTogether;
-        }
+        // The remote catalog layout (migrates the old local "Songs" group) — see RemoteSongContentSetup.
+        var group = RemoteSongContentSetup.EnsureGroup(settings, null);
 
         // 1. Playable songs: Music root + recursive subfolders ONLY (never a project-wide AudioClip search).
         var guids = PlayableSongScope.FindPlayableClipGuids();
@@ -114,6 +106,7 @@ public static class SongAddressablesSetup
         AssetDatabase.SaveAssets();
 
         UpdateSongCatalog(settings, guids);
+        Debug.Log(RemoteSongContentSetup.Setup()); // per-song labels + published profile / index entries
 
         Debug.Log($"[SongAddressablesSetup] Cleanup: {removed} non-Music entr(y/ies) removed from '{GroupName}', {unlabeled} label(s) removed elsewhere.");
         Debug.Log($"[SongAddressablesSetup] Done — {guids.Count} audio clip(s) from {MusicFolder} are " +

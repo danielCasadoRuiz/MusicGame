@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1abea45d9a53b43b33e8c4a5bd67f9, type: 3}
+  m_Name: VoicePack_chopin_en
+  m_EditorClassIdentifier: Assembly-CSharp::ComposerVoicePack
+  composerId: chopin
+  language: en
+  engine: qwen3-tts
+  voiceDefinitionHash: 2a1882f738a5aea3
+  lines:
+  - key: Composer.chopin.Dialogue.Defeat.001
+    clip: {fileID: 8300000, guid: 3b7914988f72c2948ac433aa577cf242, type: 3}
+    textHash: e850619c93cd956a
+    duration: 4.23
+  - key: Composer.chopin.Dialogue.Defeat.002
+    clip: {fileID: 8300000, guid: 214ae5d8129be02448f88070199225d0, type: 3}
+    textHash: ac3ebfc755492951
+    duration: 4.578
+  - key: Composer.chopin.Dialogue.Defeat.003
+    clip: {fileID: 8300000, guid: ef4682905b21f9244ab773cbb3fcfe6c, type: 3}
+    textHash: d98056cdbf99bfd5
+    duration: 4.207
+  - key: Composer.chopin.Dialogue.Defeat.004
+    clip: {fileID: 8300000, guid: a5bc024e2b96fc84c976301e8e7cee38, type: 3}
+    textHash: 2551369cf7559e8b
+    duration: 5.199
+  - key: Composer.chopin.Dialogue.Defeat.005
+    clip: {fileID: 8300000, guid: 7ff8e911311fb274ca66679267d9e8b1, type: 3}
+    textHash: f7798dc56cb1e12d
+    duration: 4.826
+  - key: Composer.chopin.Dialogue.Defeat.006
+    clip: {fileID: 8300000, guid: 188f9d896eb9fdc40af56dbd4f57fd1a, type: 3}
+    textHash: 727712e245c47603
+    duration: 5.352
+  - key: Composer.chopin.Dialogue.Defeat.007
+    clip: {fileID: 8300000, guid: f5cc21876e73183448f5f820132bc190, type: 3}
+    textHash: b0f030ef8f9823c0
+    duration: 6.03
+  - key: Composer.chopin.Dialogue.Defeat.008
+    clip: {fileID: 8300000, guid: 5079126878814f6418c7479b8a1f7467, type: 3}
+    textHash: fab5fe771d103be7
+    duration: 4.253
+  - key: Composer.chopin.Dialogue.Defeat.009
+    clip: {fileID: 8300000, guid: 8ce0996bc46bd794eb44670bbffb5c25, type: 3}
+    textHash: 525c06600246ed1d
+    duration: 4.479
+  - key: Composer.chopin.Dialogue.Defeat.010
+    clip: {fileID: 8300000, guid: b72acaffb2544644fa444788f5676cbf, type: 3}
+    textHash: 11e54e94550ac466
+    duration: 5.334
+  - key: Composer.chopin.Dialogue.Intro.001
+    clip: {fileID: 8300000, guid: eae6d68a868365c4294b12d70c400498, type: 3}
+    textHash: c91e295f63b5d30e
+    duration: 3.791
+  - key: Composer.chopin.Dialogue.Intro.002
+    clip: {fileID: 8300000, guid: 78d0f375cd17a6644b07e3b88515578b, type: 3}
+    textHash: d3d9f6e563073999
+    duration: 4.47
+  - key: Composer.chopin.Dialogue.Intro.003
+    clip: {fileID: 8300000, guid: ef9f0ea9da946a245bdab59b4f7f67b3, type: 3}
+    textHash: 1d4289a7f72f694a
+    duration: 4.11
+  - key: Composer.chopin.Dialogue.Intro.004
+    clip: {fileID: 8300000, guid: f790d84f1961fee45bf808be6efd5fc9, type: 3}
+    textHash: 5912b2e271d6f980
+    duration: 3.09
+  - key: Composer.chopin.Dialogue.Intro.005
+    clip: {fileID: 8300000, guid: 0a270ddf5168db345b1a5143e285d8f4, type: 3}
+    textHash: b95f240586e11d17
+    duration: 4.878
+  - key: Composer.chopin.Dialogue.Intro.006
+    clip: {fileID: 8300000, guid: 6251eb51f29f31c40be057f8b982e878, type: 3}
+    textHash: de27b9f444771c45
+    duration: 3.457
+  - key: Composer.chopin.Dialogue.Intro.007
+    clip: {fileID: 8300000, guid: 7dade3adae719614e8f895b268c7ed0b, type: 3}
+    textHash: 841112b2ba0edd30
+    duration: 4.726
+  - key: Composer.chopin.Dialogue.Intro.008
+    clip: {fileID: 8300000, guid: ebd00685fe5fc9548a280e5ecf699587, type: 3}
+    textHash: a9a924d434790ad8
+    duration: 4.032
+  - key: Composer.chopin.Dialogue.Intro.009
+    clip: {fileID: 8300000, guid: 4da661f8be5e15d4e9f483620918aaed, type: 3}
+    textHash: e287f60d7ec2080b
+    duration: 4.658
+  - key: Composer.chopin.Dialogue.Intro.010
+    clip: {fileID: 8300000, guid: dfcd82e1e1c728e4db4e5f9598f8a97b, type: 3}
+    textHash: 14ed36374a6bcdf0
+    duration: 3.595
+  - key: Composer.chopin.Dialogue.Victory.001
+    clip: {fileID: 8300000, guid: d96e2df1beaf5c94c86e951100ae08a4, type: 3}
+    textHash: 25c04ef2fe88d8a7
+    duration: 4.176
+  - key: Composer.chopin.Dialogue.Victory.002
+    clip: {fileID: 8300000, guid: 28f0b0732a3ecde4aaf27b49c403eecd, type: 3}
+    textHash: 1c53abc7143e917d
+    duration: 4.684
+  - key: Composer.chopin.Dialogue.Victory.003
+    clip: {fileID: 8300000, guid: f3ba84fd5559f7b4885f304add8238b7, type: 3}
+    textHash: a8257fd9ef0d75e1
+    duration: 3.67
+  - key: Composer.chopin.Dialogue.Victory.004
+    clip: {fileID: 8300000, guid: d4221fbd51055904191a7a3073b19f97, type: 3}
+    textHash: 0742888d6cade011
+    duration: 4.906
+  - key: Composer.chopin.Dialogue.Victory.005
+    clip: {fileID: 8300000, guid: 03d1839c0ccf3fc47b3685a2dccd5f0f, type: 3}
+    textHash: 9051002ef6e2f3cd
+    duration: 4.274
+  - key: Composer.chopin.Dialogue.Victory.006
+    clip: {fileID: 8300000, guid: 488173e325bbb634ca95689c0dbe85b9, type: 3}
+    textHash: ccc653883a3e9046
+    duration: 3.445
+  - key: Composer.chopin.Dialogue.Victory.007
+    clip: {fileID: 8300000, guid: 2261ed906d0116e498b29b0f1314c1fb, type: 3}
+    textHash: 083526c421abe58d
+    duration: 4.8
+  - key: Composer.chopin.Dialogue.Victory.008
+    clip: {fileID: 8300000, guid: 3a1b8b9b921a7b14f9c11d9c5bb37b3e, type: 3}
+    textHash: b09dffcf56f6c98d
+    duration: 3.794
+  - key: Composer.chopin.Dialogue.Victory.009
+    clip: {fileID: 8300000, guid: 78bc302d9e23ba540ad9d76c1663c606, type: 3}
+    textHash: 0c38107c83e840d5
+    duration: 3.773
+  - key: Composer.chopin.Dialogue.Victory.010
+    clip: {fileID: 8300000, guid: e58478b0879ccb348b78478363a60099, type: 3}
+    textHash: b48e2cf741a91d97
+    duration: 6.41
+  efforts:
+    hurt: {fileID: 0}
+    special: {fileID: 0}
+    defeat: {fileID: 0}

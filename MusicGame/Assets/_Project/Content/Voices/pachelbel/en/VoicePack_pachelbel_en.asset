@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1abea45d9a53b43b33e8c4a5bd67f9, type: 3}
+  m_Name: VoicePack_pachelbel_en
+  m_EditorClassIdentifier: Assembly-CSharp::ComposerVoicePack
+  composerId: pachelbel
+  language: en
+  engine: qwen3-tts
+  voiceDefinitionHash: e05d0e71d1297e19
+  lines:
+  - key: Composer.pachelbel.Dialogue.Defeat.001
+    clip: {fileID: 8300000, guid: f7350b2102b4fc446a9dd19b2035d695, type: 3}
+    textHash: ff946ed8c8f0e0db
+    duration: 4.989
+  - key: Composer.pachelbel.Dialogue.Defeat.002
+    clip: {fileID: 8300000, guid: 17f7b825083a09941aad5d60dcdd69a4, type: 3}
+    textHash: 75f052b0e9568eab
+    duration: 5.688
+  - key: Composer.pachelbel.Dialogue.Defeat.003
+    clip: {fileID: 8300000, guid: 2efb81a538232b44c8e4d5ed73f7a409, type: 3}
+    textHash: 161acb610bd2b9c5
+    duration: 5.021
+  - key: Composer.pachelbel.Dialogue.Defeat.004
+    clip: {fileID: 8300000, guid: acb385972bf7cc540ad9429018b76339, type: 3}
+    textHash: d76229b70252b446
+    duration: 5.118
+  - key: Composer.pachelbel.Dialogue.Defeat.005
+    clip: {fileID: 8300000, guid: 3675d72ee5e10794391cb10ca587aa2b, type: 3}
+    textHash: ffcf97ada17d5585
+    duration: 4.391
+  - key: Composer.pachelbel.Dialogue.Defeat.006
+    clip: {fileID: 8300000, guid: eb56f6434c089094b911d19d6172dacc, type: 3}
+    textHash: 7afd2bcef28fbaf6
+    duration: 4.462
+  - key: Composer.pachelbel.Dialogue.Defeat.007
+    clip: {fileID: 8300000, guid: 5ee5cb9b875c2cc43aac101420810073, type: 3}
+    textHash: 1d617ca5c6c47d3f
+    duration: 4.807
+  - key: Composer.pachelbel.Dialogue.Defeat.008
+    clip: {fileID: 8300000, guid: a29cc03a9fdebc842b30d36aabeecd47, type: 3}
+    textHash: 5084a3171947bcfe
+    duration: 4.482
+  - key: Composer.pachelbel.Dialogue.Defeat.009
+    clip: {fileID: 8300000, guid: 300abb17703621b449286a7a68cb4cd6, type: 3}
+    textHash: a2e4714fb4912256
+    duration: 5.235
+  - key: Composer.pachelbel.Dialogue.Defeat.010
+    clip: {fileID: 8300000, guid: bc981e7a6db3a5a4ba2622de90a863ee, type: 3}
+    textHash: a69fe77f8338cefa
+    duration: 4.654
+  - key: Composer.pachelbel.Dialogue.Intro.001
+    clip: {fileID: 8300000, guid: e2e0e8f8006d3794189cb71775718fa0, type: 3}
+    textHash: 893c6b87e046323f
+    duration: 4.769
+  - key: Composer.pachelbel.Dialogue.Intro.002
+    clip: {fileID: 8300000, guid: f060f385585bdcb4c8619843a4705f09, type: 3}
+    textHash: bf6c6157d1b4357e
+    duration: 4.348
+  - key: Composer.pachelbel.Dialogue.Intro.003
+    clip: {fileID: 8300000, guid: b1216ca39e11c5b409fb9982ebb930df, type: 3}
+    textHash: d4c16f449970aca5
+    duration: 3.016
+  - key: Composer.pachelbel.Dialogue.Intro.004
+    clip: {fileID: 8300000, guid: 77ec353a933d7cb4084df4da7e06f2a9, type: 3}
+    textHash: 25b45855e541e87e
+    duration: 4.652
+  - key: Composer.pachelbel.Dialogue.Intro.005
+    clip: {fileID: 8300000, guid: 1d00079e8814dfe4f8cda599ce35e428, type: 3}
+    textHash: 9b7d09f1c261ba4c
+    duration: 3.267
+  - key: Composer.pachelbel.Dialogue.Intro.006
+    clip: {fileID: 8300000, guid: 7a63ced0a0b2f8244ad633180f006373, type: 3}
+    textHash: beffa142570702ef
+    duration: 4.172
+  - key: Composer.pachelbel.Dialogue.Intro.007
+    clip: {fileID: 8300000, guid: 2aa9991f68558974786ecb6f4ace3f6f, type: 3}
+    textHash: f50cb8ce8020914f
+    duration: 3.376
+  - key: Composer.pachelbel.Dialogue.Intro.008
+    clip: {fileID: 8300000, guid: 6764ea5baa1461741bc00225b97bfeb7, type: 3}
+    textHash: 9eb89252ecdf16f0
+    duration: 4.765
+  - key: Composer.pachelbel.Dialogue.Intro.009
+    clip: {fileID: 8300000, guid: 3866031b5a17d8a40a562f14bdacec16, type: 3}
+    textHash: 29cfda36538fe94a
+    duration: 4.148
+  - key: Composer.pachelbel.Dialogue.Intro.010
+    clip: {fileID: 8300000, guid: 52e2f645a3ee5724ead9b65323241cc1, type: 3}
+    textHash: bc1e883fdff0f761
+    duration: 2.901
+  - key: Composer.pachelbel.Dialogue.Victory.001
+    clip: {fileID: 8300000, guid: 80914954dc50bc542b83110f82b711c3, type: 3}
+    textHash: c7a2118330038ef7
+    duration: 4.126
+  - key: Composer.pachelbel.Dialogue.Victory.002
+    clip: {fileID: 8300000, guid: 6cd22ad99821ee84493a1c1d4e85cc40, type: 3}
+    textHash: 8405f45629b27985
+    duration: 4.989
+  - key: Composer.pachelbel.Dialogue.Victory.003
+    clip: {fileID: 8300000, guid: 7186c1224bc3ff040b37bad37b038ef5, type: 3}
+    textHash: 6012eb63caeb07ec
+    duration: 4.335
+  - key: Composer.pachelbel.Dialogue.Victory.004
+    clip: {fileID: 8300000, guid: 3b83509133e96364480057facb7dad9e, type: 3}
+    textHash: c126a0f8108981ca
+    duration: 3.626
+  - key: Composer.pachelbel.Dialogue.Victory.005
+    clip: {fileID: 8300000, guid: 7b1320fe8759df349b35897989a737b2, type: 3}
+    textHash: 200224244daf5fa2
+    duration: 3.823
+  - key: Composer.pachelbel.Dialogue.Victory.006
+    clip: {fileID: 8300000, guid: 79d1ba4931f2d024cb60a9f53159f10d, type: 3}
+    textHash: 8cdf2f73ec57c4cc
+    duration: 5.015
+  - key: Composer.pachelbel.Dialogue.Victory.007
+    clip: {fileID: 8300000, guid: d89faa8594760dd44a8b520dc4010090, type: 3}
+    textHash: 20c387746243cca7
+    duration: 4.142
+  - key: Composer.pachelbel.Dialogue.Victory.008
+    clip: {fileID: 8300000, guid: 1719bfa346c495f4c959e53ef0a58ede, type: 3}
+    textHash: 65312d3bd00ec875
+    duration: 4.299
+  - key: Composer.pachelbel.Dialogue.Victory.009
+    clip: {fileID: 8300000, guid: 40acef72589014948ad665f0b7ab5e89, type: 3}
+    textHash: bf024b6de1a79b73
+    duration: 5.389
+  - key: Composer.pachelbel.Dialogue.Victory.010
+    clip: {fileID: 8300000, guid: 8947e7e44cde03f479a3981b3ab53447, type: 3}
+    textHash: 8f4cd2e620688f1e
+    duration: 4.773
+  efforts:
+    hurt: {fileID: 0}
+    special: {fileID: 0}
+    defeat: {fileID: 0}

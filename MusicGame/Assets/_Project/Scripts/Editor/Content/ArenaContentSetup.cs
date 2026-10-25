@@ -88,7 +88,8 @@ public static class ArenaContentSetup
                 }
                 string guid = AssetDatabase.AssetPathToGUID(path);
                 allGuids.Add(guid);
-                AddEntry(settings, group, path, $"Arena/{composer.id}/{n:00}", CategoryLabel, label);
+                if (ArenaSceneCatalog.Current != null && ArenaSceneCatalog.Current.Contains(guid)) settings.RemoveAssetEntry(guid);
+                else AddEntry(settings, group, path, $"Arena/{composer.id}/{n:00}", CategoryLabel, label);
                 if (!composer.arenas.Any(r => r != null && r.AssetGUID == guid)) { composer.arenas.Add(new AssetReferenceGameObject(guid)); linked++; }
             }
             if (linked > 0) EditorUtility.SetDirty(composer);
@@ -117,7 +118,8 @@ public static class ArenaContentSetup
         sb.AppendLine($"  {(separate ? "PASS" : "FAIL")}  {GroupName}: pack separately (one bundle per arena), {(remote ? "remote" : "LOCAL")} load path");
         int arenaEntries = group.entries.Count(e => e.AssetPath.EndsWith(".prefab"));
         bool unique = guids.Count == roster.Count * ArenasPerComposer;
-        if (!unique || arenaEntries < guids.Count) ok = false;
+        int sceneBacked = guids.Count(g => ArenaSceneCatalog.Current != null && ArenaSceneCatalog.Current.Contains(g));
+        if (!unique || arenaEntries + sceneBacked < guids.Count) ok = false;
         sb.AppendLine($"  {(unique ? "PASS" : "FAIL")}  {guids.Count} distinct arena prefabs (GUIDs), {arenaEntries} Addressable entries");
         // Character content and arenas never share a group / label.
         var enemyGroups = settings.groups.Where(g => g != null && g.Name.StartsWith("Remote_Enemies")).ToList();

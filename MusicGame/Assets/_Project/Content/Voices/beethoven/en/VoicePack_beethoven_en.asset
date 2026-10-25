@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1abea45d9a53b43b33e8c4a5bd67f9, type: 3}
+  m_Name: VoicePack_beethoven_en
+  m_EditorClassIdentifier: Assembly-CSharp::ComposerVoicePack
+  composerId: beethoven
+  language: en
+  engine: qwen3-tts
+  voiceDefinitionHash: e15843f047362288
+  lines:
+  - key: Composer.beethoven.Dialogue.Defeat.001
+    clip: {fileID: 8300000, guid: a59ec695f82c3ee4880ceda5b8c2ac57, type: 3}
+    textHash: cc0560207b657de8
+    duration: 4.237
+  - key: Composer.beethoven.Dialogue.Defeat.002
+    clip: {fileID: 8300000, guid: 288de29d1e0435c44a5ad10affdda403, type: 3}
+    textHash: 3c481199b6c4e09f
+    duration: 4.404
+  - key: Composer.beethoven.Dialogue.Defeat.003
+    clip: {fileID: 8300000, guid: c0698a20fa459d34ead16855ce848b43, type: 3}
+    textHash: bda54b9d35fd8811
+    duration: 5.151
+  - key: Composer.beethoven.Dialogue.Defeat.004
+    clip: {fileID: 8300000, guid: 7bef26c9aa53e164b9ca2b53637e65fc, type: 3}
+    textHash: 2f487d582076576f
+    duration: 4.435
+  - key: Composer.beethoven.Dialogue.Defeat.005
+    clip: {fileID: 8300000, guid: 274d45431a632ef42a475198ed03a960, type: 3}
+    textHash: 9f3d6701f49dc954
+    duration: 4.836
+  - key: Composer.beethoven.Dialogue.Defeat.006
+    clip: {fileID: 8300000, guid: 57843b97f32b42a44961c09cfead32b6, type: 3}
+    textHash: bb4a7d3d739c0981
+    duration: 3.929
+  - key: Composer.beethoven.Dialogue.Defeat.007
+    clip: {fileID: 8300000, guid: e67c454ec0f0cc74b9fd5ac238a9ec3a, type: 3}
+    textHash: 70fc5346777d4653
+    duration: 4.911
+  - key: Composer.beethoven.Dialogue.Defeat.008
+    clip: {fileID: 8300000, guid: df89ca9048817d64c8ffb4d4cdcb72c2, type: 3}
+    textHash: de0ded3549009454
+    duration: 3.023
+  - key: Composer.beethoven.Dialogue.Defeat.009
+    clip: {fileID: 8300000, guid: 878b3ebee6fffb342a9c02c0d99af970, type: 3}
+    textHash: 27ef6f412f391036
+    duration: 4.276
+  - key: Composer.beethoven.Dialogue.Defeat.010
+    clip: {fileID: 8300000, guid: 70c6bd3faa5687746838a715f46d6308, type: 3}
+    textHash: 5bbe53e00b358a9c
+    duration: 4.319
+  - key: Composer.beethoven.Dialogue.Intro.001
+    clip: {fileID: 8300000, guid: aa13f9f97a0e4234585318f04a3cc72c, type: 3}
+    textHash: 5ba53c7d0c6817bf
+    duration: 3.263
+  - key: Composer.beethoven.Dialogue.Intro.002
+    clip: {fileID: 8300000, guid: da079298a85ab4c40ac435923a289163, type: 3}
+    textHash: 87dced7fab5ccf43
+    duration: 3.76
+  - key: Composer.beethoven.Dialogue.Intro.003
+    clip: {fileID: 8300000, guid: 3e59c7c315d647145a11039aebb32344, type: 3}
+    textHash: a778143b82f08ac7
+    duration: 4.086
+  - key: Composer.beethoven.Dialogue.Intro.004
+    clip: {fileID: 8300000, guid: 56a1765c287fd944cad26e1d2f9372fc, type: 3}
+    textHash: 10bc5d825d9c59b9
+    duration: 3.368
+  - key: Composer.beethoven.Dialogue.Intro.005
+    clip: {fileID: 8300000, guid: 1f7e7c1b0a64ef54aa4016045e1ea9e9, type: 3}
+    textHash: 32aced016b32e992
+    duration: 3.175
+  - key: Composer.beethoven.Dialogue.Intro.006
+    clip: {fileID: 8300000, guid: a88535caa61e35c4f8afa71c70b858de, type: 3}
+    textHash: 64d9cdea5d054355
+    duration: 3.936
+  - key: Composer.beethoven.Dialogue.Intro.007
+    clip: {fileID: 8300000, guid: 56def39d81d0442438bc401cad05c779, type: 3}
+    textHash: ecc5a8c1d335cc88
+    duration: 3.763
+  - key: Composer.beethoven.Dialogue.Intro.008
+    clip: {fileID: 8300000, guid: 2980c1d32fa1f3045993f95a00fb2036, type: 3}
+    textHash: 88f010e59dd065c2
+    duration: 4.087
+  - key: Composer.beethoven.Dialogue.Intro.009
+    clip: {fileID: 8300000, guid: 92858b95a45559a4786a4b6fc213a48b, type: 3}
+    textHash: 394bff40d7a6e387
+    duration: 2.677
+  - key: Composer.beethoven.Dialogue.Intro.010
+    clip: {fileID: 8300000, guid: ff87e4175c63b3940a60996ad1ccf2a2, type: 3}
+    textHash: 6733272735620bc8
+    duration: 4.518
+  - key: Composer.beethoven.Dialogue.Victory.001
+    clip: {fileID: 8300000, guid: a26b0eff2d2cb454d87d4450e1bd7367, type: 3}
+    textHash: 1656b731845d7845
+    duration: 3.032
+  - key: Composer.beethoven.Dialogue.Victory.002
+    clip: {fileID: 8300000, guid: 7e74cefee514f6f4590fb8b56bff17e2, type: 3}
+    textHash: df07d83c4f608314
+    duration: 2.881
+  - key: Composer.beethoven.Dialogue.Victory.003
+    clip: {fileID: 8300000, guid: 201a6cefe0bec1b4ea245e146af3bfed, type: 3}
+    textHash: aa81b563d7a3aa58
+    duration: 3.825
+  - key: Composer.beethoven.Dialogue.Victory.004
+    clip: {fileID: 8300000, guid: b240f5b3c54cc8141b65494834ff4883, type: 3}
+    textHash: 15878f3a23c0dd7e
+    duration: 3.204
+  - key: Composer.beethoven.Dialogue.Victory.005
+    clip: {fileID: 8300000, guid: c41f7823d0da0eb499682ba39269fa2c, type: 3}
+    textHash: 22dd22476c145d54
+    duration: 3.514
+  - key: Composer.beethoven.Dialogue.Victory.006
+    clip: {fileID: 8300000, guid: 74731a757909d22458a41309057078d6, type: 3}
+    textHash: fdf732a003c88d6b
+    duration: 2.204
+  - key: Composer.beethoven.Dialogue.Victory.007
+    clip: {fileID: 8300000, guid: 70e3f5ab7b31ba5469c5be2215744c89, type: 3}
+    textHash: 48a9cb5c81141fcd
+    duration: 3.065
+  - key: Composer.beethoven.Dialogue.Victory.008
+    clip: {fileID: 8300000, guid: db06718db79e5194c892e13922422650, type: 3}
+    textHash: bac00627d6057b85
+    duration: 2.952
+  - key: Composer.beethoven.Dialogue.Victory.009
+    clip: {fileID: 8300000, guid: 2c03351273e5571428da03c09467e11a, type: 3}
+    textHash: 715a7cf18c22ffc3
+    duration: 3.435
+  - key: Composer.beethoven.Dialogue.Victory.010
+    clip: {fileID: 8300000, guid: 2f5b58b4a2dfa6b41adcf2bd9a11e0ad, type: 3}
+    textHash: 9afdcc2b3962c983
+    duration: 3.36
+  efforts:
+    hurt: {fileID: 0}
+    special: {fileID: 0}
+    defeat: {fileID: 0}

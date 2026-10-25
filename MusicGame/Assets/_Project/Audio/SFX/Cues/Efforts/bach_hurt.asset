@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a7f43baddb4e274eb9596c7a7db1113, type: 3}
+  m_Name: bach_hurt
+  m_EditorClassIdentifier: Assembly-CSharp::SfxCue
+  clips:
+  - {fileID: 8300000, guid: c85a5c33d08b5c042946cbeb11eb8f4d, type: 3}
+  - {fileID: 8300000, guid: e6e3d8eea7a5dfb4db5578d4dc6c4952, type: 3}
+  - {fileID: 8300000, guid: dae00a3edeac83844a9aac98f43c449d, type: 3}
+  - {fileID: 8300000, guid: 75a681e5a9f8d0b4089e5d540d1a353a, type: 3}
+  - {fileID: 8300000, guid: c151536fd9180ca488537da6ce434ef7, type: 3}
+  - {fileID: 8300000, guid: 1a20f8922f79dfe4db8f5d06ca34ff5b, type: 3}
+  channel: 2
+  volume: 0.55
+  volumeJitter: 0.06
+  pitch: {x: 0.95500004, y: 0.985}
+  maxInstances: 1
+  cooldown: 0.55
+  credits: "HaelDB, \"Male Grunt/Yelling sounds\" (OpenGameArt) \u2014 CC0 1.0. Audio/Sfx/Vocal/HaelDB/LICENSE.txt"

@@ -152,6 +152,41 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ThemeTextReceiver
   colorToken: 6
   fontToken: 1
+--- !u!1 &860406056886461119
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7994489147429771586}
+  m_Layer: 0
+  m_Name: BonusSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7994489147429771586
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 860406056886461119}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8862549632835095754}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: 0, y: 74}
+  m_SizeDelta: {x: -40, y: 150}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!1 &1273730975205897764
 GameObject:
   m_ObjectHideFlags: 0
@@ -204,6 +239,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EndScreenView
   titleText: {fileID: 436044353136592316}
   evaluationPanel: {fileID: 8193764082610024283}
+  bonusSlot: {fileID: 7994489147429771586}
   restartButton: {fileID: 6750812921272831606}
   restartButtonLabel: {fileID: 5447922503990148214}
   continueButton: {fileID: 1168434329509918551}
@@ -907,6 +943,7 @@ RectTransform:
   - {fileID: 8189880351071897003}
   - {fileID: 1069001417366560530}
   - {fileID: 1283700393051503036}
+  - {fileID: 7994489147429771586}
   m_Father: {fileID: 2877092509637129076}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}

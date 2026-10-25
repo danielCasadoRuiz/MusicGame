@@ -7,9 +7,8 @@ using UnityEngine.SceneManagement;
 /// Owns loading/unloading of the additive Mode Scenes (Frontend/Runner/Fight — see GameMode) and of
 /// the always-loaded UI Scene. Persistent (IAppModule, constructed by AppBootstrap on the same
 /// [App Bootstrap] GameObject as GameSession/AppFlowController/ThemeManager) — the single place that
-/// calls SceneManager.LoadSceneAsync/UnloadSceneAsync, so no individual screen or gameplay script
-/// ever loads a scene directly ("AppFlow decideix l'estat, SceneFlow executa les càrregues" — see the
-/// multi-scene refactor plan's own section on this split of responsibility).
+/// loads MODE scenes ("AppFlow decideix l'estat, SceneFlow executa les càrregues"). Nested arena
+/// content scenes are owned by ArenaEnvironmentLoader; their cleanup is awaited before Fight unloads.
 ///
 /// Target runtime layout: Core (this object's home, whichever scene happens to load first — see
 /// AppBootstrap's own doc) + UI (loaded once here, right after boot, never unloaded) + exactly one
@@ -129,6 +128,12 @@ public class SceneFlowController : MonoBehaviour, IAppModule
 
         if (previousMode.HasValue && SceneNames.TryGetValue(previousMode.Value, out string previousSceneName))
         {
+            if (previousMode.Value == GameMode.Fight && FightSceneBootstrap.Instance != null)
+            {
+                var cleanup = FightSceneBootstrap.Instance.ShutdownStageAsync();
+                while (!cleanup.IsCompleted) yield return null;
+                if (cleanup.IsFaulted) Debug.LogException(cleanup.Exception);
+            }
             var unloadOp = SceneManager.UnloadSceneAsync(previousSceneName);
             if (unloadOp != null) yield return unloadOp;
         }

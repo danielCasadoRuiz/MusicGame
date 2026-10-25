@@ -125,6 +125,10 @@ public class MainMenuController : MonoBehaviour
         AudioListener.volume = startVolume;
         _volumeSlider.value = startVolume;
         _volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
+        // Channel volumes (GameAudio persists them; master stays the global AudioListener volume above).
+        BindChannel(view.musicVolumeSlider, GameAudioChannel.Music);
+        BindChannel(view.sfxVolumeSlider, GameAudioChannel.Sfx);
+        BindChannel(view.voiceVolumeSlider, GameAudioChannel.Voice);
 
         // Data-dependent (PLAY / CONTINUE): set here and in RefreshProgressUI; static labels are LocalizedText.
         Loc.Set(_playLabel, "MainMenu.Play");
@@ -226,6 +230,7 @@ public class MainMenuController : MonoBehaviour
         _root.SetAsLastSibling();
         _settingsPanel.gameObject.SetActive(false);
         ShowNextNotice(); // after the menu is up, so the popup sits on top
+        if (CampaignService.LapPromptPending) ShowLapFinished(); // a just-finished lap: offered once
     }
 
     private void Hide()
@@ -253,9 +258,13 @@ public class MainMenuController : MonoBehaviour
     }
 
     // CONTINUE: the pending song (if any) or the next uncompleted route song -> the same load + SongAnalysis path
-    // Song Selection uses (SongSelectionService + AddressableSongSource), without showing the selector.
+    // Song Selection uses (SongSelectionService + CatalogSongSource), without showing the selector.
     private System.Collections.IEnumerator ContinueRoutine()
     {
+        // Lap finished: CONTINUE starts the next lap directly (its prompt was already offered once).
+        // New lap waiting for its first song: CONTINUE opens Song Selection (BACK returns here, still pending).
+        if (CampaignService.LapFinished) { StartNewLapAndChoose(); yield break; }
+        if (CampaignService.FirstSongPending) { AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongSelection); yield break; }
         _continuing = true;
         System.Collections.Generic.List<UnityEngine.ResourceManagement.ResourceLocations.IResourceLocation> catalog = null;
         yield return SongProgression.LoadCatalog(list => catalog = list);
@@ -276,17 +285,20 @@ public class MainMenuController : MonoBehaviour
             yield break;
         }
 
-        // Same order as the selector PLAY: the Analyzing screen appears at once, the clip loads underneath.
-        AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongAnalysis);
+        // The NEW selection is recorded FIRST (a catalog selection loads nothing — the readiness barrier does),
+        // and only then SongAnalysis is entered: entering it while the previous song was still the selection
+        // made the preparation start on that old song, which the new selection then superseded.
         _songService ??= GetComponent<SongSelectionService>() ?? gameObject.AddComponent<SongSelectionService>();
-        yield return _songService.SelectSong(new AddressableSongSource(location), null, ok =>
-        {
-            if (ok) return;
-            Debug.LogWarning($"[MainMenuController] CONTINUE: failed to load '{songId}' - back to Main Menu.");
-            AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu);
-            SetMenuStatus(Loc.Get("SongSelection.LoadFailed"));
-        });
+        bool selected = false;
+        yield return _songService.SelectSong(new CatalogSongSource(songId, SongCatalog.DisplayNameFor(songId)), null, ok => selected = ok);
         _continuing = false;
+        if (!selected)
+        {
+            Debug.LogWarning($"[MainMenuController] CONTINUE: '{songId}' could not be selected - staying on the Main Menu.");
+            SetMenuStatus(Loc.Get("SongSelection.LoadFailed"));
+            yield break;
+        }
+        AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongAnalysis);
     }
 
     private void OnRivalsClicked() => RivalCollectionController.Instance?.Open();
@@ -308,8 +320,9 @@ public class MainMenuController : MonoBehaviour
         switch (notice)
         {
             case CampaignService.Notice.CampaignCompleted:
+                CampaignService.MarkLapPromptShown(); // this notice IS the finished lap's prompt
                 Popup.Show(Loc.Get("Campaign.CompletedTitle"), Loc.Get("Campaign.CompletedBody"), silhouette, Color.black,
-                           Loc.Get("Campaign.NewLap"), StartNewLapAndContinue, Loc.Get("Campaign.Later"), ShowNextNotice);
+                           Loc.Get("Campaign.NewLap"), StartNewLapAndChoose, Loc.Get("Campaign.Later"), ShowNextNotice);
                 break;
             case CampaignService.Notice.BossUnlocked:
                 Popup.Show(Loc.Get("Campaign.BossUnlockedTitle"), Loc.Get("Campaign.BossUnlockedBody"), silhouette, Color.white,
@@ -326,21 +339,24 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
-    /// <summary>CONTINUE with the lap over: celebrate and offer a new lap (records and cards are kept).</summary>
+    /// <summary>A finished lap, shown ONCE (on the menu after the lap's last win): next lap or later. "Later" leaves the
+    /// campaign pending; CONTINUE then starts the next lap without asking again (CampaignService.LapPromptPending).</summary>
     private void ShowLapFinished()
     {
-        if (Popup == null) return;
+        if (Popup == null || Popup.IsOpen) return;
         if (CampaignService.PendingNotice() == CampaignService.Notice.CampaignCompleted) { ShowNextNotice(); return; }
+        CampaignService.MarkLapPromptShown();
         var data = CampaignService.Data;
         Popup.Show(Loc.Get("Campaign.LapDoneTitle", data != null ? data.lap.ToString() : "1"), Loc.Get("Campaign.LapDoneBody"), null, Color.white,
-                   Loc.Get("Campaign.NewLap"), StartNewLapAndContinue, Loc.Get("Campaign.Later"), null);
+                   Loc.Get("Campaign.NewLap"), StartNewLapAndChoose, Loc.Get("Campaign.Later"), null);
     }
 
-    private void StartNewLapAndContinue()
+    /// <summary>Starts the next lap (once — guarded in CampaignService) and opens Song Selection for its first song.</summary>
+    private void StartNewLapAndChoose()
     {
         CampaignService.StartNewLap();
         RefreshProgressUI();
-        if (!_continuing) StartCoroutine(ContinueRoutine());
+        if (CampaignService.FirstSongPending) AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongSelection);
     }
 
     private void OnSettingsClicked()
@@ -356,6 +372,13 @@ public class MainMenuController : MonoBehaviour
 #else
         Application.Quit();
 #endif
+    }
+
+    private static void BindChannel(UnityEngine.UI.Slider slider, GameAudioChannel channel)
+    {
+        if (slider == null || GameAudio.Instance == null) return;
+        slider.value = GameAudio.Instance.GetVolume(channel);
+        slider.onValueChanged.AddListener(v => GameAudio.Instance?.SetVolume(channel, v));
     }
 
     private void OnVolumeChanged(float value)

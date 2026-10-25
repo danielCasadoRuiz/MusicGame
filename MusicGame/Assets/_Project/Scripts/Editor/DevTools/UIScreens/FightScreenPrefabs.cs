@@ -26,6 +26,24 @@ public static class FightScreenPrefabs
     // PortraitSize + PortraitGap (FightController's former BuildPortrait shift, baked).
     private const float PortraitSize = 70f, PortraitGap = 12f, PortraitShift = PortraitSize + PortraitGap;
 
+    /// <summary>"PERFECT!" under each health bar, on the row of the round pips but at the bar's other end (never over
+    /// them). Hidden; FightController shows the winner's one on a perfect KO round. Also used to add them to the
+    /// existing hand-edited prefab (FightHudPerfectSetup).</summary>
+    public static void BuildPerfectTexts(RectTransform bar, FightHudView view)
+    {
+        Vector2 topLeft = new Vector2(0f, 1f), topRight = new Vector2(1f, 1f);
+        TextMeshProUGUI Make(string name, Vector2 anchor, Vector2 pos, TextAlignmentOptions align)
+        {
+            var t = UIScreenPrefabContext.Localized(UIFactory.CreateText(name, bar, "PERFECT!", 24, new Color(1f, 0.83f, 0.22f), align, FontStyles.Bold | FontStyles.Italic), "Eval.Perfect");
+            UIFactory.SetBox(t.rectTransform, anchor, anchor, anchor, pos, new Vector2(320f, 28f));
+            t.raycastTarget = false;
+            t.gameObject.SetActive(false);
+            return t;
+        }
+        view.playerPerfectText = Make("PlayerPerfect", topLeft, new Vector2(20f + PortraitShift, -62f), TextAlignmentOptions.TopRight);
+        view.opponentPerfectText = Make("OpponentPerfect", topRight, new Vector2(-90f - PortraitShift, -62f), TextAlignmentOptions.TopLeft);
+    }
+
     public static void Build(UIScreenPrefabContext ctx)
     {
         ctx.Library.opponentCell = ctx.Prefab<OpponentCellView>($"{UIScreenPrefabContext.ItemsFolder}/OpponentCell.prefab", BuildOpponentCell);
@@ -103,6 +121,8 @@ public static class FightScreenPrefabs
         view.opponentRoundPipsText = UIFactory.CreateText("OpponentRoundPips", bar, "", 16, Color.white, TextAlignmentOptions.TopRight, FontStyles.Bold);
         UIFactory.SetBox(view.opponentRoundPipsText.rectTransform, topRight, topRight, topRight, new Vector2(-90f - PortraitShift, -64f), new Vector2(320f, 20f));
         view.opponentRoundPipsText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+
+        BuildPerfectTexts(bar, view);
 
         // Timer — center.
         view.timerText = UIFactory.CreateText("Timer", bar, "", 28, Color.white, TextAlignmentOptions.Top, FontStyles.Bold);

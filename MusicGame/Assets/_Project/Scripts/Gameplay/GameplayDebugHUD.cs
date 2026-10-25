@@ -103,6 +103,7 @@ public class GameplayDebugHUD : MonoBehaviour
         y = DrawSection(X, y, W, "MACRO EVENTS (recent)",  DrawMacroLog);
         y = DrawSection(X, y, W, "MUSIC ENVIRONMENT",      DrawEnvironment);
         y = DrawSection(X, y, W, "GAMEPLAY EVENTS", DrawEventStats);
+        y = DrawSection(X, y, W, "BONUS LAYOUT", DrawBonusLayout);
         y = DrawSection(X, y, W, "PERFORMANCE BY TYPE", DrawPerformance);
         y = DrawSection(X, y, W, "FIGHT STATS (preview)", DrawFightStats);
         y = DrawSection(X, y, W, "SYNC AUDIT",     DrawSyncAudit);
@@ -278,6 +279,15 @@ public class GameplayDebugHUD : MonoBehaviour
 
         foreach (var t in _profile.musicTags)
             Row(x, ref y, w, $"{t.tag,-18} {t.score:F3}  [{MusicTagClassifier.Classify(t.tag)}]");
+    }
+
+    // Stored layout identity + selection counts (BonusLayoutProvider / GameplayTimeline.Stats) and the
+    // listening-click mode (BonusDiagnostics, F7).
+    private void DrawBonusLayout(float x, ref float y, float w)
+    {
+        Row(x, ref y, w, $"{BonusLayoutProvider.LastOutcome?.ToString() ?? "—"}  {BonusLayoutProvider.LastKey}");
+        if (_manager?.Timeline != null) Row(x, ref y, w, _manager.Timeline.Stats.ToString());
+        Row(x, ref y, w, BonusDiagnostics.Summary);
     }
 
     private void DrawEventStats(float x, ref float y, float w)

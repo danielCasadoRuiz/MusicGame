@@ -68,6 +68,7 @@ public class SongSelectionController : MonoBehaviour
 
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
     private System.Action<ThemeChangedEvent> _onThemeChanged;
+    private System.Action<SongPreparationEvent> _onPreparation;
 
     private void Awake()
     {
@@ -90,7 +91,12 @@ public class SongSelectionController : MonoBehaviour
     {
         _onFlowStateChanged = e =>
         {
-            if (e.Current == GameFlowState.SongSelection) Show();
+            if (e.Current == GameFlowState.SongSelection)
+            {
+                // Only the Match Result's SELECT SONG (from Fight) keeps BACK pointed at the result.
+                if (e.Previous != GameFlowState.Fight) MatchResultReturn.Disarm();
+                Show();
+            }
             else if (e.Previous == GameFlowState.SongSelection) Hide();
         };
         EventBus.Subscribe(_onFlowStateChanged);
@@ -102,6 +108,17 @@ public class SongSelectionController : MonoBehaviour
         _onThemeChanged = _ => RefreshRowHighlight(CurrentAccentColor());
         EventBus.Subscribe(_onThemeChanged);
 
+        // A failed preparation comes back here: show WHY (each reason has its own recovery — retry with
+        // PLAY for network / load problems, a content update for incompatible content).
+        _onPreparation = e =>
+        {
+            if (e.Stage != SongPreparationStage.Failed || e.Error == SongContentError.Cancelled) return;
+            _isLoading = false;
+            RefreshPlayButtonInteractable();
+            SetStatus(Loc.Get(FailureKey(e.Error)), _errorStatusColor);
+        };
+        EventBus.Subscribe(_onPreparation);
+
         // Same UI-Scene-loads-asynchronously race as the other Frontend screens.
         if (AppBootstrap.Context != null && AppBootstrap.Context.AppFlow.CurrentState == GameFlowState.SongSelection)
             Show();
@@ -111,7 +128,16 @@ public class SongSelectionController : MonoBehaviour
     {
         EventBus.Unsubscribe(_onFlowStateChanged);
         EventBus.Unsubscribe(_onThemeChanged);
+        EventBus.Unsubscribe(_onPreparation);
     }
+
+    private static string FailureKey(SongContentError error) => error switch
+    {
+        SongContentError.DownloadFailed      => "SongSelection.DownloadFailed",
+        SongContentError.IndexUnavailable    => "SongSelection.DownloadFailed",
+        SongContentError.IncompatibleContent => "SongSelection.ContentIncompatible",
+        _                                    => "SongSelection.LoadFailed",
+    };
 
     // ── Prefab wiring — see SongSelectionView's own doc ──────────────────────────
 
@@ -134,7 +160,7 @@ public class SongSelectionController : MonoBehaviour
         _rowSelectedAlpha    = view.rowSelectedAlpha;
         _fallbackAccentColor = view.fallbackAccentColor;
 
-        view.backButton.onClick.AddListener(() => AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.MainMenu));
+        view.backButton.onClick.AddListener(() => { StopPreview(); MatchResultReturn.Back(); }); // result it came from, else Main Menu
         view.playButton.onClick.AddListener(OnPlayClicked);
         view.playYourSongButton.onClick.AddListener(OnPlayYourSongClicked);
 
@@ -156,13 +182,20 @@ public class SongSelectionController : MonoBehaviour
     // so the brief async gap is never actually visible.
     private IEnumerator LoadCatalogAndPopulate()
     {
+        // After the startup catalog check + the published index (SongCatalogService): a song added by a
+        // content update is listed with its stable id; a location nobody published an id for is skipped.
+        yield return SongCatalogService.EnsureReady();
         AsyncOperationHandle<IList<IResourceLocation>> handle =
             Addressables.LoadResourceLocationsAsync(SongLabel, typeof(AudioClip));
         yield return handle;
 
         _entries.Clear();
         if (handle.Status == AsyncOperationStatus.Succeeded)
-            _entries.AddRange(handle.Result);
+        {
+            foreach (var location in handle.Result)
+                if (SongProgression.IdOf(location) != null) _entries.Add(location);
+                else Debug.LogWarning($"[SongSelectionController] '{location.PrimaryKey}' has no published songId — not listed.");
+        }
         else
             Debug.LogWarning("[SongSelectionController] Failed to query the 'Song' Addressables label.");
         Addressables.Release(handle);
@@ -188,7 +221,7 @@ public class SongSelectionController : MonoBehaviour
             var row = UIPrefabLibrarySO.Spawn(lib != null ? lib.songRow : null, _songListRoot, "SongRow");
             if (row == null) break; // missing prefab: logged by Spawn
             row.name = "SongRow_" + i;
-            row.label.text = location.PrimaryKey; // the Addressable's own address — set once, in the Editor tool, to a friendly display name
+            row.label.text = SongCatalog.DisplayNameForAddress(location.PrimaryKey); // published display name (the address is the ASCII songId key)
 
             // Row BACKGROUND is deliberately NOT a ThemeColorReceiver — its color depends on
             // selection state (see RefreshRowHighlight), not just the theme.
@@ -202,35 +235,42 @@ public class SongSelectionController : MonoBehaviour
             row.playPauseButton.onClick.AddListener(() => OnCardPlayPause(index));
             _cardPlayButtons.Add(row.playPauseButton);
 
-            // Shown instead of PREVIEW once this song is completed (see RefreshCompletedRows).
-            _completedBadges.Add(row.completedBadge);
+            // Played check (history) — its own column between the name and PREVIEW (see RefreshCompletedRows).
+            _rows.Add(row);
             _cardPlayLabels.Add(row.playPauseLabel);
         }
         RefreshCompletedRows();
         RefreshPreviewButton();
     }
 
-    // ── Completed songs (PlayerProgress.completedSongIds) — visible, dimmed, not selectable ──────
+    // ── Row state: played history (check) vs use in THIS lap (selection) — two independent things ──────
 
     private readonly List<Button> _rowButtons = new();
     private readonly List<Button> _cardPlayButtons = new();
     private readonly List<TextMeshProUGUI> _rowLabels = new();
-    private readonly List<TextMeshProUGUI> _completedBadges = new();
+    private readonly List<SongRowView> _rows = new();
 
+    // Unavailable = already used (won) in THIS lap — the only thing that blocks selection. The check is the
+    // all-time played history (any lap, won or not): shown, never consulted for availability.
     private bool IsCompletedRow(int index) =>
-        index >= 0 && index < _entries.Count && SongProgression.IsCompleted(SongProgression.IdOf(_entries[index]));
+        index >= 0 && index < _entries.Count && SongProgression.IsUsedThisLap(SongProgression.IdOf(_entries[index]));
+    private bool IsPlayedRow(int index) =>
+        index >= 0 && index < _entries.Count && SongProgression.IsPlayed(SongProgression.IdOf(_entries[index]));
 
-    /// <summary>Completed songs stay in the list (progress through the catalog is visible) but are
-    /// dimmed, marked COMPLETED, and their row + PREVIEW are disabled. Re-run on every Show.</summary>
+    /// <summary>Every song stays in the list. The check is on once the song was ever played (dim otherwise); a song
+    /// used in this lap gets the disabled row style (dimmed name, row + PREVIEW not interactable). Re-run on every Show.</summary>
     private void RefreshCompletedRows()
     {
+        SongProgression.RefreshLapUse(SongProgression.Ids(_entries));
         for (int i = 0; i < _rowButtons.Count && i < _entries.Count; i++)
         {
             bool done = IsCompletedRow(i);
+            _rows[i].SetPlayed(done || IsPlayedRow(i));
             _rowButtons[i].interactable = !done;
-            _cardPlayButtons[i].gameObject.SetActive(!done);
-            _completedBadges[i].gameObject.SetActive(done);
-            _rowLabels[i].text = done ? $"<alpha=#66>{_entries[i].PrimaryKey}" : _entries[i].PrimaryKey;
+            // PREVIEW keeps its place (no layout jump); as before, a song used in this lap is not previewed.
+            _cardPlayButtons[i].interactable = !done;
+            string name = SongCatalog.DisplayNameForAddress(_entries[i].PrimaryKey);
+            _rowLabels[i].text = done ? $"<alpha=#66>{name}" : name;
         }
         if (IsCompletedRow(_selectedCatalogIndex)) { StopPreview(); _selectedCatalogIndex = -1; }
         RefreshRowHighlight(CurrentAccentColor());
@@ -378,6 +418,8 @@ public class SongSelectionController : MonoBehaviour
     {
         if (!HasSelection || _isLoading) return;
         StopPreview(); // the real run starts — never alongside a preview
+        MatchResultReturn.Disarm(); // a new song is played: the result screen is left for good
+        if (!_selectedLocalInfo.HasValue) CampaignService.MarkFirstSongChosen(); // the new lap's first song is chosen
 
         if (_selectedLocalInfo.HasValue)
         {
@@ -387,16 +429,12 @@ public class SongSelectionController : MonoBehaviour
             return;
         }
 
-        // Advance to SongAnalysis IMMEDIATELY — the Analyzing screen must appear the instant Play
-        // is pressed (AnalyzingScreenController shows itself as soon as this state is entered, not
-        // only once PreAnalysisStartedEvent fires), not after the catalog clip has finished loading
-        // from Addressables. GameSession.SelectedSong.Clip is still null at this point for a
-        // moment — SongAnalysisController's own BeginAnalysis() waits for it to appear before
-        // actually starting the FFT pass, so the "loading the clip" and "analyzing it" steps both
-        // happen visibly on the Analyzing screen instead of stalling Song Selection beforehand.
+        // The NEW selection is recorded FIRST and only then SongAnalysis is entered (same order as Main Menu
+        // CONTINUE / Next Song): a catalog selection loads nothing (CatalogSongSource completes in the same
+        // frame — the readiness barrier downloads/loads on the Analyzing screen), so the screen still appears
+        // the instant Play is pressed, and the preparation never starts on the previous song.
         _isLoading = true;
         RefreshPlayButtonInteractable();
-        AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongAnalysis);
 
         var location = _entries[_selectedCatalogIndex];
         // A manual choice is the player's new preference: future CONTINUE follows songs similar to it.
@@ -408,17 +446,17 @@ public class SongSelectionController : MonoBehaviour
         var pending = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.PendingRun : null;
         if (pending == null || pending.songId != songId || !RunAssignment.TryRestorePending(catalogIds, out _))
             RunAssignment.CreatePendingRun(songId);
-        StartCoroutine(_service.SelectSong(new AddressableSongSource(location), null, success =>
+        StartCoroutine(_service.SelectSong(new CatalogSongSource(songId, SongCatalog.DisplayNameFor(songId)), null, success =>
         {
             _isLoading = false;
             if (!success)
             {
-                // Loading failed after we already left Song Selection — bounce back to it instead
-                // of leaving the Analyzing screen stuck with nothing to analyze.
-                AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongSelection);
+                // Nothing selected: stay on Song Selection (it was never left) with the reason.
                 RefreshPlayButtonInteractable();
                 SetStatus(Loc.Get("SongSelection.LoadFailed"), _errorStatusColor);
+                return;
             }
+            AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongAnalysis);
         }));
     }
 }

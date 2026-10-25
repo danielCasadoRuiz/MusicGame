@@ -61,6 +61,7 @@ public static class RunAssignment
         var (opponent, level, tier) = PickOpponent(session);
         session.SetAssignedOpponent(opponent, level, tier);
         RunnerPickupLayout.ApplySessionOnly(); // new assignment → new (session-only) pickup distribution
+        RunnerDifficultyOverride.Clear();      // a local file is free play: no campaign position / difficulty
     }
 
     /// <summary>CONTINUE / next song: a VALID pending assignment wins (same song + same rival, the

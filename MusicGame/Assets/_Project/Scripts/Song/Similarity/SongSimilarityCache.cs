@@ -4,11 +4,14 @@ using UnityEngine;
 
 /// <summary>
 /// Where similarity vectors come from, in priority order:
+///   0. published index — SongCatalogIndexSO entries (remote content, SongCatalogService.RegisterPublished):
+///                       the vectors of the songs actually published, including songs added by a content
+///                       update after the player shipped;
 ///   1. baked catalog  — AppConfigSO.songSimilarity (SongSimilarityCatalogSO, Editor-precomputed for
 ///                       EVERY built-in playable song): the normal source, no play history needed;
 ///   2. runtime cache  — persistentDataPath/SongSimilarity/vectors.json, written after a FULL analysis
 ///                       of a catalog song that has NO baked vector (dev content / future content);
-///   3. lazy fallback  — an existing SongCache analysis JSON for that clip (no audio, no ML: only the
+///   3. lazy fallback  — the local binary analysis cache entry of that song (no audio, no ML: only the
 ///                       derived features are recomputed), then stored into (2). Not the normal case.
 /// Never runs a full audio analysis just to answer "what comes next?". Small (ids + ~66 floats each),
 /// kept apart from PlayerProgress (which stores ids only).
@@ -20,6 +23,7 @@ public static class SongSimilarityCache
 
     private static Dictionary<string, SongSimilarityVector> s_runtime;
     private static Dictionary<string, SongSimilarityVector> s_baked;
+    private static readonly Dictionary<string, SongSimilarityVector> s_published = new();
     private static readonly HashSet<string> s_lazyMisses = new();
 
     private static string FilePath => Path.Combine(Application.persistentDataPath, "SongSimilarity", "vectors.json");
@@ -28,14 +32,15 @@ public static class SongSimilarityCache
     {
         EnsureLoaded();
         if (!string.IsNullOrEmpty(songId) &&
-            ((s_baked.TryGetValue(songId, out vector) && vector.IsValid) ||
+            ((s_published.TryGetValue(songId, out vector) && vector.IsValid) ||
+             (s_baked.TryGetValue(songId, out vector) && vector.IsValid) ||
              (s_runtime.TryGetValue(songId, out vector) && vector.IsValid)))
             return true;
         vector = null;
         return false;
     }
 
-    /// <summary>TryGet, then the lazy SongCache fallback (attempted once per id per session).</summary>
+    /// <summary>TryGet, then the lazy analysis-cache fallback (attempted once per id per session).</summary>
     public static bool TryGetOrLazyBuild(string songId, out SongSimilarityVector vector)
     {
         if (TryGet(songId, out vector)) return true;
@@ -53,11 +58,22 @@ public static class SongSimilarityCache
         var v = SongSimilarityVector.Build(songId, profile);
         if (v == null) return;
         EnsureLoaded();
+        if (s_published.TryGetValue(songId, out var pub) && pub.IsValid) return; // published vector is authoritative
         if (s_baked.TryGetValue(songId, out var baked) && baked.IsValid) return; // shipped vector is authoritative
         if (s_runtime.TryGetValue(songId, out var old) && SameValues(old, v)) return;
         s_runtime[songId] = v;
         SaveRuntime();
         Debug.Log($"[SongSimilarity] Vector cached for '{songId}'.");
+    }
+
+    /// <summary>The published index's vectors (replaces the previous set: a content update may change them).</summary>
+    public static void RegisterPublished(IEnumerable<SongSimilarityVector> vectors)
+    {
+        s_published.Clear();
+        if (vectors != null)
+            foreach (var v in vectors)
+                if (v != null && !string.IsNullOrEmpty(v.songId) && v.IsValid) s_published[v.songId] = v;
+        s_lazyMisses.Clear();
     }
 
     // ── loading / saving ──────────────────────────────────────────────────────
@@ -104,31 +120,27 @@ public static class SongSimilarityCache
         return true;
     }
 
-    /// <summary>The SongCache JSON of a catalog song (SongCache names it "&lt;clip name&gt;_&lt;samples&gt;.json";
-    /// a playable song's address is its clip name, resolved from the stable songId). Derived features
-    /// recomputed. Null when absent.</summary>
-    public static SongProfile LoadCachedProfile(string songId, string clipName = null)
+    /// <summary>The local binary analysis cache entry of a catalog song (SongProfileCache, keyed by songId),
+    /// derived features recomputed. It is only checked against the CURRENT analysis params/pipeline: the
+    /// audio revision cannot be verified without the audio, which is acceptable for an approximate
+    /// similarity vector (never for gameplay). Null when absent or stale.</summary>
+    public static SongProfile LoadCachedProfile(string songId)
     {
-        clipName ??= SongCatalog.AddressForId(songId); // songId → address (= clip name for playable songs)
-        if (string.IsNullOrEmpty(clipName)) return null;
+        if (string.IsNullOrEmpty(songId)) return null;
         try
         {
-            string dir = Path.Combine(Application.persistentDataPath, "SongCache");
-            if (!Directory.Exists(dir)) return null;
-            foreach (var file in Directory.GetFiles(dir, "*.json"))
-            {
-                string name = Path.GetFileNameWithoutExtension(file);
-                int us = name.LastIndexOf('_');
-                if (us <= 0 || name.Substring(0, us) != clipName) continue;
-                var data = JsonUtility.FromJson<SongProfileData>(File.ReadAllText(file));
-                if (data == null || data.clipName != clipName) continue;
-                var profile = data.ToProfile();
-                var app = Resources.Load<AppConfigSO>("AppConfig");
-                AudioPreAnalyzer.ComputeDerivedFeatures(profile, app != null ? app.audioAnalysis : null);
-                return profile;
-            }
+            var app = Resources.Load<AppConfigSO>("AppConfig");
+            if (app == null || app.audioAnalysis == null) return null;
+            SongProfileCache.InitOnMainThread();
+            string file = SongProfileCache.FindAnyFor(songId);
+            if (file == null) return null;
+            byte[] bytes = File.ReadAllBytes(file);
+            var header = MusicGame.Audio.Analysis.ProfileBinary.ReadHeader(bytes, out _);
+            var current = MusicGame.Audio.Analysis.AnalysisParams.Create(SongAnalysisSnapshot.ToSettings(app.audioAnalysis));
+            if (header.pipelineVersion != MusicGame.Audio.Analysis.AnalysisVersions.Pipeline || header.paramsHash != current.Hash) return null;
+            return SongAnalysisPipeline.LoadProfile(bytes, new DerivedAnalysisSettings(app.audioAnalysis), out _);
         }
-        catch (System.Exception e) { Debug.LogWarning($"[SongSimilarity] SongCache read failed for '{songId}': {e.Message}"); }
+        catch (System.Exception e) { Debug.LogWarning($"[SongSimilarity] Cached profile read failed for '{songId}': {e.Message}"); }
         return null;
     }
 

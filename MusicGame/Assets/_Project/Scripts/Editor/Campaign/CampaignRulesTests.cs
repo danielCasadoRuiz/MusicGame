@@ -378,6 +378,25 @@ public static class CampaignRulesTests
         var cycle = new SongCycleData();
         Check(SongCycleModel.Consume(cycle, "song_A") && !SongCycleModel.Consume(cycle, "song_A") && cycle.consumedSongIds.Count == 1,
               "the same song won twice is consumed once");
+
+        // Song use is per LAP: a new lap = a new cycle, every song available again; the history is never the pool.
+        cycle.lap = 1;
+        int cycleBefore = cycle.cycle;
+        SongCycleModel.StartForLap(cycle, 2);
+        Check(cycle.lap == 2 && cycle.cycle == cycleBefore + 1 && cycle.consumedSongIds.Count == 0, "new lap: new cycle bound to it, no song used yet");
+
+        // Old save migration: only the songs WON in the current lap (from the position records) count as used.
+        var md = new CampaignProgressData { lap = 2 };
+        var pa = CampaignModel.Position(md, "T1", 1); pa.completed = true;
+        pa.lastCombat = new PhaseRecordData { has = true, valid = true, lap = 2, songId = "song_new" };
+        pa.bestCombat = new PhaseRecordData { has = true, valid = true, lap = 1, songId = "song_old" };
+        var pb = CampaignModel.Position(md, "T1", 2); pb.completed = true;
+        pb.lastCombat = new PhaseRecordData { has = true, valid = true, lap = 1, songId = "song_lap1" };
+        var old = new SongCycleData { cycle = 2, consumedSongIds = new List<string> { "song_lap1", "song_new", "song_end_of_lap1" } };
+        SongCycleModel.BindToCurrentLap(old, md, c);
+        Check(old.lap == 2 && old.consumedSongIds.Count == 1 && old.consumedSongIds[0] == "song_new",
+              "migration: this lap's won songs only (earlier laps / history are not 'used')");
+        Check(SongCycleModel.BindToCurrentLap(old, md, c) == null, "migration runs once");
     }
 
     // ── Save migration ───────────────────────────────────────────────────────

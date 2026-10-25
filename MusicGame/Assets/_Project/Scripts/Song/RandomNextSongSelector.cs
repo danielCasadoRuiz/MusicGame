@@ -19,7 +19,7 @@ public class RandomNextSongSelector : INextSongSelector
 
         var candidates = new List<IResourceLocation>(catalog.Count);
         foreach (var location in catalog)
-            if (location != null && location.PrimaryKey != previousDisplayName) candidates.Add(location);
+            if (location != null && SongProgression.IdOf(location) != previousDisplayName) candidates.Add(location); // previous = its songId
 
         // Every entry matched the previous song's key (shouldn't normally happen with a real
         // catalog) — fall back to the full catalog rather than returning null.

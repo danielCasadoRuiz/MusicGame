@@ -95,6 +95,14 @@ public class PlayerProgressService : MonoBehaviour
             }
         }
         else CampaignModel.Normalize(_data.campaign, campaign);
+
+        // v6: song use is per lap. An old cycle is rebuilt once from this lap's own records (never the history).
+        string rebuilt = SongCycleModel.BindToCurrentLap(_data.songCycle, _data.campaign, campaign);
+        if (rebuilt != null)
+        {
+            Debug.Log("[PlayerProgress] Song use bound to the current lap — " + rebuilt);
+            if (HasSave) Save();
+        }
     }
 
     /// <summary>Owned cards among `required` (non-linear collection: each version on its own).</summary>
@@ -234,6 +242,19 @@ public class PlayerProgressService : MonoBehaviour
         _data.completedSongIds.Add(songId);
         Debug.Log($"[PlayerProgress] Song completed: '{songId}' ({_data.completedSongIds.Count} total)");
         if (save) Changed("song");
+        return true;
+    }
+
+    public IReadOnlyList<string> PlayedSongIds => _data.playedSongIds;
+    /// <summary>Played at least once, in any lap (Song Selection's check) — never decides availability.</summary>
+    public bool IsSongPlayed(string songId) => !string.IsNullOrEmpty(songId) && _data.playedSongIds.Contains(songId);
+
+    /// <summary>Adds a playable song to the played history (the Runner finished). `save` false lets the caller batch it.</summary>
+    public bool MarkSongPlayed(string songId, bool save = true)
+    {
+        if (string.IsNullOrEmpty(songId) || _data.playedSongIds.Contains(songId)) return false;
+        _data.playedSongIds.Add(songId);
+        if (save) Changed("song played");
         return true;
     }
 

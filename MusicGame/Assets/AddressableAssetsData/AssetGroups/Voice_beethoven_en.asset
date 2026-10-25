@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Voice_beethoven_en
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Voice_beethoven_en
+  m_GUID: 4cf3e578624fa2948a3e5bb87a485d99
+  m_SerializeEntries:
+  - m_GUID: dc56620726ab8b54787528ef5ca6b858
+    m_Address: VoicePack/beethoven/en
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - VoiceLang_en
+    - VoicePack
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a4cc0dfc618f344aaae658dde9bb725, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: bfbfd79afd097bf4a9fab49124044a4b, type: 2}
+    - {fileID: 11400000, guid: a2bcc4a6117c5e642b14a201071fbb71, type: 2}

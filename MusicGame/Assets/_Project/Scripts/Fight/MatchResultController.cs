@@ -54,6 +54,8 @@ public class MatchResultController : MonoBehaviour
     private MatchResultView _view;   // the spawned MatchResult.prefab instance
     private RectTransform   _root;
     private TextMeshProUGUI _titleText;
+    private TextMeshProUGUI _perfectBanner;
+    private Coroutine       _perfectRoutine;
 
     private Button          _continueButton;
     private Button          _selectSongButton; // won match only: choose the next song manually (secondary to CONTINUE)
@@ -67,6 +69,10 @@ public class MatchResultController : MonoBehaviour
     private readonly IRewardedAdService _adService = new NotImplementedRewardedAdService();
 
     private MatchEndedEvent? _pendingMatchEnded;
+    // SELECT SONG: what this screen showed, kept to re-present it unchanged when Song Selection's BACK returns
+    // here (MatchResultReturn) — presentation only, nothing is re-evaluated or re-awarded.
+    private MatchEndedEvent? _returnMatchEnded;
+    private RivalVersionUnlockedEvent? _returnUnlock, _shownUnlock;
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
     private System.Action<MatchEndedEvent> _onMatchEnded;
     private System.Action<GameFlowStateChangedEvent> _onGameFlowChanged;
@@ -110,10 +116,22 @@ public class MatchResultController : MonoBehaviour
         // Cached the instant it arrives — FightMatchController publishes MatchEndedEvent BEFORE
         // requesting FightFlowState.MatchWon/MatchLost (see its own NotifyRoundEndDisplayComplete),
         // so this data is always ready by the time Show() below actually runs.
-        _onMatchEnded = e => _pendingMatchEnded = e;
+        _onMatchEnded = e => { _pendingMatchEnded = e; _returnMatchEnded = null; _returnUnlock = null; }; // a real new result
         _onFightFlowChanged = e =>
         {
-            if (e.Current == FightFlowState.MatchWon) Show(true);
+            if (e.Current == FightFlowState.MatchWon)
+            {
+                // Back from Song Selection (FightFlowController resumed straight at MatchWon): the same result.
+                if (_returnMatchEnded.HasValue && e.Previous == FightFlowState.MatchWon)
+                {
+                    _pendingMatchEnded = _returnMatchEnded;
+                    _pendingUnlock     = _returnUnlock;
+                    _returnMatchEnded  = null;
+                    _returnUnlock      = null;
+                    FightMusicController.Instance?.Lock(GameSession.Instance?.SelectedOpponentSong, GameSession.Instance?.SelectedOpponentLevelConfig);
+                }
+                Show(true);
+            }
             else if (e.Current == FightFlowState.MatchLost) Show(false);
             // A fresh match starting over (see FightFlowController's own re-entry announcement) —
             // clean up so a stale result never lingers behind the next Opponent Selection.
@@ -145,6 +163,15 @@ public class MatchResultController : MonoBehaviour
         // for real the moment Runner is actually ready.
         _onGameFlowChanged = e =>
         {
+            // Replay Song whose Runner could not start (the barrier failed and went back to Song Selection):
+            // no GameStartedEvent will come — release this cover instead of waiting for it forever.
+            if (_awaitingReplaySongReady && e.Previous == GameFlowState.Gameplay && e.Current != GameFlowState.Gameplay)
+            {
+                _awaitingReplaySongReady = false;
+                SetReplaySongButtonsInteractable(true);
+                ExitFightUI();
+                return;
+            }
             if (e.Previous != GameFlowState.Fight) return;
             if (_awaitingReplaySongReady) return;
             ExitFightUI();
@@ -188,6 +215,7 @@ public class MatchResultController : MonoBehaviour
     {
         _root        = view.root != null ? view.root.GetComponent<RectTransform>() : (RectTransform)view.transform;
         _titleText   = view.titleText;
+        _perfectBanner = view.perfectBanner;
 
         _continueButton = view.continueButton;
         view.continueButton.onClick.AddListener(OnContinueClicked);
@@ -242,6 +270,8 @@ public class MatchResultController : MonoBehaviour
         _root.SetAsLastSibling();
 
         PopulateResults(playerWon, data);
+        ShowPerfect(false);
+        _shownUnlock   = _pendingUnlock;
         _pendingUnlock = null; // shown once; a repeat victory over the same version never sets it
         BeginInputGuard();
     }
@@ -328,9 +358,16 @@ public class MatchResultController : MonoBehaviour
         AddUnlock(p);
     }
 
+    // PERFECT is announced per ROUND (FightController: a KO round won with a full bar), never at the end of the match.
+    private void ShowPerfect(bool show)
+    {
+        if (_perfectBanner != null) _perfectBanner.gameObject.SetActive(false);
+    }
+
     private void Hide()
     {
         EndInputGuard();
+        ShowPerfect(false);
         _root.gameObject.SetActive(false);
     }
 
@@ -469,6 +506,9 @@ public class MatchResultController : MonoBehaviour
     // its pendingRun already cleared (FightMatchController), so nothing is abandoned here.
     private void OnSelectSongClicked()
     {
+        _returnMatchEnded = _pendingMatchEnded;
+        _returnUnlock     = _shownUnlock;
+        MatchResultReturn.Arm(); // Song Selection's BACK returns to this result
         Hide();
         FightMusicController.Instance?.Stop();
         AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongSelection);

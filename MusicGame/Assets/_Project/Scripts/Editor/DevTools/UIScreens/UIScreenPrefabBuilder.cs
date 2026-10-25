@@ -58,6 +58,7 @@ public static class UIScreenPrefabBuilder
         Run(ctx, "Fight", FightScreenPrefabs.Build);
         Run(ctx, "Results", ResultsScreenPrefabs.Build);
         Run(ctx, "Runner", RunnerScreenPrefabs.Build);
+        Run(ctx, "Help", HelpScreenPrefabs.Build);   // after Fight / Runner: it patches FightHud, PauseMenu, LiveHud
 
         EditorUtility.SetDirty(lib);
         AssetDatabase.SaveAssets();

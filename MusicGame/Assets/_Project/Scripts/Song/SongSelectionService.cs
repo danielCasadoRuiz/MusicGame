@@ -38,14 +38,16 @@ public class SongSelectionService : MonoBehaviour
         SelectedSongInfo? result = null;
         yield return source.Load(info => result = info);
 
-        if (result == null || result.Value.Clip == null)
+        // A catalog song is selected WITHOUT its clip (the readiness barrier prepares it); anything else
+        // (an imported file) must come with its decoded clip.
+        if (result == null || (result.Value.Clip == null && !result.Value.IsCatalogSong))
         {
             onComplete?.Invoke(false);
             yield break;
         }
 
         if (GameSession.Instance != null) GameSession.Instance.SelectedSong = result;
-        if (targetAudioSource != null) targetAudioSource.clip = result.Value.Clip;
+        if (targetAudioSource != null && result.Value.Clip != null) targetAudioSource.clip = result.Value.Clip;
 
         onComplete?.Invoke(true);
     }

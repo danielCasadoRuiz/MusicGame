@@ -37,6 +37,7 @@ public class SongPreviewPlayer : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(this); return; }
         Instance = this;
         _source = gameObject.AddComponent<AudioSource>();
+        GameAudio.RouteMusic(_source);
         _source.playOnAwake = false;
         _source.loop = false;
         var app = Resources.Load<AppConfigSO>("AppConfig");
@@ -84,7 +85,7 @@ public class SongPreviewPlayer : MonoBehaviour
         clip.LoadAudioData();
         while (clip.loadState == AudioDataLoadState.Loading) yield return null;
 
-        var (start, duration) = _config != null ? _config.Resolve(location.PrimaryKey, clip.length)
+        var (start, duration) = _config != null ? _config.Resolve(SongCatalog.IdForAddress(location.PrimaryKey) ?? location.PrimaryKey, clip.length)
                                                 : (Mathf.Max(0f, clip.length * 0.5f - 15f), Mathf.Min(30f, clip.length));
         PlayingRange = (start, duration);
         _source.clip = clip;

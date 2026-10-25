@@ -94,6 +94,17 @@ public static class PlayerProgressStore
         Debug.Log($"[PlayerProgressStore] Migrated save v{data.version} → v4 stable song ids ({mapped} completed id(s) remapped).");
     }
 
+    private static void SeedPlayedHistory(PlayerProgressData data)
+    {
+        void Add(string id) { if (!string.IsNullOrEmpty(id) && !data.playedSongIds.Contains(id)) data.playedSongIds.Add(id); }
+        foreach (var id in data.completedSongIds) Add(id);
+        foreach (var id in data.songCycle.consumedSongIds) Add(id);
+        foreach (var p in data.campaign.positions)
+            if (p != null)
+                foreach (var rec in new[] { p.bestRunner, p.lastRunner, p.bestCombat, p.lastCombat })
+                    if (rec != null && rec.has) Add(rec.songId);
+    }
+
     /// <summary>In-memory migration of a loaded save (also used by the batch rule tests).</summary>
     public static void Migrate(PlayerProgressData data)
     {
@@ -136,5 +147,10 @@ public static class PlayerProgressStore
         data.songCycle.consumedSongIds ??= new System.Collections.Generic.List<string>();
         data.pendingRun.levelId ??= "";
         if (data.version < 5) data.pendingRun.bossStage = -1; // JsonUtility leaves missing ints at 0 = boss stage 0
+        // v6 → v7: the played history did not exist — rebuilt from what the save already proves was played: songs won
+        // (completedSongIds), songs used this lap, and every runner / combat record's song (any lap).
+        data.playedSongIds ??= new System.Collections.Generic.List<string>();
+        if (data.version < 7) SeedPlayedHistory(data);
+        data.playedSongIds.RemoveAll(string.IsNullOrEmpty);
     }
 }

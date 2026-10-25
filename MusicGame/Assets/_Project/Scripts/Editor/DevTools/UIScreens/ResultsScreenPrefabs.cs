@@ -23,6 +23,20 @@ public static class ResultsScreenPrefabs
             () => BuildMatchResult(evaluationPanel));
     }
 
+    /// <summary>"PERFECT!" stamp beside the title (hidden until a perfect win; MatchResultController animates it).
+    /// Also used to add it to an existing hand-edited prefab (MatchResultPerfectSetup).</summary>
+    public static TextMeshProUGUI BuildPerfectBanner(RectTransform root)
+    {
+        var top = new Vector2(0.5f, 1f);
+        var t = UIScreenPrefabContext.Localized(
+            UIFactory.CreateText("PerfectBanner", root, "PERFECT!", 64, new Color(1f, 0.83f, 0.22f), TextAlignmentOptions.Center, FontStyles.Bold | FontStyles.Italic), "Eval.Perfect");
+        UIFactory.SetBox(t.rectTransform, top, top, top, new Vector2(330f, -30f), new Vector2(420f, 96f));
+        t.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 8f);
+        t.raycastTarget = false;
+        t.gameObject.SetActive(false);
+        return t;
+    }
+
     private static GameObject BuildMatchResult(EvaluationPanel evaluationPanelPrefab)
     {
         var go = UIScreenPrefabContext.Root("MatchResultScreen", Vector2.zero);
@@ -39,6 +53,7 @@ public static class ResultsScreenPrefabs
         view.titleText = UIFactory.CreateText("Title", root, "", 60, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
         UIFactory.SetBox(view.titleText.rectTransform, top, top, top, new Vector2(0f, -40f), new Vector2(900f, 84f));
         view.titleText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
+        view.perfectBanner = BuildPerfectBanner(root);
 
         // The single results list under the title (height follows its rows — ContentSizeFitter in the prefab).
         if (evaluationPanelPrefab != null)

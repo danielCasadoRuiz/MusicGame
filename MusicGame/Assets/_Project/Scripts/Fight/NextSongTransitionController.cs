@@ -14,7 +14,7 @@ using UnityEngine.ResourceManagement.ResourceLocations;
 ///      interface's own doc on why this is never a raw Random.Range call inline here), from the
 ///      exact same "Song" Addressables catalog SongSelectionController itself queries.
 ///   2. Writes it into GameSession.SelectedSong via the EXACT SAME SongSelectionService/
-///      AddressableSongSource SongSelectionController's own PLAY button already uses — never a
+///      CatalogSongSource SongSelectionController's own PLAY button already uses — never a
 ///      second, parallel song-loading path (task's own explicit "no dupliquis... càrrega d'àudio"
 ///      requirement).
 ///   3. Shows this cartela (already visible, with the level, the instant BeginWin is called — the
@@ -140,6 +140,7 @@ public class NextSongTransitionController : MonoBehaviour
             ? GameSession.Instance.SelectedSong.Value.SongId
             : null;
 
+        yield return SongCatalogService.EnsureReady(); // published identities, after the catalog check
         var catalog = new List<IResourceLocation>();
         AsyncOperationHandle<IList<IResourceLocation>> locationsHandle =
             Addressables.LoadResourceLocationsAsync(SongLabel, typeof(AudioClip));
@@ -164,7 +165,7 @@ public class NextSongTransitionController : MonoBehaviour
         }
 
         bool loaded = false;
-        yield return _service.SelectSong(new AddressableSongSource(nextLocation), null, success => loaded = success);
+        yield return _service.SelectSong(new CatalogSongSource(SongProgression.IdOf(nextLocation), SongCatalog.DisplayNameForAddress(nextLocation.PrimaryKey)), null, success => loaded = success);
 
         if (!loaded)
         {
@@ -175,7 +176,7 @@ public class NextSongTransitionController : MonoBehaviour
             yield break;
         }
 
-        _songNameText.text = nextLocation.PrimaryKey;
+        _songNameText.text = SongCatalog.DisplayNameForAddress(nextLocation.PrimaryKey);
 
         float hold = _config != null ? Mathf.Max(0f, _config.nextSongCardHoldDuration) : 1.6f;
         float fade = _config != null ? Mathf.Max(0.05f, _config.nextSongCardFadeDuration) : 0.35f;

@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29e0d69184de5364fafafebaaec86b7f, type: 3}
+  m_Name: Voice_announcer_m
+  m_EditorClassIdentifier: Assembly-CSharp::VoiceDefinition
+  voiceId: announcer_m
+  engine: qwen3-tts
+  description: 'Male, thirties, basketball arena hype man and PA announcer, deep powerful baritone with thick chest resonance, loud and commanding, street swagger, punchy rhythmic flow, elongated vowels, electrifying crowd energy, never nasal, never soft.'
+  referenceText: 'Ladies and gentlemen, get on your feet and make some noise! It''s showtime! Three! Two! One! Let''s goooo! Are you ready? I can''t hear you! Louder! Here we go, baby!'
+  referenceLanguage: en
+  seed: 7202
+  languageOverrides: []
+  extraLines:
+  - key: Announcer.Three
+    text: 'Three!'
+    seed: 404
+    language: 
+    engineLanguage: 
+    phrase: 'Three! Two! One! Tempo!'
+    segment: 0
+  - key: Announcer.Two
+    text: 'Two!'
+    seed: 404
+    language: 
+    engineLanguage: 
+    phrase: 'Three! Two! One! Tempo!'
+    segment: 1
+  - key: Announcer.One
+    text: 'One!'
+    seed: 404
+    language: 
+    engineLanguage: 
+    phrase: 'Three! Two! One! Tempo!'
+    segment: 2
+  - key: Announcer.Tempo
+    text: 'Tempo!'
+    seed: 404
+    language: 
+    engineLanguage: 
+    phrase: 'Three! Two! One! Tempo!'
+    segment: 3
+  - key: Announcer.Fury
+    text: 'Fury!'
+    seed: 303
+    language: 
+    engineLanguage: 
+    phrase: 'Three! Two! One! Fyury!'
+    segment: 3
+  - key: Announcer.Perfect
+    text: 'Perfect!'
+    seed: 404
+    language: 
+    engineLanguage: 
+    phrase: 
+    segment: 0
+  - key: Announcer.Three
+    text: 'Tres!'
+    seed: 831
+    language: ca
+    engineLanguage: es
+    phrase: '¡Tres! ¡Dos! ¡U!'
+    segment: 0
+    maxSeconds: 0
+  - key: Announcer.Two
+    text: 'Dos!'
+    seed: 831
+    language: ca
+    engineLanguage: es
+    phrase: '¡Tres! ¡Dos! ¡U!'
+    segment: 1
+    maxSeconds: 0
+  - key: Announcer.One
+    text: 'U!'
+    seed: 831
+    language: ca
+    engineLanguage: es
+    phrase: '¡Tres! ¡Dos! ¡U!'
+    segment: 2
+    maxSeconds: 0

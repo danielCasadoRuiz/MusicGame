@@ -1,0 +1,80 @@
+[
+ {
+  "id": "female_a",
+  "description": "Female, late thirties, charismatic arena announcer, full warm contralto with strong chest resonance, low speaking register, confident punchy video-game delivery, natural and adult, never high-pitched, never childlike, no falsetto.",
+  "seed": 4101,
+  "tempo": {
+   "file": "female_a_tempo.wav",
+   "duration": 2.96
+  },
+  "fury": {
+   "file": "female_a_fury.wav",
+   "duration": 0.8
+  },
+  "f0_median_hz": 368.0
+ },
+ {
+  "id": "female_b",
+  "description": "Female, forties, sports broadcast and fighting-game announcer, deep husky alto voice with body and a little grit, strong breath support, commanding hype energy, crisp consonants, grounded mature tone, no squeaky or girlish sound.",
+  "seed": 4202,
+  "tempo": {
+   "file": "female_b_tempo.wav",
+   "duration": 3.016
+  },
+  "fury": {
+   "file": "female_b_fury.wav",
+   "duration": 0.614
+  },
+  "f0_median_hz": 387.6
+ },
+ {
+  "id": "female_c",
+  "description": "Female, thirties, esports arena host, rich mezzo-contralto, powerful and rhythmic, big stadium energy, relaxed low pitch, natural adult performance, not cartoonish, not shrill.",
+  "seed": 4303,
+  "tempo": {
+   "file": "female_c_tempo.wav",
+   "duration": 2.658
+  },
+  "fury": {
+   "file": "female_c_fury.wav",
+   "duration": 0.588
+  },
+  "f0_median_hz": 355.5
+ },
+ {
+  "id": "male_b",
+  "description": "Male, forties, fighting-game announcer, deep resonant bass-baritone with a slight rasp, huge hype energy, rhythmic punchy delivery, natural adult performance, not cartoonish.",
+  "seed": 4404,
+  "tempo": {
+   "file": "male_b_tempo.wav",
+   "duration": 2.099
+  },
+  "fury": {
+   "file": "male_b_fury.wav",
+   "duration": 0.986
+  },
+  "f0_median_hz": 285.4
+ },
+ {
+  "id": "male_c",
+  "description": "Male, thirties, arena announcer, warm powerful baritone, bright energetic attack, rhythmic and bold, crisp consonants, natural video-game hype, no exaggerated growl.",
+  "seed": 4505,
+  "tempo": {
+   "file": "male_c_tempo.wav",
+   "duration": 2.88
+  },
+  "fury": {
+   "file": "male_c_fury.wav",
+   "duration": 0.998
+  },
+  "f0_median_hz": 396.7
+ },
+ {
+  "id": "compare:reference_20672b39.wav",
+  "f0_median_hz": 387.6
+ },
+ {
+  "id": "compare:reference_8a59a7ff.wav",
+  "f0_median_hz": 290.4
+ }
+]

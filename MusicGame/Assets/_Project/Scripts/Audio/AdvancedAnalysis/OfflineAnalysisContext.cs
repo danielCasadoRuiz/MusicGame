@@ -1,11 +1,11 @@
 /// <summary>
 /// Shared read-only context passed to every IOfflineAnalyzer.
 /// Contains all FFT-derived per-frame data and song-level metadata.
-/// Built by AudioPreAnalyzer after the main analysis loop.
+/// Built by SongProfileDerived.Compute from a profile's RAW arrays (read-only).
 /// </summary>
 public class OfflineAnalysisContext
 {
-    public AudioAnalysisConfig Config;
+    public DerivedAnalysisSettings Config; // immutable snapshot (safe on a worker thread)
 
     // ── Song metadata ─────────────────────────────────────────────────────────
     public int   SampleRate;

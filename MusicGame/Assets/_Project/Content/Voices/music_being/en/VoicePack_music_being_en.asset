@@ -1,0 +1,383 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1abea45d9a53b43b33e8c4a5bd67f9, type: 3}
+  m_Name: VoicePack_music_being_en
+  m_EditorClassIdentifier: Assembly-CSharp::ComposerVoicePack
+  composerId: music_being
+  language: en
+  engine: qwen3-tts
+  voiceDefinitionHash: 6c267f79a203cd03
+  lines:
+  - key: Composer.music_being.Dialogue.Defeat.L1.001
+    clip: {fileID: 8300000, guid: 0898a3c9235ffdb4896a0e1d84aeda9f, type: 3}
+    textHash: 74d87a892c450146
+    duration: 4.069
+  - key: Composer.music_being.Dialogue.Defeat.L1.002
+    clip: {fileID: 8300000, guid: a2bd5141d8986be49991c66fe033b353, type: 3}
+    textHash: 1c0545c957de699a
+    duration: 3.76
+  - key: Composer.music_being.Dialogue.Defeat.L1.003
+    clip: {fileID: 8300000, guid: 9667ea9ea66c3414d96bcbb87713fe88, type: 3}
+    textHash: 9316ad2a6ac8692f
+    duration: 4.062
+  - key: Composer.music_being.Dialogue.Defeat.L1.004
+    clip: {fileID: 8300000, guid: d0611a90d8074804b809326b6f413361, type: 3}
+    textHash: 981d2085e527e684
+    duration: 2.4
+  - key: Composer.music_being.Dialogue.Defeat.L1.005
+    clip: {fileID: 8300000, guid: 3c16801ade159144c881da5bd964d202, type: 3}
+    textHash: 5950afab78292a2f
+    duration: 2.741
+  - key: Composer.music_being.Dialogue.Defeat.L1.006
+    clip: {fileID: 8300000, guid: 51b90f831e4e5b8459de518f95b88a38, type: 3}
+    textHash: 2d3d67508504243c
+    duration: 3.886
+  - key: Composer.music_being.Dialogue.Defeat.L1.007
+    clip: {fileID: 8300000, guid: 890e6cac8c97aac4c8e451a2c6bbc022, type: 3}
+    textHash: 1ff6b94538217d54
+    duration: 4.289
+  - key: Composer.music_being.Dialogue.Defeat.L1.008
+    clip: {fileID: 8300000, guid: 24c2126e87464624db264b58928b15f4, type: 3}
+    textHash: 1e72ee2f4e618c50
+    duration: 4.689
+  - key: Composer.music_being.Dialogue.Defeat.L1.009
+    clip: {fileID: 8300000, guid: f4b716a0073c99947b267863510b69ae, type: 3}
+    textHash: b64c274fda1fdac0
+    duration: 3.216
+  - key: Composer.music_being.Dialogue.Defeat.L1.010
+    clip: {fileID: 8300000, guid: c29e4bc21e631d64c841f8e5671ba039, type: 3}
+    textHash: e187cb9451b98c57
+    duration: 3.44
+  - key: Composer.music_being.Dialogue.Defeat.L2.001
+    clip: {fileID: 8300000, guid: c68445f0d190b504db43bf6ad38999fb, type: 3}
+    textHash: 192c304de8720220
+    duration: 3.399
+  - key: Composer.music_being.Dialogue.Defeat.L2.002
+    clip: {fileID: 8300000, guid: a1613feb01aac4241893a1a0c264db6c, type: 3}
+    textHash: ae4494978a3aa248
+    duration: 3.574
+  - key: Composer.music_being.Dialogue.Defeat.L2.003
+    clip: {fileID: 8300000, guid: 3f6047b997e1bd6498950554a7ee3671, type: 3}
+    textHash: 4eee4053d114e86e
+    duration: 3.6
+  - key: Composer.music_being.Dialogue.Defeat.L2.004
+    clip: {fileID: 8300000, guid: 28eaa540d3e27dc4e9d53865506f517d, type: 3}
+    textHash: 8142e4fcd35fd5cf
+    duration: 4
+  - key: Composer.music_being.Dialogue.Defeat.L2.005
+    clip: {fileID: 8300000, guid: 5cf359684eedb9041afe3b59fad2ea32, type: 3}
+    textHash: ca6e1ecc8ca1d23e
+    duration: 3.04
+  - key: Composer.music_being.Dialogue.Defeat.L2.006
+    clip: {fileID: 8300000, guid: 8fb454fcb59c905439791d9df1b58e6d, type: 3}
+    textHash: 9c1e68c161a68ae6
+    duration: 4
+  - key: Composer.music_being.Dialogue.Defeat.L2.007
+    clip: {fileID: 8300000, guid: ed176a50f177be446b6634e576ba346d, type: 3}
+    textHash: 869673ef6cdd794f
+    duration: 3.052
+  - key: Composer.music_being.Dialogue.Defeat.L2.008
+    clip: {fileID: 8300000, guid: fc678ee101747fb4a92aa60c507ec333, type: 3}
+    textHash: f546feb75bbf0e53
+    duration: 3.285
+  - key: Composer.music_being.Dialogue.Defeat.L2.009
+    clip: {fileID: 8300000, guid: 5c6ddc8f9fc618b4e82db1b93d4905b2, type: 3}
+    textHash: e3bacfa3297a7765
+    duration: 3.121
+  - key: Composer.music_being.Dialogue.Defeat.L2.010
+    clip: {fileID: 8300000, guid: 84ecc600ff26a72488da8e3a3de02187, type: 3}
+    textHash: aa9f4164d891154b
+    duration: 3.392
+  - key: Composer.music_being.Dialogue.Defeat.L3.001
+    clip: {fileID: 8300000, guid: e7542e6a0f554bf4d87f9eb25319e8df, type: 3}
+    textHash: 2c8e8d4cb8c85882
+    duration: 3.595
+  - key: Composer.music_being.Dialogue.Defeat.L3.002
+    clip: {fileID: 8300000, guid: 76556cc2867809342b799645ddd6d54e, type: 3}
+    textHash: 3329db6c60691ad9
+    duration: 4.16
+  - key: Composer.music_being.Dialogue.Defeat.L3.003
+    clip: {fileID: 8300000, guid: 97aa5a371b3b82e42adbdae6c7882f23, type: 3}
+    textHash: 26789bcca23af6c5
+    duration: 4.225
+  - key: Composer.music_being.Dialogue.Defeat.L3.004
+    clip: {fileID: 8300000, guid: d49dc584374145c478efd46c8069fd65, type: 3}
+    textHash: a72feb19ae7c773a
+    duration: 4.553
+  - key: Composer.music_being.Dialogue.Defeat.L3.005
+    clip: {fileID: 8300000, guid: 8bc7f7403adae634c825b2a05365e1a5, type: 3}
+    textHash: 05d8ca8a70a6ac21
+    duration: 3.404
+  - key: Composer.music_being.Dialogue.Defeat.L3.006
+    clip: {fileID: 8300000, guid: c084f51a3fb55b2458abc732cb954602, type: 3}
+    textHash: 09577a459dcca16e
+    duration: 3.575
+  - key: Composer.music_being.Dialogue.Defeat.L3.007
+    clip: {fileID: 8300000, guid: dd8054557cf10ad41b33d261144a9201, type: 3}
+    textHash: 2bde90482a76ef99
+    duration: 4.098
+  - key: Composer.music_being.Dialogue.Defeat.L3.008
+    clip: {fileID: 8300000, guid: daf6f448027ec3a4d877b6fa21488080, type: 3}
+    textHash: 5e71a4250822f463
+    duration: 5.262
+  - key: Composer.music_being.Dialogue.Defeat.L3.009
+    clip: {fileID: 8300000, guid: f141ce2e971d1694d83aa56eda430792, type: 3}
+    textHash: a9a0962c250d3100
+    duration: 3.379
+  - key: Composer.music_being.Dialogue.Defeat.L3.010
+    clip: {fileID: 8300000, guid: aa03824049678954e92bd541e9099e2f, type: 3}
+    textHash: 05014bc0b4daca29
+    duration: 4.093
+  - key: Composer.music_being.Dialogue.Intro.L1.001
+    clip: {fileID: 8300000, guid: 3807d397127de8d49adaef70ed89adca, type: 3}
+    textHash: 75d2835f89a20bd2
+    duration: 4.508
+  - key: Composer.music_being.Dialogue.Intro.L1.002
+    clip: {fileID: 8300000, guid: af5d547e3713e6948b6de99cd942692d, type: 3}
+    textHash: 8c7ebcf4da912389
+    duration: 6.146
+  - key: Composer.music_being.Dialogue.Intro.L1.003
+    clip: {fileID: 8300000, guid: 135eca5a6a178824abf08f1ad5eb61e1, type: 3}
+    textHash: e9ccb1f4c8601708
+    duration: 4.766
+  - key: Composer.music_being.Dialogue.Intro.L1.004
+    clip: {fileID: 8300000, guid: 4846b95873ff2054da305654af103bf1, type: 3}
+    textHash: b7f53d37dd128c75
+    duration: 5.2
+  - key: Composer.music_being.Dialogue.Intro.L1.005
+    clip: {fileID: 8300000, guid: adf8edc8118653e44aaf4ecde565903a, type: 3}
+    textHash: 1213fa788e2abe2c
+    duration: 4.342
+  - key: Composer.music_being.Dialogue.Intro.L1.006
+    clip: {fileID: 8300000, guid: e6f186d980ce72a4dbb4596b70d8f794, type: 3}
+    textHash: 4385a96708f06a4a
+    duration: 3.691
+  - key: Composer.music_being.Dialogue.Intro.L1.007
+    clip: {fileID: 8300000, guid: 223a2908093d5084fbc9af3803093e57, type: 3}
+    textHash: 90fe8880b364b5ed
+    duration: 3.755
+  - key: Composer.music_being.Dialogue.Intro.L1.008
+    clip: {fileID: 8300000, guid: 73f93401b249c6d4cb965fd1c5f99504, type: 3}
+    textHash: 80587e143dcaa7ca
+    duration: 3.34
+  - key: Composer.music_being.Dialogue.Intro.L1.009
+    clip: {fileID: 8300000, guid: 960e2751060b6f943980a75df7801b90, type: 3}
+    textHash: fc9c86efbd865fc9
+    duration: 2.775
+  - key: Composer.music_being.Dialogue.Intro.L1.010
+    clip: {fileID: 8300000, guid: 2bf93069985cc1a42bfdf2cc565cbf1c, type: 3}
+    textHash: 53b41445404bdac6
+    duration: 4.219
+  - key: Composer.music_being.Dialogue.Intro.L2.001
+    clip: {fileID: 8300000, guid: c713c0326a3f2fe4a9503d450edbecd7, type: 3}
+    textHash: 8fab0dbe8c6a52bf
+    duration: 3.36
+  - key: Composer.music_being.Dialogue.Intro.L2.002
+    clip: {fileID: 8300000, guid: 2297e146e2109a441a535fbf721ee311, type: 3}
+    textHash: 326c88c1305b54e7
+    duration: 3.36
+  - key: Composer.music_being.Dialogue.Intro.L2.003
+    clip: {fileID: 8300000, guid: bb274c6c6bb89b549af468e8e009c39a, type: 3}
+    textHash: 962270d84c18d2ae
+    duration: 5.072
+  - key: Composer.music_being.Dialogue.Intro.L2.004
+    clip: {fileID: 8300000, guid: 0f2f057f109e38d4d959e76dc917de03, type: 3}
+    textHash: 2bb2b0b613f31ca9
+    duration: 3.586
+  - key: Composer.music_being.Dialogue.Intro.L2.005
+    clip: {fileID: 8300000, guid: db7d2583dc54a244986cc3a5aad50a54, type: 3}
+    textHash: fdb8cdb2008fa20d
+    duration: 3.679
+  - key: Composer.music_being.Dialogue.Intro.L2.006
+    clip: {fileID: 8300000, guid: 9d4cd946a6871064d9074085ccdd2199, type: 3}
+    textHash: 20193fb6f1d40ffb
+    duration: 3.053
+  - key: Composer.music_being.Dialogue.Intro.L2.007
+    clip: {fileID: 8300000, guid: d6e26eff7c0372c4d956a6e6d6e32443, type: 3}
+    textHash: df63fc3d598d703f
+    duration: 4.506
+  - key: Composer.music_being.Dialogue.Intro.L2.008
+    clip: {fileID: 8300000, guid: aa6063854a38e754ebad408eae9a9ae3, type: 3}
+    textHash: 91d5c52f57f645c2
+    duration: 3.49
+  - key: Composer.music_being.Dialogue.Intro.L2.009
+    clip: {fileID: 8300000, guid: e2eb29917c56b96479feaf45e1b7bd0f, type: 3}
+    textHash: c2f391ec7d613799
+    duration: 2.945
+  - key: Composer.music_being.Dialogue.Intro.L2.010
+    clip: {fileID: 8300000, guid: 67ea63c8596989e4083dc145f1cfb87a, type: 3}
+    textHash: 892f01cd59a84578
+    duration: 3.362
+  - key: Composer.music_being.Dialogue.Intro.L3.001
+    clip: {fileID: 8300000, guid: b60673f6b36c1fc4f9167d43fdebcb0b, type: 3}
+    textHash: f36c2fad0b1f2c2e
+    duration: 3.562
+  - key: Composer.music_being.Dialogue.Intro.L3.002
+    clip: {fileID: 8300000, guid: ae2f920453216dd488ace23bb32a3878, type: 3}
+    textHash: e3ad423241986032
+    duration: 3.916
+  - key: Composer.music_being.Dialogue.Intro.L3.003
+    clip: {fileID: 8300000, guid: 8ae39802b15d1174bafd991fb0d3e428, type: 3}
+    textHash: e2f7d7ba614b98e1
+    duration: 3.12
+  - key: Composer.music_being.Dialogue.Intro.L3.004
+    clip: {fileID: 8300000, guid: d45ce606bef4aa6499006f61e245926c, type: 3}
+    textHash: d2d35a0bce7ec3e9
+    duration: 3.791
+  - key: Composer.music_being.Dialogue.Intro.L3.005
+    clip: {fileID: 8300000, guid: cd530e34b6a1701449b4a3cf69c8f26b, type: 3}
+    textHash: 8a369ea3331ba6d6
+    duration: 4.187
+  - key: Composer.music_being.Dialogue.Intro.L3.006
+    clip: {fileID: 8300000, guid: 93cc2d7fd30c7e446a4578c6fb4c28ca, type: 3}
+    textHash: ddb2350225f0c7ae
+    duration: 4.217
+  - key: Composer.music_being.Dialogue.Intro.L3.007
+    clip: {fileID: 8300000, guid: e1e3561a256393646bdc062198448b3b, type: 3}
+    textHash: 3128fcadb84ac1c4
+    duration: 2.733
+  - key: Composer.music_being.Dialogue.Intro.L3.008
+    clip: {fileID: 8300000, guid: 5b6e9aeb12f70fd47ad4a46b4b066b81, type: 3}
+    textHash: 0aef2ea1d5a67fc2
+    duration: 4
+  - key: Composer.music_being.Dialogue.Intro.L3.009
+    clip: {fileID: 8300000, guid: 1c3091cb532bf2d4eaeb801fef79c1e6, type: 3}
+    textHash: e3405a44466b5c10
+    duration: 2.865
+  - key: Composer.music_being.Dialogue.Intro.L3.010
+    clip: {fileID: 8300000, guid: eb3becca077b11346894ffe09c24cfbf, type: 3}
+    textHash: 6b4b82ef777ddfa6
+    duration: 3.906
+  - key: Composer.music_being.Dialogue.Victory.L1.001
+    clip: {fileID: 8300000, guid: 3b9ebcd3092bac1418fa09674333246c, type: 3}
+    textHash: a8637034cc2dcb90
+    duration: 3.487
+  - key: Composer.music_being.Dialogue.Victory.L1.002
+    clip: {fileID: 8300000, guid: b653f040814f73c408d828870b0a4efe, type: 3}
+    textHash: f6f0f5dd1b3c11e1
+    duration: 3.012
+  - key: Composer.music_being.Dialogue.Victory.L1.003
+    clip: {fileID: 8300000, guid: ea908b2babdae4d41a30058d6fb67a30, type: 3}
+    textHash: e6bfa9c67ea7c142
+    duration: 2.96
+  - key: Composer.music_being.Dialogue.Victory.L1.004
+    clip: {fileID: 8300000, guid: 7312f9cf2c877034ead02020bef829d7, type: 3}
+    textHash: 0d5c912e0338dea5
+    duration: 1.52
+  - key: Composer.music_being.Dialogue.Victory.L1.005
+    clip: {fileID: 8300000, guid: 5e9971d99ad49c14eb6aa8d4b67fab87, type: 3}
+    textHash: 406a970321e21513
+    duration: 2.72
+  - key: Composer.music_being.Dialogue.Victory.L1.006
+    clip: {fileID: 8300000, guid: c3eb07290cb7fb64785fded01f3d8aa6, type: 3}
+    textHash: 399d57ff350d70b1
+    duration: 3.668
+  - key: Composer.music_being.Dialogue.Victory.L1.007
+    clip: {fileID: 8300000, guid: aa5308b28762ce642889dbc80bc72265, type: 3}
+    textHash: d3022fc2e4dae5a4
+    duration: 2.534
+  - key: Composer.music_being.Dialogue.Victory.L1.008
+    clip: {fileID: 8300000, guid: 73ee8046ab236674d98a93f16306aa8f, type: 3}
+    textHash: f6c9137231887803
+    duration: 2.921
+  - key: Composer.music_being.Dialogue.Victory.L1.009
+    clip: {fileID: 8300000, guid: dde0ebbfc62a7384a9c2864ef06b686a, type: 3}
+    textHash: 42cc6d085d0de886
+    duration: 4.244
+  - key: Composer.music_being.Dialogue.Victory.L1.010
+    clip: {fileID: 8300000, guid: 73c3390885c8e504692fefdf7851a0ba, type: 3}
+    textHash: 3de2d77f384bc355
+    duration: 3.387
+  - key: Composer.music_being.Dialogue.Victory.L2.001
+    clip: {fileID: 8300000, guid: 62efab19b270e794d843b97d178ff33e, type: 3}
+    textHash: e69fd8167773e258
+    duration: 3.558
+  - key: Composer.music_being.Dialogue.Victory.L2.002
+    clip: {fileID: 8300000, guid: f9a1c6a2f1e2cf04d86987f563d3ae3e, type: 3}
+    textHash: f0fd9d08796f2871
+    duration: 2.225
+  - key: Composer.music_being.Dialogue.Victory.L2.003
+    clip: {fileID: 8300000, guid: ed28305d8ce536847a694efcd63515bc, type: 3}
+    textHash: e5b41cd2a4ad0422
+    duration: 2.549
+  - key: Composer.music_being.Dialogue.Victory.L2.004
+    clip: {fileID: 8300000, guid: 4483cbb29227d1345b704d83777125d7, type: 3}
+    textHash: 1082939b7fea8517
+    duration: 3.227
+  - key: Composer.music_being.Dialogue.Victory.L2.005
+    clip: {fileID: 8300000, guid: 960d1afe3104e0840a0e8bae835fb35d, type: 3}
+    textHash: b6e3b39e545d25e9
+    duration: 4.427
+  - key: Composer.music_being.Dialogue.Victory.L2.006
+    clip: {fileID: 8300000, guid: 014c3a0fd6077ae438076d0abf65c737, type: 3}
+    textHash: 5fc19c2622347c89
+    duration: 2.8
+  - key: Composer.music_being.Dialogue.Victory.L2.007
+    clip: {fileID: 8300000, guid: 65fce9318756fa847a887b16eccc8ec6, type: 3}
+    textHash: ea8ab064c24d20fc
+    duration: 2.8
+  - key: Composer.music_being.Dialogue.Victory.L2.008
+    clip: {fileID: 8300000, guid: 73151babf7fd8b94487c942336abe77f, type: 3}
+    textHash: 6824abfa3df0b879
+    duration: 2.986
+  - key: Composer.music_being.Dialogue.Victory.L2.009
+    clip: {fileID: 8300000, guid: 52bda563390ab0a48a2ea6983da475f4, type: 3}
+    textHash: db0c18a261cdd23d
+    duration: 2.317
+  - key: Composer.music_being.Dialogue.Victory.L2.010
+    clip: {fileID: 8300000, guid: a51bb3b49227fe144a80c2cca062c666, type: 3}
+    textHash: 40e68bde3a513703
+    duration: 3.549
+  - key: Composer.music_being.Dialogue.Victory.L3.001
+    clip: {fileID: 8300000, guid: 02030d313e2169d44b9d85a976a76569, type: 3}
+    textHash: 668aaa54fd74c70c
+    duration: 3.491
+  - key: Composer.music_being.Dialogue.Victory.L3.002
+    clip: {fileID: 8300000, guid: dd52d3474c3eb4c49a8450c255b18b6b, type: 3}
+    textHash: 2202cd5d6a447be3
+    duration: 2.856
+  - key: Composer.music_being.Dialogue.Victory.L3.003
+    clip: {fileID: 8300000, guid: 4161e968d878cb846965ea523eded926, type: 3}
+    textHash: 6623d69a6935069a
+    duration: 2.791
+  - key: Composer.music_being.Dialogue.Victory.L3.004
+    clip: {fileID: 8300000, guid: 6e277f6903a94354aadaa2bc78538638, type: 3}
+    textHash: a8e9a2ee3774d2c1
+    duration: 3.203
+  - key: Composer.music_being.Dialogue.Victory.L3.005
+    clip: {fileID: 8300000, guid: 50413780974b7b14392de8a00831da97, type: 3}
+    textHash: 65a085159d2585b4
+    duration: 3.213
+  - key: Composer.music_being.Dialogue.Victory.L3.006
+    clip: {fileID: 8300000, guid: 7da647e5c40da1648a3e7227f5b8e998, type: 3}
+    textHash: a557f837aec81fdd
+    duration: 3.823
+  - key: Composer.music_being.Dialogue.Victory.L3.007
+    clip: {fileID: 8300000, guid: 31533fd2ee646f6428f5694cae4ca292, type: 3}
+    textHash: 66ac3b17b84ce483
+    duration: 2.24
+  - key: Composer.music_being.Dialogue.Victory.L3.008
+    clip: {fileID: 8300000, guid: 8f503876ee1bcfc46af9b647021ce8b3, type: 3}
+    textHash: ec82d41207173375
+    duration: 3.503
+  - key: Composer.music_being.Dialogue.Victory.L3.009
+    clip: {fileID: 8300000, guid: 8e6a26fb61ccbdd45a0cd49b231966de, type: 3}
+    textHash: 10889f09506945ac
+    duration: 3.657
+  - key: Composer.music_being.Dialogue.Victory.L3.010
+    clip: {fileID: 8300000, guid: 0a542595cb9532b48a514fc169d423b2, type: 3}
+    textHash: 629d77512050ceda
+    duration: 4.05
+  efforts:
+    hurt: {fileID: 0}
+    special: {fileID: 0}
+    defeat: {fileID: 0}

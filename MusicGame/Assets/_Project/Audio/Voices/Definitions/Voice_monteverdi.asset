@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29e0d69184de5364fafafebaaec86b7f, type: 3}
+  m_Name: Voice_monteverdi
+  m_EditorClassIdentifier: Assembly-CSharp::VoiceDefinition
+  voiceId: monteverdi
+  engine: qwen3-tts
+  description: Male, fifties, dramatic expressive baritone, theatrical and passionate,
+    declamatory like an opera narrator, sweeping emotion, rolling cadence.
+  referenceText: Behold the stage! Every word must sing, every silence must weep.
+    Tonight, my friend, we invent the drama all over again!
+  referenceLanguage: en
+  seed: 1222
+  languageOverrides: []
+  hurtTexts:
+  - Ahh!
+  - Ugh!
+  - Oh!
+  specialTexts:
+  - Behold!
+  - Haaah!
+  defeatTexts:
+  - Alas... the drama ends...
+  - Nooo...

@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1abea45d9a53b43b33e8c4a5bd67f9, type: 3}
+  m_Name: VoicePack_monteverdi_en
+  m_EditorClassIdentifier: Assembly-CSharp::ComposerVoicePack
+  composerId: monteverdi
+  language: en
+  engine: qwen3-tts
+  voiceDefinitionHash: 024da871c6383ddc
+  lines:
+  - key: Composer.monteverdi.Dialogue.Defeat.001
+    clip: {fileID: 8300000, guid: 4f830807c7c3b894eb32d95d2c74d6b2, type: 3}
+    textHash: 10677b619c7ffb35
+    duration: 5.12
+  - key: Composer.monteverdi.Dialogue.Defeat.002
+    clip: {fileID: 8300000, guid: c692d4646da5e074daf7491a3a6b3566, type: 3}
+    textHash: b226c302d85a8346
+    duration: 3.824
+  - key: Composer.monteverdi.Dialogue.Defeat.003
+    clip: {fileID: 8300000, guid: 614c3be313c24124497a9e9502f6d4b6, type: 3}
+    textHash: 27340cf663bcc17a
+    duration: 4.203
+  - key: Composer.monteverdi.Dialogue.Defeat.004
+    clip: {fileID: 8300000, guid: 10f293bd3f19f2846979d1c644957ba7, type: 3}
+    textHash: f549f52b4ac7a5a6
+    duration: 4.16
+  - key: Composer.monteverdi.Dialogue.Defeat.005
+    clip: {fileID: 8300000, guid: 8cd01a5a16561cd43b8def4ba7331513, type: 3}
+    textHash: 58d5bd41e5342b87
+    duration: 3.52
+  - key: Composer.monteverdi.Dialogue.Defeat.006
+    clip: {fileID: 8300000, guid: 3960d6d284f81c34bb5641679e774035, type: 3}
+    textHash: fb48316a7852be2f
+    duration: 4.303
+  - key: Composer.monteverdi.Dialogue.Defeat.007
+    clip: {fileID: 8300000, guid: b2bebbcdd80f4384691348a72c606de8, type: 3}
+    textHash: 2425ee13ffa7c75a
+    duration: 5.04
+  - key: Composer.monteverdi.Dialogue.Defeat.008
+    clip: {fileID: 8300000, guid: 783855ae531107c4097786aa7e3b51c8, type: 3}
+    textHash: 3ecfe0332ef0f10c
+    duration: 4.086
+  - key: Composer.monteverdi.Dialogue.Defeat.009
+    clip: {fileID: 8300000, guid: 84e847759a25cc24d879fd13d73daf3f, type: 3}
+    textHash: 831dd1450c8817cc
+    duration: 4.64
+  - key: Composer.monteverdi.Dialogue.Defeat.010
+    clip: {fileID: 8300000, guid: ff3c6e6034fe21a4bab9b9c5f4b30af4, type: 3}
+    textHash: 69f51ab5ae77e7db
+    duration: 5.12
+  - key: Composer.monteverdi.Dialogue.Intro.001
+    clip: {fileID: 8300000, guid: a8bd7731b22894f4cad8a53f5b5ef4a8, type: 3}
+    textHash: 42a167468785d33e
+    duration: 5.76
+  - key: Composer.monteverdi.Dialogue.Intro.002
+    clip: {fileID: 8300000, guid: 91d437a2f593ab94d979c55970d93bb8, type: 3}
+    textHash: 55ad97109cc8ad35
+    duration: 4.383
+  - key: Composer.monteverdi.Dialogue.Intro.003
+    clip: {fileID: 8300000, guid: 2df17d0539106d04f98852374472f04e, type: 3}
+    textHash: a088ab8dc46b1f5a
+    duration: 3.52
+  - key: Composer.monteverdi.Dialogue.Intro.004
+    clip: {fileID: 8300000, guid: e0fd4ebd4bc1af444900b6a2545f4389, type: 3}
+    textHash: 41190967a0c64851
+    duration: 4.4
+  - key: Composer.monteverdi.Dialogue.Intro.005
+    clip: {fileID: 8300000, guid: 39a818a6c01f3c7479cc6e1b1be88488, type: 3}
+    textHash: ad8154df74b94d86
+    duration: 4.24
+  - key: Composer.monteverdi.Dialogue.Intro.006
+    clip: {fileID: 8300000, guid: c248eb8c21b83214b953899e9d8200db, type: 3}
+    textHash: b0a15482b4550cb8
+    duration: 4.147
+  - key: Composer.monteverdi.Dialogue.Intro.007
+    clip: {fileID: 8300000, guid: 5dc0ed831a68e804b91c4b227172903d, type: 3}
+    textHash: 01cc475537aae938
+    duration: 4.16
+  - key: Composer.monteverdi.Dialogue.Intro.008
+    clip: {fileID: 8300000, guid: 1de15418557f4e249a2349d8bbd523fb, type: 3}
+    textHash: 5f52b6cb8438459e
+    duration: 3.485
+  - key: Composer.monteverdi.Dialogue.Intro.009
+    clip: {fileID: 8300000, guid: ccd53d4c2c925004e857d3e6b2b1f179, type: 3}
+    textHash: bac5a334892d9035
+    duration: 2.88
+  - key: Composer.monteverdi.Dialogue.Intro.010
+    clip: {fileID: 8300000, guid: 3f914acbc07e20046b48e7a6aa114331, type: 3}
+    textHash: 2e504cb4abf9ae21
+    duration: 3.76
+  - key: Composer.monteverdi.Dialogue.Victory.001
+    clip: {fileID: 8300000, guid: 86771814f93a85d4ba9c51e1fa7e0b9b, type: 3}
+    textHash: dfe3010ef5a7075f
+    duration: 3.646
+  - key: Composer.monteverdi.Dialogue.Victory.002
+    clip: {fileID: 8300000, guid: 6f2cf762a5b794f4b912d3100af97f5f, type: 3}
+    textHash: b357c617a2a007a4
+    duration: 2.837
+  - key: Composer.monteverdi.Dialogue.Victory.003
+    clip: {fileID: 8300000, guid: 933c3f16c850ac148a792486442a1415, type: 3}
+    textHash: eb4669cf2bb4db1c
+    duration: 3.68
+  - key: Composer.monteverdi.Dialogue.Victory.004
+    clip: {fileID: 8300000, guid: 25c83b177f16ef9488f5ade79a4984aa, type: 3}
+    textHash: b994a7a9b97b6eef
+    duration: 3.52
+  - key: Composer.monteverdi.Dialogue.Victory.005
+    clip: {fileID: 8300000, guid: 4dc0675ac8366984e964a640d3c428f5, type: 3}
+    textHash: 61d565afe25c9222
+    duration: 3.68
+  - key: Composer.monteverdi.Dialogue.Victory.006
+    clip: {fileID: 8300000, guid: d9fe98d11ca2119428cc5d697536cc88, type: 3}
+    textHash: 618ab3d0329d328f
+    duration: 3.28
+  - key: Composer.monteverdi.Dialogue.Victory.007
+    clip: {fileID: 8300000, guid: 15e4f8f64bb0b504ea14c207911c39f1, type: 3}
+    textHash: 978e8c8c264d7bf3
+    duration: 4.24
+  - key: Composer.monteverdi.Dialogue.Victory.008
+    clip: {fileID: 8300000, guid: ac77fbad9e7e4a74284822b64e4e9246, type: 3}
+    textHash: 177a02d6a8657b98
+    duration: 3.52
+  - key: Composer.monteverdi.Dialogue.Victory.009
+    clip: {fileID: 8300000, guid: d201477a61a8a1143b5efc3427b1e03b, type: 3}
+    textHash: da1a0b62b5ca9aad
+    duration: 3.879
+  - key: Composer.monteverdi.Dialogue.Victory.010
+    clip: {fileID: 8300000, guid: 219d226474d585545981755a3975ad10, type: 3}
+    textHash: e193a46158087e06
+    duration: 4.88
+  efforts:
+    hurt: {fileID: 0}
+    special: {fileID: 0}
+    defeat: {fileID: 0}

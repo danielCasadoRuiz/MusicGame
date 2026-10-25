@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class DynamicsAnalyzer : IOfflineAnalyzer
 {
-    public bool IsEnabled(AudioAnalysisConfig config)
+    public bool IsEnabled(DerivedAnalysisSettings config)
         => config.advancedEnabled && config.advancedDynamics;
 
     public void Analyze(OfflineAnalysisContext ctx, SongProfile profile)

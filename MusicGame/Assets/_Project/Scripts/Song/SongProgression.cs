@@ -36,6 +36,8 @@ public static class SongProgression
     /// <summary>The playable catalog's locations (the "Song" label).</summary>
     public static IEnumerator LoadCatalog(System.Action<List<IResourceLocation>> onLoaded)
     {
+        // Identities come from the PUBLISHED index, read only after the startup catalog check (never raced).
+        yield return SongCatalogService.EnsureReady();
         var list = new List<IResourceLocation>();
         AsyncOperationHandle<IList<IResourceLocation>> handle = Addressables.LoadResourceLocationsAsync(SongLabel, typeof(AudioClip));
         yield return handle;
@@ -73,8 +75,26 @@ public static class SongProgression
     /// <summary>Stable id of one loaded location (null if not in the catalog).</summary>
     public static string IdOf(IResourceLocation location) => location != null ? SongCatalog.IdForAddress(location.PrimaryKey) : null;
 
+    /// <summary>All-time history: completed in any lap (records / badge only — never decides availability).</summary>
     public static bool IsCompleted(string songId) =>
         PlayerProgressService.Instance != null && PlayerProgressService.Instance.IsSongCompleted(songId);
+
+    /// <summary>All-time PLAYED history (Runner finished, won or not): Song Selection's check only — never decides availability.</summary>
+    public static bool IsPlayed(string songId) =>
+        PlayerProgressService.Instance != null && PlayerProgressService.Instance.IsSongPlayed(songId);
+
+    /// <summary>Already won in the CURRENT lap (its song cycle): not available to choose / be assigned again.</summary>
+    public static bool IsUsedThisLap(string songId) =>
+        PlayerProgressService.Instance?.SongCycle?.consumedSongIds != null && PlayerProgressService.Instance.SongCycle.consumedSongIds.Contains(songId);
+
+    /// <summary>Applies the in-lap renewal (every playable song used → all available again) before listing them.</summary>
+    public static void RefreshLapUse(IReadOnlyList<string> catalogIds)
+    {
+        var progress = PlayerProgressService.Instance;
+        if (progress?.SongCycle == null || catalogIds == null || catalogIds.Count == 0) return;
+        SongCycleModel.Consumed(progress.SongCycle, catalogIds, out bool renewed);
+        if (renewed) { Debug.Log($"[SongProgression] Every playable song was used in this lap — all available again (cycle {progress.SongCycle.cycle})."); progress.Save(); }
+    }
 
     /// <summary>A MANUAL catalog choice: becomes the new preference seed; the route is rebuilt now
     /// around the seed + the remaining (uncompleted) songs.</summary>
@@ -157,11 +177,12 @@ public static class SongProgression
         foreach (var id in catalogIds)
             if (SongSimilarityCache.TryGetOrLazyBuild(id, out var v)) vectors[id] = v;
 
-        string signature = Signature(seed, catalogIds, vectors.ContainsKey);
+        string signature = Signature(seed, catalogIds, vectors.ContainsKey) + $"-c{progress.SongCycle?.cycle ?? 0}"; // new cycle ⇒ new route
         if (!force && progress.SongRoute.signature == signature && progress.SongRoute.songIds.Count > 0) return;
 
+        // The route covers the songs still available in THIS lap (not the all-time history).
         var remaining = new List<string>();
-        foreach (var id in catalogIds) if (!progress.IsSongCompleted(id)) remaining.Add(id);
+        foreach (var id in catalogIds) if (!IsUsedThisLap(id)) remaining.Add(id);
         var route = SongSimilarityService.BuildRoute(seed, remaining, id => vectors.TryGetValue(id, out var x) ? x : null,
                                                      new List<SongSimilarityVector>(vectors.Values));
         progress.SetSongRoute(route, signature);

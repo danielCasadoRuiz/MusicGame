@@ -15,6 +15,8 @@ public class MatchResultView : MonoBehaviour
 {
     public GameObject      root;
     public TextMeshProUGUI titleText;
+    [Tooltip("PERFECT! — won without the health bar ever losing anything (shown + animated by MatchResultController).")]
+    public TextMeshProUGUI perfectBanner;
 
     [Header("Win only")]
     public Button          continueButton;

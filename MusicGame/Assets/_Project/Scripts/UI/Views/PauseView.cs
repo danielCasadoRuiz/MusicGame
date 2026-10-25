@@ -33,4 +33,8 @@ public class PauseView : MonoBehaviour
     [Tooltip("Optional — if left empty the icon Image is simply hidden and only the text switches.")]
     public Sprite      thirdPersonIcon;
     public Sprite      firstPersonIcon;
+
+    [Header("Help: the bonuses section of the pause (HelpScreenController)")]
+    public Button bonusHelpButton;
+    public TextMeshProUGUI bonusHelpButtonLabel;
 }

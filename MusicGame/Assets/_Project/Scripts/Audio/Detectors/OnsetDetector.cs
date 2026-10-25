@@ -6,8 +6,8 @@ public class OnsetDetector : IAudioDetector
 
     private float       _threshold;
     private float       _cooldown;
-    private float       _lastTime;
-    private float[]     _prevSpectrum;
+    private float       _lastTime = float.NegativeInfinity; // clip time of the last fire
+    private float[]     _prevSpectrum;                      // null right after a Reset
     private SongProfile _profile;
 
     public void Initialize(AudioAnalysisConfig config)
@@ -18,14 +18,22 @@ public class OnsetDetector : IAudioDetector
 
     public void SetSongProfile(SongProfile profile) => _profile = profile;
 
+    public void Reset()
+    {
+        _lastTime     = float.NegativeInfinity;
+        _prevSpectrum = null;
+    }
+
     public void Analyze(AudioData data)
     {
-        if (_prevSpectrum == null)
+        if (_prevSpectrum == null || _prevSpectrum.Length != data.spectrum.Length)
         {
             _prevSpectrum = (float[])data.spectrum.Clone();
             return;
         }
 
+        // The previous spectrum is updated every frame (cooldown included); the cooldown only
+        // gates firing.
         float flux = 0f;
         for (int i = 0; i < data.spectrum.Length; i++)
         {
@@ -37,14 +45,15 @@ public class OnsetDetector : IAudioDetector
         float threshold = _threshold;
         if (_profile != null)
         {
-            float adapted = _profile.GetEnergyAt(data.timestamp) * 2f;
+            // SongProfile is indexed by CLIP time (AudioData.clipTime, from timeSamples).
+            float adapted = _profile.GetEnergyAt(data.clipTime) * 2f;
             if (adapted > threshold) threshold = adapted;
         }
 
-        if (flux > threshold && data.timestamp - _lastTime > _cooldown)
+        if (flux > threshold && data.clipTime - _lastTime > _cooldown)
         {
-            _lastTime = data.timestamp;
-            EventBus.Publish(new OnsetDetectedEvent { Strength = flux, Time = data.timestamp });
+            _lastTime = data.clipTime;
+            EventBus.Publish(new OnsetDetectedEvent { Strength = flux, Time = data.clipTime });
         }
     }
 }

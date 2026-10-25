@@ -63,7 +63,7 @@ public static class UIPlaymodeSmokeTests
     private static SongRowView FirstPlayableRow() =>
         UnityEngine.Object.FindObjectsByType<SongRowView>(FindObjectsSortMode.None)
             .OrderBy(r => r.transform.GetSiblingIndex())
-            .First(r => r.completedBadge == null || !r.completedBadge.gameObject.activeSelf);
+            .First(r => r.button.interactable && !r.Played);
 
     private static readonly string[] Overlays =
     {

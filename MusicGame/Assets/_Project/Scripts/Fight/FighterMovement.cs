@@ -44,9 +44,8 @@ using UnityEngine;
 /// exists anywhere else. Sidestep/SideWalk reuse the exact same CanMove gate.
 ///
 /// SPEED: FightArenaConfig.baseMovementSpeed (scaled by runSpeedMultiplier/airControlMultiplier as
-/// appropriate) is the only tunable this phase — not yet scaled by FighterStats.Speed (see
-/// SpeedMultiplier's own doc: "no vull començar a balancejar FightStats" per an earlier phase's own
-/// scope note, still honored here). Nothing here hardcodes Punch/Kick-specific numbers.
+/// appropriate) × SpeedMultiplier — the fighter's own Agility through FightCombatBalanceConfig.agilityToMoveSpeed
+/// (the runner build decides how fast the player moves). Nothing here hardcodes Punch/Kick-specific numbers.
 /// </summary>
 public class FighterMovement : MonoBehaviour
 {
@@ -105,9 +104,15 @@ public class FighterMovement : MonoBehaviour
     // ── SideWalk — continuous while armed; see HandleVerticalDirection's own doc ─────────────────
     private int _sideWalkDirection; // -1 / 0 / +1, along _actor.SideXZ
 
-    /// <summary>Not read by anything yet — the seam FighterStats.Speed would multiply once real
-    /// combat balancing exists (see class doc). Always 1 this phase.</summary>
-    public float SpeedMultiplier { get; set; } = 1f;
+    /// <summary>Movement speed from this fighter's OWN Agility (FightCombatBalanceConfig.agilityToMoveSpeed, clamped):
+    /// multiplies walk / backpedal / run / side-walk. Read live from the actor's build every frame, so nothing can leave
+    /// it stale (round changes, Fight Again). Dashes, lunges and knockback keep their fixed speeds.</summary>
+    public float SpeedMultiplier =>
+        _actor != null && Balance != null ? Balance.ComputeModifiers(_actor.BuildStats).MoveSpeedMultiplier : 1f;
+
+    private static FightCombatBalanceConfig s_balance;
+    private static FightCombatBalanceConfig Balance =>
+        s_balance != null ? s_balance : (s_balance = Resources.Load<AppConfigSO>("AppConfig")?.combatBalance);
 
     public bool IsLocked => _locked;
     public float Multiplier => _multiplier;
@@ -320,7 +325,7 @@ public class FighterMovement : MonoBehaviour
         if (_sideWalkDirection != 0)
         {
             float sidewalkSpeed = _config != null ? _config.sidewalkSpeed : 2.2f;
-            delta += _actor.SideXZ * (_sideWalkDirection * sidewalkSpeed * _multiplier * airControl * Time.deltaTime);
+            delta += _actor.SideXZ * (_sideWalkDirection * sidewalkSpeed * SpeedMultiplier * _multiplier * airControl * Time.deltaTime);
         }
         delta += ComputeSidestepDelta();
 

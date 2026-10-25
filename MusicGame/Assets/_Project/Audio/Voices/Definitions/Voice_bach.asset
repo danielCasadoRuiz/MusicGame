@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29e0d69184de5364fafafebaaec86b7f, type: 3}
+  m_Name: Voice_bach
+  m_EditorClassIdentifier: Assembly-CSharp::VoiceDefinition
+  voiceId: bach
+  engine: qwen3-tts
+  description: Male, late fifties, deep warm bass-baritone, calm authority of a church
+    organist and teacher, measured unhurried pace, very precise articulation, dry
+    understated wit.
+  referenceText: 'Every voice has its place, and every place has its voice. Listen
+    carefully: four lines, one purpose. Now, shall we begin the lesson?'
+  referenceLanguage: en
+  seed: 1000
+  languageOverrides: []
+  hurtTexts:
+  - Hmph!
+  - Ugh!
+  - Oof!
+  specialTexts:
+  - All voices, now!
+  - Haaah!
+  defeatTexts:
+  - Nooo...
+  - Ah... well played.

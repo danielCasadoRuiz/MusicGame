@@ -79,14 +79,33 @@ public class CountdownController : MonoBehaviour
         _sequence = StartCoroutine(PlaySequence(warmupTime));
     }
 
+    // "Tempo!" right after "One" has finished, scheduled so its attack lands `attackIn` seconds after the "1" appeared.
+    private static IEnumerator AnnounceAt(GameAudio audio, AudioClip word, float attackIn)
+    {
+        float lead = Mathf.Max(0.05f, audio.Onset(word) + 0.05f);
+        float wait = Mathf.Max(0f, attackIn - lead);
+        if (wait > 0f) yield return new WaitForSeconds(wait);
+        audio.PlayAnnouncer(word, GameAudioScope.Runner, Mathf.Max(0f, attackIn - wait));
+    }
+
     private IEnumerator PlaySequence(float warmupTime)
     {
         int ticks = Mathf.Max(1, Mathf.RoundToInt(warmupTime));
         float tickDuration = warmupTime > 0f ? warmupTime / ticks : 0f;
 
+        // The session's announcer speaks the existing numbers (only the voice — no instrumental tick); "Tempo!" is
+        // scheduled during "1" so its accent lands exactly when GO shows and the song starts (same warmup timeline).
+        var audio = GameAudio.Instance;
+        var voice = audio != null ? audio.Announcer : null;
         for (int n = ticks; n >= 1; n--)
         {
             _numberText.text = n.ToString();
+            if (voice != null)
+            {
+                var word = audio.AnnouncerNumber(n);   // in the game language; Tempo! is a reserved word (always English)
+                if (word != null) audio.PlayAnnouncer(word, GameAudioScope.Runner);
+                if (n == 1) StartCoroutine(AnnounceAt(audio, voice.tempo, tickDuration));
+            }
             if (tickDuration > 0f) yield return new WaitForSeconds(tickDuration);
         }
 

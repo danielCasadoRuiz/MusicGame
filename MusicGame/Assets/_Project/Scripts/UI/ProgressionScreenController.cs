@@ -206,8 +206,7 @@ public class ProgressionScreenController : MonoBehaviour
     private static string SongName(string songId)
     {
         if (string.IsNullOrEmpty(songId)) return "—";
-        string address = SongCatalog.AddressForId(songId);
-        return string.IsNullOrEmpty(address) ? songId : System.IO.Path.GetFileNameWithoutExtension(address);
+        return SongCatalog.DisplayNameFor(songId) ?? songId;
     }
 
     private static OpponentDefinition Rival(string id)

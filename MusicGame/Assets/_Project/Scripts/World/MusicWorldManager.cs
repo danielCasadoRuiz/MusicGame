@@ -370,8 +370,11 @@ public class MusicWorldManager : MonoBehaviour
     // actually started playing) — NormalizedBandValue treats that as its own case (a synthetic
     // hill), never a clamp to frame 0, which is what the un-corrected formula used to do (and
     // what left the terrain permanently warmupTime seconds ahead of the audible audio).
+    // (Returns CLIP time despite the historical name — MusicTime does the conversions.)
     private float DistanceToSongTime(float distance) =>
-        _config.core.playerSpeed > 0f ? distance / _config.core.playerSpeed - _config.core.warmupTime : 0f;
+        _config.core.playerSpeed > 0f
+            ? MusicTime.SongToClip(MusicTime.DistanceToSong(distance, _config.core.playerSpeed), _config.core.warmupTime)
+            : 0f;
 
     // Smoothly blends the two nearest bands so the terrain rolls continuously across the
     // width instead of stepping — each band's own "purity" peaks at its centre column. This is

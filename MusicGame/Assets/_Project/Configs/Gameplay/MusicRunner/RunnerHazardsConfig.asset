@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5129bdb3e7d0ec479a85eb0392332b4, type: 3}
+  m_Name: RunnerHazardsConfig
+  m_EditorClassIdentifier: Assembly-CSharp::RunnerHazardsConfig
+  enabled: 1
+  lowBlockPrefab: {fileID: 372383410387369346, guid: 83c26c0b5417af24394fa99344e1f340, type: 3}
+  highBlockPrefab: {fileID: 2522302983778221567, guid: 6e0f3b67b347afa439716530018191ee, type: 3}
+  portalPrefab: {fileID: 4944979152598744036, guid: dd4559e89eabbf74f89b51c09c15bc04, type: 3}
+  windowWallPrefab: {fileID: 5286666086136577889, guid: 29888c7142f2c1e43aaa75a92c7252ad, type: 3}
+  crawlWallPrefab: {fileID: 8221639192092412761, guid: 072cc901ea9fcf1429bbf21c02c3bc04, type: 3}
+  uShapePrefab: {fileID: 5093780650316591215, guid: d2fc1f01a1d84a04dbe9cd70e69c7bbd, type: 3}
+  chaserPrefab: {fileID: 7165882988800283576, guid: c35f7ce60ff7a074ba21bc57f46deadc, type: 3}
+  firstHazardAfterSeconds: 8
+  endClearSeconds: 4
+  easyObstacleGapSeconds: 11
+  hardObstacleGapSeconds: 4
+  gapJitter: 0.5
+  bonusClearance: 0.8
+  minTrackWidth: 4.5
+  spawnLookAhead: 45
+  recycleBehind: 15
+  lowBlockFrom: 0
+  highBlockFrom: 0
+  uShapeFrom: 0.1
+  portalFrom: 0.3
+  crawlWallFrom: 0.45
+  windowWallFrom: 0.6
+  firstChaserAfterSeconds: 15
+  easyChaserGapSeconds: 35
+  hardChaserGapSeconds: 15
+  chaserActivationDistance: 9
+  easyChaserWarning: 0.9
+  hardChaserWarning: 0.5
+  easyChaserCatchUpSpeed: 1.2
+  hardChaserCatchUpSpeed: 3.5
+  easyChaserAcceleration: 1.2
+  hardChaserAcceleration: 4
+  easyChaserFollowDelay: 0.7
+  hardChaserFollowDelay: 0.25
+  easyChaserDuration: 7
+  hardChaserDuration: 13
+  chaserLateralSpeed: 5
+  fallPenaltyScale: 1
+  chaserPenaltyScale: 1
+  trappedPenaltyScale: 1
+  trapGraceSeconds: 0.4
+  respawnProtectionSeconds: 1.5
+  respawnClearAhead: 6
+  testGallery: 0
+  testGalleryGapSeconds: 5
+  testHotkeys: 0

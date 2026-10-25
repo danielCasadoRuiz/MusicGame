@@ -33,6 +33,7 @@ public static class QualityAssetResolver
     /// <summary>Raised the first time a quality-dependent asset is resolved: from then on the active
     /// quality stays stable for the session (DeviceQualityResolver only caches later rule updates).</summary>
     public static bool QualityInUse { get; private set; }
+    public static void MarkQualityInUse() => QualityInUse = true;
 
     public static AssetReferenceGameObject Resolve(QualityAssetCollection collection, out string resolvedQuality)
     {

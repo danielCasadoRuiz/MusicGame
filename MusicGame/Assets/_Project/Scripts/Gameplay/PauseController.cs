@@ -144,7 +144,9 @@ public class PauseController : MonoBehaviour
         if (_ended) return;
 
         var kb = Keyboard.current;
-        if (kb != null && kb.escapeKey.wasPressedThisFrame)
+        // While the help is open (or on the frame it closed) its own Escape handling wins: never also toggle the pause.
+        bool helpOwnsInput = HelpScreenController.IsOpen || HelpScreenController.ClosedThisFrame;
+        if (kb != null && kb.escapeKey.wasPressedThisFrame && !helpOwnsInput)
         {
             if (_paused) Resume();
             else if (_manager != null && _manager.IsRunning) Pause();
@@ -186,6 +188,7 @@ public class PauseController : MonoBehaviour
         Time.timeScale = 0f;
         if (_audio != null) _audio.Pause();
         MusicClock.Instance?.Pause();
+        GameAudio.Instance?.SetAnnouncerPaused(true);   // the countdown's voice freezes with the countdown
 
         RefreshVisibility();
     }
@@ -195,11 +198,45 @@ public class PauseController : MonoBehaviour
         if (!_paused) return;
         _paused = false;
 
+        if (HelpScreenController.IsOpen) HelpScreenController.Instance.Close();
         Time.timeScale = 1f;
         if (_audio != null) _audio.UnPause();
         MusicClock.Instance?.Resume();
+        GameAudio.Instance?.SetAnnouncerPaused(false);
 
         RefreshVisibility();
+    }
+
+    // ── Help (bonuses): from the preRun tip card or from the pause menu — see HelpScreenController ──────
+
+    /// <summary>The tip card's "More info": pause at once (the countdown and the warmup freeze exactly where they
+    /// are) and open the bonuses straight away; closing it resumes directly, without the pause menu.</summary>
+    public void OpenHelpFromTip()
+    {
+        if (_ended || _manager == null || !_manager.IsRunning || HelpScreenController.Instance == null) return;
+        Pause();
+        HelpScreenController.Instance.Open(HelpTopic.Bonuses, HelpOrigin.TipCard, OnHelpClosed);
+        RefreshVisibility();
+    }
+
+    private void OpenHelpFromPause()
+    {
+        if (!_paused || HelpScreenController.Instance == null) return;
+        HelpScreenController.Instance.Open(HelpTopic.Bonuses, HelpOrigin.PauseMenu, OnHelpClosed);
+        RefreshVisibility();
+    }
+
+    private void OnHelpClosed(HelpOrigin origin)
+    {
+        if (origin == HelpOrigin.PauseMenu) { RefreshVisibility(); return; }   // back to the pause menu, still paused
+        StartCoroutine(ResumeNextFrame());
+    }
+
+    // One frame later, so the key / click that closed the help is never also read as a gameplay input.
+    private System.Collections.IEnumerator ResumeNextFrame()
+    {
+        yield return null;
+        if (_paused && !HelpScreenController.IsOpen) Resume();
     }
 
     /// <summary>
@@ -235,6 +272,8 @@ public class PauseController : MonoBehaviour
         view.resumeButton.onClick.AddListener(Resume);
         view.restartButton.onClick.AddListener(RestartSongFromPause);
         view.mainMenuButton.onClick.AddListener(OnMainMenuClicked);
+        if (view.bonusHelpButton != null) view.bonusHelpButton.onClick.AddListener(OpenHelpFromPause);
+        else Debug.LogError("[PauseController] PauseView.bonusHelpButton not assigned — run Tools > MusicGame > UI > Help Placeholders + Prefabs (patches PauseMenu.prefab).", view);
 
         _cameraToggleButtonRoot = view.cameraToggleButtonRoot != null ? view.cameraToggleButtonRoot.GetComponent<RectTransform>() : null;
         _cameraToggleIcon       = view.cameraToggleIcon;
@@ -256,6 +295,7 @@ public class PauseController : MonoBehaviour
         if (view.resumeButtonLabel  != null) Loc.Set(view.resumeButtonLabel, "Pause.Resume");
         if (view.restartButtonLabel != null) Loc.Set(view.restartButtonLabel, "Pause.RestartSong");
         if (view.mainMenuButtonLabel != null) Loc.Set(view.mainMenuButtonLabel, "Pause.MainMenu");
+        if (view.bonusHelpButtonLabel != null) Loc.Set(view.bonusHelpButtonLabel, "Help.Pause.Bonuses");
 
         RefreshVisibility();
     }
@@ -263,7 +303,7 @@ public class PauseController : MonoBehaviour
     private void RefreshVisibility()
     {
         if (_overlayRoot == null || _pauseButtonRoot == null) return; // no PauseView wired (already logged)
-        _overlayRoot.gameObject.SetActive(!_ended && _paused);
+        _overlayRoot.gameObject.SetActive(!_ended && _paused && !HelpScreenController.IsOpen);
 
         bool showPersistentButtons = !_ended && !_paused && _manager != null && _manager.IsRunning;
         _pauseButtonRoot.gameObject.SetActive(showPersistentButtons);

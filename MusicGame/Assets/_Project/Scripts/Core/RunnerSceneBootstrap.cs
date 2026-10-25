@@ -63,7 +63,8 @@ public class RunnerSceneBootstrap : MonoBehaviour
     private IEnumerator RepublishProfileNextFrame(SongProfile profile)
     {
         yield return null;
-        EventBus.Publish(new SongProfileReadyEvent { Profile = profile });
+        // Same selection by construction (GameSession drops Profile when the selection changes).
+        EventBus.Publish(new SongProfileReadyEvent { Profile = profile, SelectionGeneration = GameSession.Instance != null ? GameSession.Instance.SelectionGeneration : 0 });
     }
 
     private void OnDisable()

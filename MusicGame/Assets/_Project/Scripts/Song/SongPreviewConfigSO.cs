@@ -17,7 +17,7 @@ public class SongPreviewConfigSO : ScriptableObject
     [System.Serializable]
     public class Entry
     {
-        [Tooltip("Addressable address of a Runner song, or the AudioClip name of a composer track.")]
+        [Tooltip("songId of a Runner song (song_NNN), or the AudioClip name of a composer track.")]
         public string songId;
         [Tooltip("Seconds into the song where the preview starts (its most recognizable section).")]
         [Min(0f)] public float previewStartTime;

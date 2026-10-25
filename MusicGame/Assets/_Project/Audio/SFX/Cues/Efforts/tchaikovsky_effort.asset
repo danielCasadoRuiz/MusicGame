@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a7f43baddb4e274eb9596c7a7db1113, type: 3}
+  m_Name: tchaikovsky_effort
+  m_EditorClassIdentifier: Assembly-CSharp::SfxCue
+  clips:
+  - {fileID: 8300000, guid: 8222f5850064b40458321249313e3f2b, type: 3}
+  - {fileID: 8300000, guid: cd28143e4c09c5140b24b65c1e3bb581, type: 3}
+  - {fileID: 8300000, guid: 92d4eb910c84de04793f46c87aeafaec, type: 3}
+  channel: 2
+  volume: 0.6
+  volumeJitter: 0.06
+  pitch: {x: 1.005, y: 1.035}
+  maxInstances: 1
+  cooldown: 1.2
+  credits: "HaelDB, \"Male Grunt/Yelling sounds\" (OpenGameArt) \u2014 CC0 1.0. Audio/Sfx/Vocal/HaelDB/LICENSE.txt"

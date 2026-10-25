@@ -48,6 +48,7 @@ public class FightMusicController : MonoBehaviour
         _current  = gameObject.AddComponent<AudioSource>();
         _incoming = gameObject.AddComponent<AudioSource>();
         _fx       = gameObject.AddComponent<AudioSource>();
+        GameAudio.RouteMusic(_current); GameAudio.RouteMusic(_incoming); GameAudio.RouteMusic(_fx);
         _fx.playOnAwake = false;
         _fx.loop = true;
         var flow = Resources.Load<AppConfigSO>("AppConfig")?.fightFlow;

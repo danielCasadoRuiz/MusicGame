@@ -32,9 +32,16 @@ public class RunnerEnvironmentController : MonoBehaviour
     // Quality-variant modules are Addressables: their handles live until the next Build/Clear.
     private readonly List<AsyncOperationHandle<GameObject>> _handles = new();
     private int _buildToken;
+    private int _pendingLoads;
 
     public RunnerEnvironmentBaseSO BaseEnvironment { get; private set; }
     public RunnerEnvironmentStyleSO Style { get; private set; }
+    /// <summary>Readiness barrier (GameplayManager, PreparingConsumers): every slot of the current build has
+    /// finished resolving — instantiated, or its variant load completed (failures are logged and count as
+    /// done: the slot stays empty). Music-reactive modules must exist before the first musical instant.</summary>
+    public bool IsBuilt => _root != null && _pendingLoads == 0;
+    public int PendingLoads => _pendingLoads;
+
     /// <summary>Debug: "Horizon: PF_x (Inherit) | MusicReactive: none (Disabled)".</summary>
     public string Summary { get; private set; } = "";
 
@@ -82,9 +89,11 @@ public class RunnerEnvironmentController : MonoBehaviour
             int token = _buildToken, index = i;
             var handle = Addressables.LoadAssetAsync<GameObject>(source.reference);
             _handles.Add(handle);
+            _pendingLoads++;
             handle.Completed += h =>
             {
                 if (token != _buildToken || slotRoot == null) return; // rebuilt / destroyed meanwhile
+                _pendingLoads--;
                 if (h.Status != AsyncOperationStatus.Succeeded || h.Result == null)
                 {
                     Debug.LogError($"[RunnerEnvironment] {slot}: failed to load the {source.resolvedQuality} variant ({how}).");
@@ -158,12 +167,13 @@ public class RunnerEnvironmentController : MonoBehaviour
     }
 
     /// <summary>Ticks one slot's modules (called by HorizonWorld in its fixed per-frame order).</summary>
-    public void Tick(RunnerEnvironmentSlot slot, MusicWorldManager world, float songTime)
+    public void Tick(RunnerEnvironmentSlot slot, MusicWorldManager world, float songTime, float clipTime)
     {
         var modules = _modules[(int)slot];
         if (modules == null || modules.Count == 0) return;
         _context.World = world;
         _context.SongTime = songTime;
+        _context.ClipTime = clipTime;
         for (int i = 0; i < modules.Count; i++) modules[i].TickModule(_context);
     }
 
@@ -172,6 +182,7 @@ public class RunnerEnvironmentController : MonoBehaviour
     private void Clear()
     {
         _buildToken++;
+        _pendingLoads = 0;
         for (int i = 0; i < _modules.Length; i++) _modules[i]?.Clear();
         foreach (var h in _handles) if (h.IsValid()) Addressables.Release(h);
         _handles.Clear();

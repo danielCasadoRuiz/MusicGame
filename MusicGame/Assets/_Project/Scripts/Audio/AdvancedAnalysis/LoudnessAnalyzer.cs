@@ -6,7 +6,7 @@ using UnityEngine;
 /// </summary>
 public class LoudnessAnalyzer : IOfflineAnalyzer
 {
-    public bool IsEnabled(AudioAnalysisConfig config)
+    public bool IsEnabled(DerivedAnalysisSettings config)
         => config.advancedEnabled && config.advancedLoudness;
 
     public void Analyze(OfflineAnalysisContext ctx, SongProfile profile)

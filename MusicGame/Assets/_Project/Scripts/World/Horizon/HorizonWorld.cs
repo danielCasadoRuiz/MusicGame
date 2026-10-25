@@ -170,8 +170,8 @@ public class HorizonWorld : MonoBehaviour
         // depends on its CameraDelta being current this frame), everything else after.
         _cameraController.Tick();
         _water.Tick();
-        _environment.Tick(RunnerEnvironmentSlot.MusicReactive, world, clock.SongTime);
+        _environment.Tick(RunnerEnvironmentSlot.MusicReactive, world, clock.SongTime, clock.ClipTime);
         _sky.Tick();
-        _environment.Tick(RunnerEnvironmentSlot.Horizon, world, clock.SongTime);
+        _environment.Tick(RunnerEnvironmentSlot.Horizon, world, clock.SongTime, clock.ClipTime);
     }
 }

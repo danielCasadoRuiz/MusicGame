@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a7f43baddb4e274eb9596c7a7db1113, type: 3}
+  m_Name: ChaserContact
+  m_EditorClassIdentifier: Assembly-CSharp::SfxCue
+  clips:
+  - {fileID: 8300000, guid: 0c6b6cc9d51b43c4d921237e5682724c, type: 3}
+  - {fileID: 8300000, guid: da1aca5b8d7e63e4dac8347e74e6f1c5, type: 3}
+  - {fileID: 8300000, guid: 88acc8ee05138be4b8134e3848f8c2c7, type: 3}
+  channel: 1
+  volume: 0.65
+  volumeJitter: 0.08
+  pitch: {x: 0.97, y: 1.03}
+  maxInstances: 1
+  cooldown: 0.6
+  credits: "Kenney \"Sci-fi Sounds\" (kenney.nl) \u2014 CC0 1.0. Licence: Assets/_Project/Audio/Sfx/Kenney/License.txt"

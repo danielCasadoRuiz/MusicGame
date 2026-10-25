@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1abea45d9a53b43b33e8c4a5bd67f9, type: 3}
+  m_Name: VoicePack_bach_en
+  m_EditorClassIdentifier: Assembly-CSharp::ComposerVoicePack
+  composerId: bach
+  language: en
+  engine: qwen3-tts
+  voiceDefinitionHash: 236460c3c0e662c8
+  lines:
+  - key: Composer.bach.Dialogue.Defeat.001
+    clip: {fileID: 8300000, guid: 42f12a7d3c877594c8649d2fc6e3d959, type: 3}
+    textHash: c5ab6bd31b31711a
+    duration: 4.145
+  - key: Composer.bach.Dialogue.Defeat.002
+    clip: {fileID: 8300000, guid: c7e71f8ba4f29e34b954aee7fb266c09, type: 3}
+    textHash: 5ef7a9d8d9372508
+    duration: 3.868
+  - key: Composer.bach.Dialogue.Defeat.003
+    clip: {fileID: 8300000, guid: 7d05107fb2bacc448ae592e766badf2f, type: 3}
+    textHash: 23d821623858c363
+    duration: 4.43
+  - key: Composer.bach.Dialogue.Defeat.004
+    clip: {fileID: 8300000, guid: 1c66b416dd79b0f4ca2d41a4a63f48de, type: 3}
+    textHash: 70937ac61d45de5b
+    duration: 4.986
+  - key: Composer.bach.Dialogue.Defeat.005
+    clip: {fileID: 8300000, guid: 5e04330b56c72574b8cba5de7424b988, type: 3}
+    textHash: 8a07a37de001ec00
+    duration: 4.468
+  - key: Composer.bach.Dialogue.Defeat.006
+    clip: {fileID: 8300000, guid: cfc371d897f120a4f89c21e77df5ea1d, type: 3}
+    textHash: ff35775655a4e177
+    duration: 3.824
+  - key: Composer.bach.Dialogue.Defeat.007
+    clip: {fileID: 8300000, guid: 70a0a5e6ace122e49ac5fe5bac5d275e, type: 3}
+    textHash: a51598875730c73e
+    duration: 3.8
+  - key: Composer.bach.Dialogue.Defeat.008
+    clip: {fileID: 8300000, guid: 263d1ae64a5e90149a6c2db0117b6c61, type: 3}
+    textHash: ccc1fce0df9b0f73
+    duration: 3.886
+  - key: Composer.bach.Dialogue.Defeat.009
+    clip: {fileID: 8300000, guid: d47e43f631934dc45b6b2454a1d101ab, type: 3}
+    textHash: 54b03d195484d021
+    duration: 3.84
+  - key: Composer.bach.Dialogue.Defeat.010
+    clip: {fileID: 8300000, guid: f63d6a0d5a3a91743b663001cfbbac03, type: 3}
+    textHash: e0e84da79bf7e40c
+    duration: 4.302
+  - key: Composer.bach.Dialogue.Intro.001
+    clip: {fileID: 8300000, guid: 637017acfbd7e3f48a341f647e65b919, type: 3}
+    textHash: ac30db45225023fb
+    duration: 3.399
+  - key: Composer.bach.Dialogue.Intro.002
+    clip: {fileID: 8300000, guid: f12b83ff84a560b4984916a26b01f1d0, type: 3}
+    textHash: 3ebff2a5673c484b
+    duration: 3.692
+  - key: Composer.bach.Dialogue.Intro.003
+    clip: {fileID: 8300000, guid: 97336626edcb15c498f090429d0f828c, type: 3}
+    textHash: f24fe4325cb9cd6a
+    duration: 3.846
+  - key: Composer.bach.Dialogue.Intro.004
+    clip: {fileID: 8300000, guid: d892720d28f8e1147abbd0e5e149bb21, type: 3}
+    textHash: ceb841514ff4757d
+    duration: 3.259
+  - key: Composer.bach.Dialogue.Intro.005
+    clip: {fileID: 8300000, guid: 95c790359ae2ef246b0fe39b6527eec9, type: 3}
+    textHash: a7db41f5f9c228df
+    duration: 3.555
+  - key: Composer.bach.Dialogue.Intro.006
+    clip: {fileID: 8300000, guid: b8220b27ee221c348a267fa47a54f5d3, type: 3}
+    textHash: 13baf3690b36305f
+    duration: 4.373
+  - key: Composer.bach.Dialogue.Intro.007
+    clip: {fileID: 8300000, guid: 3abf36a5f0d54eb42b3f88f71b3d89ab, type: 3}
+    textHash: 998b700d1f792f4f
+    duration: 3.24
+  - key: Composer.bach.Dialogue.Intro.008
+    clip: {fileID: 8300000, guid: e95060ae98042124b9a54242d0baa3c6, type: 3}
+    textHash: 250429f2244d2092
+    duration: 3.63
+  - key: Composer.bach.Dialogue.Intro.009
+    clip: {fileID: 8300000, guid: c012515a185e80846a569ba909d32fa1, type: 3}
+    textHash: 14d5340027312194
+    duration: 2.963
+  - key: Composer.bach.Dialogue.Intro.010
+    clip: {fileID: 8300000, guid: 9f89aff749c590c4db0cbd716c3544aa, type: 3}
+    textHash: f538841bedc126a7
+    duration: 3.609
+  - key: Composer.bach.Dialogue.Victory.001
+    clip: {fileID: 8300000, guid: 0437162d0dce55c41a30b8638a9a880d, type: 3}
+    textHash: 8290b4383b13f1e2
+    duration: 3.944
+  - key: Composer.bach.Dialogue.Victory.002
+    clip: {fileID: 8300000, guid: 2526bec4be5a6e142a7d9d3527392659, type: 3}
+    textHash: aefa51852b2f340a
+    duration: 4.2
+  - key: Composer.bach.Dialogue.Victory.003
+    clip: {fileID: 8300000, guid: 06520590a72f0c84797f80c994934a0e, type: 3}
+    textHash: 1ae755b364f75b62
+    duration: 3.345
+  - key: Composer.bach.Dialogue.Victory.004
+    clip: {fileID: 8300000, guid: 6f60195d12662174b99fceefe1ebf476, type: 3}
+    textHash: a3d9a664d281ea0e
+    duration: 3.111
+  - key: Composer.bach.Dialogue.Victory.005
+    clip: {fileID: 8300000, guid: dbb41c56d7d04b7479f38e453cdf6785, type: 3}
+    textHash: 7e099eb23782b788
+    duration: 3.135
+  - key: Composer.bach.Dialogue.Victory.006
+    clip: {fileID: 8300000, guid: 00c70ab4b9e4989498469fd6d22331cf, type: 3}
+    textHash: bd39448900cdf454
+    duration: 3.921
+  - key: Composer.bach.Dialogue.Victory.007
+    clip: {fileID: 8300000, guid: 28dcf3f784769cb4d9d68c061dfd8d3a, type: 3}
+    textHash: d739b5af5718c433
+    duration: 3.341
+  - key: Composer.bach.Dialogue.Victory.008
+    clip: {fileID: 8300000, guid: 6724d5c6fa99ecc4eb8a9159a51891dc, type: 3}
+    textHash: 84d80998aef134f7
+    duration: 3.74
+  - key: Composer.bach.Dialogue.Victory.009
+    clip: {fileID: 8300000, guid: ac5443d02ff935a4d8b51170f273a855, type: 3}
+    textHash: 52e67dc69084f33e
+    duration: 2.533
+  - key: Composer.bach.Dialogue.Victory.010
+    clip: {fileID: 8300000, guid: 77dbe1d1f62f58641a66086e258251d7, type: 3}
+    textHash: 5acf3eeda3340bbc
+    duration: 2.554
+  efforts:
+    hurt: {fileID: 0}
+    special: {fileID: 0}
+    defeat: {fileID: 0}

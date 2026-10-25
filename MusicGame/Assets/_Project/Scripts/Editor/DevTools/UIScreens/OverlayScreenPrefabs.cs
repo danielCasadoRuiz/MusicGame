@@ -74,7 +74,7 @@ public static class OverlayScreenPrefabs
         view.root = root.gameObject;
 
         view.numberText = UIFactory.CreateText("Number", root, "", 96, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
-        CenterBox(view.numberText.rectTransform, Vector2.zero, new Vector2(400f, 200f));
+        CenterBox(view.numberText.rectTransform, Vector2.zero, new Vector2(700f, 200f));   // wide enough for "TEMPO!"
         view.numberText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
 
         root.gameObject.SetActive(false);

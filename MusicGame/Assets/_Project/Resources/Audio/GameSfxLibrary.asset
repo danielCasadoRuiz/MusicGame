@@ -1,0 +1,128 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb3b6a986b389134da1cb59b234f646c, type: 3}
+  m_Name: GameSfxLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::GameSfxLibrary
+  mixer: {fileID: 24100000, guid: 9149904beb6fc454380834684fae62bc, type: 2}
+  musicGroup: {fileID: 5063332799280910751, guid: 9149904beb6fc454380834684fae62bc, type: 2}
+  sfxGroup: {fileID: 1825538934908911991, guid: 9149904beb6fc454380834684fae62bc, type: 2}
+  voiceGroup: {fileID: 4432014233059573162, guid: 9149904beb6fc454380834684fae62bc, type: 2}
+  announcers:
+  - voiceId: announcer_f
+    inRotation: 1
+    three: {fileID: 8300000, guid: 6579386a58757ee498dc6d2f1cc1c11f, type: 3}
+    two: {fileID: 8300000, guid: 151815c75b8c4f24582cc72c75a9c8c3, type: 3}
+    one: {fileID: 8300000, guid: e8b0ba27f4c71384d813470d483a0d9b, type: 3}
+    tempo: {fileID: 8300000, guid: 11e04eb4c5e763642becda9e052460ec, type: 3}
+    fury: {fileID: 8300000, guid: dbeb7b534cd3ce740a02b571c9a90f93, type: 3}
+    perfect: {fileID: 8300000, guid: 983047d884e98c54fa91a414f98cd632, type: 3}
+    numbers:
+    - language: ca
+      three: {fileID: 8300000, guid: 569204af59689c340b50b7927e9ee93c, type: 3}
+      two: {fileID: 8300000, guid: dd4fe294335288a48ac03e517c9ef73c, type: 3}
+      one: {fileID: 8300000, guid: b4141a674d7f3b74f8a3818e98beb2df, type: 3}
+  - voiceId: announcer_m
+    inRotation: 1
+    three: {fileID: 8300000, guid: a0769685f5ba0fc40a2b2930d2b59bd5, type: 3}
+    two: {fileID: 8300000, guid: f21539a62cb269d4cbc011d27c855c2e, type: 3}
+    one: {fileID: 8300000, guid: d1f26fcad9627674ca9e82497a72212c, type: 3}
+    tempo: {fileID: 8300000, guid: 4baf8685468c5de4b8132536b4a0e4f8, type: 3}
+    fury: {fileID: 8300000, guid: 7d6343429335eb14c8fb92b62841aa32, type: 3}
+    perfect: {fileID: 8300000, guid: e54e88031eb6ec949893737451d22fb3, type: 3}
+    numbers:
+    - language: ca
+      three: {fileID: 8300000, guid: fff031840a6bd3f40bf08d41c789ff42, type: 3}
+      two: {fileID: 8300000, guid: bdf019934622f9148954fb1076f5a240, type: 3}
+      one: {fileID: 8300000, guid: 51877e349119bb544a2a9052213c98ba, type: 3}
+  hitLight: {fileID: 11400000, guid: 0c0e228312f649d4494499107547fe68, type: 2}
+  hitHeavy: {fileID: 11400000, guid: 489fe7ecc4901684e81a5aef6cbb857c, type: 2}
+  hitBlocked: {fileID: 11400000, guid: c6b1949828593ad4ca8d78933aefc24f, type: 2}
+  specialLaunch: {fileID: 11400000, guid: d53d689c2c4517244847be952a7a8a2f, type: 2}
+  knockOut: {fileID: 11400000, guid: edd8eb62c99b6554da549eddd10cbb4a, type: 2}
+  playerEfforts:
+    hurt: {fileID: 11400000, guid: 95f7498db6078e840aacb4ec69f267d3, type: 2}
+    special: {fileID: 11400000, guid: 30024b4fff474364c962b5d577de237c, type: 2}
+    defeat: {fileID: 11400000, guid: 9cdc4a7914dafe1448c6ddc95761d131, type: 2}
+  composerEfforts:
+  - id: wagner
+    efforts:
+      hurt: {fileID: 11400000, guid: 40b399bb7c2800b4ea82b0876efee66f, type: 2}
+      special: {fileID: 11400000, guid: cc2483c942f199b4ea2bd50787e03d8f, type: 2}
+      defeat: {fileID: 11400000, guid: 7c54f7fa4aa77cc4da91989d3486b0f0, type: 2}
+  - id: brahms
+    efforts:
+      hurt: {fileID: 11400000, guid: ad202f6267d29dd4bad3e563fdb468f6, type: 2}
+      special: {fileID: 11400000, guid: bb1b2622569ff404783582faf049cd8b, type: 2}
+      defeat: {fileID: 11400000, guid: 6286e2d4c811a504c8f884db23ed2421, type: 2}
+  - id: bach
+    efforts:
+      hurt: {fileID: 11400000, guid: cd438d627171ecc4b9c0b22fb2be406d, type: 2}
+      special: {fileID: 11400000, guid: 2ca31f87b8428ab47be68348e93e4202, type: 2}
+      defeat: {fileID: 11400000, guid: 8ad2323c0191fa74cb89285943f040a7, type: 2}
+  - id: handel
+    efforts:
+      hurt: {fileID: 11400000, guid: f419ac862b46c9b43bf417001ddd13a4, type: 2}
+      special: {fileID: 11400000, guid: 2e6060683d969fc47b6d946ad87950c6, type: 2}
+      defeat: {fileID: 11400000, guid: 1ab12133619538947b7fdfc9a5469897, type: 2}
+  - id: pachelbel
+    efforts:
+      hurt: {fileID: 11400000, guid: 0d7ad1765e0bb9e4e89bb9da4bba5aed, type: 2}
+      special: {fileID: 11400000, guid: 39fc120be2094e04e94a68515c1fcbfb, type: 2}
+      defeat: {fileID: 11400000, guid: f668484a6cb881d47a8b4491fefc9be0, type: 2}
+  - id: beethoven
+    efforts:
+      hurt: {fileID: 11400000, guid: aa45940371068994daf977225823b223, type: 2}
+      special: {fileID: 11400000, guid: cad4c5526300def4a8cc161d598f9363, type: 2}
+      defeat: {fileID: 11400000, guid: 0b8a316248e33824b94610a90a252e35, type: 2}
+  - id: monteverdi
+    efforts:
+      hurt: {fileID: 11400000, guid: 6c7e2018bf3400d4b91f1f0bc4779a30, type: 2}
+      special: {fileID: 11400000, guid: cbd1a6ecc36c44743bd0a25a3ea00f72, type: 2}
+      defeat: {fileID: 11400000, guid: 6bb85f58243b222419f68207c86efb03, type: 2}
+  - id: tchaikovsky
+    efforts:
+      hurt: {fileID: 11400000, guid: 4089da7bcd6ce8447bc0ed2d7997a29f, type: 2}
+      special: {fileID: 11400000, guid: 647dd100ddf1e52439a933edb204dc23, type: 2}
+      defeat: {fileID: 11400000, guid: e43db70927628704aa8d3c335710a335, type: 2}
+  - id: haydn
+    efforts:
+      hurt: {fileID: 11400000, guid: bc1cad7565180af429a9c03934ffebf6, type: 2}
+      special: {fileID: 11400000, guid: 2a3e0335e41713243919abe3e16049a1, type: 2}
+      defeat: {fileID: 11400000, guid: 60c8290e3c0747a488a6fc315e88406a, type: 2}
+  - id: chopin
+    efforts:
+      hurt: {fileID: 11400000, guid: dc8e78c260e96b64cb744c30eedb839c, type: 2}
+      special: {fileID: 11400000, guid: 61c4e5a025350fa4daa1ebd8254bb44b, type: 2}
+      defeat: {fileID: 11400000, guid: a20482f50fe91e94eb82ab6c5ab8d01c, type: 2}
+  - id: vivaldi
+    efforts:
+      hurt: {fileID: 11400000, guid: 39bf61f1c4e6c5f429dd4a897efb3dc8, type: 2}
+      special: {fileID: 11400000, guid: 089f06b82ca607b42a4a8f78db95c382, type: 2}
+      defeat: {fileID: 11400000, guid: d7f3644ccb2784b438c2ac88210ab59c, type: 2}
+  - id: mozart
+    efforts:
+      hurt: {fileID: 11400000, guid: cb04becc8204c104093a81ddb9a276b7, type: 2}
+      special: {fileID: 11400000, guid: c2310c9bfc41f2f468937f796dc5ca6b, type: 2}
+      defeat: {fileID: 11400000, guid: 7a841fa7f6d6db64dbb219877a8d9533, type: 2}
+  - id: music_being
+    efforts:
+      hurt: {fileID: 11400000, guid: 611bf88d8326cc14a8298ad76ca566af, type: 2}
+      special: {fileID: 11400000, guid: 22824eb4f1eca5a49920ba32153aae58, type: 2}
+      defeat: {fileID: 11400000, guid: 3273e231ba7dc5249ac17543f0caf6e4, type: 2}
+  defaultComposerEfforts:
+    hurt: {fileID: 11400000, guid: b0cd6a64951f2c640a7e087833e8a6ab, type: 2}
+    special: {fileID: 11400000, guid: 04aa023ce558a324089ac17a9ec2856d, type: 2}
+    defeat: {fileID: 11400000, guid: 70bb0c876b8403f4abb91b5113a73b6e, type: 2}
+  chaserWake: {fileID: 11400000, guid: c158d035036c3d74a897e7bfb207b8b3, type: 2}
+  chaserActivate: {fileID: 11400000, guid: e3971f779c862aa42bea02332c37e701, type: 2}
+  chaserContact: {fileID: 11400000, guid: 8882d312ae8988b47937c09739b463fa, type: 2}
+  trapped: {fileID: 11400000, guid: 4e33a80cfc57ff34db7371692f907cb0, type: 2}

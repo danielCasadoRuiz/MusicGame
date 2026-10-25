@@ -31,6 +31,11 @@ public class CampaignProgressData
     public bool initialized;
 
     public int lapsCompleted;
+    /// <summary>A new lap was started and its FIRST song has not been chosen yet: CONTINUE opens Song Selection
+    /// (never a new lap, never the lap-finished prompt again) until a song is confirmed there.</summary>
+    public bool firstSongPending;
+    /// <summary>The lap whose "lap finished — next lap / later" prompt was already shown (shown once per lap).</summary>
+    public int lapPromptShownForLap;
     /// <summary>Per-position best results (independent per phase) + latest attempt.</summary>
     public List<PositionRecordData> positions = new();
 
@@ -118,11 +123,15 @@ public class BossStageData
     public PhaseRecordData lastCombat = new();
 }
 
-/// <summary>Music variety, INDEPENDENT of laps: songs WON in the current cycle are out of the pool
-/// until every playable song has been won once in it; then a new cycle starts with all of them.</summary>
+/// <summary>Song use INSIDE the current lap (availability to choose / be assigned): songs WON in this lap are out
+/// of the pool. A new lap starts a new cycle with every song available again; if every playable song gets used
+/// before the lap ends, the cycle renews inside the lap (all available again) so nobody is ever stuck.
+/// The all-time history (records, completedSongIds, cards) is separate and never touched by this.</summary>
 [System.Serializable]
 public class SongCycleData
 {
     public int cycle = 1;
     public List<string> consumedSongIds = new();
+    /// <summary>The campaign lap this cycle belongs to (0 = an old save, migrated once from the position records).</summary>
+    public int lap;
 }

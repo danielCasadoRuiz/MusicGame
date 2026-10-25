@@ -20,13 +20,20 @@
 ///   - Old saves (pending run without a seed, pickupSeed == 0) get one seed the first time that pending
 ///     run is restored, saved at once — from then on it is fixed like any other.
 /// No assignment at all (the Runner scene played directly in the editor) → the config's collectibleSeed.
+///
+/// SINCE P4 the layout no longer uses this per-match seed: BonusLayoutProvider derives the seed from the
+/// combination (BonusLayoutKey — song/profile revision, position, difficulty, generator, config) and stores
+/// the layout, so the same combination always replays the same layout and a retry never re-draws it. The
+/// stored pickupSeed stays in saves (compatibility) and GeneratorVersion stays the generator's version stamp.
 /// </summary>
 public static class RunnerPickupLayout
 {
     /// <summary>Generator version stamped next to the seed. Bump it when GameplayTimeline's placement
     /// changes in a way that makes an old seed produce a different layout (the stored seed is still
     /// reused — the match identity is kept — and the stamp is updated with a log line).</summary>
-    public const int GeneratorVersion = 2; // 2: ground-true placement (real mesh) + trigger-volume reach model
+    // 3 (P4): selection from the detected attacks (onsetEvents) at a continuous difficulty, layout seed
+    //    derived from the BonusLayoutKey (no longer this per-match seed), layouts stored per combination.
+    public const int GeneratorVersion = 4; // 2: ground-true placement (real mesh) + trigger-volume reach model; 4: track-margin (edgeChance) progression
 
     /// <summary>The seed of the match being played (null = no assignment → config seed).</summary>
     public static int? CurrentSeed { get; private set; }

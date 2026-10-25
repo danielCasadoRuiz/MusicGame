@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1abea45d9a53b43b33e8c4a5bd67f9, type: 3}
+  m_Name: VoicePack_mozart_en
+  m_EditorClassIdentifier: Assembly-CSharp::ComposerVoicePack
+  composerId: mozart
+  language: en
+  engine: qwen3-tts
+  voiceDefinitionHash: c2a4880804ec1eea
+  lines:
+  - key: Composer.mozart.Dialogue.Defeat.001
+    clip: {fileID: 8300000, guid: 355db1f97a6997a49901e41b94f1b56b, type: 3}
+    textHash: 926c65a96a165c0b
+    duration: 4.874
+  - key: Composer.mozart.Dialogue.Defeat.002
+    clip: {fileID: 8300000, guid: 13d20843b7577fa499dd8bd65114024c, type: 3}
+    textHash: 341aa709fa267ca8
+    duration: 4.285
+  - key: Composer.mozart.Dialogue.Defeat.003
+    clip: {fileID: 8300000, guid: 0914b6271aac59b4cb51727c8d24786a, type: 3}
+    textHash: b42531e5d44cb583
+    duration: 2.777
+  - key: Composer.mozart.Dialogue.Defeat.004
+    clip: {fileID: 8300000, guid: 0fd0d74414867b94e8c2029fde2ca382, type: 3}
+    textHash: 1b6976f61c0f2742
+    duration: 4.063
+  - key: Composer.mozart.Dialogue.Defeat.005
+    clip: {fileID: 8300000, guid: bcf7c0de1d1f52341a39e727548e302a, type: 3}
+    textHash: 02631519138dba00
+    duration: 3.413
+  - key: Composer.mozart.Dialogue.Defeat.006
+    clip: {fileID: 8300000, guid: aea84ce9927ae334280c0db584752f2d, type: 3}
+    textHash: a50b4a3c49800987
+    duration: 3.36
+  - key: Composer.mozart.Dialogue.Defeat.007
+    clip: {fileID: 8300000, guid: 30baff000e952aa458e245d94c0fd345, type: 3}
+    textHash: 46a03ae8cde50b1b
+    duration: 4.373
+  - key: Composer.mozart.Dialogue.Defeat.008
+    clip: {fileID: 8300000, guid: adc228ee551c1164ea11435efb04214d, type: 3}
+    textHash: d9f544ec5631ea49
+    duration: 3.992
+  - key: Composer.mozart.Dialogue.Defeat.009
+    clip: {fileID: 8300000, guid: 62c1d71866eb190468ac7a4246f68002, type: 3}
+    textHash: 6be3245413edbdce
+    duration: 3.526
+  - key: Composer.mozart.Dialogue.Defeat.010
+    clip: {fileID: 8300000, guid: 98507e4adf335bb43a47f7548b8108fb, type: 3}
+    textHash: 121b5bb65d3c94d8
+    duration: 3.585
+  - key: Composer.mozart.Dialogue.Intro.001
+    clip: {fileID: 8300000, guid: a425659aad2e83148a2bc3d5a9836f33, type: 3}
+    textHash: 846a2009f72676c9
+    duration: 4.039
+  - key: Composer.mozart.Dialogue.Intro.002
+    clip: {fileID: 8300000, guid: 94a2c67daf7cc054386c12b5590a2a93, type: 3}
+    textHash: 9ed9630c1d2fc6f2
+    duration: 2.634
+  - key: Composer.mozart.Dialogue.Intro.003
+    clip: {fileID: 8300000, guid: 42d46879ab90fb44eaffd5ce263600d9, type: 3}
+    textHash: 414ed43d54359bf4
+    duration: 2.8
+  - key: Composer.mozart.Dialogue.Intro.004
+    clip: {fileID: 8300000, guid: 8f2518373ca3ed946a95461c4033fce7, type: 3}
+    textHash: ddf12b7bbab9d189
+    duration: 2.546
+  - key: Composer.mozart.Dialogue.Intro.005
+    clip: {fileID: 8300000, guid: 12557417573c6854ba7ab802e1f11589, type: 3}
+    textHash: ba7162028b319349
+    duration: 4.24
+  - key: Composer.mozart.Dialogue.Intro.006
+    clip: {fileID: 8300000, guid: bda55f29e99725647aa9ce1fdccb7f47, type: 3}
+    textHash: ea72385538215ba6
+    duration: 3.76
+  - key: Composer.mozart.Dialogue.Intro.007
+    clip: {fileID: 8300000, guid: d8cdc40e6f521b849a09ae29ab463774, type: 3}
+    textHash: 2bb696b90acc834a
+    duration: 2.56
+  - key: Composer.mozart.Dialogue.Intro.008
+    clip: {fileID: 8300000, guid: 664504e6e6e2d5c499d61449184758ed, type: 3}
+    textHash: f027ffc20b2ff98b
+    duration: 3.238
+  - key: Composer.mozart.Dialogue.Intro.009
+    clip: {fileID: 8300000, guid: 7f7da0776224c0343a0b9215e9f77c51, type: 3}
+    textHash: c6a438e8cbab482f
+    duration: 3.627
+  - key: Composer.mozart.Dialogue.Intro.010
+    clip: {fileID: 8300000, guid: 7fee583e32d301445a7d680f91a04dc4, type: 3}
+    textHash: 20ec6d25fa9fc246
+    duration: 2.932
+  - key: Composer.mozart.Dialogue.Victory.001
+    clip: {fileID: 8300000, guid: da9c0be621827c54787d388b2c1719dd, type: 3}
+    textHash: 37840b9b0fb0edbd
+    duration: 3.493
+  - key: Composer.mozart.Dialogue.Victory.002
+    clip: {fileID: 8300000, guid: 9aa39fd9bcd97624ca18abef8d4b16c6, type: 3}
+    textHash: afa36fe1033e3c00
+    duration: 2.96
+  - key: Composer.mozart.Dialogue.Victory.003
+    clip: {fileID: 8300000, guid: ec776f8311d76cc459d2fd198025651e, type: 3}
+    textHash: 54ac2c4022a262f0
+    duration: 3.573
+  - key: Composer.mozart.Dialogue.Victory.004
+    clip: {fileID: 8300000, guid: 4e988ba101d11fd4183a0b55395b7ed9, type: 3}
+    textHash: 1dc54950fa1d7cbd
+    duration: 2.88
+  - key: Composer.mozart.Dialogue.Victory.005
+    clip: {fileID: 8300000, guid: 899b26fb15a93b544a0f34b0dafcedd1, type: 3}
+    textHash: c11c69c95697a747
+    duration: 3.205
+  - key: Composer.mozart.Dialogue.Victory.006
+    clip: {fileID: 8300000, guid: 361bd3ed887fdc24581c0d8b6f5de13b, type: 3}
+    textHash: 202b569d53abd3cf
+    duration: 2.72
+  - key: Composer.mozart.Dialogue.Victory.007
+    clip: {fileID: 8300000, guid: 430a54f910d100f4aa92567570756740, type: 3}
+    textHash: b7554b400af086eb
+    duration: 2.658
+  - key: Composer.mozart.Dialogue.Victory.008
+    clip: {fileID: 8300000, guid: 864b28db9928ce6499cdb5a51843dc4f, type: 3}
+    textHash: 359f4f1abe481efd
+    duration: 3.36
+  - key: Composer.mozart.Dialogue.Victory.009
+    clip: {fileID: 8300000, guid: 9fb4706531fe01e4f8db86edfbed3ca2, type: 3}
+    textHash: bf396455b412010b
+    duration: 3.28
+  - key: Composer.mozart.Dialogue.Victory.010
+    clip: {fileID: 8300000, guid: 04bc7f47914b90c47bf2f122eeaa1ae3, type: 3}
+    textHash: 165035201ea597d9
+    duration: 4.327
+  efforts:
+    hurt: {fileID: 0}
+    special: {fileID: 0}
+    defeat: {fileID: 0}

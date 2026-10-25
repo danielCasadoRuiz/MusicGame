@@ -123,6 +123,14 @@ public class RoundIntroController : MonoBehaviour
         _routine = StartCoroutine(PlaySequence());
     }
 
+    private static IEnumerator AnnounceAt(GameAudio audio, AudioClip word, float attackIn)
+    {
+        float lead = Mathf.Max(0.05f, audio.Onset(word) + 0.05f);
+        float wait = Mathf.Max(0f, attackIn - lead);
+        if (wait > 0f) yield return new WaitForSeconds(wait);
+        audio.PlayAnnouncer(word, GameAudioScope.Fight, Mathf.Max(0f, attackIn - wait));
+    }
+
     private IEnumerator PlaySequence()
     {
         float roundIntroDuration  = _config != null ? Mathf.Max(0f, _config.roundIntroDuration)  : 1.5f;
@@ -130,16 +138,33 @@ public class RoundIntroController : MonoBehaviour
         float fightBannerDuration = _config != null ? Mathf.Max(0f, _config.fightBannerDuration)  : 1f;
         float overlayAlpha        = _config != null ? Mathf.Clamp01(_config.countdownOverlayAlpha) : 0.55f;
 
+        // The runner → fight conversion normally played during the rival's opening line (the Versus waited for it);
+        // only if it never ran for this run (no presentation) does it play here first — "ROUND 1" and the countdown
+        // start once it is over. Otherwise this returns at once.
+        _text.text = "";
+        SetOverlayAlpha(0f);
+        if (BonusConversionController.Instance != null) yield return BonusConversionController.Instance.RunIfPending(_round);
+
         SetOverlayAlpha(overlayAlpha); // instant — held flat through ROUND n/3/2/1, only fades during FIGHT! below
 
         Loc.Set(_text, "Fight.RoundLabel", _round.ToString());
+        HelpTipsController.Instance?.ShowMoves(_round);   // the moves reminder beside the countdown, until Fighting
         yield return new WaitForSeconds(roundIntroDuration);
 
         FightFlowController.Instance?.RequestState(FightFlowState.Countdown);
 
+        // The session's announcer speaks the existing 3-2-1 and "Fury!" on the next beat of the same rhythm: scheduled
+        // during "1" so its accent lands exactly when FIGHT! appears (like "Tempo!" on GO in the race).
+        var audio = GameAudio.Instance;
+        var voice = audio != null ? audio.Announcer : null;
         for (int n = 3; n >= 1; n--)
         {
             _text.text = n.ToString();
+            if (voice != null)
+            {
+                audio.PlayAnnouncer(audio.AnnouncerNumber(n), GameAudioScope.Fight);   // game language; Fury! stays English
+                if (n == 1) StartCoroutine(AnnounceAt(audio, voice.fury, countdownStep)); // accent on the FIGHT! banner
+            }
             yield return new WaitForSeconds(countdownStep);
         }
 

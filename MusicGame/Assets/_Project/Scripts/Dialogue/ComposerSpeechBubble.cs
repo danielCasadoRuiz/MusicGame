@@ -17,6 +17,7 @@ using UnityEngine.UI;
 ///   • bubble bottom-centre sits `gap` above the projected head, tail pointing down at it;
 ///   • clamped inside the screen minus `margin`, below the HUD band (`topReserved`) and, while
 ///     AvoidCenterBand is on (round intro / countdown), never over the central countdown text;
+///   • never over the KeepOut areas (the bonus block / build panel while the conversion plays);
 ///   • anchor BEHIND the camera or no camera/anchor: the bubble parks top-centre without a tail —
 ///     the line stays readable, it just stops pointing; anchor off-screen: clamped to the edge, no tail.
 /// </summary>
@@ -64,6 +65,10 @@ public class ComposerSpeechBubble : MonoBehaviour
     /// anchor (the head) with its usual smoothing.</summary>
     public Func<Vector2?> ScreenAnchorProvider;
     public bool AvoidCenterBand;
+    /// <summary>Optional areas (UI root canvas local units) the bubble must never cover — e.g. the bonus block and
+    /// the build panel while the runner → fight conversion plays under the rival's line. The bubble moves the
+    /// shortest way out of each one that stays on screen.</summary>
+    public Func<System.Collections.Generic.IReadOnlyList<Rect>> KeepOut;
 
     public bool IsVisible => _bubble != null && gameObject.activeSelf;
     public bool IsRevealing => _typewriter != null && _typewriter.IsRevealing;
@@ -203,6 +208,10 @@ public class ComposerSpeechBubble : MonoBehaviour
         target.x = minX <= maxX ? Mathf.Clamp(target.x, minX, maxX) : 0f;
         target.y = minY <= maxY ? Mathf.Clamp(target.y, minY, maxY) : minY;
 
+        var keepOut = KeepOut?.Invoke();
+        if (keepOut != null)
+            foreach (var r in keepOut) target = MoveOutOf(target, r, minX, maxX, minY, maxY);
+
         if (AvoidCenterBand && OverlapsCenterBand(target))
         {
             float above = _layout.CenterBand.y * 0.5f + 8f;
@@ -220,6 +229,28 @@ public class ComposerSpeechBubble : MonoBehaviour
                     anchor.x > _smoothed.x - halfW + 14f && anchor.x < _smoothed.x + halfW - 14f;
         _tail.gameObject.SetActive(tail);
         if (tail) _tail.anchoredPosition = new Vector2(anchor.x, _smoothed.y);
+    }
+
+    // Shortest on-screen move (up / down / right / left) that takes the bubble (bottom-centre pivot, tail below it)
+    // clear of `area`; unchanged if it does not overlap or no move fits.
+    private Vector2 MoveOutOf(Vector2 bottomCentre, Rect area, float minX, float maxX, float minY, float maxY)
+    {
+        float halfW = _size.x * 0.5f;
+        var me = Rect.MinMaxRect(bottomCentre.x - halfW, bottomCentre.y - TailSize, bottomCentre.x + halfW, bottomCentre.y + _size.y);
+        if (!me.Overlaps(area)) return bottomCentre;
+        Vector2 best = bottomCentre;
+        float bestCost = float.MaxValue;
+        void Try(Vector2 p)
+        {
+            if (p.x < minX - 0.5f || p.x > maxX + 0.5f || p.y < minY - 0.5f || p.y > maxY + 0.5f) return;
+            float cost = (p - bottomCentre).sqrMagnitude;
+            if (cost < bestCost) { bestCost = cost; best = p; }
+        }
+        Try(new Vector2(bottomCentre.x, area.yMax + TailSize));
+        Try(new Vector2(bottomCentre.x, area.yMin - _size.y));
+        Try(new Vector2(area.xMax + halfW, bottomCentre.y));
+        Try(new Vector2(area.xMin - halfW, bottomCentre.y));
+        return best;
     }
 
     private bool OverlapsCenterBand(Vector2 bottomCentre)

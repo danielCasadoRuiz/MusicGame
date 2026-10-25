@@ -66,7 +66,7 @@ public class FightArenaConfig : ScriptableObject
     public float doubleTapWindow = 0.3f;
 
     [Header("Movement")]
-    [Tooltip("Flat locomotion speed (units/second) — not yet scaled by FighterStats.Speed.")]
+    [Tooltip("Locomotion speed (units/second) at a neutral build — × the fighter's Agility multiplier (FightCombatBalanceConfig.agilityToMoveSpeed).")]
     public float baseMovementSpeed = 4f;
     [Tooltip("Multiplies baseMovementSpeed while FighterMovementState is Run (see FighterMovement's " +
              "own doc on how Forward-Forward + held Forward enters Run).")]

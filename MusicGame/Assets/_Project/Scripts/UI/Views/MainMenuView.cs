@@ -37,6 +37,10 @@ public class MainMenuView : MonoBehaviour
     public GameObject  settingsPanel;
     public TextMeshProUGUI settingsTitleText;
     public TextMeshProUGUI volumeLabelText;
+    [Tooltip("Independent channel volumes (GameAudio: Music / Sfx / Voice).")]
+    public Slider      musicVolumeSlider;
+    public Slider      sfxVolumeSlider;
+    public Slider      voiceVolumeSlider;
     public Slider      volumeSlider;
     public Button      closeButton;
     public TextMeshProUGUI closeButtonLabel;

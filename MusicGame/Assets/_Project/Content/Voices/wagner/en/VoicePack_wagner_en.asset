@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1abea45d9a53b43b33e8c4a5bd67f9, type: 3}
+  m_Name: VoicePack_wagner_en
+  m_EditorClassIdentifier: Assembly-CSharp::ComposerVoicePack
+  composerId: wagner
+  language: en
+  engine: qwen3-tts
+  voiceDefinitionHash: 7a9d4e93a9372736
+  lines:
+  - key: Composer.wagner.Dialogue.Defeat.001
+    clip: {fileID: 8300000, guid: 3a20678aadc08d640bdaf72423999794, type: 3}
+    textHash: 6177c7dfc93d11a2
+    duration: 4.823
+  - key: Composer.wagner.Dialogue.Defeat.002
+    clip: {fileID: 8300000, guid: af3fb17f7b534354faecd4e1bc9fa02d, type: 3}
+    textHash: faed711d83636b7b
+    duration: 4.966
+  - key: Composer.wagner.Dialogue.Defeat.003
+    clip: {fileID: 8300000, guid: 4ed97c8f9007b8142a8efa7afbff9e4e, type: 3}
+    textHash: c0fd7a153ed49cb5
+    duration: 4.482
+  - key: Composer.wagner.Dialogue.Defeat.004
+    clip: {fileID: 8300000, guid: 5ee86d692f2fd4b41af1551a3194d1b8, type: 3}
+    textHash: 28fbdcbefc02897a
+    duration: 4.578
+  - key: Composer.wagner.Dialogue.Defeat.005
+    clip: {fileID: 8300000, guid: 38cd83a3ad97eb647ba6b2b9c8ec924a, type: 3}
+    textHash: a0bad72af5f46fc2
+    duration: 4.358
+  - key: Composer.wagner.Dialogue.Defeat.006
+    clip: {fileID: 8300000, guid: 6a4338a2207b76748a3816c77be2eee6, type: 3}
+    textHash: 251044cb3c1bdd6f
+    duration: 4.566
+  - key: Composer.wagner.Dialogue.Defeat.007
+    clip: {fileID: 8300000, guid: ad20846d53f38ee47a944d6d0a12a75d, type: 3}
+    textHash: 626ce6c50be32d84
+    duration: 5.6
+  - key: Composer.wagner.Dialogue.Defeat.008
+    clip: {fileID: 8300000, guid: 11574a90c6679b94f880cf23e1be7cdd, type: 3}
+    textHash: eab139f092b6ed5f
+    duration: 4.306
+  - key: Composer.wagner.Dialogue.Defeat.009
+    clip: {fileID: 8300000, guid: 27ed7abf23f33e243bd3b5a9f1671f54, type: 3}
+    textHash: 7cd8500ba73c2cfd
+    duration: 4.144
+  - key: Composer.wagner.Dialogue.Defeat.010
+    clip: {fileID: 8300000, guid: 6b73b8305faf2b2429901709109f4ead, type: 3}
+    textHash: 7f3c4b61fdb4bc90
+    duration: 4.4
+  - key: Composer.wagner.Dialogue.Intro.001
+    clip: {fileID: 8300000, guid: a70a61c34843fa048b40a2d1f2d6160f, type: 3}
+    textHash: 3b482db599099d0e
+    duration: 3.918
+  - key: Composer.wagner.Dialogue.Intro.002
+    clip: {fileID: 8300000, guid: b3e6fc57c9d47c448abb1ee8e40d8df6, type: 3}
+    textHash: e74adde8821cc7a0
+    duration: 4.24
+  - key: Composer.wagner.Dialogue.Intro.003
+    clip: {fileID: 8300000, guid: b859ba3844ba0364fa03553bf04e0837, type: 3}
+    textHash: 6ec3034fe6c96d4a
+    duration: 4.872
+  - key: Composer.wagner.Dialogue.Intro.004
+    clip: {fileID: 8300000, guid: 62f4129af139bdf4898f71e3fd8efb32, type: 3}
+    textHash: a76996bb4faef91e
+    duration: 4.179
+  - key: Composer.wagner.Dialogue.Intro.005
+    clip: {fileID: 8300000, guid: dd7ce1e7dee7d58459c552750b96f401, type: 3}
+    textHash: 2d7c2201cc1f4daa
+    duration: 4.16
+  - key: Composer.wagner.Dialogue.Intro.006
+    clip: {fileID: 8300000, guid: f4834898c53e8744fb6c296f4f9feb93, type: 3}
+    textHash: 3997aec0aa38b4cd
+    duration: 3.304
+  - key: Composer.wagner.Dialogue.Intro.007
+    clip: {fileID: 8300000, guid: 8ee8eb8d02b414946b124157ab800f33, type: 3}
+    textHash: aa4a2c4da974374c
+    duration: 4.56
+  - key: Composer.wagner.Dialogue.Intro.008
+    clip: {fileID: 8300000, guid: 07176f583057e8343913517440fa4082, type: 3}
+    textHash: bff6b7de50b9803d
+    duration: 4.931
+  - key: Composer.wagner.Dialogue.Intro.009
+    clip: {fileID: 8300000, guid: 09b18ba97047a774baa7d96b2426b70c, type: 3}
+    textHash: 4a3e9b8441952015
+    duration: 4.864
+  - key: Composer.wagner.Dialogue.Intro.010
+    clip: {fileID: 8300000, guid: e9addcf9de59ede4ab49562e14d9d87d, type: 3}
+    textHash: 6d18ff06ee4a0369
+    duration: 4.596
+  - key: Composer.wagner.Dialogue.Victory.001
+    clip: {fileID: 8300000, guid: 0f6e166e41e5a624289313ed966867b8, type: 3}
+    textHash: 112b40b0bf613a0c
+    duration: 3.981
+  - key: Composer.wagner.Dialogue.Victory.002
+    clip: {fileID: 8300000, guid: 3bdcd707e77049247a1743623a39a3e1, type: 3}
+    textHash: b88f5b595ff67bd7
+    duration: 4.235
+  - key: Composer.wagner.Dialogue.Victory.003
+    clip: {fileID: 8300000, guid: fdd73a28ad5842541924cc3d3e5e9604, type: 3}
+    textHash: 6a0fa6d32ad2699f
+    duration: 4.633
+  - key: Composer.wagner.Dialogue.Victory.004
+    clip: {fileID: 8300000, guid: a46cfa095ff8dc04e893094b2b07133a, type: 3}
+    textHash: a9e9f3c87967d5cd
+    duration: 3.68
+  - key: Composer.wagner.Dialogue.Victory.005
+    clip: {fileID: 8300000, guid: fdeac0b0e6de3ac498dea420da3175f3, type: 3}
+    textHash: c24e740abb4e1922
+    duration: 4.023
+  - key: Composer.wagner.Dialogue.Victory.006
+    clip: {fileID: 8300000, guid: 16ee3e6d73310eb4694330dbb60d3451, type: 3}
+    textHash: f1b370bb77219805
+    duration: 4.201
+  - key: Composer.wagner.Dialogue.Victory.007
+    clip: {fileID: 8300000, guid: b44bdfbb1ca465a40b4316ffb1589770, type: 3}
+    textHash: 5d8090aa4e5b33dc
+    duration: 3.772
+  - key: Composer.wagner.Dialogue.Victory.008
+    clip: {fileID: 8300000, guid: 7b50c69e0737a7040bb9751995a58cae, type: 3}
+    textHash: de1e313c992eca6a
+    duration: 5.847
+  - key: Composer.wagner.Dialogue.Victory.009
+    clip: {fileID: 8300000, guid: d7d585ea75940334f93e2d3183126be3, type: 3}
+    textHash: e09bcadd3d9542b3
+    duration: 4.56
+  - key: Composer.wagner.Dialogue.Victory.010
+    clip: {fileID: 8300000, guid: 00b07330bf1221a499d6718b713bc32c, type: 3}
+    textHash: fcbf8ff1d968e8f7
+    duration: 4.787
+  efforts:
+    hurt: {fileID: 0}
+    special: {fileID: 0}
+    defeat: {fileID: 0}

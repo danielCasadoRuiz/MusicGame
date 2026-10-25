@@ -51,6 +51,17 @@ public class ThemeManager : MonoBehaviour, IAppModule, IConfigurableModule<Theme
 
     private System.Action<MusicStyleDetectedEvent> _onMusicStyleDetected;
 
+    // ── Explicit completion of a style theme change (readiness barrier) ──
+    private int   _pendingStyleLoads;
+    private float _lastThemeChangeAt = float.NegativeInfinity;
+
+    /// <summary>True once every requested music-style visual has finished loading (applied, or absent/failed —
+    /// nothing left to wait for) AND the colour transition of the last theme change has run its full
+    /// ThemeTransitionController.Duration. The readiness barrier waits on this instead of a guessed delay.</summary>
+    public bool IsStyleTransitionSettled =>
+        _pendingStyleLoads == 0 && Time.unscaledTime >= _lastThemeChangeAt + ThemeTransitionController.Duration;
+    public int PendingStyleLoads => _pendingStyleLoads;
+
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -114,8 +125,10 @@ public class ThemeManager : MonoBehaviour, IAppModule, IConfigurableModule<Theme
             return;
         }
 
+        _pendingStyleLoads++;
         _context.ThemeAssets.LoadMusicStyleVisual(reference, visual =>
         {
+            _pendingStyleLoads = Mathf.Max(0, _pendingStyleLoads - 1);
             if (visual == null) return;
             SwapStyleLayer(visual, styleRef: reference, frontendRef: null);
         });
@@ -150,6 +163,7 @@ public class ThemeManager : MonoBehaviour, IAppModule, IConfigurableModule<Theme
         EventBus.Publish(new ThemeChangingEvent { Old = CurrentTheme, New = resolved });
 
         CurrentTheme = resolved;
+        _lastThemeChangeAt = Time.unscaledTime;
         EventBus.Publish(new ThemeChangedEvent { Theme = CurrentTheme });
     }
 

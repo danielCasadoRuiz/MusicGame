@@ -80,6 +80,10 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private float kickStrength = 0.35f;
     [Tooltip("Higher = the kick snaps back to rest faster")]
     [SerializeField] private float kickDecay    = 20f;
+    [Tooltip("Pulses whose MUSICAL time (eventTime) lies within this many seconds of an already-applied " +
+             "one are the same audible hit: only the extra strength is added (max, not sum). Distinct " +
+             "times always add, even in the same frame; nothing is delayed.")]
+    [SerializeField] private float kickMergeWindow = 0.03f;
 
     [Header("View Mode — First Person")]
     [Tooltip("Child transform under the Player representing roughly the head/eyes — the First " +
@@ -182,6 +186,8 @@ public class CameraFollow : MonoBehaviour
     private Action<SongProfileReadyEvent> _onProfile;
     private Action<GameStartedEvent>      _onStart;
     private Action<BeatPulseEvent>        _onPulse;
+    private Action<MusicTimeDiscontinuityEvent> _onDiscontinuity;
+    private MusicalPulseDeduplicator      _pulseDedup;
 
     private void Awake()
     {
@@ -329,10 +335,22 @@ public class CameraFollow : MonoBehaviour
         // Capped: a dense burst of pulses (many onsets in quick succession) shouldn't be able
         // to stack past a sane ceiling — otherwise rapid-fire beats can pile the kick up faster
         // than it decays and the camera reads as constantly launching upward.
-        _onPulse   = e => _kick = Mathf.Min(_kick + e.Strength * kickStrength, kickStrength * 1.5f);
+        // Deduplicated by musical identity first (MusicalPulseDeduplicator — same event, or the same
+        // onset time within kickMergeWindow), so coinciding timeline events (an Impact plus a Kick
+        // on one onset) kick once instead of stacking.
+        _pulseDedup ??= new MusicalPulseDeduplicator(kickMergeWindow);
+        _onPulse   = e =>
+        {
+            _pulseDedup.MergeWindow = kickMergeWindow;
+            float add = _pulseDedup.Accept(e.EventIndex, e.EventTime, e.Strength);
+            if (add > 0f) _kick = Mathf.Min(_kick + add * kickStrength, kickStrength * 1.5f);
+        };
+        // Seek/respawn/restart: the same event indices legitimately pulse again.
+        _onDiscontinuity = _ => _pulseDedup.Reset();
         EventBus.Subscribe(_onProfile);
         EventBus.Subscribe(_onStart);
         EventBus.Subscribe(_onPulse);
+        EventBus.Subscribe(_onDiscontinuity);
         // The real avatar is built asynchronously, after the visibility above was applied.
         if (playerController != null) playerController.VisualChanged += ApplyRendererVisibility;
     }
@@ -343,6 +361,7 @@ public class CameraFollow : MonoBehaviour
         EventBus.Unsubscribe(_onProfile);
         EventBus.Unsubscribe(_onStart);
         EventBus.Unsubscribe(_onPulse);
+        EventBus.Unsubscribe(_onDiscontinuity);
     }
 
     private void Update()
@@ -392,10 +411,9 @@ public class CameraFollow : MonoBehaviour
         float targetLateral = playerController != null ? playerController.LateralOffset : 0f;
         _smoothedLateral = Mathf.SmoothDamp(_smoothedLateral, targetLateral, ref _velX, xSmoothTime);
 
-        if (_profile != null && clock.IsRunning && clock.SongTime > config.core.warmupTime)
+        if (_profile != null && clock.IsRunning && clock.HasPlaybackStarted)
         {
-            float songT = clock.SongTime - config.core.warmupTime;
-            float e     = _profile.GetIntensityAt(songT);
+            float e = _profile.GetIntensityAt(clock.ClipTime); // SongProfile is clip-time indexed
             _energyHeight = Mathf.Lerp(_energyHeight, e * energyHeightPeak, energySmooth * Time.deltaTime);
         }
 

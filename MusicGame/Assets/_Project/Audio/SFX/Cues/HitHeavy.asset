@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a7f43baddb4e274eb9596c7a7db1113, type: 3}
+  m_Name: HitHeavy
+  m_EditorClassIdentifier: Assembly-CSharp::SfxCue
+  clips:
+  - {fileID: 8300000, guid: 56d7ac7d18666304c9858bc3864ad989, type: 3}
+  - {fileID: 8300000, guid: 1a086065b6cffa247a4117d99de24c48, type: 3}
+  - {fileID: 8300000, guid: 6edb80568f742e641aa639e5dd4073a0, type: 3}
+  - {fileID: 8300000, guid: e84965e774aabd347bae5c8d6002004f, type: 3}
+  - {fileID: 8300000, guid: aee2697bcd410b1479d4e2cf288b0486, type: 3}
+  channel: 1
+  volume: 0.7
+  volumeJitter: 0.08
+  pitch: {x: 0.95, y: 1.05}
+  maxInstances: 2
+  cooldown: 0.06
+  credits: "Kenney \"Impact Sounds\" (kenney.nl) \u2014 CC0 1.0. Licence: Assets/_Project/Audio/Sfx/Kenney/License.txt"

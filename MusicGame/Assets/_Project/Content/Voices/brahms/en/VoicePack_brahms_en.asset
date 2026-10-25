@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1abea45d9a53b43b33e8c4a5bd67f9, type: 3}
+  m_Name: VoicePack_brahms_en
+  m_EditorClassIdentifier: Assembly-CSharp::ComposerVoicePack
+  composerId: brahms
+  language: en
+  engine: qwen3-tts
+  voiceDefinitionHash: 8dd1b406f2c1f754
+  lines:
+  - key: Composer.brahms.Dialogue.Defeat.001
+    clip: {fileID: 8300000, guid: 2c71cc0b10b5417409de2c05c2edd9f6, type: 3}
+    textHash: 2adcf7b07bb15e4e
+    duration: 3.788
+  - key: Composer.brahms.Dialogue.Defeat.002
+    clip: {fileID: 8300000, guid: 1e73c2192a6015443bc3831cda293872, type: 3}
+    textHash: baf7ee23d1077719
+    duration: 4.427
+  - key: Composer.brahms.Dialogue.Defeat.003
+    clip: {fileID: 8300000, guid: eaa1cc24a9737b244943bc34fde9ce0f, type: 3}
+    textHash: 63da5ee9831a80ae
+    duration: 3.692
+  - key: Composer.brahms.Dialogue.Defeat.004
+    clip: {fileID: 8300000, guid: 51afb97d252312d4f9f5b1d73aaca999, type: 3}
+    textHash: 7758e5677398839c
+    duration: 4.707
+  - key: Composer.brahms.Dialogue.Defeat.005
+    clip: {fileID: 8300000, guid: c76fd7cb93138054991e8c0b314f0982, type: 3}
+    textHash: 2d55cb56b86cc0d8
+    duration: 4.153
+  - key: Composer.brahms.Dialogue.Defeat.006
+    clip: {fileID: 8300000, guid: 29702b9c350713441921d7c9fd6720fb, type: 3}
+    textHash: 1eb006b528293e3a
+    duration: 2.745
+  - key: Composer.brahms.Dialogue.Defeat.007
+    clip: {fileID: 8300000, guid: 53b034148faa223489490837659f556d, type: 3}
+    textHash: d94b0d94a897d1b8
+    duration: 4.063
+  - key: Composer.brahms.Dialogue.Defeat.008
+    clip: {fileID: 8300000, guid: b51e525b4762d7e4299f1eab91b84d00, type: 3}
+    textHash: 7b220e240c37256f
+    duration: 4.623
+  - key: Composer.brahms.Dialogue.Defeat.009
+    clip: {fileID: 8300000, guid: 5610bffb5b6e6d54d839ae164333b16e, type: 3}
+    textHash: 9c83a12566bde636
+    duration: 4.776
+  - key: Composer.brahms.Dialogue.Defeat.010
+    clip: {fileID: 8300000, guid: f978ec6e4c8945a4fa72361119679350, type: 3}
+    textHash: eca014ea253744e6
+    duration: 4.826
+  - key: Composer.brahms.Dialogue.Intro.001
+    clip: {fileID: 8300000, guid: 7c43ca96296940141a95bf1316a1b88a, type: 3}
+    textHash: a2f0c409561c093a
+    duration: 3.448
+  - key: Composer.brahms.Dialogue.Intro.002
+    clip: {fileID: 8300000, guid: 2e67c8d443d91f744987c9b85d4f18b0, type: 3}
+    textHash: 77cdb1a82299b1de
+    duration: 3.162
+  - key: Composer.brahms.Dialogue.Intro.003
+    clip: {fileID: 8300000, guid: 9aa5094cdc4d37e4e9cba4fb80a1b533, type: 3}
+    textHash: 5e69aa6613981620
+    duration: 3.578
+  - key: Composer.brahms.Dialogue.Intro.004
+    clip: {fileID: 8300000, guid: 5e0fecec7f857cd4eb64336bec03f671, type: 3}
+    textHash: ebb8ba414b0dbc64
+    duration: 3.107
+  - key: Composer.brahms.Dialogue.Intro.005
+    clip: {fileID: 8300000, guid: 4da18c4accf68f5478ca3e1a215a324c, type: 3}
+    textHash: 12ec0c39e20299d7
+    duration: 2.812
+  - key: Composer.brahms.Dialogue.Intro.006
+    clip: {fileID: 8300000, guid: 19c149875acb68543a2028e5037d43d5, type: 3}
+    textHash: 456254fe9c115134
+    duration: 2.813
+  - key: Composer.brahms.Dialogue.Intro.007
+    clip: {fileID: 8300000, guid: 3ee9494e5a2cbca4796c55fc62aa453a, type: 3}
+    textHash: 9a8f80f1a8aa7632
+    duration: 3.883
+  - key: Composer.brahms.Dialogue.Intro.008
+    clip: {fileID: 8300000, guid: 506bd3ab8a5e541429343b10849ecbfd, type: 3}
+    textHash: c5362f83bd997304
+    duration: 3.287
+  - key: Composer.brahms.Dialogue.Intro.009
+    clip: {fileID: 8300000, guid: faa4d8df407fd864caf6e3474d5e8299, type: 3}
+    textHash: 2c05bc4396f9f1fd
+    duration: 3.766
+  - key: Composer.brahms.Dialogue.Intro.010
+    clip: {fileID: 8300000, guid: 374b2cad043ff00409b679d27ea4ae2b, type: 3}
+    textHash: b493d85ac9163ed7
+    duration: 3.777
+  - key: Composer.brahms.Dialogue.Victory.001
+    clip: {fileID: 8300000, guid: 452cc5d901ffbe640a87c04e1247d2e4, type: 3}
+    textHash: d0ead1080a2a8b0f
+    duration: 3.646
+  - key: Composer.brahms.Dialogue.Victory.002
+    clip: {fileID: 8300000, guid: 4f27a1fa0d691a7438e84ca291eaae72, type: 3}
+    textHash: 3c0a6752a8b9fdbf
+    duration: 3.918
+  - key: Composer.brahms.Dialogue.Victory.003
+    clip: {fileID: 8300000, guid: 664386c2584f04b448bdfc11b023d847, type: 3}
+    textHash: 5c81c09335a38b22
+    duration: 4.037
+  - key: Composer.brahms.Dialogue.Victory.004
+    clip: {fileID: 8300000, guid: 21ad58f984c16b94da66f2b374b96240, type: 3}
+    textHash: 8ac7e4bb1752796a
+    duration: 4.063
+  - key: Composer.brahms.Dialogue.Victory.005
+    clip: {fileID: 8300000, guid: 3dea3fe678533be418c65f543da5fa01, type: 3}
+    textHash: 2f4bf504cb9d43bb
+    duration: 3.528
+  - key: Composer.brahms.Dialogue.Victory.006
+    clip: {fileID: 8300000, guid: 189389d563dd9db4faae978d28491074, type: 3}
+    textHash: c0bc1aa597bafa81
+    duration: 3.105
+  - key: Composer.brahms.Dialogue.Victory.007
+    clip: {fileID: 8300000, guid: 129dfc3415288f54b86a9255b29fb9a9, type: 3}
+    textHash: 741b2f516d6e46a1
+    duration: 3.368
+  - key: Composer.brahms.Dialogue.Victory.008
+    clip: {fileID: 8300000, guid: dbacbc5ed1fa7c64d9d16a108e900e70, type: 3}
+    textHash: 8e065084e1c36bf6
+    duration: 3.727
+  - key: Composer.brahms.Dialogue.Victory.009
+    clip: {fileID: 8300000, guid: fe873ba55ab82e74b8e9da19e2fa24f6, type: 3}
+    textHash: a2cf9bc4151a4d18
+    duration: 3.988
+  - key: Composer.brahms.Dialogue.Victory.010
+    clip: {fileID: 8300000, guid: 2cdcefbc5f88b104f87d887363ffef52, type: 3}
+    textHash: e5ca5e738a1c18b9
+    duration: 4.307
+  efforts:
+    hurt: {fileID: 0}
+    special: {fileID: 0}
+    defeat: {fileID: 0}

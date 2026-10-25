@@ -61,7 +61,7 @@ public struct RingCollectedEvent
     public RingType Type;
     public Vector3  Position;
     public float    TimingError;   // |ActualTime - ExpectedTime|
-    public float    ExpectedTime;  // TimelineEvent.eventTime — the musical moment this was generated for
+    public float    ExpectedTime;  // eventTime + the player's trail (MusicRunnerCoreConfig.playerTrailSeconds) — when a non-surging player meets it
     public float    ActualTime;    // MusicClock.SongTime when the player actually touched it
     public float    Strength;      // TimelineEvent.strength
     public float    Confidence;    // TimelineEvent.confidence — classification certainty (see GameplayTimeline.ClassifyOnset), or 1.0 for a Macro-as-collectible (Impact/Peak)
@@ -87,7 +87,27 @@ public struct CheckpointReachedEvent { public int Index; }
 // FallSongTime = MusicClock.SongTime at the EXACT moment of the fall — the single source both
 // the respawn (FallRespawnSystem) and the score-protection calculation (GameplayManager) read,
 // so "where you respawn" and "what counts as protected" can never disagree.
-public struct PlayerFellEvent       { public float FallSongTime; }
+// Cause = WHY the respawn penalty fired (a real fall, the chaser's contact, trapped by an obstacle) — kept
+// distinct so each can be tuned separately (RunnerHazardsConfig penalty scales); Position = where it happened.
+public struct PlayerFellEvent       { public float FallSongTime; public RunnerPenaltyCause Cause; public Vector3 Position; }
+
+public enum RunnerPenaltyCause
+{
+    Fall,
+    ChaserContact,
+    Trapped,
+}
+
+/// <summary>Published once per penalty with what was REALLY lost (score + collected pickups removed) and
+/// where — the hook for a future "pickups knocked out and bouncing" effect. Pickups lost can be 0.</summary>
+public struct RunnerPenaltyEvent
+{
+    public RunnerPenaltyCause Cause;
+    public Vector3 Position;
+    public float   SongTime;
+    public int     ScoreLost;
+    public int     PickupsLost;
+}
 // CheckpointIndex is a legacy name kept to avoid touching every consumer: 0 still means "a full
 // restart happened" (GameplayHUD/PauseController un-freeze on this); -1 means "a normal mid-song
 // fall-respawn happened" (no discrete checkpoint involved anymore).
@@ -101,12 +121,40 @@ public struct PlayerRespawnedEvent  { public int CheckpointIndex; }
 public struct ContinuePressedEvent  { public CollectionStats Stats; }
 
 /// <summary>
-/// Fired the instant MusicClock.SongTime reaches a timeline event's musical moment —
-/// i.e. exactly when that onset sounds in the song, regardless of whether the player
+/// Fired the instant MusicClock.SongTime reaches a timeline event's musical moment (minus
+/// pulseLeadTime) — i.e. when that onset sounds in the song, regardless of whether the player
 /// has reached or collected the corresponding ring. Drives beat-synced feedback
 /// (ring pulse, camera kick) so the world visibly reacts on the beat itself.
+///
+/// EventIndex + EventTime are the pulse's musical IDENTITY: the timeline index (unique per run,
+/// -1 = unknown) and the moment's eventTime (SongTime domain, NOT the frame it was processed in).
+/// Consumers that must not stack coinciding moments (CameraFollow's kick) deduplicate on these —
+/// never on "arrived in the same frame": a slow frame can legitimately carry several real hits.
 /// </summary>
-public struct BeatPulseEvent { public RingType Type; public float Strength; public Vector3 Position; }
+public struct BeatPulseEvent
+{
+    public RingType Type;
+    public float    Strength;
+    public Vector3  Position;
+    public int      EventIndex;
+    public float    EventTime;
+}
+
+/// <summary>
+/// Published by MusicClock whenever the musical timeline jumps instead of flowing: a new run
+/// (Initialize — fresh start, restart, song change), the audio starting after the warmup, an
+/// explicit seek (fall-respawn) or an automatic resync after a stall. Anything holding per-moment
+/// state (live detector histories/cooldowns, pulse dedup, cursors) resets on it. Times are
+/// SongTime (FromSongTime/ToSongTime) and clip time (ToClipTime) — see MusicTime.
+/// </summary>
+public struct MusicTimeDiscontinuityEvent
+{
+    public MusicTimeDiscontinuityReason Reason;
+    public float FromSongTime;
+    public float ToSongTime;
+    public float ToClipTime;
+    public int   Generation;
+}
 
 /// <summary>
 /// Fired by CameraFollow whenever the view mode actually changes (UI button OR the 'V' debug

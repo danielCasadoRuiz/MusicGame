@@ -46,6 +46,8 @@ public class FallRespawnSystem : MonoBehaviour
     }
 
     public void Activate()   => _active = true;
+    /// <summary>A fall/penalty respawn (or a restart) is in progress — a second trigger is ignored.</summary>
+    public bool IsProcessing => _processing;
     public void Deactivate() { _active = false; _processing = false; }
 
     // ── Manual restart (Pause menu → Restart Song) ────────────────────────────
@@ -116,7 +118,13 @@ public class FallRespawnSystem : MonoBehaviour
 
     // ── Trigger ───────────────────────────────────────────────────────────────
 
-    public void TriggerFall()
+    public void TriggerFall() => TriggerFall(RunnerPenaltyCause.Fall);
+
+    /// <summary>The ONE respawn penalty entry point, for every cause (a real fall, the chaser's contact, trapped
+    /// by an obstacle): same fade / hold / seek-back respawn. Only one at a time (a second trigger — e.g. contact
+    /// and trap in the same frame — is ignored). Non-fall causes freeze the player in place instead of letting
+    /// it drop through the ground during the fade.</summary>
+    public void TriggerFall(RunnerPenaltyCause cause)
     {
         if (_processing) return;
         _processing = true;
@@ -124,13 +132,19 @@ public class FallRespawnSystem : MonoBehaviour
         // Captured HERE, synchronously, before any fade/coroutine delay — the audio (and
         // MusicClock, which derives from it) keeps advancing during the fade-out below, so this
         // is the only point that actually reflects "where the player was when they fell".
-        float fallSongTime = MusicClock.Instance?.SongTime ?? 0f;
+        var   clock        = MusicClock.Instance;
+        float fallSongTime = clock != null ? clock.SongTime : 0f;
+        // A fall during the warmup countdown has no audio to stop or seek: the countdown keeps
+        // running (it's game time, like GameplayManager's own warmup wait) and the respawn just
+        // puts the player back where the clock says it belongs.
+        bool duringWarmup = clock != null && !clock.HasPlaybackStarted;
 
-        Debug.Log($"[FALL] pos={_player.transform.position:F1}  y={_player.transform.position.y:F2}  " +
-                  $"fallSongTime={fallSongTime:F2}  playerDistance={_player.ActualDistance:F1}");
-        _player.EnterFallState();
-        EventBus.Publish(new PlayerFellEvent { FallSongTime = fallSongTime });
-        StartCoroutine(FallSequence(fallSongTime));
+        Debug.Log($"[FALL] cause={cause} pos={_player.transform.position:F1}  y={_player.transform.position.y:F2}  " +
+                  $"fallSongTime={fallSongTime:F2}  playerDistance={_player.ActualDistance:F1}  warmup={duringWarmup}");
+        Vector3 where = _player.transform.position;
+        _player.EnterFallState(freeze: cause != RunnerPenaltyCause.Fall);
+        EventBus.Publish(new PlayerFellEvent { FallSongTime = fallSongTime, Cause = cause, Position = where });
+        StartCoroutine(duringWarmup ? WarmupFallSequence() : FallSequence(fallSongTime));
     }
 
     // ── Respawn flow ──────────────────────────────────────────────────────────
@@ -148,12 +162,55 @@ public class FallRespawnSystem : MonoBehaviour
             yield return null;
         }
         _audio.volume = 0f;
+
+        // The song may have finished during the fade (its end reached while falling): there is no
+        // audio left to seek back into — restore the volume and respawn in place instead of
+        // restarting the music in the middle of the farewell.
+        var clock = MusicClock.Instance;
+        if (clock != null && !IsAudioDriven(clock.EffectiveState))
+        {
+            _audio.volume = origVol;
+            yield return new WaitForSeconds(Mathf.Max(0f, _config.checkpointRespawnDelay));
+            RespawnInPlace();
+            yield break;
+        }
+
+        // Hold BEFORE pausing: the clock freezes at the current musical moment instead of seeing a
+        // non-playing source (it never falls back to wall-clock time — the old forward jump that
+        // grew with every fall and advanced spawns/pulses/macros for music that never played).
+        clock?.Hold();
         _audio.Pause();
 
         yield return new WaitForSeconds(Mathf.Max(0f, _config.checkpointRespawnDelay));
 
         yield return StartCoroutine(RespawnAtSongTime(fallSongTime, origVol));
 
+        _processing = false;
+    }
+
+    private static bool IsAudioDriven(MusicClockState s) =>
+        s == MusicClockState.Playing || s == MusicClockState.Held || s == MusicClockState.Stalled;
+
+    private IEnumerator WarmupFallSequence()
+    {
+        yield return new WaitForSeconds(Mathf.Max(0f, _config.fallFadeOutDuration + _config.checkpointRespawnDelay));
+        RespawnInPlace();
+    }
+
+    /// <summary>Respawn with no audio to seek (warmup countdown, or the song already finished): the
+    /// player goes back to wherever the clock says it belongs NOW; cursors resync to that moment.</summary>
+    private void RespawnInPlace()
+    {
+        var   clock    = MusicClock.Instance;
+        float songTime = clock != null ? clock.SongTime : 0f;
+        MusicWorldManager.Instance?.RebuildNow(clock != null ? clock.MusicDistance : 0f);
+        _player.SnapToCanonicalPosition();
+        CameraFollow.Instance?.SnapToPlayer();
+        _manager.ReturnAllActiveToPool();
+        _manager.ResyncCursors(songTime);
+        Debug.Log($"[RESPAWN] in place (no audio to seek)  songTime={songTime:F2}  state={clock?.State}");
+
+        EventBus.Publish(new PlayerRespawnedEvent { CheckpointIndex = -1 });
         _processing = false;
     }
 
@@ -165,7 +222,9 @@ public class FallRespawnSystem : MonoBehaviour
     /// </summary>
     private IEnumerator RespawnAtSongTime(float songTime, float targetVol)
     {
-        float audioTime = Mathf.Max(0f, songTime - _config.warmupTime);
+        var   clock    = MusicClock.Instance;
+        float clipTime = Mathf.Max(0f, clock != null ? clock.ToClipTime(songTime)
+                                                     : MusicTime.SongToClip(songTime, _config.warmupTime));
 
         // Resync audio/clock BEFORE the player repositions itself — so by the time
         // PlayerController.SnapToCanonicalPosition() reads MusicClock.MusicDistance below, it
@@ -173,10 +232,10 @@ public class FallRespawnSystem : MonoBehaviour
         // centered wherever the player fell) could be far from the respawn point for up to a
         // frame, and MusicClock briefly still reflects the pre-fall distance — either can show up
         // as a fall-through/hitch right after respawn depending on script execution order, which
-        // this removes entirely.
-        _audio.time = audioTime;
-        _audio.Play();
-        MusicClock.Instance?.ForceUpdate();
+        // this removes entirely. StartPlayback seeks + plays + snaps the clock (Held → Playing) and
+        // publishes the Seek discontinuity (live detectors / pulse dedup reset on it).
+        if (clock != null) clock.StartPlayback(clipTime, MusicTimeDiscontinuityReason.Seek);
+        else { _audio.time = clipTime; _audio.Play(); }
 
         // Read back (not re-derived from songTime*speed — PlayerController.CanonicalDistance is
         // the only place that formula lives) purely to size the ground-rebuild window.
@@ -195,8 +254,7 @@ public class FallRespawnSystem : MonoBehaviour
                   $"verticalVelocity={_player.VerticalVelocity:F2}");
 
         _manager.ReturnAllActiveToPool();
-        _manager.SetNextEventIndex(FindFirstEventIndexAtOrAfter(songTime));
-        _manager.ResyncMacroIndex(songTime);
+        _manager.ResyncCursors(songTime);
 
         yield return StartCoroutine(FadeIn(targetVol, _config.checkpointMusicFadeInDuration));
 
@@ -206,43 +264,32 @@ public class FallRespawnSystem : MonoBehaviour
         EventBus.Publish(new PlayerRespawnedEvent { CheckpointIndex = -1 });
     }
 
-    /// <summary>First timeline event at or after the given songTime — same lookup
-    /// CheckpointSystem used to precompute per-checkpoint, done on demand here instead since
-    /// there's no fixed set of respawn points to precompute it for anymore.</summary>
-    private int FindFirstEventIndexAtOrAfter(float songTime)
-    {
-        var events = _manager != null ? _manager.Timeline?.Events : null;
-        if (events == null) return 0;
-        for (int i = 0; i < events.Length; i++)
-            if (events[i].eventTime >= songTime) return i;
-        return events.Length;
-    }
-
     private IEnumerator RestartSong(float targetVol)
     {
         Debug.Log("[RESPAWN] RestartSong (full restart — end screen / pause menu)");
 
         _audio.Stop();
 
-        _manager.ReturnAllActiveToPool();
-        _manager.SetNextEventIndex(0);
-        _manager.ResyncMacroIndex(0f);
         CheckpointSystem.Instance?.ResetToStart();
 
         // Real warmupTime this time (NOT 0) — a Restart should feel exactly like a genuine fresh
         // start: the same GameStartedEvent/CountdownController "3, 2, 1, GO" sequence, the player
         // already running over the synthetic pre-song terrain hill (MusicWorldManager's own
         // negative-time branch — see NormalizedBandValue), and the song only actually starting
-        // once that countdown finishes. SongTime starts at 0 here (Initialize's own first Tick())
-        // same as it does for the very first GenerateAndStart.
+        // once that countdown finishes. SongTime starts at the play-range start here, same as it
+        // does for the very first GenerateAndStart.
+        // The countdown leads into SongPlayStart (MusicClock.Initialize's start offset), so a
+        // restart of a mid-song range never jumps either. Cursors go to the audio's start.
         _manager.ReinitializeClock(_config.warmupTime);
+        _manager.ReturnAllActiveToPool();
+        _manager.ResyncCursors(MusicClock.Instance != null ? MusicClock.Instance.PlaybackStartSongTime : 0f);
 
         if (MusicWorldManager.Instance?.Path != null)
         {
-            MusicWorldManager.Instance.RebuildNow(0f);
-            // Single authority for "where the player belongs" — MusicClock.MusicDistance is
-            // already 0 here (ReinitializeClock above), so this places the player at the path
-            // start exactly like before, without duplicating the sample/surface logic.
+            MusicWorldManager.Instance.RebuildNow(MusicClock.Instance != null ? MusicClock.Instance.MusicDistance : 0f);
+            // Single authority for "where the player belongs" — MusicClock.MusicDistance is the
+            // run's start distance here (ReinitializeClock above), so this places the player there
+            // without duplicating the sample/surface logic.
             _player.SnapToCanonicalPosition();
             CameraFollow.Instance?.SnapToPlayer();
             Debug.Log($"[PLAYER RESET] forwardOffset={_player.ForwardOffset:F2}  lateralOffset={_player.LateralOffset:F2}  " +
@@ -263,18 +310,17 @@ public class FallRespawnSystem : MonoBehaviour
 
         yield return new WaitForSeconds(_config.warmupTime);
 
-        // Safety net — same as GenerateAndStart's own (see AddressableSongSource.Load's
-        // LoadAudioData call): the clip should already be fully loaded long before a restart is
-        // even possible, this only actually blocks if it somehow isn't.
+        // Safety net only: the readiness barrier (GameplayManager.GenerateAndStart) already required the
+        // clip's data to be Loaded before the very first countdown, so this never blocks in practice.
         if (_audio.clip != null)
             yield return new WaitUntil(() => _audio.clip.loadState != AudioDataLoadState.Loading);
 
         // Plays back from the song's own configured start (SongPlayStart), same as a fresh
         // start — not always 0 (see MusicRunnerCoreConfig's manual play range).
-        _audio.time   = _manager.SongPlayStart;
         _audio.volume = targetVol;
-        _audio.Play();
-        MusicClock.Instance?.ForceUpdate();
+        if (MusicClock.Instance != null)
+            MusicClock.Instance.StartPlayback(_manager.SongPlayStart, MusicTimeDiscontinuityReason.PlaybackStarted);
+        else { _audio.time = _manager.SongPlayStart; _audio.Play(); }
         _manager.MarkAudioPlaying();
 
         Debug.Log("[RESTART] RestartSong complete — countdown finished, song now playing");

@@ -388,6 +388,35 @@ public static class SongCycleModel
         return new HashSet<string>(cycle.consumedSongIds);
     }
 
+    /// <summary>A new lap: a new cycle bound to it, every song available again (history untouched).</summary>
+    public static void StartForLap(SongCycleData cycle, int lap)
+    {
+        cycle.cycle = Mathf.Max(1, cycle.cycle) + 1;
+        cycle.consumedSongIds ??= new List<string>();
+        cycle.consumedSongIds.Clear();
+        cycle.lap = lap;
+    }
+
+    /// <summary>Old save (cycle not bound to a lap): rebuild what THIS lap used from the position records — the songs
+    /// of the matches won in the current lap (their records carry the lap + song). Never the all-time history.
+    /// Returns what was reconstructed (logged by the caller).</summary>
+    public static string BindToCurrentLap(SongCycleData cycle, CampaignProgressData d, CampaignConfigSO c)
+    {
+        if (cycle == null || d == null || c == null || cycle.lap != 0) return null;
+        var used = new List<string>();
+        foreach (var p in d.positions)
+        {
+            if (p == null || !p.completed) continue;
+            foreach (var rec in new[] { p.lastCombat, p.bestCombat })
+                if (rec != null && rec.has && rec.valid && rec.lap == d.lap && !string.IsNullOrEmpty(rec.songId) && !used.Contains(rec.songId))
+                    used.Add(rec.songId);
+        }
+        var before = new List<string>(cycle.consumedSongIds ?? new List<string>());
+        cycle.consumedSongIds = used;
+        cycle.lap = d.lap;
+        return $"lap {d.lap}: {used.Count} song(s) used this lap [{string.Join(", ", used)}] (cycle had [{string.Join(", ", before)}])";
+    }
+
     public static bool Consume(SongCycleData cycle, string songId)
     {
         if (string.IsNullOrEmpty(songId)) return false;

@@ -86,13 +86,42 @@ public static class CampaignService
     public static string CurrentPositionLabel =>
         Available && !LapFinished ? PositionLabel(CurrentLevel.id, Data.matchNumber) : "";
 
-    public static void StartNewLap()
+    /// <summary>Starts the next lap ONCE (only from a finished lap — a second call, a reopened game or a repeated button
+    /// never increments again): lap + 1 from L1#1, a new song cycle (every song available again), no assigned song —
+    /// the player chooses the first one (FirstSongPending). Records, stars, cards and history are kept. Saved at once.</summary>
+    public static bool StartNewLap()
     {
-        if (!Available) return;
+        if (!Available) return false;
+        if (!LapFinished) { Debug.Log("[Campaign] StartNewLap ignored: the current lap is not finished."); return false; }
         CampaignModel.StartNewLap(Data, Config);
+        if (P.SongCycle != null) SongCycleModel.StartForLap(P.SongCycle, Data.lap);
+        Data.firstSongPending = true;
+        P.ClearPendingRun(save: false);
         P.Save();
-        Debug.Log($"[Campaign] Lap {Data.lap} started at {CampaignModel.CurrentPositionId(Data, Config)} (records and cards kept).");
+        Debug.Log($"[Campaign] Lap {Data.lap} started at {CampaignModel.CurrentPositionId(Data, Config)} — first song to choose (records and cards kept).");
         EventBus.Publish(new CampaignChangedEvent { Reason = "lap" });
+        return true;
+    }
+
+    /// <summary>The new lap waits for its first song to be chosen in Song Selection.</summary>
+    public static bool FirstSongPending => Available && Data.firstSongPending && !LapFinished;
+
+    /// <summary>A song was confirmed in Song Selection: the lap is now resumed through its pending run as usual.</summary>
+    public static void MarkFirstSongChosen()
+    {
+        if (!Available || !Data.firstSongPending) return;
+        Data.firstSongPending = false;
+        P.Save();
+    }
+
+    /// <summary>The finished lap's prompt (next lap / later) has not been shown yet — shown once per lap.</summary>
+    public static bool LapPromptPending => LapFinished && Data.lapPromptShownForLap != Data.lap;
+
+    public static void MarkLapPromptShown()
+    {
+        if (!Available || Data.lapPromptShownForLap == Data.lap) return;
+        Data.lapPromptShownForLap = Data.lap;
+        P.Save();
     }
 
     // ── Assignment ───────────────────────────────────────────────────────────────
@@ -128,10 +157,15 @@ public static class CampaignService
     /// <summary>Runner difficulty of the level the assignment belongs to (pickup heights / patterns).</summary>
     public static void ApplyRunnerDifficulty(PendingRunData run)
     {
-        RunnerDifficultyOverride.Current = null;
+        RunnerDifficultyOverride.Clear();
         if (!Available || run == null || run.IsBoss) return;
         int index = Config.IndexOf(run.levelId);
-        if (index >= 0) RunnerDifficultyOverride.Current = Config.Level(index).runnerDifficulty;
+        if (index < 0) return;
+        RunnerDifficultyOverride.Current = Config.Level(index).runnerDifficulty;
+        RunnerDifficultyOverride.Value = Config.RunnerDifficultyAt(run.levelId, run.matchNumber, run.lap);
+        RunnerDifficultyOverride.Position = run.PositionId;
+        // The lap is part of the layout identity only when it actually changes the difficulty.
+        RunnerDifficultyOverride.KeyLap = Config.lapDifficultyStep > 0f ? run.lap : 0;
     }
 
     // ── Runner phase ─────────────────────────────────────────────────────────────
@@ -157,6 +191,10 @@ public static class CampaignService
             Falls = results != null ? results.FallCount : 0,
         };
 
+        // Played history (Song Selection's check): any catalog song whose Runner finished, won or not. Saved with the
+        // runner record below, or on its own when the run belongs to no campaign position.
+        bool firstPlay = P != null && P.MarkSongPlayed(songId, save: false);
+
         var run = P != null ? P.PendingRun : null;
         if (Available && run != null && run.IsSet && !run.IsBoss && run.songId == songId && !string.IsNullOrEmpty(run.PositionId))
         {
@@ -169,6 +207,7 @@ public static class CampaignService
                       (outcome.Record.NewRecord ? " NEW RECORD" : $" — record kept {StarMath.Label(outcome.Record.Best.halfStars)}★"));
             EventBus.Publish(new CampaignChangedEvent { Reason = "runner" });
         }
+        else if (firstPlay) P.Save();
         LastRunner = outcome;
         return outcome;
     }
@@ -321,8 +360,17 @@ public static class CampaignService
     }
 }
 
-/// <summary>Campaign-level runner difficulty for the run being played (null = the config's own value).</summary>
+/// <summary>Campaign runner difficulty of the run being played (null = free play: the config's own value).</summary>
 public static class RunnerDifficultyOverride
 {
+    /// <summary>Legacy Normal/Hard label of the level.</summary>
     public static RunnerDifficulty? Current;
+    /// <summary>Continuous difficulty 0..1 of this campaign position (CampaignConfigSO.RunnerDifficultyAt).</summary>
+    public static float? Value;
+    /// <summary>Campaign position ("L2#3"); null/empty = free play.</summary>
+    public static string Position;
+    /// <summary>Lap number for the layout key, 0 when laps do not change the difficulty.</summary>
+    public static int KeyLap;
+
+    public static void Clear() { Current = null; Value = null; Position = null; KeyLap = 0; }
 }

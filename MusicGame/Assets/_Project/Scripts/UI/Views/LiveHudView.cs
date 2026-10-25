@@ -45,4 +45,14 @@ public class LiveHudView : MonoBehaviour
     public TextMeshProUGUI lifeValue;
     public TextMeshProUGUI specialLabel;
     public TextMeshProUGUI specialValue;
+
+    [Header("Bonus icon slots (sprites from HelpUIConfig — placeholders until the final art)")]
+    public Image kickIcon;
+    public Image snareIcon;
+    public Image hiHatIcon;
+    public Image beatIcon;
+    public Image onsetIcon;
+    public Image impactIcon;
+    public Image lifeIcon;
+    public Image specialIcon;
 }

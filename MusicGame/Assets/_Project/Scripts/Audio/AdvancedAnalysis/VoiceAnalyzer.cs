@@ -5,11 +5,12 @@ using UnityEngine;
 /// Post-processes raw per-frame voice probability:
 /// - Applies temporal smoothing to reduce false positives
 /// - Detects contiguous vocal zones above threshold
-/// Output: SongProfile.voiceProbability (smoothed), .vocalZones
+/// Output: SongProfile.voiceProbabilitySmoothed (a NEW array — the raw voiceProbability is never
+/// replaced, so re-running this on a cached/loaded profile never smooths twice), .vocalZones
 /// </summary>
 public class VoiceAnalyzer : IOfflineAnalyzer
 {
-    public bool IsEnabled(AudioAnalysisConfig config)
+    public bool IsEnabled(DerivedAnalysisSettings config)
         => config.advancedEnabled && config.advancedVoice;
 
     public void Analyze(OfflineAnalysisContext ctx, SongProfile profile)
@@ -25,7 +26,7 @@ public class VoiceAnalyzer : IOfflineAnalyzer
         var smoothed = (float[])ctx.VoiceProb.Clone();
         int smoothWin = Mathf.Max(3, Mathf.RoundToInt(0.3f / hopTime));
         AdvancedFFTFeatures.BoxSmooth(smoothed, smoothWin);
-        profile.voiceProbability = smoothed;
+        profile.voiceProbabilitySmoothed = smoothed;
 
         // Detect contiguous vocal zones
         int minFrames = Mathf.Max(1, Mathf.RoundToInt(minDur / hopTime));

@@ -52,6 +52,9 @@ public class UIFlowController : MonoBehaviour
         AddScreen<OpponentSelectionController>();
         AddScreen<VersusScreenController>();
         AddScreen<MatchFarewellController>();
+        AddScreen<HelpScreenController>();       // full help (bonuses / moves) — pause + tip cards
+        AddScreen<HelpTipsController>();         // compact preRun / preFight tip cards
+        AddScreen<BonusConversionController>();  // runner → fight bonus conversion (before round 1)
         AddScreen<RoundIntroController>();
         AddScreen<RoundEndController>();
         AddScreen<MatchResultController>();

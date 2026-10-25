@@ -17,15 +17,21 @@ using UnityEngine.UI;
 ///      signal; presentationReadyTimeoutSeconds is only a safety cap), the fight camera makes its pass
 ///      to the combat framing (FightCameraController.BeginIntroTravelling).
 ///   3. Once the card has faded, the rival's Intro line appears in a speech bubble over its head
-///      (ComposerDialoguePresentation), typed, then held dialogueReadHoldSeconds.
-///   4. When BOTH the camera pass and the reading are done → RoundIntro, exactly once (Advance).
-///      The pass is never stretched to the line: a short pass waits on the final framing, a short
-///      line waits for the pass to land. No line (disabled/missing/error/timeout) = pass only.
+///      (ComposerDialoguePresentation), typed, then held dialogueReadHoldSeconds. As the line starts
+///      (or the card ends without one), the runner → fight bonus conversion starts too
+///      (BonusConversionController.BeginInPresentation: the bonus block waiting at the bottom since the
+///      runner results converts into the fight HUD, revealed for it); the bubble keeps clear of the
+///      block and of the build panel (ComposerSpeechBubble.KeepOut).
+///   4. When the camera pass, the reading AND the conversion are all done → RoundIntro, exactly once
+///      (Advance) — no extra pause after the last of them. The pass is never stretched to the line: a
+///      short pass waits on the final framing, a short line waits for the pass to land (and for the
+///      conversion). No line (disabled/missing/error/timeout) = pass (+ conversion) only.
 ///   5. The bubble stays (frozen, above the countdown curtain) through ROUND n / 3-2-1 / FIGHT! and
 ///      fades when Fighting really starts.
 ///
 /// SKIP (button or ESC, only during this state): camera snapped to the same final framing, line
-/// completed (or dropped if still loading — it can never pop up later), hold skipped, ONE Advance.
+/// completed (or dropped if still loading — it can never pop up later), hold skipped, the conversion
+/// resolved to its final values (started first if it had not), then ONE Advance.
 /// Everything is one Update-driven timeline with one cancellation (StopIntro), so nothing stale can
 /// move the camera, show a bubble or request a transition after leaving Fight / Fight Again.
 ///
@@ -51,7 +57,7 @@ public class VersusScreenController : MonoBehaviour
 
     private Step  _step;
     private float _stageWait, _cardElapsed, _revealElapsed;
-    private bool  _cardDone, _advanceRequested, _skipAfterLoading;
+    private bool  _cardDone, _advanceRequested, _skipAfterLoading, _conversionStarted;
 
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
     private System.Action<GameFlowStateChangedEvent>  _onGameFlowChanged;
@@ -82,6 +88,7 @@ public class VersusScreenController : MonoBehaviour
         // Separate component prefabs (speech bubble, skip button), spawned after the card as before.
         _dialogue = new ComposerDialoguePresentation(ComposerSpeechBubble.Spawn(UIFactory.RootCanvas(), _config), _config);
         _skip = FightPresentationSkip.Spawn("VersusSkipButton");
+        if (_dialogue.Bubble != null) _dialogue.Bubble.KeepOut = BubbleKeepOut;
         _root.gameObject.SetActive(false);
     }
 
@@ -110,6 +117,7 @@ public class VersusScreenController : MonoBehaviour
             if (e.Previous != GameFlowState.Fight) return;
             StopIntro();
             ComposerDialogueService.ReleaseAll();
+            ComposerVoiceService.ReleaseAll();
             FightPreloader.Release(); // a preload never outlives the fight it was for
         };
         EventBus.Subscribe(_onFightFlowChanged);
@@ -179,7 +187,7 @@ public class VersusScreenController : MonoBehaviour
 
         _step = Step.WaitingForStage;
         _stageWait = _cardElapsed = _revealElapsed = 0f;
-        _cardDone = _advanceRequested = _skipAfterLoading = false;
+        _cardDone = _advanceRequested = _skipAfterLoading = _conversionStarted = false;
 
         // The definitive rival, captured NOW (Fight Again re-enters here with the same one). The line
         // starts loading at once but only shows once the Versus card is gone.
@@ -208,8 +216,8 @@ public class VersusScreenController : MonoBehaviour
             if (_loadingText != null) _loadingText.alpha = 0.55f + 0.45f * Mathf.Abs(Mathf.Sin(_stageWait * 2.2f));
             float cap = _config != null ? _config.versusLoadingTimeoutSeconds : 30f;
             bool ready = bootstrap != null && bootstrap.StageReady; // both avatars built + arena loaded
-            if (!ready && _stageWait < cap) return;
-            if (!ready) Debug.LogWarning($"[VersusScreenController] Stage not ready after {cap:0.#}s — starting the presentation anyway.");
+            // A scene download can exceed the old avatar timeout. Never reveal an empty stage.
+            if (!ready) return;
             if (_loadingText != null) _loadingText.gameObject.SetActive(false);
             FightPreloader.Release(); // the fight now holds its own handles
             if (_skipAfterLoading) { SkipIntro(); return; }
@@ -226,9 +234,33 @@ public class VersusScreenController : MonoBehaviour
 
         UpdateCard(dt);
         _dialogue.Tick(dt);
+        if (_cardDone && !_conversionStarted && _dialogue.CurrentPhase != ComposerDialoguePresentation.Phase.Loading) StartConversion();
 
         bool cameraDone = cam == null || !cam.IsIntroTravelling;
-        if (_cardDone && cameraDone && _dialogue.IsReadingComplete) Advance();
+        if (_cardDone && cameraDone && _dialogue.IsReadingComplete && ConversionDone) Advance();
+    }
+
+    // The rival's bubble keeps clear of the bonus block / build panel (conversion) and of the moves tip card that
+    // appears beside the countdown while the line is still on screen.
+    private readonly System.Collections.Generic.List<Rect> _keepOut = new();
+
+    private System.Collections.Generic.IReadOnlyList<Rect> BubbleKeepOut()
+    {
+        _keepOut.Clear();
+        _keepOut.AddRange(BonusConversionController.KeepOutRects());
+        var card = HelpTipsController.Instance != null ? HelpTipsController.Instance.CardRect : null;
+        if (card != null) _keepOut.Add(BonusConversionController.CanvasRect(card, 12f));
+        return _keepOut;
+    }
+
+    private bool ConversionDone => _conversionStarted && !BonusConversionController.IsBusy;
+
+    /// <summary>With the rival's line (or at the end of the card when there is none): the bonus block converts.</summary>
+    private void StartConversion()
+    {
+        _conversionStarted = true;
+        BonusConversionController.Instance?.BeginInPresentation();
+        if (_skip != null && _skip.IsShown) _skip.transform.SetAsLastSibling();   // above the HUD it revealed
     }
 
     private void UpdateCard(float dt)
@@ -270,9 +302,13 @@ public class VersusScreenController : MonoBehaviour
         }
         if (!_cardDone) EndCard();
         SetBackdropAlpha(_config != null ? _config.versusBackdropAlpha : 0.15f);
+        _revealElapsed = float.MaxValue;
         if (_loadingText != null) _loadingText.gameObject.SetActive(false);
         _dialogue.SkipToEnd();
-        Advance();
+        if (!_conversionStarted) StartConversion();
+        BonusConversionController.Instance?.Skip();   // final values; it ends on its next frame
+        _step = Step.Presenting;
+        if (ConversionDone) Advance();                // otherwise Update advances the moment it has ended
     }
 
     /// <summary>The single exit of the Versus: at most one RoundIntro request per intro, only while

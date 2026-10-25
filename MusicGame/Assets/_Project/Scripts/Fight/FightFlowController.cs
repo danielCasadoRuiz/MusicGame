@@ -47,8 +47,17 @@ public class FightFlowController : MonoBehaviour
             // (same as AppFlowController's) exists to stop REDUNDANT same-state calls mid-flow,
             // not to skip the one announcement every screen controller needs to actually reset
             // itself for a fresh match.
-            Debug.Log("[FightFlowController] Entering Fight — starting at OpponentSelection.");
             var previous = CurrentState;
+            // BACK from a Song Selection opened from the Match Result: straight back to that (won) result —
+            // no roulette, no match, nothing re-run (MatchResultReturn).
+            if (MatchResultReturn.ConsumeResume())
+            {
+                Debug.Log("[FightFlowController] Returning to the match result (from Song Selection).");
+                CurrentState = FightFlowState.MatchWon;
+                EventBus.Publish(new FightFlowStateChangedEvent { Previous = previous, Current = CurrentState });
+                return;
+            }
+            Debug.Log("[FightFlowController] Entering Fight — starting at OpponentSelection.");
             CurrentState = FightFlowState.OpponentSelection;
             EventBus.Publish(new FightFlowStateChangedEvent { Previous = previous, Current = CurrentState });
         };

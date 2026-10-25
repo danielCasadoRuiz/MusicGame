@@ -71,7 +71,8 @@ public class SpectrumBars3D : MonoBehaviour, IRunnerEnvironmentModule
     public void InitializeModule(RunnerEnvironmentContext context) =>
         Initialize(settingsOverride != null ? settingsOverride : context.Config, context.ModuleRoot, context.Water);
 
-    public void TickModule(RunnerEnvironmentContext context) => Tick(context.World, context.SongTime);
+    // NormalizedBandValue is CLIP-time indexed (negative = countdown) — never SongTime.
+    public void TickModule(RunnerEnvironmentContext context) => Tick(context.World, context.ClipTime);
 
     private static readonly int PlasticColorID        = Shader.PropertyToID("_PlasticColor");
     private static readonly int PlasticTintStrengthID = Shader.PropertyToID("_PlasticTintStrength");
@@ -223,7 +224,7 @@ public class SpectrumBars3D : MonoBehaviour, IRunnerEnvironmentModule
         return count > 0 ? sum / count : 0f;
     }
 
-    public void Tick(MusicWorldManager world, float songTime)
+    public void Tick(MusicWorldManager world, float clipTime)
     {
         if (_config == null || world == null) return;
 
@@ -265,7 +266,7 @@ public class SpectrumBars3D : MonoBehaviour, IRunnerEnvironmentModule
         {
             float tCenter = (c + 0.5f) / barCount;
             float bandF   = tCenter * (realBandCount - 1);
-            float rawNorm = SampleBandRange(world, bandF, realBandCount, barCount, songTime);
+            float rawNorm = SampleBandRange(world, bandF, realBandCount, barCount, clipTime);
             float target  = Mathf.Clamp01(rawNorm * gain);
 
             float current = _smoothedAmplitude[c];

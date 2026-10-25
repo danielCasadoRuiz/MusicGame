@@ -79,10 +79,10 @@ public class CheckpointSystem : MonoBehaviour
         // Checkpoint 0 = song start (after warmup)
         for (float songT = warmup; songT <= warmup + profile.duration + 0.01f; songT += interval)
         {
-            float audioT = songT - warmup;
+            float audioT = MusicTime.SongToClip(songT, warmup);
             if (audioT > profile.duration + 0.01f) break;
 
-            float dist   = songT * speed;
+            float dist   = MusicTime.SongToDistance(songT, speed);
             var   sample = path.GetSample(dist);
 
             // First event index at or after this song time

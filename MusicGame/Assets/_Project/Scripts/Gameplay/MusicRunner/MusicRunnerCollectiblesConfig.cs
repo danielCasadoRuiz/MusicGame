@@ -189,6 +189,8 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     public float collectibleRadius        = 0.5f;
     [Tooltip("Extra clearance kept between a collectible's edge and the path's walkable edge")]
     public float collectibleLateralMargin = 0.6f;
+    [Tooltip("Where the track MARGIN band starts, as a fraction of the usable half-width (see PickupHeightDifficulty.edgeChance).")]
+    [Range(0f, 1f)] public float edgeBandStart = 0.65f;
     [Tooltip("Extra safety margin above the collectible's own half-height when computing the " +
              "minimum clearance above the real surface. This is a FLOOR that OVERRIDES " +
              "bonusMinJumpHeightFactor whenever it would be higher (see CollectibleFloor) — with " +
@@ -276,8 +278,8 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     // Both stay a deliberate MINORITY (the user's rule: most points are collected running on the
     // ground; jumping / leaving the track is the exception that pays more). Hard (campaign L3/L4)
     // roughly doubles the exceptions — it used to make ~45 % of pickups jump-only.
-    public PickupHeightDifficulty normalHeights = new() { elevatedChance = 0.05f, offTrackChance = 0.04f, patternElevatedChance = 0.05f };
-    public PickupHeightDifficulty hardHeights   = new() { elevatedChance = 0.10f, offTrackChance = 0.08f, patternElevatedChance = 0.15f };
+    public PickupHeightDifficulty normalHeights = new() { elevatedChance = 0.05f, offTrackChance = 0.04f, patternElevatedChance = 0.05f, edgeChance = 0.10f };
+    public PickupHeightDifficulty hardHeights   = new() { elevatedChance = 0.10f, offTrackChance = 0.08f, patternElevatedChance = 0.15f, edgeChance = 0.25f };
     [Tooltip("Highest pickup CENTRE height (m above the track surface) that ordinary running collects " +
              "without jumping. Non-elevated pickups never go above it; the height score bonus starts " +
              "above it (plus heightBonusDeadZone).")]
@@ -300,6 +302,66 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     /// applied through RunnerDifficultyOverride when the match is assigned/resumed).</summary>
     public RunnerDifficulty EffectiveDifficulty => RunnerDifficultyOverride.Current ?? difficulty;
     public PickupHeightDifficulty Heights => EffectiveDifficulty == RunnerDifficulty.Hard ? hardHeights : normalHeights;
+
+    // ── Continuous difficulty, bonus selection, dev layout overrides, diagnostics (P4) ──
+    /// <summary>Continuous difficulty where normalHeights / hardHeights are exactly reached (the anchors of
+    /// the old two-step tuning); in between and beyond, the chances are interpolated / extrapolated.</summary>
+    public const float NormalDifficultyAnchor = 0.3f, HardDifficultyAnchor = 0.6f;
+
+    [Header("Bonus Selection / Diagnostics (P4)")]
+    [Tooltip("Free play (no campaign position) difficulty 0..1; −1 = from `difficulty` (Normal 0.3, Hard 0.6).")]
+    [Range(-1f, 1f)] public float freePlayDifficulty = -1f;
+    public BonusSelectionSettings selection = new();
+    [Tooltip("DEVELOPMENT ONLY — off by default, ignored outside the editor / development builds, never a player option.")]
+    public RunnerLayoutDevOverrides devLayoutOverrides = new();
+    public BonusDiagnosticsSettings diagnostics = new();
+
+    /// <summary>Difficulty (0..1) of the run being prepared: the campaign position's (RunnerDifficultyOverride.Value),
+    /// else free play (a dev override may cap it in the editor / development builds only).</summary>
+    public float CurrentDifficulty
+    {
+        get
+        {
+            float free = freePlayDifficulty >= 0f ? freePlayDifficulty
+                       : difficulty == RunnerDifficulty.Hard ? HardDifficultyAnchor : NormalDifficultyAnchor;
+            float d = RunnerDifficultyOverride.Value ?? free;
+            var dev = DevOverrides;
+            return Mathf.Clamp01(Mathf.Min(d, dev != null ? dev.maxDifficulty : 1f));
+        }
+    }
+
+    /// <summary>Jump / off-track chances at a continuous difficulty (normalHeights at 0.3, hardHeights at 0.6,
+    /// linear in between and beyond, clamped); dev overrides only in the editor / development builds.</summary>
+    /// <summary>The dev layout overrides when they may act: enabled AND editor / development build. Null in
+    /// normal play — release builds can never alter difficulty, jumps or off-track bonuses through them.</summary>
+    public RunnerLayoutDevOverrides DevOverrides
+    {
+        get
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            return devLayoutOverrides != null && devLayoutOverrides.enabled ? devLayoutOverrides : null;
+#else
+            return null;
+#endif
+        }
+    }
+
+    public PickupHeightDifficulty HeightsAt(float difficulty)
+    {
+        float t = (difficulty - NormalDifficultyAnchor) / (HardDifficultyAnchor - NormalDifficultyAnchor);
+        float L(float a, float b) => Mathf.Clamp01(Mathf.LerpUnclamped(a, b, t));
+        var h = new PickupHeightDifficulty
+        {
+            elevatedChance        = L(normalHeights.elevatedChance, hardHeights.elevatedChance),
+            offTrackChance        = L(normalHeights.offTrackChance, hardHeights.offTrackChance),
+            patternElevatedChance = L(normalHeights.patternElevatedChance, hardHeights.patternElevatedChance),
+            edgeChance            = L(normalHeights.edgeChance, hardHeights.edgeChance),
+        };
+        var dev = DevOverrides;
+        if (dev != null && dev.noJumps) { h.elevatedChance = 0f; h.patternElevatedChance = 0f; h.offTrackChance = 0f; }
+        if (dev != null && dev.noOffTrack) h.offTrackChance = 0f;
+        return h;
+    }
 
     /// <summary>x1 up to the bottom of the elevated band, rising linearly to heightBonusMaxMultiplier
     /// at its top (both from GameplayTimeline.ElevatedBand). `heightAboveSurface` = the pickup's
@@ -374,7 +436,7 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
     // "how far ahead on the path" question, not a "how many seconds" one (unlike pulseLeadTime
     // above, which IS about timing and stays exactly on the beat, untouched by this).
     [Header("Visual Anticipation")]
-    // World units ahead of the music's own canonical distance (PlayerController.CanonicalDistance
+    // World units ahead of the musical front (PlayerController.MusicFrontDistance — not the trailing player position
     // — NOT ActualDistance; surge must never pull a reveal forward) at which a ring/bonus starts
     // visually growing/revealing — a separate, EARLY, purely visual
     // cue (a mild GameplayManager.RevealEvent → RingController.Pulse(0)) so you SEE it
@@ -442,4 +504,7 @@ public class PickupHeightDifficulty
     [Range(0f, 1f)] public float offTrackChance = 0.06f;
     [Tooltip("0..1 chance a pickup pattern (arc/stair) may peak into the elevated band; otherwise it stays in the running band.")]
     [Range(0f, 1f)] public float patternElevatedChance = 0.15f;
+    [Tooltip("0..1 chance an ordinary on-track single pickup goes to the track MARGIN (the outer edgeBandStart..1 of " +
+             "the usable half-width, either side) instead of anywhere across the track — wider lateral moves.")]
+    [Range(0f, 1f)] public float edgeChance = 0.1f;
 }

@@ -1,5 +1,21 @@
 public enum EventType { Ring }
 
+/// <summary>Where a pickup comes from — kept on every event so diagnostics (and the player-facing
+/// pulses) never present a synthetic or structural item as a detected hit.</summary>
+public enum BonusOrigin : byte
+{
+    /// <summary>A detected attack of the profile (SongProfile.onsetEvents[onsetIndex]).</summary>
+    Detected      = 0,
+    /// <summary>Gap filler on a TRACKED beat (BonusSelectionSettings.syntheticFill) — not a detection.</summary>
+    SyntheticGrid = 1,
+    /// <summary>A structural moment (Impact / Peak) from the profile's dynamics.</summary>
+    Structural    = 2,
+    /// <summary>Combat resources (Life / Special) — not musical.</summary>
+    Resource      = 3,
+    /// <summary>Old single-label classifier (a profile without onsetEvents).</summary>
+    Legacy        = 4,
+}
+
 /// <summary>
 /// A single pre-calculated gameplay event anchored to a musical moment.
 /// World position is NOT stored — it is derived at activation time:
@@ -17,7 +33,7 @@ public enum EventType { Ring }
 [System.Serializable]
 public struct TimelineEvent
 {
-    public float     eventTime;       // MusicClock.SongTime when player reaches this event
+    public float     eventTime;       // MusicClock.SongTime of the musical moment (the musical front reaches it; the player meets it playerTrailSeconds later)
     public float     eventDistance;   // = eventTime * unitsPerSecond (path arc-length)
     public EventType eventType;
     public RingType  ringType;
@@ -36,4 +52,6 @@ public struct TimelineEvent
     public string    sourceFeature;   // dominant raw signal: "Kick", "Snare", "HiHat", "Beat", "Onset", "Impact", "Peak"
     public float     confidence;      // 0..1 — how many independent raw signals agreed this is a real moment
     public string    contributors;    // e.g. "Kick+Impact" — every raw signal fused into this event
+    public BonusOrigin origin;        // detected / synthetic / structural / resource (see BonusOrigin)
+    public int       onsetIndex;      // Detected: index into SongProfile.onsetEvents; −1 otherwise
 }

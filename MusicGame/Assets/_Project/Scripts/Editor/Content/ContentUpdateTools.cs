@@ -68,6 +68,7 @@ public static class ContentUpdateTools
         var settings = AddressableAssetSettingsDefaultObject.Settings;
         version ??= PlayerSettings.bundleVersion;
         sb.AppendLine($"  profile {settings.profileSettings.GetProfileName(settings.activeProfileId)}, player version {PlayerSettings.bundleVersion}, target {PlatformFolder()}");
+        if (!SongContentGate(sb)) { ok = false; return sb.ToString(); }
 
         AddressableAssetSettings.CleanPlayerContent(settings.ActivePlayerDataBuilder);
         AddressableAssetSettings.BuildPlayerContent(out AddressablesPlayerBuildResult result);
@@ -97,6 +98,7 @@ public static class ContentUpdateTools
         ok = File.Exists(state);
         if (!ok) return sb.AppendLine($"  FAIL  no content state for {version} ({state}) — the release was not built with Build Release Content").ToString();
         sb.AppendLine($"  state {state}");
+        if (!SongContentGate(sb)) { ok = false; return sb.ToString(); }
 
         // Shipped ("Cannot Change Post Release") entries that changed since the release + dependants.
         var modified = ContentUpdateScript.GatherModifiedEntriesWithDependencies(settings, state);
@@ -125,6 +127,15 @@ public static class ContentUpdateTools
         sb.AppendLine($"  ok    update built → {settings.RemoteCatalogBuildPath.GetValue(settings)} (upload the whole folder)");
         AssetDatabase.SaveAssets();
         return sb.ToString();
+    }
+
+    /// <summary>Published song catalog must be complete and consistent before ANY content build.</summary>
+    private static bool SongContentGate(StringBuilder sb)
+    {
+        string report = SongContentValidator.Validate(EditorUserBuildSettings.activeBuildTarget, out int errors);
+        if (errors == 0) { sb.AppendLine("  ok    published song content validated"); return true; }
+        sb.Append(report).AppendLine("  FAIL  published song content invalid — nothing built");
+        return false;
     }
 
     public static bool IsUpdateGroup(AddressableAssetGroup g) => g != null && g.Name.StartsWith(UpdateGroupPrefix);

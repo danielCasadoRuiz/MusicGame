@@ -152,6 +152,7 @@ public class OpponentSelectionController : MonoBehaviour
             _root.gameObject.SetActive(false);
             FightMusicController.Instance?.Lock(session.SelectedOpponentSong, session.BossSongOverride != null ? null : session.SelectedOpponentLevelConfig);
             ComposerDialogueService.Preload(session.SelectedOpponent.id);
+            ComposerVoiceService.Preload(session.SelectedOpponent.id);
             // Next frame: every other listener must finish handling OpponentSelection first.
             StopRoulette();
             _rouletteRoutine = StartCoroutine(AdvanceNextFrame());
@@ -271,7 +272,7 @@ public class OpponentSelectionController : MonoBehaviour
         }
         // The DEFINITIVE rival only (never the roulette's fakes): its dialogue table loads during the
         // final hold so the Versus line is usually ready on arrival; other composers' tables are released.
-        if (finalOpponent != null) ComposerDialogueService.Preload(finalOpponent.id);
+        if (finalOpponent != null) { ComposerDialogueService.Preload(finalOpponent.id); ComposerVoiceService.Preload(finalOpponent.id); }
         Debug.Log($"[OpponentSelectionController] Final pick: " +
                   $"{(finalOpponent != null ? finalOpponent.displayName : "(null)")} — tier {tier} (config tier {resolvedTier}, " +
                   $"{(useAssigned ? "precomputed assignment" : "picked here — no assignment")}) — " +

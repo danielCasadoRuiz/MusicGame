@@ -64,6 +64,8 @@ public class FighterMoveController : MonoBehaviour
     public AttackTag CurrentTag { get; private set; }
     private FightAttackBonus _queuedBonus = FightAttackBonus.Identity;
     private AttackTag _queuedTag;
+    // A charge the REQUEST carries on top of the move asset's own cost (the finishers' x3 — CombatResourceUse).
+    private CombatResourceType _queuedCharge;
 
     // COMBO STRINGS (FightComboRecognizer): every request carries the string it came from. A
     // continuation flagged ReplacesPrevious (PPP → PPPK) cancels the move of the SAME string —
@@ -220,6 +222,7 @@ public class FighterMoveController : MonoBehaviour
                 var bonus = _queuedBonus;
                 var tag = _queuedTag;
                 int stringId = _queuedStringId;
+                var charge = _queuedCharge;
                 QueuedMove = null;
                 // A queued enhanced Signature that can no longer be paid for falls back to the basic one.
                 if (tag == AttackTag.Signature && !CanAfford(move) && _moveSet != null && _moveSet.signatureBasic != null)
@@ -229,7 +232,7 @@ public class FighterMoveController : MonoBehaviour
                 }
                 // Re-validated at dequeue time too — posture/movement-state may have changed while
                 // this move sat queued, and the resource may no longer be affordable.
-                if (IsContextAllowed(move) && CanAfford(move)) BeginMove(move, bonus, tag, stringId);
+                if (IsContextAllowed(move) && CanAfford(move)) BeginMove(move, bonus, tag, stringId, charge);
             }
             else if (!IsHitStunned && !IsMatchLocked)
             {
@@ -280,9 +283,19 @@ public class FighterMoveController : MonoBehaviour
         }
         else move = _moveSet.GetByMoveId(combo.moveId);
 
-        var bonus = ComboBonus(combo.attackBonus);
-        var tag = combo.attackBonus != FightComboBonus.None ? AttackTag.Finisher : AttackTag.Combo;
-        if (TryExecuteMove(move, bonus, tag, stringId, replaces))
+        // A finisher (triple punch / triple kick) is POWERED — its bonus — only when it can pay one x3
+        // (CombatResourceUse.FinisherCharge, spent when the move starts); without one the same string just ends on
+        // the plain normal (free, no bonus). Never paid with another charge.
+        var charge = CombatResourceType.None;
+        var bonus = FightAttackBonus.Identity;
+        var tag = AttackTag.Combo;
+        if (combo.attackBonus != FightComboBonus.None && Wallet != null && Wallet.CanAfford(CombatResourceUse.FinisherCharge, CombatResourceUse.FinisherAmount))
+        {
+            charge = CombatResourceUse.FinisherCharge;
+            bonus = ComboBonus(combo.attackBonus);
+            tag = AttackTag.Finisher;
+        }
+        if (TryExecuteMove(move, bonus, tag, stringId, replaces, charge))
             LastComboInfo = $"{(string.IsNullOrEmpty(combo.debugName) ? combo.id : combo.debugName)} → {move.debugName}{(bonus.IsIdentity ? "" : $" ({bonus})")}";
     }
 
@@ -320,35 +333,41 @@ public class FighterMoveController : MonoBehaviour
 
     /// <summary>
     /// Hold Down + Punch + Kick completed (FightPowerRequestedEvent). Activates the Power State and
-    /// consumes exactly 1 x4 (CombatResourceType.QuadCombo, the Runner's x4 count in this fighter's
-    /// FighterCombatResources wallet) — but ONLY if every condition holds: fighting, not stunned or
-    /// knocked down, match not over, Power not already active (no refresh/extend/stack), and x4 ≥ 1.
-    /// Any rejection consumes nothing and does nothing else (the absorbed presses never replay).
+    /// consumes ALL the x4 charges held (CombatResourceUse.PowerCost — the Runner's x4 count in this fighter's
+    /// FighterCombatResources wallet), lasting longer the more were held (CombatResourceUse.PowerSeconds) —
+    /// but ONLY if every condition holds: fighting, not stunned or knocked down, match not over, Power not
+    /// already active (no refresh/extend/stack), and x4 ≥ 1.
+    /// Validate → activate → consume happen together in this one call (same frame), so a repeated request
+    /// finds the state already active and is rejected; any rejection consumes nothing.
     /// </summary>
     private void TryActivatePower()
     {
         if (_actor == null || _actor.Power == null) return;
+        var cost = CombatResourceUse.PowerCost;
         string reject =
             !_active || IsMatchLocked ? "not fighting / match over" :
             IsHitStunned              ? "stunned / knocked down" :
             _actor.Power.IsActive     ? "already active" :
-            Wallet == null || !Wallet.CanAfford(CombatResourceType.QuadCombo, 1) ? "no x4" : null;
+            Wallet == null || Wallet.Get(cost) < 1 ? "no x4" : null;
         if (reject != null)
         {
-            LastPowerInfo = $"REJECTED ({reject}) — x4 {Wallet?.QuadCombos ?? 0}";
+            LastPowerInfo = $"REJECTED ({reject}) — x4 {Wallet?.Get(cost) ?? 0}";
             Debug.Log($"[FighterMoveController] {_actor.Side} Power rejected: {reject}");
             return;
         }
 
-        float duration = _balanceConfig != null ? _balanceConfig.powerDuration : 6f;
+        // EVERY x4 held is spent at once; each one beyond the first adds time (CombatResourceUse.PowerSeconds).
+        int amount = Wallet.Get(cost);
+        float duration = CombatResourceUse.PowerSeconds(amount, _balanceConfig);
         var mult = _balanceConfig != null ? _balanceConfig.PowerMultipliers : FightAttackBonus.Identity;
-        if (!Wallet.TryConsume(CombatResourceType.QuadCombo, 1) || !_actor.Power.TryActivate(_actor, duration, mult))
+        // Started first (it can only fail when already active, checked above), then paid: never a charge without the state.
+        if (!_actor.Power.TryActivate(_actor, duration, mult) || !Wallet.TryConsume(cost, amount))
         {
-            LastPowerInfo = "REJECTED (could not consume x4)";
+            LastPowerInfo = "REJECTED (could not start)";
             return;
         }
-        LastPowerInfo = $"ACTIVATED — 1 x4 consumed (x4 left {Wallet.QuadCombos})";
-        Debug.Log($"[FighterMoveController] {_actor.Side} POWER STATE ON for {duration:0.0}s ({mult}); 1 x4 consumed, {Wallet.QuadCombos} left");
+        LastPowerInfo = $"ACTIVATED — {amount} x4 consumed → {duration:0.#} s (x4 left {Wallet.Get(cost)})";
+        Debug.Log($"[FighterMoveController] {_actor.Side} POWER STATE ON for {duration:0.0}s ({mult}); {amount} x4 consumed, {Wallet.Get(cost)} left");
     }
 
     private void TryStartMove(FightMoveDefinition move) => TryExecuteMove(move);
@@ -378,7 +397,8 @@ public class FighterMoveController : MonoBehaviour
     /// an already-spawned projectile keeps flying); a move cancelled in Startup committed nothing.
     /// If the string's move isn't current any more (finished, interrupted by a hit) it is a plain request.
     /// </summary>
-    public bool TryExecuteMove(FightMoveDefinition move, FightAttackBonus bonus, AttackTag tag, int stringId, bool replaces)
+    public bool TryExecuteMove(FightMoveDefinition move, FightAttackBonus bonus, AttackTag tag, int stringId, bool replaces,
+                               CombatResourceType charge = CombatResourceType.None)
     {
         LastRejection = "";
         if (move == null)             { LastRejection = "no move"; return false; }
@@ -393,7 +413,7 @@ public class FighterMoveController : MonoBehaviour
             var cancelled = CurrentMove;
             var cancelledPhase = CurrentPhase;
             InterruptMove();
-            BeginMove(move, bonus, tag, stringId);
+            BeginMove(move, bonus, tag, stringId, charge);
             LastReplaceInfo = $"{cancelled.debugName} ({cancelledPhase}) → {move.debugName}";
             Debug.Log($"[FighterMoveController] Combo extended: cancelled {LastReplaceInfo}");
             return true;
@@ -402,13 +422,14 @@ public class FighterMoveController : MonoBehaviour
             LastReplaceInfo = $"{QueuedMove.debugName} (queued) → {move.debugName}";
 
         if (CurrentPhase == FighterMoveState.Idle || InCancelWindow())
-            BeginMove(move, bonus, tag, stringId);
+            BeginMove(move, bonus, tag, stringId, charge);
         else
         {
             QueuedMove = move; // latest request wins — a single queue slot, see class doc
             _queuedBonus = bonus;
             _queuedTag = tag;
             _queuedStringId = stringId;
+            _queuedCharge = charge;
         }
         return true;
     }
@@ -472,11 +493,13 @@ public class FighterMoveController : MonoBehaviour
         return mid;
     }
 
-    private void BeginMove(FightMoveDefinition move, FightAttackBonus bonus, AttackTag tag, int stringId)
+    private void BeginMove(FightMoveDefinition move, FightAttackBonus bonus, AttackTag tag, int stringId,
+                           CombatResourceType charge = CombatResourceType.None)
     {
         QueuedMove = null; // this move supersedes whatever was queued, if anything
         _queuedTag = AttackTag.None;
         _queuedStringId = 0;
+        _queuedCharge = CombatResourceType.None;
         _currentStringId = stringId;
         CurrentMove = move;
         MoveElapsed = 0f;
@@ -492,6 +515,14 @@ public class FighterMoveController : MonoBehaviour
         }
         if (move.resourceCost != CombatResourceType.None)
             EventBus.Publish(new FightResourceSpentEvent { Fighter = _actor, Move = move, Type = move.resourceCost, Amount = move.resourceAmount });
+        // The request's own charge (a powered finisher's x3): paid now, once per started move. If it can no longer be
+        // paid (spent while this sat queued) the move still starts, unpowered — the free plain version.
+        if (charge != CombatResourceType.None && move.resourceCost == CombatResourceType.None)
+        {
+            if (Wallet != null && Wallet.TryConsume(charge, 1))
+                EventBus.Publish(new FightResourceSpentEvent { Fighter = _actor, Move = move, Type = charge, Amount = 1 });
+            else { bonus = FightAttackBonus.Identity; tag = AttackTag.Combo; }
+        }
 
         // Power multiplies whatever this attack already carries (captured now, for this whole move).
         bool power = _actor != null && _actor.Power != null && _actor.Power.IsActive;
@@ -585,7 +616,7 @@ public class FighterMoveController : MonoBehaviour
     /// off correctly, same as a natural phase transition — no separate "interrupted" event exists.</summary>
     public void InterruptMove()
     {
-        if (CurrentMove == null) { QueuedMove = null; _queuedTag = AttackTag.None; _queuedStringId = 0; return; }
+        if (CurrentMove == null) { QueuedMove = null; _queuedTag = AttackTag.None; _queuedStringId = 0; _queuedCharge = CombatResourceType.None; return; }
 
         var previousPhase = CurrentPhase;
         var move = CurrentMove;
@@ -595,6 +626,7 @@ public class FighterMoveController : MonoBehaviour
         QueuedMove = null;
         _queuedTag = AttackTag.None;
         _queuedStringId = 0;
+        _queuedCharge = CombatResourceType.None;
         _currentStringId = 0;
         CurrentAttackBonus = FightAttackBonus.Identity; // never leak into whatever starts next
         CurrentTag = AttackTag.None;
@@ -623,6 +655,7 @@ public class FighterMoveController : MonoBehaviour
         QueuedMove = null;
         _queuedTag = AttackTag.None;
         _queuedStringId = 0;
+        _queuedCharge = CombatResourceType.None;
         _currentStringId = 0;
         CurrentAttackBonus = FightAttackBonus.Identity;
         CurrentTag = AttackTag.None;

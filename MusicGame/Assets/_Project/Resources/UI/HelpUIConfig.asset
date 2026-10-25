@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9678fd55d410e504a885affb10640555, type: 3}
+  m_Name: HelpUIConfig
+  m_EditorClassIdentifier: Assembly-CSharp::HelpUIConfigSO
+  bonusIcons:
+  - kind: 0
+    sprite: {fileID: 21300000, guid: 8cdd0a0923a1511439c4ea236caf175a, type: 3}
+  - kind: 1
+    sprite: {fileID: 21300000, guid: f9816dc3084074542bb266321737092b, type: 3}
+  - kind: 2
+    sprite: {fileID: 21300000, guid: 94c29262a77358c49b92ae7483dfc831, type: 3}
+  - kind: 3
+    sprite: {fileID: 21300000, guid: e00cfc8695919854da91a98c2df2a296, type: 3}
+  - kind: 4
+    sprite: {fileID: 21300000, guid: 36d423110a1d87e4ca71a1d0c61af923, type: 3}
+  - kind: 5
+    sprite: {fileID: 21300000, guid: 9ff885b389513c44e9d98c70b2823cf9, type: 3}
+  - kind: 6
+    sprite: {fileID: 21300000, guid: 1b6d06b356f9d034891bb580c2d32b4c, type: 3}
+  - kind: 7
+    sprite: {fileID: 21300000, guid: 850e381a7df0f1e4997577c20f4aed94, type: 3}
+  - kind: 8
+    sprite: {fileID: 21300000, guid: 5c1f4b45eed15b3408b173be0779d0c3, type: 3}
+  - kind: 9
+    sprite: {fileID: 21300000, guid: a0aee5f0be46112439dd35c1cb52e892, type: 3}
+  - kind: 10
+    sprite: {fileID: 21300000, guid: 909bf9db1d3271d43a0797c785807f9f, type: 3}
+  statIcons:
+  - stat: 8
+    sprite: {fileID: 21300000, guid: 975c6f0000ce8c24884fc0ed08d056c1, type: 3}
+    color: {r: 0.95, g: 0.62, b: 0.25, a: 1}
+  - stat: 9
+    sprite: {fileID: 21300000, guid: 2db70e8a74d890f458c6164e5f7360fe, type: 3}
+    color: {r: 0.92, g: 0.3, b: 0.25, a: 1}
+  - stat: 2
+    sprite: {fileID: 21300000, guid: 7a3fd973595559940abd30a1ee88b40d, type: 3}
+    color: {r: 0.3, g: 0.78, b: 1, a: 1}
+  - stat: 10
+    sprite: {fileID: 21300000, guid: 50bcd02bd75545a4cbba785b425cb31c, type: 3}
+    color: {r: 0.5, g: 0.85, b: 0.4, a: 1}
+  - stat: 11
+    sprite: {fileID: 21300000, guid: 37bad9cc06433a946ab1b0a5e27cd284, type: 3}
+    color: {r: 1, g: 0.82, b: 0.3, a: 1}
+  gameplay: {fileID: 11400000, guid: c797592768f344c4b43bf7b0cc29d8b8, type: 2}
+  tripleComboColor: {r: 0.95, g: 0.75, b: 0.25, a: 1}
+  quadComboColor: {r: 1, g: 0.45, b: 0.15, a: 1}
+  statBarFullPoints: 40
+  runnerTipPosition: {x: 20, y: -118}
+  fightTipPosition: {x: 20, y: -102}
+  tipWidth: 470
+  bonusTipColumns: 2
+  tipPageSeconds: 2.2
+  tipFadeSeconds: 0.25
+  trayInSeconds: 0.35
+  sourceStagger: 0.22
+  flightSeconds: 0.6
+  flightArc: 0.22
+  arrivalScale: 0.25
+  barGrowSeconds: 0.35
+  pulseSeconds: 0.25
+  pulseScale: 1.25
+  endHoldSeconds: 0.5
+  maxFlightsInAir: 4
+  blockTravelSeconds: 0.8
+  blockBubbleMargin: 16

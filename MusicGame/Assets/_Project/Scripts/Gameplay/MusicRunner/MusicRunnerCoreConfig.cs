@@ -17,6 +17,17 @@ public class MusicRunnerCoreConfig : ScriptableObject
     public float playerSpeed = 10f;
     public float strafeSpeed = 8f;
 
+    [Tooltip("Seconds the player's reference position runs BEHIND the musical front (MusicClock.MusicDistance), " +
+             "so a cube's hit (full size at its eventTime, right on the front / playhead line) is seen just AHEAD " +
+             "of the player, who reaches it this long after. The ONE place this delay exists: converted to " +
+             "distance with playerSpeed (PlayerTrailDistance); the music, MusicClock and every event time are " +
+             "untouched, and scoring expects the meeting at eventTime + this. 0 = the old behaviour (player on the front). " +
+             "Raise it if the hits still happen too close to the player; lower it if the player feels late.")]
+    [Range(0f, 1f)] public float playerTrailSeconds = 0.2f;
+
+    /// <summary>playerTrailSeconds in path distance (world units along the path) at playerSpeed.</summary>
+    public float PlayerTrailDistance => Mathf.Max(0f, playerTrailSeconds) * playerSpeed;
+
     [Header("Touch joystick — ANALOG (on-screen stick only; keyboard keeps its full ±1)")]
     [Tooltip("Stick deflection (0..1) ignored around the centre, so a resting thumb doesn't drift.")]
     [Range(0f, 0.5f)] public float joystickDeadZone = 0.12f;

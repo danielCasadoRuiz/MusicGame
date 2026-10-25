@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Voice_haydn_en
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Voice_haydn_en
+  m_GUID: a54b437b3f726ee41b1a1d224aa720ac
+  m_SerializeEntries:
+  - m_GUID: d8d83500da355994686d51d314da2342
+    m_Address: VoicePack/haydn/en
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - VoiceLang_en
+    - VoicePack
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a4cc0dfc618f344aaae658dde9bb725, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 6f045ed9481efba4d8b76cb7428edeec, type: 2}
+    - {fileID: 11400000, guid: 2e6237c4fa6eb6c4c9fae49bbd203ca4, type: 2}

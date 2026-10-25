@@ -1227,6 +1227,398 @@ MonoBehaviour:
     m_Key: Fight.Loading
     m_Metadata:
       m_Items: []
+  - m_Id: 14508508013191168
+    m_Key: SongSelection.DownloadFailed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14508508130631680
+    m_Key: SongSelection.ContentIncompatible
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14508508130631681
+    m_Key: Preparing.Downloading
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14508508130631682
+    m_Key: Preparing.Loading
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14508508130631683
+    m_Key: Preparing.Preparing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14788093393035264
+    m_Key: Settings.MusicVolume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14788093472727040
+    m_Key: Settings.SfxVolume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14788093472727041
+    m_Key: Settings.VoiceVolume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400454242304
+    m_Key: Help.Stat.PunchPower
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128384
+    m_Key: Help.Stat.KickPower
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128385
+    m_Key: Help.Stat.Agility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128386
+    m_Key: Help.Stat.Resistance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128387
+    m_Key: Help.Stat.ImpactPower
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128388
+    m_Key: Help.Stat.Short.PunchPower
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128389
+    m_Key: Help.Stat.Short.KickPower
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128390
+    m_Key: Help.Stat.Short.Agility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128391
+    m_Key: Help.Stat.Short.Resistance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128392
+    m_Key: Help.Stat.Short.ImpactPower
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128393
+    m_Key: Help.Stat.PunchPower.Full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128394
+    m_Key: Help.Stat.KickPower.Full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128395
+    m_Key: Help.Stat.Agility.Full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128396
+    m_Key: Help.Stat.Resistance.Full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128397
+    m_Key: Help.Stat.ImpactPower.Full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128398
+    m_Key: Help.Bonus.TripleCombo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128399
+    m_Key: Help.Bonus.QuadCombo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128400
+    m_Key: Help.Effect.ScoreOnly
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128401
+    m_Key: Help.Effect.Life
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128402
+    m_Key: Help.Effect.Special
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128403
+    m_Key: Help.Effect.Triple
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128404
+    m_Key: Help.Effect.Quad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128405
+    m_Key: Help.Bonus.Feeds
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128406
+    m_Key: Help.Bonus.ScoreOnlyFull
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128407
+    m_Key: Help.Bonus.LifeFull
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128408
+    m_Key: Help.Bonus.SpecialFull
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128409
+    m_Key: Help.Bonus.TripleFull
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128410
+    m_Key: Help.Bonus.QuadFull
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128411
+    m_Key: Help.Bonus.Intro
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128412
+    m_Key: Help.Bonus.HelpTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128413
+    m_Key: Help.Bonus.StatsHeader
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128414
+    m_Key: Help.Moves.Title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128415
+    m_Key: Help.Moves.Intro
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128416
+    m_Key: Help.Moves.IntroMobile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128417
+    m_Key: Help.Moves.Basics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128418
+    m_Key: Help.Moves.Combos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128419
+    m_Key: Help.Moves.Special
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128420
+    m_Key: Help.Move.Punch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128421
+    m_Key: Help.Move.Kick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128422
+    m_Key: Help.Move.HighLow
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128423
+    m_Key: Help.Move.HighLowDetail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128424
+    m_Key: Help.Move.Guard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128425
+    m_Key: Help.Move.GuardDetail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128426
+    m_Key: Help.Move.Grab
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128427
+    m_Key: Help.Move.GrabDetail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128428
+    m_Key: Help.Move.ComboTiming
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128429
+    m_Key: Help.Move.FinisherDetail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128430
+    m_Key: Help.Move.FinisherShort
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128431
+    m_Key: Help.Move.SpecialReq
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128432
+    m_Key: Help.Move.SpecialShort
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128433
+    m_Key: Help.Move.Power
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128434
+    m_Key: Help.Move.PowerReq
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128435
+    m_Key: Help.Move.PowerShort
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128436
+    m_Key: Help.Combo.aaa_b
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128437
+    m_Key: Help.Combo.bb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128438
+    m_Key: Help.Combo.bbab
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128439
+    m_Key: Help.Combo.forward_a
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128440
+    m_Key: Help.Combo.down_b
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128441
+    m_Key: Help.Combo.back_aab
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128442
+    m_Key: Help.Combo.dash_forward
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128443
+    m_Key: Help.Combo.backdash
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128444
+    m_Key: Help.Combo.punch_finisher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128445
+    m_Key: Help.Combo.kick_finisher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128446
+    m_Key: Help.Combo.special_fireball
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128447
+    m_Key: Help.Tip.BonusTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128448
+    m_Key: Help.Tip.MovesTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128449
+    m_Key: Help.Tip.More
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128450
+    m_Key: Help.Tip.PauseHint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128451
+    m_Key: Help.Pause.Bonuses
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128452
+    m_Key: Help.Pause.Moves
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128453
+    m_Key: Help.Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128454
+    m_Key: Help.Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128455
+    m_Key: Help.HintBack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128456
+    m_Key: Help.HintContinue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128457
+    m_Key: Help.Conv.Title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128458
+    m_Key: Help.Conv.Budget
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335882870784
+    m_Key: Help.Moves.FreeCombos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008128
+    m_Key: Help.Moves.Charged
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008129
+    m_Key: Help.Move.NoCharge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008130
+    m_Key: Help.Move.FinisherFree
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008131
+    m_Key: Help.Move.FinisherShortFree
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008132
+    m_Key: Help.Move.SpecialSpend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008133
+    m_Key: Help.Move.PowerSpend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490770780160
+    m_Key: Help.Move.FinisherPowered
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306112
+    m_Key: Help.Move.FinisherSpend
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306113
+    m_Key: Help.Move.PowerAll
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306114
+    m_Key: Help.Move.PowerAllReq
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306115
+    m_Key: Help.Bonus.TripleUse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306116
+    m_Key: Help.Bonus.QuadUse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15315109997502464
+    m_Key: Help.Stat.Agility.Speed
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

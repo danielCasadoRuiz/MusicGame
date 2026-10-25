@@ -291,7 +291,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2088487718805524
-    m_Localized: JA!
+    m_Localized: TEMPO!
     m_Metadata:
       m_Items: []
   - m_Id: 2088487718805525
@@ -363,7 +363,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2246691362758660
-    m_Localized: LLUITA!
+    m_Localized: FURY!
     m_Metadata:
       m_Items: []
   - m_Id: 2289223262068736
@@ -1288,6 +1288,423 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 12319507021881344
     m_Localized: "Carregant\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14508508013191168
+    m_Localized: "No s'ha pogut descarregar la can\xE7\xF3 \u2014 comprova la connexi\xF3
+      i torna-ho a provar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14508508130631680
+    m_Localized: "El contingut d'aquesta can\xE7\xF3 s'ha d'actualitzar \u2014 prova'n
+      una altra."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14508508130631681
+    m_Localized: "Descarregant la can\xE7\xF3 ({0} MB)..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14508508130631682
+    m_Localized: "Carregant la can\xE7\xF3..."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14508508130631683
+    m_Localized: Preparant el nivell...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14788093393035264
+    m_Localized: "M\xFAsica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14788093472727040
+    m_Localized: Efectes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14788093472727041
+    m_Localized: Veus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400454242304
+    m_Localized: "For\xE7a de cop de puny"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128384
+    m_Localized: "For\xE7a de puntada"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128385
+    m_Localized: Agilitat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128386
+    m_Localized: "Resist\xE8ncia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128387
+    m_Localized: "For\xE7a d'impacte"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128388
+    m_Localized: PUNY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128389
+    m_Localized: PUNTADA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128390
+    m_Localized: AGILITAT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128391
+    m_Localized: RESIST.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128392
+    m_Localized: IMPACTE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128393
+    m_Localized: "M\xE9s dany amb els cops de puny."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128394
+    m_Localized: "M\xE9s dany amb les puntades."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128395
+    m_Localized: "Moviments m\xE9s r\xE0pids: menys preparaci\xF3 i menys recuperaci\xF3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128396
+    m_Localized: Reps menys dany i et desequilibren menys.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128397
+    m_Localized: "Els teus cops desequilibren i empenyen m\xE9s el rival."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128398
+    m_Localized: COMBO x3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128399
+    m_Localized: COMBO x4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128400
+    m_Localized: "Nom\xE9s punts"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128401
+    m_Localized: Vida extra
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128402
+    m_Localized: +1 Especial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128403
+    m_Localized: '{0} seguits'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128404
+    m_Localized: '{0} seguits: Poder'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128405
+    m_Localized: 'Prepara: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128406
+    m_Localized: Suma punts. No modifica cap atribut del combat.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128407
+    m_Localized: "+1 vida extra, que es desa amb el progr\xE9s (com a m\xE0xim {0}
+      per can\xE7\xF3). Si perds una lluita, una vida et permet tornar a lluitar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128408
+    m_Localized: "+1 Especial per a la lluita seg\xFCent. El moviment Especial el
+      gasta en la versi\xF3 potenciada (dany \xD7{0}); sense, \xE9s un cop fort normal."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128409
+    m_Localized: "{0} bonus musicals seguits (en {1} s) donen una c\xE0rrega x3 per
+      a la lluita. El seu \xFAs al combat encara est\xE0 pendent."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128410
+    m_Localized: "{0} bonus musicals seguits (en {1} s) donen una c\xE0rrega x4.
+      Al combat, mant\xE9n \u2193 + Puny + Puntada {2} s: estat de Poder durant {3}
+      s (dany \xD7{4})."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128411
+    m_Localized: "Els bonus musicals preparen el teu lluitador. Com de b\xE9 els
+      reculls (dels que t\xE9 la can\xE7\xF3) fixa la pot\xE8ncia total, fins a {0}
+      punts; quins reculls decideix com es reparteixen aquests punts entre els atributs.
+      Si la can\xE7\xF3 no t\xE9 cap bonus d'un atribut, aquest atribut fa servir
+      el teu rendiment mitj\xE0."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128412
+    m_Localized: BONUS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128413
+    m_Localized: "Qu\xE8 fa cada atribut"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128414
+    m_Localized: MOVIMENTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128415
+    m_Localized: "Teclat: J = Puny \xB7 K = Puntada \xB7 WASD o fletxes = moure't.
+      \u2192 vol dir cap al rival, \u2190 enrere."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128416
+    m_Localized: "Joystick per moure't, botons COP i PUNTADA per atacar. \u2192 vol
+      dir cap al rival, \u2190 enrere."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128417
+    m_Localized: "B\xE0sics"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128418
+    m_Localized: Combos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128419
+    m_Localized: Especial i Poder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128420
+    m_Localized: Cop de puny
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128421
+    m_Localized: Puntada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128422
+    m_Localized: Atac alt / baix
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128423
+    m_Localized: "Mant\xE9n \u2191 o \u2193 mentre prems el bot\xF3."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128424
+    m_Localized: "Gu\xE0rdia (mant\xE9n)"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128425
+    m_Localized: "Mant\xE9n enrere per bloquejar. Amb \u2193 bloqueges els atacs
+      baixos, amb \u2191 els alts. No funciona a l'aire ni enmig d'un moviment."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128426
+    m_Localized: Agafada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128427
+    m_Localized: "Prem els dos botons alhora (en {0} s). La mateixa pulsaci\xF3 et
+      deslliura d'una agafada."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128428
+    m_Localized: "Com a m\xE0xim {0} s entre pulsacions."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128429
+    m_Localized: "El tercer cop fa dany \xD7{0}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128430
+    m_Localized: "3r cop \xD7{0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128431
+    m_Localized: "Gasta 1 Especial (en tens {0}) en la versi\xF3 potenciada (dany
+      \xD7{1}). Sense Especial: un cop fort normal."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128432
+    m_Localized: cal 1 Especial ({0})
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128433
+    m_Localized: Estat de Poder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128434
+    m_Localized: "Mant\xE9n {0} s. Gasta 1 c\xE0rrega x4 (en tens {1}). Dura {2}
+      s: dany \xD7{3}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128435
+    m_Localized: "mant\xE9n {0} s \xB7 cal 1 x4 ({1})"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128436
+    m_Localized: Cops + puntada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128437
+    m_Localized: Doble puntada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128438
+    m_Localized: Cadena de puntades
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128439
+    m_Localized: Cop en estocada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128440
+    m_Localized: Puntada baixa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128441
+    m_Localized: Cadena enrere
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128442
+    m_Localized: Esprint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128443
+    m_Localized: Salt enrere
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128444
+    m_Localized: Triple cop de puny
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128445
+    m_Localized: Triple puntada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128446
+    m_Localized: Especial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128447
+    m_Localized: Els bonus preparen la lluita
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128448
+    m_Localized: Els teus moviments
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128449
+    m_Localized: "M\xE9s informaci\xF3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128450
+    m_Localized: "Ajuda completa tamb\xE9 a Pausa (Esc)"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128451
+    m_Localized: BONUS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128452
+    m_Localized: MOVIMENTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128453
+    m_Localized: TORNA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128454
+    m_Localized: CONTINUA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128455
+    m_Localized: "Esc: torna al men\xFA de pausa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128456
+    m_Localized: 'Esc: tanca i continua'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128457
+    m_Localized: "Els teus bonus \u2192 la lluita"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128458
+    m_Localized: "Pot\xE8ncia {0} / {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335882870784
+    m_Localized: Combos (sense cost)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008128
+    m_Localized: "Gasten una c\xE0rrega"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008129
+    m_Localized: "No gasta cap c\xE0rrega."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008130
+    m_Localized: "No gasta cap c\xE0rrega: \xABtriple\xBB vol dir tres pulsacions,
+      no el Combo x3 del runner."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008131
+    m_Localized: "3r cop \xD7{0} \xB7 sense cost"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008132
+    m_Localized: "gasta 1 Especial \xB7 en tens {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008133
+    m_Localized: "mant\xE9n {0} s \xB7 gasta 1 x4 \xB7 en tens {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490770780160
+    m_Localized: "Amb una c\xE0rrega x3, el tercer cop fa dany \xD7{0} i la gasta;
+      sense, \xE9s un cop normal."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306112
+    m_Localized: "gasta 1 x3 \xB7 3r cop \xD7{0} \xB7 en tens {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306113
+    m_Localized: "mant\xE9n {0} s \xB7 gasta tots els x4 ({1}) \u2192 {2} s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306114
+    m_Localized: "Mant\xE9n {0} s. Gasta TOTES les c\xE0rregues x4 (en tens {1}):
+      {2} s amb una, +{3} s per cada una de m\xE9s (ara {4} s). Dany \xD7{5}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306115
+    m_Localized: "{0} bonus musicals seguits (en {1} s) donen una c\xE0rrega x3.
+      Al combat, el Triple cop de puny o la Triple puntada en gasta una: el tercer
+      cop fa dany \xD7{2}."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306116
+    m_Localized: "{0} bonus musicals seguits (en {1} s) donen una c\xE0rrega x4.
+      Al combat, mant\xE9n \u2193 + Puny + Puntada {2} s: estat de Poder (dany \xD7{3}),
+      que gasta tots els x4 que tinguis \u2014 {4} s amb un, +{5} s per cada un de
+      m\xE9s."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15315109997502464
+    m_Localized: "Et mous m\xE9s de pressa, i els atacs comencen i es recuperen abans."
     m_Metadata:
       m_Items: []
   references:

@@ -32,7 +32,7 @@ public static class LocalizationSetup
 
     // key → (English, Catalan). Any OTHER project locale (if added later) falls back to the
     // English text below rather than being left blank.
-    private static readonly (string key, string en, string ca)[] Entries =
+    internal static readonly (string key, string en, string ca)[] Entries =
     {
         ("Analyzing.Title", "Analyzing song...",                 "Analitzant la cançó..."),
         ("Analyzing.Tip01", "Extracting musical style...",        "Extraient l'estil musical..."),
@@ -107,6 +107,9 @@ public static class LocalizationSetup
         // ── Settings panel (opened from Main Menu) ──────────────────────────────
         ("Settings.Title",  "SETTINGS", "AJUSTOS"),
         ("Settings.Volume", "Volume",   "Volum"),
+        ("Settings.MusicVolume", "Music",   "Música"),
+        ("Settings.SfxVolume",   "Effects", "Efectes"),
+        ("Settings.VoiceVolume", "Voices",  "Veus"),
         ("Settings.Close",  "CLOSE",    "TANCA"),
 
         // ── Song selection ───────────────────────────────────────────────────────
@@ -120,12 +123,17 @@ public static class LocalizationSetup
         ("SongSelection.Play",                 "PLAY",                             "JUGA"),
         ("SongSelection.Loading",              "Loading song...",                  "Carregant la cançó..."),
         ("SongSelection.LoadFailed",           "Couldn't load that song — try again.", "No s'ha pogut carregar la cançó — torna-ho a provar."),
+        ("SongSelection.DownloadFailed",       "Couldn't download that song — check your connection and try again.", "No s'ha pogut descarregar la cançó — comprova la connexió i torna-ho a provar."),
+        ("SongSelection.ContentIncompatible",  "This song's content needs an update — try another song.", "El contingut d'aquesta cançó s'ha d'actualitzar — prova'n una altra."),
+        ("Preparing.Downloading",              "Downloading song ({0} MB)...", "Descarregant la cançó ({0} MB)..."),
+        ("Preparing.Loading",                  "Loading song...", "Carregant la cançó..."),
+        ("Preparing.Preparing",                "Preparing the level...", "Preparant el nivell..."),
         ("SongSelection.LocalFileCancelled",   "File selection cancelled.",        "Selecció de fitxer cancel·lada."),
         ("SongSelection.LocalFileSelected",    "Selected: {0}",                    "Seleccionat: {0}"),
         ("SongSelection.LocalFileDefaultName", "Local File",                       "Fitxer local"),
 
         // ── Countdown ────────────────────────────────────────────────────────────
-        ("Countdown.Go",     "GO!",     "JA!"),
+        ("Countdown.Go",     "TEMPO!",  "TEMPO!"),  // reserved word (= the announcer), same in every language
         ("Countdown.Finish", "FINISH!", "FINAL!"),
 
         // ── Mobile controls ──────────────────────────────────────────────────────
@@ -145,7 +153,7 @@ public static class LocalizationSetup
         ("OpponentSelection.Title", "CHOOSE YOUR OPPONENT", "TRIA EL TEU RIVAL"),
         ("Fight.Versus",            "VS",                   "VS"),
         ("Fight.RoundLabel",        "ROUND {0}",             "RONDA {0}"),
-        ("Fight.Banner",            "FIGHT!",                "LLUITA!"),
+        ("Fight.Banner",            "FURY!",                 "FURY!"),   // reserved word (= the announcer)
 
         // ── Fight flow (Round End / Match Result) ──────────────────────────────────
         ("Fight.KO",          "KO!",           "KO!"),
@@ -289,7 +297,123 @@ public static class LocalizationSetup
         ("MainMenu.ExtraLives", "Extra lives {0}", "Vides extra {0}"),
         ("MainMenu.LapDone", "LAP {0} COMPLETED", "VOLTA {0} COMPLETADA"),
         ("MainMenu.CampaignStatus", "Lap {0}  ·  Mastered matches {1}/{2}", "Volta {0}  ·  Partides dominades {1}/{2}"),
+        // Help: tip cards, full help, bonus conversion (HelpScreenPrefabs / HelpUISetup).
+        ("Help.Stat.PunchPower", "Punch power", "Força de cop de puny"),
+        ("Help.Stat.KickPower", "Kick power", "Força de puntada"),
+        ("Help.Stat.Agility", "Agility", "Agilitat"),
+        ("Help.Stat.Resistance", "Resistance", "Resistència"),
+        ("Help.Stat.ImpactPower", "Impact power", "Força d'impacte"),
+        ("Help.Stat.Short.PunchPower", "PUNCH", "PUNY"),
+        ("Help.Stat.Short.KickPower", "KICK", "PUNTADA"),
+        ("Help.Stat.Short.Agility", "AGILITY", "AGILITAT"),
+        ("Help.Stat.Short.Resistance", "RESIST.", "RESIST."),
+        ("Help.Stat.Short.ImpactPower", "IMPACT", "IMPACTE"),
+        ("Help.Stat.PunchPower.Full", "More damage with your punches.", "Més dany amb els cops de puny."),
+        ("Help.Stat.KickPower.Full", "More damage with your kicks.", "Més dany amb les puntades."),
+        ("Help.Stat.Agility.Full", "Faster moves: shorter start-up and recovery.", "Moviments més ràpids: menys preparació i menys recuperació."),
+        ("Help.Stat.Resistance.Full", "You take less damage and get staggered less.", "Reps menys dany i et desequilibren menys."),
+        ("Help.Stat.ImpactPower.Full", "Your hits stagger and push the rival further.", "Els teus cops desequilibren i empenyen més el rival."),
+        ("Help.Bonus.TripleCombo", "COMBO x3", "COMBO x3"),
+        ("Help.Bonus.QuadCombo", "COMBO x4", "COMBO x4"),
+        ("Help.Effect.ScoreOnly", "Score only", "Només punts"),
+        ("Help.Effect.Life", "Extra life", "Vida extra"),
+        ("Help.Effect.Special", "+1 Special", "+1 Especial"),
+        ("Help.Effect.Triple", "{0} in a row", "{0} seguits"),
+        ("Help.Effect.Quad", "{0} in a row: Power", "{0} seguits: Poder"),
+        ("Help.Bonus.Feeds", "Builds: {0}.", "Prepara: {0}."),
+        ("Help.Bonus.ScoreOnlyFull", "Adds score. It does not change any fight attribute.", "Suma punts. No modifica cap atribut del combat."),
+        ("Help.Bonus.LifeFull", "+1 extra life, saved with your progress (at most {0} per song). After losing a fight, a life lets you fight again.", "+1 vida extra, que es desa amb el progrés (com a màxim {0} per cançó). Si perds una lluita, una vida et permet tornar a lluitar."),
+        ("Help.Bonus.SpecialFull", "+1 Special for the next fight. The Special move spends it on its powered version (×{0} damage); without one it is a plain heavy punch.", "+1 Especial per a la lluita següent. El moviment Especial el gasta en la versió potenciada (dany ×{0}); sense, és un cop fort normal."),
+        ("Help.Bonus.TripleFull", "{0} musical bonuses in a row (within {1} s) give an x3 charge for the fight. Its use in the fight is still pending.", "{0} bonus musicals seguits (en {1} s) donen una càrrega x3 per a la lluita. El seu ús al combat encara està pendent."),
+        ("Help.Bonus.QuadFull", "{0} musical bonuses in a row (within {1} s) give an x4 charge. In the fight, hold ↓ + Punch + Kick for {2} s: Power state for {3} s (×{4} damage).", "{0} bonus musicals seguits (en {1} s) donen una càrrega x4. Al combat, mantén ↓ + Puny + Puntada {2} s: estat de Poder durant {3} s (dany ×{4})."),
+        ("Help.Bonus.Intro", "Musical bonuses prepare your fighter. How well you collect them (out of those the song has) sets your total power, up to {0} points; which ones you collect decides how those points are shared between the attributes. If a song has none of an attribute's bonuses, that attribute takes your average performance.", "Els bonus musicals preparen el teu lluitador. Com de bé els reculls (dels que té la cançó) fixa la potència total, fins a {0} punts; quins reculls decideix com es reparteixen aquests punts entre els atributs. Si la cançó no té cap bonus d'un atribut, aquest atribut fa servir el teu rendiment mitjà."),
+        ("Help.Bonus.HelpTitle", "BONUSES", "BONUS"),
+        ("Help.Bonus.StatsHeader", "What each attribute does", "Què fa cada atribut"),
+        ("Help.Moves.Title", "MOVES", "MOVIMENTS"),
+        ("Help.Moves.Intro", "Keyboard: J = Punch · K = Kick · WASD or arrows = move. → means towards the rival, ← away from them.", "Teclat: J = Puny · K = Puntada · WASD o fletxes = moure't. → vol dir cap al rival, ← enrere."),
+        ("Help.Moves.IntroMobile", "Joystick to move, PUNCH and KICK buttons to attack. → means towards the rival, ← away from them.", "Joystick per moure't, botons COP i PUNTADA per atacar. → vol dir cap al rival, ← enrere."),
+        ("Help.Moves.Basics", "Basics", "Bàsics"),
+        ("Help.Moves.Combos", "Combos", "Combos"),
+        ("Help.Moves.Special", "Special and Power", "Especial i Poder"),
+        ("Help.Move.Punch", "Punch", "Cop de puny"),
+        ("Help.Move.Kick", "Kick", "Puntada"),
+        ("Help.Move.HighLow", "High / low attack", "Atac alt / baix"),
+        ("Help.Move.HighLowDetail", "Hold ↑ or ↓ while pressing the button.", "Mantén ↑ o ↓ mentre prems el botó."),
+        ("Help.Move.Guard", "Guard (hold)", "Guàrdia (mantén)"),
+        ("Help.Move.GuardDetail", "Hold away from the rival to block. With ↓ you block low attacks, with ↑ high ones. Not in the air or mid-move.", "Mantén enrere per bloquejar. Amb ↓ bloqueges els atacs baixos, amb ↑ els alts. No funciona a l'aire ni enmig d'un moviment."),
+        ("Help.Move.Grab", "Grab", "Agafada"),
+        ("Help.Move.GrabDetail", "Press both buttons together (within {0} s). The same press escapes a grab.", "Prem els dos botons alhora (en {0} s). La mateixa pulsació et deslliura d'una agafada."),
+        ("Help.Move.ComboTiming", "At most {0} s between presses.", "Com a màxim {0} s entre pulsacions."),
+        ("Help.Move.FinisherDetail", "The third hit deals ×{0} damage.", "El tercer cop fa dany ×{0}."),
+        ("Help.Move.FinisherShort", "3rd hit ×{0}", "3r cop ×{0}"),
+        ("Help.Move.SpecialReq", "Spends 1 Special (you have {0}) on the powered version (×{1} damage). Without a Special: a plain heavy punch.", "Gasta 1 Especial (en tens {0}) en la versió potenciada (dany ×{1}). Sense Especial: un cop fort normal."),
+        ("Help.Move.SpecialShort", "needs 1 Special ({0})", "cal 1 Especial ({0})"),
+        ("Help.Move.Power", "Power state", "Estat de Poder"),
+        ("Help.Move.PowerReq", "Hold for {0} s. Spends 1 x4 charge (you have {1}). Lasts {2} s: ×{3} damage.", "Mantén {0} s. Gasta 1 càrrega x4 (en tens {1}). Dura {2} s: dany ×{3}."),
+        ("Help.Move.PowerShort", "hold {0} s · needs 1 x4 ({1})", "mantén {0} s · cal 1 x4 ({1})"),
+        ("Help.Combo.aaa_b", "Punches + kick", "Cops + puntada"),
+        ("Help.Combo.bb", "Double kick", "Doble puntada"),
+        ("Help.Combo.bbab", "Kick chain", "Cadena de puntades"),
+        ("Help.Combo.forward_a", "Lunge punch", "Cop en estocada"),
+        ("Help.Combo.down_b", "Low kick", "Puntada baixa"),
+        ("Help.Combo.back_aab", "Back chain", "Cadena enrere"),
+        ("Help.Combo.dash_forward", "Dash", "Esprint"),
+        ("Help.Combo.backdash", "Backdash", "Salt enrere"),
+        ("Help.Combo.punch_finisher", "Triple punch", "Triple cop de puny"),
+        ("Help.Combo.kick_finisher", "Triple kick", "Triple puntada"),
+        ("Help.Combo.special_fireball", "Special", "Especial"),
+        // Charges (CombatResourceUse): which moves are free, which spend a charge — new keys (tables are never overwritten).
+        ("Help.Moves.FreeCombos", "Combos (free)", "Combos (sense cost)"),
+        ("Help.Moves.Charged", "Spend a charge", "Gasten una càrrega"),
+        ("Help.Move.NoCharge", "Spends no charge.", "No gasta cap càrrega."),
+        ("Help.Move.SpecialSpend", "spends 1 Special · you have {0}", "gasta 1 Especial · en tens {0}"),
+        // 2026-10-25: x3 → powered finishers, x4 → Power spends all charges (CombatResourceUse).
+        ("Help.Move.FinisherPowered", "With an x3 charge the third hit deals ×{0} damage and spends it; without one it is a normal hit.", "Amb una càrrega x3, el tercer cop fa dany ×{0} i la gasta; sense, és un cop normal."),
+        ("Help.Move.FinisherSpend", "spends 1 x3 · 3rd hit ×{0} · you have {1}", "gasta 1 x3 · 3r cop ×{0} · en tens {1}"),
+        ("Help.Move.PowerAll", "hold {0} s · spends all x4 ({1}) → {2} s", "mantén {0} s · gasta tots els x4 ({1}) → {2} s"),
+        ("Help.Move.PowerAllReq", "Hold for {0} s. Spends ALL your x4 charges (you have {1}): {2} s with one, +{3} s for each extra one (now {4} s). ×{5} damage.", "Mantén {0} s. Gasta TOTES les càrregues x4 (en tens {1}): {2} s amb una, +{3} s per cada una de més (ara {4} s). Dany ×{5}."),
+        ("Help.Bonus.TripleUse", "{0} musical bonuses in a row (within {1} s) give an x3 charge. In the fight, the Triple punch or the Triple kick spends one: its third hit deals ×{2} damage.", "{0} bonus musicals seguits (en {1} s) donen una càrrega x3. Al combat, el Triple cop de puny o la Triple puntada en gasta una: el tercer cop fa dany ×{2}."),
+        ("Help.Bonus.QuadUse", "{0} musical bonuses in a row (within {1} s) give an x4 charge. In the fight, hold ↓ + Punch + Kick for {2} s: Power state (×{3} damage), spending every x4 you have — {4} s with one, +{5} s for each extra one.", "{0} bonus musicals seguits (en {1} s) donen una càrrega x4. Al combat, mantén ↓ + Puny + Puntada {2} s: estat de Poder (dany ×{3}), que gasta tots els x4 que tinguis — {4} s amb un, +{5} s per cada un de més."),
+        ("Help.Stat.Agility.Speed", "You move faster, and your attacks start and recover sooner.", "Et mous més de pressa, i els atacs comencen i es recuperen abans."),
+        ("Help.Tip.BonusTitle", "Bonuses prepare your next fight", "Els bonus preparen la lluita"),
+        ("Help.Tip.MovesTitle", "Your moves", "Els teus moviments"),
+        ("Help.Tip.More", "More info", "Més informació"),
+        ("Help.Tip.PauseHint", "Full help also in Pause (Esc)", "Ajuda completa també a Pausa (Esc)"),
+        ("Help.Pause.Bonuses", "BONUSES", "BONUS"),
+        ("Help.Pause.Moves", "MOVES", "MOVIMENTS"),
+        ("Help.Back", "BACK", "TORNA"),
+        ("Help.Continue", "CONTINUE", "CONTINUA"),
+        ("Help.HintBack", "Esc: back to the pause menu", "Esc: torna al menú de pausa"),
+        ("Help.HintContinue", "Esc: close and continue", "Esc: tanca i continua"),
+        ("Help.Conv.Title", "Your bonuses → your fight", "Els teus bonus → la lluita"),
+        ("Help.Conv.Budget", "Power {0} / {1}", "Potència {0} / {1}"),
     };
+
+    /// <summary>Adds ONLY the given keys that are missing from the UIText table (every locale) — never
+    /// overwrites existing text (hand edits survive). Used by tools that introduce new strings (P3 song
+    /// preparation). Returns how many entries were added.</summary>
+    public static int AddMissingEntries(IEnumerable<string> keys)
+    {
+        var collection = LocalizationEditorSettings.GetStringTableCollection(TableName);
+        if (collection == null) { Debug.LogError("[LocalizationSetup] No UIText collection — run Tools > MusicGame > Setup Localization."); return 0; }
+        var wanted = new HashSet<string>(keys);
+        int added = 0;
+        foreach (var table in collection.StringTables)
+        {
+            if (table == null) continue;
+            bool useCatalan = table.LocaleIdentifier.Code == "ca";
+            foreach (var e in Entries)
+            {
+                if (!wanted.Contains(e.key) || table.GetEntry(e.key) != null) continue;
+                table.AddEntry(e.key, useCatalan ? e.ca : e.en);
+                added++;
+            }
+            EditorUtility.SetDirty(table);
+        }
+        EditorUtility.SetDirty(collection.SharedData);
+        AssetDatabase.SaveAssets();
+        return added;
+    }
 
     [MenuItem("Tools/MusicGame/Setup Localization")]
     public static void Setup()

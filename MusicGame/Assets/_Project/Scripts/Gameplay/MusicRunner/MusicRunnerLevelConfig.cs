@@ -147,10 +147,11 @@ public class MusicRunnerLevelConfig : ScriptableObject
     // CPU lookup of "which chunk is active".
     [Header("Playhead Scanline")]
     public bool  playheadEnabled = true;
-    [Tooltip("How far AHEAD of the player's canonical music-distance the line sits, in the same " +
-             "distance units as everything else here (== world meters along the path) — e.g. 1 " +
-             "means the line always sits ~1m ahead of the player.")]
-    public float playheadOffset = 1f;
+    [Tooltip("Extra distance (world meters along the path) added to the MUSICAL FRONT (MusicClock.MusicDistance — " +
+             "the same SongTime·speed every event distance uses, NOT the player's trailing position nor its surge). " +
+             "0 = the line passes exactly under a cube at the instant it hits (its eventTime); the player runs " +
+             "MusicRunnerCoreConfig.playerTrailSeconds behind it. Keep 0 unless deliberately shifting the line.")]
+    public float playheadOffset = 0f;
     [Tooltip("World-space width (meters) of the glowing band, measured ALONG the path (converted " +
              "to UV internally against the CURRENT chunk's own length, so it always reads as the " +
              "same physical width regardless of how long a given ground window happens to be) — " +

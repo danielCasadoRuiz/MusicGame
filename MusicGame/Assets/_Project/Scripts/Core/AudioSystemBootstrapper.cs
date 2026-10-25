@@ -27,26 +27,29 @@ public class AudioSystemBootstrapper : MonoBehaviour
     public AudioSource         AudioSource => audioSource;
 
     private AudioContextProvider _contextProvider;
+    private IAudioDetector[]     _detectors;
+    private AudioAnalyzer        _analyzer;
+    // ONE stored handler (not a lambda per detector) so OnDestroy can actually unsubscribe it.
+    private System.Action<SongProfileReadyEvent> _onProfile;
 
     private void Awake()
     {
         var sampler     = gameObject.AddComponent<AudioSampler>();
-        var analyzer    = gameObject.AddComponent<AudioAnalyzer>();
+        _analyzer       = gameObject.AddComponent<AudioAnalyzer>();
 
         _contextProvider = new AudioContextProvider();
         _contextProvider.Initialize(audioSource);
 
-        IAudioDetector[] detectors = BuildDetectors();
+        _detectors = BuildDetectors();
+        foreach (var d in _detectors) d.Initialize(config);
 
-        foreach (var d in detectors)
-        {
-            d.Initialize(config);
-            // Deliver SongProfile to each detector once pre-analysis finishes
-            EventBus.Subscribe<SongProfileReadyEvent>(e => d.SetSongProfile(e.Profile));
-        }
+        // Deliver SongProfile to each detector once pre-analysis finishes — a new profile is a
+        // song change, so every detector history/cooldown is reset too.
+        _onProfile = OnProfileReady;
+        EventBus.Subscribe(_onProfile);
 
         sampler.Initialize(audioSource, config);
-        analyzer.Initialize(sampler, config, detectors);
+        _analyzer.Initialize(sampler, config, _detectors);
 
         if (config != null && config.enableVisualizer)
         {
@@ -55,16 +58,19 @@ public class AudioSystemBootstrapper : MonoBehaviour
         }
     }
 
+    private void OnProfileReady(SongProfileReadyEvent e)
+    {
+        foreach (var d in _detectors) d.SetSongProfile(e.Profile);
+        if (_analyzer != null) _analyzer.ResetState("song change");
+        else foreach (var d in _detectors) d.Reset();
+    }
+
     private void OnDestroy()
     {
         _contextProvider?.Dispose();
-        // NOTE: no longer calls EventBus.Clear() here. That used to be a blunt way to clean up the
-        // per-detector lambda subscriptions added in Awake() (see BuildDetectors' subscribe loop
-        // above), but a global wipe now also silently drops persistent, cross-scene subscribers
-        // (GameSession, AppFlowController) the moment this scene-local object is destroyed — which
-        // would have been a latent bug the instant a real scene transition exists. The detector
-        // lambdas leaking on repeated Awake() calls is pre-existing, narrower technical debt to
-        // revisit when Song Analysis becomes an independently re-triggerable service.
+        // Targeted unsubscribe — never EventBus.Clear(), which would also drop persistent,
+        // cross-scene subscribers (GameSession, AppFlowController).
+        if (_onProfile != null) EventBus.Unsubscribe(_onProfile);
     }
 
     private IAudioDetector[] BuildDetectors()

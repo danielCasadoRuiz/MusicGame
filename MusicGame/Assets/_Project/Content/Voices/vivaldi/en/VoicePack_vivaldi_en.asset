@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1abea45d9a53b43b33e8c4a5bd67f9, type: 3}
+  m_Name: VoicePack_vivaldi_en
+  m_EditorClassIdentifier: Assembly-CSharp::ComposerVoicePack
+  composerId: vivaldi
+  language: en
+  engine: qwen3-tts
+  voiceDefinitionHash: c1806fba3293815f
+  lines:
+  - key: Composer.vivaldi.Dialogue.Defeat.001
+    clip: {fileID: 8300000, guid: 6b12e115a48346c4fbfcc7bf61469548, type: 3}
+    textHash: f66ec627a5dde7c6
+    duration: 3.873
+  - key: Composer.vivaldi.Dialogue.Defeat.002
+    clip: {fileID: 8300000, guid: 654717b06cb1fd740a5c03431911154d, type: 3}
+    textHash: 093fd8787090cbe3
+    duration: 3.942
+  - key: Composer.vivaldi.Dialogue.Defeat.003
+    clip: {fileID: 8300000, guid: 4f438691782acac498e923365978f50d, type: 3}
+    textHash: 2c1c443358ca7b0f
+    duration: 4.053
+  - key: Composer.vivaldi.Dialogue.Defeat.004
+    clip: {fileID: 8300000, guid: 280728ab939dfb14fa9a66ad384a437a, type: 3}
+    textHash: 167b42ee3ad3e7c5
+    duration: 3.291
+  - key: Composer.vivaldi.Dialogue.Defeat.005
+    clip: {fileID: 8300000, guid: 04b8249dcee285847b1c1e4beedd4731, type: 3}
+    textHash: 4f98af87cee176e5
+    duration: 4.367
+  - key: Composer.vivaldi.Dialogue.Defeat.006
+    clip: {fileID: 8300000, guid: 99f6852cf920d924db1b43e436a08b43, type: 3}
+    textHash: 1495e192889af07d
+    duration: 3.727
+  - key: Composer.vivaldi.Dialogue.Defeat.007
+    clip: {fileID: 8300000, guid: 4853d2f7171c5964b80565749945278b, type: 3}
+    textHash: 69210d7fa2922a7c
+    duration: 3.846
+  - key: Composer.vivaldi.Dialogue.Defeat.008
+    clip: {fileID: 8300000, guid: e38e2d392f48f5640a67da7e9726f22b, type: 3}
+    textHash: 36556aaf3ab7d799
+    duration: 3.518
+  - key: Composer.vivaldi.Dialogue.Defeat.009
+    clip: {fileID: 8300000, guid: 947e2c7de71419a4db26450d6a0a975f, type: 3}
+    textHash: 6b54435fb1674448
+    duration: 3.966
+  - key: Composer.vivaldi.Dialogue.Defeat.010
+    clip: {fileID: 8300000, guid: 9bf84850506e85a47b0782faaa2eb66a, type: 3}
+    textHash: f945e03bb03aa36c
+    duration: 3.465
+  - key: Composer.vivaldi.Dialogue.Intro.001
+    clip: {fileID: 8300000, guid: bec7ff596639d194bb3ff23c5b7959db, type: 3}
+    textHash: aca2efb712ef7d0d
+    duration: 3.316
+  - key: Composer.vivaldi.Dialogue.Intro.002
+    clip: {fileID: 8300000, guid: 7b01d48ee233df64283c2f412e43ae6d, type: 3}
+    textHash: 4c6dee393cd529e2
+    duration: 4.181
+  - key: Composer.vivaldi.Dialogue.Intro.003
+    clip: {fileID: 8300000, guid: c0ddeba4ec1833743940ff7cfcb7c079, type: 3}
+    textHash: cfd27e9fc552c829
+    duration: 3.473
+  - key: Composer.vivaldi.Dialogue.Intro.004
+    clip: {fileID: 8300000, guid: 4f798b46c30b88f40a33a1d3d51ac031, type: 3}
+    textHash: 885c116394fec6c6
+    duration: 2.8
+  - key: Composer.vivaldi.Dialogue.Intro.005
+    clip: {fileID: 8300000, guid: 5a831fef3db330c409a3726623411583, type: 3}
+    textHash: 904f6c8b946eacba
+    duration: 3.712
+  - key: Composer.vivaldi.Dialogue.Intro.006
+    clip: {fileID: 8300000, guid: 13a754859a2050148acb5359b928b8f4, type: 3}
+    textHash: 77e8b957277edded
+    duration: 2.753
+  - key: Composer.vivaldi.Dialogue.Intro.007
+    clip: {fileID: 8300000, guid: b049f32db1ce0ec40adf05d4ec699212, type: 3}
+    textHash: 513563da341c6c0a
+    duration: 3.49
+  - key: Composer.vivaldi.Dialogue.Intro.008
+    clip: {fileID: 8300000, guid: 8bf419d80f89b4644b04369fcb6b1d5d, type: 3}
+    textHash: bb0be110052791fc
+    duration: 3.072
+  - key: Composer.vivaldi.Dialogue.Intro.009
+    clip: {fileID: 8300000, guid: 6edcb7d37c5d592429234107722c1cdf, type: 3}
+    textHash: 81042ddc0908466f
+    duration: 3.483
+  - key: Composer.vivaldi.Dialogue.Intro.010
+    clip: {fileID: 8300000, guid: ed7684c702dca364692ce96056ee7908, type: 3}
+    textHash: 761a3427ce9584a1
+    duration: 2.866
+  - key: Composer.vivaldi.Dialogue.Victory.001
+    clip: {fileID: 8300000, guid: 4ea4cbf54931f7e478f6f26014cd7967, type: 3}
+    textHash: 5f762bc84a7f35eb
+    duration: 3.738
+  - key: Composer.vivaldi.Dialogue.Victory.002
+    clip: {fileID: 8300000, guid: fb83032df7176c8419eb525f4c283f3f, type: 3}
+    textHash: 50da5286e05089f6
+    duration: 3.524
+  - key: Composer.vivaldi.Dialogue.Victory.003
+    clip: {fileID: 8300000, guid: c1dc1869ce3ae3f4f8607f255777b8a3, type: 3}
+    textHash: 838a520daea57bdc
+    duration: 3.427
+  - key: Composer.vivaldi.Dialogue.Victory.004
+    clip: {fileID: 8300000, guid: 67058b45b93b50a418a66f22b6e5156c, type: 3}
+    textHash: 61b0658966884e76
+    duration: 2.911
+  - key: Composer.vivaldi.Dialogue.Victory.005
+    clip: {fileID: 8300000, guid: 39ba64d9c9f835949b149098e6db6ffb, type: 3}
+    textHash: f88393bb81de1171
+    duration: 2.621
+  - key: Composer.vivaldi.Dialogue.Victory.006
+    clip: {fileID: 8300000, guid: b2e74f0efd29ab94189503c18b93f29a, type: 3}
+    textHash: c48606f77c069af7
+    duration: 3.724
+  - key: Composer.vivaldi.Dialogue.Victory.007
+    clip: {fileID: 8300000, guid: eae9ab0a8104dbd40a6bd9f892590bf0, type: 3}
+    textHash: ee64d93510ac44d1
+    duration: 3.119
+  - key: Composer.vivaldi.Dialogue.Victory.008
+    clip: {fileID: 8300000, guid: c8caf6cbfb0cb4b4084e163fa096136f, type: 3}
+    textHash: d17a6f34fde5b4e9
+    duration: 4.08
+  - key: Composer.vivaldi.Dialogue.Victory.009
+    clip: {fileID: 8300000, guid: 1ee21a1b59d7b3543a280d82198f0cb6, type: 3}
+    textHash: 9a3f6b4c5c2c62f3
+    duration: 3.4
+  - key: Composer.vivaldi.Dialogue.Victory.010
+    clip: {fileID: 8300000, guid: f9e614d084808a844bd62cd59abbecbd, type: 3}
+    textHash: dc788bc9488ff011
+    duration: 3.315
+  efforts:
+    hurt: {fileID: 0}
+    special: {fileID: 0}
+    defeat: {fileID: 0}

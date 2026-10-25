@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1abea45d9a53b43b33e8c4a5bd67f9, type: 3}
+  m_Name: VoicePack_haydn_en
+  m_EditorClassIdentifier: Assembly-CSharp::ComposerVoicePack
+  composerId: haydn
+  language: en
+  engine: qwen3-tts
+  voiceDefinitionHash: 360ea6d83fea66e0
+  lines:
+  - key: Composer.haydn.Dialogue.Defeat.001
+    clip: {fileID: 8300000, guid: 4d767313239fd374eb800ffa2f1d6b9a, type: 3}
+    textHash: 12a18529b691c6be
+    duration: 5.493
+  - key: Composer.haydn.Dialogue.Defeat.002
+    clip: {fileID: 8300000, guid: ed81d4bc58a15f348898cac4896b43d9, type: 3}
+    textHash: 6833281532eead7b
+    duration: 5.226
+  - key: Composer.haydn.Dialogue.Defeat.003
+    clip: {fileID: 8300000, guid: a41ee6f69958ff14cb4a1e00a3b2a8ea, type: 3}
+    textHash: 2ff96bc5b75c017f
+    duration: 3.614
+  - key: Composer.haydn.Dialogue.Defeat.004
+    clip: {fileID: 8300000, guid: f6a9855e9b1f8e344b7d1fd98b085a88, type: 3}
+    textHash: 56f3e00641ce98c0
+    duration: 4.412
+  - key: Composer.haydn.Dialogue.Defeat.005
+    clip: {fileID: 8300000, guid: d2254a9e4a09c6c448fd2b43f44a123d, type: 3}
+    textHash: 363b566791bcd5fb
+    duration: 3.376
+  - key: Composer.haydn.Dialogue.Defeat.006
+    clip: {fileID: 8300000, guid: 9c83bfc304fcd7f4783ec90aafa56329, type: 3}
+    textHash: 4be95302f8826df2
+    duration: 5.154
+  - key: Composer.haydn.Dialogue.Defeat.007
+    clip: {fileID: 8300000, guid: aca3a9f95bf52b44586b6ea076a1bc99, type: 3}
+    textHash: 2a031129d1ef028b
+    duration: 4.978
+  - key: Composer.haydn.Dialogue.Defeat.008
+    clip: {fileID: 8300000, guid: 0fc2029bfdf1b474d90e6c0682abfd5b, type: 3}
+    textHash: fd1b3299202a4f99
+    duration: 4.872
+  - key: Composer.haydn.Dialogue.Defeat.009
+    clip: {fileID: 8300000, guid: fb9888ecc0819ff4b9d5e1fc577556c8, type: 3}
+    textHash: 6ffc2a94e130d32e
+    duration: 4.152
+  - key: Composer.haydn.Dialogue.Defeat.010
+    clip: {fileID: 8300000, guid: 376c116a93ccfff49b137cb6f18c2693, type: 3}
+    textHash: 8539fe58336494ef
+    duration: 4.357
+  - key: Composer.haydn.Dialogue.Intro.001
+    clip: {fileID: 8300000, guid: 010c97b383e12e247a715715b40c38c1, type: 3}
+    textHash: 68b92aed4c465836
+    duration: 3.869
+  - key: Composer.haydn.Dialogue.Intro.002
+    clip: {fileID: 8300000, guid: 0c40e2d51219f44499a1d5446e0972df, type: 3}
+    textHash: a0a0577996406a55
+    duration: 4.204
+  - key: Composer.haydn.Dialogue.Intro.003
+    clip: {fileID: 8300000, guid: 2bc86e0f94d45274ea31a71cf8e5a9b8, type: 3}
+    textHash: c7ded4c7c00603f1
+    duration: 4.226
+  - key: Composer.haydn.Dialogue.Intro.004
+    clip: {fileID: 8300000, guid: 081f53124d77faa4bbd66cfed29f8828, type: 3}
+    textHash: 134f5629190b1eea
+    duration: 4.663
+  - key: Composer.haydn.Dialogue.Intro.005
+    clip: {fileID: 8300000, guid: aa72bc5de5119934399acbb51cd57216, type: 3}
+    textHash: 83b0430b5e4bbf6a
+    duration: 4.708
+  - key: Composer.haydn.Dialogue.Intro.006
+    clip: {fileID: 8300000, guid: 089a91b9503452545a0e2f0d48184e27, type: 3}
+    textHash: 61b8e42179ca342d
+    duration: 4.949
+  - key: Composer.haydn.Dialogue.Intro.007
+    clip: {fileID: 8300000, guid: b7332d34a4f183a4d88557721855ec43, type: 3}
+    textHash: dd02f09f1bb62a8f
+    duration: 3.6
+  - key: Composer.haydn.Dialogue.Intro.008
+    clip: {fileID: 8300000, guid: 88df92c8cb3fd084dbb12308956ddd5f, type: 3}
+    textHash: 9ab7657951fbba1a
+    duration: 5.238
+  - key: Composer.haydn.Dialogue.Intro.009
+    clip: {fileID: 8300000, guid: b12a0f4b07c0f154285742b4ae4d7e5e, type: 3}
+    textHash: 1601579254bec8a7
+    duration: 3.888
+  - key: Composer.haydn.Dialogue.Intro.010
+    clip: {fileID: 8300000, guid: 65908501ee029dd448df94ddee8a15d8, type: 3}
+    textHash: 2982b3212b3273f9
+    duration: 4.775
+  - key: Composer.haydn.Dialogue.Victory.001
+    clip: {fileID: 8300000, guid: dfaed08b8128ba141abf72db5d57e4ca, type: 3}
+    textHash: bf348fc88b41cf05
+    duration: 5.548
+  - key: Composer.haydn.Dialogue.Victory.002
+    clip: {fileID: 8300000, guid: c7f5ee0a5c801334db602836831a1ca2, type: 3}
+    textHash: 5d7e6fab01590dac
+    duration: 4.419
+  - key: Composer.haydn.Dialogue.Victory.003
+    clip: {fileID: 8300000, guid: 06b17d729bda3c54daf5c6e83d6c2260, type: 3}
+    textHash: 580870c01f9994e2
+    duration: 4.718
+  - key: Composer.haydn.Dialogue.Victory.004
+    clip: {fileID: 8300000, guid: 25e044cf4a2519e42ae030e11987eb4e, type: 3}
+    textHash: 62343408846fe12c
+    duration: 4.477
+  - key: Composer.haydn.Dialogue.Victory.005
+    clip: {fileID: 8300000, guid: 1d397a9d0dc760e45a74e52fa5343715, type: 3}
+    textHash: c1ac4a0fb9fdb6bc
+    duration: 5.032
+  - key: Composer.haydn.Dialogue.Victory.006
+    clip: {fileID: 8300000, guid: 0f1dfad8e989887418935ce83e8f0381, type: 3}
+    textHash: f4666e183d5f0d0b
+    duration: 5.595
+  - key: Composer.haydn.Dialogue.Victory.007
+    clip: {fileID: 8300000, guid: d492c00b843ca784994d292567fb3190, type: 3}
+    textHash: fb8fb446d1ea7917
+    duration: 3.408
+  - key: Composer.haydn.Dialogue.Victory.008
+    clip: {fileID: 8300000, guid: 6c68349e101b9e148bce041392438740, type: 3}
+    textHash: f4f160901568dc95
+    duration: 5.802
+  - key: Composer.haydn.Dialogue.Victory.009
+    clip: {fileID: 8300000, guid: 3b33aebcc85a15a478fe1407cf2dbcb8, type: 3}
+    textHash: 0bdf0f09b3bb99ee
+    duration: 3.652
+  - key: Composer.haydn.Dialogue.Victory.010
+    clip: {fileID: 8300000, guid: 2f18f8c7a66e7944386f628000be71d4, type: 3}
+    textHash: 912b508612171c14
+    duration: 5.296
+  efforts:
+    hurt: {fileID: 0}
+    special: {fileID: 0}
+    defeat: {fileID: 0}

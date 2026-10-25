@@ -67,7 +67,7 @@ public static class MusicStyleResolver
         float beat    = full ? Mathf.Clamp01(profile.beatConfidence) : 0f;
         float dens    = full ? Mean(profile.density) : 0f;
         float tempo   = full ? Mathf.Clamp01(profile.tempoStability) : 0f;
-        float voice   = full ? Mean(profile.voiceProbability) : 0f;
+        float voice   = full ? Mean(profile.VoiceForFeatures) : 0f; // smoothed (derived) voice, as before
         float timbre  = full ? Mean(profile.timbralChange) : 0f;
         float dyn     = full ? Mathf.Clamp01(StdDev(profile.intensity) / Mathf.Max(0.01f, rules.intensitySpreadForMax)) : 0f;
         float hits    = full ? Mathf.Clamp01((profile.impactTimes?.Length ?? 0) / minutes / Mathf.Max(0.01f, rules.impactsPerMinuteForMax)) : 0f;

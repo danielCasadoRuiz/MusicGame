@@ -21,6 +21,12 @@ using UnityEngine.Localization.Settings;
 /// Language change keeps composer, category and KEY (never a new draw): revealing → types the new
 /// translation from the start; complete → shows it complete and restarts the reading hold; frozen →
 /// just swaps the text. A per-line English fallback never changes the global locale.
+///
+/// VOICE: the line's generated audio (ComposerVoiceService, in the language the text is shown in, only if its text
+/// hash matches) is awaited at most VoiceWaitSeconds together with the text; it starts WITH the bubble (the reveal
+/// is sped up if needed to keep pace with it) and the reading hold also waits for it to end. Missing / late / stale
+/// audio = subtitle only, and a late clip is never played afterwards. Skip, Freeze, FadeOut, Cancel and a language
+/// change stop it.
 /// </summary>
 public sealed class ComposerDialoguePresentation
 {
@@ -36,6 +42,10 @@ public sealed class ComposerDialoguePresentation
     private int _version;
     private float  _loadElapsed, _holdLeft;
     private bool   _displayAllowed, _frozen, _localeChangedWhileLoading, _subscribed;
+    private AudioClip _pendingVoice;
+    private int    _voiceToken;
+    private bool   _voicePaused;
+    private const float VoiceWaitSeconds = 1.5f;
 
     public Phase  CurrentPhase { get; private set; } = Phase.Idle;
     public string CurrentKey => _key;
@@ -111,9 +121,21 @@ public sealed class ComposerDialoguePresentation
             case Phase.Holding:
                 if (FightController.IsPaused) break;
                 _holdLeft -= dt;
-                if (_holdLeft <= 0f) CurrentPhase = Phase.Done;
+                if (_holdLeft <= 0f && VoiceRemaining <= 0f) CurrentPhase = Phase.Done; // never cut the voice
                 break;
         }
+        // The voice pauses with the fight.
+        bool paused = FightController.IsPaused;
+        if (paused != _voicePaused && _voiceToken != 0) { _voicePaused = paused; GameAudio.Instance?.PauseVoice(paused, _voiceToken); }
+    }
+
+    private float VoiceRemaining => _voiceToken != 0 && GameAudio.Instance != null ? GameAudio.Instance.VoiceRemaining(_voiceToken) : 0f;
+
+    private void StopVoice(float fade)
+    {
+        if (_voiceToken != 0) GameAudio.Instance?.StopVoice(fade, _voiceToken);
+        _voiceToken = 0;
+        _voicePaused = false;
     }
 
     /// <summary>Skip: the line (if any) complete at once, no reading hold; a line still loading is
@@ -129,6 +151,7 @@ public sealed class ComposerDialoguePresentation
             case Phase.Revealing:
             case Phase.Holding:
                 _bubble.CompleteReveal();
+                StopVoice(0.12f);
                 CurrentPhase = Phase.Done;
                 break;
         }
@@ -139,6 +162,7 @@ public sealed class ComposerDialoguePresentation
     public void Freeze()
     {
         if (CurrentPhase == Phase.Loading) DropLoad();
+        StopVoice(0.25f); // the countdown takes over: no voice under it
         _frozen = true;
     }
 
@@ -146,6 +170,7 @@ public sealed class ComposerDialoguePresentation
     {
         int token = _token;
         StopLoading();
+        StopVoice(seconds);
         if (_bubble == null) { Reset(); done?.Invoke(); return; }
         _bubble.FadeOut(seconds, () =>
         {
@@ -158,6 +183,7 @@ public sealed class ComposerDialoguePresentation
     public void Cancel()
     {
         StopLoading();
+        StopVoice(0f);
         if (_bubble != null) _bubble.Hide();
         Reset();
     }
@@ -168,7 +194,7 @@ public sealed class ComposerDialoguePresentation
     {
         _token++;
         CurrentPhase = Phase.Idle;
-        _key = null; _pendingText = null;
+        _key = null; _pendingText = null; _pendingVoice = null;
         _frozen = false;
         if (_subscribed) { LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged; _subscribed = false; }
     }
@@ -183,6 +209,7 @@ public sealed class ComposerDialoguePresentation
         _token++;              // a late result is ignored
         StopLoading();
         _pendingText = null;
+        _pendingVoice = null;
         CurrentPhase = Phase.Unavailable;
     }
 
@@ -208,15 +235,34 @@ public sealed class ComposerDialoguePresentation
         }
 
         if (!line.IsValid) { CurrentPhase = Phase.Unavailable; return; }
+
+        // Its voice, bounded: whatever is not ready within VoiceWaitSeconds is dropped (subtitle only).
+        AudioClip voice;
+        using (var wait = CancellationTokenSource.CreateLinkedTokenSource(ct))
+        {
+            wait.CancelAfter(TimeSpan.FromSeconds(VoiceWaitSeconds));
+            voice = await ComposerVoiceService.GetLineAsync(_composerId, line.Key, line.Text, line.LocaleCode, wait.Token);
+        }
+        if (token != _token) return;
+
         _key = line.Key;
         _pendingText = line.Text;
+        _pendingVoice = voice;
         TryDisplayPending();
     }
 
     private void TryDisplayPending()
     {
         if (CurrentPhase != Phase.Loading || _pendingText == null || !_displayAllowed || _frozen) return;
-        _bubble.Show(_speaker, _pendingText, CharsPerSecond, PunctuationPause);
+        float cps = CharsPerSecond;
+        if (_pendingVoice != null)
+        {
+            _voiceToken = GameAudio.Instance != null ? GameAudio.Instance.PlayVoice(_pendingVoice, GameAudioScope.Fight) : 0;
+            // The text never lags behind the voice: done typing by ~90 % of the spoken line.
+            if (_voiceToken != 0) cps = Mathf.Max(cps, _pendingText.Length / Mathf.Max(0.4f, _pendingVoice.length * 0.9f));
+        }
+        _pendingVoice = null;
+        _bubble.Show(_speaker, _pendingText, cps, PunctuationPause);
         _pendingText = null;
         CurrentPhase = _bubble.IsRevealing ? Phase.Revealing : Phase.Holding;
         _holdLeft = ReadHold;
@@ -224,6 +270,7 @@ public sealed class ComposerDialoguePresentation
 
     private void OnLocaleChanged(Locale locale)
     {
+        StopVoice(0.15f); // the voice was in the previous language
         if (CurrentPhase == Phase.Loading && _key == null) { _localeChangedWhileLoading = true; return; }
         if (_key == null) return;
         _ = ReResolveAsync(_token, _key, _cts != null ? _cts.Token : default);

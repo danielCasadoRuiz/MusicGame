@@ -15,7 +15,7 @@ public class HarmonyAnalyzer : IOfflineAnalyzer
     private static readonly float[] MinorTemplate =
         { 6.33f, 2.68f, 3.52f, 5.38f, 2.60f, 3.53f, 2.54f, 4.75f, 3.98f, 2.69f, 3.34f, 3.17f };
 
-    public bool IsEnabled(AudioAnalysisConfig config)
+    public bool IsEnabled(DerivedAnalysisSettings config)
         => config.advancedEnabled && config.advancedHarmony;
 
     public void Analyze(OfflineAnalysisContext ctx, SongProfile profile)

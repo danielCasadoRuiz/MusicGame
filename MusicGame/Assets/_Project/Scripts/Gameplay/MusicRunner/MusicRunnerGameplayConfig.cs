@@ -29,4 +29,7 @@ public class MusicRunnerGameplayConfig : ScriptableObject
 
     [Header("Environment / Visuals")]
     public EnvironmentConfig environment;
+
+    [Header("Hazards (obstacles / chaser) — NOT part of the bonus layout key")]
+    public RunnerHazardsConfig hazards;
 }

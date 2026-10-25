@@ -112,8 +112,9 @@ public static class RunnerEnvironmentCheck
             {
                 float songTime = 20f + f * (1f / 30f);
                 camCtl.Tick(); water.Tick();
-                env.Tick(RunnerEnvironmentSlot.MusicReactive, world, songTime);
-                env.Tick(RunnerEnvironmentSlot.Horizon, world, songTime);
+                float clipTime = MusicTime.SongToClip(songTime, gameplay.core.warmupTime);
+                env.Tick(RunnerEnvironmentSlot.MusicReactive, world, songTime, clipTime);
+                env.Tick(RunnerEnvironmentSlot.Horizon, world, songTime, clipTime);
                 if (bars.Length > 0)
                 {
                     var bar = bars[0].transform.Find("SpectrumBarsRoot").GetChild(4);

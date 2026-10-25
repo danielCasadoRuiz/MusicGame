@@ -10,26 +10,19 @@ using UnityEngine.UI;
 /// loading (see SongAnalysisController) — the player must see "something is happening" the moment
 /// they press Play, not after that load quietly finishes in the background.
 ///
-/// Three phases, always in this order, progress fill NEVER jumping backward or snapping to a fixed
-/// value mid-flow:
-///   1. DETECTING (0% .. ~28%) — from the instant this screen shows until MusicStyleDetectedEvent
-///      arrives. There's no real signal for "how close is style detection" (semantic tagging is one
-///      opaque ML call — see AudioPreAnalyzer's own doc on why it now runs BEFORE the rest of
-///      analysis), so this is a self-paced ease toward a soft ceiling that never quite reaches it —
-///      always visibly still creeping forward instead of stalling flat if tagging takes a while.
-///      Normal random Tip rotation plays underneath.
-///   2. STYLE DETECTED (pinned at 30%, ~StyleFlashSeconds) — MusicStyleDetectedEvent fires (this is
-///      also when ThemeManager, subscribed independently, starts swapping CurrentTheme) — a fixed
-///      "Style detected: X!" caption replaces whatever tip was showing, bar pinned at exactly 30%
-///      (never snapped further; there's real analysis work — or a cache-hit's own fake beat — still
-///      to account for in the remaining 70%).
-///   3. FINISHING (30% .. 100%) — for a cache MISS, PreAnalysisProgressEvent keeps arriving from
-///      AudioPreAnalyzer's still-running per-frame analysis (needed for level generation): REAL
-///      progress, remapped from this event's own 0..1 into 30%..100% of the bar, with normal Tip
-///      rotation resumed. For a cache HIT, no such event ever comes (the cache-hit branch skips the
-///      whole per-frame loop) — another self-paced ease from 30% toward ~97% instead, over roughly
-///      AudioPreAnalyzer's own CacheHitFakeDelaySeconds (not hard-synced to it — whichever finishes
-///      first, Hide() cuts the other short, which is fine).
+/// The title shows the REAL preparation state of the current selection (SongPreparationEvent): downloading
+/// (with its size) / loading / preparing for a published catalog song, analysing for an imported file.
+/// For a catalog song the fill shows the real downloaded fraction and reaches 100% only when the content
+/// stage is really complete (ContentReady) — stages without a measurable fraction leave it where it is.
+///
+/// The progress fill is TRUTHFUL: it only ever shows the analysis' real, monotonic progress
+/// (PreAnalysisProgressEvent, published by AudioPreAnalyzer on the main thread from the pipeline's
+/// own stage counters) and never moves on a timer or an asymptotic simulation. A cache hit simply
+/// reaches 100% as soon as the stored profile is loaded (no cosmetic delay any more).
+/// When the FINAL style is published (MusicStyleDetectedEvent — also when ThemeManager, subscribed
+/// independently, starts swapping CurrentTheme) a fixed "Style detected: X!" caption replaces the
+/// rotating tips for StyleFlashSeconds — a presentation beat of the reveal, not progress — after
+/// which MusicStyleRevealFinishedEvent lets SongAnalysisController continue to the Runner.
 ///
 /// Stays up even AFTER GameFlowState leaves SongAnalysis for Gameplay — hiding right then would
 /// reveal Runner's Mode Scene still being loaded/built (SceneFlowController's load is async, and
@@ -39,10 +32,8 @@ using UnityEngine.UI;
 /// once the level is generated AND the player/camera are already placed (see its own
 /// GenerateAndStart) — so this overlay bridges the ENTIRE gap from "Play pressed" through "Runner
 /// is fully ready", with the "3, 2, 1, GO" Countdown taking over the instant it's gone. The
-/// failure path (a bad catalog load bouncing back to Song Selection) still hides immediately on
-/// leaving SongAnalysis, since there's no scene load to wait for there. Not SongProfileReadyEvent
-/// either way — that fires the instant analysis itself is done, before SongAnalysisController's
-/// theme-transition wait even starts, so hiding on it would cut Phase 2/3 short.
+/// failure path (a bad catalog load or a failed analysis bouncing back to Song Selection) still
+/// hides immediately on leaving SongAnalysis, since there's no scene load to wait for there.
 ///
 /// Pure SCREEN CONTROLLER — theming lives entirely on generic receivers attached to each themed
 /// child (Dim: ThemeColorReceiver(Background), Title: ThemeTextReceiver(Primary/Display), Tip:
@@ -71,14 +62,8 @@ public class AnalyzingScreenController : MonoBehaviour
     [SerializeField] private float minTipInterval = 1f;
     [SerializeField] private float maxTipInterval = 2f;
 
-    // ── Progress phase tuning ─────────────────────────────────────────────────
-    private const float PhaseOneCeiling      = 0.28f; // Phase 1 eases toward this, never quite reaching it
-    private const float PhaseOneEaseSpeed    = 1.2f;  // higher = faster approach to the ceiling
-    private const float StyleDetectedFill    = 0.30f; // pinned value for the whole Phase 2 flash
-    private const float StyleFlashSeconds    = 1.4f;
-    private const float CacheHitFinishSeconds = 1.6f; // Phase 3 duration when there's no real progress signal
-    private const float CacheHitFinishCeiling = 0.97f;
-    private const float PendingCeiling       = 0.90f; // Phase 1 bar cap while the style waits for the full analysis
+    // How long the "Style detected: X!" caption is held before the reveal counts as finished.
+    private const float StyleFlashSeconds = 1.4f;
 
     private RectTransform _root;
     private TextMeshProUGUI _titleText;
@@ -86,19 +71,15 @@ public class AnalyzingScreenController : MonoBehaviour
     private Image _progressFill;
 
     private Coroutine _tipRoutine;
-    private Coroutine _progressRoutine;
+    private Coroutine _revealRoutine;
     private int       _lastTipIndex = -1;
-    private bool      _isCacheHit;
-    private bool      _realProgressActive; // Phase 3, cache-miss only — _onProgress is allowed to drive the fill
-    private bool      _stylePending;       // tags inconclusive: real progress drives Phase 1 until the final style
     private float     _lastProgress;
 
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
-    private System.Action<PreAnalysisStartedEvent>   _onStarted;
     private System.Action<PreAnalysisProgressEvent>  _onProgress;
     private System.Action<MusicStyleDetectedEvent>   _onStyleDetected;
-    private System.Action<MusicStylePendingEvent>    _onStylePending;
     private System.Action<GameStartedEvent>          _onGameStarted;
+    private System.Action<SongPreparationEvent>      _onPreparation;
 
     private AnalyzingScreenView _view;
 
@@ -121,43 +102,33 @@ public class AnalyzingScreenController : MonoBehaviour
         {
             if (e.Current == GameFlowState.SongAnalysis) Show();
             // Only the FAILURE path (bounced back to Song Selection — see
-            // SongSelectionController.OnPlayClicked) hides here. The success path (→ Gameplay)
-            // deliberately does NOT hide on this transition — Runner's Mode Scene has only just
-            // started loading at this point (SceneFlowController.LoadMode is async), and
-            // GameplayManager/MusicWorldManager/CameraFollow all still need to build the level and
-            // hard-snap the camera into position afterward. Hiding here would reveal that whole
-            // setup process — including the camera's very first snap to the player, previously
-            // visible as a jarring jump — instead of covering it. GameStartedEvent (below) is the
-            // real "Runner is fully ready" signal: GameplayManager only publishes it once the
-            // level is generated AND the player/camera are already placed correctly (see its own
-            // GenerateAndStart).
+            // SongSelectionController.OnPlayClicked / SongAnalysisController.OnAnalysisFailed) hides
+            // here. The success path (→ Gameplay) deliberately does NOT hide on this transition —
+            // Runner's Mode Scene has only just started loading at this point (SceneFlowController.
+            // LoadMode is async), and GameplayManager/MusicWorldManager/CameraFollow all still need to
+            // build the level and hard-snap the camera into position afterward. GameStartedEvent
+            // (below) is the real "Runner is fully ready" signal.
             else if (e.Previous == GameFlowState.SongAnalysis && e.Current != GameFlowState.Gameplay) Hide();
         };
-        // Only recorded for Phase 3 to branch on later (see ShowStyleDetected) — Phase 1 already
-        // started the instant this screen showed, well before analysis itself necessarily has.
-        _onStarted  = e => _isCacheHit = e.IsCacheHit;
         _onProgress = e =>
         {
-            _lastProgress = Mathf.Clamp01(e.Progress);
-            if (_progressFill == null) return;
-            if (_stylePending)
-                _progressFill.fillAmount = Mathf.Max(_progressFill.fillAmount, Mathf.Lerp(PhaseOneCeiling, PendingCeiling, _lastProgress));
-            else if (_realProgressActive)
-                _progressFill.fillAmount = Mathf.Max(_progressFill.fillAmount, Mathf.Lerp(StyleDetectedFill, 1f, _lastProgress));
-        };
-        // Style still pending: keep tips rotating, let the real analysis progress move the bar.
-        _onStylePending = _ =>
-        {
-            _stylePending = true;
-            if (_progressRoutine != null) { StopCoroutine(_progressRoutine); _progressRoutine = null; }
+            _lastProgress = Mathf.Max(_lastProgress, Mathf.Clamp01(e.Progress));
+            if (_progressFill != null) _progressFill.fillAmount = Mathf.Max(_progressFill.fillAmount, _lastProgress);
         };
         _onStyleDetected = e => ShowStyleDetected(e.GameStyle);
         _onGameStarted = _ => Hide();
+        _onPreparation = e =>
+        {
+            if (GameSession.Instance != null && e.SelectionGeneration != GameSession.Instance.SelectionGeneration) return; // stale
+            if (_root == null || !_root.gameObject.activeSelf) return;
+            ApplyStage(e.Stage, e.DownloadBytes);
+            if (e.Stage == SongPreparationStage.Downloading && e.Progress >= 0f) SetFill(e.Progress);
+            else if (e.Stage == SongPreparationStage.ContentReady) SetFill(1f);
+        };
+        EventBus.Subscribe(_onPreparation);
         EventBus.Subscribe(_onFlowStateChanged);
-        EventBus.Subscribe(_onStarted);
         EventBus.Subscribe(_onProgress);
         EventBus.Subscribe(_onStyleDetected);
-        EventBus.Subscribe(_onStylePending);
         EventBus.Subscribe(_onGameStarted);
 
         // Same UI-Scene-loads-asynchronously race as the other Frontend screens.
@@ -168,11 +139,47 @@ public class AnalyzingScreenController : MonoBehaviour
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onFlowStateChanged);
-        EventBus.Unsubscribe(_onStarted);
         EventBus.Unsubscribe(_onProgress);
         EventBus.Unsubscribe(_onStyleDetected);
-        EventBus.Unsubscribe(_onStylePending);
         EventBus.Unsubscribe(_onGameStarted);
+        EventBus.Unsubscribe(_onPreparation);
+    }
+
+    private void SetFill(float value)
+    {
+        _lastProgress = Mathf.Max(_lastProgress, Mathf.Clamp01(value));
+        if (_progressFill != null) _progressFill.fillAmount = Mathf.Max(_progressFill.fillAmount, _lastProgress);
+    }
+
+    // Title = what is really happening now (never a timer).
+    private void ApplyStage(SongPreparationStage stage, long downloadBytes)
+    {
+        if (_titleText == null) return;
+        switch (stage)
+        {
+            case SongPreparationStage.Downloading:
+                Loc.Set(_titleText, "Preparing.Downloading", (downloadBytes / 1048576f).ToString("0.0"));
+                break;
+            case SongPreparationStage.ResolvingSelection:
+            case SongPreparationStage.LoadingContent:
+            case SongPreparationStage.ValidatingProfile:
+            case SongPreparationStage.BuildingProfile:
+            case SongPreparationStage.PreparingAudio:
+            case SongPreparationStage.ContentReady:
+                Loc.Set(_titleText, "Preparing.Loading");
+                break;
+            case SongPreparationStage.ResolvingStyle:
+            case SongPreparationStage.ApplyingTheme:
+            case SongPreparationStage.LoadingScene:
+            case SongPreparationStage.PreparingWorld:
+            case SongPreparationStage.PreparingConsumers:
+            case SongPreparationStage.Ready:
+                Loc.Set(_titleText, "Preparing.Preparing");
+                break;
+            case SongPreparationStage.Analysing:
+                Loc.Set(_titleText, TitleKey);
+                break;
+        }
     }
 
     // ── Prefab wiring — see AnalyzingScreenView's own doc ────────────────────────
@@ -191,68 +198,54 @@ public class AnalyzingScreenController : MonoBehaviour
 
     // ── Show / hide ─────────────────────────────────────────────────────────────
 
-    // Phase 1 start — see this class's own doc.
     private void Show()
     {
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
         Loc.Set(_titleText, TitleKey);
         if (_progressFill != null) _progressFill.fillAmount = 0f;
+        // The preparation may already have reported a state for this selection (event order is not guaranteed).
+        if (GameSession.Instance != null && SongPreparation.CurrentGeneration == GameSession.Instance.SelectionGeneration)
+            ApplyStage(SongPreparation.Current, 0);
 
-        _isCacheHit = false;
-        _realProgressActive = false;
-        _stylePending = false;
         _lastProgress = 0f;
-        StopPhaseRoutines();
+        StopRoutines();
         _lastTipIndex = -1;
-        _tipRoutine      = StartCoroutine(RotateTips());
-        _progressRoutine = StartCoroutine(EaseFillToward(PhaseOneCeiling, PhaseOneEaseSpeed));
+        _tipRoutine = StartCoroutine(RotateTips());
     }
 
     private void Hide()
     {
         if (_root != null) _root.gameObject.SetActive(false);
-        _realProgressActive = false;
-        StopPhaseRoutines();
+        StopRoutines();
     }
 
-    private void StopPhaseRoutines()
+    private void StopRoutines()
     {
-        if (_tipRoutine != null)      { StopCoroutine(_tipRoutine);      _tipRoutine      = null; }
-        if (_progressRoutine != null) { StopCoroutine(_progressRoutine); _progressRoutine = null; }
+        if (_tipRoutine != null)    { StopCoroutine(_tipRoutine);    _tipRoutine    = null; }
+        if (_revealRoutine != null) { StopCoroutine(_revealRoutine); _revealRoutine = null; }
     }
 
-    // Phase 2 — see this class's own doc. Never snaps the bar past StyleDetectedFill; Phase 3
-    // (started from AfterStyleFlash) is what carries it the rest of the way.
+    // The final style is known: hold its caption, then report the reveal as finished. The fill keeps
+    // following the real progress underneath (it is never pinned or advanced here).
     private void ShowStyleDetected(GameMusicStyle style)
     {
-        _realProgressActive = false;
-        _stylePending = false;
-        StopPhaseRoutines();
-        if (_progressFill != null) _progressFill.fillAmount = Mathf.Max(_progressFill.fillAmount, StyleDetectedFill);
+        StopRoutines();
         if (_tipText != null) Loc.Set(_tipText, "Analyzing.StyleDetected", Loc.Key("GameStyle." + style));
-
-        _progressRoutine = StartCoroutine(AfterStyleFlash());
+        _revealRoutine = StartCoroutine(AfterStyleFlash());
     }
 
-    // Phase 3 handoff — see this class's own doc.
     private IEnumerator AfterStyleFlash()
     {
-        yield return new WaitForSeconds(StyleFlashSeconds);
+        yield return new WaitForSecondsRealtime(StyleFlashSeconds);
 
         // The final style has been shown — SongAnalysisController may continue to the Runner now.
+        _revealRoutine = null;
         EventBus.Publish(new MusicStyleRevealFinishedEvent());
 
-        bool analysisDone = _lastProgress >= 0.999f;
-        if (_isCacheHit || analysisDone)
+        // Still analysing (early, tags-only style): back to the rotating tips while it finishes.
+        if (_lastProgress < 1f)
         {
-            float from = _progressFill != null ? _progressFill.fillAmount : StyleDetectedFill;
-            _progressRoutine = StartCoroutine(EaseFillOverTime(from, Mathf.Max(from, CacheHitFinishCeiling),
-                                                               analysisDone ? 0.4f : CacheHitFinishSeconds));
-        }
-        else
-        {
-            _realProgressActive = true; // _onProgress takes over the fill from here
             _lastTipIndex = -1;
             _tipRoutine = StartCoroutine(RotateTips());
         }
@@ -274,33 +267,5 @@ public class AnalyzingScreenController : MonoBehaviour
         do { idx = Random.Range(0, TipKeys.Length); } while (TipKeys.Length > 1 && idx == _lastTipIndex);
         _lastTipIndex = idx;
         return TipKeys[idx];
-    }
-
-    // Asymptotic ease — creeps toward `target` forever without fully reaching it, so it always
-    // reads as "still working" regardless of how long the real, unsignaled work behind it actually
-    // takes (semantic tagging is one opaque ML call — see this class's own doc). Runs until
-    // whichever phase started it stops it (StopPhaseRoutines) — never completes on its own.
-    private IEnumerator EaseFillToward(float target, float speed)
-    {
-        while (true)
-        {
-            if (_progressFill != null)
-                _progressFill.fillAmount = Mathf.Lerp(_progressFill.fillAmount, target, Time.deltaTime * speed);
-            yield return null;
-        }
-    }
-
-    // Fixed-duration ease — used only where the window IS roughly known (Phase 3 of a cache hit,
-    // paced against AudioPreAnalyzer.CacheHitFakeDelaySeconds even though the two aren't hard-synced).
-    private IEnumerator EaseFillOverTime(float from, float to, float duration)
-    {
-        float t = 0f;
-        if (_progressFill != null) _progressFill.fillAmount = from;
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-            if (_progressFill != null) _progressFill.fillAmount = Mathf.Lerp(from, to, Mathf.Clamp01(t / duration));
-            yield return null;
-        }
     }
 }

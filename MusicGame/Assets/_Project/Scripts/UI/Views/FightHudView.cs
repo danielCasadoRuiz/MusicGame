@@ -20,6 +20,9 @@ public class FightHudView : MonoBehaviour
     public TextMeshProUGUI opponentNameText;
     public Image       opponentHealthFill;
     public TextMeshProUGUI opponentRoundPipsText;
+    [Tooltip("PERFECT! under each health bar: shown (with the announcer's voice) when that fighter wins a round by KO with a full bar.")]
+    public TextMeshProUGUI playerPerfectText;
+    public TextMeshProUGUI opponentPerfectText;
     public TextMeshProUGUI timerText;
     public Button       pauseButton;
     public TextMeshProUGUI pauseButtonLabel;
@@ -44,6 +47,12 @@ public class FightHudView : MonoBehaviour
     public TextMeshProUGUI resumeButtonLabel;
     public Button       mainMenuButton;
     public TextMeshProUGUI mainMenuButtonLabel;
+    [Tooltip("Pause menu: the moves section of the help (HelpScreenController).")]
+    public Button movesHelpButton;
+    public TextMeshProUGUI movesHelpButtonLabel;
+
+    [Header("Fight preparation (build stats + run resources) — the conversion animation's destinations")]
+    public FightBuildPanelView buildPanel;
 
     [Header("Mobile controls — visible ONLY during FightFlowState.Fighting, on real/simulated mobile")]
     public GameObject mobileControlsRoot;

@@ -30,7 +30,9 @@ using UnityEngine;
 ///
 /// Buildup (profile.GetBuildupAt) intensifies saturation/value toward the target; an
 /// Impact/Drop MacroEvent snaps partway to the target ("the transition culminates here").
-/// Reads MusicClock.Instance.SongTime — never writes to it, and never touches
+/// Reads MusicClock.Instance.ClipTime (SongProfile is indexed by CLIP time — SongTime would read
+/// warmupTime seconds into the future) and only once the audio has actually started: nothing is
+/// sampled during the warmup countdown. Never writes to the clock, and never touches
 /// PlayerController/CameraFollow.
 ///
 /// Created dynamically by GameplayManager, same pattern as every other subsystem — call
@@ -100,7 +102,12 @@ public class MusicEnvironmentController : MonoBehaviour
 
     private void OnEnable()
     {
-        _onProfile = e => _profile = e.Profile;
+        _onProfile = e =>
+        {
+            _profile             = e.Profile;
+            _featuresInitialized = false; // a new song's chroma must not ease in from the old one's
+            _sampleTimer         = 0f;
+        };
         _onMacro   = e =>
         {
             if (_config == null) return;
@@ -126,7 +133,10 @@ public class MusicEnvironmentController : MonoBehaviour
         if (_config == null) return;
 
         var clock = MusicClock.Instance;
-        bool clockRunning = clock != null && clock.IsRunning;
+        // Only real, audible music time: not before the audio starts (warmup countdown), and
+        // frozen whenever the clock is (pause/hold) since ClipTime itself is frozen then.
+        bool clockRunning = clock != null && clock.IsRunning && clock.HasPlaybackStarted;
+        float clipTime    = clockRunning ? clock.ClipTime : 0f;
 
         // ── Shared macro-intensity driver (Horizon World palette modulation) ────────────────
         // Deliberately independent of enableMusicEnvironment below (that one only gates the
@@ -135,8 +145,8 @@ public class MusicEnvironmentController : MonoBehaviour
         if (_config.enableMusicEnvironmentModulation && _profile != null && clockRunning)
         {
             float rawIntensity = Mathf.Clamp01(
-                _profile.GetIntensityAt(clock.SongTime) * 0.5f +
-                _profile.GetBuildupAt(clock.SongTime)   * 0.5f);
+                _profile.GetIntensityAt(clipTime) * 0.5f +
+                _profile.GetBuildupAt(clipTime)   * 0.5f);
             float rate = 1f - Mathf.Exp(-Time.deltaTime / Mathf.Max(0.01f, _config.paletteMacroSmoothingTime));
             _smoothedMacroIntensity = Mathf.Lerp(_smoothedMacroIntensity, rawIntensity, rate);
         }
@@ -150,7 +160,7 @@ public class MusicEnvironmentController : MonoBehaviour
         if (_sampleTimer <= 0f)
         {
             _sampleTimer = Mathf.Max(0.05f, _config.colorSampleInterval);
-            SampleFeatures(clock.SongTime);
+            SampleFeatures(clipTime);
         }
 
         float colorRate = 1f - Mathf.Exp(-Time.deltaTime / Mathf.Max(0.01f, _config.colorSmoothingTimeConstant));
@@ -167,9 +177,10 @@ public class MusicEnvironmentController : MonoBehaviour
         }
     }
 
-    private void SampleFeatures(float songTime)
+    // clipTime: SongProfile (clip) time — see the class doc.
+    private void SampleFeatures(float clipTime)
     {
-        var chroma = _profile.GetChromaAt(songTime);
+        var chroma = _profile.GetChromaAt(clipTime);
         float alpha = Mathf.Clamp01(_config.chromaEMAAlpha);
 
         if (chroma != null)
@@ -177,13 +188,13 @@ public class MusicEnvironmentController : MonoBehaviour
             if (!_featuresInitialized)
             {
                 for (int i = 0; i < 12; i++) _chromaEMA[i] = chroma[i];
-                _intensityEMA        = _profile.GetIntensityAt(songTime);
+                _intensityEMA        = _profile.GetIntensityAt(clipTime);
                 _featuresInitialized = true;
             }
             else
             {
                 for (int i = 0; i < 12; i++) _chromaEMA[i] = Mathf.Lerp(_chromaEMA[i], chroma[i], alpha);
-                _intensityEMA = Mathf.Lerp(_intensityEMA, _profile.GetIntensityAt(songTime), alpha);
+                _intensityEMA = Mathf.Lerp(_intensityEMA, _profile.GetIntensityAt(clipTime), alpha);
             }
         }
 
@@ -195,7 +206,7 @@ public class MusicEnvironmentController : MonoBehaviour
         if (clarity >= _config.hueConfidenceThreshold)
             _targetHue = candidateHue;
 
-        _lastBuildup = _profile.GetBuildupAt(songTime);
+        _lastBuildup = _profile.GetBuildupAt(clipTime);
         float boost  = Mathf.Lerp(1f, _config.buildupIntensityBoost, _lastBuildup);
 
         float sat = Mathf.Clamp01(_config.baseSaturation * boost);

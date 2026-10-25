@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1abea45d9a53b43b33e8c4a5bd67f9, type: 3}
+  m_Name: VoicePack_handel_en
+  m_EditorClassIdentifier: Assembly-CSharp::ComposerVoicePack
+  composerId: handel
+  language: en
+  engine: qwen3-tts
+  voiceDefinitionHash: 6a77ae7f15f7f2ba
+  lines:
+  - key: Composer.handel.Dialogue.Defeat.001
+    clip: {fileID: 8300000, guid: ca724f5ed571a094f82f499ec1379551, type: 3}
+    textHash: f4060a865fd57e44
+    duration: 5.251
+  - key: Composer.handel.Dialogue.Defeat.002
+    clip: {fileID: 8300000, guid: 311cc478bb0073b46abe41a32c8c77b5, type: 3}
+    textHash: aa43dc71f48095b2
+    duration: 4.24
+  - key: Composer.handel.Dialogue.Defeat.003
+    clip: {fileID: 8300000, guid: dddb76f118495874dbe1b1af9e6846f4, type: 3}
+    textHash: 487ff246cf2dec04
+    duration: 5.44
+  - key: Composer.handel.Dialogue.Defeat.004
+    clip: {fileID: 8300000, guid: 34b503c729a3a4b42b139f1ca74ee9c1, type: 3}
+    textHash: 1d7f14d0330f30b6
+    duration: 4.24
+  - key: Composer.handel.Dialogue.Defeat.005
+    clip: {fileID: 8300000, guid: cc4b034bf1d54804e97ee7b9e465e198, type: 3}
+    textHash: 65a35afefb0c6d86
+    duration: 4.4
+  - key: Composer.handel.Dialogue.Defeat.006
+    clip: {fileID: 8300000, guid: 94e8bdc8b7f30c949a3b250cb263b89d, type: 3}
+    textHash: 392ef2f46380ab00
+    duration: 4.48
+  - key: Composer.handel.Dialogue.Defeat.007
+    clip: {fileID: 8300000, guid: 215c13637c036674894b594639f86b40, type: 3}
+    textHash: 8fc7ab585fc0e225
+    duration: 4.96
+  - key: Composer.handel.Dialogue.Defeat.008
+    clip: {fileID: 8300000, guid: 4e4cd25ce8fbe054da395d75fee3a2d3, type: 3}
+    textHash: abff07d97becd2de
+    duration: 4.314
+  - key: Composer.handel.Dialogue.Defeat.009
+    clip: {fileID: 8300000, guid: 89bbfbcde89f9ee45966a6e45bdfcd48, type: 3}
+    textHash: 29025942538ca4a4
+    duration: 4.56
+  - key: Composer.handel.Dialogue.Defeat.010
+    clip: {fileID: 8300000, guid: 3e85f9548f69fc54d9641acac2969e19, type: 3}
+    textHash: 4033bb80311d260a
+    duration: 5.883
+  - key: Composer.handel.Dialogue.Intro.001
+    clip: {fileID: 8300000, guid: 0b4ef09d9876b174d8b62af56dcacf60, type: 3}
+    textHash: e0e4b344a8345db8
+    duration: 4.56
+  - key: Composer.handel.Dialogue.Intro.002
+    clip: {fileID: 8300000, guid: 5ad99427cc80d3c4fb4373d01d5744d2, type: 3}
+    textHash: c1f239d496ced9a6
+    duration: 3.656
+  - key: Composer.handel.Dialogue.Intro.003
+    clip: {fileID: 8300000, guid: 5fbbdc0f4f66c624fba059437a553be2, type: 3}
+    textHash: ad7392212c31ba38
+    duration: 4.32
+  - key: Composer.handel.Dialogue.Intro.004
+    clip: {fileID: 8300000, guid: e85021101da5d3141b3bb775a828cbcf, type: 3}
+    textHash: 846c8dc42071081a
+    duration: 4.24
+  - key: Composer.handel.Dialogue.Intro.005
+    clip: {fileID: 8300000, guid: 31eb997fe73a4984aa05568810b7d870, type: 3}
+    textHash: 8bc4f45d427eedce
+    duration: 3.76
+  - key: Composer.handel.Dialogue.Intro.006
+    clip: {fileID: 8300000, guid: 383d485adc70bb347b0474aa18137626, type: 3}
+    textHash: 60f49edd66cf142b
+    duration: 3.84
+  - key: Composer.handel.Dialogue.Intro.007
+    clip: {fileID: 8300000, guid: 09e8a31b0d95da041a1b2ee67e1ba514, type: 3}
+    textHash: 1effd7f5b860a1ee
+    duration: 3.52
+  - key: Composer.handel.Dialogue.Intro.008
+    clip: {fileID: 8300000, guid: 5a56208b656442e43896183e83926c4d, type: 3}
+    textHash: 66f2ac4d6326beff
+    duration: 4.452
+  - key: Composer.handel.Dialogue.Intro.009
+    clip: {fileID: 8300000, guid: 03c0dec28e86430469a581278c48b2d3, type: 3}
+    textHash: 061027d43881c85b
+    duration: 5.36
+  - key: Composer.handel.Dialogue.Intro.010
+    clip: {fileID: 8300000, guid: 94afee54f72a092489abe720bc7239c1, type: 3}
+    textHash: b8c9fe445e8e09ee
+    duration: 3.92
+  - key: Composer.handel.Dialogue.Victory.001
+    clip: {fileID: 8300000, guid: 565e870b9686c444ba7e570158b6a84b, type: 3}
+    textHash: 802c1ba58572dbb1
+    duration: 3.92
+  - key: Composer.handel.Dialogue.Victory.002
+    clip: {fileID: 8300000, guid: 582fa409cde9e824d84ed0f701a71842, type: 3}
+    textHash: 80236c635512c1fd
+    duration: 4.08
+  - key: Composer.handel.Dialogue.Victory.003
+    clip: {fileID: 8300000, guid: 16267b4062b5a7d449bb0ab3406ec044, type: 3}
+    textHash: fb9d45ed8b68c3a1
+    duration: 4.16
+  - key: Composer.handel.Dialogue.Victory.004
+    clip: {fileID: 8300000, guid: d2f4947e8e29bfc4aad125d88e4d1f81, type: 3}
+    textHash: 23fdccadcdb09365
+    duration: 4.219
+  - key: Composer.handel.Dialogue.Victory.005
+    clip: {fileID: 8300000, guid: 3a6d485ddd1f11d4a96224437b340b4d, type: 3}
+    textHash: 24a9b0c333813061
+    duration: 4.64
+  - key: Composer.handel.Dialogue.Victory.006
+    clip: {fileID: 8300000, guid: 1df80e145255c15419e8e743a5e54959, type: 3}
+    textHash: 16eaa35586e4aef4
+    duration: 4.24
+  - key: Composer.handel.Dialogue.Victory.007
+    clip: {fileID: 8300000, guid: a63a554e796fa3e478d88173192aaf56, type: 3}
+    textHash: 6455e6ab3b0c063b
+    duration: 4.16
+  - key: Composer.handel.Dialogue.Victory.008
+    clip: {fileID: 8300000, guid: ddbd9b40500e39542a0ecea6d0643e10, type: 3}
+    textHash: 87fe2e3153513892
+    duration: 3.04
+  - key: Composer.handel.Dialogue.Victory.009
+    clip: {fileID: 8300000, guid: 641a3316ef5d2c143b1477cdb7bf02af, type: 3}
+    textHash: 541bc720640d5651
+    duration: 4.08
+  - key: Composer.handel.Dialogue.Victory.010
+    clip: {fileID: 8300000, guid: b4183f1407991574cb5c8499d1e887ff, type: 3}
+    textHash: fe55552ce992e7eb
+    duration: 4.48
+  efforts:
+    hurt: {fileID: 0}
+    special: {fileID: 0}
+    defeat: {fileID: 0}

@@ -10,9 +10,9 @@ using UnityEngine.UI;
 /// UIRegistry) — this class only wires their views and fills values; it never builds UI. A missing view
 /// is logged as an error and that part of the HUD simply stays off (no procedural fallback).
 /// The end screen is ONE results list (EndScreenView.evaluationPanel — see PopulateEndScreen): race stars,
-/// score, pickups/timing, falls + no-fall bonus, the per-ring-type bars (item prefab
-/// UIPrefabLibrarySO.runnerPerformanceRow, appended to the same list), resources for the fight, lives and
-/// the match record — nothing repeated in a second block, nothing debug-only. Real
+/// score, pickups/timing, falls + no-fall bonus, lives and the match record — plus, in the panel's bonus slot,
+/// the collected bonuses as the SAME bonus block the fight later converts (BonusConversionController docks it
+/// there; it replaced the per-ring-type bars and the "for the fight" line, so no bonus is shown twice). Real
 /// Button components mean clicks are handled by EventSystem, not by OnGUI's control-ID bookkeeping
 /// (which is what made Restart/Continue occasionally need two clicks with the old IMGUI version).
 /// </summary>
@@ -59,11 +59,7 @@ public class GameplayHUD : MonoBehaviour
     private int              _finalFallCount;
     private float            _finalNormalizedScore;
     private int              _finalMaxPossibleScore;
-    private GamePerformance  _finalPerformance;
-    private RunnerResourceCounts _finalResources;
-
-    private static readonly RingType[] PerformanceRowOrder =
-        { RingType.Kick, RingType.Snare, RingType.HiHat, RingType.Beat, RingType.Onset, RingType.Impact, RingType.Peak };
+    private bool             _resultsReady;   // this run's RunnerResults exist (RunnerResultsReadyEvent)
 
     private Action<LevelGeneratedEvent>   _onLevel;
     private Action<GameEndedEvent>        _onEnd;
@@ -82,6 +78,7 @@ public class GameplayHUD : MonoBehaviour
     // ── uGUI refs: end screen ───────────────────────────────────────────────
     private RectTransform _endRoot;
     private EvaluationPanel _endPanel;          // the ONE results list (EndScreenView.evaluationPanel)
+    private RectTransform _bonusSlot;           // where the bonus block is docked (EndScreenView.bonusSlot)
     private System.Action<RunnerResultsReadyEvent> _onResultsReady;
     // Campaign evaluation of THIS run (CampaignService.LastRunner, delivered by RunnerResultsReadyEvent in
     // the same GameEndedEvent dispatch); null until then and cleared whenever the end screen hides.
@@ -126,8 +123,6 @@ public class GameplayHUD : MonoBehaviour
             _finalFallCount        = e.FallCount;
             _finalNormalizedScore  = e.NormalizedScore;
             _finalMaxPossibleScore = e.MaxPossibleScore;
-            _finalPerformance      = e.Performance;
-            _finalResources        = e.Resources;
             SetGameEnded(true);
             PopulateEndScreen();
         };
@@ -145,6 +140,7 @@ public class GameplayHUD : MonoBehaviour
         _onResultsReady = _ =>
         {
             _runnerOutcome = CampaignService.LastRunner;
+            _resultsReady = true;
             if (_gameEnded) PopulateEndScreen();
         };
         EventBus.Subscribe(_onResultsReady);
@@ -181,7 +177,12 @@ public class GameplayHUD : MonoBehaviour
     private void SetGameEnded(bool ended)
     {
         _gameEnded = ended;
-        if (!ended) _runnerOutcome = null; // a restart / new run: never show the previous run's evaluation
+        if (!ended)
+        {
+            _runnerOutcome = null; // a restart / new run: never show the previous run's evaluation
+            _resultsReady = false;
+            BonusConversionController.Instance?.HideFromResults();
+        }
         if (_liveRoot != null) _liveRoot.gameObject.SetActive(!ended);
         if (_endRoot != null) _endRoot.gameObject.SetActive(ended);
     }
@@ -229,6 +230,24 @@ public class GameplayHUD : MonoBehaviour
         if (view.specialLabel != null && config != null) view.specialLabel.color = config.collectibles.specialColor;
         if (_lifeValueText == null || _specialValueText == null)
             Debug.LogError("[GameplayHUD] LiveHudView.lifeValue/specialValue not assigned — run Tools > MusicGame > UI > Build All UI Prefabs (patches LiveHud.prefab).", view);
+
+        // Bonus icon slots: sprite + tint from the central HelpUIConfig (placeholders until the final art).
+        var help = HelpUIConfigSO.Instance;
+        if (help != null)
+        {
+            SetIcon(view.kickIcon, help, BonusKind.Kick);     SetIcon(view.snareIcon, help, BonusKind.Snare);
+            SetIcon(view.hiHatIcon, help, BonusKind.HiHat);   SetIcon(view.beatIcon, help, BonusKind.Beat);
+            SetIcon(view.onsetIcon, help, BonusKind.Onset);   SetIcon(view.impactIcon, help, BonusKind.Impact);
+            SetIcon(view.lifeIcon, help, BonusKind.Life);     SetIcon(view.specialIcon, help, BonusKind.Special);
+        }
+    }
+
+    private static void SetIcon(UnityEngine.UI.Image image, HelpUIConfigSO help, BonusKind kind)
+    {
+        if (image == null) return;
+        image.sprite = help.Icon(kind);
+        image.color = help.Tint(kind);
+        image.enabled = image.sprite != null;
     }
 
     private void UpdateLiveHud()
@@ -297,8 +316,7 @@ public class GameplayHUD : MonoBehaviour
     }
 
     // Single source of truth for "which localization key does this RingType's short HUD label
-    // use" — shared by the top-bar column headers and the end-screen performance rows (RowLabel)
-    // so there's exactly one place mapping RingType → text, never two that could drift apart.
+    // use" — the top-bar column headers' one place mapping RingType → text.
     private static string RingTypeKey(RingType type) => $"HUD.{type}";
 
     private static void SetLabel(TextMeshProUGUI text, RingType type)
@@ -312,6 +330,9 @@ public class GameplayHUD : MonoBehaviour
     {
         _endRoot  = view.GetComponent<RectTransform>();
         _endPanel = view.evaluationPanel;
+        _bonusSlot = view.bonusSlot;
+        if (_bonusSlot == null)
+            Debug.LogError("[GameplayHUD] EndScreenView.bonusSlot not assigned — run Tools > MusicGame > UI > Help Placeholders + Prefabs (patches EndScreen.prefab).", view);
         if (_endPanel == null)
             Debug.LogError("[GameplayHUD] EndScreenView.evaluationPanel not assigned — run Tools > MusicGame > UI > Build All UI Prefabs (patches EndScreen.prefab).", view);
 
@@ -365,11 +386,12 @@ public class GameplayHUD : MonoBehaviour
     ///   Score a / max (n%)                       the gameplay score behind those stars
     ///   Pickups · Timing                         what the score is made of
     ///   Falls (+ no-fall bonus / bonus lost)     only the bonus line when it applies
-    ///   per-type bars                            compact RunnerPerformanceRow items
-    ///   For the fight: specials (once) + x3/x4   the fight wallet this run filled
     ///   Lives +n · extra lives (Fight Again)     granted once per match (RunRewardRules)
     ///   Best race of this match / next step      the stored record (when not just beaten) + "the fight is next"
-    /// Rebuilt from scratch on each call (GameEndedEvent and RunnerResultsReadyEvent may arrive in any order).
+    /// and the collected bonuses (musical ones, Special, x3 / x4, Life) as the bonus block in the panel's slot — the
+    /// same block, design and counts the fight presentation converts, never a second list of them.
+    /// Rebuilt from scratch on each call (GameEndedEvent and RunnerResultsReadyEvent may arrive in any order); the
+    /// block only once this run's results exist.
     /// </summary>
     private void PopulateEndScreen()
     {
@@ -399,31 +421,8 @@ public class GameplayHUD : MonoBehaviour
         else if (hasBonus) p.AddLine(Loc.Get("Results.FallsBonusLost", _finalFallCount.ToString(), bonusPct.ToString()));
         else p.AddLine(Loc.Get("Results.Falls", _finalFallCount.ToString()));
 
-        // Per ring type: compact bars in the same list.
-        if (_finalPerformance != null)
-        {
-            var lib = UIPrefabLibrarySO.Instance;
-            var rowPrefab = lib != null ? lib.runnerPerformanceRow : null;
-            foreach (var type in PerformanceRowOrder)
-            {
-                if (!_finalPerformance.ByType.TryGetValue(type, out var tp)) continue;
-                var row = p.AddItem(rowPrefab, $"Row_{type}");
-                if (row == null) break; // AddItem already logged the missing prefab
-                Color color = config != null ? config.collectibles.RingColor(type) : Color.white;
-                row.Set(RowLabel(type), color, tp.CollectionRate, $"{tp.CollectionRate * 100f:F0}%  {tp.Collected}/{tp.Available}");
-            }
-        }
-
-        // What this run gives the fight (the run's wallet; specials are collected == available here).
-        int specialsCollected = run != null ? run.SpecialsCollectedThisRun : _finalResources.Specials;
-        int specialsAvailable = run != null ? run.Wallet.Specials : specialsCollected;
-        string specials = RunRewardRules.SameSpecialCount(specialsCollected, specialsAvailable)
-            ? Loc.Get("Results.Specials", specialsAvailable.ToString())
-            : Loc.Get("Results.SpecialsSplit", specialsCollected.ToString(), specialsAvailable.ToString());
-        string combos = _finalResources.TripleCombos + _finalResources.QuadCombos > 0
-            ? "  ·  " + Loc.Get("Results.Combos", _finalResources.TripleCombos.ToString(), _finalResources.QuadCombos.ToString())
-            : "";
-        p.AddLine(Loc.Get("Results.ForTheFight") + "  " + specials + combos);
+        // The collected bonuses (per type, Special, x3 / x4, Life): the bonus block, docked in the panel's slot.
+        if (_resultsReady) BonusConversionController.Instance?.ShowInResults(_bonusSlot);
 
         // Lives: granted once per match; the inventory's one use is Fight Again.
         int livesCollected = run != null ? run.LivesCollectedThisRun : 0;
@@ -442,6 +441,4 @@ public class GameplayHUD : MonoBehaviour
         }
         else if (o != null) p.AddNote(Loc.Get("Eval.NotCampaign"));
     }
-
-    private static string RowLabel(RingType type) => Loc.Get(RingTypeKey(type));
 }

@@ -30,13 +30,62 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
     public static GameSession Instance { get; private set; }
 
     /// <summary>What Song Selection chose. Null until Song Selection actually runs (not built yet
-    /// — see SelectedSongInfo's own doc).</summary>
-    public SelectedSongInfo? SelectedSong { get; set; }
+    /// — see SelectedSongInfo's own doc).
+    /// Every assignment (a new song, or null while a catalog clip is still loading) starts a NEW
+    /// selection: SelectionGeneration increments and the previous selection's Profile is dropped, so a
+    /// late analysis of an older selection can never be adopted and nothing retains its data.</summary>
+    public SelectedSongInfo? SelectedSong
+    {
+        get => _selectedSong;
+        set
+        {
+            _selectedSong = value;
+            SelectionGeneration++;
+            Profile = null;
+            // The previous song's playback audio is released once ANOTHER song (or an imported file) is the
+            // selection. A pending selection (null) keeps it until the new content is adopted — re-selecting
+            // the same song then never unloads/reloads its clip (acquire, then release).
+            if (SongContent != null && value.HasValue && (!value.Value.IsCatalogSong || value.Value.SongId != SongContent.SongId))
+                ReleaseSongContent();
+        }
+    }
+    private SelectedSongInfo? _selectedSong;
+
+    /// <summary>The playback audio lease of the current catalog selection (CatalogSongLoader → AdoptCatalogContent).
+    /// GameSession is its ONLY owner: nothing else releases it.</summary>
+    public SongContentLease SongContent { get; private set; }
+
+    /// <summary>Hands the prepared content of selection `generation` to the session: its clip becomes
+    /// SelectedSong.Clip (same selection — no new generation) and the lease is owned here. False (caller
+    /// releases its lease) when the selection moved on meanwhile — a stale load can never adopt.</summary>
+    public bool AdoptCatalogContent(int generation, SongContentLease lease)
+    {
+        if (lease == null || generation != SelectionGeneration || !_selectedSong.HasValue || _selectedSong.Value.SongId != lease.SongId)
+            return false;
+        var previous = SongContent;
+        SongContent = lease;
+        var song = _selectedSong.Value;
+        song.Clip = lease.Clip;
+        _selectedSong = song;
+        if (previous != null && previous != lease) previous.Release(); // new one held first, then the old released
+        return true;
+    }
+
+    private void ReleaseSongContent()
+    {
+        var lease = SongContent;
+        SongContent = null;
+        lease?.Release();
+    }
+
+    /// <summary>Identity of the current song selection (see SelectedSong). Analysis requests carry it;
+    /// SongProfileReadyEvent with another generation is rejected.</summary>
+    public int SelectionGeneration { get; private set; }
 
     /// <summary>This song's analysis — the single copy every downstream system (Gameplay, future
-    /// Fight) reads. Filled automatically here whenever SongProfileReadyEvent fires, in addition
-    /// to whatever else already subscribes to that same event directly (e.g. GameplayManager) —
-    /// existing subscribers are left untouched; this only adds one more, authoritative copy.</summary>
+    /// Fight) reads. Filled automatically here whenever SongProfileReadyEvent fires FOR THE CURRENT
+    /// SELECTION (SelectionGeneration), in addition to whatever else already subscribes to that same
+    /// event directly (e.g. GameplayManager).</summary>
     public SongProfile Profile { get; private set; }
 
     /// <summary>Written by RunnerSceneBootstrap right after IMusicStyleClassifier resolves this song's
@@ -312,6 +361,13 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
     {
         _onProfileReady = e =>
         {
+            if (e.SelectionGeneration != SelectionGeneration)
+            {
+                Debug.LogWarning($"[GameSession] Ignored a SongProfileReadyEvent of selection #{e.SelectionGeneration} " +
+                                 $"(current #{SelectionGeneration}) — stale profile not adopted.");
+                return;
+            }
+            if (ReferenceEquals(Profile, e.Profile)) return; // RunnerSceneBootstrap's re-publish of the same profile
             Profile = e.Profile;
             // A full analysis is the moment to (re)cache this catalog song's similarity vector.
             var sel = SelectedSong;
@@ -368,6 +424,11 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
         EventBus.Subscribe(_onGameStarted);
     }
 
+    private void OnDestroy()
+    {
+        if (Instance == this) ReleaseSongContent();
+    }
+
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onProfileReady);
@@ -391,4 +452,7 @@ public struct SelectedSongInfo
     public AudioClip Clip;
     /// <summary>Null for a predefined song; set for a locally-picked WAV/MP3.</summary>
     public string    LocalFilePath;
+
+    /// <summary>A published catalog song (prepared from its remote content, never analysed on the device).</summary>
+    public bool IsCatalogSong => !string.IsNullOrEmpty(SongId) && string.IsNullOrEmpty(LocalFilePath);
 }

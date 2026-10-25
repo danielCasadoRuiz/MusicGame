@@ -9,7 +9,9 @@ using UnityEngine;
 ///   attacker <move.scalingStat> (PunchPower / KickPower / ...) → damage dealt
 ///   defender Resistance                                          → damage taken + hit-stun resistance
 ///   attacker ImpactPower                                         → knockback + hit stun dealt
-///   own Agility                                                  → Startup/Recovery timing scale
+///   own Agility                                                  → Startup/Recovery timing scale (attack speed)
+///                                                                   + walk/run/side-walk speed (movement speed)
+/// Rivals: rivalBuildBudgetByLevel sizes their build by difficulty level, independent of the player.
 ///
 /// Legacy FighterStats (Strength/Defense/...) are no longer read by combat.
 /// </summary>
@@ -19,24 +21,56 @@ public class FightCombatBalanceConfig : ScriptableObject
     [Header("Health")]
     public float defaultMaxHealth = 100f;
 
+    // 2026-10-25 rebalance: a LOW base and a big share from the runner. X = stat points (a run's 100-point budget split
+    // over five stats: ~4 each for a poor run, ~10 for a middling one, ~16–18 for a very good one, 30+ when a run
+    // specialises). 16 points = the old neutral 1.0. Curves clamp at their ends (no runaway values).
     [Header("Build stats → combat multipliers (X = stat points, Y = multiplier)")]
-    [Tooltip("Attacker's move.scalingStat → damage DEALT.")]
+    [Tooltip("Attacker's move.scalingStat (PunchPower for punches, KickPower for kicks…) → damage DEALT.")]
     public AnimationCurve buildStatToDamage = new AnimationCurve(
-        new Keyframe(0f, 0.85f), new Keyframe(16f, 1.00f), new Keyframe(40f, 1.25f));
+        new Keyframe(0f, 0.25f), new Keyframe(5f, 0.45f), new Keyframe(10f, 0.70f), new Keyframe(16f, 1.00f),
+        new Keyframe(25f, 1.40f), new Keyframe(40f, 1.90f));
     [Tooltip("Defender Resistance → damage TAKEN (lower = tankier).")]
     public AnimationCurve resistanceToDamageTaken = new AnimationCurve(
-        new Keyframe(0f, 1.10f), new Keyframe(16f, 1.00f), new Keyframe(40f, 0.85f));
+        new Keyframe(0f, 1.50f), new Keyframe(8f, 1.25f), new Keyframe(16f, 1.00f), new Keyframe(25f, 0.80f), new Keyframe(40f, 0.60f));
     [Tooltip("Defender Resistance → incoming hit stun AND knockback (lower = shrugs hits off).")]
     public AnimationCurve resistanceToStagger = new AnimationCurve(
-        new Keyframe(0f, 1.10f), new Keyframe(16f, 1.00f), new Keyframe(40f, 0.85f));
+        new Keyframe(0f, 1.25f), new Keyframe(16f, 1.00f), new Keyframe(40f, 0.75f));
     [Tooltip("Attacker ImpactPower → knockback and hit stun DEALT.")]
     public AnimationCurve impactToStagger = new AnimationCurve(
-        new Keyframe(0f, 0.85f), new Keyframe(16f, 1.00f), new Keyframe(40f, 1.30f));
-    [Tooltip("Own Agility → Startup/Recovery duration scale (lower = faster). Active never scales.")]
+        new Keyframe(0f, 0.60f), new Keyframe(16f, 1.00f), new Keyframe(40f, 1.45f));
+    [Tooltip("Own Agility → ATTACK speed: Startup/Recovery duration scale (lower = faster). Active never scales, so hit " +
+             "windows, combo input windows and cancels keep their meaning.")]
     public AnimationCurve agilityToTimingScale = new AnimationCurve(
-        new Keyframe(0f, 1.08f), new Keyframe(16f, 1.00f), new Keyframe(40f, 0.88f));
-    public float minTimingScale = 0.7f;
-    public float maxTimingScale = 1.15f;
+        new Keyframe(0f, 1.25f), new Keyframe(8f, 1.12f), new Keyframe(16f, 1.00f), new Keyframe(25f, 0.90f), new Keyframe(40f, 0.80f));
+    public float minTimingScale = 0.78f;
+    public float maxTimingScale = 1.28f;
+    [Tooltip("Own Agility → MOVEMENT speed: walk / backpedal / run / side-walk (FighterMovement.SpeedMultiplier). " +
+             "Dashes, lunges and knockback keep their own fixed speeds.")]
+    public AnimationCurve agilityToMoveSpeed = new AnimationCurve(
+        new Keyframe(0f, 0.62f), new Keyframe(8f, 0.78f), new Keyframe(16f, 0.95f), new Keyframe(25f, 1.10f), new Keyframe(40f, 1.30f));
+    [Tooltip("Hard floor / ceiling of the movement multiplier: never immobile, never uncontrollable.")]
+    public float minMoveSpeedMultiplier = 0.6f;
+    public float maxMoveSpeedMultiplier = 1.35f;
+
+    [Header("Rival progression (difficulty — never the player's run)")]
+    [Tooltip("Total build points of a rival by its version / tier (OpponentLevelConfig.level). Its FighterStatsProfileSO " +
+             "keeps the rival's PROPORTIONS (identity); this sets the size. Independent of the player's build on purpose.")]
+    public AnimationCurve rivalBuildBudgetByLevel = new AnimationCurve(
+        new Keyframe(1f, 45f), new Keyframe(2f, 60f), new Keyframe(3f, 75f), new Keyframe(4f, 90f));
+
+    /// <summary>A rival's build for its level: the profile's proportions scaled to rivalBuildBudgetByLevel.</summary>
+    public FighterBuildStats RivalBuild(FighterBuildStats profile, int level)
+    {
+        float budget = Mathf.Max(0f, rivalBuildBudgetByLevel.Evaluate(Mathf.Max(1, level)));
+        float total = profile.Total;
+        if (total <= 0f) return FighterBuildStats.Even(budget);
+        float k = budget / total;
+        return new FighterBuildStats
+        {
+            punchPower = profile.punchPower * k, kickPower = profile.kickPower * k, agility = profile.agility * k,
+            resistance = profile.resistance * k, impactPower = profile.impactPower * k,
+        };
+    }
 
     [Tooltip("Build stats used for a fighter with no real source (no Runner run / no authored opponent build).")]
     public float neutralBuildBudget = 80f;
@@ -85,9 +119,9 @@ public class FightCombatBalanceConfig : ScriptableObject
     [Min(0.05f)] public float getUpDuration = 1.6f;
 
     [Header("Finishers (combo definitions with attackBonus = Punch/KickFinisher)")]
-    [Tooltip("Multipliers on the Punch Finisher (combo P P P). Its timing lives on the combo definition.")]
+    [Tooltip("Multipliers on the Punch Finisher (combo P P P) — only when it is POWERED by one x3 (CombatResourceUse). Its timing lives on the combo definition.")]
     public FightAttackBonus punchFinisher = new(1.5f, 1.6f, 1.8f);
-    [Tooltip("Multipliers on the Kick Finisher (combo K K K).")]
+    [Tooltip("Multipliers on the Kick Finisher (combo K K K) — only when powered by one x3.")]
     public FightAttackBonus kickFinisher = new(1.5f, 1.6f, 2.0f);
 
     [Header("Signature Move (FightMoveSetSO.signatureBasic / signatureSpecial)")]
@@ -99,8 +133,10 @@ public class FightCombatBalanceConfig : ScriptableObject
     [Header("Power State (hold Down + Punch + Kick)")]
     [Tooltip("Seconds Down + Punch + Kick must be held together to activate the Power State.")]
     [Min(0.1f)] public float powerActivationHoldTime = 1.0f;
-    [Tooltip("Seconds the Power State lasts once activated.")]
-    [Min(0.1f)] public float powerDuration = 6f;
+    [Tooltip("Seconds the Power State lasts when ONE x4 is spent. Activating spends every x4 held (CombatResourceUse).")]
+    [Min(0.1f)] public float powerDuration = 4f;
+    [Tooltip("Extra seconds for each x4 spent beyond the first (4 s, 5 s with two, 6 s with three…). Provisional.")]
+    [Min(0f)] public float powerSecondsPerExtraCharge = 1f;
     [Min(0f)] public float powerDamageMultiplier = 1.3f;
     [Min(0f)] public float powerStaggerMultiplier = 1.25f;
     [Min(0f)] public float powerKnockbackMultiplier = 1.25f;
@@ -118,6 +154,7 @@ public class FightCombatBalanceConfig : ScriptableObject
             KnockbackDealtMultiplier = impactToStagger.Evaluate(stats.impactPower),
             ResistanceMultiplier     = resistanceToStagger.Evaluate(stats.resistance),
             TimingScale              = Mathf.Clamp(agilityToTimingScale.Evaluate(stats.agility), minTimingScale, maxTimingScale),
+            MoveSpeedMultiplier      = Mathf.Clamp(agilityToMoveSpeed.Evaluate(stats.agility), minMoveSpeedMultiplier, maxMoveSpeedMultiplier),
         };
     }
 }
@@ -129,11 +166,12 @@ public struct FightCombatModifiers
     public float DamageTakenMultiplier;    // defender Resistance
     public float KnockbackDealtMultiplier; // attacker ImpactPower (knockback + hit stun)
     public float ResistanceMultiplier;     // defender Resistance (hit stun + knockback)
-    public float TimingScale;              // own Agility
+    public float TimingScale;              // own Agility (attack speed)
+    public float MoveSpeedMultiplier;      // own Agility (movement speed)
 
     public static FightCombatModifiers Identity => new FightCombatModifiers
     {
         DamageDealtMultiplier = 1f, DamageTakenMultiplier = 1f, KnockbackDealtMultiplier = 1f,
-        ResistanceMultiplier = 1f, TimingScale = 1f,
+        ResistanceMultiplier = 1f, TimingScale = 1f, MoveSpeedMultiplier = 1f,
     };
 }

@@ -3,9 +3,9 @@ using UnityEngine;
 /// <summary>
 /// Lives in the real Fight Mode Scene (Fight.unity), loaded additively by SceneFlowController the
 /// instant GameFlowState becomes Fight and unloaded the instant it leaves Fight (see
-/// SceneFlowController's GameFlowStateChangedEvent reaction). Spawns the real Player/Opponent
-/// FighterActors (capsule visuals — no humanoids exist yet, see FighterActor's own doc), a flat
-/// arena floor, and this scene's own Fight camera, using whatever data the Runner/Opponent
+/// SceneFlowController's GameFlowStateChangedEvent reaction). Loads the selected arena first, then
+/// creates Player/Opponent actors and their avatars inside the arena scene. Fight owns the shared
+/// camera and combat coordination, using whatever data the Runner/Opponent
 /// Selection already prepared (GameSession's SelectedSong/Profile/RunnerResults/
 /// DetectedMusicStyleId/SelectedOpponentLevelConfig) and CurrentTheme — it never re-analyzes music,
 /// re-resolves a style, or re-resolves an opponent-per-level itself, only reads what's already
@@ -37,6 +37,9 @@ public class FightSceneBootstrap : MonoBehaviour
     /// <summary>The live Fight scene (null outside Fight). Presentation code (Versus intro, composer
     /// speech bubble) reads the actors and the readiness signal below — never spawns or moves anything.</summary>
     public static FightSceneBootstrap Instance { get; private set; }
+    public Camera ArenaCamera => arenaCamera;
+    private int _stageBuildToken;
+    private bool _stagePreparing, _exiting;
     public FighterActor PlayerActor => _playerActor;
     public FighterActor OpponentActor => _opponentActor;
     public FightCameraController CameraController { get; private set; }
@@ -104,25 +107,23 @@ public class FightSceneBootstrap : MonoBehaviour
 
         Instance = this;
         BuildArena();
-        SpawnFighters();
-        SetupCamera();
-        // Direct scene play / tests: the opponent was applied at spawn (or there is no flow at all).
+        // No fighters exist while the roulette is selecting or while the arena scene is loading.
         bool selectionPending = FightFlowController.Instance != null && FightFlowController.Instance.CurrentState == FightFlowState.OpponentSelection;
-        if (!selectionPending && _opponentBuildToken == 0) OpponentVisualReady = true;
 
         _onFightFlowChanged = e =>
         {
             if (e.Current == FightFlowState.VersusIntro)
             {
-                ApplyArenaEnvironment();
-                ApplySelectedOpponent(GameSession.Instance != null ? GameSession.Instance.SelectedOpponentLevelConfig : null);
+                _ = PrepareStageAsync();
             }
         };
         EventBus.Subscribe(_onFightFlowChanged);
+        if (!selectionPending) _ = PrepareStageAsync();
     }
 
     private void OnDestroy()
     {
+        _exiting = true; ++_stageBuildToken; ++_opponentBuildToken;
         if (Instance == this) Instance = null;
         if (_previousMainCamera != null)
             _previousMainCamera.enabled = true;
@@ -170,7 +171,8 @@ public class FightSceneBootstrap : MonoBehaviour
     /// <summary>The player's avatar is fully built (or failed to the capsule) — see TryBuildAvatar.</summary>
     public bool PlayerVisualReady { get; private set; } = true;
     /// <summary>Both fighters fully dressed and posed + the arena loaded: what the Versus loading card waits for.</summary>
-    public bool StageReady => PlayerVisualReady && OpponentVisualReady && (_arenaLoader == null || _arenaLoader.IsReady);
+    public bool StageReady => !_stagePreparing && !_exiting && _playerActor != null && _opponentActor != null && PlayerVisualReady && OpponentVisualReady && _arenaLoader != null && _arenaLoader.IsReady
+                              && (GameAudio.Instance == null || GameAudio.Instance.IsReady); // combat sounds preloaded
     public ArenaEnvironmentLoader ArenaLoader => _arenaLoader;
 
     private void BuildArena()
@@ -200,6 +202,56 @@ public class FightSceneBootstrap : MonoBehaviour
         if (arena == null) arena = stage >= 0 ? session.BossArena : ArenaSelector.Pick(opponent, version); // per rival version (level)
         if (arena == null || !arena.RuntimeKeyIsValid()) arena = _arenaConfig != null ? _arenaConfig.defaultArena : null;
         _arenaLoader.Request(arena, key);
+    }
+
+    private async System.Threading.Tasks.Task PrepareStageAsync()
+    {
+        if (_exiting) return;
+        int token = ++_stageBuildToken;
+        bool reuse = _playerActor != null && _opponentActor != null && PlayerVisualReady && OpponentVisualReady;
+        var session = GameSession.Instance;
+        string key = FightPreloader.ArenaKey(session?.SelectedOpponent, session?.SelectedOpponentLevelConfig?.level ?? 0, session != null ? session.CurrentBossStage : -1);
+        reuse &= _arenaLoader.IsReady && _arenaLoader.CurrentKey == key;
+        _stagePreparing = true;
+        try
+        {
+            if (!reuse) ReleaseFighters();
+            ApplyArenaEnvironment();
+            await _arenaLoader.LoadingTask;
+            if (this == null || _exiting || token != _stageBuildToken) return;
+            if (!reuse)
+            {
+                PlayerVisualReady = true; OpponentVisualReady = false;
+                SpawnFighters();
+                var destination = _arenaLoader.LoadedScene.IsValid() ? _arenaLoader.LoadedScene : gameObject.scene;
+                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(_playerActor.gameObject, destination);
+                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(_opponentActor.gameObject, destination);
+                SetupCamera();
+                if (session?.SelectedOpponentLevelConfig == null) OpponentVisualReady = true;
+                Debug.Log("[FightSceneBootstrap] Fighters spawned AFTER arena readiness in scene '" + destination.name + "'.");
+            }
+            else ApplySelectedOpponent(session?.SelectedOpponentLevelConfig);
+        }
+        catch (System.Exception e) { Debug.LogException(e); }
+        finally { if (this != null && token == _stageBuildToken) _stagePreparing = false; }
+    }
+
+    private void ReleaseFighters()
+    {
+        ++_opponentBuildToken;
+        _opponentAvatarInstance?.Dispose(); _opponentAvatarInstance = null;
+        _playerAvatarInstance?.Dispose(); _playerAvatarInstance = null;
+        if (_playerActor != null) Destroy(_playerActor.gameObject);
+        if (_opponentActor != null) Destroy(_opponentActor.gameObject);
+        _playerActor = null; _opponentActor = null; _appliedOpponentConfig = null;
+        PlayerVisualReady = false; OpponentVisualReady = false;
+    }
+
+    public async System.Threading.Tasks.Task ShutdownStageAsync()
+    {
+        _exiting = true; ++_stageBuildToken;
+        ReleaseFighters(); FightPreloader.Release();
+        if (_arenaLoader != null) await _arenaLoader.ShutdownAsync();
     }
 
     // ── Fighters ──────────────────────────────────────────────────────────────
@@ -253,7 +305,7 @@ public class FightSceneBootstrap : MonoBehaviour
         ApplyPlayerCombatSetup();
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        gameObject.AddComponent<FightDebugCombatInput>().Initialize(_playerActor, _opponentActor); // TEMPORARY debug keys 1-9
+        (GetComponent<FightDebugCombatInput>() ?? gameObject.AddComponent<FightDebugCombatInput>()).Initialize(_playerActor, _opponentActor); // TEMPORARY debug keys 1-9
 #endif
 
         // Player: the ONE shared player identity (AppConfig.playerAvatar — the same recipe the Runner
@@ -323,8 +375,9 @@ public class FightSceneBootstrap : MonoBehaviour
 
     private async System.Threading.Tasks.Task BuildPlayerAvatar(AvatarRecipeSO playerRecipe)
     {
-        await TryBuildAvatar(playerRecipe, _playerActor, "Player", i => { _playerAvatarInstance?.Dispose(); _playerAvatarInstance = i; return true; });
-        if (this != null) PlayerVisualReady = true; // built, or fell back to the capsule
+        int token = _stageBuildToken;
+        await TryBuildAvatar(playerRecipe, _playerActor, "Player", i => { if (token != _stageBuildToken) return false; _playerAvatarInstance?.Dispose(); _playerAvatarInstance = i; return true; });
+        if (this != null && token == _stageBuildToken) PlayerVisualReady = true; // built, or fell back to the capsule
     }
 
     private async System.Threading.Tasks.Task BuildOpponentAvatar(OpponentLevelConfig levelConfig, string who, int token)
@@ -346,7 +399,8 @@ public class FightSceneBootstrap : MonoBehaviour
     ///              RunnerResults.CombatBuild as-is, resources = RunnerResults.Resources (a per-match
     ///              wallet; the Runner output itself is never modified).
     ///   Opponent — the selected TIER config's combatProfile (fallback defaultOpponentCombatProfile),
-    ///              build = its FighterStatsProfileSO.buildStats, resources = its tier's own counts.
+    ///              build = its FighterStatsProfileSO.buildStats proportions sized by its level
+    ///              (FightCombatBalanceConfig.RivalBuild), resources = its tier's own counts.
     /// </summary>
     private float NeutralBuildBudget => _combatBalanceConfig != null ? _combatBalanceConfig.neutralBuildBudget : 80f;
 
@@ -364,8 +418,13 @@ public class FightSceneBootstrap : MonoBehaviour
 
     private void ApplyOpponentCombatSetup(OpponentLevelConfig opponentLevelConfig)
     {
+        // Difficulty, not the player's run: the rival's profile gives its proportions (identity), its version / tier
+        // sizes the total (FightCombatBalanceConfig.rivalBuildBudgetByLevel).
         float neutral = NeutralBuildBudget;
-        _opponentActor.SetBuildStats(opponentLevelConfig?.combatStats != null ? opponentLevelConfig.combatStats.buildStats : FighterBuildStats.Even(neutral));
+        var profileBuild = opponentLevelConfig?.combatStats != null ? opponentLevelConfig.combatStats.buildStats : FighterBuildStats.Even(neutral);
+        _opponentActor.SetBuildStats(_combatBalanceConfig != null && opponentLevelConfig != null
+            ? _combatBalanceConfig.RivalBuild(profileBuild, opponentLevelConfig.level)
+            : profileBuild);
         _opponentActor.SetCombatResources(opponentLevelConfig != null
             ? new FighterCombatResources(opponentLevelConfig.tripleCombos, opponentLevelConfig.quadCombos, opponentLevelConfig.specials)
             : new FighterCombatResources(0, 0, 0));
@@ -395,6 +454,7 @@ public class FightSceneBootstrap : MonoBehaviour
 
     private async System.Threading.Tasks.Task TryBuildAvatar(AvatarRecipeSO recipeSO, FighterActor opponentActor, string who, System.Func<AvatarInstance, bool> keep)
     {
+        int stageToken = _stageBuildToken;
         var runtimeRecipe = recipeSO.ToRuntime();
         bool bound = false, applied = false;
         // Built HIDDEN (AvatarFactory.CreateHiddenAsync): the T-pose body and the garments being put on are never
@@ -402,7 +462,7 @@ public class FightSceneBootstrap : MonoBehaviour
         // fighter appears already standing in its combat pose.
         var instance = await AvatarFactory.CreateHiddenAsync(runtimeRecipe, opponentActor != null ? opponentActor.VisualRoot : null, built =>
         {
-            if (this == null || opponentActor == null) return;
+            if (this == null || opponentActor == null || stageToken != _stageBuildToken) { built.Dispose(); return; }
             if (!keep(built)) { built.Dispose(); return; }
             opponentActor.ReplaceVisual(built.Root);
             // The actor's gameplay origin sits at spawn height (the capsule's centre); the avatar's feet
@@ -421,7 +481,7 @@ public class FightSceneBootstrap : MonoBehaviour
         // The scene/actor may already be gone by the time an Addressables load resolves (Fight
         // exited mid-load — see the Fight-exit lifecycle hardening elsewhere in this project) —
         // dispose the freshly-built avatar instead of touching a destroyed actor.
-        if (this == null || opponentActor == null)
+        if (this == null || opponentActor == null || stageToken != _stageBuildToken)
         {
             instance.Dispose();
             return;
@@ -496,7 +556,7 @@ public class FightSceneBootstrap : MonoBehaviour
     private void SetupCamera()
     {
         if (arenaCamera == null) return;
-        var camController = arenaCamera.gameObject.AddComponent<FightCameraController>();
+        var camController = CameraController != null ? CameraController : arenaCamera.gameObject.AddComponent<FightCameraController>();
         camController.Initialize(_cameraConfig, _playerActor.transform, _opponentActor.transform);
         CameraController = camController;
     }

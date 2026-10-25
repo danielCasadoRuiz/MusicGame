@@ -9,7 +9,8 @@ using UnityEngine.InputSystem;
 /// Per frame, three independent pieces of state are updated (pure — no transform writes),
 /// then folded into exactly one CharacterController.Move() call:
 ///
-///   CanonicalDistance = MusicClock.MusicDistance  — where the player belongs RIGHT NOW
+///   CanonicalDistance = MusicClock.MusicDistance − TrailDistance — where the player belongs RIGHT NOW
+///                                                    (the musical front minus playerTrailSeconds·speed).
 ///                                                    according to the music. Exposed publicly;
 ///                                                    this is the ONLY place that formula lives —
 ///                                                    CameraFollow/GameplayManager/FallRespawnSystem/
@@ -80,6 +81,7 @@ public class PlayerController : MonoBehaviour
 
     // ── Fall state ────────────────────────────────────────────────────────────
     private bool    _isFalling;
+    private bool    _fallFrozen;
     private Vector3 _fallVelocity;
 
     // ── Controller ────────────────────────────────────────────────────────────
@@ -129,10 +131,20 @@ public class PlayerController : MonoBehaviour
     public float ExpectedJumpAirTime => config != null && config.gravity < 0f ? 2f * config.jumpForce / -config.gravity : 0.8f;
     private bool _recenterAnnounced;
 
-    /// <summary>Where the player belongs RIGHT NOW according to the music — single source of
-    /// truth for "songTime/MusicDistance → longitudinal position". Nobody else should
-    /// re-derive this from MusicClock directly.</summary>
-    public float CanonicalDistance => MusicClock.Instance?.MusicDistance ?? 0f;
+    /// <summary>The MUSICAL FRONT: where the song is right now on the path (MusicClock.MusicDistance) — a cube
+    /// hits (full size) when this front reaches it, and the ground playhead line draws it. Song schedule
+    /// (spawn lookahead, reveal) reads this; the player itself runs TrailDistance behind it.</summary>
+    public float MusicFrontDistance => MusicClock.Instance?.MusicDistance ?? 0f;
+
+    /// <summary>MusicRunnerCoreConfig.playerTrailSeconds — how long after a moment's hit the player
+    /// (without surge) reaches it. TrailDistance is the same delay in path distance.</summary>
+    public float TrailSeconds  => config != null ? Mathf.Max(0f, config.playerTrailSeconds) : 0f;
+    public float TrailDistance => config != null ? config.PlayerTrailDistance : 0f;
+
+    /// <summary>Where the player belongs RIGHT NOW according to the music: the musical front minus the
+    /// intentional trail — single source of truth for "songTime → player's longitudinal position"
+    /// (camera, respawn, restart, start placement). Nobody else should re-derive this.</summary>
+    public float CanonicalDistance => MusicFrontDistance - TrailDistance;
 
     /// <summary>Where the player REALLY is, including surge. What GameplayManager's spawn/
     /// recycle windows and the debug HUD should read instead of MusicDistance + ForwardOffset.</summary>
@@ -479,9 +491,49 @@ public class PlayerController : MonoBehaviour
 
         Vector3 motion = horizontalDelta + Vector3.up * (_verticalVelocity * Time.deltaTime + _pendingLift);
         _pendingLift = 0f;
-        _cc.Move(motion);
+        Vector3 before = transform.position;
+        var flags = _cc.Move(motion);
+        AccountForBlocking(sample, horizontalDelta, transform.position - before, flags);
 
         transform.rotation = Quaternion.LookRotation(sample.tangent, Vector3.up);
+    }
+
+    // ── Physical blocking (obstacles) ────────────────────────────────────────────────────
+    // The music's reference keeps advancing while an obstacle physically stops the player. What the
+    // CharacterController could NOT move this frame is taken out of the song offset (longitudinal) and the
+    // lateral offset, so the wanted position stays the REAL one: never pushed through the wall, and no burst
+    // of recovered distance once free (the offset then returns at the normal holdBackRecover rate). The
+    // escape margin is the existing hold-back area (−maxHoldBack): blocked AT that limit = BlockedAtBackLimit
+    // (RunnerHazardSystem turns a sustained one into the Trapped penalty). Reaching the limit voluntarily
+    // (holding back) is never "blocked".
+
+    /// <summary>An obstacle stopped part of this frame's forward motion.</summary>
+    public bool IsBlocked { get; private set; }
+    /// <summary>Blocked while already at the back limit of the movement area (−maxHoldBack): can't keep up.</summary>
+    public bool BlockedAtBackLimit { get; private set; }
+
+    private void AccountForBlocking(in MusicPath.Sample sample, Vector3 wanted, Vector3 got, CollisionFlags flags)
+    {
+        IsBlocked = false;
+        BlockedAtBackLimit = false;
+        if (_farewellMode || (flags & CollisionFlags.Sides) == 0) return;
+        Vector3 fwd = sample.tangent; fwd.y = 0f;
+        if (fwd.sqrMagnitude < 1e-6f) return;
+        fwd.Normalize();
+        Vector3 right = sample.right; right.y = 0f; // the same axis _lateralOffset is measured along
+        if (right.sqrMagnitude > 1e-6f) right.Normalize();
+        got.y = 0f;
+
+        float lostAlong = Vector3.Dot(wanted, fwd) - Vector3.Dot(got, fwd);
+        if (lostAlong > 0.002f)
+        {
+            IsBlocked = true;
+            _forwardOffset -= lostAlong;
+            float maxBack = Mathf.Max(0f, config.maxHoldBack);
+            if (_forwardOffset < -maxBack) { _forwardOffset = -maxBack; BlockedAtBackLimit = true; }
+        }
+        float lostSide = Vector3.Dot(wanted, right) - Vector3.Dot(got, right);
+        if (Mathf.Abs(lostSide) > 0.002f) _lateralOffset -= lostSide; // sliding along a side: stay where it really is
     }
 
     // ── Fall detection (vertical, track-relative — NOT the lateral limit) ──────────────────
@@ -498,9 +550,12 @@ public class PlayerController : MonoBehaviour
 
     // ── Fall state ────────────────────────────────────────────────────────────
 
-    public void EnterFallState()
+    /// <param name="freeze">true = stay where it is (a penalty that is not a fall: chaser contact, trapped);
+    /// false = free-fall under gravity (a real fall off the track).</param>
+    public void EnterFallState(bool freeze = false)
     {
         _isFalling    = true;
+        _fallFrozen   = freeze;
         _fallVelocity = Vector3.zero;
         if (_cc != null) _cc.enabled = false; // hand off to manual world-space fall movement below
     }
@@ -563,6 +618,9 @@ public class PlayerController : MonoBehaviour
         _fallVelocity     = Vector3.zero;
         _forwardOffset    = 0f;
         _lateralOffset    = 0f;
+        _fallFrozen       = false;
+        IsBlocked         = false;
+        BlockedAtBackLimit = false;
         _lateralVelocity  = 0f;
         _verticalVelocity    = 0f;
         LateralLimit         = 0f;
@@ -576,6 +634,7 @@ public class PlayerController : MonoBehaviour
     private void UpdateFall()
     {
         // World-space free-fall (CharacterController disabled — see EnterFallState)
+        if (_fallFrozen) return;
         _fallVelocity      += Vector3.up * config.gravity * Time.deltaTime;
         transform.position += _fallVelocity * Time.deltaTime;
     }

@@ -10,7 +10,9 @@ using UnityEngine.UI;
 ///
 /// SHOWS ITSELF the instant FightFlowState.RoundIntro begins (right as the VS cartela ends) and stays
 /// visible, unchanged, all the way through Countdown and into Fighting — it is NOT a separate screen
-/// that pops in when Fighting starts. RoundIntroController's own "ROUND {n}"/3-2-1/FIGHT! sequence
+/// that pops in when Fighting starts. Exception: on a run's first fight it already shows during the rival's opening
+/// line in VersusIntro, because the runner → fight bonus conversion plays there and needs its destinations
+/// (ShowHudForConversion). RoundIntroController's own "ROUND {n}"/3-2-1/FIGHT! sequence
 /// (plus its one dark overlay — see that class's own doc) renders ON TOP of this already-visible HUD
 /// for readability; when that sequence ends there is nothing left to reveal, so no second fade/reveal
 /// happens here (a previous version of this class owned its own redundant transition overlay — removed,
@@ -44,11 +46,19 @@ public class FightController : MonoBehaviour
 {
     private FightFlowConfig _flowConfig; // roundDuration — see Awake()
 
+    public static FightController Instance { get; private set; }
+
     private FightHudView _view;
     private RectTransform _root;
+
+    /// <summary>The player's fight preparation panel (build stats + resources) — the conversion's destinations.</summary>
+    public FightBuildPanelView BuildPanel => _view != null ? _view.buildPanel : null;
     private TextMeshProUGUI _timerText;
     private TextMeshProUGUI _playerNameText, _opponentNameText;
     private Image _playerHealthFill, _opponentHealthFill;
+    private TMPro.TextMeshProUGUI _playerPerfect, _opponentPerfect;
+    private Coroutine _perfectRoutine;
+    private System.Action<RoundEndedEvent> _onRoundEnded;
     private TextMeshProUGUI _playerRoundPipsText, _opponentRoundPipsText;
 
     private RectTransform _pausePanel;
@@ -78,6 +88,7 @@ public class FightController : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
         var appConfig = Resources.Load<AppConfigSO>("AppConfig");
         _flowConfig = appConfig != null ? appConfig.fightFlow : null;
 
@@ -90,6 +101,7 @@ public class FightController : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (Instance == this) Instance = null;
         if (_view != null) Destroy(_view.gameObject);
     }
 
@@ -131,20 +143,33 @@ public class FightController : MonoBehaviour
         {
             // The HUD itself (top bar, live-updating) shows the instant RoundIntro begins — see
             // class doc. Only the interactive controls wait for the real Fighting state.
-            if (e.Current == FightFlowState.RoundIntro) ShowHud();
+            if (e.Current == FightFlowState.RoundIntro) { HidePerfect(); ShowHud(); }
             else if (e.Current == FightFlowState.Fighting) ActivateControls();
             // Fight Again re-enters the in-arena Versus with the HUD still up from the last match:
             // hide it again so the presentation (card, camera pass, bubble) is clean.
-            else if (e.Current == FightFlowState.VersusIntro) HideHudForPresentation();
+            else if (e.Current == FightFlowState.VersusIntro) { HidePerfect(); HideHudForPresentation(); }
+        };
+        // PERFECT: a round won by KO with the winner's bar FULL (the real health, never the rounded text) — either
+        // fighter. The word appears under the winner's bar and the announcer says it at the same moment.
+        _onRoundEnded = e =>
+        {
+            if (e.Reason != RoundEndReason.KO || !e.Winner.HasValue) return;
+            bool playerWon = e.Winner.Value == FighterSide.Player;
+            float winnerHealth = playerWon ? e.PlayerHealthPercent : e.OpponentHealthPercent;
+            if (winnerHealth < 0.9999f) return;
+            ShowPerfect(playerWon ? _playerPerfect : _opponentPerfect);
         };
         EventBus.Subscribe(_onFlowStateChanged);
         EventBus.Subscribe(_onFightFlowChanged);
+        EventBus.Subscribe(_onRoundEnded);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onFlowStateChanged);
         EventBus.Unsubscribe(_onFightFlowChanged);
+        EventBus.Unsubscribe(_onRoundEnded);
+        HidePerfect();
         ExitFight();
     }
 
@@ -153,12 +178,10 @@ public class FightController : MonoBehaviour
         if (!_active) return;
 
         var kb = Keyboard.current;
-        // Esc pauses only while rounds are being played. In VersusIntro / MatchFarewell ESC belongs to
-        // the presentation's Skip (FightPresentationSkip) — never both; on the result screen it does nothing.
-        var fightState = FightFlowController.Instance != null ? FightFlowController.Instance.CurrentState : FightFlowState.Fighting;
-        bool pausable = fightState == FightFlowState.RoundIntro || fightState == FightFlowState.Countdown ||
-                        fightState == FightFlowState.Fighting || fightState == FightFlowState.RoundEnd;
-        if (kb != null && kb.escapeKey.wasPressedThisFrame && (pausable || _paused))
+        bool pausable = Pausable;
+        // While the help is open (or on the frame it closed) its own Escape handling wins: never also toggle the pause.
+        bool helpOwnsInput = HelpScreenController.IsOpen || HelpScreenController.ClosedThisFrame;
+        if (kb != null && kb.escapeKey.wasPressedThisFrame && (pausable || _paused) && !helpOwnsInput)
             SetPaused(!_paused);
         // V = the same First/Third Person toggle as the HUD button (one method: FightCameraController.ToggleView).
         if (kb != null && kb.vKey.wasPressedThisFrame && !_paused)
@@ -170,6 +193,130 @@ public class FightController : MonoBehaviour
         UpdateHealthBars();
         UpdateRoundPips();
         UpdateTimerText();
+        UpdateBuildPanel();
+    }
+
+    // Esc / the pause button pause only while rounds are being played. In VersusIntro / MatchFarewell ESC belongs to
+    // the presentation's Skip (FightPresentationSkip) — never both (the HUD is already up in VersusIntro while the
+    // bonus conversion plays); on the result screen it does nothing.
+    private static bool Pausable
+    {
+        get
+        {
+            var fightState = FightFlowController.Instance != null ? FightFlowController.Instance.CurrentState : FightFlowState.Fighting;
+            return fightState == FightFlowState.RoundIntro || fightState == FightFlowState.Countdown ||
+                   fightState == FightFlowState.Fighting || fightState == FightFlowState.RoundEnd;
+        }
+    }
+
+    // ── Fight preparation panel (build stats + charges), integrated in the top bar's player side ─────────
+    // The real values, read every frame from the ONE source (the player's FighterCombatResources = Run.Wallet, the
+    // persistent life inventory): the HUD keeps no counter of its own, so a pause, a round change or a refresh can
+    // never restore a spent charge. A change pulses its cell briefly; a charge at 0 is dimmed. While the runner →
+    // fight conversion plays, the animation owns the panel (BonusConversionController.IsBusy) and ends on these values.
+    private FighterActor _playerActor;
+    private readonly System.Collections.Generic.Dictionary<BonusKind, int> _shownCharges = new();
+
+    private void UpdateBuildPanel()
+    {
+        var panel = BuildPanel;
+        if (panel == null) return;
+        FitBuildPanel(panel);
+        if (BonusConversionController.IsBusy) { _shownCharges.Clear(); return; }
+        if (_playerActor == null)
+            foreach (var a in FindObjectsByType<FighterActor>(FindObjectsSortMode.None)) if (a.Side == FighterSide.Player) _playerActor = a;
+        if (_playerActor == null) return;
+        var build = _playerActor.BuildStats;
+        foreach (var row in panel.stats)
+            if (row != null) BonusConversionController.ShowStat(panel, row.stat, BuildValue(build, row.stat));
+        foreach (var cell in panel.resources)
+        {
+            if (cell == null) continue;
+            int v = ChargeValue(_playerActor.CombatResources, cell.kind);
+            BonusConversionController.ShowResource(cell, v);
+            if (_shownCharges.TryGetValue(cell.kind, out int before) && before != v && cell.root != null)
+                StartCoroutine(PulseCell(cell.root));
+            _shownCharges[cell.kind] = v;
+        }
+    }
+
+    /// <summary>A charge as the HUD shows it — straight from the wallet / the life inventory.</summary>
+    public static int ChargeValue(FighterCombatResources wallet, BonusKind kind) => kind switch
+    {
+        BonusKind.Special => wallet != null ? wallet.Specials : 0,
+        BonusKind.TripleCombo => wallet != null ? wallet.TripleCombos : 0,
+        BonusKind.QuadCombo => wallet != null ? wallet.QuadCombos : 0,
+        BonusKind.Life => PlayerProgressService.Instance != null ? PlayerProgressService.Instance.ExtraLives : 0,
+        _ => 0,
+    };
+
+    private static System.Collections.IEnumerator PulseCell(RectTransform rt)
+    {
+        const float seconds = 0.22f, scale = 1.3f;
+        for (float t = 0f; t < seconds && rt != null; t += Time.unscaledDeltaTime)
+        {
+            rt.localScale = Vector3.one * Mathf.Lerp(scale, 1f, t / seconds);
+            yield return null;
+        }
+        if (rt != null) rt.localScale = Vector3.one;
+    }
+
+    // The panel starts right of the player's health bar and must end before the centred timer at ANY aspect: scaled
+    // down (never up) when the canvas is narrower than the 1920 reference. The conversion's flights aim at the cells'
+    // live positions, so they follow.
+    private void FitBuildPanel(FightBuildPanelView panel)
+    {
+        var rt = panel.root;
+        if (rt == null || _timerText == null || !(rt.parent is RectTransform bar)) return;
+        var corners = new Vector3[4];
+        _timerText.rectTransform.GetWorldCorners(corners);
+        float limit = bar.InverseTransformPoint(corners[0]).x - 12f;
+        float left = rt.localPosition.x - rt.pivot.x * rt.rect.width;
+        float width = rt.rect.width;
+        float scale = width > 0f ? Mathf.Clamp((limit - left) / width, 0.55f, 1f) : 1f;
+        if (!Mathf.Approximately(rt.localScale.x, scale)) rt.localScale = new Vector3(scale, scale, 1f);
+    }
+
+    private static float BuildValue(FighterBuildStats b, FightStatId stat) => stat switch
+    {
+        FightStatId.PunchPower => b.punchPower,
+        FightStatId.KickPower => b.kickPower,
+        FightStatId.Agility => b.agility,
+        FightStatId.Resistance => b.resistance,
+        FightStatId.ImpactPower => b.impactPower,
+        _ => 0f,
+    };
+
+    // ── Help (moves): from the preFight tip card or from the pause menu — see HelpScreenController ──────
+
+    /// <summary>The tip card's "More info": pause at once (countdown included) and open the moves straight away;
+    /// closing it resumes the countdown where it stopped, without going through the pause menu.</summary>
+    public void OpenHelpFromTip()
+    {
+        if (!_active || HelpScreenController.Instance == null) return;
+        SetPaused(true);
+        HelpScreenController.Instance.Open(HelpTopic.Moves, HelpOrigin.TipCard, OnHelpClosed);
+        if (_pausePanel != null) _pausePanel.gameObject.SetActive(false);
+    }
+
+    private void OpenHelpFromPause()
+    {
+        if (!_paused || HelpScreenController.Instance == null) return;
+        HelpScreenController.Instance.Open(HelpTopic.Moves, HelpOrigin.PauseMenu, OnHelpClosed);
+        if (_pausePanel != null) _pausePanel.gameObject.SetActive(false);
+    }
+
+    private void OnHelpClosed(HelpOrigin origin)
+    {
+        if (origin == HelpOrigin.PauseMenu) { if (_pausePanel != null) _pausePanel.gameObject.SetActive(_paused); return; }
+        StartCoroutine(ResumeNextFrame());
+    }
+
+    // One frame later, so the key / click that closed the help is never also read as a fight input.
+    private System.Collections.IEnumerator ResumeNextFrame()
+    {
+        yield return null;
+        if (_paused && !HelpScreenController.IsOpen) SetPaused(false);
     }
 
     private void UpdateHealthBars()
@@ -204,6 +351,47 @@ public class FightController : MonoBehaviour
         _opponentRoundPipsText.text = PipsText(match.OpponentRoundsWon, slots);
     }
 
+    private void ShowPerfect(TMPro.TextMeshProUGUI text)
+    {
+        HidePerfect();
+        if (text == null) return;
+        text.gameObject.SetActive(true);
+        var a = GameAudio.Instance;
+        if (a != null && a.Announcer != null) a.PlayAnnouncer(a.Announcer.perfect, GameAudioScope.Fight); // same instant as the word
+        _perfectRoutine = StartCoroutine(PerfectStamp(text));
+    }
+
+    private void HidePerfect()
+    {
+        if (_perfectRoutine != null) { StopCoroutine(_perfectRoutine); _perfectRoutine = null; }
+        if (_playerPerfect != null) _playerPerfect.gameObject.SetActive(false);
+        if (_opponentPerfect != null) _opponentPerfect.gameObject.SetActive(false);
+    }
+
+    // A quick stamp (big and transparent → overshoot → settled), then a gentle pulse until the next round (unscaled time).
+    private static System.Collections.IEnumerator PerfectStamp(TMPro.TextMeshProUGUI text)
+    {
+        var rt = text.rectTransform;
+        float t = 0f;
+        const float In = 0.28f;
+        while (t < In)
+        {
+            t += Time.unscaledDeltaTime;
+            float k = Mathf.Clamp01(t / In);
+            rt.localScale = Vector3.one * (Mathf.LerpUnclamped(2.2f, 1f, 1f - Mathf.Pow(1f - k, 3f)) + Mathf.Sin(k * Mathf.PI) * 0.12f);
+            text.alpha = k;
+            yield return null;
+        }
+        rt.localScale = Vector3.one;
+        text.alpha = 1f;
+        while (true)
+        {
+            t += Time.unscaledDeltaTime;
+            rt.localScale = Vector3.one * (1f + 0.04f * Mathf.Sin(t * 5f));
+            yield return null;
+        }
+    }
+
     private static string PipsText(int won, int slots)
     {
         won = Mathf.Clamp(won, 0, slots);
@@ -222,6 +410,14 @@ public class FightController : MonoBehaviour
         _active = true;
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling(); // RoundIntroController re-asserts its OWN root on top of this right after — see its own doc
+    }
+
+    /// <summary>BonusConversionController, when the runner → fight conversion starts during the rival's opening
+    /// line: the HUD (the conversion's destinations) shows before RoundIntro. Nothing else changes — the pause and
+    /// the controls still wait for their own states.</summary>
+    public void ShowHudForConversion()
+    {
+        if (_root != null && !_root.gameObject.activeSelf) ShowHud();
     }
 
     private void HideHudForPresentation()
@@ -250,6 +446,8 @@ public class FightController : MonoBehaviour
         _active = false;
         if (_root != null) _root.gameObject.SetActive(false);
         if (_mobileControlsRoot != null) _mobileControlsRoot.gameObject.SetActive(false);
+        BonusConversionController.Instance?.Abort();
+        _playerActor = null;
 
         // Fight.unity (and every FighterActor in it) unloads on exit — stale references would
         // otherwise survive into a fresh Fight entry until FindHealthRefs happens to be called again.
@@ -266,6 +464,8 @@ public class FightController : MonoBehaviour
         _opponentNameText   = view.opponentNameText;
         _playerHealthFill   = UIFactory.EnsureFillSprite(view.playerHealthFill);
         _opponentHealthFill = UIFactory.EnsureFillSprite(view.opponentHealthFill);
+        _playerPerfect      = view.playerPerfectText;
+        _opponentPerfect    = view.opponentPerfectText;
         _playerRoundPipsText   = view.playerRoundPipsText;
         _opponentRoundPipsText = view.opponentRoundPipsText;
         _timerText          = view.timerText;
@@ -277,9 +477,12 @@ public class FightController : MonoBehaviour
         _portraitPlaceholderColor = view.portraitPlaceholderColor;
         _cameraToggleLabel  = view.cameraToggleLabel;
 
-        view.pauseButton.onClick.AddListener(() => SetPaused(!_paused));
+        view.pauseButton.onClick.AddListener(() => { if (_paused || Pausable) SetPaused(!_paused); });
         view.resumeButton.onClick.AddListener(() => SetPaused(false));
         view.mainMenuButton.onClick.AddListener(OnMainMenuClicked);
+        if (view.movesHelpButton != null) view.movesHelpButton.onClick.AddListener(OpenHelpFromPause);
+        else Debug.LogError("[FightController] FightHud.prefab: movesHelpButton not assigned — run Tools > MusicGame > UI > Help Placeholders + Prefabs.");
+        WireBuildPanel(view.buildPanel);
         if (view.cameraToggleButton != null)
             view.cameraToggleButton.onClick.AddListener(() => { if (FightCameraController.Instance != null) FightCameraController.Instance.ToggleView(); });
 
@@ -320,16 +523,34 @@ public class FightController : MonoBehaviour
         else Debug.LogError("[FightController] FightHud.prefab: kickAction (TouchActionButton) not assigned.");
     }
 
+    // Icons from the central HelpUIConfig (placeholders until the final art) — never set in the prefab itself.
+    private static void WireBuildPanel(FightBuildPanelView panel)
+    {
+        if (panel == null) { Debug.LogError("[FightController] FightHud.prefab: buildPanel not assigned — run Tools > MusicGame > UI > Help Placeholders + Prefabs."); return; }
+        var cfg = HelpUIConfigSO.Instance;
+        foreach (var row in panel.stats)
+        {
+            if (row == null) continue;
+            if (row.icon != null && cfg != null) { row.icon.sprite = cfg.StatSprite(row.stat); row.icon.color = cfg.StatColor(row.stat); }
+            if (row.fill != null) { UIFactory.EnsureFillSprite(row.fill); if (cfg != null) row.fill.color = cfg.StatColor(row.stat); }
+            if (row.label != null) { var stat = row.stat; Loc.Bind(row.label, () => BonusHelpCatalog.StatShortName(stat)); }
+        }
+        foreach (var cell in panel.resources)
+            if (cell?.icon != null && cfg != null) { cell.icon.sprite = cfg.Icon(cell.kind); cell.icon.color = cfg.Tint(cell.kind); }
+    }
+
     // A REAL pause (it used to only show the panel while the match kept running underneath).
     private void SetPaused(bool paused)
     {
         bool changed = _paused != paused;
         _paused = paused;
         IsPaused = paused;
-        if (_pausePanel != null) _pausePanel.gameObject.SetActive(paused);
+        if (_pausePanel != null) _pausePanel.gameObject.SetActive(paused && !HelpScreenController.IsOpen);
+        if (!paused && HelpScreenController.IsOpen) HelpScreenController.Instance.Close();
         if (!changed) return;
         Time.timeScale = paused ? 0f : 1f;
         FightMusicController.Instance?.SetPaused(paused);
+        GameAudio.Instance?.SetAnnouncerPaused(paused);   // the countdown's voice freezes with the countdown
         Debug.Log($"[FightController] Fight {(paused ? "PAUSED" : "resumed")}.");
     }
 

@@ -2,69 +2,59 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Owns the whole Play → analyze → classify style → theme transition → advance-to-Gameplay pipeline
-/// for GameFlowState.SongAnalysis — the piece RunnerSceneBootstrap's own doc used to call out as
-/// "temporary, not the target architecture" (Section 13 of the multi-scene refactor plan: "Runner
-/// should only ever CONSUME an already-resolved SongProfile/CurrentTheme, never trigger analysis
-/// itself"). Lives in the always-loaded UI Scene (added by UIFlowController, same as
-/// AnalyzingScreenController) precisely so analysis can run WITHOUT the Runner Mode Scene loaded at
-/// all — SceneFlowController.ModeFor(SongAnalysis) now maps to Frontend, not Runner, so the 3D
-/// placeholder world never flashes into view behind the Analyzing screen while a song is still being
-/// analyzed or its theme still transitioning.
+/// Owns GameFlowState.SongAnalysis: the CONTENT half of the readiness barrier between "Play" and the first
+/// playable instant (see SongPreparation for the explicit states), then the style / theme transition, then
+/// the advance to Gameplay. Lives in the always-loaded UI Scene (added by UIFlowController), so nothing of
+/// the Runner scene exists yet while this runs.
 ///
-/// Sequence once GameFlowState.SongAnalysis is entered:
-///   0. Wait for GameSession.SelectedSong.Clip to actually be non-null — SongSelectionController
-///      requests this state IMMEDIATELY on Play, before a catalog song's Addressables clip load
-///      has necessarily finished, specifically so the Analyzing screen appears instantly rather
-///      than only after that load completes (bounded by ClipWaitTimeoutSeconds, and abandoned if
-///      the flow leaves SongAnalysis first — e.g. a failed load bounces back to Song Selection).
-///   1. Run AudioPreAnalyzer directly on that clip (this needs no AudioSource and no scene-local
-///      dependency at all — see AudioPreAnalyzer's own doc; it operates purely on the raw clip
-///      data) — publishes PreAnalysisStartedEvent/PreAnalysisProgressEvent exactly as before,
-///      which AnalyzingScreenController already reacts to regardless of who's driving it.
-///   2. As soon as AudioPreAnalyzer's semantic-tagging pass knows this song's tags — which happens
-///      BEFORE the rest of its (level-generation-critical) per-frame analysis even starts, see its
-///      own doc — OnTagsReady runs MusicStyleResolver.ResolveEarly. ONLY if the tags are conclusive
-///      (dominant recognized genre, confidence + margin from MusicStyleRulesSO) the FINAL style is
-///      published right away (GameSession + MusicStyleDetectedEvent → ThemeManager swaps the theme).
-///      Otherwise the style stays PENDING (MusicStylePendingEvent, no UI/theme change).
-///   3. Full profile ready: if still pending, resolve ONCE from tags + all SongProfile features and
-///      publish. The style is never published twice. Then wait for MusicStyleRevealFinishedEvent
-///      from the Analyzing screen (already true if the early reveal ended) and at least one theme
-///      transition since publication — with a timeout fallback, never forever.
-///   4. Request GameFlowState.Gameplay — SceneFlowController maps that to Runner and loads it only
-///      now, with RunnerSceneBootstrap re-publishing SongProfileReadyEvent once Runner's own
-///      scene-local listeners (GameplayManager, MusicWorldManager, ...) have subscribed, so they
-///      keep working completely unchanged despite the event having originally fired before their
-///      scene even existed.
+/// Two kinds of selection (GameSession.SelectedSong, bound to its SelectionGeneration):
+///   CATALOG song (published, P3) — CatalogSongLoader: published index → download (real bytes) → audio +
+///     profile loaded in parallel → header/revision validation → profile built on a worker → clip data
+///     loaded. NO FFT, NO inference, no analysis cache. The loaded content is ADOPTED by GameSession
+///     (lease = handle ownership), then SongProfileReadyEvent is published once and the style is resolved
+///     from the profile's own published tags + features (MusicStyleResolver.Resolve — no Sentis model).
+///     A failure is typed (download / load / incompatible content) and returns to Song Selection with that
+///     reason; it is NEVER covered by a silent analysis.
+///   IMPORTED file (unchanged path) — AudioPreAnalyzer runs the dynamic analysis (one request bound to the
+///     selection generation; early style from tags when conclusive), as before.
+/// Then, for both: wait for the style reveal (Analyzing screen, a presentation beat) AND the theme change
+/// to be really settled (ThemeManager.IsStyleTransitionSettled: style visual loaded/applied + its colour
+/// transition finished) — explicit completions, the theme one bounded by a timeout that FAILS instead of
+/// continuing — and request Gameplay. The Runner half of the barrier (scene, world, timeline, pools, clip
+/// state) is GameplayManager.GenerateAndStart, which alone may publish GameStartedEvent (countdown + clock).
 ///
-/// SongProfileReadyEvent is still published globally exactly as before (from AudioPreAnalyzer) — so
-/// GameSession's own subscription (which fills GameSession.Profile) and anything else listening
-/// globally keeps working unchanged; this class doesn't duplicate that, it just also reads the
-/// resulting SongProfile to drive the sequence above.
+/// Identity: every step re-checks its own token and the selection generation; leaving SongAnalysis (back
+/// to Song Selection) cancels the running preparation, which then releases only its own handles and
+/// publishes nothing.
 /// </summary>
 public class SongAnalysisController : MonoBehaviour
 {
-    // Local Addressables resolution + the theme transition itself are both normally well under a
-    // second — this pads a bit beyond ThemeTransitionController.Duration so the transition has
-    // genuinely finished (not just started) before Runner loads. Purely a UX beat, not a real
-    // dependency — nothing breaks if a slow load overruns it, the theme just keeps transitioning
-    // for a moment after Gameplay has already begun loading underneath.
-    private const float PostDetectionBufferSeconds = 0.15f;
+    // Safety nets — never a substitute for the real completions they bound.
+    private const float SelectionWaitTimeoutSeconds = 20f; // a selection is recorded within a frame of Play
+    private const float RevealTimeoutSeconds = 4f;         // presentation beat (Analyzing screen caption)
+    private const float ThemeSettleTimeoutSeconds = 15f;   // style visual load + colour transition
 
     private MusicStyleRulesSO _styleRules; // AppConfigSO.musicStyleRules (null = built-in defaults)
 
     private AudioPreAnalyzer     _preAnalyzer;
     private AudioAnalysisConfig  _config;
 
-    // GameMusicStyle is published ONCE per song: at tags time only when conclusive, otherwise after
-    // the full analysis. _stylePublished guards against a second publication.
+    // GameMusicStyle is published ONCE per song: at tags time only when conclusive (imports), otherwise
+    // once the full profile is known. _stylePublished guards against a second publication.
     private bool _stylePublished;
     private bool _revealFinished;
-    private float _publishedAt;
 
-    // Safety net only — the Analyzing screen normally reports the end of its reveal well before this.
-    private const float RevealTimeoutSeconds = 4f;
+    // The preparation this controller is currently driving: a token per state entry. Every coroutine step
+    // compares its own token with this one; the analysis request id is tracked separately.
+    private int _token;
+    private int _requestId;
+    // Selection generation the running preparation belongs to (−1 = none yet / waiting for a selection).
+    private int _preparingGeneration = -1;
+    private CatalogSongLoader _loader;
+    private Coroutine _routine;
+
+    /// <summary>The last failed preparation's reason (Song Selection shows it).</summary>
+    public static SongContentError LastError { get; private set; }
 
     private System.Action<MusicStyleRevealFinishedEvent> _onRevealFinished;
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
@@ -82,70 +72,163 @@ public class SongAnalysisController : MonoBehaviour
     {
         _onFlowStateChanged = e =>
         {
-            if (e.Current == GameFlowState.SongAnalysis) BeginAnalysis();
+            if (e.Current == GameFlowState.SongAnalysis) Begin();
+            // Left SongAnalysis while still preparing (e.g. back to Song Selection): cancel it.
+            else if (e.Previous == GameFlowState.SongAnalysis) Cancel();
         };
         EventBus.Subscribe(_onFlowStateChanged);
         _onRevealFinished = _ => _revealFinished = true;
         EventBus.Subscribe(_onRevealFinished);
 
         // Same UI-Scene-loads-asynchronously race as the other Frontend screens.
-        if (AppBootstrap.Context != null && AppBootstrap.Context.AppFlow.CurrentState == GameFlowState.SongAnalysis)
-            BeginAnalysis();
+        if (InSongAnalysis) Begin();
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onFlowStateChanged);
         EventBus.Unsubscribe(_onRevealFinished);
+        Cancel();
     }
 
-    // SongSelectionController now requests SongAnalysis IMMEDIATELY on Play — for a catalog song,
-    // GameSession.SelectedSong.Clip is very likely still null at that instant (the Addressables
-    // clip load is still in flight) so the Analyzing screen shows up instantly instead of only
-    // after that load finishes. Wait here instead of bailing out the moment the clip isn't ready.
-    private const float ClipWaitTimeoutSeconds = 20f;
+    private static bool InSongAnalysis =>
+        AppBootstrap.Context != null && AppBootstrap.Context.AppFlow.CurrentState == GameFlowState.SongAnalysis;
 
-    private void BeginAnalysis() => StartCoroutine(WaitForClipThenAnalyze());
+    private void Begin()
+    {
+        // One preparation per state entry (a second Begin — the OnEnable race — replaces the first);
+        // AudioPreAnalyzer itself joins a duplicate request for the same clip + selection.
+        Cancel();
+        int token = ++_token;
+        _routine = StartCoroutine(Prepare(token));
+    }
 
-    private IEnumerator WaitForClipThenAnalyze()
+    // A selection that changes WHILE in SongAnalysis (an entry point that recorded it after entering the
+    // state, or a second request) supersedes the running preparation: that one is cancelled (its stale
+    // results are still rejected by the generation checks) and the current selection is prepared — the
+    // screen is never left waiting with no preparation running.
+    private void Update()
+    {
+        if (_preparingGeneration < 0 || !InSongAnalysis || GameSession.Instance == null) return;
+        // A cleared selection (null) is a change too: restart so Prepare waits for the new one under its own
+        // timeout (→ Fail → Song Selection) instead of the cancelled preparation leaving the screen waiting.
+        int current = GameSession.Instance.SelectionGeneration;
+        if (current == _preparingGeneration) return;
+        Debug.Log($"[SongAnalysisController] Selection changed during the preparation (#{_preparingGeneration} → #{current}) — preparing the current selection.");
+        Begin();
+    }
+
+    private void Cancel()
+    {
+        _preparingGeneration = -1;
+        _token++; // every running step of the previous preparation sees a foreign token from now on
+        if (_routine != null) { StopCoroutine(_routine); _routine = null; }
+        if (_loader != null)
+        {
+            // A stopped coroutine does not run the loader's own cleanup: cancel it explicitly and release what
+            // it acquired but never handed over (a lease is only ever owned by GameSession after adoption).
+            _loader.Abort();
+            _loader = null;
+        }
+        if (_requestId != 0 && _preAnalyzer != null && _preAnalyzer.CurrentRequestId == _requestId) _preAnalyzer.Cancel();
+        _requestId = 0;
+    }
+
+    private IEnumerator Prepare(int token)
     {
         if (_config == null)
         {
-            Debug.LogWarning("[SongAnalysisController] No AudioAnalysisConfig (AppConfig.audioAnalysis) " +
-                              "assigned — cannot analyze.");
+            Fail(CurrentGeneration, SongContentError.IncompatibleContent, "no AudioAnalysisConfig (AppConfig.audioAnalysis) assigned");
             yield break;
         }
 
+        // The selection is recorded right after Play (SongSelectionService); wait for it, never for a clip.
         float waited = 0f;
         SelectedSongInfo? selected;
-        while ((selected = GameSession.Instance != null ? GameSession.Instance.SelectedSong : null) is not { Clip: not null })
+        while ((selected = GameSession.Instance != null ? GameSession.Instance.SelectedSong : null) == null)
         {
-            // The player may have bailed back to Song Selection (a failed load) while we were
-            // waiting — stop polling instead of analyzing a stale/irrelevant clip once one finally
-            // does appear from a LATER selection.
-            if (AppBootstrap.Context == null || AppBootstrap.Context.AppFlow.CurrentState != GameFlowState.SongAnalysis)
-                yield break;
-
-            waited += Time.deltaTime;
-            if (waited > ClipWaitTimeoutSeconds)
+            if (!InSongAnalysis || token != _token) yield break;
+            waited += Time.unscaledDeltaTime;
+            if (waited > SelectionWaitTimeoutSeconds)
             {
-                Debug.LogWarning("[SongAnalysisController] Gave up waiting for GameSession.SelectedSong's " +
-                                  "clip to finish loading — nothing to analyze.");
+                Fail(CurrentGeneration, SongContentError.LoadFailed, "no song selection was recorded");
                 yield break;
             }
-
             yield return null;
         }
 
+        int generation = GameSession.Instance.SelectionGeneration;
+        _preparingGeneration = generation;
+        var song = selected.Value;
         _stylePublished = false;
         _revealFinished = false;
-        StartCoroutine(_preAnalyzer.Analyze(selected.Value.Clip, _config, OnProfileReady, OnTagsReady));
+
+        if (song.IsCatalogSong) yield return PrepareCatalogSong(song, generation, token);
+        else if (song.Clip != null) BeginAnalysis(song, generation, token);
+        else Fail(generation, SongContentError.LoadFailed, "imported song without audio");
+    }
+
+    private static int CurrentGeneration => GameSession.Instance != null ? GameSession.Instance.SelectionGeneration : 0;
+
+    // ── Catalog song: published content, no analysis ─────────────────────────────
+
+    private IEnumerator PrepareCatalogSong(SelectedSongInfo song, int generation, int token)
+    {
+        var loader = _loader = new CatalogSongLoader(song.SongId, generation, _config);
+        yield return loader.Run();
+        if (_loader == loader) _loader = null;
+        if (token != _token || !loader.IsCurrent)
+        {
+            loader.Lease?.Release(); // prepared for a selection that is gone: never adopted, never published
+            yield break;
+        }
+        if (!loader.Succeeded) { Fail(generation, loader.Error, loader.ErrorDetail); yield break; }
+
+        if (!GameSession.Instance.AdoptCatalogContent(generation, loader.Lease))
+        {
+            loader.Lease.Release();
+            yield break;
+        }
+
+        // ONE publish of the complete profile for this selection (GameSession fills Profile from it).
+        EventBus.Publish(new SongProfileReadyEvent { Profile = loader.Profile, SelectionGeneration = generation });
+
+        // Style from the PUBLISHED profile (its stored tags + features): the semantic model is never touched.
+        SongPreparation.Enter(generation, SongPreparationStage.ResolvingStyle);
+        PublishFinal(MusicStyleResolver.Resolve(loader.Profile, _styleRules), loader.Profile);
+        yield return FinishPreparation(token, generation);
+    }
+
+    // ── Imported song: dynamic analysis (unchanged behaviour) ─────────────────────
+
+    private void BeginAnalysis(SelectedSongInfo song, int generation, int token)
+    {
+        SongPreparation.Enter(generation, SongPreparationStage.Analysing, song.DisplayName);
+        int id = 0;
+        id = _preAnalyzer.Begin(new SongAnalysisRequest
+        {
+            Clip                = song.Clip,
+            SongId              = song.SongId,
+            LocalFilePath       = song.LocalFilePath,
+            SelectionGeneration = generation,
+            OnTagsReady         = OnTagsReady,
+            OnProfileReady      = p =>
+            {
+                if (token != _token || id != _requestId) return;
+                _requestId = 0;
+                // Pending (or tagging disabled): resolve once from tags + the full SongProfile features.
+                if (!_stylePublished) PublishFinal(MusicStyleResolver.Resolve(p, _styleRules), p);
+                _routine = StartCoroutine(FinishPreparation(token, generation));
+            },
+            OnFailed            = OnAnalysisFailed,
+        }, _config);
+        _requestId = id;
     }
 
     // Fires as soon as the semantic-tagging pass knows this song's tags, before the rest of the
     // analysis. The style is FINAL here only when conclusive (a dominant recognized genre — see
     // MusicStyleResolver.ResolveEarly / MusicStyleRulesSO early thresholds); otherwise it stays pending
-    // and nothing user-facing changes until FinishAnalysis.
+    // and nothing user-facing changes until the profile is complete.
     private void OnTagsReady(MusicTagScore[] tags)
     {
         if (_stylePublished) return;
@@ -156,37 +239,64 @@ public class SongAnalysisController : MonoBehaviour
         else EventBus.Publish(new MusicStylePendingEvent());
     }
 
-    private void OnProfileReady(SongProfile profile) => StartCoroutine(FinishAnalysis(profile));
-
-    private IEnumerator FinishAnalysis(SongProfile profile)
+    // No silent fallback: back to Song Selection, the cause is logged.
+    private void OnAnalysisFailed(string error)
     {
-        // Pending (or tagging disabled): resolve once from tags + the full SongProfile features.
-        if (!_stylePublished)
-            PublishFinal(MusicStyleResolver.Resolve(profile, _styleRules), profile);
+        _requestId = 0;
+        Fail(CurrentGeneration, SongContentError.LoadFailed, "song analysis failed: " + error);
+    }
 
-        // Wait for the Analyzing screen to finish revealing the final style (immediate when the early
-        // reveal already ended), and for the theme transition started at publication. Never forever.
-        float minThemeEnd = _publishedAt + ThemeTransitionController.Duration + PostDetectionBufferSeconds;
-        float timeout = Time.unscaledTime + RevealTimeoutSeconds;
-        while ((!_revealFinished || Time.unscaledTime < minThemeEnd) && Time.unscaledTime < timeout)
+    // ── Shared tail: style reveal + theme really settled → Gameplay ─────────────
+
+    private IEnumerator FinishPreparation(int token, int generation)
+    {
+        bool Current() => token == _token && GameSession.Instance != null && GameSession.Instance.SelectionGeneration == generation;
+
+        SongPreparation.Enter(generation, SongPreparationStage.ApplyingTheme);
+        float revealDeadline = Time.unscaledTime + RevealTimeoutSeconds;
+        float themeDeadline  = Time.unscaledTime + ThemeSettleTimeoutSeconds;
+        var themes = ThemeManager.Instance;
+        while (!_revealFinished || (themes != null && !themes.IsStyleTransitionSettled))
+        {
+            if (!Current()) yield break; // cancelled, or a newer selection took over
+            if (!_revealFinished && Time.unscaledTime > revealDeadline)
+            {
+                // The caption is a presentation beat, not a dependency of the game.
+                Debug.LogWarning("[SongAnalysisController] Style reveal not reported in time — continuing.");
+                _revealFinished = true;
+            }
+            if (Time.unscaledTime > themeDeadline)
+            {
+                Fail(generation, SongContentError.LoadFailed, $"theme change not settled within {ThemeSettleTimeoutSeconds:F0} s " +
+                                                              $"({themes.PendingStyleLoads} style visual load(s) pending)");
+                yield break;
+            }
             yield return null;
-        if (!_revealFinished) Debug.LogWarning("[SongAnalysisController] Style reveal not reported in time — continuing to Gameplay.");
+        }
+        if (!Current()) yield break;
 
-        AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.Gameplay);
+        _routine = null;
+        if (!InSongAnalysis) yield break;
+        SongPreparation.Enter(generation, SongPreparationStage.LoadingScene);
+        AppBootstrap.Context.AppFlow.RequestState(GameFlowState.Gameplay);
+    }
+
+    private void Fail(int generation, SongContentError error, string detail)
+    {
+        LastError = error;
+        Debug.LogError($"[SongAnalysisController] Preparation #{generation} failed ({error}): {detail} — back to Song Selection.");
+        if (SongPreparation.Current != SongPreparationStage.Failed || SongPreparation.CurrentGeneration != generation)
+            SongPreparation.Enter(generation, SongPreparationStage.Failed, detail, -1f, 0, error);
+        _routine = null;
+        if (InSongAnalysis) AppBootstrap.Context.AppFlow.RequestState(GameFlowState.SongSelection);
     }
 
     // Raw tags/features → controlled GameMusicStyle (MusicStyleResolver); never the raw top tag.
     private void PublishFinal(MusicStyleResolution res, SongProfile profile)
     {
         _stylePublished = true;
-        _publishedAt = Time.unscaledTime;
         Debug.Log($"[SongAnalysisController] FINAL game style {res.Style} (score {res.Score:0.00}, margin {res.Margin:0.00}, " +
                   $"theme {res.ThemeStyle}, features {(res.UsedFeatures ? "yes" : "tags only")})");
-        Publish(res, profile);
-    }
-
-    private static void Publish(MusicStyleResolution res, SongProfile profile)
-    {
         if (GameSession.Instance != null)
         {
             GameSession.Instance.DetectedMusicStyleId = res.ThemeStyle;

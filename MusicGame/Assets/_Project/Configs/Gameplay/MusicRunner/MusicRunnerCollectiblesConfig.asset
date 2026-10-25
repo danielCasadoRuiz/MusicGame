@@ -46,6 +46,7 @@ MonoBehaviour:
   collectibleDensity: 0.7
   collectibleRadius: 0.5
   collectibleLateralMargin: 0.6
+  edgeBandStart: 0.65
   collectibleSurfaceClearance: 0.05
   bonusMinJumpHeightFactor: 0.15
   bonusMaxJumpHeightFactor: 0.6
@@ -103,10 +104,12 @@ MonoBehaviour:
     elevatedChance: 0.05
     offTrackChance: 0.04
     patternElevatedChance: 0.05
+    edgeChance: 0.1
   hardHeights:
     elevatedChance: 0.1
     offTrackChance: 0.08
     patternElevatedChance: 0.15
+    edgeChance: 0.25
   normalCollectHeight: 1
   elevatedClearance: 0.2
   elevatedMaxJumpHeightFactor: 0.6
@@ -116,6 +119,6 @@ MonoBehaviour:
   poolMaxSize: 40
   spawnLookAhead: 1.5
   recycleGrace: 5
-  pulseLeadTime: 0.05
+  pulseLeadTime: 0
   bonusVisualActivationDistanceThirdPerson: 2
   bonusVisualActivationDistanceFirstPerson: 4

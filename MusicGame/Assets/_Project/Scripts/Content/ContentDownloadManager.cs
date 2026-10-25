@@ -72,6 +72,8 @@ public class ContentDownloadManager : MonoBehaviour, IAppModule
     public static ContentDownloadManager Instance { get; private set; }
 
     public bool IsInitialized { get; private set; }
+    /// <summary>Downloads currently running (diagnostics).</summary>
+    public int InFlightCount => _inFlight.Count;
     public float LastProgress { get; private set; }
 
     private ContentDeliveryConfigSO _config;
@@ -159,6 +161,7 @@ public class ContentDownloadManager : MonoBehaviour, IAppModule
             Debug.Log(ok ? $"[ContentDownloadManager] Remote catalog updated ({catalogs.Count})."
                          : $"[ContentDownloadManager] Catalog update failed — keeping the current catalog. {update.OperationException?.Message}");
             Addressables.Release(update);
+            if (ok) EventBus.Publish(new ContentCatalogUpdatedEvent { CatalogCount = catalogs.Count }); // e.g. the song index re-reads
             return ok;
         }
         catch (Exception e)
@@ -216,7 +219,9 @@ public class ContentDownloadManager : MonoBehaviour, IAppModule
         if (id == null) return Task.FromResult(false);
         if (_inFlight.TryGetValue(id, out var running)) return running;
         var task = DownloadWithRetries(contentKey, id, progress, cancellation);
-        _inFlight[id] = task;
+        // A synchronously completed task already ran its `finally` (removal): never cache it as in flight,
+        // or every later call for this key would get that old result without checking the content again.
+        if (!task.IsCompleted) _inFlight[id] = task;
         return task;
     }
 

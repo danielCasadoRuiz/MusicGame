@@ -9,7 +9,7 @@ using UnityEngine;
 /// </summary>
 public class SimilarityAnalyzer : IOfflineAnalyzer
 {
-    public bool IsEnabled(AudioAnalysisConfig config)
+    public bool IsEnabled(DerivedAnalysisSettings config)
         => config.advancedEnabled && config.advancedSimilarity;
 
     public void Analyze(OfflineAnalysisContext ctx, SongProfile profile)

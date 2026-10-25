@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Voice_pachelbel_en
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Voice_pachelbel_en
+  m_GUID: 0d77ae851c91e984eb9e130bcb36f46b
+  m_SerializeEntries:
+  - m_GUID: 99daebfff087eeb48b3cc8d594271054
+    m_Address: VoicePack/pachelbel/en
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - VoiceLang_en
+    - VoicePack
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a4cc0dfc618f344aaae658dde9bb725, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 6f86760e7c0ab2941a78fe3a542c5347, type: 2}
+    - {fileID: 11400000, guid: 284f40952f131bc45b754347766402ca, type: 2}

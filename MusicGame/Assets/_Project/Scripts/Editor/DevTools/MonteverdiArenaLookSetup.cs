@@ -10,7 +10,7 @@ using UnityEngine.Rendering.Universal;
 /// <summary>
 /// First real look of an arena — Monteverdi_Arena_01 (Monteverdi's version-1 arena): polished Renaissance marble
 /// mosaic floor + natural warm DAYLIGHT (reference: AssetsMaterial/Scenarios/monteverdi_reference.png).
-///   Floor   URP Lit "MonteverdiMarble_Floor": base colour, subtle normal map (0.3), evenly polished (smoothness 0.9,
+///   Floor   URP Lit "MonteverdiMarble_Floor": base colour, subtle normal map (0.06), evenly polished (smoothness 0.9,
 ///           no metallic/smoothness map) and joint occlusion; the rosette centred on the fighters (2×2 tiling,
 ///           half-tile offset on the 20 m floor).
 ///   Sky     Skybox/Panoramic from Textures/Monteverdi_SkyPanorama.png = AssetsMaterial/Scenarios/Monteverdi_Skybox.png
@@ -21,7 +21,7 @@ using UnityEngine.Rendering.Universal;
 ///           shadows, a faint warm haze, and a realtime reflection probe (rendered once on load) so the polished
 ///           floor reflects sky and fighters. Everything is restored when the arena unloads.
 ///   Quality soft shadows enabled in every URP quality asset (otherwise "Soft" falls back to hard).
-/// Also sets the TEMPORARY test force (AppConfig.testForceOpponentId = monteverdi, level 1) the user asked for.
+/// It no longer sets the Monteverdi test force (AppConfig.testForceOpponentId stays as it is).
 /// Idempotent: re-running re-applies the same values (artistic edits to OTHER parts of the prefab are kept).
 /// Menu: Tools > MusicGame > Content > Arenas > Monteverdi Arena 01 Look. Batch: -executeMethod MonteverdiArenaLookSetup.RunFromCommandLine
 /// </summary>
@@ -168,14 +168,8 @@ public static class MonteverdiArenaLookSetup
         }
         sb.AppendLine($"  PASS  soft shadows supported in every URP quality asset ({soft} changed)");
 
-        var app = Resources.Load<AppConfigSO>("AppConfig");
-        if (app != null)
-        {
-            app.testForceOpponentId = "monteverdi";
-            app.testForceOpponentLevel = 1;
-            EditorUtility.SetDirty(app);
-            sb.AppendLine("  PASS  TEST FORCE on: every normal fight vs Monteverdi v1 (arena 01) — clear AppConfig.testForceOpponentId for the real game");
-        }
+        // The temporary Monteverdi test force is no longer set here (2026-10-23: normal rival selection restored).
+        // To test Monteverdi again, set AppConfig.testForceOpponentId by hand and clear it afterwards.
         AssetDatabase.SaveAssets();
         return sb.ToString();
     }
@@ -203,7 +197,7 @@ public static class MonteverdiArenaLookSetup
         mat.SetTexture("_BaseMap", baseColor);
         mat.SetColor("_BaseColor", Color.white);
         mat.SetTexture("_BumpMap", normal);
-        mat.SetFloat("_BumpScale", 0.3f); // subtle relief: polished stone, not carved
+        mat.SetFloat("_BumpScale", 0.06f); // almost-flat polished marble; only a faint surface relief
         mat.EnableKeyword("_NORMALMAP");
         // Evenly polished: one smoothness for the whole floor (no per-joint map) — it reflects everywhere alike.
         mat.SetTexture("_MetallicGlossMap", null);

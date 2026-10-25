@@ -21,6 +21,9 @@ public class EndScreenView : MonoBehaviour
     [Header("The single results list (nested EvaluationPanel prefab)")]
     public EvaluationPanel evaluationPanel;
 
+    [Header("Where the collected-bonus block sits (BonusConversionController docks its ONE block here)")]
+    public RectTransform bonusSlot;
+
     [Header("Buttons")]
     public Button restartButton;
     public TextMeshProUGUI restartButtonLabel;

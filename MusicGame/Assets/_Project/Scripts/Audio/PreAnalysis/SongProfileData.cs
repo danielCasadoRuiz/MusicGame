@@ -8,7 +8,10 @@ public class BandEnvelope
 }
 
 /// <summary>
-/// JSON-serializable mirror of SongProfile for disk caching.
+/// LEGACY (read-only): the old pretty-JSON SongCache format (persistentDataPath/SongCache/*.json,
+/// identity = clip name + sample count, no versions). The game no longer reads or writes it — the
+/// binary SongProfileCache replaced it — but a few editor diagnostics still load those old files
+/// as sample data. Never use it as a source of truth.
 /// Stores per-frame arrays that require raw FFT spectrum to compute
 /// (spectralFlatness, chromaFlat, voiceProbability) alongside the core features.
 /// Derived features (loudness, dynamics, structure, harmony scores) are always

@@ -94,15 +94,55 @@ public class GameplayTimeline
         public string   sourceFeature;
         public bool     dampedByVocal;  // onset classification is less reliable during vocals
         public float    confidence;     // 0..1 — see ClassifyOnset; >= confidenceKeepThreshold bypasses thinning
+        public BonusOrigin origin;
+        public int      onsetIndex;     // Detected: index into profile.onsetEvents, else −1
+        public string   contributors;   // detected families ("Kick+HiHat"); null = sourceFeature
     }
+
+    /// <summary>Counts of the P4 selection (diagnostics; also stored with the layout).</summary>
+    public struct SelectionStats
+    {
+        public int detections, belowStrength, belowEnergy, mergedIntoImpact, spacingRejected, quotaRejected, selected, synthetic;
+        public int kick, snare, hihat, generic, multiFamily;
+        public float difficulty, minInterval, strengthFloor;
+        public override string ToString() =>
+            $"difficulty {difficulty:F3} (min interval {minInterval * 1000f:F0} ms, strength floor {strengthFloor:F2}) | detections {detections}: " +
+            $"selected {selected} (kick {kick}, snare {snare}, hihat {hihat}, generic {generic}; {multiFamily} with several families → one object), " +
+            $"dropped: weak {belowStrength}, quiet {belowEnergy}, spacing {spacingRejected}, density quota {quotaRejected}, merged into an Impact {mergedIntoImpact} | synthetic fill {synthetic}";
+    }
+
+    /// <summary>Selection counts of a generated layout (default for a loaded one: see BonusLayoutProvider).</summary>
+    public SelectionStats Stats { get; private set; }
 
     /// <summary>Distribution with the config's fixed collectibleSeed (tests / diagnostics).</summary>
     public static GameplayTimeline Generate(SongProfile profile, MusicRunnerGameplayConfig config, MusicPath path)
         => Generate(profile, config, path, config.collectibles.collectibleSeed);
 
-    /// <summary>The match's pickup distribution for `pickupSeed` (RunnerPickupLayout.SeedFor at match start).</summary>
+    /// <summary>`pickupSeed` at the current run's difficulty (config.collectibles.CurrentDifficulty).</summary>
     public static GameplayTimeline Generate(SongProfile profile, MusicRunnerGameplayConfig config, MusicPath path, int pickupSeed)
+        => Generate(profile, config, path, pickupSeed, config.collectibles.CurrentDifficulty);
+
+    /// <summary>A timeline from STORED events (BonusLayoutProvider): macro events and rarity are rebuilt from
+    /// the profile / the events (both deterministic, no randomness), the placement is exactly the stored one.</summary>
+    public static GameplayTimeline FromStored(SongProfile profile, MusicRunnerGameplayConfig config, TimelineEvent[] events, SelectionStats stats)
     {
+        var macroEvents = BuildMacroEvents(profile, config);
+        var counts = new Dictionary<RingType, int>();
+        foreach (var rt in RarityTypes) counts[rt] = 0;
+        foreach (var e in events) if (counts.ContainsKey(e.ringType)) counts[e.ringType]++;
+        return new GameplayTimeline(events, macroEvents, ComputeRarityMultipliers(counts, config)) { Stats = stats };
+    }
+
+    /// <summary>
+    /// The playable layout of one combination: `difficulty` (0..1) decides WHICH musical moments become
+    /// bonuses (P4 selection, deterministic), `pickupSeed` (stable per combination — BonusLayoutKey) decides
+    /// HOW they are placed. A profile without onsetEvents (legacy) keeps the old classifier + thinning path.
+    /// </summary>
+    public static GameplayTimeline Generate(SongProfile profile, MusicRunnerGameplayConfig config, MusicPath path, int pickupSeed, float difficulty)
+    {
+        var devOverrides = config.collectibles.DevOverrides; // null in normal play
+        difficulty = Mathf.Clamp01(Mathf.Min(difficulty, devOverrides != null ? devOverrides.maxDifficulty : 1f));
+        var heights = config.collectibles.HeightsAt(difficulty);
         float warmup = config.core.warmupTime;
         float speed  = config.core.playerSpeed;
 
@@ -112,7 +152,14 @@ public class GameplayTimeline
         var macroEvents = BuildMacroEvents(profile, config);
 
         // ── MICRO ──────────────────────────────────────────────────────────────────────
-        var micro = CollectMicroCandidates(profile, config);
+        bool detectedPath = profile.onsetEvents != null && profile.onsetEvents.Length > 0;
+        var stats = new SelectionStats { difficulty = difficulty };
+        var micro = detectedPath ? SelectDetectedCandidates(profile, config, macroEvents, difficulty, ref stats)
+                                 : CollectMicroCandidates(profile, config);
+        // Pattern grouping below (consecutive kept[i]…kept[i+run]) assumes temporal order, but the
+        // onset candidates and the beat-grid filler are collected as two separate runs — sort first
+        // (stable: equal times keep their collection order).
+        SortByTimeStable(micro);
 
         // Debug-only snapshot, captured BEFORE any filtering — see SyncDebugInfo.
         float firstAnalyzedOnsetRaw = (profile.onsetTimes != null && profile.onsetTimes.Length > 0)
@@ -121,39 +168,17 @@ public class GameplayTimeline
 
         micro.RemoveAll(c => !config.collectibles.IsSpawnEnabled(c.type));
 
-        // Composition rule: a non-confident Micro candidate (ambiguous Onset fallback, or the
-        // synthetic Beat filler) right on top of a reliable Impact/Drop is redundant — the
-        // Impact already represents that moment well, and keeping both would just be visual
-        // noise with no extra musical information. A CONFIDENTLY classified Kick/Snare/HiHat is
-        // NEVER absorbed this way — it coexists with the Impact, since it IS real information.
-        micro.RemoveAll(c => c.confidence < config.collectibles.confidenceKeepThreshold
-                           && IsNearMacroImpact(c.time, macroEvents, config));
-
         var rng  = new System.Random(pickupSeed);
         var kept = new List<Candidate>(micro.Count);
-        foreach (var c in micro)
-        {
-            // A confidently classified onset (see ClassifyOnset) must always have gameplay
-            // representation — never lost to a random roll. Only genuinely uncertain
-            // classifications (ambiguous Onset fallback) and the synthetic beat-grid filler
-            // fall through to density thinning below.
-            if (c.confidence >= config.collectibles.confidenceKeepThreshold) { kept.Add(c); continue; }
-
-            // Buildup sections get progressively denser — the simple, real Buildup gameplay
-            // effect for this iteration (see class doc).
-            float buildupFactor = Mathf.Lerp(1f, config.collectibles.buildupDensityBoost, profile.GetBuildupAt(c.time));
-
-            // Strength-aware survival: at strength≈1 this approaches a guaranteed keep; at
-            // strength≈0 it falls back to collectibleDensity's baseline odds. Thinning should
-            // mostly cut weak/marginal/uncertain detections, never a clearly loud, obvious hit.
-            float strengthAware = Mathf.Lerp(config.collectibles.collectibleDensity, 1f, c.strength);
-            float prob = Mathf.Lerp(config.collectibles.collectibleDensity, strengthAware, config.collectibles.strengthThinningBias);
-            prob *= buildupFactor;
-            prob *= c.dampedByVocal ? 0.6f : 1f;
-            if (rng.NextDouble() < Mathf.Clamp01(prob)) kept.Add(c);
-        }
+        if (detectedPath) kept.AddRange(micro); // already selected, deterministically (SelectDetectedCandidates)
+        else LegacyThinning(profile, config, macroEvents, micro, rng, kept);
 
         float firstMicroKeptRaw = MinTime(kept);
+        stats.minInterval   = config.collectibles.selection.MinInterval(difficulty);
+        stats.strengthFloor = config.collectibles.selection.StrengthFloor(difficulty);
+        float patternProbability = detectedPath ? config.collectibles.selection.PatternProbability(difficulty)
+                                                : config.collectibles.patternProbability;
+
 
         // Single source of truth for "how high can the player actually jump" (v²/2g) — every
         // bonus height derives from THIS, never from an independent world-unit range, so changing
@@ -180,7 +205,7 @@ public class GameplayTimeline
         while (i < kept.Count)
         {
             int run = 1;
-            if (rng.NextDouble() < config.collectibles.patternProbability)
+            if (rng.NextDouble() < patternProbability)
             {
                 int maxRun = 2 + rng.Next(0, 3); // 2..4
                 while (run < maxRun && i + run < kept.Count &&
@@ -188,8 +213,8 @@ public class GameplayTimeline
                     run++;
             }
 
-            if (run > 1) EmitPattern(kept, i, run, config, path, rng, vFloorDesign, vCeil, warmup, speed, events);
-            else         EmitSingle(kept[i], config, path, rng, vFloorDesign, vCeil, offTrackFloorDesign, offTrackCeil, warmup, speed, events);
+            if (run > 1) EmitPattern(kept, i, run, config, heights, path, rng, vFloorDesign, vCeil, warmup, speed, events);
+            else         EmitSingle(kept[i], config, heights, path, rng, vFloorDesign, vCeil, offTrackFloorDesign, offTrackCeil, warmup, speed, events);
 
             i += run;
         }
@@ -239,17 +264,63 @@ public class GameplayTimeline
         var result = new GameplayTimeline(events.ToArray(), macroEvents, rarity)
         {
             SyncDebug = new SyncDebugInfo(
-                onset:      firstAnalyzedOnsetRaw >= 0f ? warmup + firstAnalyzedOnsetRaw : -1f,
-                classified: firstClassifiedRaw     >= 0f ? warmup + firstClassifiedRaw     : -1f,
-                kept:       firstMicroKeptRaw       >= 0f ? warmup + firstMicroKeptRaw       : -1f,
+                onset:      firstAnalyzedOnsetRaw >= 0f ? MusicTime.OnsetToEventTime(firstAnalyzedOnsetRaw, warmup) : -1f,
+                classified: firstClassifiedRaw     >= 0f ? MusicTime.OnsetToEventTime(firstClassifiedRaw, warmup)     : -1f,
+                kept:       firstMicroKeptRaw       >= 0f ? MusicTime.OnsetToEventTime(firstMicroKeptRaw, warmup)       : -1f,
                 macro:      macroEvents.Length > 0 ? macroEvents[0].eventTime : -1f,
                 final:      events.Count > 0 ? events[0].eventTime : -1f),
+            Stats = stats,
         };
         return result;
     }
 
+    // The pre-P4 path (a profile without onsetEvents): absorption next to an Impact/Drop, then strength /
+    // buildup-aware random thinning with the layout's rng. Unchanged, for legacy profiles only.
+    private static void LegacyThinning(SongProfile profile, MusicRunnerGameplayConfig config, MacroEvent[] macroEvents,
+                                       List<Candidate> micro, System.Random rng, List<Candidate> kept)
+    {
+        // Composition rule: a non-confident Micro candidate (ambiguous Onset fallback, or the
+        // synthetic Beat filler) right on top of a reliable Impact/Drop is redundant — the
+        // Impact already represents that moment well. A CONFIDENTLY classified one is kept.
+        micro.RemoveAll(c => c.confidence < config.collectibles.confidenceKeepThreshold
+                           && IsNearMacroImpact(c.time, macroEvents, config));
+        foreach (var c in micro)
+        {
+            // A confidently classified onset (see ClassifyOnset) must always have gameplay
+            // representation — never lost to a random roll. Only genuinely uncertain
+            // classifications (ambiguous Onset fallback) and the synthetic beat-grid filler
+            // fall through to density thinning below.
+            if (c.confidence >= config.collectibles.confidenceKeepThreshold) { kept.Add(c); continue; }
+
+            // Buildup sections get progressively denser — the simple, real Buildup gameplay
+            // effect for this iteration (see class doc).
+            float buildupFactor = Mathf.Lerp(1f, config.collectibles.buildupDensityBoost, profile.GetBuildupAt(c.time));
+
+            // Strength-aware survival: at strength≈1 this approaches a guaranteed keep; at
+            // strength≈0 it falls back to collectibleDensity's baseline odds. Thinning should
+            // mostly cut weak/marginal/uncertain detections, never a clearly loud, obvious hit.
+            float strengthAware = Mathf.Lerp(config.collectibles.collectibleDensity, 1f, c.strength);
+            float prob = Mathf.Lerp(config.collectibles.collectibleDensity, strengthAware, config.collectibles.strengthThinningBias);
+            prob *= buildupFactor;
+            prob *= c.dampedByVocal ? 0.6f : 1f;
+            if (rng.NextDouble() < Mathf.Clamp01(prob)) kept.Add(c);
+        }
+    }
+
     // Min `time` among candidates matching `predicate` (or all, if null) — -1 if none match.
     // Used only for the debug-only SyncDebugInfo snapshot above.
+    private static void SortByTimeStable(List<Candidate> list)
+    {
+        // Insertion sort: stable, and O(n) on the already-sorted onset run (only grid items move).
+        for (int i = 1; i < list.Count; i++)
+        {
+            var c = list[i];
+            int j = i - 1;
+            while (j >= 0 && list[j].time > c.time) { list[j + 1] = list[j]; j--; }
+            list[j + 1] = c;
+        }
+    }
+
     private static float MinTime(List<Candidate> list, System.Func<Candidate, bool> predicate = null)
     {
         float min = float.MaxValue;
@@ -322,11 +393,11 @@ public class GameplayTimeline
 
         MacroEvent Make(float t, MacroEventType type, float strength, bool climax = false)
         {
-            float eventTime = warmup + t;
+            float eventTime = MusicTime.OnsetToEventTime(t, warmup);
             return new MacroEvent
             {
                 eventTime     = eventTime,
-                eventDistance = eventTime * speed,
+                eventDistance = MusicTime.SongToDistance(eventTime, speed),
                 type          = type,
                 strength      = strength,
                 isClimax      = climax,
@@ -355,7 +426,7 @@ public class GameplayTimeline
         float peakTime = FindPeakTime(profile);
         if (peakTime >= 0f)
         {
-            float peakEventTime = warmup + peakTime;
+            float peakEventTime = MusicTime.OnsetToEventTime(peakTime, warmup);
             int   nearest       = -1;
             float bestDist      = ClimaxTagTolerance;
             for (int k = 0; k < result.Count; k++)
@@ -386,7 +457,7 @@ public class GameplayTimeline
     // song's climax", a different question from "is this Micro candidate redundant right here".
     private static bool IsNearMacroImpact(float microTime, MacroEvent[] macroEvents, MusicRunnerGameplayConfig config)
     {
-        float microEventTime = config.core.warmupTime + microTime;
+        float microEventTime = MusicTime.OnsetToEventTime(microTime, config.core.warmupTime);
         foreach (var m in macroEvents)
         {
             if (m.type != MacroEventType.Impact && m.type != MacroEventType.Drop) continue;
@@ -405,6 +476,8 @@ public class GameplayTimeline
     {
         float vFloor = CollectibleFloor(type, config, vFloorDesign, vCeil);
         float vOff   = Mathf.Lerp(vFloor, vCeil, 0.5f);
+        if (config.collectibles.DevOverrides != null && config.collectibles.DevOverrides.noJumps)
+            vOff = Mathf.Min(vOff, RunningCeiling(config, vFloor, vCeil));
 
         events.Add(new TimelineEvent
         {
@@ -419,6 +492,8 @@ public class GameplayTimeline
             sourceFeature  = type.ToString(),
             confidence     = 1f,
             contributors   = m.isClimax ? $"{type}+Peak" : type.ToString(),
+            origin         = BonusOrigin.Structural,
+            onsetIndex     = -1,
         });
     }
 
@@ -437,8 +512,8 @@ public class GameplayTimeline
     {
         var c = config.collectibles;
         var range = PlayRangeResolver.Resolve(config.core, profile.duration);
-        float windowStart = warmup + range.Start;
-        float windowEnd   = warmup + range.End;
+        float windowStart = MusicTime.ClipToSong(range.Start, warmup);
+        float windowEnd   = MusicTime.ClipToSong(range.End, warmup);
         float playedMinutes = (range.End - range.Start) / 60f;
 
         var taken = new List<float>(events.Count + 8);
@@ -478,6 +553,25 @@ public class GameplayTimeline
                                    candidate => !float.IsNaN(SideAt(candidate)));
             if (t < 0f) return;
 
+            // Dev override (editor / development builds only): no detour / no jump → on the racing line, running height.
+            var access = c.DevOverrides;
+            if (access != null && (access.noOffTrack || access.noJumps))
+            {
+                taken.Add(t);
+                rare.Add(t);
+                float half = LateralHalfRange(path, config, t * speed) * 0.5f;
+                float floor = CollectibleFloor(type, config, vFloorDesign, vCeil);
+                events.Add(new TimelineEvent
+                {
+                    eventTime = t, eventDistance = t * speed, eventType = EventType.Ring, ringType = type,
+                    lateralOffset  = half > 0f ? (float)(rng.NextDouble() * 2.0 - 1.0) * half : 0f,
+                    verticalOffset = Mathf.Lerp(floor, RunningCeiling(config, floor, vCeil), 0.35f),
+                    floorClearance = floor, strength = 1f, sourceFeature = type.ToString(), confidence = 1f,
+                    contributors = type + " (dev override)", origin = BonusOrigin.Resource, onsetIndex = -1,
+                });
+                return;
+            }
+
             // Same side as the off-track bonuses around it — never opposite detours back to back.
             // ALWAYS off the route, above standing reach and reachable from the real edge with a jump;
             // a few lateral rolls, else this slot is dropped (never a centre-lane fallback).
@@ -507,6 +601,8 @@ public class GameplayTimeline
                 sourceFeature  = type.ToString(),
                 confidence     = 1f,
                 contributors   = type.ToString(),
+                origin         = BonusOrigin.Resource,
+                onsetIndex     = -1,
             });
         }
 
@@ -572,6 +668,8 @@ public class GameplayTimeline
                     sourceFeature  = type + " (test)",
                     confidence     = 1f,
                     contributors   = type + " (test fallback)",
+                    origin         = BonusOrigin.Resource,
+                    onsetIndex     = -1,
                 });
             }
             int total = c.testLifePickups + c.testSpecialPickups;
@@ -605,6 +703,155 @@ public class GameplayTimeline
             }
         }
         return -1f;
+    }
+
+    // ── P4: selection from the DETECTED attacks ──────────────────────────────────────
+
+    /// <summary>
+    /// Which detected moments become bonuses at `difficulty` — deterministic (no randomness):
+    ///   1. gates: origin Detected, strength ≥ the difficulty's floor, the song not near-silent there
+    ///      (energyThreshold), not already represented by a spawned Impact (impactMergeWindow);
+    ///   2. priority = strength × (0.6 + 0.4 × best family confidence) + onBeatPriority when within
+    ///      onBeatWindow of a TRACKED beat;
+    ///   3. greedy by priority (ties: earlier first): accepted only if no accepted bonus is closer than the
+    ///      minimum interval (and a dev spacing override, if active) — the song's playable ranking, the same at every
+    ///      difficulty; the difficulty keeps its first Share(difficulty) (harder = a superset of easier);
+    ///   4. one object per detection: its families (multi-label) are the object's contributors, its type is
+    ///      the most confident family above familyMinConfidence, else a generic Onset (never a guess);
+    ///   5. optional synthetic fill on tracked beats in long gaps (origin SyntheticGrid, type Beat, "Grid").
+    /// </summary>
+    private static List<Candidate> SelectDetectedCandidates(SongProfile profile, MusicRunnerGameplayConfig config,
+                                                            MacroEvent[] macroEvents, float difficulty, ref SelectionStats stats)
+    {
+        var sel    = config.collectibles.selection;
+        var access = config.collectibles.DevOverrides; // null in normal play
+        float minInterval = Mathf.Max(sel.MinInterval(difficulty), access != null ? access.minBonusSpacing : 0f);
+        float floor  = sel.StrengthFloor(difficulty);
+        float warmup = config.core.warmupTime;
+        var   ev     = profile.onsetEvents;
+        stats.detections = ev.Length;
+
+        // Impacts that spawn their own object (clip time): a detection on top of one is that same moment.
+        var impacts = new List<float>();
+        if (config.collectibles.IsSpawnEnabled(RingType.Impact))
+            foreach (var m in macroEvents)
+                if (m.type == MacroEventType.Impact) impacts.Add(m.eventTime - warmup);
+
+        var ranked = new List<(int index, float priority)>(ev.Length);
+        for (int k = 0; k < ev.Length; k++)
+        {
+            var e = ev[k];
+            if (e.origin != MusicGame.Audio.Analysis.OnsetOrigin.Detected) continue;
+            if (e.strength < floor) { stats.belowStrength++; continue; }
+            if (profile.GetEnergyAt(e.time) < profile.averageEnergy * config.levelGeneration.energyThreshold) { stats.belowEnergy++; continue; }
+            if (NearAny(impacts, e.time, sel.impactMergeWindow)) { stats.mergedIntoImpact++; continue; }
+            float conf = Mathf.Max(Mathf.Max(e.kickConfidence, e.snareConfidence), Mathf.Max(e.hihatConfidence, e.genericConfidence));
+            float priority = e.strength * (0.6f + 0.4f * conf);
+            if (profile.beatTimes != null && NearAny(profile.beatTimes, e.time, sel.onBeatWindow)) priority += sel.onBeatPriority;
+            ranked.Add((k, priority));
+        }
+        ranked.Sort((a, b) => a.priority != b.priority ? b.priority.CompareTo(a.priority) : a.index.CompareTo(b.index));
+
+        var acceptedTimes = new List<float>(); // ascending
+        var accepted = new List<int>();
+        foreach (var (index, _) in ranked)
+        {
+            float t = ev[index].time;
+            if (!FreeSlot(acceptedTimes, t, minInterval, out int pos)) { stats.spacingRejected++; continue; }
+            acceptedTimes.Insert(pos, t);
+            accepted.Add(index);
+        }
+        // Difficulty = how much of this ranking is kept (smooth, nested): `accepted` is in priority order.
+        int quota = Mathf.Max(1, Mathf.RoundToInt(sel.Share(difficulty) * accepted.Count));
+        if (accepted.Count > quota)
+        {
+            stats.quotaRejected = accepted.Count - quota;
+            for (int k = quota; k < accepted.Count; k++) acceptedTimes.Remove(ev[accepted[k]].time);
+            accepted.RemoveRange(quota, accepted.Count - quota);
+        }
+        accepted.Sort();
+
+        var list = new List<Candidate>(accepted.Count + 16);
+        foreach (int k in accepted)
+        {
+            var e = ev[k];
+            var (type, conf, families, familyCount) = FamilyOf(e, sel.familyMinConfidence);
+            switch (type)
+            {
+                case RingType.Kick:  stats.kick++;  break;
+                case RingType.Snare: stats.snare++; break;
+                case RingType.HiHat: stats.hihat++; break;
+                default:             stats.generic++; break;
+            }
+            if (familyCount > 1) stats.multiFamily++;
+            list.Add(new Candidate
+            {
+                time = e.time, type = type, strength = e.strength, sourceFeature = type.ToString(),
+                confidence = conf, origin = BonusOrigin.Detected, onsetIndex = k, contributors = families,
+            });
+        }
+        stats.selected = list.Count;
+
+        // Synthetic fill — tracked beats only (never a rigid 60/BPM grid), identifiable, off by default.
+        if (sel.syntheticFill && profile.beatTimes != null)
+        {
+            float gap = Mathf.Max(sel.syntheticMinGap, minInterval);
+            foreach (float b in profile.beatTimes)
+            {
+                if (b < 0f || b > profile.duration - 0.5f) continue;
+                if (profile.GetEnergyAt(b) < profile.averageEnergy * config.levelGeneration.energyThreshold) continue;
+                if (!FreeSlot(acceptedTimes, b, gap, out int pos)) continue;
+                acceptedTimes.Insert(pos, b);
+                list.Add(new Candidate
+                {
+                    time = b, type = RingType.Beat, strength = profile.intensity != null ? profile.GetIntensityAt(b) : 0.5f,
+                    sourceFeature = "Grid", confidence = 0f, origin = BonusOrigin.SyntheticGrid, onsetIndex = -1, contributors = "SyntheticGrid",
+                });
+                stats.synthetic++;
+            }
+        }
+        return list;
+    }
+
+    // `sorted` ascending: true when `t` keeps `gap` from both neighbours; `pos` = its insertion index.
+    private static bool FreeSlot(List<float> sorted, float t, float gap, out int pos)
+    {
+        pos = sorted.BinarySearch(t);
+        if (pos >= 0) return false;
+        pos = ~pos;
+        return (pos == 0 || t - sorted[pos - 1] >= gap) && (pos == sorted.Count || sorted[pos] - t >= gap);
+    }
+
+    private static bool NearAny(IList<float> times, float t, float window)
+    {
+        if (window <= 0f || times == null) return false;
+        foreach (float x in times) if (Mathf.Abs(x - t) <= window) return true;
+        return false;
+    }
+
+    // The object's type = the most confident labelled family above `minConfidence` (Kick/Snare/HiHat), else
+    // a generic Onset; `families` lists every label of the detection ("Kick+HiHat"), `count` the K/S/H labels.
+    private static (RingType type, float confidence, string families, int count) FamilyOf(
+        MusicGame.Audio.Analysis.OnsetEvent e, float minConfidence)
+    {
+        RingType type = RingType.Onset;
+        float best = -1f;
+        int count = 0;
+        var sb = new System.Text.StringBuilder();
+        void Consider(MusicGame.Audio.Analysis.OnsetFamily f, RingType rt, float c)
+        {
+            if (!e.Has(f)) return;
+            count++;
+            if (sb.Length > 0) sb.Append('+');
+            sb.Append(rt.ToString());
+            if (c >= minConfidence && c > best) { best = c; type = rt; }
+        }
+        Consider(MusicGame.Audio.Analysis.OnsetFamily.Kick,  RingType.Kick,  e.kickConfidence);
+        Consider(MusicGame.Audio.Analysis.OnsetFamily.Snare, RingType.Snare, e.snareConfidence);
+        Consider(MusicGame.Audio.Analysis.OnsetFamily.HiHat, RingType.HiHat, e.hihatConfidence);
+        if (e.Has(MusicGame.Audio.Analysis.OnsetFamily.Generic)) { if (sb.Length > 0) sb.Append('+'); sb.Append("Generic"); }
+        if (sb.Length == 0) sb.Append("Onset");
+        return (type, best >= 0f ? best : e.genericConfidence, sb.ToString(), count);
     }
 
     // ── Micro candidate collection ───────────────────────────────────────────────────
@@ -649,6 +896,8 @@ public class GameplayTimeline
                     sourceFeature = type.ToString(),
                     dampedByVocal = profile.IsVocalAt(t),
                     confidence    = classConfidence,
+                    origin        = BonusOrigin.Legacy,
+                    onsetIndex    = -1,
                 });
             }
         }
@@ -680,6 +929,8 @@ public class GameplayTimeline
                     // Synthetic filler, not a real detection — lowest inherent trust, so it's
                     // the one thinning should actually thin when density needs to come down.
                     confidence    = 0.15f,
+                    origin        = BonusOrigin.SyntheticGrid,
+                    onsetIndex    = -1,
                 });
             }
         }
@@ -689,15 +940,14 @@ public class GameplayTimeline
 
     // ── Placement ─────────────────────────────────────────────────────────────────
 
-    private static void EmitSingle(Candidate c, MusicRunnerGameplayConfig config, MusicPath path, System.Random rng,
+    private static void EmitSingle(Candidate c, MusicRunnerGameplayConfig config, PickupHeightDifficulty heights, MusicPath path, System.Random rng,
                                    float vFloorDesign, float vCeil,
                                    float offTrackFloorDesign, float offTrackCeil,
                                    float warmup, float speed,
                                    List<TimelineEvent> events)
     {
-        float songTime  = warmup + c.time;
+        float songTime  = MusicTime.OnsetToEventTime(c.time, warmup);
         float dist      = songTime * speed;
-        var   heights   = config.collectibles.Heights;
         bool  offTrack  = rng.NextDouble() < heights.offTrackChance;
 
         float lateral = 0f;
@@ -726,7 +976,12 @@ public class GameplayTimeline
         {
             floorClearance = CollectibleFloor(c.type, config, vFloorDesign, vCeil);
             float half = LateralHalfRange(path, config, dist);
-            lateral = half > 0f ? (float)(rng.NextDouble() * 2.0 - 1.0) * half : 0f;
+            // A difficulty-driven share goes to the track MARGIN (outer band, either side): wider lateral moves,
+            // still inside the usable half-width, so exactly as reachable as any other on-track spot.
+            if (half > 0f && rng.NextDouble() < heights.edgeChance)
+                lateral = (rng.NextDouble() < 0.5 ? -1f : 1f) * half * Mathf.Lerp(config.collectibles.edgeBandStart, 1f, (float)rng.NextDouble());
+            else
+                lateral = half > 0f ? (float)(rng.NextDouble() * 2.0 - 1.0) * half : 0f;
             // Most pickups stay in the RUNNING band (no jump needed); only elevatedChance of them
             // (per difficulty) go up into the jump band — see Pickup Height by Difficulty.
             if (rng.NextDouble() < heights.elevatedChance)
@@ -749,23 +1004,25 @@ public class GameplayTimeline
             strength       = c.strength,
             sourceFeature  = c.sourceFeature,
             confidence     = c.confidence,
-            contributors   = c.sourceFeature,
+            contributors   = c.contributors ?? c.sourceFeature,
             isOffTrack     = offTrack,
+            origin         = c.origin,
+            onsetIndex     = c.onsetIndex,
         });
     }
 
     // A short run of consecutive kept candidates, close together in time, becomes one
     // coordinated shape (arc or stair) instead of independent random heights/positions.
     private static void EmitPattern(List<Candidate> kept, int start, int run, MusicRunnerGameplayConfig config,
-                                    MusicPath path, System.Random rng, float vFloorDesign, float vCeil,
+                                    PickupHeightDifficulty heights, MusicPath path, System.Random rng, float vFloorDesign, float vCeil,
                                     float warmup, float speed, List<TimelineEvent> events)
     {
         bool  stair = rng.NextDouble() < 0.5;
         // A pattern peaks into the jump band only with patternElevatedChance (per difficulty).
-        bool  elevatedPattern = rng.NextDouble() < config.collectibles.Heights.patternElevatedChance;
+        bool  elevatedPattern = rng.NextDouble() < heights.patternElevatedChance;
 
         float avgDist = 0f;
-        for (int k = 0; k < run; k++) avgDist += (warmup + kept[start + k].time) * speed;
+        for (int k = 0; k < run; k++) avgDist += MusicTime.SongToDistance(MusicTime.OnsetToEventTime(kept[start + k].time, warmup), speed);
         avgDist /= run;
 
         // One shared lateral anchor for the whole run (+ small per-event jitter) so it reads
@@ -776,7 +1033,7 @@ public class GameplayTimeline
         for (int k = 0; k < run; k++)
         {
             var   c        = kept[start + k];
-            float songTime = warmup + c.time;
+            float songTime = MusicTime.OnsetToEventTime(c.time, warmup);
             float dist     = songTime * speed;
 
             float vFloor = CollectibleFloor(c.type, config, vFloorDesign, vCeil);
@@ -811,7 +1068,9 @@ public class GameplayTimeline
                 strength       = c.strength,
                 sourceFeature  = c.sourceFeature,
                 confidence     = c.confidence,
-                contributors   = c.sourceFeature,
+                contributors   = c.contributors ?? c.sourceFeature,
+                origin         = c.origin,
+                onsetIndex     = c.onsetIndex,
             });
         }
     }

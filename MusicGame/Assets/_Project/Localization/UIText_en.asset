@@ -291,7 +291,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2088487718805524
-    m_Localized: GO!
+    m_Localized: TEMPO!
     m_Metadata:
       m_Items: []
   - m_Id: 2088487718805525
@@ -363,7 +363,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2246691362758660
-    m_Localized: FIGHT!
+    m_Localized: FURY!
     m_Metadata:
       m_Items: []
   - m_Id: 2289223262068736
@@ -1277,6 +1277,421 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 12319507021881344
     m_Localized: "Loading\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14508508013191168
+    m_Localized: "Couldn't download that song \u2014 check your connection and try
+      again."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14508508130631680
+    m_Localized: "This song's content needs an update \u2014 try another song."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14508508130631681
+    m_Localized: Downloading song ({0} MB)...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14508508130631682
+    m_Localized: Loading song...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14508508130631683
+    m_Localized: Preparing the level...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14788093393035264
+    m_Localized: Music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14788093472727040
+    m_Localized: Effects
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14788093472727041
+    m_Localized: Voices
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400454242304
+    m_Localized: Punch power
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128384
+    m_Localized: Kick power
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128385
+    m_Localized: Agility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128386
+    m_Localized: Resistance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128387
+    m_Localized: Impact power
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128388
+    m_Localized: PUNCH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128389
+    m_Localized: KICK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128390
+    m_Localized: AGILITY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128391
+    m_Localized: RESIST.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128392
+    m_Localized: IMPACT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128393
+    m_Localized: More damage with your punches.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128394
+    m_Localized: More damage with your kicks.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128395
+    m_Localized: 'Faster moves: shorter start-up and recovery.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128396
+    m_Localized: You take less damage and get staggered less.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128397
+    m_Localized: Your hits stagger and push the rival further.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128398
+    m_Localized: COMBO x3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128399
+    m_Localized: COMBO x4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128400
+    m_Localized: Score only
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128401
+    m_Localized: Extra life
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128402
+    m_Localized: +1 Special
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128403
+    m_Localized: '{0} in a row'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128404
+    m_Localized: '{0} in a row: Power'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128405
+    m_Localized: 'Builds: {0}.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128406
+    m_Localized: Adds score. It does not change any fight attribute.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128407
+    m_Localized: +1 extra life, saved with your progress (at most {0} per song).
+      After losing a fight, a life lets you fight again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128408
+    m_Localized: "+1 Special for the next fight. The Special move spends it on its
+      powered version (\xD7{0} damage); without one it is a plain heavy punch."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128409
+    m_Localized: '{0} musical bonuses in a row (within {1} s) give an x3 charge for
+      the fight. Its use in the fight is still pending.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128410
+    m_Localized: "{0} musical bonuses in a row (within {1} s) give an x4 charge.
+      In the fight, hold \u2193 + Punch + Kick for {2} s: Power state for {3} s (\xD7{4}
+      damage)."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128411
+    m_Localized: Musical bonuses prepare your fighter. How well you collect them
+      (out of those the song has) sets your total power, up to {0} points; which
+      ones you collect decides how those points are shared between the attributes.
+      If a song has none of an attribute's bonuses, that attribute takes your average
+      performance.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128412
+    m_Localized: BONUSES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128413
+    m_Localized: What each attribute does
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128414
+    m_Localized: MOVES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128415
+    m_Localized: "Keyboard: J = Punch \xB7 K = Kick \xB7 WASD or arrows = move. \u2192
+      means towards the rival, \u2190 away from them."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128416
+    m_Localized: "Joystick to move, PUNCH and KICK buttons to attack. \u2192 means
+      towards the rival, \u2190 away from them."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128417
+    m_Localized: Basics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128418
+    m_Localized: Combos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128419
+    m_Localized: Special and Power
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128420
+    m_Localized: Punch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128421
+    m_Localized: Kick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128422
+    m_Localized: High / low attack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128423
+    m_Localized: "Hold \u2191 or \u2193 while pressing the button."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128424
+    m_Localized: Guard (hold)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128425
+    m_Localized: "Hold away from the rival to block. With \u2193 you block low attacks,
+      with \u2191 high ones. Not in the air or mid-move."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128426
+    m_Localized: Grab
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128427
+    m_Localized: Press both buttons together (within {0} s). The same press escapes
+      a grab.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128428
+    m_Localized: At most {0} s between presses.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128429
+    m_Localized: "The third hit deals \xD7{0} damage."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128430
+    m_Localized: "3rd hit \xD7{0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128431
+    m_Localized: "Spends 1 Special (you have {0}) on the powered version (\xD7{1}
+      damage). Without a Special: a plain heavy punch."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128432
+    m_Localized: needs 1 Special ({0})
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128433
+    m_Localized: Power state
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128434
+    m_Localized: "Hold for {0} s. Spends 1 x4 charge (you have {1}). Lasts {2} s:
+      \xD7{3} damage."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128435
+    m_Localized: "hold {0} s \xB7 needs 1 x4 ({1})"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128436
+    m_Localized: Punches + kick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128437
+    m_Localized: Double kick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128438
+    m_Localized: Kick chain
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128439
+    m_Localized: Lunge punch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128440
+    m_Localized: Low kick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128441
+    m_Localized: Back chain
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128442
+    m_Localized: Dash
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128443
+    m_Localized: Backdash
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128444
+    m_Localized: Triple punch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128445
+    m_Localized: Triple kick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128446
+    m_Localized: Special
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128447
+    m_Localized: Bonuses prepare your next fight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128448
+    m_Localized: Your moves
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128449
+    m_Localized: More info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128450
+    m_Localized: Full help also in Pause (Esc)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128451
+    m_Localized: BONUSES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128452
+    m_Localized: MOVES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128453
+    m_Localized: BACK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128454
+    m_Localized: CONTINUE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128455
+    m_Localized: 'Esc: back to the pause menu'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128456
+    m_Localized: 'Esc: close and continue'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128457
+    m_Localized: "Your bonuses \u2192 your fight"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15185400538128458
+    m_Localized: Power {0} / {1}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335882870784
+    m_Localized: Combos (free)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008128
+    m_Localized: Spend a charge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008129
+    m_Localized: Spends no charge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008130
+    m_Localized: 'Spends no charge: "triple" is the three presses, not the runner''s
+      Combo x3.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008131
+    m_Localized: "3rd hit \xD7{0} \xB7 free"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008132
+    m_Localized: "spends 1 Special \xB7 you have {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15280335929008133
+    m_Localized: "hold {0} s \xB7 spends 1 x4 \xB7 you have {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490770780160
+    m_Localized: "With an x3 charge the third hit deals \xD7{0} damage and spends
+      it; without one it is a normal hit."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306112
+    m_Localized: "spends 1 x3 \xB7 3rd hit \xD7{0} \xB7 you have {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306113
+    m_Localized: "hold {0} s \xB7 spends all x4 ({1}) \u2192 {2} s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306114
+    m_Localized: "Hold for {0} s. Spends ALL your x4 charges (you have {1}): {2}
+      s with one, +{3} s for each extra one (now {4} s). \xD7{5} damage."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306115
+    m_Localized: "{0} musical bonuses in a row (within {1} s) give an x3 charge.
+      In the fight, the Triple punch or the Triple kick spends one: its third hit
+      deals \xD7{2} damage."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15297490825306116
+    m_Localized: "{0} musical bonuses in a row (within {1} s) give an x4 charge.
+      In the fight, hold \u2193 + Punch + Kick for {2} s: Power state (\xD7{3} damage),
+      spending every x4 you have \u2014 {4} s with one, +{5} s for each extra one."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15315109997502464
+    m_Localized: You move faster, and your attacks start and recover sooner.
     m_Metadata:
       m_Items: []
   references:

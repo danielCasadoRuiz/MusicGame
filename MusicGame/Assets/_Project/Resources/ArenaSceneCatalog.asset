@@ -1,0 +1,459 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3607b1a843ae054da0dc91c9fecfa27, type: 3}
+  m_Name: ArenaSceneCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::ArenaSceneCatalog
+  entries:
+  - sourceArenaGuid: 200d8885d969a074c897d8d91e816402
+    variants:
+    - qualityName: Low
+      scene:
+        m_AssetGUID: b281055f060d24447b5878b1df01ca55
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Mid
+      scene:
+        m_AssetGUID: cb2e17cad98d0fc4e97ca99cf4058bf0
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: HighMid
+      scene:
+        m_AssetGUID: 25bcb1549c8a4fc42a01e50e813dd11f
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: High
+      scene:
+        m_AssetGUID: 994cfe51dc9d9314ab724ea3a5cfa8f8
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Ultra
+      scene:
+        m_AssetGUID: ebeb95a1153ac8a459ad19c046735833
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+  - sourceArenaGuid: 0c760b4faf7df5c42993604897a6af47
+    variants:
+    - qualityName: Low
+      scene:
+        m_AssetGUID: 6afcdf393a542ea4bb09108a3d430759
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Mid
+      scene:
+        m_AssetGUID: 762e2940552051745b176ed10bc56224
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: HighMid
+      scene:
+        m_AssetGUID: 773a07378c011aa488ddd8f4647e1454
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: High
+      scene:
+        m_AssetGUID: 829d95184dc8a144a8dd9210b0fea559
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Ultra
+      scene:
+        m_AssetGUID: b984d4635fa932249b90f4c6bf01f2fd
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+  - sourceArenaGuid: 86176bc33c5649842bcfa69fa04a1d49
+    variants:
+    - qualityName: Low
+      scene:
+        m_AssetGUID: 92b988a621b233445b06cd915ad8fb36
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Mid
+      scene:
+        m_AssetGUID: 02061999ccd97254188ee1b2b73c3153
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: HighMid
+      scene:
+        m_AssetGUID: c4aeb39c14357c24b9e681399b66dd3f
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: High
+      scene:
+        m_AssetGUID: 1e2b51454d305a242a6f1e9f2f0f74ab
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Ultra
+      scene:
+        m_AssetGUID: 8042e592bf96eb34aa650f35c9ee57fb
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+  - sourceArenaGuid: 979eba034ccbaef45a569e5c04d1d751
+    variants:
+    - qualityName: Low
+      scene:
+        m_AssetGUID: a6eac143731346b47bcf94397d0e22e3
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Mid
+      scene:
+        m_AssetGUID: 1367734b4523be942ab67fb24b592d0d
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: HighMid
+      scene:
+        m_AssetGUID: a2fa260fd7899b443a9c9903a82bd715
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: High
+      scene:
+        m_AssetGUID: e9579393e0df27240b4cff449ac1002e
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Ultra
+      scene:
+        m_AssetGUID: 6b411f77b21db2b42a7c9693e9b41767
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+  - sourceArenaGuid: a7ffb0adc95949445a65bfd335bf82d5
+    variants:
+    - qualityName: Low
+      scene:
+        m_AssetGUID: c699eddc0462edd45aa093b80531ead9
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Mid
+      scene:
+        m_AssetGUID: f5272c7a3be75e549aff6bc71322c3f4
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: HighMid
+      scene:
+        m_AssetGUID: c1d63d598a1e21a4e9f8fb2f40ddd364
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: High
+      scene:
+        m_AssetGUID: 648d91536f954a348ab50619d12ff070
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Ultra
+      scene:
+        m_AssetGUID: 3f5ea50f847bdbb48ac6a11a46480299
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+  - sourceArenaGuid: 2f0923c4b3102e54ab695fb208bec82a
+    variants:
+    - qualityName: Low
+      scene:
+        m_AssetGUID: 363ce3681108ea6469c685981b52f2df
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Mid
+      scene:
+        m_AssetGUID: 7cb5ed73912cba84385caa25f4679302
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: HighMid
+      scene:
+        m_AssetGUID: bc96f484fde036b459a2c291771a2f07
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: High
+      scene:
+        m_AssetGUID: 5c46f640234e901449cec7c979dd79e2
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Ultra
+      scene:
+        m_AssetGUID: b1d1b9b61c07b004080e15c491b9be08
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+  - sourceArenaGuid: 78af930383be87a44b22bbc752647675
+    variants:
+    - qualityName: Low
+      scene:
+        m_AssetGUID: c56fd135094d4ec47945fd99c1efd9e7
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Mid
+      scene:
+        m_AssetGUID: 83f50fe59b211294192cc7a797be9cd6
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: HighMid
+      scene:
+        m_AssetGUID: 656e8a467e3c6da4184b137c0ae19b3a
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: High
+      scene:
+        m_AssetGUID: 7e7affe5c52c73641a49d7514d449566
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Ultra
+      scene:
+        m_AssetGUID: 78346ec8daab98448bf741d26827dfbe
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+  - sourceArenaGuid: e4ede1c83c755834aa04d7c40dc12d12
+    variants:
+    - qualityName: Low
+      scene:
+        m_AssetGUID: a752d12917964cf42b5c3921dc3c395f
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Mid
+      scene:
+        m_AssetGUID: 92d9f74299b9d3f4383c8bbba7920f45
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: HighMid
+      scene:
+        m_AssetGUID: 51dc8451e6a5e7d4283b321752d2dc87
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: High
+      scene:
+        m_AssetGUID: ebfe7e130174a9749bbffe527e9cfb39
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Ultra
+      scene:
+        m_AssetGUID: 194249c6bce128d4fab6dd54d2cd5f05
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+  - sourceArenaGuid: 8e35ac503a964d143a0a2a64cb96bc67
+    variants:
+    - qualityName: Low
+      scene:
+        m_AssetGUID: 9e9a2cb34e993d9478221f7f85d6d6a1
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Mid
+      scene:
+        m_AssetGUID: 9b1e3583301de674a8f753b06627d609
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: HighMid
+      scene:
+        m_AssetGUID: 993b055375c0bbc48a3a35c445c768eb
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: High
+      scene:
+        m_AssetGUID: 321a8c38132743040b70f7cad7d2b402
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Ultra
+      scene:
+        m_AssetGUID: 8079c35e6c88db64e960fe1b7436972b
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+  - sourceArenaGuid: 6c03d8a8eac115d4f95110019de17450
+    variants:
+    - qualityName: Low
+      scene:
+        m_AssetGUID: 4c7794b5ba746074d931d08f0ff3ea2c
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Mid
+      scene:
+        m_AssetGUID: 0c6c60d4f348ba8409abb401c746f1b6
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: HighMid
+      scene:
+        m_AssetGUID: ceb3e707c57cf1f4cbdf4ec4fe760086
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: High
+      scene:
+        m_AssetGUID: d11fd2a490f76e24686a5b12381832dc
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Ultra
+      scene:
+        m_AssetGUID: 35abcc72255b69f4fbc476cb95ee2e12
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+  - sourceArenaGuid: 99ff39af92f62b243b0dc433c78c5764
+    variants:
+    - qualityName: Low
+      scene:
+        m_AssetGUID: baa379aa287491f45afcb823161d51a8
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Mid
+      scene:
+        m_AssetGUID: 9b38b81b58ef0fb4ca8fe7809daf15a6
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: HighMid
+      scene:
+        m_AssetGUID: 3e8f184f155e00a4eb97541c35c72db0
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: High
+      scene:
+        m_AssetGUID: a9ceb3e484abaa744a55a2b82bdfba13
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Ultra
+      scene:
+        m_AssetGUID: 071e478c3579e8e4a9c8ee16f1640485
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+  - sourceArenaGuid: e17d717c38bd1a9419296e73e84699f8
+    variants:
+    - qualityName: Low
+      scene:
+        m_AssetGUID: 17a6cb0f17973834baadcd977dbbe05d
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Mid
+      scene:
+        m_AssetGUID: 8c1186bb357e3d14ea28c2930eb4a187
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: HighMid
+      scene:
+        m_AssetGUID: d9cd22ce112679d4fa933b68be513ae7
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: High
+      scene:
+        m_AssetGUID: 50b2fdb3cd256ca44a47e7122d287a96
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0
+    - qualityName: Ultra
+      scene:
+        m_AssetGUID: cbc727a895e3bc44dbeec7e22766050c
+        m_SubObjectName: 
+        m_SubObjectGUID: 
+        m_SubObjectType: 
+        m_EditorAssetChanged: 0

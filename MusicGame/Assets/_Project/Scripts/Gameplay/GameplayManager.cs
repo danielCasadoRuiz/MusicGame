@@ -19,6 +19,7 @@ public class GameplayManager : MonoBehaviour
     private GameplayTimeline _timeline;
     private int              _nextEventIdx;
     private int              _nextPulseIdx;
+    private int              _nextHitIdx;    // musical cubes: small → full size exactly at eventTime (no lead)
     private int              _nextRevealIdx; // distance-based EARLY visual reveal — see RevealEvent()
     private int              _nextMacroIdx;
     private SongProfile      _profile;
@@ -129,12 +130,18 @@ public class GameplayManager : MonoBehaviour
 
     // ── Subscriptions ─────────────────────────────────────────────────────────
     private Action<SongProfileReadyEvent>  _onProfile;
+    private Coroutine _startRoutine;
+
+    /// <summary>Upper bound of the Runner-side technical waits before the countdown (world build, clip data).
+    /// Exceeding it is a FAILURE (back to Song Selection), never a start with partial preparation.</summary>
+    private const float ReadinessTimeoutSeconds = 30f;
     private Action<RingCollectedEvent>     _onRing;
     private Action<PlayerFellEvent>        _onFall;
 
     private void Awake()
     {
         OriginalVolume = audioSource.volume;
+        GameAudio.RouteMusic(audioSource); // the song plays on the Music channel
         _stats      = new CollectionStats();
         _resources  = new RunnerResourceTracker(config.scoring);
         _clock      = MusicClock.GetOrCreate(gameObject);
@@ -190,7 +197,13 @@ public class GameplayManager : MonoBehaviour
 
     private void OnEnable()
     {
-        _onProfile = e => StartCoroutine(GenerateAndStart(e.Profile));
+        _onProfile = e =>
+        {
+            // One start per scene life: a later publish (another selection) supersedes the pending one —
+            // never two GenerateAndStart racing to publish GameStartedEvent.
+            if (_startRoutine != null) StopCoroutine(_startRoutine);
+            _startRoutine = StartCoroutine(GenerateAndStart(e.Profile, e.SelectionGeneration));
+        };
         _onRing    = e =>
         {
             // Life/Special are combat resources: no score, no musical counters, no combos.
@@ -219,7 +232,7 @@ public class GameplayManager : MonoBehaviour
             _resources.OnMusicalPickup(e.ActualTime);
             PublishStatsChanged();
         };
-        _onFall = e => ApplyFallPenalty(e.FallSongTime);
+        _onFall = e => ApplyFallPenalty(e);
         EventBus.Subscribe(_onProfile);
         EventBus.Subscribe(_onRing);
         EventBus.Subscribe(_onFall);
@@ -234,28 +247,54 @@ public class GameplayManager : MonoBehaviour
 
     // ── Session startup ───────────────────────────────────────────────────────
 
-    private IEnumerator GenerateAndStart(SongProfile profile)
+    /// <summary>
+    /// The RUNNER half of the readiness barrier (the content half is SongAnalysisController / CatalogSongLoader).
+    /// Explicit completions, in order, each re-checking that this is still the current selection:
+    ///   PreparingWorld     MusicWorldManager built the path from this profile (IsReady);
+    ///   PreparingConsumers timeline, pools, checkpoints, environment modules loaded (RunnerEnvironmentController
+    ///                      .IsBuilt), player placed on the real surface;
+    ///   PreparingAudio     the AudioSource holds THIS selection's clip and its data is Loaded (decompressed /
+    ///                      compressed-in-memory ready to decode / streaming opened) — a technical wait that
+    ///                      happens HERE, before the clock is even initialised, never inside the warmup.
+    /// Only then Ready: MusicClock.Initialize + GameStartedEvent (countdown) — the warmup is a game phase,
+    /// not a margin to finish loads — and StartPlayback exactly warmupTime later.
+    /// </summary>
+    private IEnumerator GenerateAndStart(SongProfile profile, int selectionGeneration)
     {
         _profile = profile;
+        // Still this selection AND still in Gameplay: leaving (back to Song Selection while the Runner scene was
+        // still loading) must never let a late-finishing preparation start the countdown.
+        bool Current() => (GameSession.Instance == null || GameSession.Instance.SelectionGeneration == selectionGeneration)
+                          && (AppBootstrap.Context == null || AppBootstrap.Context.AppFlow.CurrentState == GameFlowState.Gameplay);
+        float deadline = Time.unscaledTime + ReadinessTimeoutSeconds;
+
+        if (!Current()) yield break; // e.g. the Runner scene finished loading after the player left
 
         // Wait for MusicWorldManager to finish generating the path
-        yield return new WaitUntil(() => MusicWorldManager.Instance?.IsReady == true);
+        SongPreparation.Enter(selectionGeneration, SongPreparationStage.PreparingWorld);
+        while (MusicWorldManager.Instance?.IsReady != true)
+        {
+            if (!Current()) yield break;
+            if (Time.unscaledTime > deadline) { FailStart(selectionGeneration, "world not built in time"); yield break; }
+            yield return null;
+        }
+        if (!Current()) yield break;
+        SongPreparation.Enter(selectionGeneration, SongPreparationStage.PreparingConsumers);
         var path = MusicWorldManager.Instance.Path;
 
-        // Generate timeline (no startZ needed — eventDistance is path-relative)
-        // The match's pickup distribution: the song's musical events + THIS match's stored seed
-        // (RunnerPickupLayout — a resumed / replayed match gets the same layout, a new match a new one).
-        int pickupSeed    = RunnerPickupLayout.SeedFor(config.collectibles);
-        _timeline         = GameplayTimeline.Generate(profile, config, path, pickupSeed);
-        Debug.Log($"[GameplayManager] Pickup distribution: seed {pickupSeed}, {_timeline.Events.Length} events.");
+        // The bonus layout of THIS combination (song/profile revision × campaign position × difficulty ×
+        // generator × config): loaded when it was played before, else generated once from its stable seed
+        // and saved (BonusLayoutProvider). Completes here, before the countdown.
+        var layout = BonusLayoutProvider.Default.GetOrCreateForCurrentRun(profile, config, path);
+        _timeline  = layout.Timeline;
+        Debug.Log($"[GameplayManager] Bonus layout {layout.Outcome} in {layout.Milliseconds:F1} ms: seed {layout.Record.seed}, " +
+                  $"{_timeline.Events.Length} events, position {layout.Record.key.campaignPosition}, difficulty {layout.Record.key.Difficulty:F3}" +
+                  (config.collectibles.diagnostics.logSummary ? $"\n  {_timeline.Stats}" : ""));
+        BonusDiagnostics.Bind(gameObject, _timeline, profile, audioSource, config);
         // The played window must be known BEFORE counting what's available: pickups outside it
         // (manual play range) can never be met, so they must not exist for scoring/performance.
         (SongPlayStart, SongPlayEnd) = ResolvePlayRange(profile.duration);
         _maxPossibleScore = ComputePerTypePotential();
-        _nextEventIdx  = 0;
-        _nextPulseIdx  = 0;
-        _nextRevealIdx = 0;
-        _nextMacroIdx  = 0;
 
         // Pools
         InitializePools();
@@ -263,21 +302,70 @@ public class GameplayManager : MonoBehaviour
         // Checkpoints
         _checkpoints.Initialize(profile, config.core, path, _timeline);
 
-        _songEndSongTime       = config.core.warmupTime + SongPlayEnd;
-        _songEndDistance       = _songEndSongTime * config.core.playerSpeed;
+        // Environment modules (horizon, music-reactive bars) may be Addressable quality variants still loading:
+        // they react from the first musical instant, so they must exist before the countdown.
+        var environment = RunnerEnvironmentController.Instance;
+        while (environment != null && !environment.IsBuilt)
+        {
+            if (!Current()) yield break;
+            if (Time.unscaledTime > deadline) { FailStart(selectionGeneration, $"environment modules not loaded in time ({environment.PendingLoads} pending)"); yield break; }
+            yield return null;
+        }
+        if (!Current()) yield break;
+
+        // The countdown / hazard sounds are preloaded at boot: never start the countdown before they are.
+        while (GameAudio.Instance != null && !GameAudio.Instance.IsReady)
+        {
+            if (!Current()) yield break;
+            if (Time.unscaledTime > deadline) { Debug.LogWarning("[GameplayManager] Sound effects still loading — starting without waiting longer."); break; }
+            yield return null;
+        }
+
+        _songEndSongTime       = MusicTime.ClipToSong(SongPlayEnd, config.core.warmupTime);
+        _songEndDistance       = MusicTime.SongToDistance(_songEndSongTime, config.core.playerSpeed);
+
+        // Hazards (obstacles + chaser): deterministic from THIS layout's seed + difficulty, fitted between its
+        // bonuses (which they never move); not stored and not part of the bonus layout key.
+        var hazards = GetComponent<RunnerHazardSystem>() ?? gameObject.AddComponent<RunnerHazardSystem>();
+        hazards.Initialize(config.hazards, playerController, this, _timeline, path, layout.Record.seed, layout.Record.key.Difficulty,
+                           MusicTime.ClipToSong(SongPlayStart, config.core.warmupTime), _songEndSongTime, config.core.playerSpeed);
         _songFinishedAnnounced = false;
         _farewellElapsed       = 0f;
 
-        // Place the player at the path distance SongPlayStart corresponds to — NOT path distance
-        // 0 — since MusicDistance = SongTime * UnitsPerSecond and SongTime = warmupTime +
-        // audioSource.time (see MusicClock's own doc): audioSource is about to start playing from
-        // SongPlayStart below, so the player's canonical distance the instant movement begins is
-        // (warmupTime + SongPlayStart) * playerSpeed, not (warmupTime + 0) * playerSpeed. Spawning
-        // anywhere else would desync the player's visible position from that canonical distance
-        // the moment the run starts. ON the real musical surface, not the MusicPath centerline
-        // (the surface sits above it by the frequency-driven relief; using the centerline directly
-        // can start the player metres below the actual ground mesh).
-        float   startDistance = (config.core.warmupTime + SongPlayStart) * config.core.playerSpeed;
+        // The clip that will play must be THIS selection's, with its data ready, BEFORE the countdown — and
+        // before the clock is even initialised, so no technical wait can ever advance (or cap) MusicClock.
+        SongPreparation.Enter(selectionGeneration, SongPreparationStage.PreparingAudio, audioSource.clip != null ? audioSource.clip.loadType.ToString() : "no clip");
+        var expectedClip = GameSession.Instance != null && GameSession.Instance.SelectedSong.HasValue ? GameSession.Instance.SelectedSong.Value.Clip : audioSource.clip;
+        if (audioSource.clip == null || (expectedClip != null && audioSource.clip != expectedClip))
+        { FailStart(selectionGeneration, "the Runner AudioSource does not hold the selected song's clip"); yield break; }
+        if (audioSource.clip.loadState == AudioDataLoadState.Unloaded) audioSource.clip.LoadAudioData();
+        while (audioSource.clip.loadState != AudioDataLoadState.Loaded)
+        {
+            if (!Current()) yield break;
+            if (audioSource.clip.loadState == AudioDataLoadState.Failed) { FailStart(selectionGeneration, "audio data failed to load"); yield break; }
+            if (Time.unscaledTime > deadline) { FailStart(selectionGeneration, "audio data not ready in time"); yield break; }
+            yield return null;
+        }
+        if (!Current()) yield break;
+
+        // The clock starts AT the play range's start: the warmup countdown runs SongTime from
+        // SongPlayStart up to warmupTime + SongPlayStart, exactly where StartPlayback below takes
+        // over — so a mid-song start never jumps (see MusicClock.Initialize).
+        _clock.Initialize(audioSource, config.core.warmupTime, config.core.playerSpeed, SongPlayStart);
+
+        // Cursors fast-forwarded to the audio's start: nothing before the played window may spawn,
+        // pulse or fire a macro (a mid-song start used to burst every earlier event in one frame).
+        ResyncCursors(_clock.PlaybackStartSongTime);
+
+        // Place the player where the clock says it belongs right now (its canonical distance),
+        // ON the real musical surface, not the MusicPath centerline (the surface sits above it by
+        // the frequency-driven relief; using the centerline directly can start the player metres
+        // below the actual ground mesh). A start away from distance 0 also needs the ground built
+        // there before the first frame.
+        // The player starts at its reference distance (the musical front minus the trail); the ground
+        // window follows the front, as in MusicWorldManager.Update.
+        float   startDistance = playerController.CanonicalDistance;
+        if (_clock.MusicDistance > 0f) MusicWorldManager.Instance?.RebuildNow(_clock.MusicDistance);
         var     startSample = path.GetSample(startDistance);
         Vector3 startPos    = MusicWorldManager.Instance != null
             ? MusicWorldManager.Instance.SampleSurface(startDistance, 0f).position
@@ -285,14 +373,15 @@ public class GameplayManager : MonoBehaviour
         playerController.transform.position = startPos;
         playerController.transform.rotation = Quaternion.LookRotation(startSample.tangent, Vector3.up);
 
-        _clock.Initialize(audioSource, config.core.warmupTime, config.core.playerSpeed);
-
         EventBus.Publish(new LevelGeneratedEvent
         {
             RingCount       = MusicalAvailableCount(), // musical pickups the player can meet — never Life/Special
             AvailableByType = new Dictionary<RingType, int>(_availableByType),
         });
 
+        // READY: every mandatory dependency completed. Only now may the countdown (and later the music) start.
+        SongPreparation.Enter(selectionGeneration, SongPreparationStage.Ready);
+        PulseTimingDiagnostics.BeginRun();
         _running = true;
         playerController.StartRunning();
         _fallRespawn.Activate();
@@ -300,18 +389,28 @@ public class GameplayManager : MonoBehaviour
 
         yield return new WaitForSeconds(config.core.warmupTime);
 
-        // Safety net — the clip's actual PCM decode was already kicked off way back when the
-        // song was first selected (see AddressableSongSource.Load's own LoadAudioData call), so
-        // this should already be Loaded by now; only actually blocks (a few more frames, never
-        // the whole warmup) if a huge/slow file genuinely hasn't finished yet, trading a hair of
-        // extra countdown time for guaranteeing Play() below never hitches.
-        if (audioSource.clip != null)
+        // Should never block: the barrier above required Loaded before the countdown. Kept as an assertion
+        // (logged if it ever waits) — MusicClock holds at warmup + SongPlayStart meanwhile (warmup is capped).
+        if (audioSource.clip != null && audioSource.clip.loadState == AudioDataLoadState.Loading)
+        {
+            Debug.LogWarning("[GameplayManager] Clip data still loading after the countdown — the readiness barrier was bypassed.");
             yield return new WaitUntil(() => audioSource.clip.loadState != AudioDataLoadState.Loading);
+        }
 
-        audioSource.time = SongPlayStart;
-        audioSource.Play();
-        _clock.ForceUpdate();
+        _clock.StartPlayback(SongPlayStart, MusicTimeDiscontinuityReason.PlaybackStarted);
         _audioPlaying = true;
+        PulseTimingDiagnostics.MarkPlaybackStarted();
+        _startRoutine = null;
+    }
+
+    // A technical failure BEFORE the countdown: nothing was started (clock never initialised). Back to
+    // Song Selection with the reason — never a partially prepared run.
+    private void FailStart(int selectionGeneration, string reason)
+    {
+        _startRoutine = null;
+        Debug.LogError($"[GameplayManager] Run #{selectionGeneration} cannot start: {reason} — back to Song Selection.");
+        SongPreparation.Enter(selectionGeneration, SongPreparationStage.Failed, reason, -1f, 0, SongContentError.LoadFailed);
+        AppBootstrap.Context?.AppFlow.RequestState(GameFlowState.SongSelection);
     }
 
     // A RUNNER concern (see MusicRunnerCoreConfig.useManualPlayRange's own doc) — applies to every
@@ -333,16 +432,17 @@ public class GameplayManager : MonoBehaviour
         // Closes a pending Triple once its window passes (a Quad closes on its own pickup).
         _resources.Tick(_clock.SongTime);
 
-        // CanonicalDistance (== MusicClock.MusicDistance, purely SongTime * speed) — NEVER
-        // includes the surge's forwardOffset. Spawn/reveal timing must track "has the song
-        // actually reached this moment yet", not "where is the player standing right now": a
-        // surging player (W/↑) getting physically ahead of the beat must never pull a bonus into
-        // existence early just because they're now spatially closer to it. Everything on the
-        // song's own fixed schedule (activation lookahead, reveal) reads from this.
-        float canonicalDist = playerController.CanonicalDistance;
-        float lookAheadD    = canonicalDist + config.collectibles.spawnLookAhead * config.core.playerSpeed;
+        // The MUSICAL FRONT (== MusicClock.MusicDistance, purely SongTime * speed) — NEVER includes
+        // the surge's forwardOffset nor the player's intentional trail. Spawn/reveal timing must
+        // track "has the song actually reached this moment yet", not "where is the player standing
+        // right now": a surging player (W/↑) getting physically ahead of the beat must never pull a
+        // bonus into existence early just because they're now spatially closer to it. Everything on
+        // the song's own fixed schedule (activation lookahead, reveal) reads from this.
+        float frontDist  = playerController.MusicFrontDistance;
+        float lookAheadD = frontDist + config.collectibles.spawnLookAhead * config.core.playerSpeed;
 
-        // The player's ACTUAL distance (CanonicalDistance + surge) — only for things that
+        // The player's ACTUAL distance (CanonicalDistance + surge; CanonicalDistance already trails
+        // the front by playerTrailSeconds) — only for things that
         // legitimately care where the player really is in space (recycling something once it's
         // genuinely behind them), never for anything gated on the song's own progress.
         float playerDist    = playerController.ActualDistance;
@@ -360,11 +460,11 @@ public class GameplayManager : MonoBehaviour
             _nextEventIdx++;
         }
 
-        // EARLY visual reveal — purely spatial, separate from the musical trigger below. This is
-        // what makes a ring visibly grow/react AHEAD of the player instead of right as they cross
-        // it — the actual beat-synced reaction (full-strength Pulse + BeatPulseEvent/camera kick)
-        // still fires exactly on the music's own schedule via the pulseLeadTime loop right after
-        // this one, completely untouched. Distance depends on the CURRENT camera view (Third/
+        // EARLY visual reveal — purely spatial, separate from the musical trigger below. RESOURCES
+        // (Life / Special) only: it makes them visibly react AHEAD of the player; musical cubes are
+        // skipped (RevealEvent) and stay small until the hit loop below. The beat-synced reaction
+        // (BeatPulseEvent/camera kick) still fires on the music's own schedule via the pulse loop
+        // right after this one. Distance depends on the CURRENT camera view (Third/
         // First Person read differently) — CameraFollow is the single authority for both "which
         // view is active" and "what that maps to" (MusicRunnerCollectiblesConfig.GetBonusVisualActivationDistance),
         // so this changes immediately on a view toggle with zero branching here.
@@ -372,23 +472,34 @@ public class GameplayManager : MonoBehaviour
             ? CameraFollow.Instance.EffectiveBonusVisualActivationDistance
             : config.collectibles.bonusVisualActivationDistanceThirdPerson;
         while (_nextRevealIdx < _timeline.Events.Length &&
-               _timeline.Events[_nextRevealIdx].eventDistance - canonicalDist <= revealDistance &&
+               _timeline.Events[_nextRevealIdx].eventDistance - frontDist <= revealDistance &&
                _timeline.Events[_nextRevealIdx].eventDistance < _songEndDistance)
         {
             RevealEvent(_nextRevealIdx);
             _nextRevealIdx++;
         }
 
-        // Fire beat pulses config.collectibles.pulseLeadTime seconds BEFORE the player actually reaches
-        // each event. Firing exactly on arrival reads as "already past the player" by the
-        // time it's perceived — a small lead keeps the pulse visibly ahead of/reachable by
-        // the player while still landing close enough to feel tied to the music.
+        // Beat pulses (BeatPulseEvent/camera kick + the resources' pulse) at eventTime − pulseLeadTime
+        // (default 0 = exactly on the musical moment). Musical cubes' size change never uses this
+        // lead — see the hit loop below.
         while (_nextPulseIdx < _timeline.Events.Length &&
                _clock.SongTime >= _timeline.Events[_nextPulseIdx].eventTime - config.collectibles.pulseLeadTime &&
                _timeline.Events[_nextPulseIdx].eventTime < _songEndSongTime)
         {
+            // Diagnostics only (open 128 ms late-pulse issue): expected vs actual musical time, frame, context.
+            PulseTimingDiagnostics.Record(_nextPulseIdx, _timeline.Events[_nextPulseIdx].eventTime - config.collectibles.pulseLeadTime, _clock);
             FirePulse(_nextPulseIdx);
             _nextPulseIdx++;
+        }
+
+        // Musical cubes: small → full size EXACTLY at their musical moment (SongTime ≥ eventTime) — not by
+        // proximity, not with pulseLeadTime. A cube already collected is not brought back.
+        while (_nextHitIdx < _timeline.Events.Length &&
+               _clock.SongTime >= _timeline.Events[_nextHitIdx].eventTime &&
+               _timeline.Events[_nextHitIdx].eventTime < _songEndSongTime)
+        {
+            if (RingTypes.IsMusical(_timeline.Events[_nextHitIdx].ringType)) FindActiveRing(_nextHitIdx)?.Hit();
+            _nextHitIdx++;
         }
 
         // Fire Macro moments (Impact/Drop/BuildupStart/Peak) exactly at their eventTime —
@@ -419,6 +530,13 @@ public class GameplayManager : MonoBehaviour
                 _activeEvents.RemoveAt(i);
                 continue;
             }
+            // A musical cube the player has passed without collecting shrinks away, then recycles itself.
+            var rcMiss = ae.go.GetComponent<RingController>();
+            if (rcMiss != null && rcMiss.IsMusical && !rcMiss.IsMissing && ae.evt.eventDistance < playerDist - rcMiss.MissedBehindDistance)
+            {
+                rcMiss.Miss();
+                continue;
+            }
             if (ae.evt.eventDistance < recycleThreshold)
             {
                 ae.pool.Return(ae.go);
@@ -435,8 +553,9 @@ public class GameplayManager : MonoBehaviour
         if (_audioPlaying && audioSource.isPlaying && SongPlayEnd > 0f && config.core.fadeOutSeconds > 0f)
         {
             float fadeStart = SongPlayEnd - config.core.fadeOutSeconds;
-            if (audioSource.time >= fadeStart)
-                audioSource.volume = Mathf.Lerp(OriginalVolume, 0f, Mathf.Clamp01((audioSource.time - fadeStart) / config.core.fadeOutSeconds));
+            float clipTime  = _clock.AudioClipTime; // raw timeSamples-based position, same as the end test below
+            if (clipTime >= fadeStart)
+                audioSource.volume = Mathf.Lerp(OriginalVolume, 0f, Mathf.Clamp01((clipTime - fadeStart) / config.core.fadeOutSeconds));
         }
 
         // The song has genuinely ended: fade is already complete (volume is 0 by construction —
@@ -449,7 +568,12 @@ public class GameplayManager : MonoBehaviour
         // motion never depends on how much of the clip happened to be left AT ALL). This is also
         // when the activation loops above stop spawning anything new, and
         // FinishBannerController shows its "FINISH!" banner.
-        if (!_songFinishedAnnounced && _audioPlaying && SongPlayEnd > 0f && audioSource.time >= SongPlayEnd)
+        //
+        // "Reached the end" is MusicClock's explicit evidence (ReachedPlaybackEnd): the raw clip
+        // position got to SongPlayEnd while playing, or — when SongPlayEnd is the clip's own end,
+        // where Unity stops the source and resets its position — the clock's natural-end detection.
+        // Never "!isPlaying" on its own (pause/hold/stop/transition look the same).
+        if (!_songFinishedAnnounced && _audioPlaying && SongPlayEnd > 0f && _clock.ReachedPlaybackEnd(SongPlayEnd))
         {
             _songFinishedAnnounced = true;
             audioSource.volume = OriginalVolume; // undo the fade now — nothing left to hide it under
@@ -576,8 +700,8 @@ public class GameplayManager : MonoBehaviour
     // ever be collected. Small tolerance so an event exactly on the boundary still counts.
     private bool IsInPlayedWindow(in TimelineEvent e)
     {
-        float start = config.core.warmupTime + SongPlayStart - 0.05f;
-        float end   = config.core.warmupTime + (SongPlayEnd > 0f ? SongPlayEnd : float.MaxValue / 4f);
+        float start = MusicTime.ClipToSong(SongPlayStart, config.core.warmupTime) - 0.05f;
+        float end   = SongPlayEnd > 0f ? MusicTime.ClipToSong(SongPlayEnd, config.core.warmupTime) : float.MaxValue / 4f;
         return e.eventTime >= start && e.eventTime < end;
     }
 
@@ -640,14 +764,14 @@ public class GameplayManager : MonoBehaviour
     private float SongTimeToProgress(float songTime)
     {
         if (_profile == null || _profile.duration <= 0f) return 0f;
-        return Mathf.Clamp01((songTime - config.core.warmupTime) / _profile.duration);
+        return Mathf.Clamp01(MusicTime.SongToClip(songTime, config.core.warmupTime) / _profile.duration);
     }
 
     /// <summary>Inverse of SongTimeToProgress — turns a protectedProgress fraction back into an
     /// absolute songTime, so it can be compared against _pickupHistory's own songTime stamps.</summary>
     private float ProgressToSongTime(float progress)
     {
-        return config.core.warmupTime + Mathf.Clamp01(progress) * (_profile != null ? _profile.duration : 0f);
+        return MusicTime.ClipToSong(Mathf.Clamp01(progress) * (_profile != null ? _profile.duration : 0f), config.core.warmupTime);
     }
 
     /// <summary>
@@ -676,24 +800,30 @@ public class GameplayManager : MonoBehaviour
     /// fraction itself shrinks as the song progresses (config.scoring.fallPenaltyCurve, UNCHANGED), so
     /// the same mistake costs less late in an otherwise-good run.
     /// </summary>
-    private void ApplyFallPenalty(float fallSongTime)
+    // Every respawn penalty (fall / chaser contact / trapped) — for now all equivalent to a fall, scaled per
+    // cause by RunnerHazardsConfig.PenaltyScale (1 = the fall's own penalty), counted as a fall in the run's
+    // evaluation. RunnerPenaltyEvent reports what was really lost and where.
+    private void ApplyFallPenalty(PlayerFellEvent e)
     {
         _fallCount++;
         _resources.OnFall(config.scoring.fallCancelsCombo);
-        ApplyFallPenaltyToPickups(fallSongTime);
+        float scale = config.hazards != null ? config.hazards.PenaltyScale(e.Cause) : 1f;
+        var (score, pickups) = ApplyFallPenaltyToPickups(e.FallSongTime, scale);
+        EventBus.Publish(new RunnerPenaltyEvent { Cause = e.Cause, Position = e.Position, SongTime = e.FallSongTime, ScoreLost = score, PickupsLost = pickups });
         PublishStatsChanged();
     }
 
-    private void ApplyFallPenaltyToPickups(float fallSongTime)
+    private (int score, int pickups) ApplyFallPenaltyToPickups(float fallSongTime, float scale = 1f)
     {
-        if (_pickupHistory.Count == 0) return; // nothing collected yet — nothing at risk
+        int totalScore = 0, totalPickups = 0;
+        if (_pickupHistory.Count == 0) return (0, 0); // nothing collected yet — nothing at risk
 
         float fallProgress      = SongTimeToProgress(fallSongTime);
         float protectedProgress = Mathf.Clamp01(config.scoring.fallProtectionCurve.Evaluate(fallProgress));
         float protectedSongTime = ProgressToSongTime(protectedProgress);
 
-        float fraction = Mathf.Clamp01(config.scoring.fallPenaltyCurve.Evaluate(fallProgress));
-        if (fraction <= 0f) return;
+        float fraction = Mathf.Clamp01(config.scoring.fallPenaltyCurve.Evaluate(fallProgress) * Mathf.Max(0f, scale));
+        if (fraction <= 0f) return (0, 0);
 
         foreach (var kv in _pickupHistory)
         {
@@ -720,7 +850,10 @@ public class GameplayManager : MonoBehaviour
 
             _stats.SubtractScore(lostScore);
             _stats.Unregister(kv.Key, removeCount);
+            totalScore += lostScore;
+            totalPickups += removeCount;
         }
+        return (totalScore, totalPickups);
     }
 
     // ── Pause / Restart Song API (called by PauseController / FallRespawnSystem) ──────────────
@@ -827,7 +960,12 @@ public class GameplayManager : MonoBehaviour
         go.SetActive(true);
 
         var rc = go.GetComponent<RingController>();
-        if (rc != null) rc.Activate(evt, () => pool.Return(go));
+        if (rc != null)
+        {
+            rc.Activate(evt, () => pool.Return(go), playerController.TrailSeconds);
+            // Spawned after its musical moment already happened (e.g. after a respawn): shown full size at once.
+            if (RingTypes.IsMusical(evt.ringType) && _clock != null && _clock.SongTime >= evt.eventTime) rc.Hit();
+        }
 
         _activeEvents.Add(new ActiveEvent { evt = evt, go = go, pool = pool, index = index });
     }
@@ -851,9 +989,9 @@ public class GameplayManager : MonoBehaviour
         var evt = _timeline.Events[index];
         if (evt.eventType != EventType.Ring) return;
 
-        // Mild strength (0) — a soft "notice me" grow, deliberately weaker than the real
-        // beat-synced Pulse(evt.strength) that still fires later at the exact musical moment.
-        // No BeatPulseEvent here: that's the musical trigger, this is purely visual.
+        // Resources (Life / Special) only: their mild "notice me" grow is unchanged. MUSICAL cubes never grow
+        // by proximity — they stay small until their musical moment (Hit, see Update's hit loop).
+        if (RingTypes.IsMusical(evt.ringType)) return;
         FindActiveRing(index)?.Pulse(0f);
     }
 
@@ -868,7 +1006,9 @@ public class GameplayManager : MonoBehaviour
         Vector3 pos;
         if (rc != null)
         {
-            rc.Pulse(evt.strength);
+            // Musical cubes change size in Hit() at the exact eventTime (never with this lead);
+            // resources keep their pulse animation here.
+            if (!RingTypes.IsMusical(evt.ringType)) rc.Pulse(evt.strength);
             pos = rc.transform.position;
         }
         else
@@ -882,8 +1022,17 @@ public class GameplayManager : MonoBehaviour
 
         // Life/Special are combat resources, not musical moments — they pulse visually but never
         // drive beat-synced world feedback.
+        // EventIndex/EventTime = the pulse's musical identity (see BeatPulseEvent) — what consumers
+        // deduplicate on, never the frame it happened to be processed in.
         if (RingTypes.IsMusical(evt.ringType))
-            EventBus.Publish(new BeatPulseEvent { Type = evt.ringType, Strength = evt.strength, Position = pos });
+            EventBus.Publish(new BeatPulseEvent
+            {
+                Type       = evt.ringType,
+                Strength   = evt.strength,
+                Position   = pos,
+                EventIndex = index,
+                EventTime  = evt.eventTime,
+            });
     }
 
     /// <summary>The currently-active RingController for a given timeline index, or null if it's
@@ -891,8 +1040,14 @@ public class GameplayManager : MonoBehaviour
     private RingController FindActiveRing(int index)
     {
         for (int i = 0; i < _activeEvents.Count; i++)
-            if (_activeEvents[i].index == index)
-                return _activeEvents[i].go.GetComponent<RingController>();
+        {
+            var ae = _activeEvents[i];
+            if (ae.index != index || !ae.go.activeSelf) continue;
+            var rc = ae.go.GetComponent<RingController>();
+            // A collected cube returns to the pool at once; if the pool already handed the same object to
+            // another event this frame, it no longer represents this one.
+            if (rc != null && rc.SourceEventTime == ae.evt.eventTime) return rc;
+        }
         return null;
     }
 
@@ -908,23 +1063,19 @@ public class GameplayManager : MonoBehaviour
         _activeEvents.Clear();
     }
 
-    public void SetNextEventIndex(int idx)
+    /// <summary>
+    /// Places every cursor (spawn, reveal, pulse, macro) on the first moment at or after songTime —
+    /// the single resync for a run start (mid-song included), fall-respawn and restart. Moments
+    /// before songTime are skipped WITHOUT firing (the activation loops only move forward, so this
+    /// is what prevents a burst of every earlier event in one frame); moments still ahead are kept.
+    /// </summary>
+    public void ResyncCursors(float songTime)
     {
-        _nextEventIdx  = Mathf.Clamp(idx, 0, _timeline?.Events.Length ?? 0);
+        _nextEventIdx  = MusicTime.FirstEventAtOrAfter(_timeline?.Events, songTime);
         _nextPulseIdx  = _nextEventIdx;
+        _nextHitIdx    = _nextEventIdx;
         _nextRevealIdx = _nextEventIdx;
-    }
-
-    /// <summary>Realigns the Macro-event cursor to a resumed songTime (checkpoint respawn or
-    /// restart) — otherwise moments already passed would refire, or ones still ahead would be
-    /// silently skipped. Called alongside SetNextEventIndex by FallRespawnSystem.</summary>
-    public void ResyncMacroIndex(float songTime)
-    {
-        _nextMacroIdx = 0;
-        var macro = _timeline?.MacroEvents;
-        if (macro == null) return;
-        while (_nextMacroIdx < macro.Length && macro[_nextMacroIdx].eventTime < songTime)
-            _nextMacroIdx++;
+        _nextMacroIdx  = MusicTime.FirstMacroAtOrAfter(_timeline?.MacroEvents, songTime);
     }
 
     /// <summary>
@@ -937,7 +1088,8 @@ public class GameplayManager : MonoBehaviour
     /// </summary>
     public void ReinitializeClock(float warmupTime = 0f)
     {
-        _clock.Initialize(audioSource, warmupTime, config.core.playerSpeed);
+        // Same start offset as GenerateAndStart: the countdown leads into SongPlayStart, not clip 0.
+        _clock.Initialize(audioSource, warmupTime, config.core.playerSpeed, SongPlayStart);
     }
 
     // ── Pool initialization ───────────────────────────────────────────────────

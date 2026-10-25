@@ -1,0 +1,6 @@
+# Production-only dependencies of the voice generator (install PyTorch first, see setup.ps1).
+qwen-tts            # Apache-2.0 — pulls transformers, accelerate, librosa, soundfile, onnxruntime, einops...
+huggingface_hub     # Apache-2.0 — model download
+soundfile           # BSD-3-Clause
+pyloudnorm          # MIT — EBU R128 loudness normalisation
+numpy               # BSD-3-Clause
