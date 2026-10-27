@@ -243,9 +243,10 @@ public class BonusLayoutTests
     }
 
     [Test]
-    public void SyntheticFillIsOffByDefaultIdentifiableAndOnTrackedBeats()
+    public void SyntheticFillCanBeDisabledAndStaysIdentifiableAndOnTrackedBeats()
     {
-        Assert.IsFalse(_config.collectibles.selection.syntheticFill, "synthetic fill is opt-in");
+        // Exercise both modes explicitly; the authored default can be tuned independently.
+        _config.collectibles.selection.syntheticFill = false;
         Assert.AreEqual(0, Gen(0.5f).Events.Count(e => e.origin == BonusOrigin.SyntheticGrid));
         _config.collectibles.selection.syntheticFill = true;
         var t = Gen(0.5f);
@@ -262,6 +263,27 @@ public class BonusLayoutTests
             Assert.IsFalse(detectedTimes.Any(d => Mathf.Abs(d - e.eventTime) < gap - 1e-4f), "only in real gaps");
         }
         TestContext.WriteLine($"synthetic fill: {syn.Count} beats over {t.Stats.selected} detected bonuses");
+    }
+
+    [Test]
+    public void LegacyLayoutGetsUsageSummaryOnceWithoutRegeneratingEvents()
+    {
+        var store = new FileBonusLayoutStore(_tmp);
+        var provider = new BonusLayoutProvider(store);
+        var original = provider.GetOrCreate(_profile, _config, _path, .5f, "L2#3", 0);
+        File.WriteAllBytes(store.PathFor(original.Record.key), BonusUsageSummaryTests.LegacyBytes(original.Record));
+        var loaded = provider.GetOrCreate(_profile, _config, _path, .5f, "L2#3", 0);
+        Assert.AreEqual(BonusLayoutOutcome.Loaded, loaded.Outcome);
+        Assert.AreEqual(original.Record.generatedAtUnixSeconds, loaded.Record.generatedAtUnixSeconds);
+        Assert.AreEqual(original.Record.seed, loaded.Record.seed);
+        CollectionAssert.AreEqual(original.Record.events.Select(e => e.eventTime), loaded.Record.events.Select(e => e.eventTime));
+        var expected = BonusTypeUsage.Summarize(original.Record.events);
+        CollectionAssert.AreEqual(expected.Select(u => u.type), loaded.Record.bonusTypes.Select(u => u.type));
+        CollectionAssert.AreEqual(expected.Select(u => u.count), loaded.Record.bonusTypes.Select(u => u.count));
+        byte[] upgraded = File.ReadAllBytes(store.PathFor(original.Record.key));
+        Assert.AreEqual(2, System.BitConverter.ToInt32(upgraded, 4));
+        provider.GetOrCreate(_profile, _config, _path, .5f, "L2#3", 0);
+        CollectionAssert.AreEqual(upgraded, File.ReadAllBytes(store.PathFor(original.Record.key)), "already upgraded files are not rewritten");
     }
 }
 #endif

@@ -204,12 +204,19 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
 
     /// <summary>AppConfig.testForceOpponentId / testForceOpponentLevel (TEST ONLY): replaces the assigned rival
     /// (new match, resumed pending match, free run alike) for the session — saved progress is not rewritten.</summary>
-    private static void ApplyTestForce(ref OpponentDefinition opponent, ref OpponentLevelConfig level, ref int tier)
+    private readonly OpponentShuffleBag _testOpponentBag = new();
+
+    private void ApplyTestForce(ref OpponentDefinition opponent, ref OpponentLevelConfig level, ref int tier)
     {
         var app = Resources.Load<AppConfigSO>("AppConfig");
-        if (app == null || string.IsNullOrEmpty(app.testForceOpponentId) || app.opponentRoster == null) return;
-        OpponentDefinition forced = null;
-        foreach (var o in app.opponentRoster.opponents) if (o != null && o.id == app.testForceOpponentId) { forced = o; break; }
+        if (opponent == null || app == null || string.IsNullOrWhiteSpace(app.testForceOpponentId) || app.opponentRoster == null) return;
+        var ids = new System.Collections.Generic.HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+        var allowed = new System.Collections.Generic.List<OpponentDefinition>();
+        // Trim each configured id so the Inspector accepts a human-readable comma-separated list.
+        foreach (var id in app.testForceOpponentId.Split(',')) if (!string.IsNullOrWhiteSpace(id)) ids.Add(id.Trim());
+        if (app.opponentRoster.opponents != null)
+            foreach (var o in app.opponentRoster.opponents) if (o != null && ids.Contains(o.id)) allowed.Add(o);
+        var forced = _testOpponentBag.Next(allowed, 2, _selectionRng);
         if (forced == null) { Debug.LogWarning($"[GameSession] TEST FORCE: no roster rival with id '{app.testForceOpponentId}' — ignored."); return; }
         int wanted = app.testForceOpponentLevel > 0 ? app.testForceOpponentLevel : (level != null ? level.level : tier);
         OpponentLevelConfig forcedLevel = null;

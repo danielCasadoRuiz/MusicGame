@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 857d1222792cfd746af5ac5917a034bd, type: 3}
+  m_Name: Hair_Wagner_hair
+  m_EditorClassIdentifier: Assembly-CSharp::HairItemSO
+  stableId: wagner_hair
+  displayName: Wagner hair
+  contentGroup: Enemy_wagner
+  variantMode: 0
+  sharedVariant:
+    prefab:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    qualityPrefabs:
+      variants:
+      - qualityName: Low
+        prefab:
+          m_AssetGUID: 9be545b24a4d0e5428c96b0df6e0da5b
+          m_SubObjectName: 
+          m_SubObjectGUID: 
+          m_SubObjectType: 
+          m_EditorAssetChanged: 0
+      - qualityName: Mid
+        prefab:
+          m_AssetGUID: 09592fb17d9e50541a33d752185a5a47
+          m_SubObjectName: 
+          m_SubObjectGUID: 
+          m_SubObjectType: 
+          m_EditorAssetChanged: 0
+      - qualityName: HighMid
+        prefab:
+          m_AssetGUID: 05c333b0ef439434b9213f77e729115c
+          m_SubObjectName: 
+          m_SubObjectGUID: 
+          m_SubObjectType: 
+          m_EditorAssetChanged: 0
+      - qualityName: High
+        prefab:
+          m_AssetGUID: 088cbcf7aa2b20e48bedbbda0f63e2f8
+          m_SubObjectName: 
+          m_SubObjectGUID: 
+          m_SubObjectType: 
+          m_EditorAssetChanged: 0
+      - qualityName: Ultra
+        prefab:
+          m_AssetGUID: 9963dbff3122fcd4583b45262f8ca348
+          m_SubObjectName: 
+          m_SubObjectGUID: 
+          m_SubObjectType: 
+          m_EditorAssetChanged: 0
+    supportedMorphChannels: 
+  maleVariant:
+    prefab:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    qualityPrefabs:
+      variants: []
+    supportedMorphChannels: 
+  femaleVariant:
+    prefab:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    qualityPrefabs:
+      variants: []
+    supportedMorphChannels: 
+  defaultColorOverride:
+    item: {fileID: 0}
+    color: {r: 0, g: 0, b: 0, a: 0}
+    shaderProperty: 
+  attachmentBoneName: Head
+  canCoexistWithHeadwear: 0

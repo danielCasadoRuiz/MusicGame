@@ -122,12 +122,17 @@ public class GameplayTimeline
 
     /// <summary>A timeline from STORED events (BonusLayoutProvider): macro events and rarity are rebuilt from
     /// the profile / the events (both deterministic, no randomness), the placement is exactly the stored one.</summary>
-    public static GameplayTimeline FromStored(SongProfile profile, MusicRunnerGameplayConfig config, TimelineEvent[] events, SelectionStats stats)
+    public static GameplayTimeline FromStored(SongProfile profile, MusicRunnerGameplayConfig config, TimelineEvent[] events, SelectionStats stats,
+                                              IReadOnlyList<BonusTypeUsage> bonusTypes = null)
     {
         var macroEvents = BuildMacroEvents(profile, config);
         var counts = new Dictionary<RingType, int>();
         foreach (var rt in RarityTypes) counts[rt] = 0;
-        foreach (var e in events) if (counts.ContainsKey(e.ringType)) counts[e.ringType]++;
+        if (bonusTypes != null)
+        {
+            foreach (var entry in bonusTypes) if (counts.ContainsKey(entry.type)) counts[entry.type] = entry.count;
+        }
+        else foreach (var e in events) if (counts.ContainsKey(e.ringType)) counts[e.ringType]++;
         return new GameplayTimeline(events, macroEvents, ComputeRarityMultipliers(counts, config)) { Stats = stats };
     }
 

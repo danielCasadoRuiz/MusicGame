@@ -29,9 +29,11 @@ public static class CombatResourceUse
     /// <summary>Power duration for `charges` x4 spent together: base + one step per charge beyond the first.</summary>
     public static float PowerSeconds(int charges, FightCombatBalanceConfig balance)
     {
+        if (charges <= 0) return 0f;
         float baseSeconds = balance != null ? balance.powerDuration : 4f;
         float perExtra = balance != null ? balance.powerSecondsPerExtraCharge : 1f;
-        return baseSeconds + System.Math.Max(0, charges - 1) * perExtra;
+        return System.Math.Min(balance != null ? balance.powerMaxDuration : 12f,
+            baseSeconds + System.Math.Max(0, charges - 1) * perExtra);
     }
 
     /// <summary>The enhanced Signature's price, straight from its move asset (None if it has none).</summary>

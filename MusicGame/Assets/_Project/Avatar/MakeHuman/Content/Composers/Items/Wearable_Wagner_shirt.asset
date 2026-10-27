@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89e8ca9c8051d154aaa295e820e31b33, type: 3}
+  m_Name: Wearable_Wagner_shirt
+  m_EditorClassIdentifier: Assembly-CSharp::WearableItemSO
+  stableId: wagner_shirt
+  displayName: Wagner shirt
+  contentGroup: Enemy_wagner
+  variantMode: 0
+  sharedVariant:
+    prefab:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    qualityPrefabs:
+      variants:
+      - qualityName: Low
+        prefab:
+          m_AssetGUID: 1faa59967582d7a428e17491e4b3cbfd
+          m_SubObjectName: 
+          m_SubObjectGUID: 
+          m_SubObjectType: 
+          m_EditorAssetChanged: 0
+      - qualityName: Mid
+        prefab:
+          m_AssetGUID: b729e9d9d4fa8f4469093b6bf24a2dbf
+          m_SubObjectName: 
+          m_SubObjectGUID: 
+          m_SubObjectType: 
+          m_EditorAssetChanged: 0
+      - qualityName: HighMid
+        prefab:
+          m_AssetGUID: 15441f1a5d804a949a668cd9825df8a6
+          m_SubObjectName: 
+          m_SubObjectGUID: 
+          m_SubObjectType: 
+          m_EditorAssetChanged: 0
+      - qualityName: High
+        prefab:
+          m_AssetGUID: c75c053b2064f0c4ba77c76910f94bb0
+          m_SubObjectName: 
+          m_SubObjectGUID: 
+          m_SubObjectType: 
+          m_EditorAssetChanged: 0
+      - qualityName: Ultra
+        prefab:
+          m_AssetGUID: 63a652aa8b6389e45a2008af3ed6c236
+          m_SubObjectName: 
+          m_SubObjectGUID: 
+          m_SubObjectType: 
+          m_EditorAssetChanged: 0
+    supportedMorphChannels: 00000000010000000200000003000000040000000500000006000000
+  maleVariant:
+    prefab:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    qualityPrefabs:
+      variants: []
+    supportedMorphChannels: 
+  femaleVariant:
+    prefab:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectGUID: 
+      m_SubObjectType: 
+      m_EditorAssetChanged: 0
+    qualityPrefabs:
+      variants: []
+    supportedMorphChannels: 
+  defaultColorOverride:
+    item: {fileID: 0}
+    color: {r: 0, g: 0, b: 0, a: 0}
+    shaderProperty: 
+  occupiedSlots: 64
+  layer: 2
+  hiddenBodyRegions: 52
+  occludedLowerGarmentRegions: 0
+  hidesHair: 0

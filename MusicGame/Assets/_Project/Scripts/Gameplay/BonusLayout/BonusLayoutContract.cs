@@ -134,6 +134,31 @@ public sealed class BonusLayoutRecord
     public long           generatedAtUnixSeconds;
     public GameplayTimeline.SelectionStats stats;
     public TimelineEvent[] events = Array.Empty<TimelineEvent>();
+    // Null only for files written before the persisted usage summary was introduced.
+    public BonusTypeUsage[] bonusTypes;
+}
+
+/// <summary>Small, persisted pool manifest: each bonus type used by this layout and its total count.</summary>
+[Serializable]
+public struct BonusTypeUsage
+{
+    public RingType type;
+    public int count;
+
+    public static BonusTypeUsage[] Summarize(TimelineEvent[] events)
+    {
+        var counts = new SortedDictionary<RingType, int>();
+        foreach (var e in events)
+        {
+            if (e.eventType != EventType.Ring) continue;
+            counts.TryGetValue(e.ringType, out int count);
+            counts[e.ringType] = count + 1;
+        }
+        var result = new BonusTypeUsage[counts.Count];
+        int i = 0;
+        foreach (var entry in counts) result[i++] = new BonusTypeUsage { type = entry.Key, count = entry.Value };
+        return result;
+    }
 }
 
 /// <summary>Persistence of generated layouts — kept apart from the music profile, its cache and the save.</summary>

@@ -82,6 +82,7 @@ public class GameplayManager : MonoBehaviour
 
     // ── Pool infrastructure ───────────────────────────────────────────────────
     private readonly Dictionary<RingType, ObjectPool> _ringPools = new();
+    private BonusTypeUsage[] _usedBonusTypes = Array.Empty<BonusTypeUsage>();
     private Transform                                  _poolParent;
     private readonly Dictionary<RingType, Material>    _materials = new();
 
@@ -287,6 +288,7 @@ public class GameplayManager : MonoBehaviour
         // and saved (BonusLayoutProvider). Completes here, before the countdown.
         var layout = BonusLayoutProvider.Default.GetOrCreateForCurrentRun(profile, config, path);
         _timeline  = layout.Timeline;
+        _usedBonusTypes = layout.Record.bonusTypes;
         Debug.Log($"[GameplayManager] Bonus layout {layout.Outcome} in {layout.Milliseconds:F1} ms: seed {layout.Record.seed}, " +
                   $"{_timeline.Events.Length} events, position {layout.Record.key.campaignPosition}, difficulty {layout.Record.key.Difficulty:F3}" +
                   (config.collectibles.diagnostics.logSummary ? $"\n  {_timeline.Stats}" : ""));
@@ -1101,16 +1103,17 @@ public class GameplayManager : MonoBehaviour
         int init = config.collectibles.poolInitialSize;
         int max  = config.collectibles.poolMaxSize;
 
-        foreach (RingType rt in System.Enum.GetValues(typeof(RingType)))
+        // The cache already supplies the small type/count manifest; do not scan timeline events here.
+        foreach (var usage in _usedBonusTypes)
         {
-            var captured = rt;
+            var captured = usage.type;
             var prefab   = TryGetThemedRingVisual(captured, out var themedPrefabVisual) && themedPrefabVisual.prefab != null
                 ? themedPrefabVisual.prefab
                 : config.collectibles.ResolvePrefab(captured);
             _ringPools[captured] = new ObjectPool(
                 captured.ToString(),
                 () => BuildPoolObject(captured, prefab),
-                init, max
+                Mathf.Min(init, usage.count), max
             );
         }
     }
@@ -1140,12 +1143,17 @@ public class GameplayManager : MonoBehaviour
             Destroy(go.GetComponent<Rigidbody>());
         }
 
-        // Material/colour ALWAYS comes from config.collectibles.RingColor(type) — regardless of whether this
-        // type uses a custom prefab (keeps its own mesh/shape) or the fallback cube — so the
-        // event's real type is always what determines what you see, never whatever colour a
-        // prefab happened to be authored with.
+        // Textured authored pickups retain their maps. Plain placeholders/fallbacks keep the
+        // configured type colour and emission, as before.
         var renderer = go.GetComponentInChildren<MeshRenderer>();
-        if (renderer != null) renderer.material = GetOrCreateMaterial(type);
+        if (renderer != null)
+        {
+            var authored = renderer.sharedMaterial;
+            bool textured = authored != null &&
+                ((authored.HasProperty("_BaseMap") && authored.GetTexture("_BaseMap") != null) ||
+                 (authored.HasProperty("_MainTex") && authored.GetTexture("_MainTex") != null));
+            if (!textured) renderer.sharedMaterial = GetOrCreateMaterial(type);
+        }
 
         var rc = go.GetComponent<RingController>() ?? go.AddComponent<RingController>();
         rc.Setup(type);

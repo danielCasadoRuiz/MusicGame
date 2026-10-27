@@ -214,6 +214,8 @@ public class FightCombatBalanceConfig : ScriptableObject
     [Min(0.1f)] public float powerDuration = 4f;
     [Tooltip("Extra seconds for each x4 spent beyond the first (4 s, 5 s with two, 6 s with three…). Provisional.")]
     [Min(0f)] public float powerSecondsPerExtraCharge = 1f;
+    [Tooltip("Maximum seconds of Power, regardless of the number of x4 collected.")]
+    [Min(0.1f)] public float powerMaxDuration = 12f;
     [Min(0f)] public float powerDamageMultiplier = 1.3f;
     [Min(0f)] public float powerStaggerMultiplier = 1.25f;
     [Min(0f)] public float powerKnockbackMultiplier = 1.25f;

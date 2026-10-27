@@ -45,7 +45,7 @@ public class AppConfigSO : ScriptableObject
     public PlatformMode editorPlatformSimulation = PlatformMode.Desktop;
 
     [Header("Testing (temporary — leave empty for the real game)")]
-    [Tooltip("TEST ONLY: every normal fight is against this composer id (e.g. \"monteverdi\"), whatever the campaign or " +
+    [Tooltip("TEST ONLY: every normal fight is against this composer id, or a shuffled pool of comma-separated ids, whatever the campaign or " +
              "the pending match assigned — to review an arena/avatar repeatedly. Saved progress keeps its real data. " +
              "Final-rival stages are not affected. Empty = off.")]
     public string testForceOpponentId = "";

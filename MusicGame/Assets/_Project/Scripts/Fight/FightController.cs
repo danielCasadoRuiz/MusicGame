@@ -217,23 +217,56 @@ public class FightController : MonoBehaviour
     private FighterActor _playerActor;
     private readonly System.Collections.Generic.Dictionary<BonusKind, int> _shownCharges = new();
 
+    private readonly System.Collections.Generic.Dictionary<FightStatId, float> _displayedStats = new();
+    private FightCombatBalanceConfig _hudBalance;
+
+    // Equivalent damage points for the live Power multiplier. Other attributes remain unchanged.
+    public static float PowerDisplayPoints(float points, FightStatId stat, FighterPowerState power,
+        FightCombatBalanceConfig balance)
+    {
+        if (power == null || !power.IsActive || balance == null ||
+            (stat != FightStatId.PunchPower && stat != FightStatId.KickPower)) return points;
+        var curve = balance.buildStatToDamage;
+        if (curve == null || curve.length == 0) return points;
+        float low = points, high = Mathf.Max(points, curve.keys[curve.length - 1].time);
+        float target = curve.Evaluate(points) * power.Multipliers.damage;
+        for (int i = 0; i < 20; i++)
+        {
+            float mid = (low + high) * 0.5f;
+            if (curve.Evaluate(mid) < target) low = mid; else high = mid;
+        }
+        return (low + high) * 0.5f;
+    }
+
     private void UpdateBuildPanel()
     {
         var panel = BuildPanel;
         if (panel == null) return;
         FitBuildPanel(panel);
-        if (BonusConversionController.IsBusy) { _shownCharges.Clear(); return; }
+        if (BonusConversionController.IsBusy) { _shownCharges.Clear(); _displayedStats.Clear(); return; }
         if (_playerActor == null)
             foreach (var a in FindObjectsByType<FighterActor>(FindObjectsSortMode.None)) if (a.Side == FighterSide.Player) _playerActor = a;
         if (_playerActor == null) return;
         var build = _playerActor.BuildStats;
+        if (_hudBalance == null) _hudBalance = Resources.Load<AppConfigSO>("AppConfig")?.combatBalance;
         foreach (var row in panel.stats)
-            if (row != null) BonusConversionController.ShowStat(panel, row.stat, BuildValue(build, row.stat));
+        {
+            if (row == null) continue;
+            float target = PowerDisplayPoints(BuildValue(build, row.stat), row.stat, _playerActor.Power, _hudBalance);
+            float shown = _displayedStats.TryGetValue(row.stat, out float previous)
+                ? Mathf.Lerp(previous, target, 1f - Mathf.Exp(-Time.deltaTime / 0.12f)) : target;
+            if (Mathf.Abs(shown - target) < 0.01f) shown = target;
+            _displayedStats[row.stat] = shown;
+            BonusConversionController.ShowStat(panel, row.stat, shown);
+        }
         foreach (var cell in panel.resources)
         {
             if (cell == null) continue;
             int v = ChargeValue(_playerActor.CombatResources, cell.kind);
-            BonusConversionController.ShowResource(cell, v);
+            if (cell.kind == BonusKind.QuadCombo)
+                BonusConversionController.ShowPowerSeconds(cell, _playerActor.Power.IsActive
+                    ? _playerActor.Power.Remaining : CombatResourceUse.PowerSeconds(v, _hudBalance));
+            else BonusConversionController.ShowResource(cell, v);
             if (_shownCharges.TryGetValue(cell.kind, out int before) && before != v && cell.root != null)
                 StartCoroutine(PulseCell(cell.root));
             _shownCharges[cell.kind] = v;

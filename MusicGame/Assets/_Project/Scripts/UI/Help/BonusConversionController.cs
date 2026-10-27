@@ -601,7 +601,9 @@ public class BonusConversionController : MonoBehaviour
     private void SetResource(FightBuildPanelView panel, BonusKind kind, int value)
     {
         _shownResources[kind] = value;
-        ShowResource(Cell(panel, kind), value);
+        if (kind == BonusKind.QuadCombo)
+            ShowPowerSeconds(Cell(panel, kind), CombatResourceUse.PowerSeconds(value, Resources.Load<AppConfigSO>("AppConfig")?.combatBalance));
+        else ShowResource(Cell(panel, kind), value);
     }
 
     /// <summary>Shared with FightController: the one way a charge cell shows its count — dimmed at 0.</summary>
@@ -610,6 +612,12 @@ public class BonusConversionController : MonoBehaviour
         if (cell == null) return;
         if (cell.value != null) { cell.value.text = value.ToString(); cell.value.alpha = value > 0 ? 1f : 0.4f; }
         if (cell.icon != null) { var c = cell.icon.color; c.a = value > 0 ? 1f : 0.3f; cell.icon.color = c; }
+    }
+
+    public static void ShowPowerSeconds(FightBuildPanelView.ResourceCell cell, float seconds)
+    {
+        ShowResource(cell, Mathf.CeilToInt(seconds));
+        if (cell?.value != null) cell.value.text = $"{Mathf.CeilToInt(seconds)}s";
     }
 
     /// <summary>Shared with FightController: the one way a stat row shows its points.</summary>

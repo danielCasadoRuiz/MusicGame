@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Wearable_Wagner_jacket
   m_EditorClassIdentifier: Assembly-CSharp::WearableItemSO
   stableId: wagner_jacket
-  displayName: Wagner Jacket
+  displayName: Wagner jacket
   contentGroup: Enemy_wagner
   variantMode: 0
   sharedVariant:
@@ -35,6 +35,13 @@ MonoBehaviour:
       - qualityName: Mid
         prefab:
           m_AssetGUID: 50b4e16e05af1784da9a451de0a4d703
+          m_SubObjectName: 
+          m_SubObjectGUID: 
+          m_SubObjectType: 
+          m_EditorAssetChanged: 0
+      - qualityName: HighMid
+        prefab:
+          m_AssetGUID: d4ffeb463564d3d4489f4d37be477cd4
           m_SubObjectName: 
           m_SubObjectGUID: 
           m_SubObjectType: 
@@ -80,6 +87,6 @@ MonoBehaviour:
     shaderProperty: 
   occupiedSlots: 1
   layer: 4
-  hiddenBodyRegions: 20
-  occludedLowerGarmentRegions: 20
+  hiddenBodyRegions: 52
+  occludedLowerGarmentRegions: 0
   hidesHair: 0

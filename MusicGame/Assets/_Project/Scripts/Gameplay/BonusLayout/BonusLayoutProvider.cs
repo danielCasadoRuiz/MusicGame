@@ -45,8 +45,15 @@ public sealed class BonusLayoutProvider : IBonusLayoutProvider
         string problem = null;
         if (_store != null && _store.TryLoad(key, out var stored, out problem))
         {
+            // Upgrade old files once, retaining the exact stored events, seed and generation time.
+            if (stored.bonusTypes == null)
+            {
+                stored.bonusTypes = BonusTypeUsage.Summarize(stored.events);
+                try { _store.Save(stored); }
+                catch (Exception e) { Debug.LogWarning($"[BonusLayout] Could not persist bonus type summary ({e.Message})."); }
+            }
             LastOutcome = BonusLayoutOutcome.Loaded;
-            return new BonusLayoutResult(GameplayTimeline.FromStored(profile, config, stored.events, stored.stats), stored,
+            return new BonusLayoutResult(GameplayTimeline.FromStored(profile, config, stored.events, stored.stats, stored.bonusTypes), stored,
                                          BonusLayoutOutcome.Loaded, sw.Elapsed.TotalMilliseconds, null);
         }
 
@@ -55,7 +62,7 @@ public sealed class BonusLayoutProvider : IBonusLayoutProvider
         var record = new BonusLayoutRecord
         {
             key = key, seed = key.Seed, generatedAtUnixSeconds = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-            stats = timeline.Stats, events = timeline.Events,
+            stats = timeline.Stats, events = timeline.Events, bonusTypes = BonusTypeUsage.Summarize(timeline.Events),
         };
         var outcome = problem != null ? BonusLayoutOutcome.Rebuilt : BonusLayoutOutcome.Generated;
         if (problem != null) Debug.LogWarning($"[BonusLayout] Stored layout unusable ({problem}) — rebuilt from the same seed {key.Seed}.");
@@ -105,14 +112,14 @@ public sealed class BonusLayoutProvider : IBonusLayoutProvider
 
 /// <summary>
 /// One binary file per layout: persistentDataPath/BonusLayouts/&lt;songId&gt;_&lt;revision tag&gt;_&lt;key hash&gt;.mgbl.
-/// "MGBL" v1, the full key string (verified on load — a hash collision or a foreign file is never used), seed,
-/// generation time, selection counts, every placed event, CRC-32 over the content. Written to a temp file
+/// "MGBL" v2 (also reads v1), the full key string (verified on load — a foreign file is never used), seed,
+/// generation time, selection counts, every placed event, a bonus type/count manifest, CRC-32 over the content. Written to a temp file
 /// then moved. Separate from the save: deleting it only means the layout is rebuilt (identically).
 /// </summary>
 public sealed class FileBonusLayoutStore : IBonusLayoutStore
 {
     private const uint Magic = 0x4C42474D; // "MGBL"
-    private const int  Version = 1;
+    private const int  Version = 2;
     public const string Extension = ".mgbl";
 
     private readonly string _root;
@@ -200,6 +207,9 @@ public sealed class FileBonusLayoutStore : IBonusLayoutStore
                 w.Write((byte)e.origin); w.Write(e.onsetIndex);
                 w.Write(e.sourceFeature ?? ""); w.Write(e.contributors ?? "");
             }
+            var usage = r.bonusTypes ?? BonusTypeUsage.Summarize(r.events);
+            w.Write(usage.Length);
+            foreach (var entry in usage) { w.Write((int)entry.type); w.Write(entry.count); }
         }
         byte[] content = body.ToArray();
         using var file = new MemoryStream();
@@ -216,7 +226,7 @@ public sealed class FileBonusLayoutStore : IBonusLayoutStore
         using var r = new BinaryReader(new MemoryStream(bytes));
         if (r.ReadUInt32() != Magic) throw new InvalidDataException("not a bonus layout file");
         int version = r.ReadInt32();
-        if (version != Version) throw new InvalidDataException($"layout format {version} (reads {Version})");
+        if (version != 1 && version != Version) throw new InvalidDataException($"layout format {version} (reads 1 and {Version})");
         int length = r.ReadInt32();
         uint crc = r.ReadUInt32();
         int offset = (int)r.BaseStream.Position;
@@ -251,6 +261,24 @@ public sealed class FileBonusLayoutStore : IBonusLayoutStore
                 sourceFeature = r.ReadString(), contributors = r.ReadString(),
             };
         }
+        if (version >= 2)
+        {
+            int count = r.ReadInt32();
+            if (count < 0 || count > Enum.GetValues(typeof(RingType)).Length) throw new InvalidDataException("invalid bonus type summary length");
+            rec.bonusTypes = new BonusTypeUsage[count];
+            var seen = new System.Collections.Generic.HashSet<RingType>();
+            int total = 0;
+            for (int i = 0; i < count; i++)
+            {
+                var type = (RingType)r.ReadInt32(); int uses = r.ReadInt32();
+                if (!Enum.IsDefined(typeof(RingType), type) || !seen.Add(type) || uses <= 0 || uses > n)
+                    throw new InvalidDataException("invalid bonus type summary entry");
+                total += uses;
+                rec.bonusTypes[i] = new BonusTypeUsage { type = type, count = uses };
+            }
+            if (total != n) throw new InvalidDataException("bonus type summary total does not match event count");
+        }
+        if (r.BaseStream.Position != offset + length) throw new InvalidDataException("unexpected layout content length");
         return rec;
     }
 

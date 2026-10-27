@@ -15,6 +15,14 @@ MonoBehaviour:
   m_GroupName: Remote_Enemies_Mid
   m_GUID: b8010d5d53921c1459474e8870dd8d12
   m_SerializeEntries:
+  - m_GUID: 09592fb17d9e50541a33d752185a5a47
+    m_Address: Enemy_wagner/Hair_Wagner_hair/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_wagner
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1884518762b2dcb42a5c6852f2d7fd67
     m_Address: Enemy_monteverdi/Wearable_Monteverdi_pants/sharedVariant/qualityPrefabs@Mid
     m_ReadOnly: 0
@@ -45,6 +53,22 @@ MonoBehaviour:
     m_SerializedLabels:
     - Category_Enemies
     - Enemy_monteverdi
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b729e9d9d4fa8f4469093b6bf24a2dbf
+    m_Address: Enemy_wagner/Wearable_Wagner_shirt/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_wagner
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c28e779ca87e57049bbea6d1f3c72e0a
+    m_Address: Enemy_wagner/Wearable_Wagner_pants/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_wagner
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cd65ceb321b53ec4abc29d5330952e1e

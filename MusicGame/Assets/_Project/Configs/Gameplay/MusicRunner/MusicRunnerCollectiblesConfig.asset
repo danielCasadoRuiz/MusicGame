@@ -19,7 +19,7 @@ MonoBehaviour:
   ringBeat: {fileID: 5434954073038206104, guid: 0f629694df2a8c640ba1a7c781dc2a44, type: 3}
   ringOnset: {fileID: 5167320800414378715, guid: 8af333c83b7f0e24f8029441db6ab781, type: 3}
   ringPeak: {fileID: 0}
-  ringImpact: {fileID: 0}
+  ringImpact: {fileID: 2140121398992214513, guid: c116963ef59e61c4ebb79976620fb70d, type: 3}
   ringLife: {fileID: 5167320800414378715, guid: d98857f536ca48588a6663e2f374fd9d, type: 3}
   ringSpecial: {fileID: 5167320800414378715, guid: 4065862513464bafbc29484c12949a56, type: 3}
   kickColor: {r: 0.9, g: 0.22, b: 0.1, a: 1}
@@ -31,6 +31,8 @@ MonoBehaviour:
   impactColor: {r: 1, g: 0.4, b: 0.05, a: 1}
   lifeColor: {r: 1, g: 1, b: 1, a: 1}
   specialColor: {r: 1, g: 0.15, b: 0.85, a: 1}
+  ringEmissionEnabled: 0
+  ringEmissionIntensity: 0.8
   uiCollectFlashDuration: 0.6
   spawnKick: 1
   spawnSnare: 1
@@ -39,6 +41,24 @@ MonoBehaviour:
   spawnOnset: 1
   spawnImpact: 1
   spawnPeak: 0
+  spawnLife: 1
+  lifePickupsPerMinute: 1
+  maxLifePickups: 1
+  spawnSpecial: 1
+  maxSpecialPickups: 1
+  specialPickupDelay: 0.6
+  specialFallbackWhenNoMoment: 1
+  resourcePickupMinGap: 0.12
+  lifePlacement:
+    minEdgeOffset: 1
+    maxEdgeOffset: 2.2
+    minJumpHeightFactor: 0.7
+    maxJumpHeightFactor: 0.95
+  specialPlacement:
+    minEdgeOffset: 1.6
+    maxEdgeOffset: 2.8
+    minJumpHeightFactor: 0.85
+    maxJumpHeightFactor: 1
   confidenceKeepThreshold: 0.4
   strengthThinningBias: 1
   buildupDensityBoost: 1.6
@@ -115,6 +135,40 @@ MonoBehaviour:
   elevatedMaxJumpHeightFactor: 0.6
   heightBonusMaxMultiplier: 1.5
   elevatedMinScoreMultiplier: 1.25
+  freePlayDifficulty: -1
+  selection:
+    minInterval: 0.16
+    strengthFloor: 0.08
+    easyShare: 0.8
+    hardShare: 1
+    familyMinConfidence: 0.5
+    onBeatWindow: 0.04
+    onBeatPriority: 0.15
+    impactMergeWindow: 0.09
+    easyPatternProbability: 0.08
+    hardPatternProbability: 0.22
+    syntheticFill: 1
+    syntheticMinGap: 0.8
+    onBeatGenericAsBeat: 1
+    accentImpactsPerMinute: 4
+    accentImpactMinGap: 7
+    accentImpactMinStrength: 0.45
+  devLayoutOverrides:
+    enabled: 0
+    minBonusSpacing: 0
+    noOffTrack: 0
+    noJumps: 0
+    maxDifficulty: 1
+  diagnostics:
+    clickMode: 0
+    clickVolume: 0.6
+    logSummary: 1
+  resourcePickupTestFallback: 0
+  testLifePickups: 2
+  testSpecialPickups: 2
+  minReactionTime: 0.35
+  difficultPickupAirReach: 0.8
+  difficultPickupMinSpacing: 3
   poolInitialSize: 8
   poolMaxSize: 40
   spawnLookAhead: 1.5
