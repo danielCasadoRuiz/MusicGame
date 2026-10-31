@@ -31,6 +31,27 @@ public class StyleSkinLibrarySO : ScriptableObject
         public Sprite[] letters = new Sprite[9];
     }
 
+    [System.Serializable]
+    public class HudSkin
+    {
+        public GameMusicStyle style;
+        [Tooltip("Runner top bar, 2048×384 (see HudBar* constants).")]
+        public Sprite bar;
+        [Tooltip("Pause glyph (256×256) for the bar's round slot: normal / pressed.")]
+        public Sprite pause;
+        public Sprite pauseSelected;
+    }
+
+    [System.Serializable]
+    public class BonusSkin
+    {
+        public BonusKind kind;
+        [Tooltip("The bonus' own colours (front view).")]
+        public Sprite normal;
+        [Tooltip("The gold 'classic' version it fades to as the run nears its end.")]
+        public Sprite classic;
+    }
+
     public const string TitleLetters = "TEMPOFURY";
     /// <summary>Button art: body rect inside the 1280×320 sprite (the rest is glow margin).</summary>
     public static readonly Vector2 ButtonCanvas = new(1280f, 320f);
@@ -65,13 +86,37 @@ public class StyleSkinLibrarySO : ScriptableObject
     [Tooltip("Runner: OFF (default) = the song starts fully in the player's style and ends fully classic — the end of " +
              "the run is the classical rival's territory; ON = the reverse.")]
     public bool runnerProgressTowardsStyle = false;
+    [Tooltip("Runner HUD: the classic look comes in as a curtain from the right; width of its soft edge (fraction of the bar).")]
+    [Range(0.01f, 1f)] public float runnerCurtainSoftness = 0.2f;
+    [Tooltip("UI material with the MusicGame/UI/CurtainFade shader (the classic bar over the style bar).")]
+    public Material curtainMaterial;
     [Tooltip("Fight: how much one round of difference counts against a full health bar of difference.")]
     [Range(0f, 1f)] public float fightRoundWeight = 0.5f;
+
+    [Header("Runner HUD")]
+    [Tooltip("Per style, plus GameMusicStyle.Classical = the classic bar / pause every style fades to.")]
+    public List<HudSkin> hud = new();
+    [Tooltip("One set for every style: normal → classic.")]
+    public List<BonusSkin> bonuses = new();
+
+    [Header("Main menu logo")]
+    [Tooltip("The composers (alpha), the same for every style; the TEMPO FURY title is drawn over them.")]
+    public Sprite composers;
 
     [Header("Title")]
     public List<TitleSkin> titles = new();
     [Tooltip("Title shown for a style without its own title art (Classical / Unknown).")]
     public GameMusicStyle titleFallback = GameMusicStyle.Cinematic;
+
+    /// <summary>Runner bar art: 2048×384 canvas; inner panel, counters row, separator, progress track and round
+    /// pause slot in its pixels (top-left origin) — shared by every style's bar.</summary>
+    public static readonly Vector2 HudBarCanvas = new(2048f, 384f);
+    public static readonly Vector2 HudPauseCenter = new(1841f, 201f);
+    public const float HudPauseDiameter = 142f;
+
+    public HudSkin Hud(GameMusicStyle style) => hud.Find(h => h.style == style && h.bar != null);
+    public HudSkin ClassicHud => Hud(GameMusicStyle.Classical);
+    public BonusSkin Bonus(BonusKind kind) => bonuses.Find(b => b.kind == kind && b.normal != null);
 
     public ButtonSkin Button(GameMusicStyle style) => buttons.Find(b => b.style == style && b.normal != null);
 
@@ -85,6 +130,17 @@ public class StyleSkinLibrarySO : ScriptableObject
     /// <summary>Runner: weight of the song's style (0 = classic) from the played fraction of the song.</summary>
     public float RunnerWeight(float progress01) =>
         runnerProgressTowardsStyle ? Mathf.Clamp01(progress01) : 1f - Mathf.Clamp01(progress01);
+
+    /// <summary>Runner HUD curtain: where the classic layer starts (UV x of the bar) when `classicShare` (0..1, =
+    /// 1 − RunnerWeight) of the song is classic — 1 = none (fully the style), −softness = all of it.</summary>
+    public float CurtainEdge(float classicShare) => 1f - Mathf.Clamp01(classicShare) * (1f + runnerCurtainSoftness);
+
+    /// <summary>How classic (0..1) the curtain makes a point at `x01` across the bar (pause slot, a bonus icon…).</summary>
+    public float CurtainClassic(float classicShare, float x01)
+    {
+        float edge = CurtainEdge(classicShare);
+        return Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((x01 - edge) / runnerCurtainSoftness));
+    }
 
     /// <summary>Fight: 0.5 when even, towards 1 when the player leads (health + rounds), towards 0 when the rival does.</summary>
     public float FightWeight(float playerHealth01, float rivalHealth01, int playerRounds, int rivalRounds)

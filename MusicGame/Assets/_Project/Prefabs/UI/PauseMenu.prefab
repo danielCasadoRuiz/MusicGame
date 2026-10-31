@@ -212,6 +212,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StyleBlendButton
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  art: 0
   classicLayer: {fileID: 4459114511671336671}
   styleLayer: {fileID: 6545087130107285603}
   label: {fileID: 8557497491365921802}
@@ -639,9 +640,85 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StyleBlendButton
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  art: 0
   classicLayer: {fileID: 5454372606156062475}
   styleLayer: {fileID: 5210886029592662381}
   label: {fileID: 1380985339218606578}
+--- !u!1 &3009197058573986363
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4988522930226648105}
+  - component: {fileID: 429837787002111879}
+  - component: {fileID: 1026218909898702043}
+  m_Layer: 0
+  m_Name: StyleLayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &4988522930226648105
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3009197058573986363}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7172114242155553917}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 143.95393, y: 143.95393}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &429837787002111879
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3009197058573986363}
+  m_CullTransparentMesh: 1
+--- !u!114 &1026218909898702043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3009197058573986363}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &3462332286901266959
 GameObject:
   m_ObjectHideFlags: 0
@@ -779,6 +856,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StyleBlendButton
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  art: 0
   classicLayer: {fileID: 4597000215549799841}
   styleLayer: {fileID: 8276233726922796092}
   label: {fileID: 7225836213296136269}
@@ -819,8 +897,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -12, y: -46}
-  m_SizeDelta: {x: 120, y: 28}
+  m_AnchoredPosition: {x: -16, y: -224.24}
+  m_SizeDelta: {x: 150, y: 32}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &3377106733379380302
 CanvasRenderer:
@@ -1511,7 +1589,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1613046306260208705
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2228,7 +2306,8 @@ GameObject:
   - component: {fileID: 6972427565021471022}
   - component: {fileID: 7721492896959496629}
   - component: {fileID: 5948667310889342024}
-  - component: {fileID: 1823346923961525345}
+  - component: {fileID: 7797742774800301877}
+  - component: {fileID: 2808172373168178698}
   m_Layer: 0
   m_Name: PauseButton
   m_TagString: Untagged
@@ -2248,14 +2327,16 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 6935627501353412451}
+  - {fileID: 4988522930226648105}
   - {fileID: 1613046306260208705}
   m_Father: {fileID: 3662799236293953161}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -12, y: -12}
-  m_SizeDelta: {x: 84, y: 28}
-  m_Pivot: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -128.24, y: -118.16}
+  m_SizeDelta: {x: 102.240005, y: 102.240005}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6972427565021471022
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2277,7 +2358,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.12}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2313,7 +2394,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 0.12}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 0.22}
@@ -2338,7 +2419,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1823346923961525345
+--- !u!114 &7797742774800301877
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2347,10 +2428,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 7213371307135476536}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b15e9c8b6f748979d206f8b4c7ce778, type: 3}
+  m_Script: {fileID: 11500000, guid: c25039a13afa51948843d5996c44f807, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ThemeColorReceiver
-  token: 9
+  m_EditorClassIdentifier: Assembly-CSharp::StyleBlendGroup
+  library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+--- !u!114 &2808172373168178698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7213371307135476536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 851e821b9cb93df4b8189afaf44dd7e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StyleBlendButton
+  library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  art: 1
+  classicLayer: {fileID: 799725743285087980}
+  styleLayer: {fileID: 1026218909898702043}
+  label: {fileID: 0}
 --- !u!1 &7574149407494329323
 GameObject:
   m_ObjectHideFlags: 0
@@ -2488,6 +2586,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StyleBlendButton
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  art: 0
   classicLayer: {fileID: 3051224058446867680}
   styleLayer: {fileID: 4753265190154880823}
   label: {fileID: 3676204677070158705}
@@ -2768,3 +2867,78 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
   key: Help.Pause.Bonuses
+--- !u!1 &8578958313513038433
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6935627501353412451}
+  - component: {fileID: 5457673180256200955}
+  - component: {fileID: 799725743285087980}
+  m_Layer: 0
+  m_Name: ClassicLayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6935627501353412451
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8578958313513038433}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7172114242155553917}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 143.95393, y: 143.95393}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5457673180256200955
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8578958313513038433}
+  m_CullTransparentMesh: 1
+--- !u!114 &799725743285087980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8578958313513038433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 74398f018eb548342bbf3620876a2050, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1

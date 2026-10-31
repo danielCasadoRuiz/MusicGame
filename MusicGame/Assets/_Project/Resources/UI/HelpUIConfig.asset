@@ -14,27 +14,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HelpUIConfigSO
   bonusIcons:
   - kind: 0
-    sprite: {fileID: 21300000, guid: 8cdd0a0923a1511439c4ea236caf175a, type: 3}
+    sprite: {fileID: 21300000, guid: 798175740b2188d43bc58b963e0bc7d9, type: 3}
+    finalArt: 1
   - kind: 1
-    sprite: {fileID: 21300000, guid: f9816dc3084074542bb266321737092b, type: 3}
+    sprite: {fileID: 21300000, guid: 45baf5598ada5a8488ac07988c0d1394, type: 3}
+    finalArt: 1
   - kind: 2
-    sprite: {fileID: 21300000, guid: 94c29262a77358c49b92ae7483dfc831, type: 3}
+    sprite: {fileID: 21300000, guid: 4e9900b9a676b4a43b21f33ffb58abcd, type: 3}
+    finalArt: 1
   - kind: 3
-    sprite: {fileID: 21300000, guid: e00cfc8695919854da91a98c2df2a296, type: 3}
+    sprite: {fileID: 21300000, guid: b3e5650b57899674b8d0079340f96657, type: 3}
+    finalArt: 1
   - kind: 4
-    sprite: {fileID: 21300000, guid: 36d423110a1d87e4ca71a1d0c61af923, type: 3}
+    sprite: {fileID: 21300000, guid: 5357415af3a11df4db6145f8b8668445, type: 3}
+    finalArt: 1
   - kind: 5
-    sprite: {fileID: 21300000, guid: 9ff885b389513c44e9d98c70b2823cf9, type: 3}
+    sprite: {fileID: 21300000, guid: 1d7fb8ad10daf7e4db75b90740a14f4e, type: 3}
+    finalArt: 1
   - kind: 6
     sprite: {fileID: 21300000, guid: 1b6d06b356f9d034891bb580c2d32b4c, type: 3}
+    finalArt: 0
   - kind: 7
-    sprite: {fileID: 21300000, guid: 850e381a7df0f1e4997577c20f4aed94, type: 3}
+    sprite: {fileID: 21300000, guid: 1c9fe24b500c45d43af755068d48f73d, type: 3}
+    finalArt: 1
   - kind: 8
-    sprite: {fileID: 21300000, guid: 5c1f4b45eed15b3408b173be0779d0c3, type: 3}
+    sprite: {fileID: 21300000, guid: 979f7576bc2cd854bb2e22b9af1c75d9, type: 3}
+    finalArt: 1
   - kind: 9
     sprite: {fileID: 21300000, guid: a0aee5f0be46112439dd35c1cb52e892, type: 3}
+    finalArt: 0
   - kind: 10
     sprite: {fileID: 21300000, guid: 909bf9db1d3271d43a0797c785807f9f, type: 3}
+    finalArt: 0
   statIcons:
   - stat: 8
     sprite: {fileID: 21300000, guid: 975c6f0000ce8c24884fc0ed08d056c1, type: 3}

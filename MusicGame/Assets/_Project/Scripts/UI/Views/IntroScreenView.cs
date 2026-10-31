@@ -15,6 +15,4 @@ public class IntroScreenView : MonoBehaviour
     [Tooltip("Full-screen invisible button (on Dim): a click/tap anywhere skips the wait.")]
     public Button       skipButton;
     public TextMeshProUGUI titleText;
-    [Tooltip("TEMPO FURY title art per style (letters as separate images); when set it replaces titleText.")]
-    public StyledTitleView styledTitle;
 }

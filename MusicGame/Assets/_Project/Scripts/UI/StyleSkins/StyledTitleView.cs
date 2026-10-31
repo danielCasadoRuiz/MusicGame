@@ -5,7 +5,8 @@ using UnityEngine.UI;
 /// The TEMPO FURY title rebuilt from its layers: background, the nine letters as separate Images (each on its
 /// own RectTransform at its place in the original 1920×1080 title, so they can later be animated one by one)
 /// and the foreground. Show(style) swaps every layer to that style's art (StyleSkinLibrarySO.titles).
-/// Built by TempoFuryUISetup from AssetsMaterial/UI/Titles/&lt;Style&gt;/Letters/layout.json.
+/// Built by TempoFuryUISetup from AssetsMaterial/UI/Titles/&lt;Style&gt;/Letters/layout.json — in the main menu (with the
+/// composers behind it) and on the left of the Runner HUD.
 /// </summary>
 public class StyledTitleView : MonoBehaviour
 {
@@ -29,10 +30,16 @@ public class StyledTitleView : MonoBehaviour
     }
 
     private const string LastStyleKey = "TempoFury.LastTitleStyle";
+    private static GameMusicStyle? _launchStyle;
 
-    /// <summary>A random style with title art, never the same as the previous time the game started.</summary>
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetLaunchStyle() => _launchStyle = null;   // each Play session is a new launch
+
+    /// <summary>The main menu's style for this launch: random among the styles with title art, never the same as
+    /// the previous launch's; the same every time the menu comes back during one launch.</summary>
     public static GameMusicStyle MenuStyle(StyleSkinLibrarySO library)
     {
+        if (_launchStyle.HasValue) return _launchStyle.Value;
         if (library == null || library.titles.Count == 0) return GameMusicStyle.Unknown;
         int last = PlayerPrefs.GetInt(LastStyleKey, -1);
         var choices = library.titles.FindAll(t => (int)t.style != last);
@@ -40,6 +47,7 @@ public class StyledTitleView : MonoBehaviour
         var style = choices[Random.Range(0, choices.Count)].style;
         PlayerPrefs.SetInt(LastStyleKey, (int)style);
         PlayerPrefs.Save();
+        _launchStyle = style;
         return style;
     }
 

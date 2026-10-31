@@ -302,9 +302,12 @@ public class HorizonConfig : ScriptableObject
     public Color horizonSkyUpperColor   = new Color(0.15f, 0.16f, 0.32f);
     public Color horizonSkyLowerColor   = new Color(0.30f, 0.21f, 0.38f);
     public Color horizonSkyHorizonColor = new Color(0.46f, 0.25f, 0.38f);
-    [Tooltip("Low-frequency noise warping the vertical gradient bands so they don't read as a " +
-             "flat linear gradient. Kept subtle on purpose — this is a plain background, not a " +
-             "detailed procedural sky.")]
+    [Tooltip("View-direction height where the sky gradient begins. -1 retains the original full-sphere mapping.")]
+    public float horizonSkyGradientStart = -1f;
+    [Tooltip("View-direction height where the sky reaches its zenith color. 1 retains the original full-sphere mapping.")]
+    public float horizonSkyGradientEnd = 1f;
+
+    [Tooltip("Low-frequency noise warping the sky gradient.")]
     public float horizonSkyNoiseScale    = 5f;
     [Range(0f, 1f)] public float horizonSkyNoiseStrength = 0.08f;
     // Restored to a visible warm halo (designReference.png clearly shows one around the sun/
@@ -367,6 +370,18 @@ public class HorizonConfig : ScriptableObject
     // NOTHING and a layer simply doesn't render (no procedural fallback texture is generated —
     // see HorizonMountainLayers.cs doc for exactly what kind of PNG to provide).
     public bool  horizonMountainsEnabled = true;
+    [Tooltip("Mirror the panorama beyond its side edges so wide first-person views and head turns cannot expose the edge of the plane.")]
+    public bool horizonMountainMirrorEdges = false;
+    [Tooltip("Draw the mountain mist over the water with a soft lower fade instead of letting the water cut a straight edge through it.")]
+    public bool horizonMountainBlendIntoWater = false;
+    [Tooltip("Texture UV height where the mountain's lower edge becomes transparent.")]
+    [Range(0f, 1f)] public float horizonMountainWaterFadeStart = 0.18f;
+    [Tooltip("Texture UV height where the mountain is fully opaque above the water.")]
+    [Range(0f, 1f)] public float horizonMountainWaterFadeEnd = 0.40f;
+
+
+    [Tooltip("Atmospheric tint applied to mountain textures. Set to 0 for colored artwork with baked mist; 1 keeps the silhouette-layer haze.")]
+    [Range(0f, 1f)] public float horizonMountainHazeAmount = 1f;
     [Tooltip("Far-layer silhouette PNG (alpha channel = shape). Assign from Assets — none = this " +
              "layer doesn't render.")]
     public Texture2D horizonMountainFarTexture;

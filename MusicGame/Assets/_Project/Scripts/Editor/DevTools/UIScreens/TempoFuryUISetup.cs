@@ -20,7 +20,13 @@ using UnityEngine.UI;
 ///      finish banner, match result (YOU WIN / YOU LOSE, PERFECT!), runner end screen, both pause titles.
 ///   3. Pause buttons (Runner PauseMenu, Fight pause) get a classic layer + a style layer (StyleBlendButton) and a
 ///      StyleBlendGroup; the pause menus are relaid out once for the 6:1 art.
-///   4. IntroScreen gets a StyledTitleView: TEMPO FURY rebuilt from background + 9 letter images + foreground.
+///   4. MainMenu (PrimeraPantalla reference): on the left the composers (AssetsMaterial/UI/Composers.png) + a StyledTitleView (TEMPO FURY rebuilt from
+///      background + 9 letter images + foreground) in this launch's random style, on the right the Tempo Fury buttons
+///      in that same style. (The IntroScreen no longer has the styled title.)
+///   5. Runner HUD (HudExample reference), from AssetsMaterial/UI/Runner HUD → Art/UI/RunnerHud: LiveHud.prefab gets the
+///      style bar over the classic bar (RunnerHudSkin), the logo on its left, score + the 6 musical bonuses, then past the
+///      separator Special and Lives (icons fade normal → classic), and the song progress with its times; PauseMenu's
+///      pause button becomes the style pause glyph (normal / pressed) in the bar's round slot.
 /// Also run at the end of Build All UI Prefabs (Patch), so a Rebuild keeps all of it.
 /// Menu: Tools > MusicGame > UI > Tempo Fury Titles + Style Buttons.
 /// Batch: -executeMethod TempoFuryUISetup.RunFromCommandLine [-preview]  (Logs/TempoFuryUISetup.txt, Logs/TempoFuryPreview/*.png)
@@ -29,6 +35,8 @@ public static class TempoFuryUISetup
 {
     private const string ArtButtons = "Assets/_Project/Art/UI/StyleButtons";
     private const string ArtTitles = "Assets/_Project/Art/UI/Titles";
+    private const string ArtHud = "Assets/_Project/Art/UI/RunnerHud";
+
     private const string LibraryPath = "Assets/_Project/Configs/UI/StyleSkinLibrary.asset";
     private const string FontPath = "Assets/_Project/UI/Fonts/TempoFuryBrush/TempoFuryBrush SDF.asset";
     private const string ClassicFolder = "Classic_fixed";
@@ -113,10 +121,83 @@ public static class TempoFuryUISetup
             if (skin.letters.Any(l => l == null)) log.AppendLine($"  FAIL  title '{name}' is missing letters");
             lib.titles.Add(skin);
         }
+        ImportHud(lib, log);
+        lib.composers = CopySprite(Path.Combine(SourceRoot, "Composers.png"), $"{ArtTitles}/Composers.png", 2048, log);
+
         EditorUtility.SetDirty(lib);
         AssetDatabase.SaveAssets();
-        log.AppendLine($"  PASS  library: {lib.buttons.Count} styled buttons + classic, {lib.titles.Count} titles");
+        log.AppendLine($"  PASS  library: {lib.buttons.Count} styled buttons + classic, {lib.titles.Count} titles, " +
+                       $"{lib.hud.Count} HUD bars, {lib.bonuses.Count} bonus icons");
     }
+
+    private static string HudSource => Path.Combine(SourceRoot, "Runner HUD");
+
+    // Runner HUD/<Style>/{bar,pause,pause_selected}.png (Classical = the classic set) and Runner HUD/Bonus/<Kind>/{normal,classic}_front.png.
+    private static void ImportHud(StyleSkinLibrarySO lib, StringBuilder log)
+    {
+        lib.hud.Clear();
+        lib.bonuses.Clear();
+        if (!Directory.Exists(HudSource)) { log.AppendLine($"  FAIL  source art missing: {HudSource}"); return; }
+        foreach (var dir in Directory.GetDirectories(HudSource).OrderBy(d => d))
+        {
+            string name = Path.GetFileName(dir);
+            if (name == "Bonus") continue;
+            if (!Enum.TryParse(name, out GameMusicStyle style)) { log.AppendLine($"  skip  HUD folder '{name}'"); continue; }
+            lib.hud.Add(new StyleSkinLibrarySO.HudSkin
+            {
+                style = style,
+                bar = CopySprite(Path.Combine(dir, "bar.png"), $"{ArtHud}/{name}/bar.png", 2048, log),
+                pause = CopySprite(Path.Combine(dir, "pause.png"), $"{ArtHud}/{name}/pause.png", 256, log),
+                pauseSelected = CopySprite(Path.Combine(dir, "pause_selected.png"), $"{ArtHud}/{name}/pause_selected.png", 256, log),
+            });
+        }
+        foreach (var dir in Directory.GetDirectories(Path.Combine(HudSource, "Bonus")).OrderBy(d => d))
+        {
+            string name = Path.GetFileName(dir);
+            if (!Enum.TryParse(name, out BonusKind kind)) { log.AppendLine($"  skip  bonus folder '{name}'"); continue; }
+            lib.bonuses.Add(new StyleSkinLibrarySO.BonusSkin
+            {
+                kind = kind,
+                normal = CopySprite(Path.Combine(dir, "normal_front.png"), $"{ArtHud}/Bonus/{name}/normal_front.png", 512, log),
+                classic = CopySprite(Path.Combine(dir, "classic_front.png"), $"{ArtHud}/Bonus/{name}/classic_front.png", 512, log),
+            });
+        }
+        if (lib.ClassicHud == null) log.AppendLine("  FAIL  Runner HUD: no Classical bar (the classic every style fades to)");
+
+        // The same final bonus art everywhere else (runner results bonus block, help, tips, fight HUD): HelpUIConfig.
+        var help = AssetDatabase.LoadAssetAtPath<HelpUIConfigSO>("Assets/_Project/Resources/UI/HelpUIConfig.asset");
+        if (help != null)
+        {
+            var icons = help.bonusIcons.ToList();
+            foreach (var b in lib.bonuses)
+            {
+                if (b.normal == null) continue;
+                int i = icons.FindIndex(x => x.kind == b.kind);
+                var icon = new HelpUIConfigSO.BonusIcon { kind = b.kind, sprite = b.normal, finalArt = true };
+                if (i < 0) icons.Add(icon); else icons[i] = icon;
+            }
+            help.bonusIcons = icons.ToArray();
+            EditorUtility.SetDirty(help);
+        }
+        else log.AppendLine("  FAIL  Resources/UI/HelpUIConfig.asset missing (bonus icons not updated)");
+
+        // The curtain the classic bar is drawn with (an asset, so the shader ships in builds).
+        var shader = Shader.Find("MusicGame/UI/CurtainFade");
+        if (shader == null) { log.AppendLine("  FAIL  shader MusicGame/UI/CurtainFade missing"); return; }
+        var mat = AssetDatabase.LoadAssetAtPath<Material>(CurtainMaterialPath);
+        if (mat == null)
+        {
+            mat = new Material(shader);
+            AssetDatabase.CreateAsset(mat, CurtainMaterialPath);
+        }
+        mat.shader = shader;
+        mat.SetFloat("_Edge", -1f);   // the prefab shows the classic bar whole
+        mat.SetFloat("_Softness", lib.runnerCurtainSoftness);
+        EditorUtility.SetDirty(mat);
+        lib.curtainMaterial = mat;
+    }
+
+    private const string CurtainMaterialPath = ArtHud + "/CurtainFade.mat";
 
     private static Sprite CopySprite(string source, string assetPath, int maxSize, StringBuilder log)
     {
@@ -130,6 +211,11 @@ public static class TempoFuryUISetup
             File.Copy(source, full, true);
             AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceSynchronousImport);
         }
+        return ConfigureSprite(assetPath, maxSize);
+    }
+
+    private static Sprite ConfigureSprite(string assetPath, int maxSize)
+    {
         var importer = (TextureImporter)AssetImporter.GetAtPath(assetPath);
         var settings = new TextureImporterSettings();
         importer.ReadTextureSettings(settings);
@@ -165,7 +251,9 @@ public static class TempoFuryUISetup
         TitlePass(lib, ctx.Log);
         ctx.Patch($"{Screens}/PauseMenu.prefab", r => PatchRunnerPause(r, lib, ctx.Log));
         ctx.Patch($"{Screens}/FightHud.prefab", r => PatchFightPause(r, lib, ctx.Log));
-        ctx.Patch($"{Screens}/IntroScreen.prefab", r => PatchIntroTitle(r, lib, ctx.Log));
+        ctx.Patch($"{Screens}/IntroScreen.prefab", r => RemoveIntroTitle(r, ctx.Log));
+        ctx.Patch($"{Screens}/MainMenu.prefab", r => PatchMainMenu(r, lib, ctx.Log));
+        if (lib.ClassicHud != null) ctx.Patch($"{Screens}/LiveHud.prefab", r => PatchLiveHud(r, lib, ctx.Log));
     }
 
     // ── Titles: every title / header text of the UI prefabs gets a TitleText (font, ivory, tier size) ──
@@ -293,6 +381,7 @@ public static class TempoFuryUISetup
         var view = root.GetComponent<PauseView>();
         if (view == null || view.overlayRoot == null || view.resumeButton == null) { log.AppendLine("  FAIL  PauseMenu.prefab: PauseView incomplete"); return; }
         EnsureGroup(view.overlayRoot, lib);
+        if (lib.ClassicHud != null) PatchHudPauseButton(view, lib, log);
         var buttons = new (Button b, TextMeshProUGUI l)[]
             { (view.resumeButton, view.resumeButtonLabel), (view.restartButton, view.restartButtonLabel),
               (view.mainMenuButton, view.mainMenuButtonLabel), (view.bonusHelpButton, view.bonusHelpButtonLabel) }
@@ -388,24 +477,30 @@ public static class TempoFuryUISetup
         return img;
     }
 
-    private static void PatchIntroTitle(GameObject root, StyleSkinLibrarySO lib, StringBuilder log)
+    // The styled title lives in the main menu now (the PrimeraPantalla reference); the intro keeps its plain title.
+    private static void RemoveIntroTitle(GameObject root, StringBuilder log)
     {
+        var old = root.GetComponentInChildren<StyledTitleView>(true);
+        if (old == null) return;
+        UnityEngine.Object.DestroyImmediate(old.gameObject);
         var view = root.GetComponent<IntroScreenView>();
-        if (view == null) { log.AppendLine("  FAIL  IntroScreen.prefab: no IntroScreenView"); return; }
-        if (view.styledTitle != null) { view.styledTitle.library = lib; return; }
+        if (view != null && view.titleText != null) view.titleText.gameObject.SetActive(true);
+        log.AppendLine("  PASS  IntroScreen: styled title removed (now in the main menu)");
+    }
 
+    /// <summary>TEMPO FURY rebuilt on its own 1920×1080 canvas (centre-anchored rect, the caller places / scales it):
+    /// background, the nine letters at their layout.json boxes, foreground.</summary>
+    private static StyledTitleView BuildStyledTitle(string name, Transform parent, StyleSkinLibrarySO lib, StringBuilder log)
+    {
         string layoutPath = Path.Combine(SourceRoot, "Titles", lib.titles.Count > 0 ? lib.titles[0].style.ToString() : "Rock", "Letters/layout.json");
-        if (!File.Exists(layoutPath)) { log.AppendLine($"  FAIL  title layout missing: {layoutPath}"); return; }
+        if (!File.Exists(layoutPath)) { log.AppendLine($"  FAIL  title layout missing: {layoutPath}"); return null; }
         var layout = JsonUtility.FromJson<TitleLayout>(File.ReadAllText(layoutPath));
         var canvasSize = new Vector2(layout.fullCanvas[0], layout.fullCanvas[1]);
 
-        var parent = view.titleText != null ? view.titleText.transform.parent : root.transform;
-        var titleRoot = new GameObject("StyledTitle", typeof(RectTransform)).GetComponent<RectTransform>();
+        var titleRoot = new GameObject(name, typeof(RectTransform)).GetComponent<RectTransform>();
         titleRoot.SetParent(parent, false);
-        if (view.titleText != null) titleRoot.SetSiblingIndex(view.titleText.transform.GetSiblingIndex() + 1);
         var c = new Vector2(0.5f, 0.5f);
-        UIFactory.SetBox(titleRoot, c, c, c, Vector2.zero, canvasSize);   // the title's own 1920×1080 canvas…
-        titleRoot.localScale = Vector3.one * 0.8f;                         // …shown at 80 % of the screen
+        UIFactory.SetBox(titleRoot, c, c, c, Vector2.zero, canvasSize);
 
         var title = titleRoot.gameObject.AddComponent<StyledTitleView>();
         title.library = lib;
@@ -427,8 +522,314 @@ public static class TempoFuryUISetup
         }
         title.foreground = FullImage("Foreground", titleRoot);
         title.Show(lib.Title(GameMusicStyle.Rock) != null ? GameMusicStyle.Rock : lib.titleFallback);   // editor preview
-        view.styledTitle = title;
-        log.AppendLine("  PASS  IntroScreen: styled TEMPO FURY title (9 separate letters)");
+        return title;
+    }
+
+    // ── Main menu (PrimeraPantalla): composers above the TEMPO FURY title, the buttons coming out from behind its right
+    // side; the whole group centred on the screen. Laid out on every run (screen points, 1920×1080, top-left origin). ──
+
+    /// <summary>A screen point (1920×1080, top-left origin) as a centre-anchored position.</summary>
+    private static Vector2 ScreenPos(float x, float y) => new(x - 960f, 540f - y);
+    private const float MenuTitleScale = 0.51f;                              // title content 905×452
+    private static readonly Vector2 MenuTitleTopLeft = new(340f, 430f);       // title content's top-left on screen
+    private static readonly Rect MenuComposers = new(435f, 150f, 770f, 434f);  // composers.png 1670×942 at 0.46
+    private const float MenuButtonLeft = 1095f, MenuButtonTop = 262f, MenuButtonW = 480f, MenuButtonH = 96f, MenuButtonGap = 20f;
+    private const float MenuButtonHidden = 150f;   // left part of each button behind the title: the label centres on the rest
+
+    private static void PatchMainMenu(GameObject root, StyleSkinLibrarySO lib, StringBuilder log)
+    {
+        var view = root.GetComponent<MainMenuView>();
+        if (view == null || view.playButton == null) { log.AppendLine("  FAIL  MainMenu.prefab: MainMenuView incomplete"); return; }
+        var screen = (RectTransform)view.playButton.transform.parent;
+        var c = new Vector2(0.5f, 0.5f);
+
+        if (view.logo == null)
+        {
+            var logo = UIFactory.CreateRect("Logo", screen);
+            UIFactory.Stretch(logo);
+            NewImage("Composers", logo);
+            var title = BuildStyledTitle("StyledTitle", logo, lib, log);
+            if (title == null) return;
+            view.logo = title;
+            log.AppendLine("  PASS  MainMenu: composers + styled TEMPO FURY logo");
+        }
+        view.logo.library = lib;
+        var logoRoot = view.logo.transform.parent;
+        logoRoot.SetAsLastSibling();   // over the buttons, which come out from behind it…
+        var settings = view.settingsPanel != null ? view.settingsPanel.transform : null;
+        if (settings != null && settings.parent == logoRoot.parent) settings.SetAsLastSibling();   // …but under the settings panel
+        var composers = C<Image>(logoRoot.Find("Composers")?.gameObject);
+        if (composers != null)
+        {
+            composers.sprite = lib.composers;
+            UIFactory.SetBox(composers.rectTransform, c, c, c, ScreenPos(MenuComposers.center.x, MenuComposers.center.y), MenuComposers.size);
+        }
+        // Title content (73,96)-(1847,983) of its 1920×1080 canvas → its top-left at MenuTitleTopLeft.
+        float s = MenuTitleScale;
+        var titleRt = (RectTransform)view.logo.transform;
+        UIFactory.SetBox(titleRt, c, c, c, ScreenPos(MenuTitleTopLeft.x + (960f - 73f) * s, MenuTitleTopLeft.y + (540f - 96f) * s), new Vector2(1920f, 1080f));
+        titleRt.localScale = Vector3.one * s;
+        if (view.titleText != null) view.titleText.gameObject.SetActive(false);   // the logo is the title
+
+        EnsureGroup(view.root, lib);
+        view.buttonStyle = C<StyleBlendGroup>(view.root);
+        var buttons = new[] { view.playButton, view.rivalsButton, view.progressionButton, view.settingsButton, view.quitButton }.Where(b => b != null).ToArray();
+        foreach (var b in buttons) SkinButton(b, b.GetComponentInChildren<TextMeshProUGUI>(true), lib);
+        float buttonX = MenuButtonLeft + MenuButtonW / 2f;
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            UIFactory.SetBox((RectTransform)buttons[i].transform, c, c, c,
+                ScreenPos(buttonX, MenuButtonTop + MenuButtonH / 2f + i * (MenuButtonH + MenuButtonGap)), new Vector2(MenuButtonW, MenuButtonH));
+            var label = buttons[i].GetComponentInChildren<TextMeshProUGUI>(true);
+            if (label == null) continue;
+            // Spaced capitals as in the reference; a long word shrinks to stay on the visible part of the plate.
+            label.fontStyle = FontStyles.Bold | FontStyles.UpperCase;
+            label.characterSpacing = 12f;
+            label.textWrappingMode = TextWrappingModes.NoWrap;
+            label.enableAutoSizing = true;
+            label.fontSizeMax = 32f;
+            label.fontSizeMin = 18f;
+            label.margin = new Vector4(MenuButtonHidden, 0f, 56f, 0f);
+        }
+        view.buttonStackGap = MenuButtonGap;
+        float below = MenuButtonTop + buttons.Length * (MenuButtonH + MenuButtonGap) + 6f;
+        if (view.menuStatusText != null)
+            UIFactory.SetBox(view.menuStatusText.rectTransform, c, c, c, ScreenPos(buttonX, below + 16f), new Vector2(620f, 32f));
+        if (view.profileText != null)   // campaign status: centred under the whole group
+            UIFactory.SetBox(view.profileText.rectTransform, c, c, c, ScreenPos(960f, 1000f), new Vector2(1200f, 110f));
+        log.AppendLine("  PASS  MainMenu: PrimeraPantalla layout");
+    }
+
+    // ── Runner HUD (HudExample) ──────────────────────────────────────────────────
+
+    // The bar art (2048×384) is placed at HudScale, right-aligned with HudMargin to its painted edge (x 2008) and its
+    // painted top (y 48) HudMargin below the screen top. Children are placed in ART pixels (top-left origin).
+    private const float HudScale = 0.72f, HudMargin = 8f;
+    private static Vector2 HudBarPos => new(-HudMargin + 40f * HudScale, -HudMargin + 48f * HudScale);   // top-right anchored
+    private const float HudLogoScale = 0.29f;
+
+    /// <summary>A point of the bar art (art px, top-left origin) in screen units from the screen's top-right corner.</summary>
+    private static Vector2 HudPoint(Vector2 art) =>
+        HudBarPos + new Vector2(-(StyleSkinLibrarySO.HudBarCanvas.x - art.x) * HudScale, -art.y * HudScale);
+
+    private static readonly BonusKind[] HudCounters =
+        { BonusKind.Kick, BonusKind.Snare, BonusKind.HiHat, BonusKind.Beat, BonusKind.Onset, BonusKind.Impact };
+
+    private static void PatchLiveHud(GameObject root, StyleSkinLibrarySO lib, StringBuilder log)
+    {
+        var view = root.GetComponent<LiveHudView>();
+        if (view == null) { log.AppendLine("  FAIL  LiveHud.prefab: no LiveHudView"); return; }
+        if (view.skin != null)
+        {
+            view.skin.library = lib;
+            if (view.skin.logo != null) view.skin.logo.library = lib;
+            if (view.skin.classicBar != null)
+            {
+                view.skin.classicBar.sprite = lib.ClassicHud.bar;
+                view.skin.classicBar.material = lib.curtainMaterial;   // the classic bar is the curtain, over the style bar
+                if (view.skin.styleBar != null && view.skin.classicBar.transform.GetSiblingIndex() < view.skin.styleBar.transform.GetSiblingIndex())
+                    view.skin.classicBar.transform.SetSiblingIndex(view.skin.styleBar.transform.GetSiblingIndex());
+            }
+            foreach (var icon in view.skin.icons)
+            {
+                var b = lib.Bonus(icon.kind);
+                if (b == null) continue;
+                if (icon.normal != null) icon.normal.sprite = b.normal;
+                if (icon.classic != null) icon.classic.sprite = b.classic;
+            }
+            return;
+        }
+        var rt = (RectTransform)root.transform;
+        // The old 44 px top bar and its progress line are replaced as a whole (Runner.unity only overrides the root).
+        foreach (var old in new[] { "TopBar", "SongProgressBg" })
+        {
+            var t = rt.Find(old);
+            if (t != null) UnityEngine.Object.DestroyImmediate(t.gameObject);
+        }
+
+        var bar = UIFactory.CreateRect("HudBar", rt);
+        bar.SetSiblingIndex(0);
+        var tr = new Vector2(1f, 1f);
+        UIFactory.SetBox(bar, tr, tr, tr, HudBarPos, StyleSkinLibrarySO.HudBarCanvas);
+        bar.localScale = Vector3.one * HudScale;
+
+        var skin = root.AddComponent<RunnerHudSkin>();
+        skin.library = lib;
+        skin.styleBar = FullImage("StyleBar", bar);
+        skin.styleBar.enabled = false;
+        skin.classicBar = FullImage("ClassicBar", bar);   // over the style bar: the curtain
+        skin.classicBar.sprite = lib.ClassicHud.bar;
+        skin.classicBar.material = lib.curtainMaterial;
+
+        var ivory = lib.titleColor;
+        var dim = new Color(ivory.r, ivory.g, ivory.b, 0.7f);
+        // Score (left of the counters).
+        var score = ArtRect("Score", bar, 232f, 108f, 290f, 130f);
+        view.scoreLabel = ArtText("Label", score, 0f, 4f, 290f, 34f, 28, dim, TextAlignmentOptions.Left);
+        view.scoreLabel.characterSpacing = 8f;
+        UIScreenPrefabContext.Localized(view.scoreLabel, "HUD.Score");
+        view.scoreValue = ArtText("Value", score, 0f, 38f, 290f, 80f, 64, Color.white, TextAlignmentOptions.Left, FontStyles.Bold);
+        view.scoreValue.text = "000000";
+
+        // The 6 musical bonuses, then past the separator (x 1402) Special and Lives.
+        const float cellsLeft = 530f, cellsRight = 1392f, cellW = (cellsRight - cellsLeft) / 6f, sideW = 142f;
+        var counters = new List<(BonusKind kind, float x, float w)>();
+        for (int i = 0; i < HudCounters.Length; i++) counters.Add((HudCounters[i], cellsLeft + i * cellW, cellW));
+        counters.Add((BonusKind.Special, 1408f, sideW));
+        counters.Add((BonusKind.Life, 1408f + sideW, sideW));
+        foreach (var (kind, x, w) in counters)
+        {
+            var cell = ArtRect($"Cell_{kind}", bar, x, 104f, w, 136f);
+            var normal = ArtImage("Icon", cell, (w - 82f) / 2f, 6f, 82f, 82f);
+            var classic = ArtImage("IconClassic", cell, (w - 82f) / 2f, 6f, 82f, 82f);
+            var art = lib.Bonus(kind);
+            normal.sprite = art != null ? art.normal : null;
+            classic.sprite = art != null ? art.classic : null;
+            classic.color = new Color(1f, 1f, 1f, 0f);
+            classic.enabled = false;
+            skin.icons.Add(new RunnerHudSkin.BonusIcon { kind = kind, normal = normal, classic = classic });
+            var value = ArtText("Value", cell, 0f, 88f, w, 44f, 38, IconColor(kind), TextAlignmentOptions.Center, FontStyles.Bold);
+            value.text = "0";
+            SetCounter(view, kind, value, normal);
+        }
+
+        // Song progress: played time | bar on the classic art's track | song length.
+        view.elapsedTimeText = ArtText("Elapsed", bar, 214f, 262f, 92f, 40f, 30, ivory, TextAlignmentOptions.Right);
+        view.elapsedTimeText.text = "0:00";
+        var track = ArtImage("ProgressTrack", bar, 318f, 274f, 1214f, 18f);
+        track.preserveAspect = false;
+        track.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Art/UI/White.png");
+        track.color = new Color(0f, 0f, 0f, 0.55f);
+        var fill = ArtImage("ProgressFill", bar, 318f, 274f, 1214f, 18f);
+        fill.preserveAspect = false;
+        fill.sprite = track.sprite;
+        fill.type = Image.Type.Filled;
+        fill.fillMethod = Image.FillMethod.Horizontal;
+        fill.fillOrigin = (int)Image.OriginHorizontal.Left;
+        fill.fillAmount = 0.35f;
+        fill.color = ivory;
+        view.progressFill = fill;
+        view.totalTimeText = ArtText("Total", bar, 1544f, 262f, 92f, 40f, 30, ivory, TextAlignmentOptions.Left);
+        view.totalTimeText.text = "0:00";
+        view.totalValue = null; view.totalLabel = null;           // no ring total in the new bar
+        view.kickLabel = view.snareLabel = view.hiHatLabel = view.beatLabel = view.onsetLabel = view.impactLabel = null;
+        view.lifeLabel = view.specialLabel = null;                 // the icons say what they are
+
+        // The TEMPO FURY logo of the song's style, on the left, slightly over the bar's angled end.
+        var logo = BuildStyledTitle("Logo", rt, lib, log);
+        if (logo != null)
+        {
+            var tl = new Vector2(0f, 1f);
+            UIFactory.SetBox((RectTransform)logo.transform, tl, tl, tl, new Vector2(4f - 73f * HudLogoScale, -(2f - 96f * HudLogoScale)), new Vector2(1920f, 1080f));
+            logo.transform.localScale = Vector3.one * HudLogoScale;
+            skin.logo = logo;
+        }
+
+        var tags = rt.Find("TagsStrip") as RectTransform;   // debug-only strip: below the bar
+        if (tags != null) tags.anchoredPosition = new Vector2(tags.anchoredPosition.x, HudPoint(new Vector2(0f, 340f)).y - 6f);
+        view.skin = skin;
+        log.AppendLine("  PASS  LiveHud: Tempo Fury bar, bonus icons, logo, progress");
+    }
+
+    private static void SetCounter(LiveHudView view, BonusKind kind, TextMeshProUGUI value, Image icon)
+    {
+        switch (kind)
+        {
+            case BonusKind.Kick: view.kickValue = value; view.kickIcon = icon; break;
+            case BonusKind.Snare: view.snareValue = value; view.snareIcon = icon; break;
+            case BonusKind.HiHat: view.hiHatValue = value; view.hiHatIcon = icon; break;
+            case BonusKind.Beat: view.beatValue = value; view.beatIcon = icon; break;
+            case BonusKind.Onset: view.onsetValue = value; view.onsetIcon = icon; break;
+            case BonusKind.Impact: view.impactValue = value; view.impactIcon = icon; break;
+            case BonusKind.Special: view.specialValue = value; view.specialIcon = icon; break;
+            case BonusKind.Life: view.lifeValue = value; view.lifeIcon = icon; break;
+        }
+    }
+
+    /// <summary>The counter's colour: the average colour of the bonus' normal art, brightened (green Beat → green number…).</summary>
+    private static Color IconColor(BonusKind kind)
+    {
+        string path = Path.Combine(HudSource, "Bonus", kind.ToString(), "normal_front.png");
+        if (!File.Exists(path)) return Color.white;
+        var tex = new Texture2D(2, 2);
+        try
+        {
+            tex.LoadImage(File.ReadAllBytes(path));
+            Vector3 sum = Vector3.zero; float weight = 0f;
+            foreach (var p in tex.GetPixels32())
+            {
+                float a = p.a / 255f;
+                sum += new Vector3(p.r, p.g, p.b) / 255f * a; weight += a;
+            }
+            if (weight <= 0f) return Color.white;
+            var mean = sum / weight;
+            Color.RGBToHSV(new Color(mean.x, mean.y, mean.z), out float h, out float sat, out _);
+            return Color.HSVToRGB(h, Mathf.Clamp01(sat * 1.1f), 1f);
+        }
+        finally { UnityEngine.Object.DestroyImmediate(tex); }
+    }
+
+    // The pause button sits in the bar's round slot: the style pause glyph over the classic one (normal / pressed).
+    private static void PatchHudPauseButton(PauseView view, StyleSkinLibrarySO lib, StringBuilder log)
+    {
+        if (view.pauseButton == null || view.pauseButtonRoot == null) return;
+        var button = view.pauseButton;
+        float d = StyleSkinLibrarySO.HudPauseDiameter * HudScale;
+        var tr = new Vector2(1f, 1f);
+        UIFactory.SetBox((RectTransform)button.transform, tr, tr, new Vector2(0.5f, 0.5f), HudPoint(StyleSkinLibrarySO.HudPauseCenter), new Vector2(d, d));
+        if (view.cameraToggleButtonRoot != null)   // right under the bar
+            UIFactory.SetBox((RectTransform)view.cameraToggleButtonRoot.transform, tr, tr, tr,
+                new Vector2(-HudMargin - 8f, HudPoint(new Vector2(0f, 340f)).y - 6f), new Vector2(150f, 32f));
+
+        var group = C<StyleBlendGroup>(view.pauseButtonRoot) ?? view.pauseButtonRoot.AddComponent<StyleBlendGroup>();
+        group.library = lib;
+        var existing = C<StyleBlendButton>(button.gameObject);
+        if (existing != null) { existing.library = lib; return; }
+
+        foreach (var receiver in button.GetComponents<ThemeColorReceiver>()) UnityEngine.Object.DestroyImmediate(receiver);
+        var hit = button.GetComponent<Image>();
+        if (hit != null) hit.color = new Color(1f, 1f, 1f, 0f);   // round click target, invisible
+        button.transition = Selectable.Transition.None;
+        if (view.pauseButtonLabel != null) view.pauseButtonLabel.gameObject.SetActive(false);   // the glyph says it
+
+        var skin = button.gameObject.AddComponent<StyleBlendButton>();
+        skin.library = lib;
+        skin.art = StyleBlendButton.Art.HudPause;
+        // pause.png: 256×256 canvas with the glyph ~100 px tall in the middle → the glyph at ~55 % of the slot.
+        float glyph = d * 0.55f * 256f / 100f;
+        skin.classicLayer = Layer("ClassicLayer", button.transform, 0, lib.ClassicHud.pause);
+        skin.styleLayer = Layer("StyleLayer", button.transform, 1, null);
+        skin.styleLayer.enabled = false;
+        var c = new Vector2(0.5f, 0.5f);
+        foreach (var layer in new[] { skin.classicLayer, skin.styleLayer })
+            UIFactory.SetBox(layer.rectTransform, c, c, c, Vector2.zero, new Vector2(glyph, glyph));
+        log.AppendLine("  PASS  Runner pause button: style glyph in the HUD bar's round slot");
+    }
+
+    private static RectTransform ArtRect(string name, RectTransform parent, float x, float y, float w, float h)
+    {
+        var rt = UIFactory.CreateRect(name, parent);
+        var tl = new Vector2(0f, 1f);
+        UIFactory.SetBox(rt, tl, tl, tl, new Vector2(x, -y), new Vector2(w, h));
+        return rt;
+    }
+
+    private static Image ArtImage(string name, RectTransform parent, float x, float y, float w, float h)
+    {
+        var img = ArtRect(name, parent, x, y, w, h).gameObject.AddComponent<Image>();
+        img.raycastTarget = false;
+        img.preserveAspect = true;
+        return img;
+    }
+
+    private static TextMeshProUGUI ArtText(string name, RectTransform parent, float x, float y, float w, float h, int size,
+        Color color, TextAlignmentOptions align, FontStyles style = FontStyles.Normal)
+    {
+        var t = UIFactory.CreateText(name, parent, "", size, color, align, style);
+        var tl = new Vector2(0f, 1f);
+        UIFactory.SetBox(t.rectTransform, tl, tl, tl, new Vector2(x, -y), new Vector2(w, h));
+        t.raycastTarget = false;
+        return t;
     }
 
     private static Image FullImage(string name, RectTransform parent)
@@ -484,13 +885,42 @@ public static class TempoFuryUISetup
                     C<StyleBlendGroup>(v.pausePanel)?.Apply(s, 0.8f);
                     C<StyleBlendButton>(v.mainMenuButton.gameObject)?.OnPointerEnter(null);
                 }, log);
-            foreach (var s in new[] { GameMusicStyle.Rock, GameMusicStyle.Dreamy, GameMusicStyle.Jazzy })
-                Shot(outDir, $"intro_title_{s}.png", $"{Screens}/IntroScreen.prefab", r =>
+            foreach (var s in new[] { GameMusicStyle.Electronic, GameMusicStyle.Rock, GameMusicStyle.Jazzy })
+                Shot(outDir, $"main_menu_{s}.png", $"{Screens}/MainMenu.prefab", r =>
                 {
-                    var v = r.GetComponent<IntroScreenView>();
-                    if (v.canvasGroup != null) v.canvasGroup.alpha = 1f;
-                    v.titleText.gameObject.SetActive(false);
-                    v.styledTitle.Show(s);
+                    var v = r.GetComponent<MainMenuView>();
+                    v.root.SetActive(true);
+                    if (v.settingsPanel != null) v.settingsPanel.SetActive(false);
+                    foreach (var loc in r.GetComponentsInChildren<LocalizedText>(true))
+                        if (loc.TryGetComponent<TMP_Text>(out var t)) Txt(t, loc.key);
+                    Txt(v.playButtonLabel, "MainMenu.Play");
+                    if (v.profileText != null) v.profileText.gameObject.SetActive(false);
+                    if (v.logo != null) v.logo.Show(s);
+                    if (v.buttonStyle != null) v.buttonStyle.Apply(s, 1f);
+                    C<StyleBlendButton>(v.playButton.gameObject)?.OnPointerEnter(null);
+                }, log);
+            foreach (var (s, p) in new[] { (GameMusicStyle.Electronic, 0.1f), (GameMusicStyle.Electronic, 0.35f), (GameMusicStyle.Electronic, 0.6f), (GameMusicStyle.Electronic, 0.95f),
+                                           (GameMusicStyle.Rock, 0.2f), (GameMusicStyle.Jazzy, 0.2f) })
+                Shot(outDir, $"hud_{s}_{p:0.00}.png", $"{Screens}/LiveHud.prefab", r =>
+                {
+                    var v = r.GetComponent<LiveHudView>();
+                    float w = lib.RunnerWeight(p);
+                    if (v.skin != null) v.skin.Apply(s, w);
+                    Txt(v.scoreLabel, "HUD.Score");
+                    v.scoreValue.text = "012450";
+                    var n = new[] { v.kickValue, v.snareValue, v.hiHatValue, v.beatValue, v.onsetValue, v.impactValue, v.specialValue, v.lifeValue };
+                    var sample = new[] { 14, 11, 35, 18, 6, 3, 1, 3 };
+                    for (int i = 0; i < n.Length; i++) if (n[i] != null) n[i].text = sample[i].ToString();
+                    v.progressFill.fillAmount = p;
+                    if (v.elapsedTimeText != null) v.elapsedTimeText.text = $"{(int)(232 * p) / 60}:{(int)(232 * p) % 60:00}";
+                    if (v.totalTimeText != null) v.totalTimeText.text = "3:52";
+                    // The pause button is PauseMenu.prefab's: same canvas, as in Runner.unity.
+                    var pause = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>($"{Screens}/PauseMenu.prefab"), r.transform.parent);
+                    UIFactory.Stretch((RectTransform)pause.transform);
+                    var pv = pause.GetComponent<PauseView>();
+                    pv.overlayRoot.SetActive(false);
+                    if (pv.cameraToggleLabel != null) Txt(pv.cameraToggleLabel, "Pause.FirstPerson");
+                    C<StyleBlendGroup>(pv.pauseButtonRoot)?.Apply(s, 1f - lib.CurtainClassic(1f - w, StyleSkinLibrarySO.HudPauseCenter.x / StyleSkinLibrarySO.HudBarCanvas.x));
                 }, log);
             foreach (var (file, key) in new[] { ("countdown_tempo.png", "Countdown.Go"), ("countdown_3.png", null) })
                 Shot(outDir, file, $"{Screens}/CountdownScreen.prefab", r =>

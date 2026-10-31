@@ -47,7 +47,13 @@ public static class BonusKinds
 [CreateAssetMenu(fileName = "HelpUIConfig", menuName = "MusicGame/UI/Help UI Config")]
 public class HelpUIConfigSO : ScriptableObject
 {
-    [System.Serializable] public struct BonusIcon { public BonusKind kind; public Sprite sprite; }
+    [System.Serializable] public struct BonusIcon
+    {
+        public BonusKind kind;
+        public Sprite sprite;
+        [Tooltip("The final, full-colour art (Runner HUD bonus icons): shown untinted.")]
+        public bool finalArt;
+    }
     [System.Serializable] public struct StatIcon { public FightStatId stat; public Sprite sprite; public Color color; }
 
     [Header("Icons (placeholders until the final art: Art/UI/Icons/Placeholders)")]
@@ -129,6 +135,7 @@ public class HelpUIConfigSO : ScriptableObject
 
     public Color Tint(BonusKind kind)
     {
+        foreach (var b in bonusIcons) if (b.kind == kind && b.finalArt && b.sprite != null) return Color.white;
         var ring = BonusKinds.Ring(kind);
         var collectibles = gameplay != null ? gameplay.collectibles : null;
         if (ring.HasValue) return collectibles != null ? collectibles.RingColor(ring.Value) : Color.white;

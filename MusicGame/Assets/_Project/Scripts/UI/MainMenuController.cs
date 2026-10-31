@@ -49,6 +49,8 @@ public class MainMenuController : MonoBehaviour
 
     private MainMenuView _view;
     private float _buttonStackGap = 18f;
+    private StyledTitleView _logo;
+    private StyleBlendGroup _buttonStyle;
     private CampaignPopup _popup;
 
     // Language selector (Settings) — nested LanguageSelector prefab in the settings panel. See LanguagePreference.
@@ -72,7 +74,12 @@ public class MainMenuController : MonoBehaviour
     {
         _onFlowStateChanged = e =>
         {
-            if (e.Current == GameFlowState.MainMenu) Show();
+            if (e.Current == GameFlowState.MainMenu)
+            {
+                // Back from a game: the menu opens in the style that was being played and fades to this launch's.
+                bool fromGame = e.Previous == GameFlowState.Gameplay || e.Previous == GameFlowState.Results || e.Previous == GameFlowState.Fight;
+                Show(fromGame ? StyleSkinLibrarySO.CurrentStyle() : GameMusicStyle.Unknown);
+            }
             else if (e.Previous == GameFlowState.MainMenu) Hide();
         };
         EventBus.Subscribe(_onFlowStateChanged);
@@ -110,6 +117,8 @@ public class MainMenuController : MonoBehaviour
         _profileText   = view.profileText;
         _menuStatusText = view.menuStatusText;
         _buttonStackGap = view.buttonStackGap;
+        _logo          = view.logo;
+        _buttonStyle   = view.buttonStyle;
 
         view.playButton.onClick.AddListener(OnPlayClicked);
         view.rivalsButton.onClick.AddListener(OnRivalsClicked);
@@ -224,14 +233,77 @@ public class MainMenuController : MonoBehaviour
 
     // ── Show / hide ─────────────────────────────────────────────────────────────
 
-    private void Show()
+    private void Show() => Show(GameMusicStyle.Unknown);
+
+    private void Show(GameMusicStyle playedStyle)
     {
+        ApplyMenuStyle(playedStyle);
         RefreshProgressUI();
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
         _settingsPanel.gameObject.SetActive(false);
         ShowNextNotice(); // after the menu is up, so the popup sits on top
         if (CampaignService.LapPromptPending) ShowLapFinished(); // a just-finished lap: offered once
+    }
+
+    // The logo and the buttons share one random style per launch (StyledTitleView.MenuStyle) — kept for all the UI
+    // outside play. Coming back from a game (`playedStyle` known and different) they start in the played style and
+    // cross-fade to it.
+    private const float StyleFadeDelay = 0.4f, StyleFadeDuration = 1.6f;
+    private Coroutine _styleFade;
+    private GameObject _fadingLogo;
+
+    private void ApplyMenuStyle(GameMusicStyle playedStyle)
+    {
+        if (_logo == null) return;
+        if (_styleFade != null) { StopCoroutine(_styleFade); _styleFade = null; }
+        if (_fadingLogo != null) Destroy(_fadingLogo);
+        SetLogoAlpha(1f);
+        var style = StyledTitleView.MenuStyle(_logo.library);
+        _logo.Show(style);
+        bool fade = playedStyle != GameMusicStyle.Unknown && playedStyle != style && isActiveAndEnabled;
+        if (!fade) { if (_buttonStyle != null) _buttonStyle.Apply(style, 1f); return; }
+        _styleFade = StartCoroutine(FadeFromPlayedStyle(playedStyle, style));
+    }
+
+    private void SetLogoAlpha(float alpha)
+    {
+        if (_logo == null) return;
+        var group = _logo.GetComponent<CanvasGroup>();
+        if (group == null) { if (alpha >= 1f) return; group = _logo.gameObject.AddComponent<CanvasGroup>(); }
+        group.alpha = alpha;
+        group.blocksRaycasts = group.interactable = false;
+    }
+
+    private System.Collections.IEnumerator FadeFromPlayedStyle(GameMusicStyle from, GameMusicStyle to)
+    {
+        // A cross-fade: the played style's logo (a copy, on top) fades out while the menu's fades in under it — background,
+        // letters and foreground alike, so nothing of the new one is there before it appears. The composers stay. The
+        // buttons go from the played style's art to the menu's.
+        _fadingLogo = Instantiate(_logo.gameObject, _logo.transform.parent);
+        _fadingLogo.name = "Logo (fading)";
+        _fadingLogo.transform.SetSiblingIndex(_logo.transform.GetSiblingIndex() + 1);
+        var group = _fadingLogo.GetComponent<CanvasGroup>();
+        if (group == null) group = _fadingLogo.AddComponent<CanvasGroup>();
+        group.alpha = 1f;
+        SetLogoAlpha(0f);
+        group.blocksRaycasts = group.interactable = false;
+        _fadingLogo.GetComponent<StyledTitleView>().Show(from);
+        if (_buttonStyle != null) _buttonStyle.Apply(to, 0f, from);
+
+        for (float t = -StyleFadeDelay; t < StyleFadeDuration; t += Time.unscaledDeltaTime)
+        {
+            float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / StyleFadeDuration));
+            group.alpha = 1f - k;
+            SetLogoAlpha(k);
+            if (_buttonStyle != null) _buttonStyle.Apply(to, k, from);
+            yield return null;
+        }
+        if (_buttonStyle != null) _buttonStyle.Apply(to, 1f);
+        SetLogoAlpha(1f);
+        Destroy(_fadingLogo);
+        _fadingLogo = null;
+        _styleFade = null;
     }
 
     private void Hide()

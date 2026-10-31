@@ -86,6 +86,7 @@ public static class RunnerScreenPrefabs
     {
         var view = root.GetComponent<LiveHudView>();
         if (view == null || view.scoreValue == null) return;
+        if (view.skin != null) return;   // the Tempo Fury bar (TempoFuryUISetup) has its own LIFE / SPECIAL cells
         var bar = view.scoreValue.rectTransform.parent.parent as RectTransform; // TopBar
         if (bar == null) return;
 

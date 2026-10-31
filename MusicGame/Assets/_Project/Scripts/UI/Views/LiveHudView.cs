@@ -33,6 +33,12 @@ public class LiveHudView : MonoBehaviour
 
     [Header("Progress")]
     public Image progressFill;
+    [Tooltip("Played time of the song (left of the progress bar) and its length (right).")]
+    public TextMeshProUGUI elapsedTimeText;
+    public TextMeshProUGUI totalTimeText;
+
+    [Header("Tempo Fury skin (style bar, bonus icons, logo) — when set, the icons keep their own art")]
+    public RunnerHudSkin skin;
 
     [Header("Semantic tags strip")]
     public GameObject tagsStrip;

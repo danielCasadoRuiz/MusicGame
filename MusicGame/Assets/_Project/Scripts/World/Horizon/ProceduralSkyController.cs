@@ -104,6 +104,8 @@ public class ProceduralSkyController : MonoBehaviour
     /// and only re-applied on demand (HorizonConfig.devLiveConfigSync, for live-tuning in Play).</summary>
     public void ApplyStaticConfig()
     {
+        _material.SetFloat("_GradientStart", _config.horizonSkyGradientStart);
+        _material.SetFloat("_GradientEnd", Mathf.Max(_config.horizonSkyGradientStart + 0.01f, _config.horizonSkyGradientEnd));
         _material.SetFloat(NoiseScaleID,    _config.horizonSkyNoiseScale);
         _material.SetFloat(NoiseStrengthID, _config.horizonSkyNoiseStrength);
 

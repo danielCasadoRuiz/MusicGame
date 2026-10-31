@@ -46,7 +46,9 @@ public class GameplayHUD : MonoBehaviour
         if (endScreenView != null) WireEndScreen(endScreenView);
         else Debug.LogError("[GameplayHUD] No EndScreenView wired (UIRegistry in Runner.unity missing/empty) — the end screen is disabled.", this);
 
+        SongProgress = 0f;
         SetGameEnded(false);
+        ApplySkin();
     }
 
     // NOTE: no local CollectionStats here — GameplayManager.Stats is the single source of
@@ -72,6 +74,11 @@ public class GameplayHUD : MonoBehaviour
     private TextMeshProUGUI  _scoreValueText;
     private TextMeshProUGUI  _totalValueText;
     private Image _progressFill;
+    private TextMeshProUGUI _elapsedTimeText, _totalTimeText;
+    private RunnerHudSkin _skin;
+    /// <summary>Played fraction (0..1) of the song's play window — the one value the HUD skin and the pause buttons
+    /// (PauseController) blend on. Back to 0 the moment a run (re)starts, never left at the previous run's end.</summary>
+    public static float SongProgress { get; private set; }
     private RectTransform _tagsStrip;
     private TextMeshProUGUI _tagStyleText, _tagVibeText, _tagOtherText;
 
@@ -129,7 +136,11 @@ public class GameplayHUD : MonoBehaviour
         _onProfile = e => { _songDuration = e.Profile.duration; _profile = e.Profile; };
         // A full restart publishes CheckpointIndex == 0 — kept as a safety net (Restart already
         // hides the end screen synchronously on click; Continue hides it directly too).
-        _onRespawned = e => { if (_built && e.CheckpointIndex == 0) SetGameEnded(false); };
+        _onRespawned = e =>
+        {
+            if (!_built) return;
+            if (e.CheckpointIndex == 0) { SongProgress = 0f; SetGameEnded(false); ApplySkin(); }
+        };
 
         EventBus.Subscribe(_onLevel);
         EventBus.Subscribe(_onEnd);
@@ -202,6 +213,9 @@ public class GameplayHUD : MonoBehaviour
         _scoreValueText = view.scoreValue;
         _totalValueText = view.totalValue;
         _progressFill   = UIFactory.EnsureFillSprite(view.progressFill);
+        _elapsedTimeText = view.elapsedTimeText;
+        _totalTimeText   = view.totalTimeText;
+        _skin            = view.skin;
 
         // Static column-header labels are baked into the prefab at Editor-bake time (whatever
         // locale was active then) — re-set them here from the CURRENT locale so they always
@@ -231,9 +245,10 @@ public class GameplayHUD : MonoBehaviour
         if (_lifeValueText == null || _specialValueText == null)
             Debug.LogError("[GameplayHUD] LiveHudView.lifeValue/specialValue not assigned — run Tools > MusicGame > UI > Build All UI Prefabs (patches LiveHud.prefab).", view);
 
-        // Bonus icon slots: sprite + tint from the central HelpUIConfig (placeholders until the final art).
+        // Bonus icon slots: sprite + tint from the central HelpUIConfig (placeholders) — unless the Tempo Fury
+        // skin is there, whose icons are the final art (normal → classic, RunnerHudSkin).
         var help = HelpUIConfigSO.Instance;
-        if (help != null)
+        if (help != null && _skin == null)
         {
             SetIcon(view.kickIcon, help, BonusKind.Kick);     SetIcon(view.snareIcon, help, BonusKind.Snare);
             SetIcon(view.hiHatIcon, help, BonusKind.HiHat);   SetIcon(view.beatIcon, help, BonusKind.Beat);
@@ -257,11 +272,14 @@ public class GameplayHUD : MonoBehaviour
 
         foreach (var kv in _counterValues)
             kv.Value.text = stats.Get(kv.Key).ToString();
-        _scoreValueText.text = stats.Score.ToString();
+        _scoreValueText.text = stats.Score.ToString("D6");
 
-        int   total = stats.Total;
-        float pct   = _totalRings > 0 ? (float)total / _totalRings * 100f : 0f;
-        _totalValueText.text = $"{total}  {pct:F0}%";
+        if (_totalValueText != null)
+        {
+            int   total = stats.Total;
+            float pct   = _totalRings > 0 ? (float)total / _totalRings * 100f : 0f;
+            _totalValueText.text = $"{total}  {pct:F0}%";
+        }
 
         // Relative to the actual PLAYED window (manager.SongPlayStart..SongPlayEnd — the whole
         // song for a catalog/automatic pick, or a manually-configured sub-range for an uploaded
@@ -275,11 +293,27 @@ public class GameplayHUD : MonoBehaviour
             : (_songDuration > 0f ? _songDuration
                 : (audioSource != null && audioSource.clip != null ? audioSource.clip.length : 0f));
         float rangeLength = rangeEnd - rangeStart;
-        _progressFill.fillAmount = (audioSource != null && audioSource.isPlaying && rangeLength > 0f)
-            ? Mathf.Clamp01((audioSource.time - rangeStart) / rangeLength)
-            : _progressFill.fillAmount;
+        if (audioSource != null && audioSource.isPlaying && rangeLength > 0f)
+            SongProgress = Mathf.Clamp01((audioSource.time - rangeStart) / rangeLength);
+        _progressFill.fillAmount = SongProgress;
+        if (_elapsedTimeText != null) _elapsedTimeText.text = FormatTime(SongProgress * Mathf.Max(rangeLength, 0f));
+        if (_totalTimeText != null) _totalTimeText.text = FormatTime(Mathf.Max(rangeLength, 0f));
+        ApplySkin();
 
         UpdateSemanticTagsStrip();
+    }
+
+    // Tempo Fury skin: the song's style at the start, the classic curtain closing over it towards the end.
+    private void ApplySkin()
+    {
+        if (_skin != null && _skin.library != null)
+            _skin.Apply(StyleSkinLibrarySO.CurrentStyle(), _skin.library.RunnerWeight(SongProgress));
+    }
+
+    private static string FormatTime(float seconds)
+    {
+        int s = Mathf.FloorToInt(seconds);
+        return $"{s / 60}:{s % 60:00}";
     }
 
     private void UpdateSemanticTagsStrip()

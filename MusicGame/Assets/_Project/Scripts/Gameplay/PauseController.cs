@@ -67,6 +67,7 @@ public class PauseController : MonoBehaviour
     private Sprite        _thirdPersonIcon;
     private Sprite        _firstPersonIcon;
     private StyleBlendGroup _styleGroup;
+    private StyleBlendGroup _hudPauseGroup;   // the pause glyph in the Runner bar's round slot
 
     private void Awake()
     {
@@ -154,6 +155,7 @@ public class PauseController : MonoBehaviour
         }
 
         RefreshVisibility();
+        if (_hudPauseGroup != null && _pauseButtonRoot.gameObject.activeInHierarchy) ApplyBlend(_hudPauseGroup);
     }
 
     /// <summary>
@@ -191,22 +193,21 @@ public class PauseController : MonoBehaviour
         MusicClock.Instance?.Pause();
         GameAudio.Instance?.SetAnnouncerPaused(true);   // the countdown's voice freezes with the countdown
 
-        ApplyStyleBlend();
+        ApplyBlend(_styleGroup);
         RefreshVisibility();
     }
 
-    // Pause buttons: classic art faded into the song's style by how much of the song has been played.
-    private void ApplyStyleBlend()
+    // Pause buttons, from the played fraction of the song (GameplayHUD.SongProgress — reset on a restart): the
+    // menu's buttons by the whole song's blend, the HUD pause by the classic curtain where its slot sits (right end
+    // of the bar, so it turns classic first).
+    private void ApplyBlend(StyleBlendGroup group)
     {
-        if (_styleGroup == null || _styleGroup.library == null) return;
-        float progress = 0f;
-        if (_audio != null && _manager != null)
-        {
-            float start = _manager.SongPlayStart;
-            float end = _manager.SongPlayEnd > 0f ? _manager.SongPlayEnd : (_audio.clip != null ? _audio.clip.length : 0f);
-            if (end > start) progress = (_audio.time - start) / (end - start);
-        }
-        _styleGroup.Apply(StyleSkinLibrarySO.CurrentStyle(), _styleGroup.library.RunnerWeight(progress));
+        if (group == null || group.library == null) return;
+        var lib = group.library;
+        float weight = lib.RunnerWeight(GameplayHUD.SongProgress);
+        if (group == _hudPauseGroup)
+            weight = 1f - lib.CurtainClassic(1f - weight, StyleSkinLibrarySO.HudPauseCenter.x / StyleSkinLibrarySO.HudBarCanvas.x);
+        group.Apply(StyleSkinLibrarySO.CurrentStyle(), weight);
     }
 
     public void Resume()
@@ -284,6 +285,7 @@ public class PauseController : MonoBehaviour
         _pauseButtonRoot = view.pauseButtonRoot.GetComponent<RectTransform>();
         _overlayRoot     = view.overlayRoot.GetComponent<RectTransform>();
         _styleGroup      = view.overlayRoot.GetComponentInChildren<StyleBlendGroup>(true);
+        _hudPauseGroup   = view.pauseButtonRoot.GetComponentInChildren<StyleBlendGroup>(true);
 
         view.pauseButton.onClick.AddListener(Pause);
         view.resumeButton.onClick.AddListener(Resume);

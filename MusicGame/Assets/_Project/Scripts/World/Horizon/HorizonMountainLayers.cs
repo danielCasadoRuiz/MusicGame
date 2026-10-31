@@ -61,20 +61,21 @@ public class HorizonMountainLayers : MonoBehaviour, IRunnerEnvironmentModule
         var shader = Shader.Find("MusicGame/HorizonMountainLayer") ?? Shader.Find("Universal Render Pipeline/Unlit");
         int layer = LayerMask.NameToLayer(HorizonCameraController.HorizonLayerName);
 
-        (_farGO, _farRenderer, _farMaterial) = BuildLayer(root, layer, "HorizonMountains_Far", shader);
-        (_nearGO, _nearRenderer, _nearMaterial) = BuildLayer(root, layer, "HorizonMountains_Near", shader);
+        (_farGO, _farRenderer, _farMaterial) = BuildLayer(root, layer, "HorizonMountains_Far", shader, config.horizonMountainMirrorEdges);
+        (_nearGO, _nearRenderer, _nearMaterial) = BuildLayer(root, layer, "HorizonMountains_Near", shader, config.horizonMountainMirrorEdges);
 
         ApplyStaticConfig();
         ApplyDynamic(0f);
     }
 
-    private static (GameObject, MeshRenderer, Material) BuildLayer(Transform root, int layer, string name, Shader shader)
+    private static (GameObject, MeshRenderer, Material) BuildLayer(Transform root, int layer, string name, Shader shader, bool mirrorEdges)
     {
         var go = new GameObject(name);
         go.layer = Mathf.Max(0, layer);
         go.transform.SetParent(root, false);
 
-        var mesh = BuildQuad();
+        var mesh = BuildQuad(mirrorEdges);
+        // The panorama importer supplies mirrored U wrapping for this optional extension.
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var mr = go.AddComponent<MeshRenderer>();
         var mat = new Material(shader) { name = name };
@@ -84,17 +85,20 @@ public class HorizonMountainLayers : MonoBehaviour, IRunnerEnvironmentModule
         return (go, mr, mat);
     }
 
-    private static Mesh BuildQuad()
+    private static Mesh BuildQuad(bool mirrorEdges)
     {
         var mesh = new Mesh { name = "HorizonMountainQuad" };
+        float halfWidth = mirrorEdges ? 3.5f : 0.5f;
+        float uvMin = mirrorEdges ? -3f : 0f;
+        float uvMax = mirrorEdges ? 4f : 1f;
         mesh.vertices = new[]
         {
-            new Vector3(-0.5f, -0.5f, 0f),
-            new Vector3( 0.5f, -0.5f, 0f),
-            new Vector3(-0.5f,  0.5f, 0f),
-            new Vector3( 0.5f,  0.5f, 0f),
+            new Vector3(-halfWidth, -0.5f, 0f),
+            new Vector3( halfWidth, -0.5f, 0f),
+            new Vector3(-halfWidth,  0.5f, 0f),
+            new Vector3( halfWidth,  0.5f, 0f),
         };
-        mesh.uv = new[] { new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 1), new Vector2(1, 1) };
+        mesh.uv = new[] { new Vector2(uvMin, 0), new Vector2(uvMax, 0), new Vector2(uvMin, 1), new Vector2(uvMax, 1) };
         mesh.triangles = new[] { 0, 1, 2, 2, 1, 3 };
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
@@ -147,14 +151,29 @@ public class HorizonMountainLayers : MonoBehaviour, IRunnerEnvironmentModule
         // to the bar baseline), Distance01 as this layer's "how far away" (far=1, near=0.35).
         const float representativeHeight = 0f; // silhouettes sit right at/around the horizon line
         Color hazed = HorizonHaze.Apply(tint * brightness, representativeHeight, distance01, macroIntensity, _config);
+        hazed = Color.Lerp(tint * brightness, hazed, _config.horizonMountainHazeAmount);
         hazed.a = baseTint.a;
         mat.SetColor(TintID, hazed);
+    }
+
+    private void ConfigureWaterBlend(Material material)
+    {
+        // Water is transparent and does not write depth. Draw the distant mountain's mist
+        // afterwards, while keeping depth testing so foreground bars still occlude it.
+        material.renderQueue = _config.horizonMountainBlendIntoWater ? 3010 : 3000;
+        material.SetFloat("_WaterBlend", _config.horizonMountainBlendIntoWater ? 1f : 0f);
+        material.SetFloat("_WaterFadeStart", _config.horizonMountainWaterFadeStart);
+        material.SetFloat("_WaterFadeEnd", Mathf.Max(_config.horizonMountainWaterFadeStart + 0.001f,
+            _config.horizonMountainWaterFadeEnd));
     }
 
     /// <summary>Texture/opacity/transform placement — pure art-direction, applied once and only
     /// re-applied on demand (HorizonConfig.devLiveConfigSync).</summary>
     public void ApplyStaticConfig()
     {
+        ConfigureWaterBlend(_farMaterial);
+        ConfigureWaterBlend(_nearMaterial);
+
         bool farVisible  = _config.horizonMountainFarTexture  != null;
         bool nearVisible = _config.horizonMountainNearTexture != null;
         _farRenderer.enabled  = farVisible;

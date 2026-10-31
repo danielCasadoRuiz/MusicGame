@@ -15,6 +15,10 @@ public class MainMenuView : MonoBehaviour
     [Header("Root")]
     public GameObject root;
     public TextMeshProUGUI titleText;
+    [Tooltip("Left of the buttons: the composers + the TEMPO FURY title of this launch's style (replaces titleText).")]
+    public StyledTitleView logo;
+    [Tooltip("The Tempo Fury menu buttons (StyleBlendButton), shown fully in the same style as the logo.")]
+    public StyleBlendGroup buttonStyle;
     [Tooltip("Campaign status under the title — next match position (big) + lap · mastered matches · extra lives (hidden until a progression save exists).")]
     public TextMeshProUGUI profileText;
     [Tooltip("\"Catalog complete\" / load failure line (hidden while empty).")]

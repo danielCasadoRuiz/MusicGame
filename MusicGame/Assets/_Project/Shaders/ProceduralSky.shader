@@ -15,6 +15,8 @@ Shader "MusicGame/ProceduralSky"
         _UpperColor    ("Upper Color",    Color) = (0.20, 0.08, 0.38, 1)
         _LowerColor    ("Lower Color",    Color) = (0.75, 0.25, 0.45, 1)
         _HorizonColor  ("Horizon Color",  Color) = (0.95, 0.55, 0.35, 1)
+        _GradientStart ("Gradient Start Height", Float) = -1
+        _GradientEnd ("Gradient End Height", Float) = 1
         _NoiseScale    ("Noise Scale", Float) = 1.5
         _NoiseStrength ("Noise Strength", Range(0,1)) = 0.25
         _GlowColor     ("Horizon Glow Color", Color) = (1, 0.6, 0.5, 1)
@@ -44,6 +46,7 @@ Shader "MusicGame/ProceduralSky"
 
             CBUFFER_START(UnityPerMaterial)
             float4 _ZenithColor, _UpperColor, _LowerColor, _HorizonColor, _GlowColor, _SunColor, _SunDirection;
+            float _GradientStart, _GradientEnd;
             float _NoiseScale, _NoiseStrength, _GlowIntensity, _SunSize, _SunGlowSize, _SunGlowIntensity;
             CBUFFER_END
 
@@ -72,7 +75,7 @@ Shader "MusicGame/ProceduralSky"
                 float h = dir.y; // -1 (down) .. 1 (up)
 
                 float n = (ValueNoise(dir.xz * _NoiseScale + h * 2.0) - 0.5) * _NoiseStrength;
-                float t = saturate(h * 0.5 + 0.5 + n);
+                float t = saturate((h - _GradientStart) / max(0.01, _GradientEnd - _GradientStart) + n);
 
                 float3 col;
                 if (t > 0.66)
