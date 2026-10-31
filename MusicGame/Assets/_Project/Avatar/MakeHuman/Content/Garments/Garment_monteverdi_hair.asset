@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6bb79ea8d940c047bf1daf38bb4a2bb, type: 3}
+  m_Name: Garment_monteverdi_hair
+  m_EditorClassIdentifier: Assembly-CSharp::SegmentedGarmentSO
+  garmentId: monteverdi_hair
+  category: hair
+  layer: 50
+  bodyCoverage: []
+  garmentCoverage: []
+  coverageConfigured: 1
+  importedCoverageHash: 3b69bc9c1a1b1294dfbd1eac36196727
+  importedSources:
+  - Monteverdi_hair\Rigged\LOW\Monteverdi_hair_LOW_5k_rigged.fbx
+  - Monteverdi_hair\Rigged\MEDIUM\Monteverdi_hair_MEDIUM_10k_rigged.fbx
+  - Monteverdi_hair\Rigged\MID-HIGH\Monteverdi_hair_MIDHIGH_20k_rigged.fbx
+  - Monteverdi_hair\Rigged\HIGH\Monteverdi_hair_HIGH_30k_rigged.fbx
+  - Monteverdi_hair\Rigged\ULTRA\Monteverdi_hair_ULTRA_50k_rigged.fbx
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Monteverdi_hair\Rigged\Segmented

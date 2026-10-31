@@ -50,7 +50,7 @@ public static class MakeHumanRigDiagnostics
     {
         var sb = new StringBuilder();
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(MakeHumanBodyBuilder.PrefabPath);
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CanonicalAvatarSetup.PrefabPath);
 
         // ---- 1. Target avatar alone: the rig-test poses (Humanoid muscles on top of the T-pose rest).
         var light = new GameObject("Light").AddComponent<Light>();

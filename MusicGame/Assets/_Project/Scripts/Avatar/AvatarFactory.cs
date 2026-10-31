@@ -20,8 +20,14 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 /// resolve slot conflicts + load equipped items -> remap each item's skeleton -> apply morphs to
 /// compatible items -> body masking -> garment-vs-garment occlusion -> color overrides -> return.
 /// Never fitting/deforming geometry procedurally beyond that (task's own explicit "no facis fitting
-/// procedural automàtic" scope note) — masking/occlusion are pure renderer.enabled toggles, morphs are
-/// pure blendshape weights on top of the body's Gender-0 rest vertices.
+/// procedural automàtic" scope note) — morphs are pure blendshape weights on top of the body's Gender-0
+/// rest vertices. Masking/occlusion has two paths:
+///   * Segmented garments (cuts package: SegmentedGarmentSO + SegmentedGarmentPart, see
+///     SegmentedGarmentSupport): AvatarInstance.Appearance keeps each garment's visible regions as ONE
+///     submesh with its final material (index data only — vertices/weights/blendshapes untouched) and masks
+///     the body's skin per region in its shader (_SkinVisibilityMask, per-avatar MaterialPropertyBlock).
+///   * Legacy (unsegmented) garments: renderer.enabled toggles through AvatarRegionMap, exactly as before.
+/// Both coexist on one avatar. Runtime equipment changes go through EquipAsync / Unequip.
 ///
 /// LIFECYCLE SAFETY (task's own explicit correction): `parent` is checked for validity (Unity's own
 /// destroyed-object equality) right after every `await` boundary — if the caller's build target
@@ -96,7 +102,7 @@ public static class AvatarFactory
             return instance;
         }
 
-        // 3-7. Skeleton, cloned meshes, base preset, morphs, face/skin — see AssembleBody.
+        // 3-7. Skeleton, cloned canonical meshes, morphs, face/skin — see AssembleBody.
         var bodyPart = AssembleBody(instance, bodyGO, recipe);
         if (bodyPart == null) return instance;
         var mapper = instance.SkeletonMapper;
@@ -121,16 +127,84 @@ public static class AvatarFactory
 
         morphController.Apply(recipe.Identity.Body); // re-apply now that garment renderers are registered too
 
-        // 12. Body masking.
-        ApplyBodyMasking(bodyPart, accepted);
+        // 12-13. Legacy (unsegmented) garments: body masking + garment-vs-garment occlusion, unchanged.
+        var legacy = LegacyItems(instance.EquippedItems);
+        ApplyBodyMasking(bodyPart, WithoutSegmented(accepted, instance.EquippedItems));
+        ApplyGarmentOcclusion(legacy);
 
-        // 13. Garment-vs-garment occlusion.
-        ApplyGarmentOcclusion(instance.EquippedItems);
+        // 13b. Segmented garments: per-region visibility + the body's skin mask.
+        instance.Appearance.Rebuild();
 
         // 14. Colors/materials.
         ApplyColorOverrides(recipe, instance.EquippedItems);
 
         return instance;
+    }
+
+    // ── Runtime equipment changes ────────────────────────────────────────────────
+
+    /// <summary>
+    /// Equips `item` on an already-built avatar: slot conflicts are checked against what is equipped (a
+    /// conflicting item is rejected with a warning, like at build time), the variant for the avatar's gender and
+    /// the active quality level is loaded, bound and morph-registered, then the appearance is rebuilt (segmented
+    /// coverage + body mask, legacy masking/occlusion). Returns the equipped record, or null.
+    /// </summary>
+    public static async Task<EquippedAvatarItem> EquipAsync(AvatarInstance instance, WearableItemSO item)
+    {
+        if (instance?.Root == null || item == null) return null;
+        foreach (var equipped in instance.EquippedItems)
+        {
+            if ((equipped.Definition.occupiedSlots & item.occupiedSlots) == AvatarSlot.None) continue;
+            Debug.LogWarning($"[AvatarFactory] '{item.displayName}' conflicts with equipped '{equipped.Definition.displayName}' over slot(s) " +
+                             $"{equipped.Definition.occupiedSlots & item.occupiedSlots} — unequip it first.");
+            return null;
+        }
+
+        var record = await LoadItem(item, instance.BodyMorphValues.BaseType, instance.SkeletonMapper, instance.MorphController, instance);
+        if (record == null || instance.Root == null) return record;
+        RefreshAppearance(instance);
+        ApplyColorOverrides(instance.Recipe, new List<EquippedAvatarItem> { record });
+        return record;
+    }
+
+    /// <summary>Removes `item` (if equipped): destroys its instance and cloned meshes, releases its Addressables
+    /// handle and its share of the segmented caches, then rebuilds the appearance of what remains.</summary>
+    public static bool Unequip(AvatarInstance instance, WearableItemSO item)
+    {
+        if (instance == null || item == null) return false;
+        var record = instance.EquippedItems.Find(e => e.Definition == item);
+        if (record == null) return false;
+
+        instance.EquippedItems.Remove(record);
+        instance.Appearance.RemoveGarment(record);
+        if (record.VisualPart != null)
+            foreach (var smr in record.VisualPart.skinnedRenderers) instance.MorphController?.UnregisterRenderer(smr);
+        foreach (var mesh in record.ClonedMeshes) instance.ReleaseClonedMesh(mesh);
+        record.ClonedMeshes.Clear();
+        if (record.Instance != null)
+        {
+            if (Application.isPlaying) Object.Destroy(record.Instance);
+            else Object.DestroyImmediate(record.Instance);
+        }
+        instance.ReleaseHandle(record.Handle);
+
+        RefreshAppearance(instance);
+        return true;
+    }
+
+    /// <summary>Re-derives everything that depends on the WHOLE equipment set after a runtime change.</summary>
+    public static void RefreshAppearance(AvatarInstance instance)
+    {
+        var legacy = LegacyItems(instance.EquippedItems);
+        // Unlike the one-shot build, a runtime change must also re-enable regions an unequipped item hid.
+        if (instance.BodyPart?.regionMap != null)
+        {
+            AvatarBodyRegion hidden = AvatarBodyRegion.None;
+            foreach (var item in legacy) hidden |= item.Definition.hiddenBodyRegions;
+            instance.BodyPart.regionMap.ApplyHiddenRegions(hidden);
+        }
+        ApplyGarmentOcclusion(legacy);
+        instance.Appearance.Rebuild();
     }
 
     /// <summary>
@@ -173,6 +247,8 @@ public static class AvatarFactory
             morphController.RegisterRenderer(smr, AllBodyChannels, "BaseAvatar");
         }
         instance.SetBodyContext(bodyPart.skinnedRenderers);
+        instance.BodyPart = bodyPart;
+        instance.Appearance.SetBody(bodyPart.skinnedRenderers, recipe.BaseAvatar != null ? recipe.BaseAvatar.garmentRegionCatalog : null);
         instance.ApplyBody(recipe.Identity.Body);
 
         // 7. Face/Skin.
@@ -273,8 +349,19 @@ public static class AvatarFactory
         {
             foreach (var smr in visualPart.skinnedRenderers)
             {
+                var source = smr.sharedMesh;
                 mapper.Remap(smr, $"Hair({hair.stableId})");
                 RegisterMorphTarget(instance, smr, variant.supportedMorphChannels, $"Hair({hair.stableId})");
+                // Hair has no garment-coverage rules. Render its segmented source in one draw.
+                var cuts = hairGO.GetComponentInChildren<SegmentedGarmentPart>();
+                if (cuts != null && cuts.TryValidate(out _) && cuts.renderers.Exists(l => l.renderer == smr))
+                {
+                    if (smr.sharedMesh == source) CloneMeshForMutation(smr, instance);
+                    var indices = source.triangles;
+                    smr.sharedMesh.subMeshCount = 1;
+                    smr.sharedMesh.SetIndices(indices, MeshTopology.Triangles, 0, false);
+                    smr.sharedMaterials = new[] { cuts.finalMaterial };
+                }
             }
         }
         else
@@ -298,41 +385,68 @@ public static class AvatarFactory
     /// mesh only to discover it doesn't apply (task's own explicit requirement). No variant for this
     /// gender is a normal, silent-except-for-one-warning skip (e.g. a Male-only item in a Female
     /// recipe) — see AvatarItemSO.GetVariant's own doc.</summary>
-    private static async Task LoadItem(WearableItemSO itemDef, BodyBaseType bodyType, AvatarSkeletonMapper mapper, AvatarBodyMorphController morphController, AvatarInstance instance)
+    private static async Task<EquippedAvatarItem> LoadItem(WearableItemSO itemDef, BodyBaseType bodyType, AvatarSkeletonMapper mapper, AvatarBodyMorphController morphController, AvatarInstance instance)
     {
         var variant = itemDef.GetVariant(bodyType);
         if (variant == null)
         {
             Debug.LogWarning($"[AvatarFactory] '{itemDef.displayName}' has no variant for {bodyType} — skipped (this item doesn't exist for this Identity).");
-            return;
+            return null;
         }
 
         // Quality-aware: the active Unity quality level picks the variant (see AvatarItemVariant.ResolvePrefab);
         // the base avatar above stays a single shared prefab on purpose.
+        int handleIndex = instance.TrackedHandleCount;
         var itemGO = await InstantiateAsync(variant.ResolvePrefab(), instance.VisualRoot, instance, itemDef.displayName);
-        if (itemGO == null) return;
+        if (itemGO == null) return null;
+        var record = AttachItem(instance, itemDef, variant, itemGO);
+        record.Handle = instance.HandleAt(handleIndex);
+        return record;
+    }
 
+    /// <summary>
+    /// Everything after the prefab exists under VisualRoot: skeleton binding, morph registration and — for a
+    /// segmented garment — registration with the avatar's AvatarAppearance. Split out of LoadItem so editor
+    /// tooling/tests can equip directly instantiated variant prefabs through the exact runtime path. Call
+    /// AvatarAppearance.Rebuild (or CreateAsync/EquipAsync do) once the equipment set is complete.
+    /// </summary>
+    public static EquippedAvatarItem AttachItem(AvatarInstance instance, WearableItemSO itemDef, AvatarItemVariant variant, GameObject itemGO)
+    {
         var visualPart = itemGO.GetComponentInChildren<AvatarVisualPart>();
+        var record = new EquippedAvatarItem { Definition = itemDef, Instance = itemGO, VisualPart = visualPart };
+        int cloneMark = instance.ClonedMeshCount;
+
         if (visualPart == null)
         {
             Debug.LogWarning($"[AvatarFactory] '{itemDef.displayName}' has no AvatarVisualPart — treated as a " +
                               "fully rigid prop with no skeleton/morph/region support.");
-            instance.EquippedItems.Add(new EquippedAvatarItem { Definition = itemDef, Instance = itemGO, VisualPart = null });
-            return;
+            instance.EquippedItems.Add(record);
+            return record;
         }
 
-        if (visualPart.skinnedRenderers.Length > 0)
+        SegmentedGarmentPart segmented = null;
+        string fallbackReason = null;
+        bool isSegmented = visualPart.skinnedRenderers.Length > 0 &&
+                           SegmentedGarmentSupport.TryGet(itemDef, itemGO, out segmented, out fallbackReason);
+        if (isSegmented)
         {
+            AttachSegmented(instance, record, segmented, variant);
+        }
+        else if (visualPart.skinnedRenderers.Length > 0)
+        {
+            // Existing equipment path, unchanged (no recognised segmentation → nothing else differs).
+            if (fallbackReason != null)
+                GarmentDiagnostics.Warn($"'{itemDef.displayName}' is equipped as an unsegmented garment: {fallbackReason}.");
             var body = AvatarClothingBinder.MainBody(instance.BodyRenderers);
             foreach (var smr in visualPart.skinnedRenderers)
             {
-                BindClothing(smr, body, mapper, instance, itemDef.displayName);
-                RegisterMorphTarget(instance, smr, variant.supportedMorphChannels, itemDef.displayName);
+                BindClothing(smr, body, instance.SkeletonMapper, instance, itemDef.displayName);
+                RegisterMorphTarget(instance, smr, variant?.supportedMorphChannels, itemDef.displayName);
             }
         }
         else if (visualPart.rootBone != null)
         {
-            var bone = mapper.FindBone(visualPart.rootBone.name);
+            var bone = instance.SkeletonMapper.FindBone(visualPart.rootBone.name);
             if (bone != null)
                 itemGO.transform.SetParent(bone, false);
             else
@@ -342,7 +456,58 @@ public static class AvatarFactory
         // else: no skinned renderers and no declared rootBone — a rigid prop already correctly
         // parented at VisualRoot by InstantiateAsync, nothing more to do.
 
-        instance.EquippedItems.Add(new EquippedAvatarItem { Definition = itemDef, Instance = itemGO, VisualPart = visualPart });
+        instance.ClonedMeshesSince(cloneMark, record.ClonedMeshes);
+        instance.EquippedItems.Add(record);
+        return record;
+    }
+
+    /// <summary>Segmented path: bind every layout renderer exactly like a legacy garment (ONE per-avatar clone of
+    /// the `_cuts` mesh, body bind poses, body rootBone/bounds, synced blendshapes), register it for body morphs
+    /// WITHOUT a second clone, and hand source + clone to the appearance, which later rewrites only the clone's
+    /// index data. The source asset is never modified.</summary>
+    private static void AttachSegmented(AvatarInstance instance, EquippedAvatarItem record, SegmentedGarmentPart part, AvatarItemVariant variant)
+    {
+        var itemDef = record.Definition;
+        var body = AvatarClothingBinder.MainBody(instance.BodyRenderers);
+        var sources = new List<Mesh>(part.renderers.Count);
+        var runtimes = new List<Mesh>(part.renderers.Count);
+        foreach (var layout in part.renderers)
+        {
+            var smr = layout.renderer;
+            var source = smr.sharedMesh;
+            BindClothing(smr, body, instance.SkeletonMapper, instance, itemDef.displayName);
+            if (smr.sharedMesh == source) CloneMeshForMutation(smr, instance); // plain-remap fallback did not clone
+            sources.Add(source);
+            runtimes.Add(smr.sharedMesh);
+
+            bool declared = variant?.supportedMorphChannels != null && variant.supportedMorphChannels.Length > 0;
+            if (declared || AvatarBodyMorphController.HasAnyCanonicalBlendShape(smr))
+                instance.MorphController?.RegisterRenderer(smr, variant?.supportedMorphChannels, itemDef.displayName);
+        }
+        record.Segmented = part;
+        instance.Appearance.AddGarment(record, itemDef.segmentedGarment, part, sources, runtimes);
+    }
+
+    // ── Legacy (unsegmented) garments ────────────────────────────────────────────
+    // MIGRATION: together with SegmentedGarmentSupport this is the compatibility layer for models without
+    // segmentation data — renderer-level AvatarRegionMap toggles driven by WearableItemSO.hiddenBodyRegions /
+    // occludedLowerGarmentRegions. Remove it (and those WearableItemSO fields) once every model is segmented.
+
+    private static List<EquippedAvatarItem> LegacyItems(List<EquippedAvatarItem> equipped)
+    {
+        var legacy = new List<EquippedAvatarItem>(equipped.Count);
+        foreach (var item in equipped) if (item.Segmented == null) legacy.Add(item);
+        return legacy;
+    }
+
+    /// <summary>`accepted` minus the items that ended up equipped as segmented garments — exactly the list the
+    /// build-time body masking used before segmentation existed.</summary>
+    private static List<WearableItemSO> WithoutSegmented(List<WearableItemSO> accepted, List<EquippedAvatarItem> equipped)
+    {
+        var result = new List<WearableItemSO>(accepted.Count);
+        foreach (var definition in accepted)
+            if (!equipped.Exists(e => e.Definition == definition && e.Segmented != null)) result.Add(definition);
+        return result;
     }
 
     /// <summary>Binds a garment renderer to the avatar skeleton with the proven SkinnedMeshBinder logic

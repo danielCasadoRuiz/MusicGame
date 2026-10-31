@@ -12,6 +12,15 @@ public class EquippedAvatarItem
     public WearableItemSO Definition;
     public GameObject Instance;
     public AvatarVisualPart VisualPart;
+
+    /// <summary>Non-null when the item was equipped as a segmented garment (see SegmentedGarmentSupport);
+    /// null = legacy (unsegmented) path.</summary>
+    public SegmentedGarmentPart Segmented;
+
+    /// <summary>The Addressables instantiate handle of this item (invalid for directly instantiated items),
+    /// and the meshes cloned for it — what AvatarFactory.Unequip releases.</summary>
+    public AsyncOperationHandle Handle;
+    public readonly List<Mesh> ClonedMeshes = new();
 }
 
 /// <summary>
@@ -38,6 +47,12 @@ public class AvatarInstance
     public AvatarSkeletonMapper SkeletonMapper;
     public readonly List<EquippedAvatarItem> EquippedItems = new();
     public AvatarRecipe Recipe;
+
+    /// <summary>Segmented-garment state of this avatar (derived garment meshes + body skin mask).</summary>
+    public readonly AvatarAppearance Appearance = new();
+
+    /// <summary>The base body's AvatarVisualPart (legacy body masking acts on its regionMap).</summary>
+    public AvatarVisualPart BodyPart;
 
     private readonly List<AsyncOperationHandle> _addressableHandles = new();
     private readonly List<Mesh> _clonedMeshes = new();
@@ -125,6 +140,36 @@ public class AvatarInstance
     /// explicitly Destroy()'d here.</summary>
     public void TrackClonedMesh(Mesh mesh) => _clonedMeshes.Add(mesh);
 
+    /// <summary>How many cloned meshes are tracked — a mark for ClonedMeshesSince.</summary>
+    public int ClonedMeshCount => _clonedMeshes.Count;
+
+    /// <summary>Copies the meshes cloned after `mark` into `result` (one equipped item's clones).</summary>
+    public void ClonedMeshesSince(int mark, List<Mesh> result)
+    {
+        for (int i = mark; i < _clonedMeshes.Count; i++) if (_clonedMeshes[i] != null) result.Add(_clonedMeshes[i]);
+    }
+
+    /// <summary>Destroys one tracked clone now (an unequipped item) instead of at Dispose.</summary>
+    public void ReleaseClonedMesh(Mesh mesh)
+    {
+        if (mesh == null || !_clonedMeshes.Remove(mesh)) return;
+        DestroyObject(mesh);
+    }
+
+    /// <summary>Releases one tracked Addressables handle now (an unequipped item) instead of at Dispose.</summary>
+    public void ReleaseHandle(AsyncOperationHandle handle)
+    {
+        if (!handle.IsValid()) return;
+        _addressableHandles.Remove(handle);
+        Addressables.Release(handle);
+    }
+
+    /// <summary>Live tracked resources — diagnostics/tests (repeated equipment changes must not grow them).</summary>
+    public int TrackedHandleCount => _addressableHandles.Count;
+
+    /// <summary>The handle tracked at `index` (default when out of range).</summary>
+    public AsyncOperationHandle HandleAt(int index) => index >= 0 && index < _addressableHandles.Count ? _addressableHandles[index] : default;
+
     /// <summary>Releases every Addressables handle, destroys every cloned Mesh, then destroys Root —
     /// safe to call more than once (a second call is a no-op). Runner/Fight call this whenever the
     /// avatar is no longer needed (a fighter/scene unloading, a debug preview Release) — never rely on
@@ -133,6 +178,8 @@ public class AvatarInstance
     {
         if (_disposed) return;
         _disposed = true;
+
+        Appearance.Dispose(); // shared topology/mask references; its meshes are among _clonedMeshes below
 
         foreach (var handle in _addressableHandles)
             if (handle.IsValid()) Addressables.Release(handle);
@@ -143,6 +190,7 @@ public class AvatarInstance
         _clonedMeshes.Clear();
 
         EquippedItems.Clear();
+        BodyPart = null;
         _bodyRenderers.Clear();
         _restPose = System.Array.Empty<(Transform, Vector3, Quaternion)>();
 

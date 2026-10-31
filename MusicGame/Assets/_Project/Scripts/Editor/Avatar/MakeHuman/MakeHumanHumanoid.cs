@@ -1,6 +1,6 @@
 /// <summary>
 /// Unity Humanoid bone mapping for the MakeHuman game_engine skeleton — applied explicitly (never
-/// auto-guessed) to MakeHuman_Canonical.fbx's ModelImporter (see MakeHumanFbxPipeline.ConfigureImporter).
+/// auto-guessed) to MakeHuman_Canonical.fbx's ModelImporter (see CanonicalAvatarModel.ConfigureImporter).
 /// The Avatar itself is created by Unity's importer FROM THE MODEL, whose rest pose is the real T-pose
 /// (see MakeHumanTPose), so no separate T-pose description exists anywhere.
 /// </summary>

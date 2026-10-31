@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6bb79ea8d940c047bf1daf38bb4a2bb, type: 3}
+  m_Name: Garment_wagner_jacket
+  m_EditorClassIdentifier: Assembly-CSharp::SegmentedGarmentSO
+  garmentId: wagner_jacket
+  category: jacket
+  layer: 40
+  bodyCoverage:
+  - shoulder_l
+  - upperarm_upper_l
+  - upperarm_lower_l
+  - forearm_upper_l
+  - forearm_lower_l
+  - shoulder_r
+  - upperarm_upper_r
+  - upperarm_lower_r
+  - forearm_upper_r
+  - forearm_lower_r
+  - back_upper
+  - back_lower
+  garmentCoverage:
+  - targetCategories:
+    - shirt
+    - top
+    zones:
+    - shoulder_l
+    - upperarm_upper_l
+    - upperarm_lower_l
+    - forearm_upper_l
+    - forearm_lower_l
+    - shoulder_r
+    - upperarm_upper_r
+    - upperarm_lower_r
+    - forearm_upper_r
+    - forearm_lower_r
+    - back_upper
+    - back_lower
+  - targetCategories:
+    - trousers
+    zones:
+    - buttocks
+  coverageConfigured: 1
+  importedCoverageHash: c0ebd4989457cb025a3d390330da3739
+  importedSources:
+  - Wagner_jacket\Rigged\LOW\Wagner_jacket_LOW_5k_rigged.fbx
+  - Wagner_jacket\Rigged\MEDIUM\Wagner_jacket_MEDIUM_10k_rigged.fbx
+  - Wagner_jacket\Rigged\MID-HIGH\Wagner_jacket_MIDHIGH_20k_rigged.fbx
+  - Wagner_jacket\Rigged\HIGH\Wagner_jacket_HIGH_30k_rigged.fbx
+  - Wagner_jacket\Rigged\ULTRA\Wagner_jacket_ULTRA_50k_rigged.fbx
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Wagner_jacket\Rigged\Segmented

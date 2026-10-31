@@ -33,7 +33,7 @@ public static class FightCombatTests
 
     public static void RunFromCommandLine()
     {
-        EditorSceneManager.OpenScene(MakeHumanBodyBuilder.DebugScenePath, OpenSceneMode.Single);
+        EditorSceneManager.OpenScene(CanonicalAvatarSetup.DebugScenePath, OpenSceneMode.Single);
         SessionState.SetBool(PendingKey, true);
         EditorApplication.isPlaying = true;
     }

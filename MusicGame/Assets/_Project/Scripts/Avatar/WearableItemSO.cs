@@ -35,6 +35,13 @@ public class WearableItemSO : AvatarItemSO
              "warning-not-crash fallback when it doesn't.")]
     public AvatarBodyRegion occludedLowerGarmentRegions;
 
+    [Header("Segmented garment (layered clothing)")]
+    [Tooltip("Layering/coverage configuration of a segmented garment (cuts package). When set AND the equipped " +
+             "variant prefab carries a valid SegmentedGarmentPart, the item is assembled per region and the " +
+             "fields under 'Masking' are not used for it. Leave empty for unsegmented models: they keep the " +
+             "existing equipment path unchanged.")]
+    public SegmentedGarmentSO segmentedGarment;
+
     [Header("Hair interaction")]
     [Tooltip("Only meaningful when occupiedSlots includes Headwear. When true, equipping this item " +
              "hides the avatar's Hair entirely (see HairItemSO.canCoexistWithHeadwear's own doc — this " +

@@ -11,11 +11,6 @@ using UnityEngine.AddressableAssets;
 /// BodyMorphValues.GetMorphWeights for the exact formula). Both endpoints share the same canonical
 /// height, so Gender never changes height, grounding or the skeleton.
 ///
-/// maleBase/femaleBase are the baked REFERENCE geometry of the two Gender endpoints (Gender 0 / 1).
-/// Runtime never writes them onto a mesh (body changes are blendshape weights only); they're the
-/// ground truth the validator/tests check the mesh against, and what future garment fitting bakes
-/// against.
-///
 /// baseAvatarPrefab is expected to carry an AvatarVisualPart (see its own doc) exposing: rootBone (the
 /// skeleton AvatarSkeletonMapper builds its cache from and every equipped item remaps onto),
 /// skinnedRenderers (morph-driven by AvatarBodyMorphController), skinToneRenderers (tinted from
@@ -30,10 +25,6 @@ public class BaseAvatarDefinitionSO : ScriptableObject
     [Header("Base geometry (Addressable) — ONE prefab, shared by both genders")]
     public AssetReferenceGameObject baseAvatarPrefab;
 
-    [Header("Gender endpoint reference geometry (Gender 0 / Gender 1) — same topology/skeleton/height")]
-    public AvatarMeshBasePresetSO maleBase;
-    public AvatarMeshBasePresetSO femaleBase;
-
     [Header("Shader properties (configurable — never hardcoded in code)")]
     [Tooltip("MaterialPropertyBlock color property FaceProfileSO.skinTone is written to on this base's " +
              "own AvatarVisualPart.skinToneRenderers.")]
@@ -43,6 +34,9 @@ public class BaseAvatarDefinitionSO : ScriptableObject
              "base's own AvatarVisualPart.faceRenderer, when both are assigned.")]
     public string faceTextureShaderProperty = "_BaseMap";
 
-    public AvatarMeshBasePresetSO GetBasePreset(BodyBaseType baseType) =>
-        baseType == BodyBaseType.Male ? maleBase : femaleBase;
+    [Header("Segmented garments")]
+    [Tooltip("Region vocabulary + per-region skin masks on THIS body's UV layout (cuts package). Null = segmented " +
+             "garments still assemble per region, but the body is never masked.")]
+    public GarmentRegionCatalogSO garmentRegionCatalog;
+
 }

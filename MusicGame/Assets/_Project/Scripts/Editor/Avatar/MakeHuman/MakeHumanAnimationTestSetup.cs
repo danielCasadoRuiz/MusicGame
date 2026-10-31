@@ -248,7 +248,7 @@ public static class MakeHumanAnimationTestSetup
     {
         ok = true;
         var derived = new Dictionary<DebugAnimation, AnimationClip>();
-        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(MakeHumanBodyBuilder.PrefabPath);
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CanonicalAvatarSetup.PrefabPath);
         if (prefab == null) { ok = false; report.Add("FAILED: MakeHuman prefab missing — bake the body first."); return derived; }
 
         if (!AssetDatabase.IsValidFolder(DerivedFolder)) AssetDatabase.CreateFolder(Folder + "/Clips", "Derived");

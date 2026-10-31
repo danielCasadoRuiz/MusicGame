@@ -1,0 +1,288 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 763eeb5ddddce7e4998378ead173d3ab, type: 3}
+  m_Name: GarmentRegionCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::GarmentRegionCatalogSO
+  regionIds:
+  - unassigned
+  - ear_l
+  - ear_r
+  - neck_lower_back_l
+  - neck_lower_back_r
+  - neck_lower_front_l
+  - neck_lower_front_r
+  - neck_upper_back_l
+  - neck_upper_back_r
+  - neck_upper_front_l
+  - neck_upper_front_r
+  - shoulder_l
+  - upperarm_upper_l
+  - upperarm_lower_l
+  - forearm_upper_l
+  - forearm_lower_l
+  - wrist_l
+  - hand_l
+  - shoulder_r
+  - upperarm_upper_r
+  - upperarm_lower_r
+  - forearm_upper_r
+  - forearm_lower_r
+  - wrist_r
+  - hand_r
+  - chest_front_center
+  - chest_front_l
+  - chest_front_r
+  - back_upper
+  - abdomen_front_center
+  - abdomen_front_l
+  - abdomen_front_r
+  - back_lower
+  - pelvis_front_center
+  - pelvis_front_l
+  - pelvis_front_r
+  - buttocks
+  - thigh_upper_front_l
+  - thigh_upper_back_l
+  - thigh_lower_front_l
+  - thigh_lower_back_l
+  - knee_back_l
+  - knee_front_l
+  - shin_upper_back_l
+  - shin_upper_front_l
+  - shin_lower_back_l
+  - shin_lower_front_l
+  - ankle_l
+  - foot_l
+  - thigh_upper_front_r
+  - thigh_upper_back_r
+  - thigh_lower_front_r
+  - thigh_lower_back_r
+  - knee_back_r
+  - knee_front_r
+  - shin_upper_back_r
+  - shin_upper_front_r
+  - shin_lower_back_r
+  - shin_lower_front_r
+  - ankle_r
+  - foot_r
+  - scalp_top
+  - head_back_lower
+  - head_back_upper
+  categories:
+  - top
+  - shirt
+  - jacket
+  - coat
+  - trousers
+  - skirt
+  - dress
+  - shoes
+  - gloves
+  - hat
+  - beard
+  - hair
+  bodyMasks:
+  - region: ear_l
+    mask: {fileID: 2800000, guid: 90d04293997e19e4984590d09ba5ded3, type: 3}
+    hiddenPixels: 0
+  - region: ear_r
+    mask: {fileID: 2800000, guid: 66bf2b1859e9fa04d92502971969a859, type: 3}
+    hiddenPixels: 0
+  - region: neck_lower_back_l
+    mask: {fileID: 2800000, guid: 76aa66fde9bfe9645aa80e118b4ff838, type: 3}
+    hiddenPixels: 0
+  - region: neck_lower_back_r
+    mask: {fileID: 2800000, guid: 578a5d6a6beda634c9e426e8caaff45c, type: 3}
+    hiddenPixels: 0
+  - region: neck_lower_front_l
+    mask: {fileID: 2800000, guid: 6608c9fc8bd6ee446a5633753c92cc5f, type: 3}
+    hiddenPixels: 0
+  - region: neck_lower_front_r
+    mask: {fileID: 2800000, guid: 9835a9b6a1edc4f40b1ce313d4dbb874, type: 3}
+    hiddenPixels: 0
+  - region: neck_upper_back_l
+    mask: {fileID: 2800000, guid: ffdd316fcf549154b9e07cc49236bb9d, type: 3}
+    hiddenPixels: 0
+  - region: neck_upper_back_r
+    mask: {fileID: 2800000, guid: 9f3e6f81782de7447b556ba426bad3ab, type: 3}
+    hiddenPixels: 0
+  - region: neck_upper_front_l
+    mask: {fileID: 2800000, guid: c172799bb2647e842b92bc1428d88f04, type: 3}
+    hiddenPixels: 0
+  - region: neck_upper_front_r
+    mask: {fileID: 2800000, guid: 7696f65359125344eb0a466048df64c5, type: 3}
+    hiddenPixels: 0
+  - region: shoulder_l
+    mask: {fileID: 2800000, guid: f0c43af299d65654eb15f064686d4782, type: 3}
+    hiddenPixels: 0
+  - region: upperarm_upper_l
+    mask: {fileID: 2800000, guid: bc425f9ea4cdced4d9147a4d4e6c382c, type: 3}
+    hiddenPixels: 0
+  - region: upperarm_lower_l
+    mask: {fileID: 2800000, guid: c3844ec25b4ca224d8ea7e3540cc2222, type: 3}
+    hiddenPixels: 0
+  - region: forearm_upper_l
+    mask: {fileID: 2800000, guid: 3cf03384323fb184ba0f4e17676e3eac, type: 3}
+    hiddenPixels: 0
+  - region: forearm_lower_l
+    mask: {fileID: 2800000, guid: 5718a581822451d469be8973c9b28576, type: 3}
+    hiddenPixels: 0
+  - region: wrist_l
+    mask: {fileID: 2800000, guid: 062ecfee5ca08954291dec06ac09ebe2, type: 3}
+    hiddenPixels: 0
+  - region: hand_l
+    mask: {fileID: 2800000, guid: 785d16600b752d44bbcee02c8bc92c1d, type: 3}
+    hiddenPixels: 0
+  - region: shoulder_r
+    mask: {fileID: 2800000, guid: 0a604043f7a3fb04d81b3c9ca6113243, type: 3}
+    hiddenPixels: 0
+  - region: upperarm_upper_r
+    mask: {fileID: 2800000, guid: 3d73a96790e8568408f4eecb410ac36d, type: 3}
+    hiddenPixels: 0
+  - region: upperarm_lower_r
+    mask: {fileID: 2800000, guid: 6f4f11d5c05d5bc48954702abbe26ba0, type: 3}
+    hiddenPixels: 0
+  - region: forearm_upper_r
+    mask: {fileID: 2800000, guid: f8dea1b7f3037b64faa5fb89a0a6372e, type: 3}
+    hiddenPixels: 0
+  - region: forearm_lower_r
+    mask: {fileID: 2800000, guid: f70f38a2256247c4cac0c483f0458b57, type: 3}
+    hiddenPixels: 0
+  - region: wrist_r
+    mask: {fileID: 2800000, guid: 181a4f4383b9a9648913195ff6547bcb, type: 3}
+    hiddenPixels: 0
+  - region: hand_r
+    mask: {fileID: 2800000, guid: 9d832242b963d074f9bbec5d43238105, type: 3}
+    hiddenPixels: 0
+  - region: chest_front_center
+    mask: {fileID: 2800000, guid: cbbad687e1ba00c4e873a2c89435df78, type: 3}
+    hiddenPixels: 0
+  - region: chest_front_l
+    mask: {fileID: 2800000, guid: a44504f3b55e5cd4d905713d53316b7e, type: 3}
+    hiddenPixels: 0
+  - region: chest_front_r
+    mask: {fileID: 2800000, guid: 54a0ec3c8b8601e4eb3245647cc2fc02, type: 3}
+    hiddenPixels: 0
+  - region: back_upper
+    mask: {fileID: 2800000, guid: 5423b2e89425fbb45a3798f707363744, type: 3}
+    hiddenPixels: 0
+  - region: abdomen_front_center
+    mask: {fileID: 2800000, guid: 979fbe4b6fcce8c40b98635e31c8abdd, type: 3}
+    hiddenPixels: 0
+  - region: abdomen_front_l
+    mask: {fileID: 2800000, guid: da9f2c11f7e04f24c81605240f86c5d9, type: 3}
+    hiddenPixels: 0
+  - region: abdomen_front_r
+    mask: {fileID: 2800000, guid: c3979ca2e9cc3f245a22e37ec5694cd6, type: 3}
+    hiddenPixels: 0
+  - region: back_lower
+    mask: {fileID: 2800000, guid: d46422baf04a9534e9ba3b31fb1fbf24, type: 3}
+    hiddenPixels: 0
+  - region: pelvis_front_center
+    mask: {fileID: 2800000, guid: eaf7510d26c1e494db10e9dffd413a2d, type: 3}
+    hiddenPixels: 0
+  - region: pelvis_front_l
+    mask: {fileID: 2800000, guid: f35a1376769666f45bd3101e24f7bcfc, type: 3}
+    hiddenPixels: 0
+  - region: pelvis_front_r
+    mask: {fileID: 2800000, guid: aec09295fb24a2a4b8007ee4b9630bb0, type: 3}
+    hiddenPixels: 0
+  - region: buttocks
+    mask: {fileID: 2800000, guid: 5ee340a8cfdbcbc40959289a818d2929, type: 3}
+    hiddenPixels: 0
+  - region: thigh_upper_front_l
+    mask: {fileID: 2800000, guid: bcdf5cf86bf6c8d45be6d1ff6e642d07, type: 3}
+    hiddenPixels: 0
+  - region: thigh_upper_back_l
+    mask: {fileID: 2800000, guid: 41b63f0c4ab02f845857684b8734064f, type: 3}
+    hiddenPixels: 0
+  - region: thigh_lower_front_l
+    mask: {fileID: 2800000, guid: ce5566fc47c5cab409e14b631d6ea14c, type: 3}
+    hiddenPixels: 0
+  - region: thigh_lower_back_l
+    mask: {fileID: 2800000, guid: d43d4a13664c2ee40aad678d169b400b, type: 3}
+    hiddenPixels: 0
+  - region: knee_back_l
+    mask: {fileID: 2800000, guid: 59368f9094904ae4aa7936b2b2a01724, type: 3}
+    hiddenPixels: 0
+  - region: knee_front_l
+    mask: {fileID: 2800000, guid: feb90fddd15ee4b4a9402312060415c4, type: 3}
+    hiddenPixels: 0
+  - region: shin_upper_back_l
+    mask: {fileID: 2800000, guid: 1a65e4181b2e576478a0ec90299d090f, type: 3}
+    hiddenPixels: 0
+  - region: shin_upper_front_l
+    mask: {fileID: 2800000, guid: e56181795d455dd47b4692fff2798661, type: 3}
+    hiddenPixels: 0
+  - region: shin_lower_back_l
+    mask: {fileID: 2800000, guid: 09691404379089b4ba4eee57359eb7d0, type: 3}
+    hiddenPixels: 0
+  - region: shin_lower_front_l
+    mask: {fileID: 2800000, guid: 7039d6493735b964f87c8b8b9e8f3de9, type: 3}
+    hiddenPixels: 0
+  - region: ankle_l
+    mask: {fileID: 2800000, guid: fa3092fd5a55af74781951af7e9bad7e, type: 3}
+    hiddenPixels: 0
+  - region: foot_l
+    mask: {fileID: 2800000, guid: bc7a79bc627e3e3498cb7f83826629e9, type: 3}
+    hiddenPixels: 0
+  - region: thigh_upper_front_r
+    mask: {fileID: 2800000, guid: 30c22a4537aea4e469dda7812a7eeea4, type: 3}
+    hiddenPixels: 0
+  - region: thigh_upper_back_r
+    mask: {fileID: 2800000, guid: 24d64a5d3aad49847ac07ad1edb7651d, type: 3}
+    hiddenPixels: 0
+  - region: thigh_lower_front_r
+    mask: {fileID: 2800000, guid: a38b1c4376909764d82bfa3b4507878a, type: 3}
+    hiddenPixels: 0
+  - region: thigh_lower_back_r
+    mask: {fileID: 2800000, guid: b3e53a7b12f483848bf85a2adea867e6, type: 3}
+    hiddenPixels: 0
+  - region: knee_back_r
+    mask: {fileID: 2800000, guid: 348e09ed930506749b940239869776f9, type: 3}
+    hiddenPixels: 0
+  - region: knee_front_r
+    mask: {fileID: 2800000, guid: d48bf35c8f2f78b4aa21751b05abcb96, type: 3}
+    hiddenPixels: 0
+  - region: shin_upper_back_r
+    mask: {fileID: 2800000, guid: b71b0b9ab37af804ea851ee312fbd1ea, type: 3}
+    hiddenPixels: 0
+  - region: shin_upper_front_r
+    mask: {fileID: 2800000, guid: 022cd753dd870c14e951414f885f54e3, type: 3}
+    hiddenPixels: 0
+  - region: shin_lower_back_r
+    mask: {fileID: 2800000, guid: 6df0754c9206fd344a4d0552309f3579, type: 3}
+    hiddenPixels: 0
+  - region: shin_lower_front_r
+    mask: {fileID: 2800000, guid: bd16daf7d4991e84398cd4b59077ec02, type: 3}
+    hiddenPixels: 0
+  - region: ankle_r
+    mask: {fileID: 2800000, guid: 68ed9e8c59cdc70478892fdad800d826, type: 3}
+    hiddenPixels: 0
+  - region: foot_r
+    mask: {fileID: 2800000, guid: 7d6ad0f2ffc664449b4b479093e4975a, type: 3}
+    hiddenPixels: 0
+  - region: scalp_top
+    mask: {fileID: 2800000, guid: d276c3f1314b1814e9485ebcd16d1733, type: 3}
+    hiddenPixels: 0
+  - region: head_back_lower
+    mask: {fileID: 2800000, guid: 83342fa9480bbc748b877fe566fe5aef, type: 3}
+    hiddenPixels: 0
+  - region: head_back_upper
+    mask: {fileID: 2800000, guid: 65d6f4b27864c0f4b8318c7d6e7ac749, type: 3}
+    hiddenPixels: 0
+  bodyObject: Body
+  bodyUv: UVMap
+  avatarSha256: 955d5e83294f03b73868f2c4003afe5f3f5ba1b7d10a33522baa30276ec53153
+  maskResolution: 1024
+  seamPaddingTexels: 4
+  sourcePackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Wagner_pants\Rigged\Segmented

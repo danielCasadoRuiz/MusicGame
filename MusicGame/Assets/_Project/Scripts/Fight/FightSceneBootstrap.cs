@@ -480,7 +480,7 @@ public class FightSceneBootstrap : MonoBehaviour
     /// Never touches gameplay/hitboxes/AI (task's own explicit "no toquis" requirement) — this only
     /// ever replaces what's under VisualRoot, exactly like the capsule-vs-prefab choice already did.
     /// </summary>
-    /// <summary>Every MakeHuman body is baked at this height (MakeHumanBodyBaker.CanonicalHeight).</summary>
+    /// <summary>Every MakeHuman body is baked at this height (CanonicalAvatarModel.ExpectedHeight).</summary>
     public const float CanonicalAvatarHeight = 1.75f;
 
     private async System.Threading.Tasks.Task TryBuildAvatar(AvatarRecipeSO recipeSO, FighterActor opponentActor, string who, System.Func<AvatarInstance, bool> keep)

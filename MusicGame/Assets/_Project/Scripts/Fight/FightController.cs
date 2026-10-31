@@ -62,6 +62,7 @@ public class FightController : MonoBehaviour
     private TextMeshProUGUI _playerRoundPipsText, _opponentRoundPipsText;
 
     private RectTransform _pausePanel;
+    private StyleBlendGroup _pauseStyleGroup;
     private bool _paused;
 
     /// <summary>True while the fight pause menu is open: Time.timeScale = 0 (fighters, round timer,
@@ -502,6 +503,7 @@ public class FightController : MonoBehaviour
         _opponentRoundPipsText = view.opponentRoundPipsText;
         _timerText          = view.timerText;
         _pausePanel         = view.pausePanel.GetComponent<RectTransform>();
+        _pauseStyleGroup    = view.pausePanel.GetComponentInChildren<StyleBlendGroup>(true);
         _playerPortrait     = view.playerPortrait;
         _opponentPortrait   = view.opponentPortrait;
         _playerPortraitCrop   = view.playerPortraitCrop;
@@ -577,6 +579,7 @@ public class FightController : MonoBehaviour
         bool changed = _paused != paused;
         _paused = paused;
         IsPaused = paused;
+        if (paused) ApplyPauseStyleBlend();
         if (_pausePanel != null) _pausePanel.gameObject.SetActive(paused && !HelpScreenController.IsOpen);
         if (!paused && HelpScreenController.IsOpen) HelpScreenController.Instance.Close();
         if (!changed) return;
@@ -584,6 +587,19 @@ public class FightController : MonoBehaviour
         FightMusicController.Instance?.SetPaused(paused);
         GameAudio.Instance?.SetAnnouncerPaused(paused);   // the countdown's voice freezes with the countdown
         Debug.Log($"[FightController] Fight {(paused ? "PAUSED" : "resumed")}.");
+    }
+
+    // Pause buttons: classic art faded into the song's style by who is winning (health + rounds).
+    private void ApplyPauseStyleBlend()
+    {
+        if (_pauseStyleGroup == null || _pauseStyleGroup.library == null) return;
+        if (_playerHealth == null || _opponentHealth == null) FindHealthRefs();
+        float player = _playerHealth != null && _playerHealth.MaxHealth > 0f ? _playerHealth.CurrentHealth / _playerHealth.MaxHealth : 1f;
+        float rival = _opponentHealth != null && _opponentHealth.MaxHealth > 0f ? _opponentHealth.CurrentHealth / _opponentHealth.MaxHealth : 1f;
+        var match = FightMatchController.Instance;
+        float weight = _pauseStyleGroup.library.FightWeight(player, rival,
+            match != null ? match.PlayerRoundsWon : 0, match != null ? match.OpponentRoundsWon : 0);
+        _pauseStyleGroup.Apply(StyleSkinLibrarySO.CurrentStyle(), weight);
     }
 
     private void PopulateInfo()

@@ -255,7 +255,7 @@ GameObject:
   - component: {fileID: 8836532275098063087}
   - component: {fileID: 5533665241835023414}
   - component: {fileID: 436044353136592316}
-  - component: {fileID: 1970277874981238834}
+  - component: {fileID: 1705536893619274778}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -280,7 +280,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -16}
-  m_SizeDelta: {x: -32, y: 30}
+  m_SizeDelta: {x: -32, y: 143}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5533665241835023414
 CanvasRenderer:
@@ -312,15 +312,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: EndScreen.Title
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
+  m_sharedMaterial: {fileID: -7326861909581889668, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0.953, g: 0.918, b: 0.827, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -337,12 +337,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
+  m_fontSize: 110
   m_fontSizeBase: 20
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 55
+  m_fontSizeMax: 110
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -382,7 +382,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &1970277874981238834
+--- !u!114 &1705536893619274778
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -391,11 +391,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4356925986697349159}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5573fc8de72c4102b886b13e3dfc6c79, type: 3}
+  m_Script: {fileID: 11500000, guid: bf01c39519ffce54aa8af357bd6d9b52, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ThemeTextReceiver
-  colorToken: 0
-  fontToken: 0
+  m_EditorClassIdentifier: Assembly-CSharp::TitleText
+  library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  tier: 1
 --- !u!1 &6250500816241018729
 GameObject:
   m_ObjectHideFlags: 0
@@ -1091,7 +1091,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 350332222222041389, guid: c537dbafca5d9e3428f850542949e985, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -54
+      value: -167
       objectReference: {fileID: 0}
     - target: {fileID: 350332222222041389, guid: c537dbafca5d9e3428f850542949e985, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

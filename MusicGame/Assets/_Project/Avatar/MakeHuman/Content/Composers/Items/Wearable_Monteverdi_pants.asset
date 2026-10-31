@@ -39,6 +39,13 @@ MonoBehaviour:
           m_SubObjectGUID: 
           m_SubObjectType: 
           m_EditorAssetChanged: 0
+      - qualityName: HighMid
+        prefab:
+          m_AssetGUID: 15b971e6974b0da4f92cbc92fd42523b
+          m_SubObjectName: 
+          m_SubObjectGUID: 
+          m_SubObjectType: 
+          m_EditorAssetChanged: 0
       - qualityName: High
         prefab:
           m_AssetGUID: 890e081be53489f44a494098cfea2416
@@ -49,13 +56,6 @@ MonoBehaviour:
       - qualityName: Ultra
         prefab:
           m_AssetGUID: 0a57bbaf0000bbf408e6a455ad304e1a
-          m_SubObjectName: 
-          m_SubObjectGUID: 
-          m_SubObjectType: 
-          m_EditorAssetChanged: 0
-      - qualityName: HighMid
-        prefab:
-          m_AssetGUID: 15b971e6974b0da4f92cbc92fd42523b
           m_SubObjectName: 
           m_SubObjectGUID: 
           m_SubObjectType: 
@@ -89,4 +89,5 @@ MonoBehaviour:
   layer: 3
   hiddenBodyRegions: 392
   occludedLowerGarmentRegions: 0
+  segmentedGarment: {fileID: 11400000, guid: 4dbb3b82f469de34b8c660a52fb90192, type: 2}
   hidesHair: 0

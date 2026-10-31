@@ -81,6 +81,9 @@ public class AvatarBodyMorphController
 
     public int RegisterRenderer(SkinnedMeshRenderer renderer, string itemLabel) => RegisterRenderer(renderer, null, itemLabel);
 
+    /// <summary>Stops driving `renderer` (an unequipped item). Returns whether it was registered.</summary>
+    public bool UnregisterRenderer(SkinnedMeshRenderer renderer) => _renderers.RemoveAll(r => r.Renderer == renderer) > 0;
+
     private static bool Contains(IReadOnlyList<MorphChannel> list, MorphChannel channel)
     {
         for (int i = 0; i < list.Count; i++) if (list[i] == channel) return true;

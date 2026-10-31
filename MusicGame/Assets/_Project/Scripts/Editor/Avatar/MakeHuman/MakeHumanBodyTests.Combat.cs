@@ -73,9 +73,9 @@ public static partial class MakeHumanBodyTests
 
         log.Check("MakeHuman_Canonical.fbx byte-identical after the imports", CombatAnimationImporter.CanonicalFbxHash() == hashBefore, "FBX changed");
         log.Check("MakeHuman canonical Humanoid description (bone map + T-pose) unchanged", CanonicalDescription() == descriptionBefore, "description changed");
-        var importer = AssetImporter.GetAtPath(MakeHumanFbxPipeline.FbxPath) as ModelImporter;
-        var avatar = MakeHumanFbxPipeline.LoadAvatar();
-        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(MakeHumanBodyBuilder.PrefabPath);
+        var importer = AssetImporter.GetAtPath(CanonicalAvatarModel.FbxPath) as ModelImporter;
+        var avatar = CanonicalAvatarModel.LoadAvatar();
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CanonicalAvatarSetup.PrefabPath);
         bool mapOk = importer != null && MakeHumanHumanoid.BoneMap.All(b => importer.humanDescription.human.Any(h => h.humanName == b.human && h.boneName == b.bone)) &&
                      importer.humanDescription.human.Length == MakeHumanHumanoid.BoneMap.Length;
         log.Check("MakeHuman_CanonicalAvatar still Humanoid / Create From This Model with the explicit 52-bone map", importer != null &&
@@ -86,7 +86,7 @@ public static partial class MakeHumanBodyTests
 
     private static string CanonicalDescription()
     {
-        var importer = AssetImporter.GetAtPath(MakeHumanFbxPipeline.FbxPath) as ModelImporter;
+        var importer = AssetImporter.GetAtPath(CanonicalAvatarModel.FbxPath) as ModelImporter;
         if (importer == null) return "";
         var d = importer.humanDescription;
         var sb = new System.Text.StringBuilder();
@@ -101,7 +101,7 @@ public static partial class MakeHumanBodyTests
         int n = entries.Count;
         log.Check($"[{tag}] entry names unique ({n} entries)", entries.Select(e => e.name).Distinct().Count() == n, "duplicate names");
 
-        var canonicalAvatar = MakeHumanFbxPipeline.LoadAvatar();
+        var canonicalAvatar = CanonicalAvatarModel.LoadAvatar();
         var badClips = new List<string>();
         var badSource = new List<string>();
         var badRoot = new List<string>();
@@ -184,8 +184,8 @@ public static partial class MakeHumanBodyTests
     private static void CheckOnAvatar(TestLog log, string tag, List<CombatAnimationEntry> entries)
     {
         if (entries.Count == 0) return;
-        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(MakeHumanBodyBuilder.PrefabPath);
-        var male = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>(MakeHumanBodyBuilder.MaleRecipePath);
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CanonicalAvatarSetup.PrefabPath);
+        var male = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>(CanonicalAvatarSetup.MaleRecipePath);
         var instance = Assemble(prefab, male, Vector3.zero);
         try
         {
@@ -245,7 +245,7 @@ public static partial class MakeHumanBodyTests
         File.WriteAllText(CombatResultFile, editReport + "\n");
         if (!editPassed) { EditorApplication.Exit(1); return; }
 
-        EditorSceneManager.OpenScene(MakeHumanBodyBuilder.DebugScenePath, OpenSceneMode.Single);
+        EditorSceneManager.OpenScene(CanonicalAvatarSetup.DebugScenePath, OpenSceneMode.Single);
         SessionState.SetBool(CombatPendingKey, true);
         EditorApplication.isPlaying = true;
     }
@@ -417,8 +417,8 @@ public static partial class MakeHumanBodyTests
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         var library = AssetDatabase.LoadAssetAtPath<CombatAnimationLibrarySO>(libraryPath);
         if (library == null) { Debug.LogError($"[CombatPreview] no library at {libraryPath}"); return; }
-        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(MakeHumanBodyBuilder.PrefabPath);
-        var male = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>(MakeHumanBodyBuilder.MaleRecipePath);
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CanonicalAvatarSetup.PrefabPath);
+        var male = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>(CanonicalAvatarSetup.MaleRecipePath);
         Directory.CreateDirectory("Logs/CombatPreview");
 
         var lightGO = new GameObject("Light");

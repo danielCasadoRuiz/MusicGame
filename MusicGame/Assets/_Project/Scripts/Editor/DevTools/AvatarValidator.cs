@@ -85,58 +85,15 @@ public static class AvatarValidator
                 warnings++;
             }
 
-            if (baseAvatar.maleBase == null)
-            {
-                Debug.LogWarning($"[AvatarValidator] {label} has no MaleBase preset assigned.");
-                warnings++;
-            }
-            if (baseAvatar.femaleBase == null)
-            {
-                Debug.LogWarning($"[AvatarValidator] {label} has no FemaleBase preset assigned.");
-                warnings++;
-            }
-
             warnings += ValidateSkinning(label, prefab, visualPart);
             warnings += ValidateAddressable(label, baseAvatar.baseAvatarPrefab);
             warnings += ValidateHumanoid(label, prefab);
-            warnings += ValidateGenderEndpoints(label, baseAvatar, visualPart);
+            warnings += ValidateGenderEndpoints(label, visualPart);
 
-            warnings += ValidateBasePresetVertexCounts(label, "MaleBase", baseAvatar.maleBase, visualPart);
-            warnings += ValidateBasePresetVertexCounts(label, "FemaleBase", baseAvatar.femaleBase, visualPart);
-            warnings += ValidateBasePresetTopologyMatch(label, baseAvatar.maleBase, baseAvatar.femaleBase);
 
             // ONE shared prefab drives every body (see BaseAvatarDefinitionSO's own doc) — its mesh must
             // carry Gender plus all six Slim/Heavy/Muscle blendshapes.
             warnings += WarnMissingBlendShapes(label, prefab.name, visualPart.skinnedRenderers, AllBodyChannels, isError: false);
-        }
-        return warnings;
-    }
-
-    /// <summary>Every renderer the base prefab actually has must exist in `preset` with EXACTLY the
-    /// same vertex count as the real mesh — task's own explicit "el nom del canal/topologia és el
-    /// contracte, no busquis mappings alternatius" philosophy applied to base presets too.</summary>
-    private static int ValidateBasePresetVertexCounts(string label, string presetLabel, AvatarMeshBasePresetSO preset, AvatarVisualPart visualPart)
-    {
-        if (preset == null || visualPart.skinnedRenderers == null) return 0;
-
-        int warnings = 0;
-        foreach (var smr in visualPart.skinnedRenderers)
-        {
-            if (smr == null || smr.sharedMesh == null) continue;
-
-            var data = preset.FindRenderer(smr.name);
-            if (data == null)
-            {
-                Debug.LogWarning($"[AvatarValidator] {label}: {presetLabel} '{preset.name}' has no vertex data for renderer '{smr.name}'.");
-                warnings++;
-                continue;
-            }
-            if (data.vertices.Length != smr.sharedMesh.vertexCount)
-            {
-                Debug.LogError($"[AvatarValidator] {label}: {presetLabel} '{preset.name}' renderer '{smr.name}' " +
-                                $"has {data.vertices.Length} vertices but the mesh has {smr.sharedMesh.vertexCount} — topology mismatch.");
-                warnings++;
-            }
         }
         return warnings;
     }
@@ -203,78 +160,35 @@ public static class AvatarValidator
         return 1;
     }
 
-    /// <summary>The continuous-Gender contract (see BaseAvatarDefinitionSO's own doc): every body mesh
-    /// rests EXACTLY in MaleBase and its Gender blendshape lands EXACTLY on FemaleBase — so Gender 0/1
-    /// reproduce the two endpoint presets. Also catches preset/mesh drift after a partial rebake.</summary>
-    private static int ValidateGenderEndpoints(string label, BaseAvatarDefinitionSO baseAvatar, AvatarVisualPart visualPart)
+    /// <summary>Gender is carried by the model itself; require a finite endpoint and
+    /// one standard frame. Canonical acceptance tests additionally compare it to the approved source.</summary>
+    private static int ValidateGenderEndpoints(string label, AvatarVisualPart visualPart)
     {
-        if (baseAvatar.maleBase == null || baseAvatar.femaleBase == null || visualPart.skinnedRenderers == null) return 0;
-
-        const float tolerance = 1e-4f;
+        if (visualPart.skinnedRenderers == null) return 0;
         int warnings = 0;
-        foreach (var smr in visualPart.skinnedRenderers)
+        foreach (var renderer in visualPart.skinnedRenderers)
         {
-            if (smr == null || smr.sharedMesh == null) continue;
-            var mesh = smr.sharedMesh;
-            var male = baseAvatar.maleBase.FindRenderer(smr.name);
-            var female = baseAvatar.femaleBase.FindRenderer(smr.name);
-            if (male == null || female == null || male.vertices.Length != mesh.vertexCount || female.vertices.Length != mesh.vertexCount)
-                continue; // reported by the vertex-count/topology checks
-
-            int genderIndex = mesh.GetBlendShapeIndex(MorphChannel.Gender.ToString());
-            if (genderIndex < 0)
+            if (renderer == null || renderer.sharedMesh == null) continue;
+            var mesh = renderer.sharedMesh;
+            int index = mesh.GetBlendShapeIndex(MorphChannel.Gender.ToString());
+            if (index < 0 || mesh.GetBlendShapeFrameCount(index) != 1 ||
+                Mathf.Abs(mesh.GetBlendShapeFrameWeight(index, 0) - 100f) > .001f)
             {
-                Debug.LogError($"[AvatarValidator] {label} renderer '{smr.name}' has no '{MorphChannel.Gender}' blendshape — Gender can't morph (rebake the avatar).");
+                Debug.LogError($"[AvatarValidator] {label} renderer '{renderer.name}' requires one Gender frame at weight 100.");
                 warnings++;
                 continue;
             }
-
-            var rest = mesh.vertices;
+            var vertices = mesh.vertices;
             var delta = new Vector3[mesh.vertexCount];
-            mesh.GetBlendShapeFrameVertices(genderIndex, mesh.GetBlendShapeFrameCount(genderIndex) - 1, delta, null, null);
-
-            float maleError = 0f, femaleError = 0f;
-            for (int i = 0; i < rest.Length; i++)
+            mesh.GetBlendShapeFrameVertices(index, 0, delta, null, null);
+            for (int i = 0; i < vertices.Length; i++)
             {
-                maleError = Mathf.Max(maleError, (rest[i] - male.vertices[i]).magnitude);
-                femaleError = Mathf.Max(femaleError, (rest[i] + delta[i] - female.vertices[i]).magnitude);
-            }
-            if (maleError > tolerance)
-            {
-                Debug.LogError($"[AvatarValidator] {label} renderer '{smr.name}' rest vertices differ from MaleBase by up to {maleError * 1000f:0.00} mm — Gender 0 wouldn't be MaleBase.");
+                Vector3 endpoint = vertices[i] + delta[i];
+                if (float.IsFinite(vertices[i].x) && float.IsFinite(vertices[i].y) && float.IsFinite(vertices[i].z) &&
+                    float.IsFinite(endpoint.x) && float.IsFinite(endpoint.y) && float.IsFinite(endpoint.z)) continue;
+                Debug.LogError($"[AvatarValidator] {label} renderer '{renderer.name}' has a non-finite Gender endpoint.");
                 warnings++;
-            }
-            if (femaleError > tolerance)
-            {
-                Debug.LogError($"[AvatarValidator] {label} renderer '{smr.name}' Gender blendshape misses FemaleBase by up to {femaleError * 1000f:0.00} mm — Gender 1 wouldn't be FemaleBase.");
-                warnings++;
-            }
-        }
-        return warnings;
-    }
-
-    /// <summary>MaleBase and FemaleBase must describe the SAME topology (task's own explicit "shared
-    /// vertex count/topology/skeleton/bone weights/UVs" requirement) — only their vertex POSITIONS may
-    /// differ, never which renderers exist or how many vertices each one has.</summary>
-    private static int ValidateBasePresetTopologyMatch(string label, AvatarMeshBasePresetSO male, AvatarMeshBasePresetSO female)
-    {
-        if (male == null || female == null) return 0;
-
-        int warnings = 0;
-        foreach (var maleEntry in male.renderers)
-        {
-            var femaleEntry = female.FindRenderer(maleEntry.rendererName);
-            if (femaleEntry == null)
-            {
-                Debug.LogWarning($"[AvatarValidator] {label}: MaleBase has renderer '{maleEntry.rendererName}' but FemaleBase doesn't — they must share the exact same topology.");
-                warnings++;
-                continue;
-            }
-            if (maleEntry.vertices.Length != femaleEntry.vertices.Length)
-            {
-                Debug.LogError($"[AvatarValidator] {label}: MaleBase/FemaleBase renderer '{maleEntry.rendererName}' vertex counts differ " +
-                                $"({maleEntry.vertices.Length} vs {femaleEntry.vertices.Length}) — they must share the exact same topology.");
-                warnings++;
+                break;
             }
         }
         return warnings;

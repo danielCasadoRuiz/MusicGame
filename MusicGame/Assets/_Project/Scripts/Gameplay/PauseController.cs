@@ -66,6 +66,7 @@ public class PauseController : MonoBehaviour
     private TextMeshProUGUI _cameraToggleLabel;
     private Sprite        _thirdPersonIcon;
     private Sprite        _firstPersonIcon;
+    private StyleBlendGroup _styleGroup;
 
     private void Awake()
     {
@@ -190,7 +191,22 @@ public class PauseController : MonoBehaviour
         MusicClock.Instance?.Pause();
         GameAudio.Instance?.SetAnnouncerPaused(true);   // the countdown's voice freezes with the countdown
 
+        ApplyStyleBlend();
         RefreshVisibility();
+    }
+
+    // Pause buttons: classic art faded into the song's style by how much of the song has been played.
+    private void ApplyStyleBlend()
+    {
+        if (_styleGroup == null || _styleGroup.library == null) return;
+        float progress = 0f;
+        if (_audio != null && _manager != null)
+        {
+            float start = _manager.SongPlayStart;
+            float end = _manager.SongPlayEnd > 0f ? _manager.SongPlayEnd : (_audio.clip != null ? _audio.clip.length : 0f);
+            if (end > start) progress = (_audio.time - start) / (end - start);
+        }
+        _styleGroup.Apply(StyleSkinLibrarySO.CurrentStyle(), _styleGroup.library.RunnerWeight(progress));
     }
 
     public void Resume()
@@ -267,6 +283,7 @@ public class PauseController : MonoBehaviour
     {
         _pauseButtonRoot = view.pauseButtonRoot.GetComponent<RectTransform>();
         _overlayRoot     = view.overlayRoot.GetComponent<RectTransform>();
+        _styleGroup      = view.overlayRoot.GetComponentInChildren<StyleBlendGroup>(true);
 
         view.pauseButton.onClick.AddListener(Pause);
         view.resumeButton.onClick.AddListener(Resume);

@@ -32,6 +32,7 @@ public class IntroScreenController : MonoBehaviour
     private RectTransform _root;
     private CanvasGroup   _canvasGroup;
     private TextMeshProUGUI _titleText;
+    private StyledTitleView _styledTitle;
 
     private Coroutine _sequence;
     private bool      _skipRequested;
@@ -84,6 +85,7 @@ public class IntroScreenController : MonoBehaviour
         _root.SetAsLastSibling();
         _canvasGroup = view.canvasGroup;
         _titleText   = view.titleText;
+        _styledTitle = view.styledTitle;
         view.skipButton.onClick.AddListener(RequestSkip);
 
         _canvasGroup.alpha = 0f;
@@ -97,6 +99,10 @@ public class IntroScreenController : MonoBehaviour
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
         Loc.Set(_titleText, "Intro.Title");
+        // The TEMPO FURY title art (per style) replaces the placeholder title string when present.
+        bool styled = _styledTitle != null && _styledTitle.Show(StyledTitleView.MenuStyle(_styledTitle.library));
+        if (_styledTitle != null) _styledTitle.gameObject.SetActive(styled);
+        _titleText.gameObject.SetActive(!styled);
 
         if (_sequence != null) StopCoroutine(_sequence);
         _skipRequested = false;

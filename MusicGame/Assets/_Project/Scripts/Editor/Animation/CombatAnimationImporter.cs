@@ -155,7 +155,7 @@ public static class CombatAnimationImporter
         var previous = new Dictionary<string, CombatAnimationEntry>();
         foreach (var e in library.entries) if (e != null && !string.IsNullOrEmpty(e.name)) previous[e.name] = e;
 
-        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(MakeHumanBodyBuilder.PrefabPath);
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CanonicalAvatarSetup.PrefabPath);
         if (prefab == null) { report.Add("ERROR    MakeHuman prefab missing — bake the body first."); return false; }
 
         var entries = new List<CombatAnimationEntry>();
@@ -1004,7 +1004,7 @@ public static class CombatAnimationImporter
 
     public static string CanonicalFbxHash()
     {
-        string path = Path.GetFullPath(MakeHumanFbxPipeline.FbxPath);
+        string path = Path.GetFullPath(CanonicalAvatarModel.FbxPath);
         if (!File.Exists(path)) return "";
         using var sha = SHA256.Create();
         return System.BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes(path))).Replace("-", "");
@@ -1024,11 +1024,11 @@ public static class CombatAnimationImporter
     public static void AssignLibraryToDebugScene(CombatAnimationLibrarySO library, List<string> report)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) { report.Add("SCENE    (play mode — assign the library to AvatarDebugPreview manually)"); return; }
-        if (AssetDatabase.LoadAssetAtPath<SceneAsset>(MakeHumanBodyBuilder.DebugScenePath) == null) { report.Add("SCENE    AvatarDebug scene missing"); return; }
+        if (AssetDatabase.LoadAssetAtPath<SceneAsset>(CanonicalAvatarSetup.DebugScenePath) == null) { report.Add("SCENE    AvatarDebug scene missing"); return; }
 
-        var scene = EditorSceneManager.GetSceneByPath(MakeHumanBodyBuilder.DebugScenePath);
+        var scene = EditorSceneManager.GetSceneByPath(CanonicalAvatarSetup.DebugScenePath);
         bool wasOpen = scene.IsValid() && scene.isLoaded;
-        if (!wasOpen) scene = EditorSceneManager.OpenScene(MakeHumanBodyBuilder.DebugScenePath, OpenSceneMode.Additive);
+        if (!wasOpen) scene = EditorSceneManager.OpenScene(CanonicalAvatarSetup.DebugScenePath, OpenSceneMode.Additive);
         bool changed = false;
         foreach (var root in scene.GetRootGameObjects())
             foreach (var preview in root.GetComponentsInChildren<AvatarDebugPreview>(true))

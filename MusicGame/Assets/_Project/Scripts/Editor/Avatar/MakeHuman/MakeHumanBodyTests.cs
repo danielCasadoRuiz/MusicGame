@@ -12,10 +12,10 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// Automated acceptance tests for the MakeHuman body — every check drives the REAL runtime path
 /// (AvatarFactory.AssembleBody / AvatarInstance.ApplyBody / AvatarBodyTransition), never a test-only
-/// deformation. Expected geometry comes from an independent fresh bake (MakeHumanBodyBaker) combined
+/// deformation. Expected runtime geometry is read from the imported AvatarLab canonical FBX and combined
 /// with the documented formula
 ///   V = lerp(MaleBase + maleMorphs, FemaleBase + femaleMorphs, Gender)
-/// so the tests prove both the math and that the saved assets still match their source data.
+/// so the tests prove both the math and that the runtime correctly consumes the imported model.
 ///
 ///   Edit mode  (Tools > MusicGame > Avatars > Run MakeHuman Body Tests): geometry, height, ground,
 ///              Gender interpolation, determinism, shared skeleton, animation sampling, instances.
@@ -40,22 +40,16 @@ public static partial class MakeHumanBodyTests
     {
         var log = new TestLog();
         var errors = new List<string>();
-        var bake = MakeHumanBodyBaker.Bake(errors);
-        var maleRecipe = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>(MakeHumanBodyBuilder.MaleRecipePath);
-        var femaleRecipe = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>(MakeHumanBodyBuilder.FemaleRecipePath);
-        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(MakeHumanBodyBuilder.PrefabPath);
+        var model = CanonicalModelReference.Read(errors);
+        var maleRecipe = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>(CanonicalAvatarSetup.MaleRecipePath);
+        var femaleRecipe = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>(CanonicalAvatarSetup.FemaleRecipePath);
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CanonicalAvatarSetup.PrefabPath);
 
-        if (bake == null || maleRecipe == null || femaleRecipe == null || prefab == null)
+        if (model == null || maleRecipe == null || femaleRecipe == null || prefab == null)
         {
-            log.Fail("Setup", $"missing bake/recipes/prefab — run the MakeHuman Body Builder first. {string.Join("; ", errors)}");
+            log.Fail("Setup", $"missing imported model/recipes/prefab — configure the exported AvatarLab model first. {string.Join("; ", errors)}");
             return log.Finish(out passed);
         }
-
-        // The FBX importer orders vertices its own way: map every imported vertex to its bake vertex
-        // (exact position + UV match), so the bake can serve as the independent expectation.
-        s_bodyOrder = MapImportedToBake(bake, 0, log);
-        s_eyesOrder = MapImportedToBake(bake, 1, log);
-        if (s_bodyOrder == null || s_eyesOrder == null) return log.Finish(out passed);
 
         var assetMeshes = new List<(Mesh mesh, Vector3[] snapshot)>();
         foreach (var smr in prefab.GetComponentsInChildren<SkinnedMeshRenderer>(true))
@@ -64,8 +58,8 @@ public static partial class MakeHumanBodyTests
         var created = new List<AvatarInstance>();
         try
         {
-            CheckAssets(log, bake, maleRecipe.baseAvatar, prefab);
-            CheckBakedHeightsAndGround(log, bake);
+            CheckAssets(log, model, maleRecipe.baseAvatar, prefab);
+            CheckImportedHeightsAndGround(log, model);
 
             var a = Assemble(prefab, maleRecipe, Vector3.zero);
             created.Add(a);
@@ -78,13 +72,13 @@ public static partial class MakeHumanBodyTests
             var avatar = a.Animator.avatar;
 
             // Gender endpoints are exact.
-            ExpectBody(log, "Gender 0 == MaleBase", a, Body(0f, 0.5f, 0f), bake);
-            ExpectBody(log, "Gender 1 == FemaleBase", a, Body(1f, 0.5f, 0f), bake);
+            ExpectBody(log, "Gender 0 == MaleBase", a, Body(0f, 0.5f, 0f), model);
+            ExpectBody(log, "Gender 1 == FemaleBase", a, Body(1f, 0.5f, 0f), model);
 
             // Each body channel alone, at its own gender's endpoint, reproduces its evaluated MakeHuman shape.
-            foreach (var channel in MakeHumanBodyShapes.AllChannels)
+            foreach (var channel in CanonicalModelReference.BodyChannels)
             {
-                float g = MakeHumanBodyShapes.BaseOf(channel) == BodyBaseType.Male ? 0f : 1f;
+                float g = CanonicalModelReference.BaseOf(channel) == BodyBaseType.Male ? 0f : 1f;
                 var values = channel switch
                 {
                     MorphChannel.MaleSlim or MorphChannel.FemaleSlim => Body(g, 0f, 0f),
@@ -92,27 +86,27 @@ public static partial class MakeHumanBodyTests
                     _ => Body(g, 0.5f, 1f),
                 };
                 a.ApplyBody(values);
-                float error = MaxError(Fbx(bake.Morphs[channel].Parts[0].Vertices), AvatarBodyChecks.BakeBody(a));
+                float error = MaxError(Fbx(model.Morphs[channel].Parts[0].Vertices), AvatarBodyChecks.BakeBody(a));
                 log.Check($"{channel} alone == evaluated {channel} (max error {Mm(error)})", error <= Tolerance, $"max error {Mm(error)}");
             }
 
             // Combinations + Gender interpolation, all against the closed-form expectation.
-            ExpectBody(log, "Female, weight +0.4, muscle 0.7 == FemaleBase + 0.4 dHeavy + 0.7 dMuscle", a, Body(1f, 0.7f, 0.7f), bake);
-            ExpectBody(log, "Gender 0.5 neutral == 0.5 MaleBase + 0.5 FemaleBase", a, Body(0.5f, 0.5f, 0f), bake);
-            ExpectBody(log, "Gender 0.25 neutral == lerp(MaleBase, FemaleBase, 0.25)", a, Body(0.25f, 0.5f, 0f), bake);
-            ExpectBody(log, "Heavy 0.8 + muscle 0.7 at Gender 0 == Male version", a, Body(0f, 0.9f, 0.7f), bake);
-            ExpectBody(log, "Heavy 0.8 + muscle 0.7 at Gender 1 == Female version", a, Body(1f, 0.9f, 0.7f), bake);
-            ExpectBody(log, "Heavy 0.8 + muscle 0.7 at Gender 0.5 == midpoint of Male/Female versions", a, Body(0.5f, 0.9f, 0.7f), bake);
-            ExpectBody(log, "Slim 0.6 at Gender 0.3 == lerp(Male slim state, Female slim state, 0.3)", a, Body(0.3f, 0.2f, 0f), bake);
-            ExpectBody(log, "Strong at Gender 0.75 == lerp(MaleMuscle, FemaleMuscle, 0.75)", a, Body(0.75f, 0.5f, 1f), bake);
+            ExpectBody(log, "Female, weight +0.4, muscle 0.7 == FemaleBase + 0.4 dHeavy + 0.7 dMuscle", a, Body(1f, 0.7f, 0.7f), model);
+            ExpectBody(log, "Gender 0.5 neutral == 0.5 MaleBase + 0.5 FemaleBase", a, Body(0.5f, 0.5f, 0f), model);
+            ExpectBody(log, "Gender 0.25 neutral == lerp(MaleBase, FemaleBase, 0.25)", a, Body(0.25f, 0.5f, 0f), model);
+            ExpectBody(log, "Heavy 0.8 + muscle 0.7 at Gender 0 == Male version", a, Body(0f, 0.9f, 0.7f), model);
+            ExpectBody(log, "Heavy 0.8 + muscle 0.7 at Gender 1 == Female version", a, Body(1f, 0.9f, 0.7f), model);
+            ExpectBody(log, "Heavy 0.8 + muscle 0.7 at Gender 0.5 == midpoint of Male/Female versions", a, Body(0.5f, 0.9f, 0.7f), model);
+            ExpectBody(log, "Slim 0.6 at Gender 0.3 == lerp(Male slim state, Female slim state, 0.3)", a, Body(0.3f, 0.2f, 0f), model);
+            ExpectBody(log, "Strong at Gender 0.75 == lerp(MaleMuscle, FemaleMuscle, 0.75)", a, Body(0.75f, 0.5f, 1f), model);
 
             // Weight/Muscle survive a Gender change: the midpoint of a heavy male->female morph is the
             // midpoint of MaleHeavy and FemaleHeavy — never a neutralized body.
             {
-                var heavyMid = Expected(bake, 0.5f, 1f, 0f);
-                var maleHeavy = Fbx(bake.Morphs[MorphChannel.MaleHeavy].Parts[0].Vertices);
-                var femaleHeavy = Fbx(bake.Morphs[MorphChannel.FemaleHeavy].Parts[0].Vertices);
-                var neutralMid = Expected(bake, 0.5f, 0.5f, 0f);
+                var heavyMid = Expected(model, 0.5f, 1f, 0f);
+                var maleHeavy = Fbx(model.Morphs[MorphChannel.MaleHeavy].Parts[0].Vertices);
+                var femaleHeavy = Fbx(model.Morphs[MorphChannel.FemaleHeavy].Parts[0].Vertices);
+                var neutralMid = Expected(model, 0.5f, 0.5f, 0f);
                 float fromLerp = 0f, fromNeutral = 0f;
                 for (int i = 0; i < heavyMid.Length; i++)
                 {
@@ -145,7 +139,7 @@ public static partial class MakeHumanBodyTests
                 int diff = AvatarBodyChecks.CountDifferent(reference, AvatarBodyChecks.BakeBody(a));
                 log.Check("Gender stress: 300 rounds of the Male/Female/0.34/Heavy/Strong/0.72/Thin sequence + random states + 200 ping-pongs — bit-exact return",
                           diff == 0, $"{diff} rendered vertices drifted");
-                ExpectBody(log, "  ...and still equals the closed-form expectation", a, target, bake);
+                ExpectBody(log, "  ...and still equals the closed-form expectation", a, target, model);
             }
 
             // One skeleton: nothing above touched bones, bindposes, the Humanoid Avatar or scale.
@@ -168,7 +162,7 @@ public static partial class MakeHumanBodyTests
                 int diff = AvatarBodyChecks.CountDifferent(bBefore, AvatarBodyChecks.BakeBody(b));
                 log.Check("Two avatars have separate runtime meshes", a.BodyRenderers[0].sharedMesh != b.BodyRenderers[0].sharedMesh, "instances share a Mesh");
                 log.Check("Morphing avatar A (Gender 0.2 thin) leaves avatar B (Gender 0.8 heavy strong) bit-identical", diff == 0, $"{diff} of B's vertices changed");
-                ExpectBody(log, "  ...and B equals its closed-form body", b, Body(0.8f, 1f, 1f), bake);
+                ExpectBody(log, "  ...and B equals its closed-form body", b, Body(0.8f, 1f, 1f), model);
                 log.Check("Both avatars share the same Humanoid Avatar asset", a.Animator.avatar == b.Animator.avatar, "different Avatars");
             }
 
@@ -189,79 +183,67 @@ public static partial class MakeHumanBodyTests
         return log.Finish(out passed);
     }
 
-    private static void CheckAssets(TestLog log, MakeHumanBakeResult bake, BaseAvatarDefinitionSO baseAvatar, GameObject prefab)
+    private static void CheckAssets(TestLog log, CanonicalModelReference model, BaseAvatarDefinitionSO baseAvatar, GameObject prefab)
     {
-        log.Check("BaseAvatarDefinitionSO wired", baseAvatar != null && baseAvatar.maleBase != null && baseAvatar.femaleBase != null &&
-                  baseAvatar.baseAvatarPrefab != null && baseAvatar.baseAvatarPrefab.editorAsset == prefab, "baseAvatar/presets/prefab reference missing");
+        log.Check("BaseAvatarDefinitionSO wired", baseAvatar != null &&
+                  baseAvatar.baseAvatarPrefab != null && baseAvatar.baseAvatarPrefab.editorAsset == prefab, "baseAvatar/prefab reference missing");
         if (baseAvatar == null) return;
-
-        foreach (var type in new[] { BodyBaseType.Male, BodyBaseType.Female })
-        {
-            var preset = baseAvatar.GetBasePreset(type);
-            var fresh = bake.GetBase(type);
-            for (int p = 0; p < bake.Source.Parts.Length; p++)
-            {
-                var data = preset != null ? preset.FindRenderer(bake.Source.Parts[p].Name) : null;
-                float error = data == null ? float.MaxValue : MaxError(Fbx(fresh.Parts[p].Vertices, p), data.vertices);
-                log.Check($"{type}Base '{bake.Source.Parts[p].Name}' through the FBX == fresh bake (max error {Mm(error)})", error <= RoundTripTolerance,
-                          data == null ? "renderer entry missing" : $"max error {Mm(error)} — rebake needed");
-            }
-        }
+        bool hasPresetDependency = false;
+        foreach (string dependency in AssetDatabase.GetDependencies(AssetDatabase.GetAssetPath(baseAvatar), true))
+            if (dependency.EndsWith("MakeHuman_MaleBase.asset") || dependency.EndsWith("MakeHuman_FemaleBase.asset")) hasPresetDependency = true;
+        log.Check("Base definition has no serialized endpoint preset dependencies", !hasPresetDependency, "obsolete geometry is still referenced");
 
         var animator = prefab.GetComponent<Animator>();
-        var humanoid = MakeHumanFbxPipeline.LoadAvatar();
-        var importer = AssetImporter.GetAtPath(MakeHumanFbxPipeline.FbxPath) as ModelImporter;
+        var humanoid = CanonicalAvatarModel.LoadAvatar();
+        var importer = AssetImporter.GetAtPath(CanonicalAvatarModel.FbxPath) as ModelImporter;
         log.Check("MakeHuman_Canonical.fbx imports as Humanoid / Create From This Model", importer != null &&
                   importer.animationType == ModelImporterAnimationType.Human && importer.avatarSetup == ModelImporterAvatarSetup.CreateFromThisModel,
                   "wrong import settings");
         log.Check($"ONE canonical Humanoid Avatar from the FBX ('{(humanoid != null ? humanoid.name : "-")}'), valid, used by the prefab",
                   humanoid != null && humanoid.isValid && humanoid.isHuman && animator != null && animator.avatar == humanoid, "missing/invalid/unassigned");
-        log.Check("No other Avatar assets remain in Generated/", AssetDatabase.FindAssets("t:Avatar", new[] { MakeHumanBodyBuilder.GeneratedFolder }).Length == 1,
+        log.Check("No other Avatar assets remain in Generated/", AssetDatabase.FindAssets("t:Avatar", new[] { CanonicalAvatarSetup.GeneratedFolder }).Length == 1,
                   "stale Avatar assets in Generated/");
         log.Check("Avatar prefab is a variant of the canonical FBX model", PrefabUtility.GetPrefabAssetType(prefab) == PrefabAssetType.Variant &&
-                  PrefabUtility.GetCorrespondingObjectFromOriginalSource(prefab) == MakeHumanFbxPipeline.LoadModel(), "prefab not based on the FBX");
-        CheckFbxRoundTrip(log, bake, prefab);
+                  PrefabUtility.GetCorrespondingObjectFromOriginalSource(prefab) == CanonicalAvatarModel.LoadModel(), "prefab not based on the FBX");
+        CheckImportedModelContract(log, model, prefab);
 
-        var channels = new List<MorphChannel>(MakeHumanBodyShapes.AllChannels) { MorphChannel.Gender };
+        var channels = new List<MorphChannel>(CanonicalModelReference.BodyChannels) { MorphChannel.Gender };
         foreach (var smr in prefab.GetComponentsInChildren<SkinnedMeshRenderer>(true))
         {
             int shapes = 0;
             foreach (var channel in channels) if (smr.sharedMesh.GetBlendShapeIndex(channel.ToString()) >= 0) shapes++;
             log.Check($"'{smr.name}' has Gender + all six body blendshapes", shapes == 7, $"only {shapes}/7");
-            log.Check($"'{smr.name}' skinned to the one {bake.Rig.Bones.Count}-bone skeleton", smr.bones.Length == bake.Rig.Bones.Count && smr.sharedMesh.bindposeCount == smr.bones.Length,
+            log.Check($"'{smr.name}' skinned to the one {model.Rig.Bones.Count}-bone skeleton", smr.bones.Length == model.Rig.Bones.Count && smr.sharedMesh.bindposeCount == smr.bones.Length,
                       $"{smr.bones.Length} bones / {smr.sharedMesh.bindposeCount} bindposes");
-            var male = baseAvatar.maleBase.FindRenderer(smr.name);
-            var restVertices = smr.sharedMesh.vertices;
-            log.Check($"'{smr.name}' rest vertices ARE MaleBase", male != null && AvatarBodyChecks.CountDifferent(male.vertices, restVertices) == 0,
-                      male == null ? "no preset entry" : $"{AvatarBodyChecks.CountDifferent(male.vertices, restVertices)} of {restVertices.Length} differ");
+            var canonical = CanonicalAvatarModel.LoadMesh(smr.name);
+            log.Check($"'{smr.name}' prefab uses the canonical FBX mesh", smr.sharedMesh == canonical, "prefab mesh is not canonical");
         }
 
-        string guid = AssetDatabase.AssetPathToGUID(MakeHumanBodyBuilder.PrefabPath);
+        string guid = AssetDatabase.AssetPathToGUID(CanonicalAvatarSetup.PrefabPath);
         var settings = UnityEditor.AddressableAssets.AddressableAssetSettingsDefaultObject.Settings;
         log.Check("Prefab is Addressable", settings != null && settings.FindAssetEntry(guid) != null, "no Addressables entry");
     }
 
     /// <summary>The eight baked source states: same canonical height, same ground plane.</summary>
-    private static void CheckBakedHeightsAndGround(TestLog log, MakeHumanBakeResult bake)
+    private static void CheckImportedHeightsAndGround(TestLog log, CanonicalModelReference model)
     {
         var sb = new StringBuilder();
         float minH = float.MaxValue, maxH = float.MinValue, maxGround = 0f;
-        foreach (var state in bake.AllStates())
+        foreach (var state in model.AllStates())
         {
             sb.Append($"{state.Name} {state.Height:0.00000} m / ground {Mm(state.GroundY)}; ");
             minH = Mathf.Min(minH, state.Height);
             maxH = Mathf.Max(maxH, state.Height);
             maxGround = Mathf.Max(maxGround, Mathf.Abs(state.GroundY));
         }
-        log.Info($"Baked heights: {sb}");
-        log.Check($"All 8 baked states are {MakeHumanBodyBaker.CanonicalHeight} m tall (range {minH:0.00000}..{maxH:0.00000} m)",
-                  Mathf.Abs(minH - MakeHumanBodyBaker.CanonicalHeight) <= HeightTolerance && Mathf.Abs(maxH - MakeHumanBodyBaker.CanonicalHeight) <= HeightTolerance,
+        log.Info($"Imported endpoint heights: {sb}");
+        log.Check($"All 8 baked states are {CanonicalAvatarModel.ExpectedHeight} m tall (range {minH:0.00000}..{maxH:0.00000} m)",
+                  Mathf.Abs(minH - CanonicalAvatarModel.ExpectedHeight) <= HeightTolerance && Mathf.Abs(maxH - CanonicalAvatarModel.ExpectedHeight) <= HeightTolerance,
                   "height mismatch");
-        log.Check($"MaleBase height == FemaleBase height ({bake.Male.Height:0.00000} vs {bake.Female.Height:0.00000} m)",
-                  Mathf.Abs(bake.Male.Height - bake.Female.Height) <= HeightTolerance, "different heights");
+        log.Check($"MaleBase height == FemaleBase height ({model.Male.Height:0.00000} vs {model.Female.Height:0.00000} m)",
+                  Mathf.Abs(model.Male.Height - model.Female.Height) <= HeightTolerance, "different heights");
         log.Check($"All 8 baked states stand on the same ground plane (max |ground| {Mm(maxGround)})", maxGround <= HeightTolerance, "ground mismatch");
-        log.Check("MakeHuman's own height targets did the work (final uniform scale within 0.1%)",
-                  AllStatesScaleWithin(bake, 0.001f), "normalization had to rescale by more than 0.1%");
+
     }
 
     /// <summary>Rendered (skinned) body along the Gender axis and for Heavy/Strong transitions: same
@@ -280,7 +262,7 @@ public static partial class MakeHumanBodyTests
                 var vertices = AvatarBodyChecks.BakeBody(a);
                 float minY = float.MaxValue, maxY = float.MinValue;
                 foreach (var v in vertices) { minY = Mathf.Min(minY, v.y); maxY = Mathf.Max(maxY, v.y); }
-                worstHeight = Mathf.Max(worstHeight, Mathf.Abs(maxY - minY - MakeHumanBodyBaker.CanonicalHeight));
+                worstHeight = Mathf.Max(worstHeight, Mathf.Abs(maxY - minY - CanonicalAvatarModel.ExpectedHeight));
                 worstGround = Mathf.Max(worstGround, Mathf.Abs(minY));
                 if (step % 5 == 0) sb.Append($"g{g:0.0}={maxY - minY:0.0000}m ");
             }
@@ -436,7 +418,7 @@ public static partial class MakeHumanBodyTests
         File.WriteAllText(ResultFile, editReport + "\n");
         if (!editPassed) { EditorApplication.Exit(1); return; }
 
-        EditorSceneManager.OpenScene(MakeHumanBodyBuilder.DebugScenePath, OpenSceneMode.Single);
+        EditorSceneManager.OpenScene(CanonicalAvatarSetup.DebugScenePath, OpenSceneMode.Single);
         SessionState.SetBool(PendingKey, true);
         EditorApplication.isPlaying = true;
     }
@@ -473,8 +455,8 @@ public static partial class MakeHumanBodyTests
                 var male = preview.Instances[0];
                 var female = preview.Instances[1];
                 var baseAvatar = male.Recipe.BaseAvatar;
-                float maleError = MaxError(baseAvatar.maleBase.FindRenderer("Body").vertices, AvatarBodyChecks.BakeBody(male));
-                float femaleError = MaxError(baseAvatar.femaleBase.FindRenderer("Body").vertices, AvatarBodyChecks.BakeBody(female));
+                float maleError = MaxError(CanonicalAvatarModel.GenderEndpoint("Body", false), AvatarBodyChecks.BakeBody(male));
+                float femaleError = MaxError(CanonicalAvatarModel.GenderEndpoint("Body", true), AvatarBodyChecks.BakeBody(female));
                 log.Check($"P1 debug avatars render exactly MaleBase / FemaleBase ({Mm(maleError)} / {Mm(femaleError)})",
                           maleError <= Tolerance && femaleError <= Tolerance, "endpoint mismatch");
                 log.Check("P1 both avatars share one Humanoid Avatar", male.Animator.avatar == female.Animator.avatar, "different Avatars");
@@ -485,13 +467,13 @@ public static partial class MakeHumanBodyTests
                 preview.SetDebugAnimation(DebugAnimation.None);
                 male.ApplyBody(Body(1f, 0.5f, 0f));
                 await Task.Yield();
-                float restError = MaxError(baseAvatar.femaleBase.FindRenderer("Body").vertices, AvatarBodyChecks.BakeBody(male));
+                float restError = MaxError(CanonicalAvatarModel.GenderEndpoint("Body", true), AvatarBodyChecks.BakeBody(male));
                 log.Check($"P2 after all that, rest Female neutral renders exactly FemaleBase ({Mm(restError)})", restError <= Tolerance, $"{Mm(restError)} off");
                 log.Check("P2 switching Idle/Walk/Run never rebuilt the avatar (same instance, same root)", preview.Instances[0] == male && male.Root == root, "avatar rebuilt");
             }
 
             // B — the real Fight pipeline: OpponentLevelConfig.avatarRecipe -> FightSceneBootstrap -> AvatarFactory -> FighterActor.
-            var composer = AssetDatabase.LoadAssetAtPath<OpponentDefinition>(MakeHumanBodyBuilder.TestOpponentPath);
+            var composer = AssetDatabase.LoadAssetAtPath<OpponentDefinition>(CanonicalAvatarSetup.TestOpponentPath);
             var levelConfig = composer != null && composer.levels.Length > 0 ? composer.levels[0] : null;
             log.Check("P3 Opponent_Bach level 1 has a MakeHuman recipe", levelConfig != null && levelConfig.avatarRecipe != null, "no avatarRecipe assigned");
 
@@ -626,8 +608,8 @@ public static partial class MakeHumanBodyTests
     public static void RenderPreviewFromCommandLine()
     {
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); // before loading: a new scene unloads unused assets
-        var male = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>(MakeHumanBodyBuilder.MaleRecipePath);
-        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(MakeHumanBodyBuilder.PrefabPath);
+        var male = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>(CanonicalAvatarSetup.MaleRecipePath);
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CanonicalAvatarSetup.PrefabPath);
         var clips = LoadValidationClips();
         var instances = new List<AvatarInstance>();
         var rowAnimations = new[] { DebugAnimation.Idle, DebugAnimation.Walk, DebugAnimation.Run };
@@ -736,81 +718,26 @@ public static partial class MakeHumanBodyTests
     // ── Helpers ──────────────────────────────────────────────────────────────────
 
     private const float RoundTripTolerance = 1e-4f; // 0.1 mm through JSON -> Blender -> FBX -> Unity
-    private static int[] s_bodyOrder, s_eyesOrder;  // imported vertex -> bake vertex
+    // Snapshot arrays already use the imported model's vertex order.
+    private static Vector3[] Fbx(Vector3[] importedVertices, int part = 0) => importedVertices;
 
-    private static Vector3[] Fbx(Vector3[] bakeOrder, int part = 0)
-    {
-        var order = part == 0 ? s_bodyOrder : s_eyesOrder;
-        var result = new Vector3[order.Length];
-        for (int i = 0; i < order.Length; i++) result[i] = bakeOrder[order[i]];
-        return result;
-    }
-
-    /// <summary>imported mesh vertex -> bake mesh vertex, by exact position + UV (every Unity vertex is a
-    /// unique (position, uv) pair). Null (and a FAIL) if any imported vertex has no counterpart.</summary>
-    private static int[] MapImportedToBake(MakeHumanBakeResult bake, int partIndex, TestLog log)
-    {
-        var part = bake.Source.Parts[partIndex];
-        var mesh = MakeHumanFbxPipeline.LoadMesh(part.Name);
-        if (mesh == null) { log.Fail($"FBX mesh '{part.Name}'", "missing from MakeHuman_Canonical.fbx"); return null; }
-
-        var bakeVerts = bake.Male.Parts[partIndex].Vertices;
-        var grid = new Dictionary<Vector3Int, List<int>>();
-        Vector3Int Cell(Vector3 p) => new Vector3Int(Mathf.FloorToInt(p.x * 1000f), Mathf.FloorToInt(p.y * 1000f), Mathf.FloorToInt(p.z * 1000f));
-        for (int i = 0; i < bakeVerts.Length; i++)
-        {
-            var c = Cell(bakeVerts[i]);
-            if (!grid.TryGetValue(c, out var list)) grid[c] = list = new List<int>();
-            list.Add(i);
-        }
-
-        var verts = mesh.vertices;
-        var uvs = mesh.uv;
-        var order = new int[verts.Length];
-        int missing = 0;
-        float worst = 0f;
-        for (int i = 0; i < verts.Length; i++)
-        {
-            var c = Cell(verts[i]);
-            int best = -1;
-            float bestCost = float.MaxValue;
-            for (int dx = -1; dx <= 1; dx++)
-            for (int dy = -1; dy <= 1; dy++)
-            for (int dz = -1; dz <= 1; dz++)
-            {
-                if (!grid.TryGetValue(new Vector3Int(c.x + dx, c.y + dy, c.z + dz), out var list)) continue;
-                foreach (int j in list)
-                {
-                    float cost = (bakeVerts[j] - verts[i]).sqrMagnitude + (part.UVs[j] - uvs[i]).sqrMagnitude;
-                    if (cost < bestCost) { bestCost = cost; best = j; }
-                }
-            }
-            if (best < 0 || bestCost > 1e-8f) { missing++; continue; }
-            worst = Mathf.Max(worst, Mathf.Sqrt(bestCost));
-            order[i] = best;
-        }
-        log.Check($"FBX '{part.Name}': every imported vertex matches a bake vertex (position+UV; {verts.Length} imported vs {bakeVerts.Length} baked, worst {worst:0.0e0})",
-                  missing == 0 && verts.Length == bakeVerts.Length, $"{missing} unmatched");
-        return missing == 0 ? order : null;
-    }
-
-    /// <summary>FBX round trip vs the bake: skeleton (hierarchy + T-pose joints), T-pose shape, skin
-    /// weights, normals, blendshape names.</summary>
-    private static void CheckFbxRoundTrip(TestLog log, MakeHumanBakeResult bake, GameObject prefab)
+    /// <summary>Imported FBX contract: skeleton (hierarchy + T-pose joints), T-pose shape, skin
+    /// normalized weights, seamless normals and blendshape names.</summary>
+    private static void CheckImportedModelContract(TestLog log, CanonicalModelReference model, GameObject prefab)
     {
         var bones = new Dictionary<string, Transform>();
         foreach (var t in prefab.GetComponentsInChildren<Transform>(true)) bones[t.name] = t;
 
         float worstJoint = 0f; string worstJointName = ""; int hierarchyErrors = 0;
-        for (int i = 0; i < bake.Rig.Bones.Count; i++)
+        for (int i = 0; i < model.Rig.Bones.Count; i++)
         {
-            var b = bake.Rig.Bones[i];
+            var b = model.Rig.Bones[i];
             if (!bones.TryGetValue(b.Name, out var t)) { hierarchyErrors++; continue; }
             if (b.Parent != null && (t.parent == null || t.parent.name != b.Parent)) hierarchyErrors++;
-            float e = (prefab.transform.InverseTransformPoint(t.position) - bake.TPose.Position[i]).magnitude;
+            float e = (prefab.transform.InverseTransformPoint(t.position) - model.TPose.Position[i]).magnitude;
             if (e > worstJoint) { worstJoint = e; worstJointName = b.Name; }
         }
-        log.Check($"FBX skeleton: all {bake.Rig.Bones.Count} bones, same hierarchy, joints at the baked T-pose (worst {Mm(worstJoint)} at {worstJointName})",
+        log.Check($"FBX skeleton: all {model.Rig.Bones.Count} bones, same hierarchy, joints at the canonical model T-pose (worst {Mm(worstJoint)} at {worstJointName})",
                   hierarchyErrors == 0 && worstJoint < 0.0005f, $"{hierarchyErrors} hierarchy errors, worst joint {Mm(worstJoint)}");
 
         // Real T-pose (rest), measured on the imported transforms.
@@ -825,48 +752,24 @@ public static partial class MakeHumanBodyTests
                   armL < 1f && armR < 1f && legL < 1f && legR < 1f && elbowL < 1f && kneeL < 1f, "not a clean T-pose");
         log.Check($"Character faces +Z, feet forward (foot yaw {footYaw:0.0} deg)", footYaw < 10f && bones["ball_l"].position.z > bones["foot_l"].position.z, "facing wrong way");
 
-        var body = MakeHumanFbxPipeline.LoadMesh("Body");
+        var body = CanonicalAvatarModel.LoadMesh("Body");
         var smr = prefab.GetComponentsInChildren<SkinnedMeshRenderer>(true)[0];
         foreach (var r in prefab.GetComponentsInChildren<SkinnedMeshRenderer>(true)) if (r.name == "Body") smr = r;
 
-        // Skin weights: imported == the bake's top-4 rule, bone by bone.
-        var weights = body.boneWeights;
-        var smrBones = smr.bones;
-        float worstWeight = 0f;
-        for (int i = 0; i < weights.Length; i++)
+        // Consumption contract: valid normalized weights referring to the model's real bones.
+        bool validWeights = true;
+        foreach (var weight in body.boneWeights)
         {
-            var expected = bake.Rig.RawTopInfluences(bake.Source.Parts[0].MeshToRawIndex[s_bodyOrder[i]]);
-            var w = weights[i];
-            var got = new Dictionary<string, float>();
-            void Add(int bi, float bw) { if (bw > 0f) got[smrBones[bi].name] = (got.TryGetValue(smrBones[bi].name, out var x) ? x : 0f) + bw; }
-            Add(w.boneIndex0, w.weight0); Add(w.boneIndex1, w.weight1); Add(w.boneIndex2, w.weight2); Add(w.boneIndex3, w.weight3);
-            foreach (var (bone, weight) in expected)
-            {
-                got.TryGetValue(bake.Rig.Bones[bone].Name, out float g);
-                worstWeight = Mathf.Max(worstWeight, Mathf.Abs(g - weight));
-            }
+            float sum = weight.weight0 + weight.weight1 + weight.weight2 + weight.weight3;
+            if (Mathf.Abs(sum - 1f) > .001f) validWeights = false;
+            if ((weight.weight0 > 0 && weight.boneIndex0 >= smr.bones.Length) ||
+                (weight.weight1 > 0 && weight.boneIndex1 >= smr.bones.Length) ||
+                (weight.weight2 > 0 && weight.boneIndex2 >= smr.bones.Length) ||
+                (weight.weight3 > 0 && weight.boneIndex3 >= smr.bones.Length)) validWeights = false;
         }
-        log.Check($"Skin weights survive the FBX (worst per-bone weight error {worstWeight:0.0000})", worstWeight < 0.01f, $"weights differ by {worstWeight:0.000}");
+        log.Check("Imported skin weights are normalized and reference valid bones", validWeights, "invalid canonical skinning");
 
-        // Normals: Unity-calculated vs the bake's seam-free normals.
         var normals = body.normals;
-        var bakeNormals = Fbx(bake.Male.Parts[0].Normals);
-        float worstNormal = 0f;
-        int over5 = 0, over45 = 0;
-        var angles = new List<float>();
-        string worstWhere = "";
-        for (int i = 0; i < normals.Length; i++)
-        {
-            float angle = Vector3.Angle(normals[i], bakeNormals[i]);
-            angles.Add(angle);
-            if (angle > 5f) over5++;
-            if (angle > 45f) over45++;
-            if (angle > worstNormal) { worstNormal = angle; worstWhere = $"vertex {i} at {body.vertices[i]}"; }
-        }
-        angles.Sort();
-        log.Info($"Normals vs bake: median {angles[angles.Count / 2]:0.00} deg, 99% {angles[(int)(angles.Count * 0.99f)]:0.00} deg, {over5} > 5 deg, {over45} > 45 deg, worst {worstNormal:0.0} ({worstWhere})");
-        log.Check($"Unity-calculated normals agree with the bake's (median {angles[angles.Count / 2]:0.00} deg; outliers are the folded eyelids)",
-                  angles[angles.Count / 2] < 3f, $"median {angles[angles.Count / 2]:0.0} deg");
 
         // No seams: every vertex duplicated along a UV seam must carry the SAME normal.
         var byPosition = new Dictionary<Vector3, Vector3>();
@@ -897,19 +800,19 @@ public static partial class MakeHumanBodyTests
         return instance;
     }
 
-    /// <summary>The closed-form expectation, built only from the eight independently baked states:
+    /// <summary>The closed-form expectation, built only from the eight imported endpoint states:
     /// lerp(MaleBase + maleMorphs, FemaleBase + femaleMorphs, gender).</summary>
-    private static Vector3[] Expected(MakeHumanBakeResult bake, float gender, float weight01, float muscle)
+    private static Vector3[] Expected(CanonicalModelReference model, float gender, float weight01, float muscle)
     {
         float slim = weight01 < 0.5f ? (0.5f - weight01) / 0.5f : 0f;
         float heavy = weight01 > 0.5f ? (weight01 - 0.5f) / 0.5f : 0f;
 
         Vector3[] Family(BodyBaseType type, MorphChannel s, MorphChannel h, MorphChannel m)
         {
-            var b = bake.GetBase(type).Parts[0].Vertices;
-            var vs = bake.Morphs[s].Parts[0].Vertices;
-            var vh = bake.Morphs[h].Parts[0].Vertices;
-            var vm = bake.Morphs[m].Parts[0].Vertices;
+            var b = model.GetBase(type).Parts[0].Vertices;
+            var vs = model.Morphs[s].Parts[0].Vertices;
+            var vh = model.Morphs[h].Parts[0].Vertices;
+            var vm = model.Morphs[m].Parts[0].Vertices;
             var result = new Vector3[b.Length];
             for (int i = 0; i < b.Length; i++)
                 result[i] = b[i] + slim * (vs[i] - b[i]) + heavy * (vh[i] - b[i]) + muscle * (vm[i] - b[i]);
@@ -923,18 +826,11 @@ public static partial class MakeHumanBodyTests
         return Fbx(expected);
     }
 
-    private static void ExpectBody(TestLog log, string name, AvatarInstance instance, BodyMorphValues values, MakeHumanBakeResult bake)
+    private static void ExpectBody(TestLog log, string name, AvatarInstance instance, BodyMorphValues values, CanonicalModelReference model)
     {
         instance.ApplyBody(values);
-        float error = MaxError(Expected(bake, values.Gender, values.Weight, values.Muscle), AvatarBodyChecks.BakeBody(instance));
+        float error = MaxError(Expected(model, values.Gender, values.Weight, values.Muscle), AvatarBodyChecks.BakeBody(instance));
         log.Check($"{name} (max error {Mm(error)})", error <= Tolerance, $"max vertex error {Mm(error)}");
-    }
-
-    private static bool AllStatesScaleWithin(MakeHumanBakeResult bake, float fraction)
-    {
-        foreach (var state in bake.AllStates())
-            if (Mathf.Abs(state.NormalizeScale - 1f) > fraction) return false;
-        return true;
     }
 
     private static (Transform bone, Vector3 position, Quaternion rotation)[] SnapshotSkeleton(AvatarInstance a)

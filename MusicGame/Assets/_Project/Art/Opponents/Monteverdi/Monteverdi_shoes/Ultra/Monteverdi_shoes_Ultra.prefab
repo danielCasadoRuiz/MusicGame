@@ -48,6 +48,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8137190829873912225, guid: 1926f3ad34edfc140bf838e462ac13a8, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 18964d7e14c108f429f22d69de63e086, type: 2}
+    - target: {fileID: -8137190829873912225, guid: 1926f3ad34edfc140bf838e462ac13a8, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 18964d7e14c108f429f22d69de63e086, type: 2}
+    - target: {fileID: -8137190829873912225, guid: 1926f3ad34edfc140bf838e462ac13a8, type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 18964d7e14c108f429f22d69de63e086, type: 2}
+    - target: {fileID: -8137190829873912225, guid: 1926f3ad34edfc140bf838e462ac13a8, type: 3}
+      propertyPath: 'm_Materials.Array.data[3]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 18964d7e14c108f429f22d69de63e086, type: 2}
+    - target: {fileID: -8137190829873912225, guid: 1926f3ad34edfc140bf838e462ac13a8, type: 3}
+      propertyPath: 'm_Materials.Array.data[4]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 18964d7e14c108f429f22d69de63e086, type: 2}
     - target: {fileID: 919132149155446097, guid: 1926f3ad34edfc140bf838e462ac13a8, type: 3}
       propertyPath: m_Name
       value: Monteverdi_shoes_Ultra
@@ -63,12 +83,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1926f3ad34edfc140bf838e462ac13a8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 314771537528980450}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1926f3ad34edfc140bf838e462ac13a8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1317051306842922040}
   m_SourcePrefab: {fileID: 100100000, guid: 1926f3ad34edfc140bf838e462ac13a8, type: 3}
---- !u!137 &2994284972366966400 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 1572776226636546805, guid: 1926f3ad34edfc140bf838e462ac13a8, type: 3}
-  m_PrefabInstance: {fileID: 4349995603713911925}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3503554381254349092 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 1926f3ad34edfc140bf838e462ac13a8, type: 3}
@@ -88,11 +106,47 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AvatarVisualPart
   rootBone: {fileID: 8350148455663882838}
   skinnedRenderers:
-  - {fileID: 2994284972366966400}
+  - {fileID: 3696520682447587882}
   rigidRenderers: []
   skinToneRenderers: []
   faceRenderer: {fileID: 0}
   regionMap: {fileID: 0}
+--- !u!114 &1317051306842922040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3503554381254349092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e41b978697a016499702cce58edff70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SegmentedGarmentPart
+  schemaVersion: 3
+  finalMaterial: {fileID: 2100000, guid: 18964d7e14c108f429f22d69de63e086, type: 2}
+  renderers:
+  - renderer: {fileID: 3696520682447587882}
+    cutsObject: GARMENT_Cuts
+    sourceObject: GARMENT
+    submeshRegions:
+    - foot_r
+    - ankle_r
+    - unassigned
+    - foot_l
+    - ankle_l
+    transportMaterials:
+    - CCZ_000_foot_r
+    - CCZ_001_ankle_r
+    - CCZ_002_unassigned
+    - CCZ_003_foot_l
+    - CCZ_004_ankle_l
+    vertexCount: 136483
+--- !u!137 &3696520682447587882 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -8137190829873912225, guid: 1926f3ad34edfc140bf838e462ac13a8, type: 3}
+  m_PrefabInstance: {fileID: 4349995603713911925}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8350148455663882838 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5746564759562468899, guid: 1926f3ad34edfc140bf838e462ac13a8, type: 3}

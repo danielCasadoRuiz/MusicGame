@@ -60,6 +60,7 @@ public static class UIScreenPrefabBuilder
         Run(ctx, "Runner", RunnerScreenPrefabs.Build);
         Run(ctx, "Help", HelpScreenPrefabs.Build);
         Run(ctx, "Profile", ProfileScreenPrefabs.Build);   // after Frontend: it patches MainMenu   // after Fight / Runner: it patches FightHud, PauseMenu, LiveHud
+        Run(ctx, "TempoFury", TempoFuryUISetup.Patch);     // last: title font, style pause buttons, styled intro title
 
         EditorUtility.SetDirty(lib);
         AssetDatabase.SaveAssets();

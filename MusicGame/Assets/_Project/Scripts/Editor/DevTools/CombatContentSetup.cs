@@ -340,7 +340,7 @@ public static class CombatContentSetup
             }
         }
 
-        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(MakeHumanBodyBuilder.PrefabPath);
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CanonicalAvatarSetup.PrefabPath);
         var animator = prefab != null ? prefab.GetComponent<Animator>() : null;
         Check("fighter avatar has a Humanoid Animator", animator != null && animator.avatar != null && animator.avatar.isHuman);
 
