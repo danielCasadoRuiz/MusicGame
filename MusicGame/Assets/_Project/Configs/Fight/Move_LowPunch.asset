@@ -15,31 +15,34 @@ MonoBehaviour:
   id: move_low_punch
   debugName: Low Punch
   moveType: 0
-  role: 1
+  role: 22
   scalingStat: 1
   resourceCost: 0
   resourceAmount: 1
   knockdownOnHit: 0
+  damageAsMaxHealthFraction: 0
   invulnerableStart: 0
   invulnerableDuration: 0
   animationState: Punch
-  startupDuration: 0.12
+  startupDuration: 0.23999998
   activeDuration: 0.1
-  recoveryDuration: 0.33
-  cancelWindow: 0.05
-  movementLocked: 1
-  movementMultiplier: 0
+  recoveryDuration: 0.28000003
+  cancelWindow: 0.14000002
+  movementLocked: 0
+  movementMultiplier: 0.4
   lungeDistance: 0
+  contactReach: 1.14
   forwardCarry: 0.15
+  airCarry: 1
   lockFacingDuringMove: 1
   allowedPostures: 
   requiredMovementStates: 
   attackDelivery: 0
   hits:
   - shape: 0
-    localOffset: {x: 0.7, y: -0.4, z: 0}
-    size: {x: 0.55, y: 0.5, z: 0.55}
-    baseDamage: 6
+    localOffset: {x: 0.5, y: 0, z: 0}
+    size: {x: 0.55, y: 0.45, z: 0.5}
+    baseDamage: 8
     baseHitStun: 0.25
     baseKnockback: 0.8
     attackHeight: 2
@@ -64,4 +67,6 @@ MonoBehaviour:
       chipDamage: 0
       tracking: 0
     destroyOnHit: 1
+  strikingLimb: 0
+  guardBreak: 0
   damage: 0

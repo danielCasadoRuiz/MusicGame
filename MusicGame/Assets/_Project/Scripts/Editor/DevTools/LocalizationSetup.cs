@@ -144,6 +144,7 @@ public static class LocalizationSetup
         // ── Fight HUD ────────────────────────────────────────────────────────────
         ("Fight.PlayerName",   "PLAYER",     "JUGADOR"),
         ("Fight.RivalUnknown", "RIVAL",      "RIVAL"),
+        ("Fight.RivalLevel",   "LEVEL",      "NIVELL"),
         ("Fight.Paused",       "PAUSED",     "PAUSA"),
         ("Fight.Pause",        "Pause",      "Pausa"),
         ("Fight.Resume",       "RESUME",     "REPRÈN"),

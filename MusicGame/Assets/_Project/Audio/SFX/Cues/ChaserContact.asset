@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: ChaserContact
   m_EditorClassIdentifier: Assembly-CSharp::SfxCue
   clips:
-  - {fileID: 8300000, guid: 0c6b6cc9d51b43c4d921237e5682724c, type: 3}
-  - {fileID: 8300000, guid: da1aca5b8d7e63e4dac8347e74e6f1c5, type: 3}
-  - {fileID: 8300000, guid: 88acc8ee05138be4b8134e3848f8c2c7, type: 3}
+  - {fileID: 8300000, guid: 2dfe479efde24a1d838d3037d8600cf1, type: 3}
+  - {fileID: 8300000, guid: f3581608f078413ca2532eeeac464eda, type: 3}
+  - {fileID: 8300000, guid: 5afc6f868e0d4226af9cc12e4cd46442, type: 3}
   channel: 1
-  volume: 0.65
+  volume: 0.75
   volumeJitter: 0.08
   pitch: {x: 0.97, y: 1.03}
   maxInstances: 1
   cooldown: 0.6
-  credits: "Kenney \"Sci-fi Sounds\" (kenney.nl) \u2014 CC0 1.0. Licence: Assets/_Project/Audio/Sfx/Kenney/License.txt"
+  credits: "Own synth (Tools/SfxSynth/synth_pickups.py) — CC0 1.0"

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6bb79ea8d940c047bf1daf38bb4a2bb, type: 3}
+  m_Name: Garment_dance_jacket
+  m_EditorClassIdentifier: Assembly-CSharp::SegmentedGarmentSO
+  garmentId: dance_jacket
+  category: jacket
+  layer: 40
+  hidesCategories:
+  - shirt
+  - top
+  - waistcoat
+  - trousers
+  occlusionGap: 0.1
+  bodyCoverage: []
+  garmentCoverage: []
+  coverageConfigured: 1
+  importedCoverageHash: 36feec702af7d7d9a54ed888e87ffac9
+  importedSources:
+  - Dance_jacket\Rigged\LOW\Dance_jacket_LOW_5k_rigged.fbx
+  - Dance_jacket\Rigged\MEDIUM\Dance_jacket_MEDIUM_10k_rigged.fbx
+  - Dance_jacket\Rigged\MID-HIGH\Dance_jacket_MIDHIGH_20k_rigged.fbx
+  - Dance_jacket\Rigged\HIGH\Dance_jacket_HIGH_30k_rigged.fbx
+  - Dance_jacket\Rigged\ULTRA\Dance_jacket_ULTRA_50k_rigged.fbx
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Dance_jacket\Rigged/Masks
+    (jacket)

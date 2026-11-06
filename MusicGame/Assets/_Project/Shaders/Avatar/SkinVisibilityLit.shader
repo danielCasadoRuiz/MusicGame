@@ -7,6 +7,20 @@ Shader "MusicGame/Avatar/Skin Visibility Lit"
 {
     Properties
     {
+
+        [HideInInspector] _IrisBaked("Baked iris", Float) = 0
+        [Header(Iris gradient)]
+        [Toggle] _IrisEnabled("Tint iris by UV", Float) = 1
+        _IrisInnerColor("Iris center", Color) = (0.42,0.32,0.14,1)
+        _IrisMainColor("Iris body", Color) = (0.28,0.49,0.64,1)
+        _IrisOuterColor("Iris rim", Color) = (0.08,0.16,0.21,1)
+        _IrisInnerRadius("Center extent", Range(0.36,0.85)) = 0.55
+        _IrisOuterRadius("Rim start", Range(0.65,0.98)) = 0.87
+        _IrisDetailGain("Fiber brightness", Range(0.5,4)) = 2.2
+        _EyeSmoothness("Eyeball smoothness", Range(0,1)) = 0.8
+        [HideInInspector] _IrisRightUV("Right iris UV", Vector) = (0.7759774,0.9251543,0.02494856,0)
+        [HideInInspector] _IrisLeftUV("Left iris UV", Vector) = (0.9238683,0.8991770,0.02494856,0)
+
         // Specular vs Metallic workflow
         _WorkflowMode("WorkflowMode", Float) = 1.0
 
@@ -182,7 +196,7 @@ Shader "MusicGame/Avatar/Skin Visibility Lit"
             #pragma instancing_options renderinglayer
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "AvatarSurfaceInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitForwardPass.hlsl"
             #define MUSICGAME_SKIN_VISIBILITY_FORWARD
             #include "SkinVisibilityPasses.hlsl"
@@ -234,7 +248,7 @@ Shader "MusicGame/Avatar/Skin Visibility Lit"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "AvatarSurfaceInput.hlsl"
             #include "SkinVisibilityShadowCasterPass.hlsl"
             ENDHLSL
         }
@@ -322,7 +336,7 @@ Shader "MusicGame/Avatar/Skin Visibility Lit"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "AvatarSurfaceInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitGBufferPass.hlsl"
             #define MUSICGAME_SKIN_VISIBILITY_GBUFFER
             #include "SkinVisibilityPasses.hlsl"
@@ -367,7 +381,7 @@ Shader "MusicGame/Avatar/Skin Visibility Lit"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "AvatarSurfaceInput.hlsl"
             #include "SkinVisibilityDepthOnlyPass.hlsl"
             ENDHLSL
         }
@@ -417,7 +431,7 @@ Shader "MusicGame/Avatar/Skin Visibility Lit"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "AvatarSurfaceInput.hlsl"
             #define REQUIRES_UV_INTERPOLATOR
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
             #define MUSICGAME_SKIN_VISIBILITY_DEPTH_NORMALS
@@ -459,7 +473,7 @@ Shader "MusicGame/Avatar/Skin Visibility Lit"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "AvatarSurfaceInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitMetaPass.hlsl"
 
             ENDHLSL
@@ -496,12 +510,12 @@ Shader "MusicGame/Avatar/Skin Visibility Lit"
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "AvatarSurfaceInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Universal2D.hlsl"
             ENDHLSL
         }
     }
 
     FallBack "Hidden/Universal Render Pipeline/FallbackError"
-    CustomEditor "UnityEditor.Rendering.Universal.ShaderGUI.LitShader"
+    CustomEditor "AvatarSurfaceShaderGUI"
 }

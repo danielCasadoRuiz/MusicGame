@@ -15,6 +15,8 @@ MonoBehaviour:
   garmentId: monteverdi_shoes
   category: shoes
   layer: 30
+  hidesCategories: []
+  occlusionGap: 0.1
   bodyCoverage: []
   garmentCoverage: []
   coverageConfigured: 1
@@ -25,4 +27,5 @@ MonoBehaviour:
   - Monteverdi_shoes\Rigged\MID-HIGH\Monteverdi_shoes_MIDHIGH_20k_rigged.fbx
   - Monteverdi_shoes\Rigged\HIGH\Monteverdi_shoes_HIGH_30k_rigged.fbx
   - Monteverdi_shoes\Rigged\ULTRA\Monteverdi_shoes_ULTRA_50k_rigged.fbx
-  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Monteverdi_shoes\Rigged\Segmented
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Monteverdi_shoes\Rigged/Masks
+    (shoes)

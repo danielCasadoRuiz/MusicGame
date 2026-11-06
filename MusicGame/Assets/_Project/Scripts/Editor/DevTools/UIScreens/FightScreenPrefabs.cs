@@ -215,16 +215,26 @@ public static class FightScreenPrefabs
         view.punchButton = view.punchAction.gameObject;
         view.kickAction  = BuildActionButton(mobileControls, "KickButton", -40f, "Mobile.Kick", out view.kickButtonLabel);
         view.kickButton  = view.kickAction.gameObject;
+        BuildJumpButton(mobileControls, view);
 
         mobileControls.gameObject.SetActive(false);
     }
 
-    private static TouchActionButton BuildActionButton(RectTransform parent, string name, float xOffset, string locKey, out TextMeshProUGUI label)
+    /// <summary>Jump: the fight's third button, above Punch / Kick (between them) - a thumb slide up reaches it.
+    /// Public for FightHudJumpSetup (adds it to an existing prefab without rebuilding).</summary>
+    public static void BuildJumpButton(RectTransform mobileControls, FightHudView view)
+    {
+        view.jumpAction = BuildActionButton(mobileControls, "JumpButton", -105f, "Mobile.Jump", out view.jumpButtonLabel, 160f);
+        view.jumpButton = view.jumpAction.gameObject;
+    }
+
+    private static TouchActionButton BuildActionButton(RectTransform parent, string name, float xOffset, string locKey, out TextMeshProUGUI label,
+                                                       float yOffset = 40f)
     {
         const float size = 110f;
         var button = UIFactory.CreatePanel(name, parent, new Color(1f, 1f, 1f, 0.25f));
         UIFactory.SetBox(button.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f),
-            new Vector2(xOffset, 40f), new Vector2(size, size));
+            new Vector2(xOffset, yOffset), new Vector2(size, size));
 
         label = UIScreenPrefabContext.Localized(
             UIFactory.CreateText("Label", button.rectTransform, "", 16, Color.white, TextAlignmentOptions.Center, FontStyles.Bold), locKey);

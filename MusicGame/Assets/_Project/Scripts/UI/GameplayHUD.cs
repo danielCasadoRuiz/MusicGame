@@ -76,6 +76,8 @@ public class GameplayHUD : MonoBehaviour
     private Image _progressFill;
     private TextMeshProUGUI _elapsedTimeText, _totalTimeText;
     private RunnerHudSkin _skin;
+    private TextMeshProUGUI _artistSongText;
+    private string _shownSongName;
     /// <summary>Played fraction (0..1) of the song's play window — the one value the HUD skin and the pause buttons
     /// (PauseController) blend on. Back to 0 the moment a run (re)starts, never left at the previous run's end.</summary>
     public static float SongProgress { get; private set; }
@@ -216,6 +218,8 @@ public class GameplayHUD : MonoBehaviour
         _elapsedTimeText = view.elapsedTimeText;
         _totalTimeText   = view.totalTimeText;
         _skin            = view.skin;
+        _artistSongText = view.artistSongText;
+        UpdateSongLabel();
 
         // Static column-header labels are baked into the prefab at Editor-bake time (whatever
         // locale was active then) — re-set them here from the CURRENT locale so they always
@@ -272,7 +276,7 @@ public class GameplayHUD : MonoBehaviour
 
         foreach (var kv in _counterValues)
             kv.Value.text = stats.Get(kv.Key).ToString();
-        _scoreValueText.text = stats.Score.ToString("D6");
+        if (_scoreValueText != null) _scoreValueText.text = stats.Score.ToString("D6");
 
         if (_totalValueText != null)
         {
@@ -295,12 +299,38 @@ public class GameplayHUD : MonoBehaviour
         float rangeLength = rangeEnd - rangeStart;
         if (audioSource != null && audioSource.isPlaying && rangeLength > 0f)
             SongProgress = Mathf.Clamp01((audioSource.time - rangeStart) / rangeLength);
-        _progressFill.fillAmount = SongProgress;
+        if (_progressFill != null) _progressFill.fillAmount = SongProgress;
+        UpdateSongLabel();
         if (_elapsedTimeText != null) _elapsedTimeText.text = FormatTime(SongProgress * Mathf.Max(rangeLength, 0f));
         if (_totalTimeText != null) _totalTimeText.text = FormatTime(Mathf.Max(rangeLength, 0f));
         ApplySkin();
 
         UpdateSemanticTagsStrip();
+    }
+
+    private void UpdateSongLabel()
+    {
+        if (_artistSongText == null) return;
+        var selected = GameSession.Instance != null ? GameSession.Instance.SelectedSong : null;
+        string displayName = selected.HasValue ? selected.Value.DisplayName : null;
+        if (string.IsNullOrWhiteSpace(displayName) && selected.HasValue && !string.IsNullOrWhiteSpace(selected.Value.LocalFilePath))
+            displayName = System.IO.Path.GetFileNameWithoutExtension(selected.Value.LocalFilePath);
+        displayName ??= audioSource != null && audioSource.clip != null ? audioSource.clip.name : "";
+        if (_shownSongName == displayName) return;
+        _shownSongName = displayName;
+        _artistSongText.text = FormatArtistSong(displayName);
+    }
+
+    /// <summary>The catalog display name is artist — title; preserve that order and normalize its separator.</summary>
+    public static string FormatArtistSong(string displayName)
+    {
+        if (string.IsNullOrWhiteSpace(displayName)) return "";
+        string clean = displayName.Trim();
+        var match = System.Text.RegularExpressions.Regex.Match(clean, @"\s+[—–-]\s+");
+        if (!match.Success) return clean;
+        string artist = clean.Substring(0, match.Index).Trim();
+        string title = clean.Substring(match.Index + match.Length).Trim();
+        return artist.Length > 0 && title.Length > 0 ? artist + " · " + title : clean;
     }
 
     // Tempo Fury skin: the song's style at the start, the classic curtain closing over it towards the end.

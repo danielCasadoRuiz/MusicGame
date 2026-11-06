@@ -38,6 +38,15 @@ public class FightArenaConfig : ScriptableObject
     public float minDepth = -1.5f;
     public float maxDepth = 1.5f;
 
+    [Header("Round arena (playtest 2026-11-04: the 3 m deep strip stopped any circling after two sidesteps)")]
+    [Tooltip("ON: the fighters move inside a CIRCLE of arenaRadius around arenaCenter (they can circle each other " +
+             "freely, Tekken-like); minBoundX/maxBoundX/minDepth/maxDepth are then ignored. OFF: the old rectangle.")]
+    public bool circularArena = true;
+    public Vector2 arenaCenterXZ = Vector2.zero;
+    [Min(1f)] public float arenaRadius = 3.6f;
+    [Tooltip("Sidesteps travel on an ARC around the opponent (distance kept), this many degrees at most per step.")]
+    [Range(10f, 120f)] public float sidestepMaxArcDegrees = 55f;
+
     [Tooltip("How close the two fighters can get (on the XZ plane) before movement/lunges/sidesteps " +
              "stop pushing them any closer — a simple, deterministic clamp (see FightMovementUtility's " +
              "own doc), not physics. Sidestepping past each other in depth is still allowed; this only " +

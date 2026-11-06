@@ -30,8 +30,10 @@ public static class ComposerArenaLifecycleProbe
         var setup=JsonUtility.FromJson<SavedSetup>(SessionState.GetString(Active+".Scenes",""));
         EditorSceneManager.RestoreSceneManagerSetup(setup.scenes.Select(s=>new SceneSetup{path=s.path,isLoaded=s.loaded,isActive=s.active}).ToArray());
     }
+    public static void RunWagnerFromCommandLine() {SessionState.SetString(Active+".FightComposer","wagner");RunFromCommandLine();}
     public static void RunFromCommandLine()
     {
+        Directory.CreateDirectory("Logs");File.WriteAllText("Logs/ArenaLoadTimings.csv","composer,version,quality,editorLoadMilliseconds\n");
         if(!Application.isBatchMode)
         {
             var before=EditorSceneManager.GetSceneManagerSetup();
@@ -94,8 +96,10 @@ public static class ComposerArenaLifecycleProbe
         foreach(string quality in ArenaSceneSetup.Qualities)
         {
             int index=QualityAssetResolver.IndexOf(QualitySettings.names,quality); QualitySettings.SetQualityLevel(index,true);
+            var loadTimer=System.Diagnostics.Stopwatch.StartNew();
             var loader=Loader(out var owner); loader.Request(source,"probe/"+quality);
             foreach(var step in Wait(loader.LoadingTask)) yield return step;
+            RecordTiming("Monteverdi",1,quality,loadTimer.Elapsed.TotalMilliseconds);
             Check(loader.IsReady && loader.LoadedQuality==quality && loader.LoadedScene.isLoaded,"loads requested "+quality+" scene");
             Check(ArenaEnvironmentLoader.LiveSceneHandles==1,"exactly one owned scene handle for "+quality);
             Check(loader.Instance.GetComponentsInChildren<MonteverdiPropQuality>(true).Length==0,"no five-quality selectors in runtime "+quality);
@@ -110,16 +114,19 @@ public static class ComposerArenaLifecycleProbe
         }
         // Validate newly migrated first arenas through the production scene loader.
         foreach(string composer in new[]{"Bach","Beethoven","Brahms","Chopin","Handel","Haydn","Mozart","Pachelbel","Tchaikovsky","Vivaldi","Wagner"})
+        for(int version=1;version<=3;version++)
         foreach(string quality in new[]{"Low","Ultra"})
         {
             QualitySettings.SetQualityLevel(QualityAssetResolver.IndexOf(QualitySettings.names,quality),true);
-            var arenaRef=new AssetReferenceGameObject(AssetDatabase.AssetPathToGUID($"Assets/_Project/Art/Arenas/{composer}/{composer}_Arena_01.prefab"));
+            var arenaRef=new AssetReferenceGameObject(AssetDatabase.AssetPathToGUID($"Assets/_Project/Art/Arenas/{composer}/{composer}_Arena_{version:00}.prefab"));
+            var loadTimer=System.Diagnostics.Stopwatch.StartNew();
             var loader=Loader(out var owner); loader.Request(arenaRef,"composer/"+composer+"/"+quality);
             foreach(var step in Wait(loader.LoadingTask)) yield return step;
+            RecordTiming(composer,version,quality,loadTimer.Elapsed.TotalMilliseconds);
             Check(loader.IsReady && loader.LoadedQuality==quality && loader.LoadedScene.isLoaded,"production loader: "+composer+" "+quality);
             var root=loader.Instance;
             var env=root.GetComponentInChildren<ArenaEnvironmentSettings>(true);
-            var scenario=JsonUtility.FromJson<ComposerSceneryAssembly.Manifest>(File.ReadAllText("Assets/_Project/Art/Arenas/composer_scenery_manifest.json")).scenes.Single(s=>s.composer==composer);
+            var scenario=JsonUtility.FromJson<ComposerSceneryAssembly.Manifest>(File.ReadAllText("Assets/_Project/Configs/Editor/composer_scenery_manifest.json")).scenes.Single(s=>s.composer==composer);
             if(scenario.look!=null && scenario.look.hideSky)
                 Check(env!=null && env.skybox==null && RenderSettings.skybox==null && !env.cameraClearsToSkybox && root.transform.Find("ComposerScenery/"+composer+"_Ceiling")!=null,"enclosed interior without skybox: "+composer+" "+quality);
             else Check(env!=null && env.skybox!=null && RenderSettings.skybox==env.skybox,"active skybox: "+composer+" "+quality);
@@ -127,7 +134,7 @@ public static class ComposerArenaLifecycleProbe
             Check(floor.sharedMaterial!=null && floor.sharedMaterial.GetTexture("_BaseMap")!=null && floor.sharedMaterial.GetTexture("_BumpMap")!=null,"floor albedo/normal: "+composer+" "+quality);
             Check(root.GetComponentsInChildren<MonteverdiPropQuality>(true).Length==0,"runtime has only selected tier: "+composer+" "+quality);
             Check(root.GetComponentsInChildren<Renderer>(true).All(r=>r.sharedMaterials.All(m=>m!=null&&m.shader!=null&&m.shader.isSupported)),"valid materials: "+composer+" "+quality);
-            if(quality=="Ultra") { for(int frame=0;frame<8;frame++) yield return true; Capture(composer,loader.LoadedScene); }
+            if(quality=="Ultra"&&version==1) { for(int frame=0;frame<8;frame++) yield return true; Capture(composer,loader.LoadedScene); }
             foreach(var step in Wait(loader.ShutdownAsync())) yield return step;
             Object.Destroy(owner); yield return true;
             Check(ArenaEnvironmentLoader.LiveSceneHandles==0 && SceneManager.GetActiveScene()==identity,"clean unload: "+composer+" "+quality);
@@ -152,11 +159,12 @@ public static class ComposerArenaLifecycleProbe
             Object.Destroy(owner); yield return true;
             Check(ArenaEnvironmentLoader.LiveSceneHandles==0 && !AnyArenaScene(),"exit during loading leaves no owned handles or orphan arena scenes");
         }
+        for(int version=2;version<=3;version++)
         {
-            var legacy=new AssetReferenceGameObject(AssetDatabase.AssetPathToGUID("Assets/_Project/Art/Arenas/Monteverdi/Monteverdi_Arena_02.prefab"));
-            var loader=Loader(out var owner); loader.Request(legacy,"legacy/02");
+            var legacy=new AssetReferenceGameObject(AssetDatabase.AssetPathToGUID($"Assets/_Project/Art/Arenas/Monteverdi/Monteverdi_Arena_{version:00}.prefab"));
+            var loader=Loader(out var owner); loader.Request(legacy,"converted/"+version);
             foreach(var step in Wait(loader.LoadingTask)) yield return step;
-            Check(loader.IsReady && loader.Instance!=null && !loader.LoadedScene.IsValid(),"unconverted arenas still load through legacy prefab path");
+            Check(loader.IsReady && loader.Instance!=null && loader.LoadedScene.IsValid(),"completed arena "+version+" loads through the scene catalog");
             foreach(var step in Wait(loader.ShutdownAsync())) yield return step;
             Object.Destroy(owner); yield return true;
         }
@@ -164,7 +172,7 @@ public static class ComposerArenaLifecycleProbe
         QualitySettings.SetQualityLevel(QualityAssetResolver.IndexOf(QualitySettings.names,"Low"),true);
         var sessionObject=new GameObject("ProbeSession"); var session=sessionObject.AddComponent<GameSession>();
         var app=Resources.Load<AppConfigSO>("AppConfig");
-        session.SelectedOpponent=app.opponentRoster.opponents.First(o=>o!=null && o.id=="monteverdi");
+        session.SelectedOpponent=app.opponentRoster.opponents.First(o=>o!=null && o.id==SessionState.GetString(Active+".FightComposer","monteverdi"));
         session.SelectedOpponentLevelConfig=session.SelectedOpponent.GetConfigForTier(1);
         session.SelectedOpponentTier=1; Time.timeScale=0;
         var fightLoad=SceneManager.LoadSceneAsync("Assets/_Project/Scenes/Fight.unity",LoadSceneMode.Additive);
@@ -179,6 +187,13 @@ public static class ComposerArenaLifecycleProbe
         }
         Check(!premature,"real Fight bootstrap never spawns fighters before arena readiness");
         Check(boot.PlayerActor.gameObject.scene==boot.ArenaLoader.LoadedScene && boot.OpponentActor.gameObject.scene==boot.ArenaLoader.LoadedScene,"both fighters belong to the loaded arena scene");
+        if(SessionState.GetString(Active+".FightComposer","")=="wagner")
+        {
+            Check(boot.ArenaLoader.LoadedScene.name.StartsWith("Wagner_"),"real Fight bootstrap loads the revised Wagner scene");
+            for(int frame=0;frame<30;frame++)yield return true;
+            foreach(var particles in boot.ArenaLoader.Instance.GetComponentsInChildren<ParticleSystem>(true))particles.Simulate(.6f,true,true);
+            CaptureFight(boot.ArenaCamera);
+        }
         int playerId=boot.PlayerActor.GetInstanceID(), opponentId=boot.OpponentActor.GetInstanceID();
         var retry=(Task)typeof(FightSceneBootstrap).GetMethod("PrepareStageAsync",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance).Invoke(boot,null);
         foreach(var step in Wait(retry)) yield return step;
@@ -189,20 +204,27 @@ public static class ComposerArenaLifecycleProbe
         var unload=SceneManager.UnloadSceneAsync(fight); while(!unload.isDone) yield return true;
         Object.Destroy(sessionObject); Time.timeScale=1; QualitySettings.SetQualityLevel(originalQuality,true);
     }
+    static void RecordTiming(string composer,int version,string quality,double elapsed) {File.AppendAllText("Logs/ArenaLoadTimings.csv",composer+","+version+","+quality+","+elapsed.ToString("F3",System.Globalization.CultureInfo.InvariantCulture)+"\n");}
     static void Capture(string composer,Scene scene)
     {
         Directory.CreateDirectory("Logs/ComposerArenaRuntimePreviews");
         var go=new GameObject("RuntimePreviewCamera"); SceneManager.MoveGameObjectToScene(go,scene);
-        var spec=JsonUtility.FromJson<ComposerSceneryAssembly.Manifest>(File.ReadAllText("Assets/_Project/Art/Arenas/composer_scenery_manifest.json")).scenes.Single(s=>s.composer==composer);
+        var spec=JsonUtility.FromJson<ComposerSceneryAssembly.Manifest>(File.ReadAllText("Assets/_Project/Configs/Editor/composer_scenery_manifest.json")).scenes.Single(s=>s.composer==composer);
         var camera=go.AddComponent<Camera>(); camera.clearFlags=RenderSettings.skybox==null?CameraClearFlags.SolidColor:CameraClearFlags.Skybox; camera.backgroundColor=new Color(.035f,.03f,.025f); camera.fieldOfView=spec.view!=null?spec.view.fov:62; camera.nearClipPlane=.1f; camera.farClipPlane=400;
         camera.transform.position=spec.view!=null?spec.view.position:new Vector3(0,2.6f,-7.6f); camera.transform.LookAt(spec.view!=null?spec.view.target:new Vector3(0,3.6f,6));
         var rt=new RenderTexture(1200,800,24); var tex=new Texture2D(1200,800,TextureFormat.RGB24,false); var before=RenderTexture.active;
         try { camera.targetTexture=rt; camera.Render(); RenderTexture.active=rt; tex.ReadPixels(new Rect(0,0,1200,800),0,0); tex.Apply(); File.WriteAllBytes("Logs/ComposerArenaRuntimePreviews/"+composer+".png",tex.EncodeToPNG()); }
         finally { camera.targetTexture=null; RenderTexture.active=before; rt.Release(); Object.Destroy(rt); Object.Destroy(tex); Object.Destroy(go); }
     }
+    static void CaptureFight(Camera camera)
+    {
+        var rt=new RenderTexture(1440,1080,24);var image=new Texture2D(1440,1080,TextureFormat.RGB24,false);var active=RenderTexture.active;var target=camera.targetTexture;
+        try {camera.targetTexture=rt;camera.Render();RenderTexture.active=rt;image.ReadPixels(new Rect(0,0,1440,1080),0,0);image.Apply();File.WriteAllBytes("Logs/ComposerArenaRuntimePreviews/Wagner_ActualFight.png",image.EncodeToPNG());}
+        finally{camera.targetTexture=target;RenderTexture.active=active;rt.Release();Object.Destroy(rt);Object.Destroy(image);}
+    }
     static void Finish(int code)
     {
-        SessionState.SetBool(Active,false); EditorApplication.update-=Tick;
+        SessionState.SetBool(Active,false);SessionState.EraseString(Active+".FightComposer"); EditorApplication.update-=Tick;
         var settings=AddressableAssetSettingsDefaultObject.Settings;
         settings.ActivePlayModeDataBuilderIndex=SessionState.GetInt(OldBuilder,0); EditorUtility.SetDirty(settings); AssetDatabase.SaveAssets();
         File.WriteAllText("Logs/ComposerArenaLifecycleProbe.txt",string.Join("\n",report));

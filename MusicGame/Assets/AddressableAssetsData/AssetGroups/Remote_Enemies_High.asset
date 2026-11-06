@@ -63,6 +63,14 @@ MonoBehaviour:
     - Enemy_brahms
     - Q_High
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 478997bd3069fb84b84e7f79875617fc
+    m_Address: Enemy_brahms/Hair_Brahms_hair/sharedVariant/qualityPrefabs@High
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_brahms
+    - Q_High
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4cd7c841a0dc4bf4299bfe3a28be4777
     m_Address: Enemy_beethoven/Wearable_beethoven_shirt/sharedVariant/qualityPrefabs@High
     m_ReadOnly: 0
@@ -122,6 +130,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - Category_Enemies
     - Enemy_bach
+    - Q_High
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 873440c22be06574ab336917345c3488
+    m_Address: Enemy_brahms/Wearable_brahms_shirt/sharedVariant/qualityPrefabs@High
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_brahms
     - Q_High
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 890e081be53489f44a494098cfea2416
@@ -194,6 +210,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - Category_Enemies
     - Enemy_monteverdi
+    - Q_High
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fb97b1354e2582946b889b02597ad3dc
+    m_Address: Enemy_bach/Wearable_bach_jacket/sharedVariant/qualityPrefabs@High
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_bach
     - Q_High
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0

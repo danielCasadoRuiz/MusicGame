@@ -50,7 +50,7 @@ public class FightMusicController : MonoBehaviour
         _fx       = gameObject.AddComponent<AudioSource>();
         GameAudio.RouteMusic(_current); GameAudio.RouteMusic(_incoming); GameAudio.RouteMusic(_fx);
         _fx.playOnAwake = false;
-        _fx.loop = true;
+        _fx.loop = false; // a burst never loops: a main-thread hitch (a song decompressing) must not keep it sounding
         var flow = Resources.Load<AppConfigSO>("AppConfig")?.fightFlow;
         if (flow != null) _fadeOutSeconds = flow.combatMusicFadeOutSeconds;
         _current.loop = true; // a short snippet/song looping is the right default for "radio" music
@@ -169,7 +169,11 @@ public class FightMusicController : MonoBehaviour
         _fxVolume = volume;
         _fx.volume = volume;
         _fx.time = Random.Range(0f, s_staticClip.length * 0.8f);
-        _fx.Play();
+        // Start and END are scheduled on the audio thread: the burst stops on time even if the main thread stalls
+        // (Update's fade below only softens the tail when frames are flowing).
+        double start = AudioSettings.dspTime + 0.005;
+        _fx.PlayScheduled(start);
+        _fx.SetScheduledEndTime(start + duration + 0.05);
         _fxStopAt = Time.unscaledTime + duration;
     }
 

@@ -46,6 +46,7 @@ public static class HazardNavigationProbe
     // Event bookkeeping.
     private static readonly List<PlayerFellEvent> s_fell = new();
     private static readonly List<RunnerPenaltyEvent> s_penalties = new();
+    private static bool s_scatterCheck;
     private static int s_respawns, s_matchEnded, s_opponentSelections;
     private static Action<PlayerFellEvent> s_onFell;
     private static Action<RunnerPenaltyEvent> s_onPenalty;
@@ -155,6 +156,9 @@ public static class HazardNavigationProbe
         (0.5f, "chaser ahead", null, () =>
         {
             s_chaserStates.Clear(); s_maxChaserStep = 0f; s_fellBefore = s_fell.Count; s_respawnsBefore = s_respawns;
+            // Held bonuses for the knocked-out scatter: more than its cap, of two types.
+            for (int i = 0; i < 20; i++)
+                EventBus.Publish(new RingCollectedEvent { Type = i % 2 == 0 ? RingType.Kick : RingType.Snare, ScoreMultiplier = 1f });
             var ch = Hazards.SpawnTestChaser(14f, 1);
             s_prevChaser = ch.transform.position;
             var cfg = Manager.Config.hazards;
@@ -174,9 +178,23 @@ public static class HazardNavigationProbe
             Check("asleep → warning → waits → chases", seq.StartsWith("Asleep→Warning→WaitingPass→Chasing"), seq);
             Check("continuous chase (no teleport)", s_maxChaserStep <= s_chaserStepLimit, $"max {s_maxChaserStep:F1} m/s (bound {s_chaserStepLimit:F1}) in {s_maxChaserState}");
             Check("ONE ChaserContact penalty", s_fell.Count == s_fellBefore + 1 && s_fell.Last().Cause == RunnerPenaltyCause.ChaserContact, $"falls +{s_fell.Count - s_fellBefore}");
+            var pe = s_penalties.LastOrDefault();
+            var scatter = Manager.GetComponent<RunnerPenaltyScatter>();
+            int held = pe.HeldTypes != null ? pe.HeldTypes.Length : 0, want = Mathf.Min(held, Manager.Config.hazards.scatterMaxPieces);
+            Check("contact knocks out min(held, max) bonuses", scatter != null && held > 0 && scatter.ActiveCount == want, $"held {held} thrown {(scatter != null ? scatter.ActiveCount : -1)} want {want}");
+            s_scatterCheck = true;
         }),
-        (0f, "wait for the respawn", () => s_respawns > s_respawnsBefore, null),
-        (2.5f, "two causes in the same frame → one penalty", null, () =>
+        (0f, "wait for the respawn", () => s_respawns > s_respawnsBefore, () =>
+        {
+            var scatter = Manager.GetComponent<RunnerPenaltyScatter>();
+            Check("thrown bonuses still flying during the respawn", !s_scatterCheck || (scatter != null && scatter.ActiveCount > 0), $"{(scatter != null ? scatter.ActiveCount : -1)} active");
+        }),
+        (3f, "thrown bonuses gone after their lifetime", null, () =>
+        {
+            var scatter = Manager.GetComponent<RunnerPenaltyScatter>();
+            Check("thrown bonuses recycled", scatter != null && scatter.ActiveCount == 0, $"{(scatter != null ? scatter.ActiveCount : -1)} active");
+        }),
+        (0f, "two causes in the same frame → one penalty", null, () =>
         {
             s_fellBefore = s_fell.Count;
             bool a = Hazards.Penalize(RunnerPenaltyCause.Trapped), b = Hazards.Penalize(RunnerPenaltyCause.ChaserContact);

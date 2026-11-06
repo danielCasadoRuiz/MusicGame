@@ -48,7 +48,7 @@ public static class MakeHumanAnimationTestSetup
     };
 
     /// <summary>Unity human bone -> CMU (cgspeed MotionBuilder-friendly) joint. No fingers, no jaw/eyes.</summary>
-    private static readonly (string human, string bone)[] CmuBoneMap =
+    internal static readonly (string human, string bone)[] CmuBoneMap =
     {
         ("Hips", "Hips"),
         ("Spine", "LowerBack"), ("Chest", "Spine"), ("UpperChest", "Spine1"),

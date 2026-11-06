@@ -15,28 +15,32 @@ MonoBehaviour:
   id: move_bb
   debugName: 'Combo: B-B'
   moveType: 1
-  role: 2
+  role: 3
   scalingStat: 2
   resourceCost: 0
   resourceAmount: 1
   knockdownOnHit: 0
+  damageAsMaxHealthFraction: 0
   invulnerableStart: 0
   invulnerableDuration: 0
-  animationState: ComboBB
-  startupDuration: 0.1
+  animationState: Kick
+  startupDuration: 0.21999997
   activeDuration: 0.12
-  recoveryDuration: 0.25
+  recoveryDuration: 0.36
   cancelWindow: 0
   movementLocked: 1
   movementMultiplier: 0
   lungeDistance: 0.2
+  contactReach: 0.98
+  forwardCarry: 0
+  airCarry: 1
   lockFacingDuringMove: 1
   allowedPostures: 
   requiredMovementStates: 
   attackDelivery: 0
   hits:
   - shape: 0
-    localOffset: {x: 0.8, y: 0.9, z: 0}
+    localOffset: {x: 0.55, y: 0.9, z: 0}
     size: {x: 0.6, y: 0.6, z: 0.6}
     baseDamage: 16
     baseHitStun: 0.35
@@ -63,4 +67,6 @@ MonoBehaviour:
       chipDamage: 0
       tracking: 0
     destroyOnHit: 1
+  strikingLimb: 0
+  guardBreak: 0
   damage: 0

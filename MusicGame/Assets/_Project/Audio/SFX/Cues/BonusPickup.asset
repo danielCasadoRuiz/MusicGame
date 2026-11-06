@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a7f43baddb4e274eb9596c7a7db1113, type: 3}
+  m_Name: BonusPickup
+  m_EditorClassIdentifier: Assembly-CSharp::SfxCue
+  clips:
+  - {fileID: 8300000, guid: ad6d082df0a547ddb9ed7b69a3b53995, type: 3}
+  - {fileID: 8300000, guid: acbee838f87847ccb9256a8c2fa64a77, type: 3}
+  - {fileID: 8300000, guid: 3e55cb2b43ce4f3cbee1f8d5c7ff4c21, type: 3}
+  channel: 1
+  volume: 0.5
+  volumeJitter: 0.1
+  pitch: {x: 0.98, y: 1.02}
+  maxInstances: 3
+  cooldown: 0.03
+  credits: "Own synth (Tools/SfxSynth/synth_pickups.py) — CC0 1.0"

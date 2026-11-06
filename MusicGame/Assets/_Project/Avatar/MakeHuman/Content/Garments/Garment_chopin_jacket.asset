@@ -15,46 +15,21 @@ MonoBehaviour:
   garmentId: chopin_jacket
   category: jacket
   layer: 40
-  bodyCoverage:
-  - shoulder_l
-  - upperarm_upper_l
-  - upperarm_lower_l
-  - forearm_upper_l
-  - forearm_lower_l
-  - shoulder_r
-  - upperarm_upper_r
-  - upperarm_lower_r
-  - forearm_upper_r
-  - forearm_lower_r
-  - back_upper
-  - back_lower
-  garmentCoverage:
-  - targetCategories:
-    - shirt
-    - top
-    zones:
-    - shoulder_l
-    - upperarm_upper_l
-    - upperarm_lower_l
-    - forearm_upper_l
-    - forearm_lower_l
-    - shoulder_r
-    - upperarm_upper_r
-    - upperarm_lower_r
-    - forearm_upper_r
-    - forearm_lower_r
-    - back_upper
-    - back_lower
-  - targetCategories:
-    - trousers
-    zones:
-    - buttocks
+  hidesCategories:
+  - shirt
+  - top
+  - waistcoat
+  - trousers
+  occlusionGap: 0.1
+  bodyCoverage: []
+  garmentCoverage: []
   coverageConfigured: 1
-  importedCoverageHash: c0ebd4989457cb025a3d390330da3739
+  importedCoverageHash: 36feec702af7d7d9a54ed888e87ffac9
   importedSources:
   - Chopin_jacket\Rigged\LOW\Chopin_jacket_LOW_5k_rigged.fbx
   - Chopin_jacket\Rigged\MEDIUM\Chopin_jacket_MEDIUM_10k_rigged.fbx
   - Chopin_jacket\Rigged\MID-HIGH\Chopin_jacket_MIDHIGH_20k_rigged.fbx
   - Chopin_jacket\Rigged\HIGH\Chopin_jacket_HIGH_30k_rigged.fbx
   - Chopin_jacket\Rigged\ULTRA\Chopin_jacket_ULTRA_50k_rigged.fbx
-  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Chopin_jacket\Rigged\Segmented
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Chopin_jacket\Rigged/Masks
+    (jacket)

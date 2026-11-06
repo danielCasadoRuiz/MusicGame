@@ -16,87 +16,270 @@ MonoBehaviour:
   - role: 0
     clip: {fileID: 7400000, guid: 5f65510b6a184eb48bd42af76bf82ef8, type: 2}
     provisional: 0
+    strikeSide: 0
     note: Boxing guard, looped
-  - role: 1
-    clip: {fileID: 7400000, guid: 6ee51ed4ec150b44690b5a7e922918ce, type: 2}
-    provisional: 0
-    note: ShadowBoxing single jab
-  - role: 2
-    clip: {fileID: 7400000, guid: 305b142c1bcd1e241a5e634e39a623a9, type: 2}
-    provisional: 0
-    note: ShadowBoxing rotating hook
-  - role: 3
-    clip: {fileID: 7400000, guid: 1b4a626899bd57d4d8c5844099fc9b4f, type: 2}
-    provisional: 0
-    note: BigFrontKick front kick
-  - role: 4
-    clip: {fileID: 7400000, guid: 29920a750f64c0641b65666673566612, type: 2}
-    provisional: 0
-    note: ShadowBoxing high cover
   - role: 5
     clip: {fileID: 7400000, guid: 2baa70db194ded84bb360c564db344db, type: 2}
     provisional: 1
+    strikeSide: 0
     note: "PROVISIONAL \u2014 covered bob/weave, no clean dodge exists in the packs"
-  - role: 6
-    clip: {fileID: 7400000, guid: fb9e060143a7eb64588b0f170eb9ae9f, type: 2}
-    provisional: 0
-    note: KnockOut_Loser head snap
   - role: 7
     clip: {fileID: 7400000, guid: 192868d8e55f0764495afb68d7e7e74d, type: 2}
     provisional: 0
+    strikeSide: 0
     note: KnockOut_Loser fall (source ground glitch at impact)
   - role: 13
     clip: {fileID: 7400000, guid: 082b498b6f6a0474c88a06236cf1992a, type: 2}
     provisional: 0
+    strikeSide: 0
     note: KnockOut_Loser lying on the back
   - role: 8
     clip: {fileID: 7400000, guid: 970b59f2780a93f478e7a83952aac12b, type: 2}
     provisional: 0
+    strikeSide: 0
     note: KnockOut_Loser get up
   - role: 11
     clip: {fileID: 7400000, guid: 45cf17b2e2b91654990331a1f5a4967a, type: 2}
     provisional: 1
+    strikeSide: 0
     note: "PROVISIONAL \u2014 spinning roundhouse stands in for a real special"
   - role: 9
     clip: {fileID: 7400000, guid: 31ae5ba0b54347747a18a7603fb7fc21, type: 2}
     provisional: 1
+    strikeSide: 0
     note: "PROVISIONAL \u2014 full taunt take (start only plays)"
   - role: 10
     clip: {fileID: 7400000, guid: 983d74d28327476409bc9e985c1c380c, type: 2}
     provisional: 0
+    strikeSide: 0
     note: Fist raised
   - role: 12
     clip: {fileID: 7400000, guid: 192868d8e55f0764495afb68d7e7e74d, type: 2}
     provisional: 1
+    strikeSide: 0
     note: "PROVISIONAL \u2014 reuses the knockdown fall"
   - role: 14
     clip: {fileID: 7400000, guid: 040b8ce45c82aeb4aa254517826efeaa, type: 2}
     provisional: 1
-    note: "PROVISIONAL — generic CMU walk (no guard arms); no combat walk exists in the packs"
+    strikeSide: 0
+    note: "PROVISIONAL \u2014 generic CMU walk (no guard arms); no combat walk exists
+      in the packs"
   - role: 15
     clip: {fileID: 7400000, guid: 040b8ce45c82aeb4aa254517826efeaa, type: 2}
     provisional: 1
-    note: "PROVISIONAL — the CMU walk played in reverse (WalkBack state speed -1) as a backpedal"
+    strikeSide: 0
+    note: "PROVISIONAL \u2014 the CMU walk played in reverse (WalkBack state speed
+      -1) as a backpedal"
   - role: 16
     clip: {fileID: 7400000, guid: adb12662c2a97bb4fb0033134a41bdbc, type: 2}
     provisional: 1
-    note: "PROVISIONAL — the Runner's CMU run loop, used for the charge"
+    strikeSide: 0
+    note: "PROVISIONAL \u2014 the Runner's CMU run loop, used for the charge"
   - role: 17
     clip: {fileID: 7400000, guid: 77189b49a86b39b439e869facc837280, type: 2}
     provisional: 1
-    note: "PROVISIONAL — the Runner's EricJacobus jump segment (in place)"
-  - role: 19
-    clip: {fileID: 7400000, guid: 619a8f081da6e5f44aa42bfc7584b2c5, type: 2}
+    strikeSide: 0
+    note: "PROVISIONAL \u2014 the Runner's EricJacobus jump segment (in place)"
+  - role: 30
+    clip: {fileID: 7400000, guid: e3faaea4ff5dee74cb0a84d0e9066c87, type: 2}
     provisional: 0
-    note: KnockOut_Loser head snap (second hit reaction, alternates with role 6)
+    strikeSide: 0
+    note: guarded forward footwork loop
+  - role: 29
+    clip: {fileID: 7400000, guid: 6fe0a0c4041fc9a45bcc61864a79783b, type: 2}
+    provisional: 0
+    strikeSide: 0
+    note: guarded backward footwork loop
+  - role: 28
+    clip: {fileID: 7400000, guid: 3534103b89e34a648b3b21b0431ee560, type: 2}
+    provisional: 0
+    strikeSide: 0
+    note: "both hands drawn back to the hip (~0.7 s gather), then thrust forward
+      at mid height (release \u2248 34.62 = 0.87 s in) \u2014 the Special's wind-up
+      + throw"
+  - role: 27
+    clip: {fileID: 7400000, guid: 7f74f32d69cf75c4a80d39fba9902ed5, type: 2}
+    provisional: 0
+    strikeSide: 0
+    note: "CMU 75_16: jump kick, leg extended forward (peak 0.46) \u2014 height left
+      to the gameplay jump"
+  - role: 1
+    clip: {fileID: 7400000, guid: 186380915ecae184c819d1591800fad2, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: "Mixamo Cross Punch: right cross, chest height (peak 0.37) \u2014 MID punch"
   - role: 20
-    clip: {fileID: 7400000, guid: 7fd4be878a3d4524f8d08ef754bb803d, type: 2}
+    clip: {fileID: 7400000, guid: 90efd2f6a6afd8f4892cefa6be2d2169, type: 2}
     provisional: 0
-    note: ShadowBoxing jab-cross (alternates with the single jab)
+    strikeSide: 1
+    note: "Mixamo Short Jab Cross: the cross (peak 0.67) \u2014 MID punch alt"
+  - role: 23
+    clip: {fileID: 7400000, guid: 1789281e5e2c1b545a525f6945792b36, type: 2}
+    provisional: 0
+    strikeSide: -1
+    note: "Mixamo Med Head Jab: lead jab to the face, 1.35 m (peak 0.43) \u2014 HIGH
+      punch"
+  - role: 22
+    clip: {fileID: 7400000, guid: aefb703d9016ece4cb93e46a64a3d8a2, type: 2}
+    provisional: 0
+    strikeSide: -1
+    note: "Mixamo Mid Body Jab: lead jab to the belly, 0.91 m (peak 0.50) \u2014
+      LOW punch"
+  - role: 2
+    clip: {fileID: 7400000, guid: c7febda1183162e46901cc2a18a479ac, type: 2}
+    provisional: 0
+    strikeSide: -1
+    note: "Mixamo Boxing Lead Hand Uppercut, steps in (peak 0.90) \u2014 strong punch"
   - role: 21
-    clip: {fileID: 7400000, guid: 75951be4417833b4eb4d42d50a137fcd, type: 2}
+    clip: {fileID: 7400000, guid: f12cf00ab26c7d645b9246e017dbfb2f, type: 2}
     provisional: 0
-    note: ShadowBoxing jab-hook (alternates with the rotating hook)
+    strikeSide: -1
+    note: "Mixamo Long Hook Punch To The Head, steps in (peak 0.93, reach 1.28) \u2014
+      strong punch alt"
+  - role: 3
+    clip: {fileID: 7400000, guid: 10ab946bd6707fc4789bca1cf8ca2462, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: "Mixamo Mma Medium Kick: rear-leg kick to the ribs, 1.12 m (peak 0.70)
+      \u2014 MID kick"
+  - role: 33
+    clip: {fileID: 7400000, guid: 1bccbf293ffd8dc4aa4056bfb8834ab8, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: "Mixamo Roundhouse Kick With The Rear Foot, 0.98 m (peak 0.63) \u2014 MID
+      kick alt"
+  - role: 25
+    clip: {fileID: 7400000, guid: fd8c788cfad54154cbc9d80ec2ffede2, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: "Mixamo Mma High Kick: head kick, 1.38 m (peak 0.73) \u2014 HIGH kick"
+  - role: 35
+    clip: {fileID: 7400000, guid: 4187d4db25d70214192c8e3491ece7d5, type: 2}
+    provisional: 0
+    strikeSide: -1
+    note: "Mixamo Mma Side Kick at the head, 1.31 m (peak 0.63) \u2014 HIGH kick
+      alt"
+  - role: 24
+    clip: {fileID: 7400000, guid: b367a5bdd5c1f5547a676069cc438d5d, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: "Mixamo Mma Low Kick: thigh / knee, 0.62 m (peak 0.60) \u2014 LOW kick"
+  - role: 26
+    clip: {fileID: 7400000, guid: a9f56b75f2e540e4692388d48c5d8196, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: "Mixamo Mma Spinning Back Kick, full turn baked into the pose, 1.49 m (peak
+      0.97) \u2014 Back + Kick"
+  - role: 6
+    clip: {fileID: 7400000, guid: 14e48337f0522864bb243a0beb8a3a5f, type: 2}
+    provisional: 0
+    strikeSide: 0
+    note: "Mixamo Light Hit To Head (straight punch) \u2014 hit reaction"
+  - role: 19
+    clip: {fileID: 7400000, guid: d251362e41285a24d8d4a9d96c6edefd, type: 2}
+    provisional: 0
+    strikeSide: 0
+    note: "Mixamo Receive Punch To The Body \u2014 hit reaction alt"
+  - role: 36
+    clip: {fileID: 7400000, guid: 05ddf6098e63afb4ba244f0d2767d2d2, type: 2}
+    provisional: 0
+    strikeSide: 0
+    note: "Mixamo High Left Block: both forearms up on the left of the head (arms
+      up \u2248 0.40)"
+  - role: 37
+    clip: {fileID: 7400000, guid: 1c8c015677971ac44901db3c3e89c17d, type: 2}
+    provisional: 0
+    strikeSide: 0
+    note: "Mixamo High Right Block: forearms up on the right of the head (arms up
+      \u2248 0.28)"
+  - role: 38
+    clip: {fileID: 7400000, guid: 712c65f27b4555c45bbf390997583039, type: 2}
+    provisional: 0
+    strikeSide: 0
+    note: "Mixamo Low Left Block: forearms down over the left ribs (\u2248 0.45)"
+  - role: 39
+    clip: {fileID: 7400000, guid: 7db0db0723f1ff04ca4a8cfaca2c1581, type: 2}
+    provisional: 0
+    strikeSide: 0
+    note: "Mixamo Low Right Block: forearms down over the right ribs (\u2248 0.33)"
+  - role: 40
+    clip: {fileID: 7400000, guid: 2a82757c5959ce24995e6e4c74764c57, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: "Mixamo Dodging Right: the torso sways right (head +0.42 m at 0.55) and
+      back \u2014 the sidestep (mirrored for the left)"
+  - role: 41
+    clip: {fileID: 7400000, guid: a3d94049e8e05634ca21f6a00d4fd701, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: 'Mixamo Medium Hit To The Head From A Right Punch: head snaps to the right
+      (mirrored for a left hand)'
+  - role: 42
+    clip: {fileID: 7400000, guid: 8855143e54a0abb4bbd56e7fab9866b0, type: 2}
+    provisional: 0
+    strikeSide: -1
+    note: "Mixamo Boxing Lead Hand Hook: left hook to the head (1.49 m, peak 0.50)
+      \u2014 SIDE high punch"
+  - role: 43
+    clip: {fileID: 7400000, guid: 249aeae883b18614987fffd40ca958df, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: "Mixamo Boxing Back Hand Hook: right hook, 1.06 m (peak 0.73) \u2014 SIDE
+      mid punch / close short hook"
+  - role: 32
+    clip: {fileID: 7400000, guid: 4579f934214da7944ae07c780ea08ec1, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: "Mixamo Cross Punch: right cross to the face (1.20 m, peak 0.37) \u2014
+      CENTRE high punch alt"
+  - role: 48
+    clip: {fileID: 7400000, guid: 005c3ebd78e5e3e4aa5fee787d513742, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: "Mixamo Boxing Back Hand Uppercut (peak 0.70) \u2014 close range, centre"
+  - role: 49
+    clip: {fileID: 7400000, guid: c54f2c2020798374abe730b92d5155c3, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: "Mixamo Muay Thai Illegal Knee: right knee up (peak 0.73) \u2014 close
+      range"
+  - role: 50
+    clip: {fileID: 7400000, guid: 07e8a630d6149134a9475a5ee19cb9fc, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: "Mixamo 360 Degrees Back Leg Sweep: crouched full turn, foot at the floor
+      (peak 1.03) \u2014 Back + Down + Kick"
+  - role: 51
+    clip: {fileID: 7400000, guid: f3558140bb6982a44b0dba8e855fd6b7, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: "Mixamo Aerial 360 Front Side Rotation Kick (inside crescent): right foot
+      1.29 m (peak 1.33, airborne 1.17\u20131.67) \u2014 back jump + Kick"
+  - role: 44
+    clip: {fileID: 7400000, guid: 490a6c2fd4dac054c8420e84ed1fb1f6, type: 2}
+    provisional: 0
+    strikeSide: -1
+    note: "Mixamo Short Hook Punch To The Body \u2014 SIDE low punch"
+  - role: 45
+    clip: {fileID: 7400000, guid: 4187d4db25d70214192c8e3491ece7d5, type: 2}
+    provisional: 0
+    strikeSide: -1
+    note: "Mixamo Mma Side Kick at the head \u2014 CENTRE high kick"
+  - role: 46
+    clip: {fileID: 7400000, guid: 1b4a626899bd57d4d8c5844099fc9b4f, type: 2}
+    provisional: 0
+    strikeSide: 1
+    note: "Rokoko big front kick \u2014 CENTRE mid kick / push kick"
+  - role: 47
+    clip: {fileID: 7400000, guid: 499d111e351823f4bbcb3b0de6ea700b, type: 2}
+    provisional: 0
+    strikeSide: -1
+    note: "CMU 143_24 low front kick to the shin \u2014 CENTRE low kick"
+  - role: 4
+    clip: {fileID: 7400000, guid: 29920a750f64c0641b65666673566612, type: 2}
+    provisional: 0
+    strikeSide: 0
+    note: 'ShadowBoxing high cover (kept: the Mixamo block made punches whiff)'
   moveCrossfade: 0.08
   reactionCrossfade: 0.05
   knockdownCrossfade: 0.04

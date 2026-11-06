@@ -8,7 +8,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>Builds every composer and player-style recipe in play mode (AvatarsClothesChecker scene) at the five
-/// qualities: all items equipped and assembled per region, hair present; front / back / side captures of the
+/// qualities: all items equipped and assembled (masks), hair present; front / back / side captures of the
 /// Ultra build in Logs/SegmentedOutfits. Chained from SegmentedOutfitSetup (-validateOutfit).</summary>
 [InitializeOnLoad]
 public static class SegmentedOutfitCheck
@@ -69,9 +69,11 @@ public static class SegmentedOutfitCheck
                     if (avatar?.Root == null) continue;
                     await Task.Yield();
                     Check(label + " items equipped", avatar.EquippedItems.Count == expected, $"{avatar.EquippedItems.Count}/{expected}");
-                    Check(label + " assembled per region", avatar.Appearance.SegmentedGarmentCount == expected, $"{avatar.Appearance.SegmentedGarmentCount}/{expected}");
+                    Check(label + " assembled (masks)", avatar.Appearance.SegmentedGarmentCount == expected, $"{avatar.Appearance.SegmentedGarmentCount}/{expected}");
                     if (recipe.identity?.hair != null)
-                        Check(label + " hair", avatar.Root.GetComponentsInChildren<SegmentedGarmentPart>().Any(p => p.name.IndexOf("hair", StringComparison.OrdinalIgnoreCase) >= 0));
+                        Check(label + " hair", avatar.Root.GetComponentsInChildren<AvatarVisualPart>().Any(p => p.name.IndexOf("hair", StringComparison.OrdinalIgnoreCase) >= 0));
+                    Check(label + " masks", avatar.Root.GetComponentsInChildren<SegmentedGarmentPart>().All(p => p.TryValidate(out _)),
+                          string.Join(", ", avatar.Root.GetComponentsInChildren<SegmentedGarmentPart>().Where(p => !p.TryValidate(out _)).Select(p => p.name)));
                     foreach (var item in avatar.EquippedItems)
                     foreach (var r in avatar.Appearance.RenderersOf(item))
                         Check($"{label} {item.Definition.stableId} one draw", r.RuntimeMesh.subMeshCount == 1 && r.Renderer.sharedMaterials.Length == 1,
@@ -83,6 +85,10 @@ public static class SegmentedOutfitCheck
                 }
                 finally { avatar?.Dispose(); }
                 await Task.Yield();
+                // 15 recipes x 5 qualities of textures: release each build before the next one.
+                var unload = Resources.UnloadUnusedAssets();
+                while (!unload.isDone) await Task.Yield();
+                GC.Collect();
             }
             Check("Body masks released", BodyVisibilityMask.CachedCount == 0);
         }

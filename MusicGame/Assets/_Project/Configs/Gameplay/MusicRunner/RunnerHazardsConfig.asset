@@ -59,3 +59,7 @@ MonoBehaviour:
   testGallery: 0
   testGalleryGapSeconds: 5
   testHotkeys: 0
+  chaserContactExtraRespawnDelay: 1
+  caughtKnockdownClip: {fileID: 7400000, guid: 192868d8e55f0764495afb68d7e7e74d, type: 2}
+  caughtDownedClip: {fileID: 7400000, guid: 082b498b6f6a0474c88a06236cf1992a, type: 2}
+  caughtKnockdownSpeed: 1.5

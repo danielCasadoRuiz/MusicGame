@@ -33,6 +33,8 @@ public class LiveHudView : MonoBehaviour
 
     [Header("Progress")]
     public Image progressFill;
+    [Tooltip("Artist first, then the song title. No elapsed/duration labels in the compact runner HUD.")]
+    public TextMeshProUGUI artistSongText;
     [Tooltip("Played time of the song (left of the progress bar) and its length (right).")]
     public TextMeshProUGUI elapsedTimeText;
     public TextMeshProUGUI totalTimeText;

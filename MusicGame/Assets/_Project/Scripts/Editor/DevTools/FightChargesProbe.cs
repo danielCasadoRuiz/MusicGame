@@ -134,6 +134,10 @@ public static class FightChargesProbe
             Player.Power.Clear(Player);
             Power();
             Check("x4 at 0: Power rejected, never negative", !Player.Power.IsActive && W.QuadCombos == 0, MC.LastPowerInfo);
+        }),
+        // The HUD refreshes in FightController.Update — read it on a later frame, not the frame the state changed.
+        (0.1f, "…HUD after x4 0", null, () =>
+        {
             CheckHud("HUD follows (x4 0)");
             Set(1, 2, 3); Power();
             Check("Power with 3 x4: spends all three at once, lasts 4 + 2 = 6 s", Player.Power.IsActive && W.QuadCombos == 0 && Mathf.Approximately(Player.Power.Duration, 6f),
@@ -154,8 +158,11 @@ public static class FightChargesProbe
             s_before = Snap(); Combo(Finisher(FightComboBonus.KickFinisher));
         }),
         (0.05f, "…plain", null, () =>
-            Check("Triple kick with 0 x3: still runs, unpowered (plain kick, no bonus), nothing spent",
-                  MC.CurrentMove != null && MC.CurrentTag == FighterMoveController.AttackTag.Combo && MC.CurrentAttackBonus.IsIdentity && Snap() == s_before, $"{MC.CurrentMove?.debugName} {MC.CurrentTag} {Snap()}")),
+            // 2026-11-04 (user design): without x3 the 3rd fast press is still a STRONGER hit (balance.unpoweredFinisher),
+            // just not the powered one — and nothing is spent.
+            Check("Triple kick with 0 x3: still runs, unpowered (the unpowered-finisher bonus, not the x3 one), nothing spent",
+                  MC.CurrentMove != null && MC.CurrentTag == FighterMoveController.AttackTag.Combo && MC.CurrentAttackBonus.Equals(Balance.unpoweredFinisher) && Snap() == s_before,
+                  $"{MC.CurrentMove?.debugName} {MC.CurrentTag} {MC.CurrentAttackBonus} {Snap()}")),
         (0f, "two x3, one each", () => Idle, () => { Set(0, 2, 0); Combo(Finisher(FightComboBonus.KickFinisher)); }),
         (0.05f, "…first", null, () => Check("with 2 x3: one finisher → 1 left", W.TripleCombos == 1 && MC.CurrentTag == FighterMoveController.AttackTag.Finisher, $"{Snap()}")),
         (0f, "…second", () => Idle, () => Combo(Finisher(FightComboBonus.PunchFinisher))),
@@ -171,8 +178,8 @@ public static class FightChargesProbe
         (0.3f, "input: walk forward…", () => Fighting && Idle, () => { Set(0, 1, 0); FightTouchInputState.Horizontal = Fwd; }),
         (0.6f, "  …P P P while still holding forward", null, () => FightTouchInputState.PunchRequested = true),
         (0.25f, "  2nd punch", null, () => FightTouchInputState.PunchRequested = true),
-        (0.25f, "  3rd punch", null, () => FightTouchInputState.PunchRequested = true),
-        (0.12f, "  powered?", null, () =>
+        (0.08f, "  3rd punch (fast: within chainThirdPressWait)", null, () => FightTouchInputState.PunchRequested = true),
+        (0.3f, "  powered?", null, () => // the strong hit starts when the 1st punch's cancel window opens (0.62 s Mixamo jab)
         {
             Check("real input: triple punch WHILE ADVANCING is the powered finisher and spends 1 x3", W.TripleCombos == 0 && MC.CurrentTag == FighterMoveController.AttackTag.Finisher,
                   $"x3 {W.TripleCombos}, tag {MC.CurrentTag}, move {MC.CurrentMove?.debugName}");
@@ -180,8 +187,10 @@ public static class FightChargesProbe
         }),
         (0.3f, "input: K K K standing", () => Fighting && Idle, () => { Set(0, 1, 0); FightTouchInputState.KickRequested = true; }),
         (0.25f, "  2nd kick", null, () => FightTouchInputState.KickRequested = true),
-        (0.25f, "  3rd kick", null, () => FightTouchInputState.KickRequested = true),
-        (0.12f, "  powered?", null, () =>
+        (0.08f, "  3rd kick (fast: within chainThirdPressWait)", null, () => FightTouchInputState.KickRequested = true),
+        // The mid kick (CMU) is slow (impact ≈ 0.5 s): the strong kick queues behind the first one and starts
+        // from its cancel window — check once it has begun.
+        (0.6f, "  powered?", null, () =>
             Check("real input: triple kick is the powered finisher and spends 1 x3", W.TripleCombos == 0 && MC.CurrentTag == FighterMoveController.AttackTag.Finisher,
                   $"x3 {W.TripleCombos}, tag {MC.CurrentTag}")),
         (0.3f, "input: tap forward then punch", () => Fighting && Idle, () => { Set(0, 0, 0); FightTouchInputState.Horizontal = 0f; }),
@@ -276,9 +285,19 @@ public static class FightChargesProbe
     private static void CheckHud(string name)
     {
         var panel = Find<FightHudView>().buildPanel;
-        var wrong = panel.resources.Where(c => c.value.text != FightController.ChargeValue(W, c.kind).ToString())
-                                   .Select(c => $"{c.kind} shows {c.value.text} (real {FightController.ChargeValue(W, c.kind)})").ToList();
+        var wrong = panel.resources.Where(c => c.value.text != Expected(c.kind))
+                                   .Select(c => $"{c.kind} shows {c.value.text} (expected {Expected(c.kind)}, real {FightController.ChargeValue(W, c.kind)})").ToList();
         Check(name, wrong.Count == 0, string.Join(", ", wrong));
+    }
+
+    // Since 2026-10-27 the x4 cell shows Power SECONDS (FightController: the time left while Power runs, else what the
+    // held x4 would give — CombatResourceUse.PowerSeconds); every other cell shows its count.
+    private static string Expected(BonusKind kind)
+    {
+        int v = FightController.ChargeValue(W, kind);
+        if (kind != BonusKind.QuadCombo) return v.ToString();
+        float seconds = Player.Power.IsActive ? Player.Power.Remaining : CombatResourceUse.PowerSeconds(v, Balance);
+        return $"{Mathf.CeilToInt(seconds)}s";
     }
 
     private static Rect ScreenRect(RectTransform rt)
@@ -339,3 +358,4 @@ public static class FightChargesProbe
     }
 }
 #endif
+    

@@ -10,9 +10,12 @@ public class FightCameraConfig : ScriptableObject
     [Header("Framing")]
     [Tooltip("Offset from the fighters' midpoint — X/Y are sideways/height, Z's magnitude is the " +
              "base back-distance before separation padding is added.")]
-    public Vector3 offset = new Vector3(0f, 1.7f, -3.2f);
+    public Vector3 offset = new Vector3(0f, 0.35f, -3f);
+    [Tooltip("Height (m) above the fighters' midpoint (their roots, ≈ hips) the camera AIMS at. With offset.y just " +
+             "above it the view is a low, almost level side shot (fighting-game framing) instead of looking down.")]
+    public float lookHeight = 0.1f;
     [Tooltip("Closest straight-line distance (m) from the camera to the fighters' midpoint.")]
-    public float minDistance = 2.6f;
+    public float minDistance = 2.4f;
     [Tooltip("FARTHEST straight-line distance (m) from the camera to the fighters' midpoint — the normal " +
              "third-person framing never goes beyond this (it comes closer when the fighters are close).")]
     public float maxDistance = 4f;

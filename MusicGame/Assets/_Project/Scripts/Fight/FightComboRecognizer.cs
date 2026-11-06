@@ -102,13 +102,16 @@ public class FightComboRecognizer
             for (int i = start; i < _recent.Count; i++) _scratch.Add(_recent[i]);
             if (!IsNode(_scratch, out var completed)) continue;
             if (freshStart < 0) freshStart = start;
-            if (completed != null && freshCompleteStart < 0) { freshCompleteStart = start; freshCombo = completed; }
+            // The longest completed suffix wins, unless a SHORTER one has a higher priority (2026-11-05: walking forward
+            // then Down+Forward+Punch read as "Forward, Punch" = the lunge punch — the Special never came out).
+            if (completed != null && (freshCompleteStart < 0 || completed.priority > freshCombo.priority)) { freshCompleteStart = start; freshCombo = completed; }
         }
 
         // Choose (see class doc).
         if (extCombo != null || freshCombo != null)
         {
-            bool useExt = extCombo != null && (freshCombo == null || extCombo.steps.Length >= freshCombo.steps.Length);
+            bool useExt = extCombo != null && (freshCombo == null ||
+                          (freshCombo.priority <= extCombo.priority && extCombo.steps.Length >= freshCombo.steps.Length));
             return useExt ? Extend(input, extCombo) : StartFrom(freshCompleteStart, freshCombo, input);
         }
         if (extValid) return Extend(input, null);

@@ -12,13 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 305e382fb6e24e04bbd06791139ba167, type: 3}
   m_Name: FightArenaConfig
   m_EditorClassIdentifier: Assembly-CSharp::FightArenaConfig
+  defaultArena:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectGUID: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   playerSpawnPosition: {x: -1.5, y: 1, z: 0}
   opponentSpawnPosition: {x: 1.5, y: 1, z: 0}
   minBoundX: -4
   maxBoundX: 4
   minDepth: -1.5
   maxDepth: 1.5
-  minimumFighterSeparation: 1
+  circularArena: 1
+  arenaCenterXZ: {x: 0, y: 0}
+  arenaRadius: 3.6
+  sidestepMaxArcDegrees: 55
+  minimumFighterSeparation: 0.6
   sidestepDistance: 1.2
   sidestepDuration: 0.18
   sidestepRecovery: 0.12
@@ -27,9 +37,24 @@ MonoBehaviour:
   doubleTapWindow: 0.3
   baseMovementSpeed: 4
   runSpeedMultiplier: 1.6
-  jumpVelocity: 6
-  gravity: 20
+  backwardSpeedMultiplier: 0.6
+  walkAcceleration: 30
+  turnSpeedDegrees: 720
+  lungeSpeed: 6
+  knockbackSpeed: 9
+  chargeAcceleration: 9
+  tackleMinSpeed: 5.6
+  tackleContactPadding: 0.12
+  tackleDamage: {x: 10, y: 18}
+  tackleKnockback: {x: 1, y: 1.8}
+  tackleKnocksDown: 0
+  tackleHitStun: 0.45
+  tackleRecovery: 0.35
+  jumpVelocity: 6.5
+  gravity: 22
   airControlMultiplier: 0.5
+  airAcceleration: 6
+  attackCarryDeceleration: 7
   playerFighterPrefab: {fileID: 0}
   playerAvatarRecipe: {fileID: 11400000, guid: 583a5e11431603248aada55510f59c35, type: 2}
   playerDebugColor: {r: 0.2, g: 0.6, b: 1, a: 1}

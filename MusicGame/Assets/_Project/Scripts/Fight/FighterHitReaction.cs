@@ -38,10 +38,27 @@ public class FighterHitReaction : MonoBehaviour
     public bool IsInHitStun => State == FighterReactionState.HitStun || IsInKnockdownFlow;
     public bool IsInBlockStun => State == FighterReactionState.BlockStun;
     public bool IsInKnockdownFlow => State >= FighterReactionState.Knockdown;
-    /// <summary>Hits are ignored for the whole knockdown flow.</summary>
-    public bool IsInvulnerable => IsInKnockdownFlow;
+    /// <summary>Hits are ignored while FALLING and GETTING UP; while lying DOWNED it can still take a few
+    /// LOW ground hits (CanTakeGroundHit — FightHitDispatcher), then it is untouchable until it is up.</summary>
+    public bool IsInvulnerable => IsInKnockdownFlow && !CanTakeGroundHit;
+    /// <summary>Lying on the floor with ground hits left this knockdown (not a KO'd fighter).</summary>
+    public bool CanTakeGroundHit => State == FighterReactionState.Downed && !_stayDown &&
+                                    _groundHits < (_balance != null ? _balance.groundHitsPerKnockdown : 2);
+    private int _groundHits;
 
     private bool _stayDown; // KO: remain Downed
+    // Tekken-like get-up (FightCombatBalanceConfig.downedWaitsForGetUpInput): lying Downed until Up / Jump is pressed.
+    private bool _getUpRequested, _upWasHeld;
+    private float _downedElapsed;
+
+    /// <summary>Lying on the floor, able to get up, waiting for the get-up input (Up / Jump, or RequestGetUp).</summary>
+    public bool WaitingForGetUp => State == FighterReactionState.Downed && !_stayDown && StateRemaining <= 0f;
+
+    /// <summary>Get up as soon as the minimum lying time allows (the AI's "Up"; also used by tests).</summary>
+    public void RequestGetUp()
+    {
+        if (State == FighterReactionState.Knockdown || State == FighterReactionState.Downed) _getUpRequested = true;
+    }
     private bool _altReaction;
 
     public void Initialize(FighterActor actor, FighterActor opponent, FightArenaConfig arenaConfig)
@@ -52,7 +69,11 @@ public class FighterHitReaction : MonoBehaviour
         _balance     = Resources.Load<AppConfigSO>("AppConfig")?.combatBalance;
     }
 
-    public void ApplyHit(float hitStunDuration, float knockbackDistance)
+    /// <summary>`attackerSide` = the attacker's striking limb (+1 right / −1 left, 0 unknown): every other hit shows the
+    /// head snapped away from THAT hand (HitReactionSide, mirrored for the left), the rest the body reaction.</summary>
+    public void ApplyHit(float hitStunDuration, float knockbackDistance) => ApplyHit(hitStunDuration, knockbackDistance, 0);
+
+    public void ApplyHit(float hitStunDuration, float knockbackDistance, int attackerSide)
     {
         if (IsInKnockdownFlow) return;
         BeginActionLock();
@@ -63,8 +84,9 @@ public class FighterHitReaction : MonoBehaviour
         // Alternate between the available hit reactions so consecutive hits don't all look the same
         // (HitReactionAlt falls back to HitReaction when the set has no clip for it).
         _altReaction = !_altReaction;
-        _actor.AnimationDriver?.PlayRole(_altReaction ? CombatRole.HitReactionAlt : CombatRole.HitReaction,
-                                         float.IsInfinity(hitStunDuration) ? -1f : hitStunDuration);
+        float shown = float.IsInfinity(hitStunDuration) ? -1f : hitStunDuration;
+        if (!_altReaction && attackerSide != 0) _actor.AnimationDriver?.PlaySided(CombatRole.HitReactionSide, attackerSide, shown);
+        else _actor.AnimationDriver?.PlayRole(_altReaction ? CombatRole.HitReactionAlt : CombatRole.HitReaction, shown);
 
         ApplyKnockback(knockbackDistance);
     }
@@ -78,7 +100,8 @@ public class FighterHitReaction : MonoBehaviour
 
         float remaining = State == FighterReactionState.BlockStun ? StateRemaining : 0f;
         Enter(FighterReactionState.BlockStun, Mathf.Max(remaining, blockStunDuration));
-        _actor.AnimationDriver?.PlayRole(CombatRole.Block);
+        if (_actor.Guard != null && _actor.Guard.CoverSide != 0) _actor.AnimationDriver?.PlayGuard(0f, _actor.Guard.State, _actor.Guard.CoverSide);
+        else _actor.AnimationDriver?.PlayRole(CombatRole.Block);
 
         ApplyKnockback(knockbackDistance);
     }
@@ -89,10 +112,24 @@ public class FighterHitReaction : MonoBehaviour
         if (IsInKnockdownFlow && !stayDown) return;
         BeginActionLock();
         _stayDown = stayDown;
-        float duration = _balance != null ? _balance.knockdownDuration : 1.2f;
+        _groundHits = 0;
+        _getUpRequested = false;
+        _downedElapsed = 0f;
+        // A direction already held when falling does not count: the get-up needs a fresh press.
+        _upWasHeld = _actor.InputController != null && _actor.InputController.CurrentVertical == FightVerticalDirection.Up;
+        float duration = _balance != null ? _balance.knockdownDuration : 0.8f;
         Enter(FighterReactionState.Knockdown, duration);
         _actor.AnimationDriver?.PlayRole(CombatRole.Knockdown, duration);
         ApplyKnockback(knockbackDistance);
+    }
+
+    /// <summary>A LOW ground hit on a downed fighter (FightHitDispatcher): counts, keeps it down a bit longer.</summary>
+    public void ApplyGroundHit()
+    {
+        if (State != FighterReactionState.Downed) return;
+        _groundHits++;
+        StateRemaining += _balance != null ? _balance.groundHitExtraDown : 0.15f;
+        _actor.AnimationDriver?.PlayRole(CombatRole.Downed);
     }
 
     // ── Grapple hooks (FighterGrapple) ───────────────────────────────────────
@@ -121,7 +158,7 @@ public class FighterHitReaction : MonoBehaviour
     public void ForceGetUp()
     {
         if (_stayDown || (State != FighterReactionState.Knockdown && State != FighterReactionState.Downed)) return;
-        float getUp = _balance != null ? _balance.getUpDuration : 1.6f;
+        float getUp = _balance != null ? _balance.getUpDuration : 0.9f;
         Enter(FighterReactionState.GetUp, getUp);
         _actor.AnimationDriver?.PlayRole(CombatRole.GetUp, getUp);
     }
@@ -157,17 +194,21 @@ public class FighterHitReaction : MonoBehaviour
         if (State == FighterReactionState.None) return;
         if (float.IsInfinity(StateRemaining)) return; // held until reset (KO)
 
+        if ((State == FighterReactionState.Knockdown || State == FighterReactionState.Downed) && !_stayDown) PollGetUpInput();
+        if (State == FighterReactionState.Downed) _downedElapsed += Time.deltaTime;
+
         StateRemaining -= Time.deltaTime;
         if (StateRemaining > 0f) return;
 
         switch (State)
         {
             case FighterReactionState.Knockdown:
-                Enter(FighterReactionState.Downed, _stayDown ? float.PositiveInfinity : (_balance != null ? _balance.downedDuration : 0.8f));
+                Enter(FighterReactionState.Downed, _stayDown ? float.PositiveInfinity : (_balance != null ? _balance.downedDuration : 0.45f));
                 _actor.AnimationDriver?.PlayRole(CombatRole.Downed);
                 return;
             case FighterReactionState.Downed:
-                float getUp = _balance != null ? _balance.getUpDuration : 1.6f;
+                if (StaysDown()) { StateRemaining = 0f; return; } // lying until the get-up input
+                float getUp = _balance != null ? _balance.getUpDuration : 0.9f;
                 Enter(FighterReactionState.GetUp, getUp);
                 _actor.AnimationDriver?.PlayRole(CombatRole.GetUp, getUp);
                 return;
@@ -180,10 +221,36 @@ public class FighterHitReaction : MonoBehaviour
         if (_actor.MoveController != null) _actor.MoveController.IsHitStunned = false;
     }
 
+    // Up pressed (fresh) or the Jump button → get up once the minimum lying time is over.
+    private void PollGetUpInput()
+    {
+        var input = _actor.InputController;
+        if (input == null) return;
+        bool up = input.CurrentVertical == FightVerticalDirection.Up;
+        if (up && !_upWasHeld) _getUpRequested = true;
+        _upWasHeld = up;
+        if (input.ConsumeJump(0.2f)) _getUpRequested = true; // consumed: no jump right after standing up
+    }
+
+    private bool StaysDown()
+    {
+        if (_balance == null || !_balance.downedWaitsForGetUpInput || _getUpRequested) return false;
+        // Nobody to press Up (a disabled AI, no input at all): it gets up by itself, as before.
+        bool hasDriver = _actor.AI != null ? _actor.AI.isActiveAndEnabled : _actor.InputController != null;
+        if (!hasDriver) return false;
+        // No ground hits left: it is untouchable on the floor, so it must not be able to lie there forever.
+        if (_groundHits >= _balance.groundHitsPerKnockdown) return false;
+        if (_balance.downedMaxDuration > 0f && _downedElapsed >= _balance.downedMaxDuration) return false;
+        return true;
+    }
+
     public void ResetForRound()
     {
         State = FighterReactionState.None;
         StateRemaining = 0f;
         _stayDown = false;
+        _groundHits = 0;
+        _getUpRequested = false;
+        _downedElapsed = 0f;
     }
 }

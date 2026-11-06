@@ -153,6 +153,8 @@ public class FighterAI : MonoBehaviour
 
         if (UpdateGrapple()) return; // held / grounded / ground control: grapple decisions only
 
+        UpdateGetUp(ctx);
+
         if (!ctx.SelfCanAct)
         {
             _wasStunned |= ctx.SelfHitStun || ctx.SelfBlockStun;   // remembered for the anticipation guard (ReflexGuard)
@@ -165,6 +167,14 @@ public class FighterAI : MonoBehaviour
         if (ReflexGuard(ctx)) return;           // a seen attack: guard now, whatever was running
         if (_executionRoutine != null) return; // committed to whatever was last decided
         if (Time.time < _nextDecisionTime) return; // still "reacting"
+        if (PowerWanted(ctx))
+        {
+            StopExecuting();
+            CurrentIntention = FightAIIntention.Wait;
+            _executionRoutine = StartCoroutine(RunToCompletion(PowerRoutine()));
+            _nextDecisionTime = Time.time + EffectiveReactionTime();
+            return;
+        }
 
         Decide(ctx);
         _nextDecisionTime = Time.time + EffectiveReactionTime();
@@ -179,7 +189,7 @@ public class FighterAI : MonoBehaviour
     public void SetProfile(AIDifficultyProfile profile) => _profile = profile;
 
     // ── Special pacing (difficulty: FightSceneBootstrap → FightCombatBalanceConfig.RivalTuningAt) ──
-    // Specials are thrown on openings (ComputeScores); this only keeps a short delay after the round start and between
+    // Specials are thrown freely when ready (ComputeScores); this only keeps a short delay after the round start and between
     // two throws. Its Specials refill every round (FightSceneBootstrap).
     private float _firstSpecialDelay, _specialCooldown, _roundStartTime, _lastSpecialTime = -999f;
 
@@ -190,10 +200,60 @@ public class FighterAI : MonoBehaviour
     }
 
     private bool HasSpecial => _actor != null && _actor.CombatResources != null && _actor.CombatResources.Specials > 0;
+
+    // ── POWER (2026-11-05: "tot el que puc fer jo ho pot fer el rival, segons nivell") ──────────────
+    // The rival holds the SAME chord a player does (Down + Punch + Kick, FighterInputController) when it has x4 charges —
+    // and it only has them at high difficulty (FightCombatBalanceConfig.rivalQuadsPerRound), so the level decides.
+    // Never in the first seconds of a round, never point-blank in front of an attacking player.
+    private bool PowerWanted(FightAIContext ctx)
+    {
+        if (_actor == null || _actor.Power == null || _actor.Power.IsActive) return false;
+        if (_actor.CombatResources == null || _actor.CombatResources.QuadCombos < 1) return false;
+        if (Time.time - _roundStartTime < 3f) return false;
+        bool safe = ctx.Distance > 1.6f || ctx.OpponentHitStun || (_opponent.HitReaction != null && _opponent.HitReaction.IsInKnockdownFlow);
+        if (!safe) return false;
+        float usage = _profile != null ? _profile.specialUsage : 0.5f;
+        return RollChance(Mathf.Lerp(0.04f, 0.2f, usage));
+    }
+
+    private IEnumerator PowerRoutine()
+    {
+        var bal = Resources.Load<AppConfigSO>("AppConfig")?.combatBalance;
+        float hold = (bal != null ? bal.powerActivationHoldTime : 1f) + 0.15f;
+        _inputSource.SetDirection(0f, -1f);
+        yield return null;
+        _inputSource.HoldPowerChord(hold);
+        float end = Time.time + hold + 0.05f;
+        while (Time.time < end && !_actor.Power.IsActive) yield return null;
+        _inputSource.ReleaseButtons();
+        _inputSource.SetDirection(0f, 0f);
+    }
     private bool SpecialReady => Time.time - _roundStartTime >= _firstSpecialDelay && Time.time - _lastSpecialTime >= _specialCooldown;
+
+    // ── Getting up (Tekken-like: a downed fighter lies until it presses Up — FighterHitReaction) ──
+    // The rival picks a random moment (FightCombatBalanceConfig.aiGetUpDelay) and stays down while a Special is
+    // flying at it (it passes over a fighter on the floor). The press is a real Jump press, like a player's.
+    private float _getUpAt = -1f;
+
+    private void UpdateGetUp(FightAIContext ctx)
+    {
+        var hr = _actor.HitReaction;
+        if (hr == null || !hr.WaitingForGetUp) { _getUpAt = -1f; return; }
+        if (_getUpAt < 0f)
+        {
+            var bal = Resources.Load<AppConfigSO>("AppConfig")?.combatBalance;
+            var range = bal != null ? bal.aiGetUpDelay : new Vector2(0.15f, 0.9f);
+            _getUpAt = Time.time + Mathf.Lerp(range.x, range.y, (float)_random.NextDouble());
+        }
+        if (ctx.IncomingProjectile != null) _getUpAt = Mathf.Max(_getUpAt, Time.time + 0.1f);
+        if (Time.time < _getUpAt) return;
+        _inputSource.RequestJump();
+        _getUpAt = Time.time + 0.3f; // retry if that press was lost
+    }
 
     public void ResetForRound()
     {
+        _getUpAt = -1f;
         _roundStartTime = Time.time;
         _lastSpecialTime = -999f;
         StopExecuting();
@@ -217,6 +277,7 @@ public class FighterAI : MonoBehaviour
     private void StopExecuting()
     {
         if (_executionRoutine != null) { StopCoroutine(_executionRoutine); _executionRoutine = null; }
+        _inputSource?.ReleaseButtons();   // an interrupted Power chord never stays held
     }
 
     private float EffectiveReactionTime()
@@ -289,6 +350,9 @@ public class FighterAI : MonoBehaviour
         }
         if (ctx.OpponentMovePhase != FighterMoveState.Recovery) _counterTried = false;
 
+        // The opponent's SPECIAL is telegraphed (a long, visible wind-up): a rival that reads it steps aside.
+        if (SpecialDodge(ctx)) return true;
+
         var inc = DetectIncomingAttack(ctx);
         bool projectile = ctx.IncomingProjectile != null;
         bool threat = inc.present && inc.guardType != GuardType.Unblockable && (projectile || ctx.Distance <= _meleeRange * 1.6f);
@@ -313,6 +377,33 @@ public class FighterAI : MonoBehaviour
             return true;
         }
         return Time.time < _guardHoldUntil;
+    }
+
+    private FightMoveDefinition _seenSpecial;
+    private bool _specialWillDodge;
+    private float _specialDodgeAt = -1f;
+
+    private bool SpecialDodge(FightAIContext ctx)
+    {
+        var move = ctx.OpponentCurrentMove;
+        bool special = move != null && move.resourceCost == CombatResourceType.Special &&
+                       (ctx.OpponentMovePhase == FighterMoveState.Startup || ctx.OpponentMovePhase == FighterMoveState.Active);
+        if (!special) { _seenSpecial = null; _specialDodgeAt = -1f; return false; }
+        if (move != _seenSpecial)
+        {
+            _seenSpecial = move;
+            _specialWillDodge = RollChance(_profile != null ? _profile.defenseProbability : 0.5f);
+            _specialDodgeAt = Time.time + EffectiveReactionTime();
+        }
+        if (!_specialWillDodge || _specialDodgeAt < 0f || Time.time < _specialDodgeAt || _actor.Posture == FighterPosture.Airborne) return false;
+        // Step aside late in the wind-up (the shot is aimed when it is released), not the instant it starts.
+        if (ctx.OpponentMovePhase == FighterMoveState.Startup && ctx.OpponentMovePhaseProgress01 < 0.7f) return false;
+        _specialDodgeAt = -1f; // once per Special
+        var side = RollChance(0.5) ? FightAIIntention.SideStepLeft : FightAIIntention.SideStepRight;
+        CurrentIntention = side;
+        BeginIntention(side, ctx);
+        _nextDecisionTime = Time.time + EffectiveReactionTime();
+        return true;
     }
 
     // ── Decision ──────────────────────────────────────────────────────────────
@@ -457,23 +548,31 @@ public class FighterAI : MonoBehaviour
         scores[FightAIIntention.Grab] = canGrab
             ? Mathf.Lerp(0.02f, 0.16f, aggression) * (oppGuarding ? 2.2f : 1f) * (_aiConfig != null ? _aiConfig.grabScoreMultiplier : 1f)
             : 0f;
-        scores[FightAIIntention.ComboAttack] = inMeleeRange ? Mathf.Lerp(0.05f, 0.65f, comboSkill) * Mathf.Lerp(0.4f, 1f, aggression) : 0f;
-        // The Special (unblockable, dodgeable) is thrown on an OPENING, never on a timer: the player recovering from a
-        // move or stunned (cannot dodge), in the air, closing in from range without attacking — plus some desperation
-        // when losing. SpecialReady only avoids a double throw. Without a Special the same input is the basic heavy
+        // Combos grow with the rival's level (2026-11-05): a low comboSkill almost never strings one, a top rival often.
+        scores[FightAIIntention.ComboAttack] = inMeleeRange ? Mathf.Lerp(0f, 0.6f, comboSkill * comboSkill) * Mathf.Lerp(0.4f, 1f, aggression) : 0f;
+        // The Special (unblockable — only a sidestep or lying on the floor avoids it) is thrown FREELY whenever it is
+        // ready (user design 2026-11-04: the player always has a way out, so the rival does not wait for an opening).
+        // Openings (the player recovering / stunned / in the air) and range only make it more likely; SpecialReady
+        // (first delay + cooldown) avoids a double throw. Without a Special the same input is the basic heavy
         // Signature, a rare option.
         float specialScore = 0f;
         if (inProjectileRange || inMeleeRange)
         {
             if (HasSpecial)
             {
-                if (SpecialReady)
+                // Never the 0.9 s wind-up INTO an attack at close range (2026-11-05: once the Special input worked, the hard
+                // rival threw it into a punch spam and ate every jab instead of guarding — RivalAIProbe).
+                bool underAttack = inMeleeRange && (ctx.OpponentMovePhase == FighterMoveState.Startup || ctx.OpponentMovePhase == FighterMoveState.Active);
+                if (SpecialReady && !underAttack)
                 {
                     bool exposed = ctx.OpponentMovePhase == FighterMoveState.Recovery || ctx.OpponentHitStun || ctx.OpponentBlockStun;
-                    bool closingIn = ctx.Distance > meleeRange * 2f && !opponentAttacking;
-                    float opening = (exposed ? 1.3f : 0f) + (ctx.OpponentPosture == FighterPosture.Airborne ? 0.6f : 0f)
-                                  + (closingIn ? 0.45f : 0f) + (ctx.SelfHealthPercent < 0.35f ? 0.35f : 0f);
-                    specialScore = Mathf.Lerp(0.1f, 1f, specialUsage) * opening;
+                    bool far = ctx.Distance > Mathf.Max(meleeRange * 2f, 2f);
+                    float bonus = 1f + (exposed ? 0.6f : 0f) + (ctx.OpponentPosture == FighterPosture.Airborne ? 0.4f : 0f)
+                                + (far ? 0.3f : 0f) + (ctx.SelfHealthPercent < 0.35f ? 0.3f : 0f);
+                    specialScore = Mathf.Lerp(0.12f, 0.6f, specialUsage) * bonus;
+                    // Ready = it WILL come soon: each decision has its own chance of throwing it outright, so it never
+                    // loses forever against the always-higher melee scores (point-blank exchanges).
+                    if (RollChance(Mathf.Lerp(0.08f, 0.3f, specialUsage) * bonus)) specialScore = 5f;
                 }
             }
             else specialScore = Mathf.Lerp(0.05f, 0.55f, specialUsage) * (ctx.Distance > meleeRange ? 1.3f : 0.7f) * 0.3f;
@@ -492,9 +591,9 @@ public class FighterAI : MonoBehaviour
         // authored yet). Split evenly between Left/Right — either genuinely dodges a straight-line
         // attack (see FighterAttack._activeAttackForward's own doc), so the actual side is
         // arbitrary; still fully gated by defenseProbability like every other defensive choice.
-        bool incomingIsDodgeable = incoming.present && incoming.guardType != GuardType.Unblockable &&
-                                    incoming.tracking != FightHitTracking.Homing;
-        float sidestepBase = incomingIsDodgeable ? 0.55f : 0.03f;
+        // The unblockable Special is the main thing a sidestep is FOR (a straight-line fireball).
+        bool incomingIsDodgeable = incoming.present && incoming.tracking != FightHitTracking.Homing;
+        float sidestepBase = !incomingIsDodgeable ? 0.03f : incoming.guardType == GuardType.Unblockable ? 0.9f : 0.55f;
         scores[FightAIIntention.SideStepLeft]  = sidestepBase * defense * 0.5f;
         scores[FightAIIntention.SideStepRight] = sidestepBase * defense * 0.5f;
 
@@ -507,6 +606,23 @@ public class FighterAI : MonoBehaviour
         // opponent is already too close AND actively attacking.
         scores[FightAIIntention.BackDash] = (opponentAttacking && ctx.Distance < meleeRange * 1.1f)
             ? Mathf.Lerp(0.1f, 0.5f, defense) : 0f;
+
+        // The player LYING ON THE FLOOR (waiting to get up): only LOW punches / kicks reach it (ground hits, limited
+        // per knockdown). Everything standing-height would fly over it, so the rival walks in and stomps low, or waits.
+        var oppReaction = _opponent != null ? _opponent.HitReaction : null;
+        if (oppReaction != null && oppReaction.State == FighterReactionState.Downed)
+        {
+            foreach (var k in new[] { FightAIIntention.NormalAttack, FightAIIntention.HighAttack, FightAIIntention.ComboAttack,
+                                      FightAIIntention.Grab, FightAIIntention.Punish, FightAIIntention.RunAttack, FightAIIntention.AirAttack,
+                                      FightAIIntention.DashApproach, FightAIIntention.RunApproach })
+                scores[k] = 0f;
+            scores[FightAIIntention.SpecialAttack] = Mathf.Min(scores[FightAIIntention.SpecialAttack] * 0.35f, 0.3f); // it would only fly over: rarely tried
+            if (oppReaction.CanTakeGroundHit)
+            {
+                if (inLowRange) scores[FightAIIntention.LowAttack] = Mathf.Lerp(0.4f, 1.3f, aggression);
+                else scores[FightAIIntention.Approach] = Mathf.Lerp(0.4f, 1.1f, aggression);
+            }
+        }
 
         return scores;
     }
@@ -528,7 +644,9 @@ public class FighterAI : MonoBehaviour
                 ctx.OpponentCurrentMove.hits != null && ctx.OpponentCurrentMove.hits.Length > 0)
             {
                 var hit = ctx.OpponentCurrentMove.hits[0];
-                return (hit.attackHeight, hit.guardType, hit.tracking, true);
+                // A strike from a jump falls onto the defender: only the HIGH guard stops it (FighterGuard.WouldBlock).
+                var h = ctx.OpponentPosture == FighterPosture.Airborne ? AttackHeight.High : hit.attackHeight;
+                return (h, hit.guardType, hit.tracking, true);
             }
         }
         if (ctx.IncomingProjectile != null && ctx.IncomingProjectile.HitDefinition != null)
@@ -543,6 +661,13 @@ public class FighterAI : MonoBehaviour
     private static float EstimateHitRange(FightMoveDefinition move)
     {
         if (move == null || move.hits == null || move.hits.Length == 0) return 1f;
+        // Measured clip reach (FightReachProbe) + the strike's own step-in (FighterMoveController.BeginMove).
+        if (move.contactReach > 0f)
+        {
+            var bal = Resources.Load<AppConfigSO>("AppConfig")?.combatBalance;
+            float step = bal != null ? bal.strikeStepIn : 0f, margin = bal != null ? bal.strikeStepMargin : 0.14f;
+            return Mathf.Max(0.3f, move.contactReach - margin + step * 0.8f);
+        }
         var hit = move.hits[0];
         return Mathf.Max(0.3f, hit.localOffset.x + hit.size.x * 0.5f);
     }
@@ -575,6 +700,8 @@ public class FighterAI : MonoBehaviour
         {
             if (c == null || c.steps == null || c.steps.Length < 2 || c.steps.Length > maxSteps) continue;
             if (string.IsNullOrEmpty(c.moveId) || c.moveId == DashForwardMoveId) continue;
+            // The Signature / Special has its own decision (SpecialAttack score — SpecialRoutine), never as a random combo.
+            if (_moveSet != null && _moveSet.signatureSpecial != null && c.moveId == _moveSet.signatureSpecial.id) continue;
             candidates.Add(c);
         }
         return candidates.Count == 0 ? null : candidates[_random.Next(candidates.Count)];
@@ -665,6 +792,20 @@ public class FighterAI : MonoBehaviour
             _inputSource.SetDirection(dirSign, 0f);
             yield return null;
         }
+        // Sometimes the run ends in the FLYING KICK: jump from the run a little before reach, kick in the air.
+        if (_actor.DistanceToOpponent > reach && _actor.DistanceToOpponent <= reach * 2.6f && _actor.MovementState == FighterMovementState.Run &&
+            RollChance(0.35))
+        {
+            _inputSource.RequestJump();
+            for (float t = 0f; t < 0.5f; t += Time.deltaTime)
+            {
+                if (_actor.Posture == FighterPosture.Airborne && _actor.DistanceToOpponent <= _meleeRange * 1.5f) break;
+                yield return null;
+            }
+            if (_actor.Posture == FighterPosture.Airborne) _inputSource.RequestKick();
+            yield return new WaitForSeconds(0.2f);
+            yield break;
+        }
         bool takedown = _actor.Grapple != null && _actor.Grapple.InGrabRange() &&
                         RollChance(0.25 * (_aiConfig != null ? _aiConfig.grabScoreMultiplier : 1f));
         if (takedown) _inputSource.RequestGrab();
@@ -674,13 +815,11 @@ public class FighterAI : MonoBehaviour
 
     private IEnumerator AirAttackRoutine(float dirSign)
     {
-        // Build a little forward speed, jump (hold Up past the threshold), kick near the opponent.
+        // Build a little forward speed, press jump (the jump button), kick near the opponent.
         _inputSource.SetDirection(dirSign, 0f);
         yield return new WaitForSeconds(0.15f);
-        float hold = (_arenaConfig != null ? _arenaConfig.directionHoldThreshold : 0.15f) + 0.05f;
-        _inputSource.SetDirection(dirSign, 1f);
-        yield return new WaitForSeconds(hold);
-        _inputSource.SetDirection(dirSign, 0f);
+        _inputSource.RequestJump();
+        yield return null;
         for (float t = 0f; t < 0.6f; t += Time.deltaTime)
         {
             if (_actor.Posture == FighterPosture.Airborne && _actor.DistanceToOpponent <= _meleeRange * 1.6f) break;
@@ -750,21 +889,22 @@ public class FighterAI : MonoBehaviour
 
     private IEnumerator JumpRoutine()
     {
-        // Must clear FighterMovement's own tap/hold threshold to resolve as a real Jump instead of
-        // a Sidestep tap (see that class's own doc on Up/Down now being dual-purpose) — held for
-        // threshold + a small margin, exactly like a human's held-but-brief jump press.
-        float holdTime = (_arenaConfig != null ? _arenaConfig.directionHoldThreshold : 0.15f) + 0.05f;
-        _inputSource.SetDirection(0f, 1f);
-        yield return new WaitForSeconds(holdTime);
+        // The jump button — instant, like the player's (straight up; the held direction would aim it).
+        _inputSource.SetDirection(0f, 0f);
+        _inputSource.RequestJump();
+        yield return new WaitForSeconds(0.1f);
     }
 
     private IEnumerator SidestepRoutine(int sideSign)
     {
-        // A short tap — safely under FighterMovement's own directionHoldThreshold — real input
-        // through the exact same tap/hold pipeline a human uses (see class doc's own "no fer
-        // trampes" checklist), never a direct Sidestep trigger.
-        float threshold = _arenaConfig != null ? _arenaConfig.directionHoldThreshold : 0.15f;
-        float tapTime = Mathf.Min(0.06f, threshold * 0.4f);
+        // A DOUBLE tap of the same vertical direction (FighterMovement: Up Up / Down Down = sidestep) — real input
+        // through the same pipeline a human uses (class doc's "no fer trampes"), never a direct Sidestep trigger.
+        float doubleTapWindow = _arenaConfig != null ? _arenaConfig.doubleTapWindow : 0.3f;
+        float tapTime = Mathf.Min(0.05f, doubleTapWindow * 0.25f);
+        _inputSource.SetDirection(0f, sideSign);
+        yield return new WaitForSeconds(tapTime);
+        _inputSource.SetDirection(0f, 0f);
+        yield return new WaitForSeconds(tapTime);
         _inputSource.SetDirection(0f, sideSign);
         yield return new WaitForSeconds(tapTime);
         _inputSource.SetDirection(0f, 0f);
@@ -773,22 +913,8 @@ public class FighterAI : MonoBehaviour
 
     private IEnumerator SideWalkRoutine(int sideSign)
     {
-        // Double-tap the SAME vertical direction, then HOLD the second press well past the
-        // threshold — exactly what FighterMovement's own double-tap+hold detection requires; a
-        // genuinely real input sequence, never a direct SideWalk trigger.
-        float threshold        = _arenaConfig != null ? _arenaConfig.directionHoldThreshold : 0.15f;
-        float doubleTapWindow  = _arenaConfig != null ? _arenaConfig.doubleTapWindow : 0.3f;
-        float tapTime = Mathf.Min(0.06f, threshold * 0.4f);
-        float gap     = Mathf.Min(0.05f, doubleTapWindow * 0.3f);
-
-        _inputSource.SetDirection(0f, sideSign);
-        yield return new WaitForSeconds(tapTime);
-        _inputSource.SetDirection(0f, 0f);
-        yield return new WaitForSeconds(gap);
-        _inputSource.SetDirection(0f, sideSign);
-        // Held well past the threshold — walks sideways for a bit, then releases like a human
-        // letting go, rather than sidewalking forever.
-        yield return new WaitForSeconds(threshold + 0.6f);
+        // No held side-walk in the current controls: a repositioning is simply a sidestep.
+        yield return SidestepRoutine(sideSign);
     }
 
     private IEnumerator DashRunRoutine(float dirSign, bool run)
@@ -803,25 +929,31 @@ public class FighterAI : MonoBehaviour
 
     private IEnumerator NormalAttackRoutine()
     {
-        _inputSource.SetDirection(0f, 0f);
+        // Mixes the three heights like a player would (Up = HIGH, none = MID, Down = LOW — the same held
+        // direction FighterMoveController.ResolveNormal reads; the height press is consumed, no sidestep).
+        double h = _random.NextDouble();
+        float vertical = h < 0.25 ? 1f : h < 0.45 ? -1f : 0f;
+        _inputSource.SetDirection(0f, vertical);
         yield return null;
         if (RollChance(0.5)) _inputSource.RequestPunch(); else _inputSource.RequestKick();
         yield return new WaitForSeconds(0.1f);
+        _inputSource.SetDirection(0f, 0f);
     }
 
     private IEnumerator LowAttackRoutine()
     {
         _inputSource.SetDirection(0f, -1f);
         yield return new WaitForSeconds(0.05f);
-        _inputSource.RequestKick();
+        // Low kick mostly, a low punch sometimes (both are LOW: they also reach a fighter lying on the floor).
+        if (RollChance(0.35)) _inputSource.RequestPunch(); else _inputSource.RequestKick();
         yield return new WaitForSeconds(0.15f);
     }
 
     private IEnumerator SpecialRoutine(float dirSign)
     {
-        if (HasSpecial) _lastSpecialTime = Time.time;
         _inputSource.SetDirection(dirSign, -1f);
         yield return new WaitForSeconds(0.05f);
+        if (HasSpecial) _lastSpecialTime = Time.time;
         _inputSource.RequestPunch();
         yield return new WaitForSeconds(0.15f);
     }

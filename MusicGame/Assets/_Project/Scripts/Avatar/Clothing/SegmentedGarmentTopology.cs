@@ -3,13 +3,13 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// The per-submesh triangle index lists of one imported `_cuts` mesh ASSET — read once and shared by every
+/// The per-submesh triangle index lists of one imported garment mesh ASSET — read once and shared by every
 /// avatar wearing that mesh (reference-counted; released with the last avatar). Every rebuild of a garment
-/// takes its visible regions' lists from here, never from the avatar's own (already merged) runtime mesh.
+/// takes its triangles from here, never from the avatar's own (already filtered) runtime mesh.
 ///
-/// Reading indices needs a CPU-readable mesh: GarmentCutsImporter imports `_cuts` models with
-/// Read/Write enabled (the existing garment imports already do), and SegmentedGarmentSupport rejects a
-/// non-readable mesh up front (legacy path) instead of failing here.
+/// Reading indices needs a CPU-readable mesh: GarmentMaskImporter imports the models with Read/Write
+/// enabled, and SegmentedGarmentSupport rejects a non-readable mesh up front (legacy path) instead of
+/// failing here.
 /// </summary>
 public sealed class SegmentedGarmentTopology
 {

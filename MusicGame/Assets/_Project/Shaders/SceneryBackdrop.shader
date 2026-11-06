@@ -8,6 +8,7 @@ Shader "MusicGame/Art/SceneryBackdrop"
         _Rotation("Rotation",Range(0,360))=0
         _HorizontalFov("Image horizontal coverage",Range(30,360))=100
         _VerticalFov("Image vertical coverage",Range(30,180))=60
+        _VerticalOffset("Image vertical framing",Range(-.5,.5))=0
         [HideInInspector] _Mapping("Mapping",Float)=1
         [HideInInspector] _ImageType("Image type",Float)=1
         [HideInInspector] _Layout("Layout",Float)=0
@@ -27,7 +28,7 @@ Shader "MusicGame/Art/SceneryBackdrop"
             sampler2D _MainTex;
             half4 _Tint;
             half _Exposure;
-            float _Rotation,_HorizontalFov,_VerticalFov;
+            float _Rotation,_HorizontalFov,_VerticalFov,_VerticalOffset;
             struct appdata{float4 vertex:POSITION;UNITY_VERTEX_INPUT_INSTANCE_ID};
             struct v2f{float4 vertex:SV_POSITION;float3 direction:TEXCOORD0;UNITY_VERTEX_OUTPUT_STEREO};
             v2f vert(appdata input)
@@ -44,7 +45,7 @@ Shader "MusicGame/Art/SceneryBackdrop"
                 float u=.5+degrees(atan2(direction.x,direction.z))/max(_HorizontalFov,1);
                 // Mirror repeats keep the supplied single-view landscape continuous around the arena.
                 u=1-abs(frac(u*.5)*2-1);
-                float v=saturate(.5+degrees(asin(clamp(direction.y,-1,1)))/max(_VerticalFov,1));
+                float v=saturate(.5+degrees(asin(clamp(direction.y,-1,1)))/max(_VerticalFov,1)-_VerticalOffset);
                 half3 color=tex2D(_MainTex,float2(u,v)).rgb;
                 color*= _Tint.rgb*unity_ColorSpaceDouble.rgb*_Exposure;
                 return half4(color,1);

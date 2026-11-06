@@ -34,9 +34,12 @@ public static class GameAudioSetup
         ("KnockOut",      "knockOut",      Files(K + "/SciFi", "lowFrequency_explosion_000", "lowFrequency_explosion_001"), 0.6f, 1, 0.5f, 0.03f, Kenney("Sci-fi Sounds")),
         ("ChaserWake",    "chaserWake",    Files(K + "/SciFi", "forceField_000", "forceField_001", "forceField_002"), 0.5f, 1, 0.5f, 0.03f, Kenney("Sci-fi Sounds")),
         ("ChaserActivate","chaserActivate",Files(K + "/SciFi", "laserLarge_000", "laserLarge_001", "laserLarge_002"), 0.5f, 1, 0.5f, 0.03f, Kenney("Sci-fi Sounds")),
-        ("ChaserContact", "chaserContact", Files(K + "/SciFi", "impactMetal_000", "impactMetal_001", "impactMetal_002"), 0.65f, 1, 0.6f, 0.03f, Kenney("Sci-fi Sounds")),
+        ("ChaserContact", "chaserContact", Files(S, "piano_slam_0", "piano_slam_1", "piano_slam_2"), 0.75f, 1, 0.6f, 0.03f, OwnSynth), // both hands slamming a piano
         ("Trapped",       "trapped",       Files(K + "/Interface", "error_004", "error_006", "error_008"), 0.6f, 1, 0.6f, 0.02f, Kenney("Interface Sounds")),
+        ("BonusPickup",   "bonusPickup",   Files(S, "bonus_pickup_0", "bonus_pickup_1", "bonus_pickup_2"), 0.5f, 3, 0.03f, 0.02f, OwnSynth), // soft noise breath
     };
+    private const string S = Root + "/Sfx/Synth";
+    private const string OwnSynth = "Own synth (Tools/SfxSynth/synth_pickups.py) — CC0 1.0";
 
 
     private static string Kenney(string pack) => $"Kenney \"{pack}\" (kenney.nl) — CC0 1.0. Licence: {K}/License.txt";

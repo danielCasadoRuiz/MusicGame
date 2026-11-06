@@ -251,6 +251,10 @@ public class OpponentSelectionController : MonoBehaviour
             for (float t = 0f; t < stepDuration && !_skipRequested; t += Time.deltaTime) yield return null;
         }
         if (_skipRequested) Debug.Log($"[OpponentSelectionController] Skip — revealing the precomputed rival {Name(opponents[finalIndex])} (no re-roll).");
+        // A Skip may have cut the preload short: the final song must finish loading BEFORE it is played (playing a
+        // still-loading music clip stalls the main thread — the old "stuck" radio static on Skip).
+        for (float t = 0f; t < preloadTimeout && finalSong != null && finalSong.loadState == AudioDataLoadState.Loading; t += Time.unscaledDeltaTime)
+            yield return null;
 
         // 3. The definitive pick — always the last step, the SAME rival computed in step 1.
         HighlightOnly(finalIndex);

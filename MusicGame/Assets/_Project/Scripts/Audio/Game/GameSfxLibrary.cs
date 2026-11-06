@@ -36,9 +36,13 @@ public class GameSfxLibrary : ScriptableObject
     public SfxCue chaserContact;
     public SfxCue trapped;
 
+    [Header("Runner pickups")]
+    [Tooltip("Any bonus collected (RingController; a prefab's own collectSound replaces it). Discreet on purpose.")]
+    public SfxCue bonusPickup;
+
     public System.Collections.Generic.IEnumerable<SfxCue> AllCues()
     {
-        foreach (var c in new[] { hitLight, hitHeavy, hitBlocked, specialLaunch, knockOut, chaserWake, chaserActivate, chaserContact, trapped })
+        foreach (var c in new[] { hitLight, hitHeavy, hitBlocked, specialLaunch, knockOut, chaserWake, chaserActivate, chaserContact, trapped, bonusPickup })
             if (c != null) yield return c;
         if (playerEfforts != null) foreach (var c in playerEfforts.All()) yield return c;
         if (defaultComposerEfforts != null) foreach (var c in defaultComposerEfforts.All()) yield return c;

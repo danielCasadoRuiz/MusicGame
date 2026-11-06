@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5113f3db8c54387965085ce138f977d, type: 3}
+  m_Name: Move_KickLowCenter
+  m_EditorClassIdentifier: Assembly-CSharp::FightMoveDefinition
+  id: move_kick_low_center
+  debugName: Front Kick (Low)
+  moveType: 1
+  role: 47
+  scalingStat: 2
+  resourceCost: 0
+  resourceAmount: 1
+  knockdownOnHit: 0
+  damageAsMaxHealthFraction: 0
+  invulnerableStart: 0
+  invulnerableDuration: 0
+  animationState: KickLowCenter
+  startupDuration: 0.13999997
+  activeDuration: 0.1
+  recoveryDuration: 0.36000004
+  cancelWindow: 0.12000002
+  movementLocked: 0
+  movementMultiplier: 0.3
+  lungeDistance: 0
+  contactReach: 0.8
+  forwardCarry: 0
+  airCarry: 1
+  lockFacingDuringMove: 1
+  allowedPostures: 
+  requiredMovementStates: 
+  attackDelivery: 0
+  hits:
+  - shape: 0
+    localOffset: {x: 0.55, y: -0.8, z: 0}
+    size: {x: 0.7, y: 0.4, z: 0.6}
+    baseDamage: 13
+    baseHitStun: 0.3
+    baseKnockback: 1.1
+    attackHeight: 2
+    guardType: 0
+    chipDamage: 0
+    tracking: 0
+  projectile:
+    visualPrefab: {fileID: 0}
+    speed: 8
+    maxLifetime: 3
+    maxDistance: 10
+    localSpawnOffset: {x: 0.8, y: 1, z: 0}
+    hitDefinition:
+      shape: 0
+      localOffset: {x: 0.8, y: 1, z: 0}
+      size: {x: 0.6, y: 0.6, z: 0.6}
+      baseDamage: 10
+      baseHitStun: 0.3
+      baseKnockback: 1
+      attackHeight: 1
+      guardType: 0
+      chipDamage: 0
+      tracking: 0
+    destroyOnHit: 1
+  strikingLimb: 0
+  guardBreak: 0
+  damage: 0

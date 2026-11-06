@@ -18,4 +18,6 @@ public static class FightTouchInputState
     /// <summary>Button currently held (pointer down → up) — for the Down + Punch + Kick Power hold.</summary>
     public static bool PunchHeld;
     public static bool KickHeld;
+    /// <summary>Jump button pressed (consumed by HumanFightInputSource) — the fight's third button.</summary>
+    public static bool JumpRequested;
 }

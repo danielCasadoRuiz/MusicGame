@@ -12,6 +12,10 @@ public enum FightMoveType
     Special,
 }
 
+/// <summary>Which limbs land this move's hit when real bodies are used (FighterBody). Auto = from the
+/// role / scaling stat (kicks → feet, otherwise hands).</summary>
+public enum FightStrikingLimb { Auto, Hands, Feet, Both }
+
 /// <summary>
 /// One executable move — entirely data-driven, same ScriptableObject-per-thing shape as
 /// OpponentDefinition/FightComboSetSO. FighterMoveController is the ONLY thing that reads this;
@@ -77,6 +81,10 @@ public class FightMoveDefinition : ScriptableObject
     public float movementMultiplier = 1f;
     [Tooltip("A one-off forward displacement applied once, at move start. 0 = no lunge.")]
     public float lungeDistance = 0f;
+    [Tooltip("Real reach of this strike's clip: the largest hips-to-hips distance at which it still touches a " +
+             "guarding body (written by FightReachProbe -alignActive). A grounded strike started farther away " +
+             "STEPS IN (up to FightCombatBalanceConfig.strikeStepIn) so it lands — 0 = unknown, no step-in.")]
+    [Min(0f)] public float contactReach = 0f;
 
     [Header("Momentum carry (see FighterMovement.SetLock)")]
     [Tooltip("GROUNDED: fraction (0..1) of the fighter's current horizontal velocity that keeps travelling " +
@@ -118,6 +126,10 @@ public class FightMoveDefinition : ScriptableObject
     public FightHitDefinition[] hits = new FightHitDefinition[] { new FightHitDefinition() };
     [Tooltip("Only read when attackDelivery is Projectile — see FightProjectileData/FightProjectile's own doc.")]
     public FightProjectileData projectile;
+    [Tooltip("Real-body hit detection (FighterBody): which limbs strike. Auto = kicks → feet, otherwise hands.")]
+    public FightStrikingLimb strikingLimb = FightStrikingLimb.Auto;
+    [Tooltip("Defender guard is IGNORED by this move and it can't be stopped once it connects (the flying kick).")]
+    public bool guardBreak;
 
     [Header("Future — not read by anything this phase")]
     [Tooltip("Superseded by hits[].baseDamage — kept only so no existing reference to this field " +

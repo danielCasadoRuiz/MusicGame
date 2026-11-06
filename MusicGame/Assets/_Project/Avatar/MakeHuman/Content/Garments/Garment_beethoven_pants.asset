@@ -15,30 +15,7 @@ MonoBehaviour:
   garmentId: beethoven_pants
   category: trousers
   layer: 20
-  bodyCoverage:
-  - pelvis_front_center
-  - pelvis_front_l
-  - pelvis_front_r
-  - buttocks
-  - thigh_upper_front_l
-  - thigh_upper_back_l
-  - thigh_lower_front_l
-  - thigh_lower_back_l
-  - knee_front_l
-  - knee_back_l
-  - thigh_upper_front_r
-  - thigh_upper_back_r
-  - thigh_lower_front_r
-  - thigh_lower_back_r
-  - knee_front_r
-  - knee_back_r
-  garmentCoverage: []
-  coverageConfigured: 1
-  importedCoverageHash: cfdff6614b2a6ea0410b47074b5b0752
-  importedSources:
-  - Beethoven_pants\Rigged\LOW\Beethoven_pants_LOW_5k_rigged.fbx
-  - Beethoven_pants\Rigged\MEDIUM\Beethoven_pants_MEDIUM_10k_rigged.fbx
-  - Beethoven_pants\Rigged\MID-HIGH\Beethoven_pants_MIDHIGH_20k_rigged.fbx
-  - Beethoven_pants\Rigged\HIGH\Beethoven_pants_HIGH_30k_rigged.fbx
-  - Beethoven_pants\Rigged\ULTRA\Beethoven_pants_ULTRA_50k_rigged.fbx
-  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Beethoven_pants\Rigged\Segmented
+  hidesCategories: []
+  occlusionGap: 0.1
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Beethoven_pants\Rigged/Masks
+    (trousers)

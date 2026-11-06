@@ -72,7 +72,7 @@ public class HorizonWorld : MonoBehaviour
         _water.Initialize(config, root);
 
         _sky = gameObject.AddComponent<ProceduralSkyController>();
-        _sky.Initialize(config, _cameraController.HorizonCamera);
+        _sky.Initialize(config, _cameraController.HorizonCamera, ResolveRunnerSun());
 
         // Swappable modules (mountains, spectrum bars) — base + style resolved, built once per run.
         _environment = GetComponent<RunnerEnvironmentController>() ?? gameObject.AddComponent<RunnerEnvironmentController>();
@@ -80,6 +80,23 @@ public class HorizonWorld : MonoBehaviour
         _environment.Build(baseEnvironment, ResolveEnvironmentStyle(baseEnvironment), root, config, _water);
 
         EnsureBloom();
+    }
+
+    private Light ResolveRunnerSun()
+    {
+        var sun = RenderSettings.sun;
+        if (sun != null && sun.type == LightType.Directional && sun.isActiveAndEnabled &&
+            sun.gameObject.scene == gameObject.scene) return sun;
+
+        // Runner currently leaves RenderSettings.sun unassigned. Select its existing
+        // directional light, without borrowing lights from additively loaded scenes.
+        Light strongest = null;
+        foreach (var candidate in FindObjectsByType<Light>(FindObjectsSortMode.None))
+            if (candidate.type == LightType.Directional && candidate.isActiveAndEnabled &&
+                candidate.gameObject.scene == gameObject.scene &&
+                (strongest == null || candidate.intensity > strongest.intensity))
+                strongest = candidate;
+        return strongest;
     }
 
     // Theme-first (ThemeManager.CurrentTheme), with the AppConfig BaseTheme as the safe fallback

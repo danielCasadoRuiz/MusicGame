@@ -22,6 +22,9 @@ public class FallRespawnSystem : MonoBehaviour
 
     private bool _active;
     private bool _processing;
+    // Extra hold before a chaser-contact respawn, so the knocked-out bonuses are seen (RunnerHazardsConfig).
+    private float _chaserContactExtraHold;
+    private RunnerPenaltyCause _cause;
 
     // ── Factory / Init ────────────────────────────────────────────────────────
 
@@ -45,10 +48,13 @@ public class FallRespawnSystem : MonoBehaviour
         _config  = config;
     }
 
+    /// <summary>Set from RunnerHazardsConfig.chaserContactExtraRespawnDelay once the hazards are built.</summary>
+    public void SetChaserContactExtraHold(float seconds) => _chaserContactExtraHold = Mathf.Max(0f, seconds);
+
     public void Activate()   => _active = true;
     /// <summary>A fall/penalty respawn (or a restart) is in progress — a second trigger is ignored.</summary>
     public bool IsProcessing => _processing;
-    public void Deactivate() { _active = false; _processing = false; }
+    public void Deactivate() { _active = false; _processing = false; ResetTapeStop(); }
 
     // ── Manual restart (Pause menu → Restart Song) ────────────────────────────
 
@@ -142,6 +148,7 @@ public class FallRespawnSystem : MonoBehaviour
         Debug.Log($"[FALL] cause={cause} pos={_player.transform.position:F1}  y={_player.transform.position.y:F2}  " +
                   $"fallSongTime={fallSongTime:F2}  playerDistance={_player.ActualDistance:F1}  warmup={duringWarmup}");
         Vector3 where = _player.transform.position;
+        _cause = cause;
         _player.EnterFallState(freeze: cause != RunnerPenaltyCause.Fall);
         EventBus.Publish(new PlayerFellEvent { FallSongTime = fallSongTime, Cause = cause, Position = where });
         StartCoroutine(duringWarmup ? WarmupFallSequence() : FallSequence(fallSongTime));
@@ -153,15 +160,29 @@ public class FallRespawnSystem : MonoBehaviour
     {
         float origVol = _audio.volume;
 
-        // Fade out
+        // Fade out — a TAPE STOP (config.fallTapeStop): the song winds down in pitch and speed (a decelerating
+        // reel), growing distorted and muffled, and dies out. The clock follows the slowed audio, so the world
+        // winds down with it; the respawn seeks back to fallSongTime (captured before) whatever the slowdown.
         float t = 0f, fadeOut = _config.fallFadeOutDuration;
+        bool tape = _config.fallTapeStop;
+        if (tape) BeginTapeStop();
         while (t < fadeOut)
         {
             t += Time.deltaTime;
-            _audio.volume = Mathf.Lerp(origVol, 0f, t / fadeOut);
+            float k = Mathf.Clamp01(t / fadeOut);
+            if (tape)
+            {
+                // Pitch drops slowly at first, then the reel stops (ease-in); the level holds a moment before dying.
+                _audio.pitch = Mathf.Lerp(1f, _config.fallTapeStopEndPitch, k * k * (2f - k));
+                _audio.volume = origVol * (1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.25f, 1f, k)));
+                if (_distortion != null) _distortion.distortionLevel = _config.fallTapeStopDistortion * Mathf.Sqrt(k);
+                if (_lowPass != null) _lowPass.cutoffFrequency = Mathf.Lerp(22000f, 900f, k);
+            }
+            else _audio.volume = Mathf.Lerp(origVol, 0f, k);
             yield return null;
         }
         _audio.volume = 0f;
+        ResetTapeStop();
 
         // The song may have finished during the fade (its end reached while falling): there is no
         // audio left to seek back into — restore the volume and respawn in place instead of
@@ -181,11 +202,37 @@ public class FallRespawnSystem : MonoBehaviour
         clock?.Hold();
         _audio.Pause();
 
-        yield return new WaitForSeconds(Mathf.Max(0f, _config.checkpointRespawnDelay));
+        float hold = _config.checkpointRespawnDelay + (_cause == RunnerPenaltyCause.ChaserContact ? _chaserContactExtraHold : 0f);
+        yield return new WaitForSeconds(Mathf.Max(0f, hold));
 
         yield return StartCoroutine(RespawnAtSongTime(fallSongTime, origVol));
 
         _processing = false;
+    }
+
+    // ── Tape stop (fall fade-out) ─────────────────────────────────────────────
+
+    private AudioDistortionFilter _distortion;
+    private AudioLowPassFilter _lowPass;
+
+    private void BeginTapeStop()
+    {
+        if (_audio == null) return;
+        if (_distortion == null && !_audio.TryGetComponent(out _distortion)) _distortion = _audio.gameObject.AddComponent<AudioDistortionFilter>();
+        if (_lowPass == null && !_audio.TryGetComponent(out _lowPass)) _lowPass = _audio.gameObject.AddComponent<AudioLowPassFilter>();
+        _distortion.distortionLevel = 0f;
+        _lowPass.cutoffFrequency = 22000f;
+        _lowPass.lowpassResonanceQ = 1f;
+        _distortion.enabled = _lowPass.enabled = true;
+    }
+
+    /// <summary>Back to the clean, normal-speed source (after the fade, and on any restart / deactivation, so a
+    /// fade cut short never leaves the song slowed or distorted).</summary>
+    private void ResetTapeStop()
+    {
+        if (_audio != null) _audio.pitch = 1f;
+        if (_distortion != null) { _distortion.distortionLevel = 0f; _distortion.enabled = false; }
+        if (_lowPass != null) { _lowPass.cutoffFrequency = 22000f; _lowPass.enabled = false; }
     }
 
     private static bool IsAudioDriven(MusicClockState s) =>
@@ -267,6 +314,7 @@ public class FallRespawnSystem : MonoBehaviour
     private IEnumerator RestartSong(float targetVol)
     {
         Debug.Log("[RESPAWN] RestartSong (full restart — end screen / pause menu)");
+        ResetTapeStop();
 
         _audio.Stop();
 

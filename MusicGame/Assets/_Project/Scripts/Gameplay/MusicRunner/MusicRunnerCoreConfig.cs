@@ -115,6 +115,13 @@ public class MusicRunnerCoreConfig : ScriptableObject
     public float fallDeathDepth      = 0.1f;
     [Tooltip("Duration of the audio fade-out on fall")]
     public float fallFadeOutDuration = 0.6f;
+    [Tooltip("The fall / penalty fade-out is a TAPE STOP: the song slows down (pitch and speed drop together, the " +
+             "world follows the audio clock) while it distorts and fades. Off = the plain volume fade.")]
+    public bool  fallTapeStop = true;
+    [Tooltip("Tape stop: playback pitch reached at the end of the fade (1 = no drop).")]
+    [Range(0.05f, 1f)] public float fallTapeStopEndPitch = 0.22f;
+    [Tooltip("Tape stop: distortion reached at the end of the fade (AudioDistortionFilter level, 0 = clean).")]
+    [Range(0f, 1f)] public float fallTapeStopDistortion = 0.55f;
 
     // ── Respawn ───────────────────────────────────────────────────────────────
     [Header("Respawn")]

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// Face + skin authoring data — deliberately minimal this phase (task's own explicit "no facis
@@ -24,6 +24,14 @@ public class FaceProfileSO : ScriptableObject
     public Texture2D faceTexture;
 
     public Color skinTone = Color.white;
+
+    [Header("Eyes — leave override off to use the shared material")]
+    public bool overrideIrisGradient;
+    public Color irisCenter = new Color(.42f,.32f,.14f,1f);
+    public Color irisBody = new Color(.28f,.49f,.64f,1f);
+    public Color irisRim = new Color(.08f,.16f,.21f,1f);
+    [Range(.36f,.85f)] public float irisCenterExtent = .55f;
+    [Range(.65f,.98f)] public float irisRimStart = .87f;
 
     // Placeholder for future face data (shape/makeup/etc.) — task's own explicit "future face data
     // placeholder" scope note: intentionally left empty rather than speculatively designed now.

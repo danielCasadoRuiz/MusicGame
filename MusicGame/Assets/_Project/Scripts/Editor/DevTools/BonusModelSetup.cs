@@ -62,6 +62,7 @@ public static class BonusModelSetup
         }
         EditorUtility.SetDirty(config);
         AssetDatabase.SaveAssets();
+        log.Append(TextureSourceShrinker.Run(ArtRoot));   // sources down to their import size
         return log.ToString();
     }
 
@@ -85,7 +86,8 @@ public static class BonusModelSetup
                 importer.SaveAndReimport();
             }
         }
-        string texSrc = Path.Combine(src, $"{name}_LOW_5k_Textures");
+        string texSrc = Path.Combine(src, "Textures", "LOW");                       // shared set (texture_share.py)
+        if (!Directory.Exists(texSrc)) texSrc = Path.Combine(src, $"{name}_LOW_5k_Textures");
         foreach (var t in new[] { "BaseColor", "MetallicSmoothness", "Normal" })
         {
             string path = $"{dst}/Textures/{t}.png";

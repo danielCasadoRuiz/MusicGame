@@ -40,9 +40,4 @@ public class BaseAvatarDefinitionSO : ScriptableObject
              "which are kept for later. Heights (OpponentDefinition.heightMeters) are not affected.")]
     public bool neutralBodyForAll = true;
 
-    [Header("Segmented garments")]
-    [Tooltip("Region vocabulary + per-region skin masks on THIS body's UV layout (cuts package). Null = segmented " +
-             "garments still assemble per region, but the body is never masked.")]
-    public GarmentRegionCatalogSO garmentRegionCatalog;
-
 }

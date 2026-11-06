@@ -47,6 +47,11 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private float extraHeight = 0f;
     [SerializeField] private float xSmoothTime     = 0.15f; // lateral smoothing
     [SerializeField] private float posSmoothTime   = 0.06f; // world-space position smoothing
+    [Header("Caught by the chaser (PlayerController.IsCaught) — both views pull back to watch the body on the floor")]
+    [SerializeField] private float caughtBehind = 9f;     // metres behind the caught player, along the path
+    [SerializeField] private float caughtSide   = 3.5f;   // metres to the side (a three-quarter view)
+    [SerializeField] private float caughtHeight = 5.5f;   // metres above the player
+    [SerializeField] private float caughtBlendSeconds = 0.9f;
     [Tooltip("true: exact original behavior — Third Person's rotation is a full LookAt toward the " +
              "player, which can wobble side to side as the player strafes laterally. false (new " +
              "default): yaw is LOCKED to the path's own heading at the camera's position instead — " +
@@ -126,6 +131,10 @@ public class CameraFollow : MonoBehaviour
     private float       _velX;
     private float       _smoothedLateral;
     private Vector3     _velPos;
+    private bool        _caughtActive;
+    private float       _caughtT;
+    private Vector3     _caughtFromPos, _caughtAnchor, _caughtTargetPos;
+    private Quaternion  _caughtFromRot;
     private Vector3     _smoothedLookAt;
     private bool        _initialized;
     private bool        _running;
@@ -397,6 +406,32 @@ public class CameraFollow : MonoBehaviour
         }
         // Placeholder capsule: the eyes go down with the body, over the same eased transition (and back up).
         else if (hasFPTarget && playerController != null) firstPersonPos -= playerController.transform.up * playerController.CrouchEyeDrop;
+
+        // ── Caught: a still, pulled-back three-quarter shot of the player on the floor (the clock keeps
+        // moving during the tape-stop fade, the frozen player does not — following it would fly the camera
+        // through the body). The respawn's SnapToPlayer ends it.
+        if (_initialized && playerController != null && playerController.IsCaught)
+        {
+            if (!_caughtActive)
+            {
+                _caughtActive  = true;
+                _caughtT       = 0f;
+                _caughtFromPos = transform.position;
+                _caughtFromRot = transform.rotation;
+                _caughtAnchor  = playerController.transform.position;
+                var s = path.GetSample(playerController.ActualDistance);
+                Vector3 back = new Vector3(s.tangent.x, 0f, s.tangent.z).normalized;
+                Vector3 side = Vector3.Cross(Vector3.up, back);
+                _caughtTargetPos = _caughtAnchor - back * caughtBehind + side * caughtSide + Vector3.up * caughtHeight;
+            }
+            _caughtT += Time.deltaTime / Mathf.Max(0.01f, caughtBlendSeconds);
+            float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(_caughtT));
+            Vector3 lookAt = _caughtAnchor + Vector3.up * 0.4f;
+            transform.position = Vector3.Lerp(_caughtFromPos, _caughtTargetPos, k);
+            transform.rotation = Quaternion.Slerp(_caughtFromRot, Quaternion.LookRotation(lookAt - _caughtTargetPos, Vector3.up), k);
+            return;
+        }
+        _caughtActive = false;
 
         // ── Apply ────────────────────────────────────────────────────────────────────────────
         if (!_initialized)

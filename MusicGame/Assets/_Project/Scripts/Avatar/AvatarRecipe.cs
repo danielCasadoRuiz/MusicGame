@@ -12,6 +12,7 @@ using System.Collections.Generic;
 /// </summary>
 public class AvatarRecipe
 {
+    public AvatarIrisSettings Iris;
     public AvatarIdentity Identity;
     public BaseAvatarDefinitionSO BaseAvatar;
 

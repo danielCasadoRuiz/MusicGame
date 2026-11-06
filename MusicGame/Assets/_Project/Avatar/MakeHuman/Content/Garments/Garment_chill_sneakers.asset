@@ -15,18 +15,17 @@ MonoBehaviour:
   garmentId: chill_sneakers
   category: shoes
   layer: 30
-  bodyCoverage:
-  - foot_l
-  - foot_r
-  - ankle_l
-  - ankle_r
+  hidesCategories: []
+  occlusionGap: 0.1
+  bodyCoverage: []
   garmentCoverage: []
   coverageConfigured: 1
-  importedCoverageHash: b4bf11d9a4ff13e7c2dd7a59f58e05d3
+  importedCoverageHash: 65f649843c74a3e5714cb16269bee426
   importedSources:
   - Chill_sneakers\Rigged\LOW\Chill_sneakers_LOW_5k_rigged.fbx
   - Chill_sneakers\Rigged\MEDIUM\Chill_sneakers_MEDIUM_10k_rigged.fbx
   - Chill_sneakers\Rigged\MID-HIGH\Chill_sneakers_MIDHIGH_20k_rigged.fbx
   - Chill_sneakers\Rigged\HIGH\Chill_sneakers_HIGH_30k_rigged.fbx
   - Chill_sneakers\Rigged\ULTRA\Chill_sneakers_ULTRA_50k_rigged.fbx
-  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Chill_sneakers\Rigged\Segmented
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Chill_sneakers\Rigged/Masks
+    (shoes)

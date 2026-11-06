@@ -15,16 +15,17 @@ MonoBehaviour:
   garmentId: acoustic_boots
   category: shoes
   layer: 30
-  bodyCoverage:
-  - foot_l
-  - foot_r
+  hidesCategories: []
+  occlusionGap: 0.1
+  bodyCoverage: []
   garmentCoverage: []
   coverageConfigured: 1
-  importedCoverageHash: 8b8e21f26f13754cd4e052e2e4dd090d
+  importedCoverageHash: 65f649843c74a3e5714cb16269bee426
   importedSources:
   - Acoustic_boots\Rigged\LOW\Acoustic_boots_LOW_5k_rigged.fbx
   - Acoustic_boots\Rigged\MEDIUM\Acoustic_boots_MEDIUM_10k_rigged.fbx
   - Acoustic_boots\Rigged\MID-HIGH\Acoustic_boots_MIDHIGH_20k_rigged.fbx
   - Acoustic_boots\Rigged\HIGH\Acoustic_boots_HIGH_30k_rigged.fbx
   - Acoustic_boots\Rigged\ULTRA\Acoustic_boots_ULTRA_50k_rigged.fbx
-  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Acoustic_boots\Rigged\Segmented
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Acoustic_boots\Rigged/Masks
+    (shoes)

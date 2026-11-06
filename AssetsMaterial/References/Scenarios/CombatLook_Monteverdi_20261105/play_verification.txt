@@ -1,0 +1,7 @@
+PASS real assembled player + Monteverdi avatars
+PASS actual FightFireballVisual and FighterAuraFx
+PASS character-only rendering layers, restored on disable
+PASS two shadowless character lights
+Candle holders=4; active particles=64; max32 per holder, no added flame lights
+Lightmaps=2; probes=255
+No SSAO, motion blur, depth of field or chromatic aberration added. Mobile GPU performance not measured.

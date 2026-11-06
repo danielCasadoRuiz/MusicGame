@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab777b6a62eedf740a4071a4f76a7744, type: 3}
+  m_Name: Avatar_Player_Electronic
+  m_EditorClassIdentifier: Assembly-CSharp::AvatarRecipeSO
+  identity: {fileID: 11400000, guid: dd0fd2461eea97642ac45f892840b23d, type: 2}
+  baseAvatar: {fileID: 11400000, guid: edb208ecbe0ae364cb01448c90f6cb52, type: 2}
+  items:
+  - {fileID: 11400000, guid: 05866b6c57581cb4f98ed5871a0d3a4f, type: 2}
+  - {fileID: 11400000, guid: 8b34994cfeaef444791b117f1010ac97, type: 2}
+  - {fileID: 11400000, guid: 67cabb6d6be14cc42923ec7a310f754c, type: 2}
+  - {fileID: 11400000, guid: 26244c871d1985945829b5126a27378f, type: 2}
+  bodyOverride:
+    overrideWeight: 0
+    weight: 0.5
+    overrideMuscle: 0
+    muscle: 0
+    overrideGender: 0
+    gender: 0
+  hairOverride: {fileID: 0}
+  faceOverride: {fileID: 0}
+  colorOverrides: []

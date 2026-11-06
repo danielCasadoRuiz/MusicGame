@@ -290,6 +290,8 @@ public static class HelpScreenPrefabs
     // ── Patches ──────────────────────────────────────────────────────────────
 
     private static readonly BonusKind[] PanelResources = { BonusKind.Special, BonusKind.TripleCombo, BonusKind.QuadCombo, BonusKind.Life };
+    private static readonly BonusKind[] RivalPanelResources = { BonusKind.Special, BonusKind.TripleCombo, BonusKind.QuadCombo };
+    private const int RivalLevelPips = 5;
 
     // The build panel sits under the player's side of the top bar (90 px), left-aligned with its portrait.
     private static void PatchFightHud(GameObject root)
@@ -298,51 +300,12 @@ public static class HelpScreenPrefabs
         if (view == null) return;
         var hud = view.root != null ? (RectTransform)view.root.transform : (RectTransform)root.transform;
 
-        if (view.buildPanel == null)
-        {
-            var bg = UIFactory.CreatePanel("BuildPanel", hud, new Color(0.06f, 0.06f, 0.09f, 0.72f));
-            UIFactory.SetBox(bg.rectTransform, TopLeft, TopLeft, TopLeft, new Vector2(20f, -98f), new Vector2(372f, 150f));
-            bg.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
-            bg.raycastTarget = false;
-            var panel = bg.gameObject.AddComponent<FightBuildPanelView>();
-            panel.root = bg.rectTransform;
-            var stats = BonusHelpCatalog.BuildStats;
-            panel.stats = new FightBuildPanelView.StatRow[stats.Length];
-            for (int i = 0; i < stats.Length; i++)
-            {
-                var row = UIFactory.CreateRect($"Stat_{stats[i]}", bg.rectTransform);
-                UIFactory.SetBox(row, TopLeft, TopLeft, TopLeft, new Vector2(8f, -8f - i * 22f), new Vector2(356f, 20f));
-                var icon = UIFactory.CreatePanel("Icon", row, Color.white);
-                UIFactory.SetBox(icon.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), Vector2.zero, new Vector2(16f, 16f));
-                icon.preserveAspect = true; icon.raycastTarget = false;
-                var label = UIFactory.CreateText("Label", row, "", 12, Color.white, TextAlignmentOptions.MidlineLeft, FontStyles.Bold);
-                UIFactory.SetBox(label.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(22f, 0f), new Vector2(96f, 18f));
-                label.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
-                var barBg = UIFactory.CreateFillBar("Bar", row, new Color(1f, 1f, 1f, 0.12f), Color.white, out var fill);
-                UIFactory.SetBox(barBg.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(122f, 0f), new Vector2(188f, 8f));
-                fill.fillAmount = 0f;
-                var value = UIFactory.CreateText("Value", row, "0", 13, Color.white, TextAlignmentOptions.MidlineRight, FontStyles.Bold);
-                UIFactory.SetBox(value.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(314f, 0f), new Vector2(40f, 18f));
-                panel.stats[i] = new FightBuildPanelView.StatRow { stat = stats[i], root = row, icon = icon, label = label, fill = fill, value = value };
-            }
-            panel.resources = new FightBuildPanelView.ResourceCell[PanelResources.Length];
-            for (int i = 0; i < PanelResources.Length; i++)
-            {
-                var cell = UIFactory.CreateRect($"Res_{PanelResources[i]}", bg.rectTransform);
-                UIFactory.SetBox(cell, TopLeft, TopLeft, TopLeft, new Vector2(8f + i * 90f, -120f), new Vector2(84f, 24f));
-                var icon = UIFactory.CreatePanel("Icon", cell, Color.white);
-                UIFactory.SetBox(icon.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), Vector2.zero, new Vector2(20f, 20f));
-                icon.preserveAspect = true; icon.raycastTarget = false;
-                var tag = UIFactory.CreateText("Tag", cell, PanelResources[i] == BonusKind.TripleCombo ? "x3" : PanelResources[i] == BonusKind.QuadCombo ? "x4" : "",
-                                               10, Color.black, TextAlignmentOptions.Center, FontStyles.Bold);
-                UIFactory.SetBox(tag.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), Vector2.zero, new Vector2(20f, 20f));
-                var value = UIFactory.CreateText("Value", cell, "0", 15, Color.white, TextAlignmentOptions.MidlineLeft, FontStyles.Bold);
-                UIFactory.SetBox(value.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(26f, 0f), new Vector2(56f, 22f));
-                panel.resources[i] = new FightBuildPanelView.ResourceCell { kind = PanelResources[i], root = cell, icon = icon, value = value };
-            }
-            view.buildPanel = panel;
-        }
+        if (view.buildPanel == null) view.buildPanel = CreateBuildPanel("BuildPanel", hud, PanelResources);
+        // The RIVAL's mirror (2026-11-05): its build, its charges and its level (label + difficulty pips).
+        if (view.opponentBuildPanel == null) view.opponentBuildPanel = CreateBuildPanel("OpponentBuildPanel", hud, RivalPanelResources);
+        EnsureLevelWidgets(view.opponentBuildPanel);
         IntegrateBuildPanel(view, hud);
+        IntegrateOpponentBuildPanel(view, hud);
 
         if (view.movesHelpButton == null && view.pausePanel != null)
         {
@@ -353,6 +316,51 @@ public static class HelpScreenPrefabs
             view.movesHelpButton.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.ButtonSecondary);
             view.movesHelpButtonLabel.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
         }
+    }
+
+    private static FightBuildPanelView CreateBuildPanel(string name, RectTransform hud, BonusKind[] kinds)
+    {
+        var bg = UIFactory.CreatePanel(name, hud, new Color(0.06f, 0.06f, 0.09f, 0.72f));
+        UIFactory.SetBox(bg.rectTransform, TopLeft, TopLeft, TopLeft, new Vector2(20f, -98f), new Vector2(372f, 150f));
+        bg.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Surface);
+        bg.raycastTarget = false;
+        var panel = bg.gameObject.AddComponent<FightBuildPanelView>();
+        panel.root = bg.rectTransform;
+        var stats = BonusHelpCatalog.BuildStats;
+        panel.stats = new FightBuildPanelView.StatRow[stats.Length];
+        for (int i = 0; i < stats.Length; i++)
+        {
+            var row = UIFactory.CreateRect($"Stat_{stats[i]}", bg.rectTransform);
+            UIFactory.SetBox(row, TopLeft, TopLeft, TopLeft, new Vector2(8f, -8f - i * 22f), new Vector2(356f, 20f));
+            var icon = UIFactory.CreatePanel("Icon", row, Color.white);
+            UIFactory.SetBox(icon.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), Vector2.zero, new Vector2(16f, 16f));
+            icon.preserveAspect = true; icon.raycastTarget = false;
+            var label = UIFactory.CreateText("Label", row, "", 12, Color.white, TextAlignmentOptions.MidlineLeft, FontStyles.Bold);
+            UIFactory.SetBox(label.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(22f, 0f), new Vector2(96f, 18f));
+            label.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+            var barBg = UIFactory.CreateFillBar("Bar", row, new Color(1f, 1f, 1f, 0.12f), Color.white, out var fill);
+            UIFactory.SetBox(barBg.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(122f, 0f), new Vector2(188f, 8f));
+            fill.fillAmount = 0f;
+            var value = UIFactory.CreateText("Value", row, "0", 13, Color.white, TextAlignmentOptions.MidlineRight, FontStyles.Bold);
+            UIFactory.SetBox(value.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(314f, 0f), new Vector2(40f, 18f));
+            panel.stats[i] = new FightBuildPanelView.StatRow { stat = stats[i], root = row, icon = icon, label = label, fill = fill, value = value };
+        }
+        panel.resources = new FightBuildPanelView.ResourceCell[kinds.Length];
+        for (int i = 0; i < kinds.Length; i++)
+        {
+            var cell = UIFactory.CreateRect($"Res_{kinds[i]}", bg.rectTransform);
+            UIFactory.SetBox(cell, TopLeft, TopLeft, TopLeft, new Vector2(8f + i * 90f, -120f), new Vector2(84f, 24f));
+            var icon = UIFactory.CreatePanel("Icon", cell, Color.white);
+            UIFactory.SetBox(icon.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), Vector2.zero, new Vector2(20f, 20f));
+            icon.preserveAspect = true; icon.raycastTarget = false;
+            var tag = UIFactory.CreateText("Tag", cell, kinds[i] == BonusKind.TripleCombo ? "x3" : kinds[i] == BonusKind.QuadCombo ? "x4" : "",
+                                           10, Color.black, TextAlignmentOptions.Center, FontStyles.Bold);
+            UIFactory.SetBox(tag.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), Vector2.zero, new Vector2(20f, 20f));
+            var value = UIFactory.CreateText("Value", cell, "0", 15, Color.white, TextAlignmentOptions.MidlineLeft, FontStyles.Bold);
+            UIFactory.SetBox(value.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(26f, 0f), new Vector2(56f, 22f));
+            panel.resources[i] = new FightBuildPanelView.ResourceCell { kind = kinds[i], root = cell, icon = icon, value = value };
+        }
+        return panel;
     }
 
     // The build panel INSIDE the top bar, on the player's side: right of the health bar (portrait 70 + gap 12 + bar
@@ -427,6 +435,120 @@ public static class HelpScreenPrefabs
     }
 
     private static readonly Vector2 MidLeft = new(0f, 0.5f);
+
+    // ── Rival panel: the player's layout mirrored on the opponent's side (stats next to its health bar, charges and
+    // level towards the timer). Anchored top-right; FightController scales it to end before the timer.
+    private const float RivalPanelRight = 506f;   // pause + portrait + health bar (90 + 82 + 320) + gap, from the right edge
+
+    private static void EnsureLevelWidgets(FightBuildPanelView panel)
+    {
+        if (panel == null) return;
+        var rt = (RectTransform)panel.transform;
+        if (panel.levelText == null)
+        {
+            panel.levelText = UIFactory.CreateText("LevelLabel", rt, "", 12, Color.white, TextAlignmentOptions.MidlineLeft, FontStyles.Bold);
+            UIScreenPrefabContext.Localized(panel.levelText, "Fight.RivalLevel");
+            panel.levelText.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.TextPrimary, UIFontToken.Body);
+        }
+        if (panel.levelPips == null || panel.levelPips.Length != RivalLevelPips)
+        {
+            if (panel.levelPips != null) foreach (var old in panel.levelPips) if (old != null) Object.DestroyImmediate(old.gameObject, true);
+            panel.levelPips = new Image[RivalLevelPips];
+            for (int i = 0; i < RivalLevelPips; i++)
+            {
+                var pip = UIFactory.CreatePanel($"LevelPip_{i}", rt, new Color(1f, 1f, 1f, 0.18f));
+                pip.raycastTarget = false;
+                panel.levelPips[i] = pip;
+            }
+        }
+    }
+
+    /// <summary>Only the rival panel on an existing FightHud (FightHudRivalPanelSetup) — nothing else is touched.</summary>
+    public static bool PatchRivalPanel(GameObject root)
+    {
+        var view = root.GetComponentInChildren<FightHudView>(true);
+        if (view == null) return false;
+        var hud = view.root != null ? (RectTransform)view.root.transform : (RectTransform)view.transform;
+        if (view.opponentBuildPanel == null) view.opponentBuildPanel = CreateBuildPanel("OpponentBuildPanel", hud, RivalPanelResources);
+        EnsureLevelWidgets(view.opponentBuildPanel);
+        IntegrateOpponentBuildPanel(view, hud);
+        return true;
+    }
+
+    private static void IntegrateOpponentBuildPanel(FightHudView view, RectTransform hud)
+    {
+        var panel = view.opponentBuildPanel;
+        var topBar = hud.Find("TopBar") as RectTransform;
+        if (panel == null || topBar == null) return;
+        Vector2 topRight = new(1f, 1f);
+        var rt = (RectTransform)panel.transform;
+        if (rt.parent != topBar) rt.SetParent(topBar, false);
+        rt.SetAsLastSibling();
+        UIFactory.SetBox(rt, topRight, topRight, topRight, new Vector2(-RivalPanelRight, 0f), new Vector2(PanelWidth, BarHeight));
+        rt.localScale = Vector3.one;
+        var bg = rt.GetComponent<Image>();
+        if (bg != null) bg.enabled = false;
+
+        // Charges + level on the LEFT (towards the timer), the four stats on the RIGHT (next to the rival's health bar).
+        Rule(rt, "RuleCharges", 230f);
+        Rule(rt, "RuleStats", PanelWidth - 1f);
+
+        var keep = new System.Collections.Generic.List<FightBuildPanelView.StatRow>();
+        foreach (var row in panel.stats)
+        {
+            if (row == null) continue;
+            if (System.Array.IndexOf(BonusHelpCatalog.BuildStats, row.stat) >= 0) keep.Add(row);
+            else if (row.root != null) Object.DestroyImmediate(row.root.gameObject, true);
+        }
+        keep.Sort((a, b) => System.Array.IndexOf(BonusHelpCatalog.BuildStats, a.stat).CompareTo(System.Array.IndexOf(BonusHelpCatalog.BuildStats, b.stat)));
+        panel.stats = keep.ToArray();
+
+        float rowH = (BarHeight - 16f) / Mathf.Max(1, panel.stats.Length);
+        for (int i = 0; i < panel.stats.Length; i++)
+        {
+            var row = panel.stats[i];
+            if (row?.root == null) continue;
+            UIFactory.SetBox(row.root, TopLeft, TopLeft, TopLeft, new Vector2(240f, -8f - i * rowH), new Vector2(190f, rowH));
+            if (row.icon != null) UIFactory.SetBox(row.icon.rectTransform, MidLeft, MidLeft, MidLeft, Vector2.zero, new Vector2(12f, 12f));
+            if (row.label != null)
+            {
+                UIFactory.SetBox(row.label.rectTransform, MidLeft, MidLeft, MidLeft, new Vector2(14f, 0f), new Vector2(54f, rowH));
+                row.label.fontSize = 11;
+            }
+            if (row.fill != null)
+                UIFactory.SetBox((RectTransform)row.fill.transform.parent, MidLeft, MidLeft, MidLeft, new Vector2(70f, 0f), new Vector2(90f, 8f));
+            if (row.value != null)
+            {
+                UIFactory.SetBox(row.value.rectTransform, MidLeft, MidLeft, MidLeft, new Vector2(162f, 0f), new Vector2(28f, rowH));
+                row.value.fontSize = 12;
+            }
+        }
+        // Charges: Special / x3 on the first line, x4 + the level on the second.
+        for (int i = 0; i < panel.resources.Length; i++)
+        {
+            var cell = panel.resources[i];
+            if (cell?.root == null) continue;
+            UIFactory.SetBox(cell.root, TopLeft, TopLeft, TopLeft, new Vector2(10f + (i % 2) * 110f, -10f - (i / 2) * 38f), new Vector2(104f, 32f));
+            cell.root.pivot = new Vector2(0.25f, 0.5f);
+            cell.root.anchoredPosition += new Vector2(26f, -16f);
+            if (cell.icon != null) UIFactory.SetBox(cell.icon.rectTransform, MidLeft, MidLeft, MidLeft, Vector2.zero, new Vector2(24f, 24f));
+            var tag = cell.root.Find("Tag") as RectTransform;
+            if (tag != null) UIFactory.SetBox(tag, MidLeft, MidLeft, MidLeft, Vector2.zero, new Vector2(24f, 24f));
+            if (cell.value != null)
+            {
+                UIFactory.SetBox(cell.value.rectTransform, MidLeft, MidLeft, MidLeft, new Vector2(30f, 0f), new Vector2(70f, 28f));
+                cell.value.fontSize = 18;
+            }
+        }
+        if (panel.levelText != null)
+        {
+            UIFactory.SetBox(panel.levelText.rectTransform, TopLeft, TopLeft, TopLeft, new Vector2(122f, -46f), new Vector2(104f, 16f));
+            panel.levelText.fontSize = 11;
+        }
+        for (int i = 0; i < panel.levelPips.Length; i++)
+            if (panel.levelPips[i] != null)
+                UIFactory.SetBox(panel.levelPips[i].rectTransform, TopLeft, TopLeft, TopLeft, new Vector2(122f + i * 19f, -64f), new Vector2(15f, 14f));
+    }
 
     private static void Rule(RectTransform panel, string name, float x)
     {

@@ -245,10 +245,21 @@ public class FighterActor : MonoBehaviour
         }
         if (!animator.isHuman) Debug.LogWarning($"[FighterActor] {Side}: bound Animator is not Humanoid — the combat clips won't retarget.");
         AnimationDriver = new AnimatorFighterAnimationDriver(animator, sharedController, CombatProfile.animationSet);
+        BoundAnimator = animator;
+        Body = new FighterBody(animator);
+        if (!Body.IsValid) Body = null;
         MoveController?.SetAnimationDriver(AnimationDriver);
         AnimationDriver.PlayRole(CombatRole.CombatIdle);
         return true;
     }
+    /// <summary>Real-body hit geometry from the bound Humanoid avatar (null for the capsule placeholder) —
+    /// see FighterBody / FighterAttack.</summary>
+    public FighterBody Body { get; private set; }
+    /// <summary>The bound avatar's Humanoid Animator (bones for effects: FighterAuraFx); null for the capsule.</summary>
+    public Animator BoundAnimator { get; private set; }
+    /// <summary>The bound avatar's body-shape blendshapes (FighterAuraFx bulks the body up during Power).</summary>
+    public AvatarBodyMorphController BodyMorph { get; set; }
+
     public void SetPosture(FighterPosture posture) => Posture = posture;
     public void SetMovementState(FighterMovementState state) => MovementState = state;
     public void RegisterHurtbox(FighterHurtbox hurtbox)

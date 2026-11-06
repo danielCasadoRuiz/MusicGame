@@ -114,7 +114,7 @@ public static class ArenaSceneLifecycleProbe
             var legacy=new AssetReferenceGameObject(AssetDatabase.AssetPathToGUID("Assets/_Project/Art/Arenas/Monteverdi/Monteverdi_Arena_02.prefab"));
             var loader=Loader(out var owner); loader.Request(legacy,"legacy/02");
             foreach(var step in Wait(loader.LoadingTask)) yield return step;
-            Check(loader.IsReady && loader.Instance!=null && !loader.LoadedScene.IsValid(),"unconverted arenas still load through legacy prefab path");
+            Check(loader.IsReady && loader.Instance!=null && loader.LoadedScene.IsValid(),"completed arena 02 loads through the scene catalog");
             foreach(var step in Wait(loader.ShutdownAsync())) yield return step;
             Object.Destroy(owner); yield return true;
         }

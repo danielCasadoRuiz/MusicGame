@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5113f3db8c54387965085ce138f977d, type: 3}
+  m_Name: Move_StepBackSpin
+  m_EditorClassIdentifier: Assembly-CSharp::FightMoveDefinition
+  id: move_step_back_spin
+  debugName: Step-back Spin
+  moveType: 0
+  role: 26
+  scalingStat: 2
+  resourceCost: 0
+  resourceAmount: 1
+  knockdownOnHit: 0
+  damageAsMaxHealthFraction: 0
+  invulnerableStart: 0
+  invulnerableDuration: 0
+  animationState: SpinHeelKick
+  startupDuration: 0.3
+  activeDuration: 0.14
+  recoveryDuration: 0.35999995
+  cancelWindow: 0
+  movementLocked: 1
+  movementMultiplier: 0
+  lungeDistance: -0.35
+  contactReach: 1.39
+  forwardCarry: 0.25
+  airCarry: 1
+  lockFacingDuringMove: 1
+  allowedPostures: 00000000
+  requiredMovementStates: 
+  attackDelivery: 0
+  hits:
+  - shape: 0
+    localOffset: {x: 0.55, y: 0.55, z: 0}
+    size: {x: 0.75, y: 0.5, z: 0.7}
+    baseDamage: 13.5
+    baseHitStun: 0.42
+    baseKnockback: 1.7
+    attackHeight: 1
+    guardType: 0
+    chipDamage: 0
+    tracking: 0
+  projectile:
+    visualPrefab: {fileID: 0}
+    speed: 8
+    maxLifetime: 3
+    maxDistance: 10
+    localSpawnOffset: {x: 0.8, y: 1, z: 0}
+    hitDefinition:
+      shape: 0
+      localOffset: {x: 0.8, y: 1, z: 0}
+      size: {x: 0.6, y: 0.6, z: 0.6}
+      baseDamage: 10
+      baseHitStun: 0.3
+      baseKnockback: 1
+      attackHeight: 1
+      guardType: 0
+      chipDamage: 0
+      tracking: 0
+    destroyOnHit: 1
+  strikingLimb: 2
+  guardBreak: 0
+  damage: 0

@@ -17,11 +17,29 @@ MonoBehaviour:
   airNormalPunch: {fileID: 11400000, guid: b3d152909e894a3daa20bdd54d455c10, type: 2}
   airNormalKick: {fileID: 11400000, guid: 939976e5b9614d3689005e40342b6008, type: 2}
   runNormalPunch: {fileID: 11400000, guid: 7a513017614a4ab39f65b64b70978aae, type: 2}
-  lowNormalKick: {fileID: 11400000, guid: e3413b06b1a74769888b789303bc1ee0, type: 2}
-  highNormalKick: {fileID: 11400000, guid: 71d374b701704155bdb607aa7c65a8a8, type: 2}
-  lowNormalPunch: {fileID: 11400000, guid: 694b3080822d480686247102c0f32db0, type: 2}
-  highNormalPunch: {fileID: 11400000, guid: 94bbf9648b524e41947bab70dcfade8e, type: 2}
   runNormalKick: {fileID: 11400000, guid: 473c7da91f714074a04f2a55e6ae1afa, type: 2}
+  highNormalPunch: {fileID: 11400000, guid: 94bbf9648b524e41947bab70dcfade8e, type: 2}
+  lowNormalPunch: {fileID: 11400000, guid: 694b3080822d480686247102c0f32db0, type: 2}
+  highNormalKick: {fileID: 11400000, guid: 71d374b701704155bdb607aa7c65a8a8, type: 2}
+  lowNormalKick: {fileID: 11400000, guid: e3413b06b1a74769888b789303bc1ee0, type: 2}
+  backNormalKick: {fileID: 11400000, guid: f1fb131acb8e5ff4eb61d02730056c1e, type: 2}
+  flyingKick: {fileID: 11400000, guid: 3481c09c33cee6141b5e20034b0438b3, type: 2}
+  punchHighSide: {fileID: 11400000, guid: d698f7dbaff284642ad78d3d79f1d7fe, type: 2}
+  punchMidSide: {fileID: 11400000, guid: 61ffcda88638e27429256ca8f9b3f821, type: 2}
+  punchLowSide: {fileID: 11400000, guid: 4d2e0b94b9213414f9635ab3863827e1, type: 2}
+  kickHighCenter: {fileID: 11400000, guid: 153e33056dc92b149b787b996ea4700c, type: 2}
+  kickMidCenter: {fileID: 11400000, guid: b81997d491859f6438c9147709e475f0, type: 2}
+  kickLowCenter: {fileID: 11400000, guid: c2a6bf7eff5bfa04ba635fd48794a3bd, type: 2}
+  pushKickMid: {fileID: 11400000, guid: 0aefa209d2e73124abbc145f10ea2e94, type: 2}
+  pushKickHigh: {fileID: 11400000, guid: 265c322b4e1b9b24ea8f5b0ddb427f26, type: 2}
+  closeUppercut: {fileID: 11400000, guid: 4496f6faa56b97c45bb48522130da4e0, type: 2}
+  closeKnee: {fileID: 11400000, guid: 7844af06af0ed5748aec0b4102b3d256, type: 2}
+  spinKickMid: {fileID: 11400000, guid: 031d0db9e44a42949b4df7dd57d81a3b, type: 2}
+  spinSweep: {fileID: 11400000, guid: 222aa08569561f24595e6e71bbc6c3e0, type: 2}
+  airSpinHeel: {fileID: 11400000, guid: 34391ff5f15320b4eac589350854ef4e, type: 2}
+  axeKick: {fileID: 11400000, guid: de715b6e28dbc93498f4b051c446b827, type: 2}
+  counterStrike: {fileID: 11400000, guid: 58b6dffbf2e31b140aad7c6e9251f749, type: 2}
+  stepBackSpin: {fileID: 11400000, guid: 758e4b07d04e1b645a9e01876eef786b, type: 2}
   moves:
   - {fileID: 11400000, guid: 6cc984990f5fd5144afa847f710137cd, type: 2}
   - {fileID: 11400000, guid: e9b025a49830c8d47aac83038a9e48a7, type: 2}
@@ -39,5 +57,23 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6316824ae61747199bf2a5e095fa0e8a, type: 2}
   - {fileID: 11400000, guid: 4ec2ba212361462db8a5d2ec96a14fe7, type: 2}
   - {fileID: 11400000, guid: ad7d0bdd8df24b9c96b8da2d070e400a, type: 2}
+  - {fileID: 11400000, guid: f1fb131acb8e5ff4eb61d02730056c1e, type: 2}
+  - {fileID: 11400000, guid: 3481c09c33cee6141b5e20034b0438b3, type: 2}
+  - {fileID: 11400000, guid: d698f7dbaff284642ad78d3d79f1d7fe, type: 2}
+  - {fileID: 11400000, guid: 61ffcda88638e27429256ca8f9b3f821, type: 2}
+  - {fileID: 11400000, guid: 4d2e0b94b9213414f9635ab3863827e1, type: 2}
+  - {fileID: 11400000, guid: 153e33056dc92b149b787b996ea4700c, type: 2}
+  - {fileID: 11400000, guid: b81997d491859f6438c9147709e475f0, type: 2}
+  - {fileID: 11400000, guid: c2a6bf7eff5bfa04ba635fd48794a3bd, type: 2}
+  - {fileID: 11400000, guid: 0aefa209d2e73124abbc145f10ea2e94, type: 2}
+  - {fileID: 11400000, guid: 265c322b4e1b9b24ea8f5b0ddb427f26, type: 2}
+  - {fileID: 11400000, guid: 4496f6faa56b97c45bb48522130da4e0, type: 2}
+  - {fileID: 11400000, guid: 7844af06af0ed5748aec0b4102b3d256, type: 2}
+  - {fileID: 11400000, guid: 031d0db9e44a42949b4df7dd57d81a3b, type: 2}
+  - {fileID: 11400000, guid: 222aa08569561f24595e6e71bbc6c3e0, type: 2}
+  - {fileID: 11400000, guid: 34391ff5f15320b4eac589350854ef4e, type: 2}
+  - {fileID: 11400000, guid: de715b6e28dbc93498f4b051c446b827, type: 2}
+  - {fileID: 11400000, guid: 58b6dffbf2e31b140aad7c6e9251f749, type: 2}
+  - {fileID: 11400000, guid: 758e4b07d04e1b645a9e01876eef786b, type: 2}
   signatureSpecial: {fileID: 11400000, guid: 4ec2ba212361462db8a5d2ec96a14fe7, type: 2}
   signatureBasic: {fileID: 11400000, guid: 6cc984990f5fd5144afa847f710137cd, type: 2}

@@ -15,6 +15,8 @@ MonoBehaviour:
   garmentId: monteverdi_beard
   category: beard
   layer: 50
+  hidesCategories: []
+  occlusionGap: 0.1
   bodyCoverage: []
   garmentCoverage: []
   coverageConfigured: 1
@@ -25,4 +27,5 @@ MonoBehaviour:
   - Monteverdi_beard\Rigged\MID-HIGH\Monteverdi_beard_MIDHIGH_20k_rigged.fbx
   - Monteverdi_beard\Rigged\HIGH\Monteverdi_beard_HIGH_30k_rigged.fbx
   - Monteverdi_beard\Rigged\ULTRA\Monteverdi_beard_ULTRA_50k_rigged.fbx
-  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Monteverdi_beard\Rigged\Segmented
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Monteverdi_beard\Rigged/Masks
+    (beard)

@@ -14,7 +14,25 @@ public interface IFighterAnimationDriver
 
     /// <summary>Called once, the instant a move starts. `gameplayDuration` = the move's authoritative
     /// Startup+Active+Recovery length (after stat timing scale) — the animation adapts to it.</summary>
-    void PlayMoveAnimation(FightMoveDefinition move, float gameplayDuration);
+    /// <summary>`gameplayDuration` = the move's BASE length; `speedScale` = the fighter's attack speed (Agility),
+    /// applied on top of the clip fitting so a more agile fighter's strikes visibly play faster.</summary>
+    void PlayMoveAnimation(FightMoveDefinition move, float gameplayDuration, float speedScale = 1f);
+
+    /// <summary>Same, with the limb SIDE that must strike (+1 right / −1 left / 0 as authored): a sided strike clip
+    /// thrown with its other side plays mirrored. Returns the side that really strikes (0 = not a sided strike).</summary>
+    int PlayMoveAnimation(FightMoveDefinition move, float gameplayDuration, float speedScale, int side);
+
+    /// <summary>Raises the guard pose (CombatRole.Block) over `raiseTime` — the fighter's Agility-scaled guard
+    /// raise time (FighterGuard.RaiseTime): the pose is fully up exactly when the guard starts blocking.</summary>
+    void PlayGuard(float raiseTime);
+
+    /// <summary>The guard pose for `state` on `side` (+1 right / −1 left, the fighter's own frame; 0 = the central
+    /// third-person guard). Falls back to the central Block pose when the set has no sided clip.</summary>
+    void PlayGuard(float raiseTime, FighterGuardState state, int side);
+
+    /// <summary>A sided presentation role (Sidestep, HitReactionSide): `side` +1 / −1 picks the clip as authored or
+    /// mirrored. `duration` > 0 fits the clip to it. Repeated calls with the same role and side keep it playing.</summary>
+    void PlaySided(CombatRole role, int side, float duration = -1f);
 
     /// <summary>Shows a non-move role (HitReaction, Knockdown, Downed, GetUp, Block, Victory...). `duration`
     /// > 0 fits the clip to that many seconds (clamped); otherwise natural speed.</summary>
@@ -36,9 +54,19 @@ public class DebugFighterAnimationDriver : IFighterAnimationDriver
 {
     public string CurrentState { get; private set; } = "Idle";
 
-    public void PlayMoveAnimation(FightMoveDefinition move, float gameplayDuration)
+    public void PlayGuard(float raiseTime) => CurrentState = CombatRole.Block.ToString();
+    public void PlayGuard(float raiseTime, FighterGuardState state, int side) => CurrentState = CombatRole.Block.ToString();
+    public void PlaySided(CombatRole role, int side, float duration = -1f) => CurrentState = role.ToString();
+
+    public void PlayMoveAnimation(FightMoveDefinition move, float gameplayDuration, float speedScale = 1f)
     {
         CurrentState = move != null && !string.IsNullOrEmpty(move.animationState) ? move.animationState : "(move, no animationState set)";
+    }
+
+    public int PlayMoveAnimation(FightMoveDefinition move, float gameplayDuration, float speedScale, int side)
+    {
+        PlayMoveAnimation(move, gameplayDuration, speedScale);
+        return side;
     }
 
     public void PlayRole(CombatRole role, float duration = -1f) => CurrentState = role.ToString();

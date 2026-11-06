@@ -32,6 +32,17 @@ using UnityEngine;
 /// exactly as before, with the direction it had when it was pressed — so Down + Kick, the Signature
 /// (Down + Forward + Punch) etc. still work, just up to that window later.
 ///
+/// DOUBLE / TRIPLE PRESS (same button, Tekken-like chain — user design 2026-11-04): the 1st press is a
+/// normal at once. A 2nd press of the same button within FightFlowConfig.chainSecondPressWindow is HELD
+/// for chainThirdPressWait to see whether a 3rd one comes: if it does, the 2nd and 3rd become ONE strong
+/// hit (the finisher combo — powered with an x3, see FighterMoveController.OnCombo) using the direction
+/// held at the 3rd press (height / advance / retreat); if not, the 2nd press plays as a plain normal,
+/// just that wait later. So a fast triple shows TWO hits (normal + strong), never three. The finisher
+/// combos are decided HERE (removed from the recognizer's set) so a slow triple never becomes one.
+///
+/// JUMP (third button): JumpPressed latches the press time; FighterMovement consumes it (ConsumeJump)
+/// — a short buffer, so a press slightly before landing / before a move ends still jumps.
+///
 /// Only active while FightFlowState is Fighting (see OnFightFlowChanged) — input is captured and
 /// interpreted here; actual movement/posture/guard consequences live in FighterMovement/FighterGuard.
 ///
@@ -54,13 +65,16 @@ public class FighterInputController : MonoBehaviour
 
     public FightHorizontalDirection CurrentHorizontal { get; private set; }
     public FightVerticalDirection CurrentVertical { get; private set; }
-    /// <summary>True while the HUMAN fighter plays in the first-person fight camera: input is then
-    /// view-relative — W/S = Forward/Back (towards / away from the opponent the view looks at),
-    /// A/D = sideways (CurrentSide), Space = jump, C/Ctrl = crouch. Third person keeps the classic
-    /// mapping. Only the INTERPRETATION of keys changes — moves, ranges and rules are identical.</summary>
+    /// <summary>True while the HUMAN fighter plays in the first-person fight camera (user design 2026-11-05): only
+    /// the AXIS changes — Up/Down = Forward/Back (towards / away from the opponent the view looks at) AND still the
+    /// HIGH / LOW modifier of a strike; Up Up = run, Down Down = backdash. Left/Right (CurrentSide): + Punch / Kick =
+    /// that hand / foot; held alone = GUARD that side (+ Up high, + Down low — FighterGuard); a double tap = sidestep
+    /// to that side. Third person keeps the classic mapping (strikes there pick a random side).</summary>
     public bool ViewRelative { get; private set; }
-    /// <summary>First-person sideways intent: −1 left, 0 none, +1 right (along the fighter's SideXZ).</summary>
+    /// <summary>First-person sideways key: −1 left, 0 none, +1 right (= the fighter's own right, SideXZ).</summary>
     public int CurrentSide { get; private set; }
+    // First person: last Back (Down key) press — "Down, Up + Punch" is the Special there (Down+Forward can't be held).
+    private float _lastBackTapTime = float.NegativeInfinity;
 
     private FightHorizontalDirection _previousHorizontal;
     private FightVerticalDirection _previousVertical;
@@ -81,6 +95,28 @@ public class FighterInputController : MonoBehaviour
     private bool _chargeFired;
     private float _chargeStart;
     private int _sequence; // per-fighter press number (FightInputEvent.Sequence)
+
+    // Double / triple press chain (see class doc).
+    private FightButton _chainButton = FightButton.None;
+    private float _chainLastTime = float.NegativeInfinity;
+    private int _chainCount;
+    private bool _chainPending;
+    private FightInputEvent _chainPendingPress;
+    private int _lastStringId;
+    private FightComboDefinition _punchFinisher, _kickFinisher;
+
+    // Jump button latch (see class doc).
+    private float _jumpPressTime = float.NegativeInfinity;
+
+    /// <summary>The jump button was pressed within `window` seconds: consumes it (true once per press).</summary>
+    public bool ConsumeJump(float window)
+    {
+        if (Time.time - _jumpPressTime > window) return false;
+        _jumpPressTime = float.NegativeInfinity;
+        return true;
+    }
+    /// <summary>A 2nd press is being held for a possible 3rd (debug).</summary>
+    public bool ChainWaiting => _chainPending;
 
     /// <summary>Debug: the recognizer (combo strings) and the recent abstract input buffer.</summary>
     public FightComboRecognizer Recognizer => _recognizer;
@@ -129,18 +165,18 @@ public class FighterInputController : MonoBehaviour
 
         _inputSource.Tick();
 
-        ViewRelative = _inputSource is HumanFightInputSource && FightCameraController.Instance != null &&
+        ViewRelative = _config != null && _config.firstPersonViewRelativeControls && _inputSource is HumanFightInputSource && FightCameraController.Instance != null &&
                        FightCameraController.Instance.ViewMode == CameraViewMode.FirstPerson;
         if (ViewRelative)
         {
-            var forwardBack = FightDirectionResolver.ResolveVertical(_inputSource.Vertical); // W = up = forward
-            CurrentHorizontal = forwardBack == FightVerticalDirection.Up ? FightHorizontalDirection.Forward
-                              : forwardBack == FightVerticalDirection.Down ? FightHorizontalDirection.Back
-                              : FightHorizontalDirection.Neutral;
+            var upDown = FightDirectionResolver.ResolveVertical(_inputSource.Vertical); // W / Up arrow = towards the opponent
             CurrentSide = _inputSource.Horizontal > 0.5f ? 1 : _inputSource.Horizontal < -0.5f ? -1 : 0;
-            CurrentVertical = _inputSource.JumpHeld ? FightVerticalDirection.Up
-                            : _inputSource.CrouchHeld ? FightVerticalDirection.Down
-                            : FightVerticalDirection.Neutral;
+            // With a side key held, Up/Down are only the HEIGHT (of the side guard / side strike) — no walking.
+            CurrentHorizontal = CurrentSide != 0 ? FightHorizontalDirection.Neutral
+                              : upDown == FightVerticalDirection.Up ? FightHorizontalDirection.Forward
+                              : upDown == FightVerticalDirection.Down ? FightHorizontalDirection.Back
+                              : FightHorizontalDirection.Neutral;
+            CurrentVertical = upDown;
         }
         else
         {
@@ -153,21 +189,70 @@ public class FighterInputController : MonoBehaviour
         // rolling Down → Down+Forward records Down then Forward. Movement keeps reading the held
         // directions itself (CurrentHorizontal/CurrentVertical) — recording never blocks it.
         if (CurrentHorizontal != _previousHorizontal && CurrentHorizontal != FightHorizontalDirection.Neutral)
+        {
             BufferDirectionTap(CurrentHorizontal, FightVerticalDirection.Neutral);
-        if (CurrentVertical != _previousVertical && CurrentVertical != FightVerticalDirection.Neutral)
+            if (CurrentHorizontal == FightHorizontalDirection.Back) _lastBackTapTime = Time.time;
+        }
+        // First person: the same key already gave the Forward/Back tap above (Up Up = run, Down Down = backdash).
+        if (!ViewRelative && CurrentVertical != _previousVertical && CurrentVertical != FightVerticalDirection.Neutral)
             BufferDirectionTap(FightHorizontalDirection.Neutral, CurrentVertical);
         _previousHorizontal = CurrentHorizontal;
         _previousVertical   = CurrentVertical;
 
+        if (_inputSource.JumpPressed) _jumpPressTime = Time.time;
+
+        // A held 2nd press whose 3rd never came: it plays now as a plain normal (slightly later).
+        // A 3rd press still held back by the power-chord window (Down held) is not late: its own press time decides.
+        bool thirdDeferred = _hasPendingPress && _chainPending && _pendingButton == _chainPendingPress.Button &&
+                             _pendingTime - _chainPendingPress.Time <= ChainThirdWait;
+        if (_chainPending && !thirdDeferred && Time.time - _chainPendingPress.Time > ChainThirdWait) FlushChainPending(resetString: true);
+
         ProcessButtons(_inputSource.PunchPressed, _inputSource.KickPressed);
     }
+
+    private float ChainSecondWindow => _config != null ? _config.chainSecondPressWindow : 0.4f;
+    private float ChainThirdWait => _config != null ? _config.chainThirdPressWait : 0.24f;
 
     private void BuildBufferAndRecognizer()
     {
         float window = _config != null ? Mathf.Max(0.2f, _config.inputBufferWindowSeconds) : 1.5f;
         _buffer = new FightInputBuffer(window, _config != null ? _config.inputBufferMaxEntries : 24);
-        _recognizer = new FightComboRecognizer(_config != null ? _config.comboSet : null, _buffer, this,
+        _recognizer = new FightComboRecognizer(RecognizerSet(_config != null ? _config.comboSet : null), _buffer, this,
                                                _config != null ? _config.comboContinuationWindow : 0.5f);
+        _chainPending = false;
+        _chainCount = 0;
+        _chainButton = FightButton.None;
+    }
+
+    // The combo set the recognizer sees: everything except the punch / kick finishers, which the
+    // double/triple press chain decides itself (see class doc).
+    private FightComboSetSO _filteredSet;
+    private FightComboSetSO RecognizerSet(FightComboSetSO set)
+    {
+        _punchFinisher = _kickFinisher = null;
+        if (set == null || set.combos == null) return set;
+        var kept = new System.Collections.Generic.List<FightComboDefinition>();
+        foreach (var c in set.combos)
+        {
+            if (c == null) continue;
+            if (c.attackBonus == FightComboBonus.PunchFinisher) { _punchFinisher ??= c; continue; }
+            if (c.attackBonus == FightComboBonus.KickFinisher)  { _kickFinisher ??= c; continue; }
+            kept.Add(c);
+        }
+        if (kept.Count == set.combos.Length) return set;
+        if (_filteredSet == null)
+        {
+            _filteredSet = ScriptableObject.CreateInstance<FightComboSetSO>();
+            _filteredSet.name = set.name + " (no finishers)";
+            _filteredSet.hideFlags = HideFlags.DontSave;
+        }
+        _filteredSet.combos = kept.ToArray();
+        return _filteredSet;
+    }
+
+    private void OnDestroy()
+    {
+        if (_filteredSet != null) Destroy(_filteredSet);
     }
 
     /// <summary>Ends the current combo string (FighterMoveController: hit stun, knockdown, match end) —
@@ -239,23 +324,100 @@ public class FighterInputController : MonoBehaviour
 
     private void PressOrDefer(FightButton button, bool down)
     {
+        PressDirections(button, out var horizontal, out var vertical);
         if (down && WindowSeconds > 0f && !_hasPendingPress)
         {
             _hasPendingPress = true;
             _pendingButton = button;
-            _pendingHorizontal = CurrentHorizontal;
-            _pendingVertical = CurrentVertical;
+            _pendingHorizontal = horizontal;
+            _pendingVertical = vertical;
             _pendingTime = Time.time;
             return;
         }
-        HandlePress(button, CurrentHorizontal, CurrentVertical, Time.time);
+        SubmitButton(button, horizontal, vertical, Time.time);
+    }
+
+    // The directions a press carries. First person: "Down, then Up + Punch" (back then towards the opponent) is the
+    // Special's Down+Forward+Punch — the same key can't hold Down and Forward at once there.
+    private void PressDirections(FightButton button, out FightHorizontalDirection horizontal, out FightVerticalDirection vertical)
+    {
+        horizontal = CurrentHorizontal;
+        vertical = CurrentVertical;
+        float window = _config != null ? _config.comboContinuationWindow : 0.5f;
+        if (ViewRelative && button == FightButton.Punch && CurrentHorizontal == FightHorizontalDirection.Forward &&
+            Time.time - _lastBackTapTime <= window)
+        {
+            vertical = FightVerticalDirection.Down;
+            _lastBackTapTime = float.NegativeInfinity;
+        }
     }
 
     private void FlushPending()
     {
         _hasPendingPress = false;
-        HandlePress(_pendingButton, _pendingHorizontal, _pendingVertical, _pendingTime);
+        SubmitButton(_pendingButton, _pendingHorizontal, _pendingVertical, _pendingTime);
         FlushPendingDirections();
+    }
+
+    // Double / triple press chain (see class doc) in front of the normal press handling.
+    private void SubmitButton(FightButton button, FightHorizontalDirection horizontal, FightVerticalDirection vertical, float time)
+    {
+        if (_chainPending)
+        {
+            if (button == _chainPendingPress.Button && time - _chainPendingPress.Time <= ChainThirdWait)
+            {
+                // 3rd press: the held 2nd + this one = ONE strong hit (the finisher), with THIS press's direction.
+                var second = _chainPendingPress;
+                _chainPending = false;
+                _chainCount = 0;
+                _chainButton = FightButton.None;
+                FeedSilently(second);
+                FeedSilently(new FightInputEvent(button, horizontal, vertical, time)); // keeps P P P K … recognisable
+                var finisher = button == FightButton.Kick ? _kickFinisher : _punchFinisher;
+                if (finisher != null)
+                    EventBus.Publish(new FightComboDetectedEvent { Source = this, Combo = finisher, StringId = _lastStringId, ReplacesPrevious = false });
+                else PublishNormal(button, _lastStringId);
+                return;
+            }
+            FlushChainPending(resetString: false); // another button: the held 2nd plays first, in order
+        }
+
+        if (button == _chainButton && _chainCount == 1 && time - _chainLastTime <= ChainSecondWindow)
+        {
+            _chainPending = true; // 2nd press: wait a moment for a possible 3rd
+            _chainPendingPress = new FightInputEvent(button, horizontal, vertical, time);
+            _chainCount = 2;
+            return;
+        }
+
+        _chainButton = button;
+        _chainCount = 1;
+        _chainLastTime = time;
+        HandlePress(button, horizontal, vertical, time);
+    }
+
+    private void FlushChainPending(bool resetString)
+    {
+        if (!_chainPending) return;
+        _chainPending = false;
+        var p = _chainPendingPress;
+        // Timed out: the 2nd hit is a fresh normal — it can't complete an older string any more.
+        if (resetString) _recognizer.Reset();
+        HandlePress(p.Button, p.Horizontal, p.Vertical, p.Time);
+    }
+
+    // Into the buffer / recognizer (string continuity) without any action of its own.
+    private void FeedSilently(FightInputEvent press)
+    {
+        var input = new FightInputEvent(press.Button, press.Horizontal, press.Vertical, press.Time, ++_sequence);
+        _buffer.Add(input);
+        _recognizer.OnNewInput(input);
+    }
+
+    private void PublishNormal(FightButton button, int stringId)
+    {
+        if (button == FightButton.Punch) EventBus.Publish(new FightNormalPunchEvent { Source = this, StringId = stringId });
+        else if (button == FightButton.Kick) EventBus.Publish(new FightNormalKickEvent { Source = this, StringId = stringId });
     }
 
     private void FlushPendingDirections()
@@ -270,9 +432,16 @@ public class FighterInputController : MonoBehaviour
         var input = new FightInputEvent(button, horizontal, vertical, pressTime, ++_sequence);
         _buffer.Add(input);
         var resolution = _recognizer.OnNewInput(input);
+        if (button != FightButton.None) _lastStringId = resolution.StringId;
 
-        // Exactly one action for this press — see class doc.
-        if (resolution.Combo != null)
+        // Exactly one action for this press — see class doc. A third-person-only combo (Forward, Punch = the lunge) is the
+        // press's own normal in first person, where Up is FORWARD and the HIGH modifier at once.
+        if (resolution.Combo != null && resolution.Combo.thirdPersonOnly && ViewRelative && button != FightButton.None)
+        {
+            if (button == FightButton.Punch) EventBus.Publish(new FightNormalPunchEvent { Source = this, StringId = resolution.StringId });
+            else if (button == FightButton.Kick) EventBus.Publish(new FightNormalKickEvent { Source = this, StringId = resolution.StringId });
+        }
+        else if (resolution.Combo != null)
             EventBus.Publish(new FightComboDetectedEvent { Source = this, Combo = resolution.Combo, StringId = resolution.StringId, ReplacesPrevious = resolution.ReplacesPrevious });
         else if (button == FightButton.Punch)
             EventBus.Publish(new FightNormalPunchEvent { Source = this, StringId = resolution.StringId });
@@ -301,5 +470,7 @@ public class FighterInputController : MonoBehaviour
         _hasPendingPress = false;
         _pendingDirections.Clear();
         _charging = false;
+        _jumpPressTime = float.NegativeInfinity;
+        _lastBackTapTime = float.NegativeInfinity;
     }
 }

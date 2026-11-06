@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations;
+using UnityEngine.Playables;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
 using UnityEngine.InputSystem;
 #endif
@@ -115,8 +117,66 @@ public class RunnerAvatarAnimator : MonoBehaviour
         Debug.Log($"[RunnerAvatarAnimator] Music style {musicStyle} → Runner animation style '{(Style != null ? Style.name : "(none)")}'.");
     }
 
+    // ── Caught by the chaser: knockdown, then lying on the floor (until the respawn) ─────────────
+    private PlayableGraph _caughtGraph;
+    private AnimationMixerPlayable _caughtMixer;
+    private AnimationClipPlayable _caughtDowned;
+    private float _caughtStart, _caughtKnockSeconds;
+    private const float CaughtBlend = 0.35f;
+
+    /// <summary>The chaser caught the player: plays `knockdown` (once, at `speed`) then loops `downed` OVER the
+    /// runner controller until the player is no longer falling (respawn). Either clip may be null.</summary>
+    public void PlayCaught(AnimationClip knockdown, AnimationClip downed, float speed)
+    {
+        if (_animator == null || (knockdown == null && downed == null)) return;
+        StopCaught();
+        StopUpperFlourish();
+        _caughtGraph = PlayableGraph.Create("RunnerCaught");
+        _caughtGraph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
+        var output = AnimationPlayableOutput.Create(_caughtGraph, "Caught", _animator);
+        _caughtMixer = AnimationMixerPlayable.Create(_caughtGraph, 2);
+        _caughtKnockSeconds = 0f;
+        if (knockdown != null)
+        {
+            var k = AnimationClipPlayable.Create(_caughtGraph, knockdown);
+            k.SetSpeed(Mathf.Max(0.1f, speed));
+            _caughtGraph.Connect(k, 0, _caughtMixer, 0);
+            _caughtKnockSeconds = knockdown.length / Mathf.Max(0.1f, speed);
+        }
+        if (downed != null)
+        {
+            _caughtDowned = AnimationClipPlayable.Create(_caughtGraph, downed);
+            _caughtGraph.Connect(_caughtDowned, 0, _caughtMixer, 1);
+        }
+        output.SetSourcePlayable(_caughtMixer);
+        _caughtStart = Time.time;
+        UpdateCaught();
+        _caughtGraph.Play();
+    }
+
+    private void UpdateCaught()
+    {
+        if (!_caughtGraph.IsValid()) return;
+        float t = Time.time - _caughtStart;
+        bool hasDowned = _caughtDowned.IsValid();
+        float from = _caughtKnockSeconds - CaughtBlend;
+        float w = !hasDowned ? 0f : _caughtKnockSeconds <= 0f ? 1f : Mathf.Clamp01((t - from) / CaughtBlend);
+        if (hasDowned && t < from) _caughtDowned.SetTime(0);   // the lying loop starts with the blend
+        _caughtMixer.SetInputWeight(0, 1f - w);
+        _caughtMixer.SetInputWeight(1, w);
+    }
+
+    private void StopCaught()
+    {
+        if (_caughtGraph.IsValid()) _caughtGraph.Destroy();
+        _caughtDowned = default;
+    }
+
+    public bool IsCaughtPosePlaying => _caughtGraph.IsValid();
+
     private void OnDestroy()
     {
+        StopCaught();
         if (_player == null) return;
         _player.Jumped -= OnJumped;
         _player.AutoReturnStarted -= OnAutoReturn;
@@ -228,6 +288,11 @@ public class RunnerAvatarAnimator : MonoBehaviour
         bool falling = _player != null && _player.IsFalling;
         bool grounded = _player == null || _player.IsGrounded;
 
+        if (_caughtGraph.IsValid())
+        {
+            if (falling) { UpdateCaught(); return; }
+            StopCaught(); // respawned: back to the runner controller
+        }
         if (falling)
         {
             if (_oneShot != RunnerAnimationRole.Fall) { StopUpperFlourish(); PlayRole(RunnerAnimationRole.Fall, false); _oneShot = RunnerAnimationRole.Fall; }

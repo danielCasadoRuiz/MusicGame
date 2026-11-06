@@ -1,0 +1,27 @@
+[
+  {
+    "variant": "Sense AA",
+    "error_vs_reference": 6.22394323348999,
+    "desktop_capture_sync_ms": 18.083000000000002
+  },
+  {
+    "variant": "MSAA 2×",
+    "error_vs_reference": 5.2926459312438965,
+    "desktop_capture_sync_ms": 20.056800000000003
+  },
+  {
+    "variant": "MSAA 4×",
+    "error_vs_reference": 4.597403526306152,
+    "desktop_capture_sync_ms": 23.075200000000002
+  },
+  {
+    "variant": "SMAA",
+    "error_vs_reference": 5.7759108543396,
+    "desktop_capture_sync_ms": 19.8122
+  },
+  {
+    "variant": "MSAA 4× + SMAA",
+    "error_vs_reference": 5.072169780731201,
+    "desktop_capture_sync_ms": 24.651
+  }
+]

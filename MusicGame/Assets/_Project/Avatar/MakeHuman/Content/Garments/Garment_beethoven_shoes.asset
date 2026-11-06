@@ -15,18 +15,17 @@ MonoBehaviour:
   garmentId: beethoven_shoes
   category: shoes
   layer: 30
-  bodyCoverage:
-  - foot_l
-  - foot_r
-  - ankle_l
-  - ankle_r
+  hidesCategories: []
+  occlusionGap: 0.1
+  bodyCoverage: []
   garmentCoverage: []
   coverageConfigured: 1
-  importedCoverageHash: b4bf11d9a4ff13e7c2dd7a59f58e05d3
+  importedCoverageHash: 65f649843c74a3e5714cb16269bee426
   importedSources:
   - Beethoven_shoes\Rigged\LOW\Beethoven_shoes_LOW_5k_rigged.fbx
   - Beethoven_shoes\Rigged\MEDIUM\Beethoven_shoes_MEDIUM_10k_rigged.fbx
   - Beethoven_shoes\Rigged\MID-HIGH\Beethoven_shoes_MIDHIGH_20k_rigged.fbx
   - Beethoven_shoes\Rigged\HIGH\Beethoven_shoes_HIGH_30k_rigged.fbx
   - Beethoven_shoes\Rigged\ULTRA\Beethoven_shoes_ULTRA_50k_rigged.fbx
-  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Beethoven_shoes\Rigged\Segmented
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Beethoven_shoes\Rigged/Masks
+    (shoes)

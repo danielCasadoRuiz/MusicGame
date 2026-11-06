@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SongCatalogIndex
   m_EditorClassIdentifier: Assembly-CSharp::SongCatalogIndexSO
   indexVersion: 1
-  contentRevision: 2f053d590ffc7edf
+  contentRevision: f2e61fc0213a3cfb
   songs:
   - songId: song_001
     displayName: "All But Water \u2014 Zero Nine"
@@ -34,6 +34,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 7
+    themeStyle: 4
+    styleRunnerUp: 6
+    styleScore: 0.81033295
+    styleMargin: 0.50074184
     similarity:
       songId: song_001
       address: SongAudio/song_001
@@ -127,6 +132,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 7
+    themeStyle: 4
+    styleRunnerUp: 6
+    styleScore: 0.81974924
+    styleMargin: 0.4022257
     similarity:
       songId: song_002
       address: SongAudio/song_002
@@ -220,6 +230,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 7
+    themeStyle: 4
+    styleRunnerUp: 12
+    styleScore: 0.5354379
+    styleMargin: 0.16539723
     similarity:
       songId: song_003
       address: SongAudio/song_003
@@ -313,6 +328,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 7
+    themeStyle: 4
+    styleRunnerUp: 12
+    styleScore: 0.7719
+    styleMargin: 0.3170862
     similarity:
       songId: song_004
       address: SongAudio/song_004
@@ -406,6 +426,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 10
+    themeStyle: 8
+    styleRunnerUp: 12
+    styleScore: 0.3399913
+    styleMargin: 0.032369673
     similarity:
       songId: song_005
       address: SongAudio/song_005
@@ -499,6 +524,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 7
+    themeStyle: 4
+    styleRunnerUp: 12
+    styleScore: 0.7996774
+    styleMargin: 0.40452898
     similarity:
       songId: song_006
       address: SongAudio/song_006
@@ -592,6 +622,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 7
+    themeStyle: 4
+    styleRunnerUp: 12
+    styleScore: 0.9921707
+    styleMargin: 0.58397853
     similarity:
       songId: song_007
       address: SongAudio/song_007
@@ -685,6 +720,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 6
+    themeStyle: 3
+    styleRunnerUp: 12
+    styleScore: 0.4491125
+    styleMargin: 0.19379094
     similarity:
       songId: song_008
       address: SongAudio/song_008
@@ -778,6 +818,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 6
+    themeStyle: 3
+    styleRunnerUp: 12
+    styleScore: 0.449258
+    styleMargin: 0.12429777
     similarity:
       songId: song_009
       address: SongAudio/song_009
@@ -871,6 +916,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 7
+    themeStyle: 4
+    styleRunnerUp: 6
+    styleScore: 0.5209912
+    styleMargin: 0.14824635
     similarity:
       songId: song_010
       address: SongAudio/song_010
@@ -964,6 +1014,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 6
+    themeStyle: 3
+    styleRunnerUp: 7
+    styleScore: 0.7971216
+    styleMargin: 0.39112148
     similarity:
       songId: song_011
       address: SongAudio/song_011
@@ -1057,6 +1112,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 6
+    themeStyle: 3
+    styleRunnerUp: 7
+    styleScore: 0.683514
+    styleMargin: 0.102179885
     similarity:
       songId: song_012
       address: SongAudio/song_012
@@ -1150,6 +1210,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 6
+    themeStyle: 3
+    styleRunnerUp: 7
+    styleScore: 0.83406997
+    styleMargin: 0.12060481
     similarity:
       songId: song_013
       address: SongAudio/song_013
@@ -1243,6 +1308,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 7
+    themeStyle: 4
+    styleRunnerUp: 6
+    styleScore: 0.86499166
+    styleMargin: 0.36607298
     similarity:
       songId: song_014
       address: SongAudio/song_014
@@ -1336,6 +1406,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 6
+    themeStyle: 3
+    styleRunnerUp: 12
+    styleScore: 0.3509024
+    styleMargin: 0.091955036
     similarity:
       songId: song_015
       address: SongAudio/song_015
@@ -1429,6 +1504,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 7
+    themeStyle: 4
+    styleRunnerUp: 12
+    styleScore: 0.86963505
+    styleMargin: 0.40517828
     similarity:
       songId: song_016
       address: SongAudio/song_016
@@ -1522,6 +1602,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 7
+    themeStyle: 4
+    styleRunnerUp: 12
+    styleScore: 0.6400423
+    styleMargin: 0.26125172
     similarity:
       songId: song_017
       address: SongAudio/song_017
@@ -1615,6 +1700,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 12
+    themeStyle: 2
+    styleRunnerUp: 7
+    styleScore: 0.5067516
+    styleMargin: 0.095100224
     similarity:
       songId: song_018
       address: SongAudio/song_018
@@ -1708,6 +1798,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 12
+    themeStyle: 2
+    styleRunnerUp: 7
+    styleScore: 0.40501916
+    styleMargin: 0.010555357
     similarity:
       songId: song_019
       address: SongAudio/song_019
@@ -1801,6 +1896,11 @@ MonoBehaviour:
     playbackChannels: 2
     playbackFrequency: 48000
     playbackLoadType: CompressedInMemory
+    gameStyle: 6
+    themeStyle: 3
+    styleRunnerUp: 7
+    styleScore: 0.4674381
+    styleMargin: 0.09112939
     similarity:
       songId: song_020
       address: SongAudio/song_020
@@ -1875,3 +1975,199 @@ MonoBehaviour:
       - 0
       sourceGuid: 63172a5d8c41f8d4fbf21c194da595e0
       sourceHash: 5d6f6356ee27fc16:994f00d7
+  - songId: song_021
+    displayName: Mikel Json - Press on till your thirst lets up
+    audioAddress: SongAudio/song_021
+    profileAddress: SongProfile/song_021
+    contentLabel: Song_song_021
+    order: 21
+    masterIdentity: 13564981860064390448
+    playbackRevision: 10270383599852555549
+    profileCrc: 897143861
+    profileBytes: 4493660
+    profileFormatVersion: 2
+    pipelineVersion: 3
+    paramsHash: 2741859574023456044
+    tagModelVersion: 1
+    durationSeconds: 252
+    playbackSamples: 12096000
+    playbackChannels: 2
+    playbackFrequency: 48000
+    playbackLoadType: CompressedInMemory
+    gameStyle: 7
+    themeStyle: 4
+    styleRunnerUp: 6
+    styleScore: 0.8995896
+    styleMargin: 0.28529972
+    similarity:
+      songId: song_021
+      address: SongAudio/song_021
+      version: 1
+      features:
+      - 0.19788206
+      - 0.41531596
+      - 0.27780205
+      - 0.4263551
+      - 0.64747596
+      - 0.3427002
+      - 0.6318373
+      - 0.28747794
+      - 0.08289242
+      - 0.9343889
+      - 0.7450918
+      - 0.9764567
+      - 0.16845164
+      - 0.2226525
+      - 0
+      - 0.557433
+      tags:
+      - 0
+      - 0.14724073
+      - 0
+      - 0
+      - 0.36522937
+      - 0.06464996
+      - 0.36763465
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0.08832019
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0.052936725
+      - 0.16009894
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0.327271
+      - 0
+      sourceGuid: e95bc5b4df0e4a3f8e105a0eb3c5d693
+      sourceHash: bc407f21a1c16d30:35795435
+  - songId: song_022
+    displayName: "Wingfly \u2014 Buzzing Tonight"
+    audioAddress: SongAudio/song_022
+    profileAddress: SongProfile/song_022
+    contentLabel: Song_song_022
+    order: 22
+    masterIdentity: 672660233190677070
+    playbackRevision: 1864733197562867746
+    profileCrc: 689965962
+    profileBytes: 3732236
+    profileFormatVersion: 2
+    pipelineVersion: 3
+    paramsHash: 2741859574023456044
+    tagModelVersion: 1
+    durationSeconds: 209.56
+    playbackSamples: 10058880
+    playbackChannels: 2
+    playbackFrequency: 48000
+    playbackLoadType: CompressedInMemory
+    gameStyle: 7
+    themeStyle: 4
+    styleRunnerUp: 6
+    styleScore: 0.9457944
+    styleMargin: 0.446227
+    similarity:
+      songId: song_022
+      address: SongAudio/song_022
+      version: 1
+      features:
+      - 0.25305104
+      - 0.40127155
+      - 0.36439702
+      - 0.4967905
+      - 0.49503952
+      - 0.2984601
+      - 0.659751
+      - 0.47125506
+      - 0.11255061
+      - 0.93258524
+      - 0.7398219
+      - 0.9447816
+      - 0.16302183
+      - 0.22801755
+      - 0
+      - 0.6100363
+      tags:
+      - 0
+      - 0.23031268
+      - 0
+      - 0
+      - 0.3038134
+      - 0.09079593
+      - 0.5211662
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0.071840085
+      - 0
+      - 0
+      - 0.06052308
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0.088704385
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0.20185426
+      - 0
+      sourceGuid: 37f82b3ff0ee42eb8182bef556fa1865
+      sourceHash: 0955c4eb0ddc9a4e:29200b8a

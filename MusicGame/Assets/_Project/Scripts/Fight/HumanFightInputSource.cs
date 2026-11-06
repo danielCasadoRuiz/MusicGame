@@ -14,6 +14,7 @@ using UnityEngine.InputSystem;
 ///   Movement: WASD or Arrow Keys (both work, same as Runner's own strafe keys)
 ///   Punch:    J
 ///   Kick:     K
+///   Jump:     Space (touch: the Jump button) — instant, never a held direction
 /// </summary>
 public class HumanFightInputSource : IFightInputSource
 {
@@ -25,6 +26,7 @@ public class HumanFightInputSource : IFightInputSource
     public bool KickHeld { get; private set; }
     public bool JumpHeld { get; private set; }
     public bool CrouchHeld { get; private set; }
+    public bool JumpPressed { get; private set; }
 
     public void Tick()
     {
@@ -32,7 +34,7 @@ public class HumanFightInputSource : IFightInputSource
         bool readKeyboard = !PlatformService.IsMobile || PlatformService.DualInputInEditor;
 
         float h = 0f, v = 0f;
-        bool punch = false, kick = false, punchHeld = false, kickHeld = false, jumpHeld = false, crouchHeld = false;
+        bool jump = false, punch = false, kick = false, punchHeld = false, kickHeld = false, jumpHeld = false, crouchHeld = false;
 
         if (readTouch)
         {
@@ -40,6 +42,7 @@ public class HumanFightInputSource : IFightInputSource
             v = FightTouchInputState.Vertical;
             if (FightTouchInputState.PunchRequested) { punch = true; FightTouchInputState.PunchRequested = false; }
             if (FightTouchInputState.KickRequested)  { kick  = true; FightTouchInputState.KickRequested  = false; }
+            if (FightTouchInputState.JumpRequested)  { jump  = true; FightTouchInputState.JumpRequested  = false; }
             punchHeld |= FightTouchInputState.PunchHeld;
             kickHeld  |= FightTouchInputState.KickHeld;
         }
@@ -64,6 +67,7 @@ public class HumanFightInputSource : IFightInputSource
                 }
 
                 jumpHeld   = kb.spaceKey.isPressed;
+                jump      |= kb.spaceKey.wasPressedThisFrame;
                 crouchHeld = kb.cKey.isPressed || kb.leftCtrlKey.isPressed;
                 punch |= kb.jKey.wasPressedThisFrame;
                 kick  |= kb.kKey.wasPressedThisFrame;
@@ -73,6 +77,7 @@ public class HumanFightInputSource : IFightInputSource
         }
 
         JumpHeld     = jumpHeld;
+        JumpPressed  = jump;
         CrouchHeld   = crouchHeld;
         Horizontal   = h;
         Vertical     = v;

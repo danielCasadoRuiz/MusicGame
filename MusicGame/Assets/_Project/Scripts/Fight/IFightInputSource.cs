@@ -28,6 +28,9 @@ public interface IFightInputSource
     /// <summary>First-person view only (FighterInputController.ViewRelative): jump / crouch keys,
     /// because W/S and A/D are then forward/back and sideways. Sources without them return false.</summary>
     bool JumpHeld => false;
+    /// <summary>True only on the frame the JUMP button was pressed (third person and first person alike —
+    /// the fight's dedicated jump button: keyboard Space, touch Jump button, AI RequestJump).</summary>
+    bool JumpPressed => false;
     bool CrouchHeld => false;
 
     /// <summary>Call exactly once per frame, before reading the properties above — computes/caches

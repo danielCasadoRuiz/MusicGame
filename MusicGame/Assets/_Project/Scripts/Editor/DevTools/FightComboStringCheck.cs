@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -37,39 +38,45 @@ public static class FightComboStringCheck
         var F = FightHorizontalDirection.Forward;
         var D = FightVerticalDirection.Down;
 
-        Scenario(sb, flow, "PPP → finisher", "normal, normal, punch_finisher",
+        // 2026-11-04: the punch / kick FINISHERS (P P P / K K K) are no longer recognised as strings — the input
+        // controller's double/triple press chain decides them (2nd press held chainThirdPressWait for a 3rd).
+        // The recognizer gets the real set WITHOUT them, exactly like FighterInputController.RecognizerSet;
+        // the 'bb' string is gone (two kicks are two kicks).
+        sb.AppendLine($"  set: {flow.comboSet.combos.Length} combos, recognizer sees {RecognizerSet(flow.comboSet).combos.Length} (finishers removed); " +
+                      $"'bb' present: {flow.comboSet.combos.Any(c => c != null && c.id == "bb")}");
+        if (flow.comboSet.combos.Any(c => c != null && c.id == "bb")) { _fails++; sb.AppendLine("  FAIL  'bb' still in the combo set (run FightFeelSetup)"); }
+        Scenario(sb, flow, "PPP → three presses reach the recognizer as normals (the chain makes the finisher)", "normal, normal, normal",
             new In(P, 0f), new In(P, 0.3f), new In(P, 0.3f));
-        Scenario(sb, flow, "PPP then K in time → aaa_b replaces the finisher", "normal, normal, punch_finisher, aaa_b*",
+        Scenario(sb, flow, "PPP then K in time → aaa_b", "normal, normal, normal, aaa_b",
             new In(P, 0f), new In(P, 0.3f), new In(P, 0.3f), new In(K, 0.3f));
-        Scenario(sb, flow, "PPPP → finisher, then a FRESH punch (no input reused)", "normal, normal, punch_finisher, normal",
-            new In(P, 0f), new In(P, 0.3f), new In(P, 0.3f), new In(P, 0.3f));
-        Scenario(sb, flow, "PPP PPP → two finishers from six presses", "normal, normal, punch_finisher, normal, normal, punch_finisher",
-            new In(P, 0f), new In(P, 0.3f), new In(P, 0.3f), new In(P, 0.3f), new In(P, 0.3f), new In(P, 0.3f));
-        Scenario(sb, flow, "PPP (0.55 s gaps) then K → finisher; aaa_b timing (0.5) fails → plain kick", "normal, normal, punch_finisher, normal",
+        Scenario(sb, flow, "PPP (0.55 s gaps) then K → aaa_b timing (0.5) fails → plain kick", "normal, normal, normal, normal",
             new In(P, 0f), new In(P, 0.55f), new In(P, 0.55f), new In(K, 0.3f));
-        Scenario(sb, flow, "PPP then K after the continuation window → plain kick", "normal, normal, punch_finisher, normal",
+        Scenario(sb, flow, "PPP then K after the continuation window → plain kick", "normal, normal, normal, normal",
             new In(P, 0f), new In(P, 0.3f), new In(P, 0.3f), new In(K, 0.7f));
-        Scenario(sb, flow, "KK → bb, KKK → kick_finisher replaces bb", "normal, bb, kick_finisher*",
-            new In(K, 0f), new In(K, 0.3f), new In(K, 0.3f));
-        Scenario(sb, flow, "KKPK → bb, normal, bbab", "normal, bb, normal, bbab",
+        Scenario(sb, flow, "KK → two kicks (no 'bb')", "normal, normal",
+            new In(K, 0f), new In(K, 0.3f));
+        Scenario(sb, flow, "KKPK → bbab", "normal, normal, normal, bbab",
             new In(K, 0f), new In(K, 0.3f), new In(P, 0.3f), new In(K, 0.3f));
         Scenario(sb, flow, "Signature twice → exactly one Signature per press", "special_fireball, special_fireball",
             new In(P, 0f, F, D), new In(P, 0.4f, F, D));
         Scenario(sb, flow, "PP then Signature → Signature (not a 3rd punch / finisher)", "normal, normal, special_fireball",
             new In(P, 0f), new In(P, 0.3f), new In(P, 0.3f, F, D));
-        Scenario(sb, flow, "Forward, Punch, Forward → no dash (one ordered stream: the punch sits between)", "-, normal, -",
+        // forward_a (2026-10-25) = a Forward TAP + Punch within 0.3 s: the lunge punch.
+        Scenario(sb, flow, "Forward, Punch, Forward → forward_a, no dash (one ordered stream: the punch sits between)", "-, forward_a, -",
             new In(T, 0f, F), new In(P, 0.1f), new In(T, 0.1f, F));
         Scenario(sb, flow, "Forward, Forward → dash", "-, dash_forward",
             new In(T, 0f, F), new In(T, 0.15f, F));
-        Scenario(sb, flow, "walking between punches keeps P P P (direction presses are transparent)", "normal, -, normal, -, punch_finisher",
-            new In(P, 0f), new In(T, 0.1f, F), new In(P, 0.15f), new In(T, 0.1f, FightHorizontalDirection.Back), new In(P, 0.15f));
-        Scenario(sb, flow, "walk then PPP then K → aaa_b still replaces the finisher", "-, normal, normal, punch_finisher, aaa_b*",
-            new In(T, 0f, F), new In(P, 0.1f), new In(P, 0.3f), new In(P, 0.3f), new In(K, 0.3f));
+        Scenario(sb, flow, "walking back between punches keeps P P P (direction presses are transparent)", "normal, -, normal, -, normal",
+            new In(P, 0f), new In(T, 0.1f, FightHorizontalDirection.Back), new In(P, 0.15f), new In(T, 0.1f, FightHorizontalDirection.Back), new In(P, 0.15f));
+        Scenario(sb, flow, "a forward step right before a punch → that punch is forward_a", "normal, -, forward_a",
+            new In(P, 0f), new In(T, 0.1f, F), new In(P, 0.15f));
+        Scenario(sb, flow, "walk, pause, then PPP then K → aaa_b", "-, normal, normal, normal, aaa_b",
+            new In(T, 0f, F), new In(P, 0.4f), new In(P, 0.3f), new In(P, 0.3f), new In(K, 0.3f));
 
         // Mixed Direction + attack sequences — TEST-ONLY definitions on top of the real set
         // (architecture check; nothing is added to the game's combo data).
         var mixed = ScriptableObject.CreateInstance<FightComboSetSO>();
-        var list = new System.Collections.Generic.List<FightComboDefinition>(flow.comboSet.combos)
+        var list = new System.Collections.Generic.List<FightComboDefinition>(RecognizerSet(flow.comboSet).combos)
         {
             Def("t_dfp",  Dir(D, true), Dir(F, false), Btn(P)),
             Def("t_dfpk", Dir(D, true), Dir(F, false), Btn(P), Btn(K)),
@@ -86,9 +93,9 @@ public static class FightComboStringCheck
             new In(T, 0f, v: D), new In(P, 0.15f), new In(K, 0.2f));
         Scenario(sb, flow, mixed, "Back → Forward → Kick", "-, -, t_bfk",
             new In(T, 0f, FightHorizontalDirection.Back), new In(T, 0.15f, F), new In(K, 0.15f));
-        Scenario(sb, flow, mixed, "Forward → Punch → Punch (a direction-started string)", "-, normal, t_fpp",
+        Scenario(sb, flow, mixed, "Forward → Punch → Punch (a direction-started string; forward_a first)", "-, forward_a, t_fpp*",
             new In(T, 0f, F), new In(P, 0.15f), new In(P, 0.3f));
-        Scenario(sb, flow, mixed, "Down → Forward too slow (0.8 s) → no combo, plain punch", "-, -, normal",
+        Scenario(sb, flow, mixed, "Down → Forward too slow (0.8 s) → no t_dfp, the forward tap + punch is forward_a", "-, -, forward_a",
             new In(T, 0f, v: D), new In(T, 0.8f, F), new In(P, 0.1f));
         Scenario(sb, flow, "Back+P P K → back_aab", "normal, normal, back_aab",
             new In(P, 0f, FightHorizontalDirection.Back), new In(P, 0.3f), new In(K, 0.3f));
@@ -103,7 +110,15 @@ public static class FightComboStringCheck
         new() { id = id, debugName = id, steps = steps, maxTimeBetweenInputs = 0.5f, moveId = "move_test" };
 
     private static void Scenario(StringBuilder sb, FightFlowConfig flow, string name, string expected, params In[] inputs) =>
-        Scenario(sb, flow, flow.comboSet, name, expected, inputs);
+        Scenario(sb, flow, RecognizerSet(flow.comboSet), name, expected, inputs);
+
+    // Same rule as FighterInputController.RecognizerSet: the finishers belong to the press chain.
+    private static FightComboSetSO RecognizerSet(FightComboSetSO set)
+    {
+        var filtered = ScriptableObject.CreateInstance<FightComboSetSO>();
+        filtered.combos = set.combos.Where(c => c != null && c.attackBonus != FightComboBonus.PunchFinisher && c.attackBonus != FightComboBonus.KickFinisher).ToArray();
+        return filtered;
+    }
 
     private static void Scenario(StringBuilder sb, FightFlowConfig flow, FightComboSetSO set, string name, string expected, params In[] inputs)
     {

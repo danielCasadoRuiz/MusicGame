@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -96,7 +96,7 @@ public static class SkinVisibilityShaderSetup
             "// writes color, GBuffer, depth, depth-normals or shadows. MotionVectors/XRMotionVectors passes are omitted (the\n" +
             "// body material already disables MOTIONVECTORS); without them covered skin cannot write motion vectors either.\n" +
             "// Regenerate (Tools > MusicGame > Avatars > Garments > Regenerate Skin Visibility Shader) after a URP upgrade.\n";
-        File.WriteAllText(ShaderPath, header + s.Replace("\r\n", "\n"));
+        File.WriteAllText(ShaderPath, AvatarSurfaceSetup.PatchGeneratedShader(header + s.Replace("\r\n", "\n")));
         AssetDatabase.ImportAsset(ShaderPath, ImportAssetOptions.ForceSynchronousImport);
     }
 }

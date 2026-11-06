@@ -132,6 +132,9 @@ public class RingController : MonoBehaviour
             if (GameAudio.Instance != null) GameAudio.Instance.PlayClip(collectSound, collectVolume, GameAudioScope.Runner);
             else AudioSource.PlayClipAtPoint(collectSound, transform.position, collectVolume);
         }
+        // No sound of its own: the shared, discreet pickup cue (GameSfxLibrary.bonusPickup).
+        else if (GameAudio.Instance != null && GameAudio.Instance.Library != null)
+            GameAudio.Instance.Play(GameAudio.Instance.Library.bonusPickup, GameAudioScope.Runner);
 
         // Expected = when the player, running its intentional trail behind the musical front, meets it —
         // not the hit moment itself (that would penalise every normal, non-surge pickup by the trail).

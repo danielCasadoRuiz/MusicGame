@@ -73,17 +73,22 @@ public static class FirstPersonCameraCapture
         (1f, WaitFighting, null),
         (0f, null, () => { FreezeRival(); SetFightView(CameraViewMode.FirstPerson); }),
         (2f, "04_fight_fp_idle", () => { CheckFight(CameraViewMode.FirstPerson); BodyInView("Fight idle", FightCameraController.Instance.Camera, FightCameraController.Instance.PlayerHeadRig, false); }),
-        // Advance (W): the lens must stay ON the eyes while moving — no lag, never the own head from behind.
+        // First person swaps the axis (user design 2026-11-05): Up = towards the opponent. The lens must stay ON the eyes while moving.
         (0f, null, () => FightTouchInputState.Vertical = 1f),
         (0.35f, null, CheckFightGlued),
         (0.3f, "05_fight_fp_advance", () => { CheckFightGlued(); FightTouchInputState.Vertical = 0f; }),
+        // Sidestep = a double tap of Right (to the screen's right).
         (0.4f, null, () => FightTouchInputState.Horizontal = 1f),
-        (0.6f, "06_fight_fp_sidestep", () => { CheckFightGlued(); FightTouchInputState.Horizontal = 0f; }),
+        (0.05f, null, () => FightTouchInputState.Horizontal = 0f),
+        (0.05f, null, () => FightTouchInputState.Horizontal = 1f),
+        (0.05f, null, () => FightTouchInputState.Horizontal = 0f),
+        (0.5f, "06_fight_fp_sidestep", CheckFightGlued),
         (0.4f, null, () => FightTouchInputState.PunchRequested = true),
         (0.18f, "07_fight_fp_punch", () => { CheckFightGlued(); BodyInView("Fight punch", FightCameraController.Instance.Camera, FightCameraController.Instance.PlayerHeadRig, false); }),
-        (0.6f, null, () => FightTouchInputState.Vertical = -1f),
+        // Guard = hold Left (that side, mid).
+        (0.6f, null, () => FightTouchInputState.Horizontal = -1f),
         (0.5f, "08_fight_fp_block", () => { CheckFightGlued(); LogGuard(); BodyInView("Fight block", FightCameraController.Instance.Camera, FightCameraController.Instance.PlayerHeadRig, false); }),
-        (0f, null, () => FightTouchInputState.Vertical = 0f),
+        (0f, null, () => FightTouchInputState.Horizontal = 0f),
         // Fall: the view goes down WITH the head (from the floor), the lens still at the eyes.
         (0.6f, null, () => { s_minFallEyeY = float.MaxValue; KnockPlayerDown(); }),
         (0.4f, "09_fight_fp_fall_a", TrackFall),

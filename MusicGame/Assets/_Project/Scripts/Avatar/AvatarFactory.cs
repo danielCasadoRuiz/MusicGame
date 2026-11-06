@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -22,10 +22,10 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 /// Never fitting/deforming geometry procedurally beyond that (task's own explicit "no facis fitting
 /// procedural automàtic" scope note) — morphs are pure blendshape weights on top of the body's Gender-0
 /// rest vertices. Masking/occlusion has two paths:
-///   * Segmented garments (cuts package: SegmentedGarmentSO + SegmentedGarmentPart, see
-///     SegmentedGarmentSupport): AvatarInstance.Appearance keeps each garment's visible regions as ONE
+///   * Layered garments (occlusion masks: SegmentedGarmentSO + SegmentedGarmentPart, see
+///     SegmentedGarmentSupport): AvatarInstance.Appearance keeps each garment's visible triangles as ONE
 ///     submesh with its final material (index data only — vertices/weights/blendshapes untouched) and masks
-///     the body's skin per region in its shader (_SkinVisibilityMask, per-avatar MaterialPropertyBlock).
+///     the body's skin in its shader (_SkinVisibilityMask, per-avatar MaterialPropertyBlock).
 ///   * Legacy (unsegmented) garments: renderer.enabled toggles through AvatarRegionMap, exactly as before.
 /// Both coexist on one avatar. Runtime equipment changes go through EquipAsync / Unequip.
 ///
@@ -248,12 +248,13 @@ public static class AvatarFactory
         }
         instance.SetBodyContext(bodyPart.skinnedRenderers);
         instance.BodyPart = bodyPart;
-        instance.Appearance.SetBody(bodyPart.skinnedRenderers, recipe.BaseAvatar != null ? recipe.BaseAvatar.garmentRegionCatalog : null);
+        instance.Appearance.SetBody(bodyPart.skinnedRenderers);
         instance.ApplyBody(recipe.Identity.Body);
 
         // 7. Face/Skin.
         ApplySkinTone(bodyPart, recipe.BaseAvatar, recipe.Identity.Face);
         ApplyFaceTexture(bodyPart, recipe.BaseAvatar, recipe.Identity.Face);
+        AvatarIrisAppearance.Apply(bodyGO, recipe.Identity.Face, recipe.Iris);
 
         return bodyPart;
     }
@@ -462,7 +463,7 @@ public static class AvatarFactory
     }
 
     /// <summary>Segmented path: bind every layout renderer exactly like a legacy garment (ONE per-avatar clone of
-    /// the `_cuts` mesh, body bind poses, body rootBone/bounds, synced blendshapes), register it for body morphs
+    /// the imported mesh, body bind poses, body rootBone/bounds, synced blendshapes), register it for body morphs
     /// WITHOUT a second clone, and hand source + clone to the appearance, which later rewrites only the clone's
     /// index data. The source asset is never modified.</summary>
     private static void AttachSegmented(AvatarInstance instance, EquippedAvatarItem record, SegmentedGarmentPart part, AvatarItemVariant variant)

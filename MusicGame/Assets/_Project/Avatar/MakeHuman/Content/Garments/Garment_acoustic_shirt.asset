@@ -15,30 +15,17 @@ MonoBehaviour:
   garmentId: acoustic_shirt
   category: shirt
   layer: 20
-  bodyCoverage:
-  - shoulder_l
-  - upperarm_upper_l
-  - upperarm_lower_l
-  - forearm_upper_l
-  - shoulder_r
-  - upperarm_upper_r
-  - upperarm_lower_r
-  - forearm_upper_r
-  - chest_front_center
-  - chest_front_l
-  - chest_front_r
-  - abdomen_front_center
-  - abdomen_front_l
-  - abdomen_front_r
-  - back_upper
-  - back_lower
+  hidesCategories: []
+  occlusionGap: 0.1
+  bodyCoverage: []
   garmentCoverage: []
   coverageConfigured: 1
-  importedCoverageHash: 84033c895784f5fe144d3874f53fb7b6
+  importedCoverageHash: ff9e413189bb3cf2c117f6828a47bfc2
   importedSources:
   - Acoustic_shirt\Rigged\LOW\Acoustic_shirt_LOW_5k_rigged.fbx
   - Acoustic_shirt\Rigged\MEDIUM\Acoustic_shirt_MEDIUM_10k_rigged.fbx
   - Acoustic_shirt\Rigged\MID-HIGH\Acoustic_shirt_MIDHIGH_20k_rigged.fbx
   - Acoustic_shirt\Rigged\HIGH\Acoustic_shirt_HIGH_30k_rigged.fbx
   - Acoustic_shirt\Rigged\ULTRA\Acoustic_shirt_ULTRA_50k_rigged.fbx
-  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Acoustic_shirt\Rigged\Segmented
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Acoustic_shirt\Rigged/Masks
+    (shirt)

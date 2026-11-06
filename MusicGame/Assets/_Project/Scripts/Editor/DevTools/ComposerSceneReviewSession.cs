@@ -21,9 +21,9 @@ public static class ComposerSceneReviewSession
     static int previousQuality=-1;
     static Material figureMaterial;
     static (ReflectionProbe probe,int id)[] renderedProbes;
-    static double probeDeadline;
+    static double probeDeadline,shaderDeadline;
     static double nextPoll;
-    [Serializable] class Command { public string id,op,composer,quality; public bool scaleFigures; }
+    [Serializable] class Command { public string id,op,composer,quality; public bool scaleFigures; public int version=1,view; }
     static ComposerSceneReviewSession()
     {
         string localCommand=@"C:\Users\VISYON\.codex\.chatgpt-projects\g-p-6a438d8b08888191a78acab089f6e907\scenery_staging\review_command.json";
@@ -45,6 +45,7 @@ public static class ComposerSceneReviewSession
                 EditorApplication.QueuePlayerLoopUpdate();
                 if(--frames>0)return;
                 if(renderedProbes!=null&&EditorApplication.timeSinceStartup<probeDeadline&&renderedProbes.Any(p=>p.probe!=null&&!p.probe.IsFinishedRendering(p.id)))return;
+                if(ShaderUtil.anythingCompiling&&EditorApplication.timeSinceStartup<shaderDeadline)return;
                 Render();return;
             }
             if(EditorApplication.timeSinceStartup<nextPoll)return;nextPoll=EditorApplication.timeSinceStartup+.3;
@@ -72,33 +73,48 @@ public static class ComposerSceneReviewSession
                 }
                 previousSetup=EditorSceneManager.GetSceneManagerSetup();
             }
+            if(command.op=="bundles"){previousSetup=null;ArenaBundleValidation.RunBuildOnlyFromCommandLine();return;}
+            if(command.op=="probeWagner"){previousSetup=null;ComposerArenaLifecycleProbe.RunWagnerFromCommandLine();return;}
             if(command.op=="probe"){previousSetup=null;ComposerArenaLifecycleProbe.RunFromCommandLine();return;}
+            if(command.op=="variantAudit")ScenarioVariantBuilder.AuditAll();
+            if(command.op=="variants")ScenarioVariantBuilder.BuildOne(command.composer);
             if(command.op=="build")ComposerSceneryAssembly.BuildOneForReview(command.composer);
-            var manifest=JsonUtility.FromJson<ComposerSceneryAssembly.Manifest>(File.ReadAllText("Assets/_Project/Art/Arenas/composer_scenery_manifest.json"));var spec=manifest.scenes.Single(s=>s.composer==command.composer);
+            var manifest=JsonUtility.FromJson<ComposerSceneryAssembly.Manifest>(File.ReadAllText("Assets/_Project/Configs/Editor/composer_scenery_manifest.json"));var spec=manifest.scenes.Single(s=>s.composer==command.composer);
             string quality=string.IsNullOrEmpty(command.quality)?"High":command.quality;
             if(!new[]{"Low","Mid","HighMid","High","Ultra"}.Contains(quality))throw new ArgumentException("Unknown quality: "+quality);
             previousQuality=QualitySettings.GetQualityLevel();int qualityIndex=Array.IndexOf(QualitySettings.names,quality);
             if(qualityIndex<0)throw new ArgumentException("Quality not configured: "+quality);QualitySettings.SetQualityLevel(qualityIndex,true);
-            var scene=EditorSceneManager.OpenScene($"Assets/_Project/Art/Arenas/{command.composer}/Scenes/{command.composer}_Arena_01_{quality}.unity",OpenSceneMode.Single);
+            var scene=EditorSceneManager.OpenScene($"Assets/_Project/Art/Arenas/{command.composer}/Scenes/{command.composer}_Arena_{command.version:00}_{quality}.unity",OpenSceneMode.Single);
             var root=scene.GetRootGameObjects().Single(g=>g.GetComponentInChildren<ArenaEnvironmentSettings>(true)!=null);var env=root.GetComponentInChildren<ArenaEnvironmentSettings>(true);
             camera=new GameObject("ReviewCamera").AddComponent<Camera>();camera.nearClipPlane=.1f;camera.farClipPlane=250;
             camera.clearFlags=env.skybox!=null?CameraClearFlags.Skybox:CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.025f,.025f,.03f);
             camera.fieldOfView=spec.view!=null?spec.view.fov:48;camera.transform.position=spec.view!=null?spec.view.position:new Vector3(0,2,-7);camera.transform.LookAt(spec.view!=null?spec.view.target:new Vector3(0,2.6f,4));
+            if(command.version>1&&command.view==0){camera.fieldOfView=67;camera.transform.position=new Vector3(0,3.2f,-7.5f);camera.transform.LookAt(new Vector3(0,4.3f,5));}
+            if(command.view==1){camera.transform.position=new Vector3(7.4f,4,-6.5f);camera.transform.LookAt(new Vector3(-2,3.5f,4));}
+            if(command.view==2){camera.transform.position=command.composer=="Wagner"?new Vector3(-6,3.2f,2):new Vector3(-7.4f,4,6.5f);camera.transform.LookAt(new Vector3(2,3.5f,-3));}
+            if(command.composer=="Brahms"||command.composer=="Haydn"){if(command.view==1){camera.transform.position=new Vector3(4.5f,2.6f,-3.5f);camera.transform.LookAt(new Vector3(-3,3.3f,6));}if(command.view==2){camera.transform.position=new Vector3(-4.5f,2.6f,3.5f);camera.transform.LookAt(new Vector3(3,3.3f,-5));}}
             if(command.scaleFigures)
             {
                 figureMaterial=new Material(Shader.Find("Universal Render Pipeline/Lit"));figureMaterial.SetColor("_BaseColor",new Color(.85f,.80f,.72f));figureMaterial.SetFloat("_Smoothness",.25f);
                 foreach(float x in new[]{-2.4f,2.4f}){var capsule=GameObject.CreatePrimitive(PrimitiveType.Capsule);capsule.name="ReviewScaleFigure_1.8m";capsule.transform.position=new Vector3(x,.9f,0);capsule.transform.localScale=new Vector3(.45f,.9f,.45f);capsule.GetComponent<Renderer>().sharedMaterial=figureMaterial;}
             }
             env.Apply(root.GetComponentInChildren<ArenaSceneLighting>(true).mainLight,camera);
+            foreach(var particles in root.GetComponentsInChildren<ParticleSystem>(true))particles.Simulate(.6f,true,true);
             renderedProbes=root.GetComponentsInChildren<ReflectionProbe>(true).Where(p=>p.mode==ReflectionProbeMode.Realtime).Select(p=>(p,p.RenderProbe())).ToArray();probeDeadline=EditorApplication.timeSinceStartup+5;
-            pending=command;frames=8;EditorApplication.QueuePlayerLoopUpdate();
+            string diagnosticFolder="Logs/ComposerSceneReview/"+command.composer;Directory.CreateDirectory(diagnosticFolder);
+            File.WriteAllLines(diagnosticFolder+"/"+quality+"_materials.txt",root.GetComponentsInChildren<Renderer>(true).SelectMany(r=>r.sharedMaterials.Where(m=>m!=null).Select(m=>r.name+" | "+r.bounds.center+" | "+AssetDatabase.GetAssetPath(m)+" | "+m.shader.name)));
+            var warmup=new RenderTexture(32,32,24);var prior=RenderTexture.active;
+            try{camera.targetTexture=warmup;camera.Render();}
+            finally{camera.targetTexture=null;RenderTexture.active=prior;warmup.Release();Object.DestroyImmediate(warmup);}
+            shaderDeadline=EditorApplication.timeSinceStartup+30;
+            pending=command;frames=12;EditorApplication.QueuePlayerLoopUpdate();
         }
         catch(Exception e){File.WriteAllText(resultPath,JsonUtility.ToJson(new Result{id=lastId,ok=false,error=e.ToString()}));Debug.LogException(e);pending=null;Restore();}
     }
     [Serializable]class Result{public string id,path,error;public bool ok;}
     static void Render()
     {
-        string folder="Logs/ComposerSceneReview/"+pending.composer;Directory.CreateDirectory(folder);string path=folder+"/reference_view.png";
+        string folder="Logs/ComposerSceneReview/"+pending.composer;Directory.CreateDirectory(folder);string path=folder+"/"+pending.quality+"_v"+pending.version+"_view"+pending.view+".png";
         var rt=new RenderTexture(1440,1080,24);var tex=new Texture2D(1440,1080,TextureFormat.RGB24,false);var before=RenderTexture.active;
         try{camera.targetTexture=rt;camera.Render();RenderTexture.active=rt;tex.ReadPixels(new Rect(0,0,1440,1080),0,0);tex.Apply();File.WriteAllBytes(path,tex.EncodeToPNG());File.WriteAllText(resultPath,JsonUtility.ToJson(new Result{id=pending.id,ok=true,path=Path.GetFullPath(path)}));}
         finally{camera.targetTexture=null;RenderTexture.active=before;rt.Release();Object.DestroyImmediate(rt);Object.DestroyImmediate(tex);pending=null;Restore();}

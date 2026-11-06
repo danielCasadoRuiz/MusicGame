@@ -31,9 +31,10 @@ using UnityEngine;
 /// dash-forward's own FightComboDetectedEvent to know when to start counting "is Forward still held"
 /// for RUN (backdash has no such hold-to-run equivalent).
 ///
-/// TAP vs HOLD (Up/Down — see HandleVerticalDirection's own doc): Up/Down now serve THREE purposes
-/// depending on timing — a short tap sidesteps, a hold jumps/crouches, and a second same-direction
-/// tap that's then HELD becomes a continuous SideWalk instead. Down+Back is ALWAYS resolved as
+/// TAP vs HOLD (Up/Down — see HandleVerticalDirection's own doc): a short tap sidesteps, holding Down
+/// crouches (holding Up does nothing by itself: it is the HIGH-attack modifier), and a second
+/// same-direction tap that's then HELD becomes a continuous SideWalk instead. JUMP is its own button
+/// (HandleJumpButton, 2026-11-04): instant, buffered, direction from the held Forward/Back. Down+Back is ALWAYS resolved as
 /// instant Crouch-intent, bypassing this whole tap/hold machinery entirely, so it can never race
 /// against or accidentally hijack FighterGuard's own Down+Back Crouch Guard (task's own explicit
 /// "no vull que dispari accidentalment un sidestep" priority rule).
@@ -90,10 +91,9 @@ public class FighterMovement : MonoBehaviour
 
     // ── Vertical direction tap/hold/double-tap state — see HandleVerticalDirection's own doc ─────
     private FightVerticalDirection _verticalPressDirection = FightVerticalDirection.Neutral;
-    private float _verticalPressStart;
-    private bool _verticalHoldResolved;
     private FightVerticalDirection _pendingSideWalkArm = FightVerticalDirection.Neutral;
     private float _pendingSideWalkArmExpiry;
+    private bool _noCrouchUntilDownReleased;
 
     // ── Sidestep — a short, timed dodge; see StartSidestep's own doc ─────────────────────────────
     private bool _sidestepActive;
@@ -125,16 +125,37 @@ public class FighterMovement : MonoBehaviour
     /// <summary>-1 (dodging along -SideXZ) / 0 (none) / +1 (along +SideXZ) — see FightDebugHUD's own
     /// doc on why this is exposed: purely informational, nothing reads it as an input.</summary>
     public int SidestepDirection => _sidestepActive ? _sidestepDirection : 0;
+    /// <summary>When the last sidestep started and to which side (+1 = the fighter's right) — the dodge-counter.</summary>
+    public float LastSidestepAt { get; private set; } = float.NegativeInfinity;
+    public int LastSidestepDirection { get; private set; }
     /// <summary>True while a SideWalk is actively carrying the fighter sideways — see
     /// FightDebugHUD's own doc.</summary>
     public bool IsSideWalking => _sideWalkDirection != 0;
 
     /// <summary>See class doc on the CAN-DO gates.</summary>
     public bool CanMove => _active && !_locked;
-    public bool CanCrouch => CanMove && !_isJumping && _sideWalkDirection == 0;
-    public bool CanJump => CanMove && !_isJumping &&
+    /// <summary>A move of this fighter is running (Startup/Active/Recovery). Unlocked moves (walking punches)
+    /// still let the fighter walk, but never change posture, sidestep or jump mid-attack.</summary>
+    private bool MoveBusy => _actor != null && _actor.MoveController != null && _actor.MoveController.CurrentPhase != FighterMoveState.Idle;
+    /// <summary>The running move is in Recovery (not stunned): a jump may cancel it (mobility).</summary>
+    private bool MoveInRecovery => _actor != null && _actor.MoveController != null &&
+                                   _actor.MoveController.CurrentPhase == FighterMoveState.Recovery && !_actor.MoveController.IsHitStunned;
+    /// <summary>The running attack is past its strike: crouch / sidestep may cut its Recovery (TryCancelRecovery).</summary>
+    private bool MoveCancellable => _actor != null && _actor.MoveController != null && _actor.MoveController.RecoveryCancellable;
+    /// <summary>A FRESH input (pressed now) may cut the running move: its Recovery, or an early Startup (feint).</summary>
+    private bool MoveCancellableNow => _actor != null && _actor.MoveController != null && _actor.MoveController.CanCancelFor(Time.time);
+    private bool StartupFeintNow => MoveCancellableNow && _actor.MoveController.CurrentPhase == FighterMoveState.Startup;
+    public bool CanCrouch => (CanMove || MoveCancellable) && !_isJumping && _sideWalkDirection == 0 && (!MoveBusy || MoveCancellable);
+    public bool CanJump => _active && !_isJumping && Time.time >= _recoverUntil &&
+        (!_locked || MoveInRecovery || StartupFeintNow) && (!MoveBusy || MoveInRecovery || StartupFeintNow) &&
         (_actor != null && (_actor.Posture == FighterPosture.Standing || _actor.Posture == FighterPosture.Crouching));
-    private bool CanSidestepOrSideWalk => CanMove && !_isJumping && _actor.Posture != FighterPosture.Crouching;
+    private bool CanSidestepOrSideWalk => (CanMove || MoveCancellableNow) && !_isJumping && (!MoveBusy || MoveCancellableNow) && _actor.Posture != FighterPosture.Crouching;
+
+    /// <summary>This jump started from a real run (Forward-Forward charge at speed): its kick is the flying kick.</summary>
+    public bool IsRunningJump => _isJumping && _runningJump;
+    /// <summary>Horizontal speed at take-off (signed, along ForwardXZ) — the flying kick's momentum.</summary>
+    public float JumpTakeoffSpeed { get; private set; }
+    private bool _runningJump;
 
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
     private System.Action<FightComboDetectedEvent>    _onComboDetected;
@@ -188,6 +209,14 @@ public class FighterMovement : MonoBehaviour
     public void QueueLunge(float distance)
     {
         if (_actor == null) return;
+        // A forward lunge only CLOSES the gap — it never carries the attacker past contact distance
+        // (no "jumping in from far away"): capped to the space left before minimumFighterSeparation.
+        if (distance > 0f && _opponent != null && _config != null)
+        {
+            Vector3 a = _actor.transform.position, b = _opponent.transform.position;
+            float gap = new Vector2(a.x - b.x, a.z - b.z).magnitude - _config.minimumFighterSeparation - 0.05f;
+            distance = Mathf.Clamp(distance, 0f, Mathf.Max(0f, gap));
+        }
         _lungeRemaining += _actor.ForwardXZ * distance;
         LastLungeDistance = distance;
     }
@@ -217,12 +246,12 @@ public class FighterMovement : MonoBehaviour
         LastLungeDistance = 0f;
 
         _isJumping = false;
+        _runningJump = false;
         _verticalVelocity = 0f;
         _running = false;
         _groundYCaptured = false; // recaptured next Update, from the fresh spawn position already applied by FighterActor
 
         _verticalPressDirection = FightVerticalDirection.Neutral;
-        _verticalHoldResolved = false;
         _pendingSideWalkArm = FightVerticalDirection.Neutral;
         _sidestepActive = false;
         _sidestepDirection = 0;
@@ -260,7 +289,7 @@ public class FighterMovement : MonoBehaviour
     /// not ALSO resolve as a jump/sidestep when the hold threshold passes or the key is released.</summary>
     public void ConsumeVerticalPress()
     {
-        if (_verticalPressDirection != FightVerticalDirection.Neutral) _verticalHoldResolved = true;
+        _pendingSideWalkArm = FightVerticalDirection.Neutral; // Up + attack, then Up again: not a double tap
     }
 
     private void Update()
@@ -276,6 +305,7 @@ public class FighterMovement : MonoBehaviour
         }
 
         HandleVerticalDirection();
+        HandleJumpButton();
         HandleRunTracking();
 
         // ── Forward/Back — relative to the live line between fighters, never world X directly ────
@@ -404,17 +434,46 @@ public class FighterMovement : MonoBehaviour
     {
         if (!CanCrouch) return; // holds whatever posture it already had — task's own explicit
                                   // "si cap move/hit stun ho impedeix" (no forced transition here)
-        if (wantsCrouch && _actor.Posture == FighterPosture.Standing) _actor.SetPosture(FighterPosture.Crouching);
+        if (wantsCrouch && _actor.Posture == FighterPosture.Standing)
+        {
+            if (MoveBusy && !_actor.MoveController.TryCancelRecovery()) return;
+            _actor.SetPosture(FighterPosture.Crouching);
+        }
         else if (!wantsCrouch && _actor.Posture == FighterPosture.Crouching) _actor.SetPosture(FighterPosture.Standing);
     }
 
     // ── Jump ──────────────────────────────────────────────────────────────────
+
+    // The JUMP BUTTON (third button) — instant. The press is buffered briefly (FighterInputController.
+    // ConsumeJump), so pressing just before landing or just before an attack's Recovery still jumps;
+    // a jump during Recovery cancels the rest of the move (mobility). First person: Back + Space stays
+    // the HIGH guard, never a jump.
+    private const float JumpBufferSeconds = 0.15f;
+
+    private void HandleJumpButton()
+    {
+        if (!CanJump) return;
+        if (!_input.ConsumeJump(JumpBufferSeconds)) return;
+        if (MoveInRecovery) _actor.MoveController.InterruptMove();
+        else if (MoveBusy && !_actor.MoveController.TryCancelFor(Time.time)) return; // a fresh jump feints an early strike
+        StartJump();
+    }
 
     private void StartJump()
     {
         _isJumping = true;
         _verticalVelocity = _config != null ? _config.jumpVelocity : 6f;
         _actor.SetPosture(FighterPosture.Airborne);
+
+        // Direction held at take-off: forward / back jump at walking speed at least (a run keeps its speed).
+        float walk = (_config != null ? _config.baseMovementSpeed : 4f) * SpeedMultiplier;
+        if (_input != null && _input.CurrentHorizontal == FightHorizontalDirection.Forward)
+            _forwardVelocity = Mathf.Max(_forwardVelocity, walk);
+        else if (_input != null && _input.CurrentHorizontal == FightHorizontalDirection.Back)
+            _forwardVelocity = Mathf.Min(_forwardVelocity, -walk * (_config != null ? _config.backwardSpeedMultiplier : 0.6f));
+        JumpTakeoffSpeed = _forwardVelocity;
+        // Momentum from a real run: the air kick becomes the flying kick (FighterMoveController.ResolveKick).
+        _runningJump = _running && _forwardVelocity >= walk * 1.2f;
     }
 
     // Runs unconditionally whenever airborne — even through hit stun/lock, so a fighter hit mid-air
@@ -433,6 +492,7 @@ public class FighterMovement : MonoBehaviour
         {
             pos.y = _groundY;
             _isJumping = false;
+            _runningJump = false;
             _verticalVelocity = 0f;
             _actor.SetPosture(FighterPosture.Standing); // always lands Standing in V1, regardless of the posture jumped from
         }
@@ -454,187 +514,114 @@ public class FighterMovement : MonoBehaviour
     // outcome specifically ("tap Up/Down SENSE combinació" — task's own wording) but still allows
     // the normal HOLD outcome (Jump/Crouch) once the threshold elapses — a forward-jump or a
     // forward+down crouch both keep working exactly as before.
-    // First-person (view-relative) variant: Space = jump on press, C/Ctrl = crouch while held, and the
-    // sideways keys (CurrentSide) tap → sidestep, hold → sidewalk. Same sidestep/sidewalk/jump/crouch
-    // mechanics as third person, only triggered by keys that match the first-person view.
+    // FIRST PERSON (user design 2026-11-05 — only the axis changes): Up/Down walk towards / away from the opponent
+    // (their double taps — run / backdash — are the same Forward-Forward / Back-Back combos as in third person);
+    // Left / Right held = the side GUARD (FighterGuard; + Down = the low one, crouched); a DOUBLE tap of Left / Right
+    // = sidestep to that side of the screen (the fighter's own left / right). No side-walk.
     private int _sidePressDirection;
-    private float _sidePressStart;
-    private bool _sideHoldResolved;
+    private int _pendingSideTap;
+    private float _pendingSideTapExpiry;
 
     private void HandleViewRelativeDirections()
     {
-        if (!CanMove)
+        _sideWalkDirection = 0;
+        _verticalPressDirection = _input.CurrentVertical;
+        int side = _input.CurrentSide;
+        // Low side guard = crouched (a high strike whiffs over it, as with the third-person low guard).
+        ApplyCrouchPosture(side != 0 && _input.CurrentVertical == FightVerticalDirection.Down && !_sidestepActive);
+        if (side == _sidePressDirection) return;
+        _sidePressDirection = side;
+        if (side == 0) return;
+        float window = _config != null ? Mathf.Max(0.05f, _config.doubleTapWindow) : 0.3f;
+        if (_pendingSideTap == side && Time.time <= _pendingSideTapExpiry)
         {
-            _verticalPressDirection = FightVerticalDirection.Neutral;
-            _sidePressDirection = 0;
-            _sideHoldResolved = false;
-            _sideWalkDirection = 0;
+            _pendingSideTap = 0;
+            StartSidestep(side);
             return;
         }
-        var vertical = _input.CurrentVertical;
-        // Back (S) + Space = HIGH guard in first person too — never a jump.
-        if (vertical == FightVerticalDirection.Up && _verticalPressDirection != FightVerticalDirection.Up && CanJump &&
-            _input.CurrentHorizontal != FightHorizontalDirection.Back) StartJump();
-        _verticalPressDirection = vertical;
-        ApplyCrouchPosture(vertical == FightVerticalDirection.Down);
-
-        int side = _input.CurrentSide;
-        if (side != _sidePressDirection)
-        {
-            if (_sidePressDirection != 0 && !_sideHoldResolved) StartSidestep(_sidePressDirection); // a quick tap
-            _sidePressDirection = side;
-            _sidePressStart = Time.time;
-            _sideHoldResolved = false;
-            _sideWalkDirection = 0;
-        }
-        float threshold = _config != null ? Mathf.Max(0.02f, _config.directionHoldThreshold) : 0.15f;
-        if (side != 0 && !_sideHoldResolved && Time.time - _sidePressStart >= threshold)
-        {
-            _sideHoldResolved = true;
-            if (CanSidestepOrSideWalk) _sideWalkDirection = side;
-        }
+        _pendingSideTap = side;
+        _pendingSideTapExpiry = Time.time + window;
     }
 
+    // CONTROLS (user design 2026-11-04 — the SAME in third and first person):
+    //   Down (held, not attacking) = crouch, INSTANTLY (FighterGuard makes it the LOW guard);
+    //   Up (held) does nothing by itself — it is the HIGH modifier (Up + attack = high, Back + Up = high guard);
+    //   a DOUBLE tap of the same vertical direction = sidestep: Down Down → towards the camera, Up Up → away from it
+    //   (the side camera's direction — FightCameraController.SideViewDirection — kept in first person too).
+    //   The second tap must come within FightArenaConfig.doubleTapWindow, with no Forward/Back held.
+    //   Jumping is only the jump button (HandleJumpButton).
     private void HandleVerticalDirection()
     {
         if (_input.ViewRelative) { HandleViewRelativeDirections(); return; }
-        if (!CanMove)
+        _sideWalkDirection = 0;
+        if (!CanMove && !MoveCancellable)
         {
             _verticalPressDirection = FightVerticalDirection.Neutral;
-            _verticalHoldResolved = false;
             _pendingSideWalkArm = FightVerticalDirection.Neutral;
-            _sideWalkDirection = 0;
             return;
         }
 
         var vertical = _input.CurrentVertical;
-        bool isDownBackGuardCombo = vertical == FightVerticalDirection.Down && _input.CurrentHorizontal == FightHorizontalDirection.Back;
-
-        if (isDownBackGuardCombo)
+        // The second Down of a Down-Down sidestep must NOT crouch first (a crouching fighter cannot sidestep —
+        // that made Down-Down dead while Up-Up worked); holding that Down after the step stays standing too
+        // until it is released.
+        if (vertical != FightVerticalDirection.Down) _noCrouchUntilDownReleased = false;
+        bool freshPress = vertical != _verticalPressDirection && vertical != FightVerticalDirection.Neutral;
+        bool secondTap = freshPress && _pendingSideWalkArm == vertical && Time.time <= _pendingSideWalkArmExpiry &&
+                         _input.CurrentHorizontal == FightHorizontalDirection.Neutral;
+        if (secondTap && vertical == FightVerticalDirection.Down)
         {
-            _sideWalkDirection = 0;
-            // Treated as an ALREADY-resolved hold (not reset to Neutral) — so if Back releases
-            // while Down stays held, the very next frame sees the SAME press direction it already
-            // had (no fresh-press reset), and the continuous Crouch-posture check below keeps
-            // holding the crouch instead of a one-frame un-crouch/re-crouch flash while the tap/hold
-            // timer needlessly restarts.
-            _verticalPressDirection = FightVerticalDirection.Down;
-            _verticalHoldResolved = true;
-            ApplyCrouchPosture(true);
-            return;
+            _noCrouchUntilDownReleased = true;
+            if (_actor.Posture == FighterPosture.Crouching) _actor.SetPosture(FighterPosture.Standing);
         }
+        ApplyCrouchPosture(vertical == FightVerticalDirection.Down && !_noCrouchUntilDownReleased && !_sidestepActive);
 
-        // Back + Up = HIGH guard (FighterGuard) — never a jump or a sidestep while held.
-        if (vertical == FightVerticalDirection.Up && _input.CurrentHorizontal == FightHorizontalDirection.Back)
-        {
-            _sideWalkDirection = 0;
-            _verticalPressDirection = FightVerticalDirection.Up;
-            _verticalHoldResolved = true;
-            ApplyCrouchPosture(false);
-            return;
-        }
+        if (vertical == _verticalPressDirection) return;
+        _verticalPressDirection = vertical;
+        if (vertical == FightVerticalDirection.Neutral) return;
 
-        // SideWalk continues purely off whether its OWN armed direction is still held — independent
-        // of the tap/hold timer below (that timer only ever governs how a FRESH press resolves).
-        if (_sideWalkDirection != 0)
-        {
-            bool stillHeld = (_sideWalkDirection > 0 && vertical == FightVerticalDirection.Up) ||
-                              (_sideWalkDirection < 0 && vertical == FightVerticalDirection.Down);
-            if (!stillHeld) _sideWalkDirection = 0; // released, opposite, or neutral — cancel (class doc: "cancel·la en soltar")
-        }
-
-        if (vertical == FightVerticalDirection.Neutral)
-        {
-            // Released — a genuine short TAP (never reached the hold threshold) fires Sidestep now.
-            if (_verticalPressDirection != FightVerticalDirection.Neutral && !_verticalHoldResolved)
-            {
-                bool combined = _input.CurrentHorizontal != FightHorizontalDirection.Neutral;
-                if (!combined) TryFireSidestepAndArmSideWalk(_verticalPressDirection);
-            }
-            _verticalPressDirection = FightVerticalDirection.Neutral;
-            _verticalHoldResolved = false;
-            ApplyCrouchPosture(false);
-            return;
-        }
-
-        if (vertical != _verticalPressDirection)
-        {
-            _verticalPressDirection = vertical;
-            _verticalPressStart = Time.time;
-            _verticalHoldResolved = false;
-        }
-
-        if (_sideWalkDirection != 0) return; // already sidewalking this exact direction — resolved
-
-        float threshold = _config != null ? Mathf.Max(0.02f, _config.directionHoldThreshold) : 0.15f;
-        if (!_verticalHoldResolved && Time.time - _verticalPressStart >= threshold)
-        {
-            _verticalHoldResolved = true;
-            bool horizontalCombo = _input.CurrentHorizontal != FightHorizontalDirection.Neutral;
-            bool isSecondTapArmed = _pendingSideWalkArm == vertical && Time.time <= _pendingSideWalkArmExpiry;
-
-            if (vertical == FightVerticalDirection.Up)
-            {
-                if (isSecondTapArmed && !horizontalCombo)
-                {
-                    _sideWalkDirection = 1;
-                    _pendingSideWalkArm = FightVerticalDirection.Neutral;
-                }
-                else if (CanJump) StartJump();
-            }
-            else // Down
-            {
-                if (isSecondTapArmed && !horizontalCombo)
-                {
-                    _sideWalkDirection = -1;
-                    _pendingSideWalkArm = FightVerticalDirection.Neutral;
-                }
-                // else: falls through to the continuous Crouch-posture update below, same as before.
-            }
-        }
-
-        // Crouch posture is a continuous LEVEL (not a one-shot) — active whenever Down has resolved
-        // past the tap window and isn't currently SideWalking. This mirrors the pre-existing
-        // instant-crouch feel closely, since directionHoldThreshold is short by design (see
-        // FightArenaConfig's own doc) — a genuine short tap still resolves as Sidestep instead.
-        bool wantsCrouch = vertical == FightVerticalDirection.Down && _verticalHoldResolved && _sideWalkDirection == 0;
-        ApplyCrouchPosture(wantsCrouch);
-    }
-
-    private void TryFireSidestepAndArmSideWalk(FightVerticalDirection tappedDirection)
-    {
-        int sideSign = tappedDirection == FightVerticalDirection.Up ? 1 : -1;
-        StartSidestep(sideSign);
-
-        // A SECOND same-direction tap within doubleTapWindow — consumed either way (never a
-        // triple-tap chain); if it's THIS press being consumed as the second half, the next hold
-        // resolution above turns into SideWalk instead of Jump/Crouch (see class doc).
-        bool isSecondTap = _pendingSideWalkArm == tappedDirection && Time.time <= _pendingSideWalkArmExpiry;
-        if (isSecondTap)
+        // A fresh Up / Down press: the second of a quick pair sidesteps, the first one arms it.
+        if (secondTap)
         {
             _pendingSideWalkArm = FightVerticalDirection.Neutral;
+            StartSidestep(SidestepSignFor(vertical));
+            return;
         }
-        else
-        {
-            float window = _config != null ? Mathf.Max(0.05f, _config.doubleTapWindow) : 0.3f;
-            _pendingSideWalkArm = tappedDirection;
-            _pendingSideWalkArmExpiry = Time.time + window;
-        }
+        float window = _config != null ? Mathf.Max(0.05f, _config.doubleTapWindow) : 0.3f;
+        _pendingSideWalkArm = vertical;
+        _pendingSideWalkArmExpiry = Time.time + window;
+    }
+
+    /// <summary>Sidestep sign along SideXZ: Down = towards the side camera, Up = away from it.</summary>
+    private int SidestepSignFor(FightVerticalDirection vertical)
+    {
+        var cam = FightCameraController.Instance;
+        int towardsCamera = cam == null || Vector3.Dot(_actor.SideXZ, cam.SideViewDirection) >= 0f ? 1 : -1;
+        return vertical == FightVerticalDirection.Down ? towardsCamera : -towardsCamera;
     }
 
     // ── Sidestep — a short, timed dodge along SideXZ; see class doc ──────────────────────────────
+
+    // Agility also makes the sidestep quicker (same distance, shorter time) — faster fighters dodge faster.
+    /// <summary>Total seconds of a sidestep (dodge + its recovery) — the sidestep animation is fitted to it.</summary>
+    public float SidestepSeconds => SidestepDuration + (_config != null ? Mathf.Max(0f, _config.sidestepRecovery) : 0.12f) / Mathf.Max(0.5f, SpeedMultiplier);
+    private float SidestepDuration =>
+        (_config != null ? Mathf.Max(0.05f, _config.sidestepDuration) : 0.18f) / Mathf.Max(0.5f, SpeedMultiplier);
 
     private void StartSidestep(int sideSign)
     {
         if (!CanSidestepOrSideWalk) return;
         if (Time.time < _sidestepReadyTime) return; // cooldown/recovery — see FightArenaConfig.sidestepRecovery's own doc
+        if (MoveBusy && !_actor.MoveController.TryCancelFor(Time.time)) return; // cuts an attack's Recovery (or feints its Startup)
 
         _sidestepActive = true;
         _sidestepElapsed = 0f;
         _sidestepDirection = sideSign;
+        LastSidestepAt = Time.time;
+        LastSidestepDirection = sideSign;
 
-        float duration = _config != null ? Mathf.Max(0.05f, _config.sidestepDuration) : 0.18f;
-        float recovery = _config != null ? Mathf.Max(0f, _config.sidestepRecovery) : 0.12f;
+        float duration = SidestepDuration;
+        float recovery = (_config != null ? Mathf.Max(0f, _config.sidestepRecovery) : 0.12f) / Mathf.Max(0.5f, SpeedMultiplier);
         _sidestepReadyTime = Time.time + duration + recovery;
     }
 
@@ -643,7 +630,7 @@ public class FighterMovement : MonoBehaviour
         if (!_sidestepActive) return Vector3.zero;
         if (_locked) { _sidestepActive = false; return Vector3.zero; } // see SetLock's own doc — redundant safety net, already cleared there too
 
-        float duration = _config != null ? Mathf.Max(0.05f, _config.sidestepDuration) : 0.18f;
+        float duration = SidestepDuration;
         float distance = _config != null ? _config.sidestepDistance : 1.2f;
 
         float remaining = duration - _sidestepElapsed;
@@ -651,6 +638,22 @@ public class FighterMovement : MonoBehaviour
         _sidestepElapsed += Time.deltaTime;
         if (_sidestepElapsed >= duration) _sidestepActive = false;
 
+        // Round arena: the step is an ARC around the opponent (the distance is kept and the line between
+        // the fighters really turns), capped at sidestepMaxArcDegrees per step.
+        if (_config != null && _config.circularArena && _opponent != null)
+        {
+            Vector3 opp = _opponent.transform.position, off = _actor.transform.position - opp;
+            off.y = 0f;
+            float r = off.magnitude;
+            if (r > 0.2f)
+            {
+                float arcTotal = Mathf.Min(distance, r * _config.sidestepMaxArcDegrees * Mathf.Deg2Rad);
+                // Quaternion.AngleAxis(θ, up)·v ≈ v + θ·(up × v), and up × (−Forward·r) = −r·SideXZ: +Side needs θ < 0.
+                float theta = -_sidestepDirection * (arcTotal / duration) * step / r;
+                Vector3 rotated = Quaternion.AngleAxis(theta * Mathf.Rad2Deg, Vector3.up) * off;
+                return rotated - off;
+            }
+        }
         return _actor.SideXZ * (_sidestepDirection * (distance / duration) * step);
     }
 

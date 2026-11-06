@@ -33,6 +33,9 @@ public class RunnerHudSkin : MonoBehaviour
     public Image classicBar;
     public List<BonusIcon> icons = new();
     public StyledTitleView logo;
+    public List<Image> separators = new();
+    public Image progressFill;
+    public Image progressBorder;
 
     private GameMusicStyle _style = (GameMusicStyle)(-1);
     private float _weight = -1f;
@@ -61,6 +64,11 @@ public class RunnerHudSkin : MonoBehaviour
         // No style bar (Classical / unknown song): the classic bar alone, uncovered.
         float classicShare = styleBar != null && styleBar.enabled ? 1f - styleWeight : 1f;
         SetCurtain(classicShare);
+        Color accent = library.HudAccent(style);
+        Color gold = library.HudAccent(GameMusicStyle.Classical);
+        foreach (var separator in separators) Tint(separator, accent, gold, classicShare);
+        Tint(progressFill, accent, gold, classicShare);
+        Tint(progressBorder, accent, gold, classicShare);
         EnsureIconPositions();
         for (int i = 0; i < icons.Count; i++)
         {
@@ -70,6 +78,15 @@ public class RunnerHudSkin : MonoBehaviour
             classic.enabled = classic.sprite != null && a > 0.001f;
             var c = classic.color; c.a = a; classic.color = c;
         }
+    }
+
+    private void Tint(Image image, Color style, Color classic, float classicShare)
+    {
+        if (image == null || classicBar == null) return;
+        var bar = classicBar.rectTransform;
+        var center = bar.InverseTransformPoint(image.rectTransform.TransformPoint(image.rectTransform.rect.center));
+        float x = Mathf.InverseLerp(bar.rect.xMin, bar.rect.xMax, center.x);
+        image.color = Color.Lerp(style, classic, library.CurtainClassic(classicShare, x));
     }
 
     private void SetCurtain(float classicShare)

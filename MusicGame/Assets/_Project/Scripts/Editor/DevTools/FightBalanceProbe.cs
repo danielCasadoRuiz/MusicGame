@@ -41,7 +41,15 @@ public static class FightBalanceProbe
     private static FightMoveSetSO MoveSet => App.fightFlow.defaultPlayerCombatProfile.moveSet;
     private static float BaseSpeed => App.arena != null ? App.arena.baseMovementSpeed : 4f;
     private static bool Fighting => FightState == FightFlowState.Fighting && Player != null;
-    private static bool Idle(FighterActor a) => MC(a) != null && MC(a).CurrentMove == null && MC(a).QueuedMove == null;
+    // Idle = no move AND standing. A fighter lying on the floor waits for Up (Tekken-like get-up, 2026-11-04): the probe
+    // "presses Up" for it, so a knockdown (the Special knocks down) never stalls the next step.
+    private static bool Idle(FighterActor a)
+    {
+        var hr = a != null ? a.HitReaction : null;
+        if (hr != null && hr.WaitingForGetUp) hr.RequestGetUp();
+        return MC(a) != null && MC(a).CurrentMove == null && MC(a).QueuedMove == null &&
+               (hr == null || hr.State == FighterReactionState.None);
+    }
 
     // ── Cases: collected bonus counts in one run (Kick, Snare, HiHat, Beat, Onset, Impact) → the real converter.
     // An average song offers ≈ Kick 80, Snare 65, HiHat 12, Onset 30 (Beat / Impact 0 today) in its played minute.
@@ -121,9 +129,9 @@ public static class FightBalanceProbe
                 s_cur.startup = MoveSet.normalPunch.startupDuration / MC(Player).AttackSpeed;   // real seconds to the hit
             }));
             steps.Add((1.0f, "  punch measured", null, () => Measure(MoveSet.normalPunch, ref s_cur.punch, ref s_cur.punchStun, ref s_cur.punchPush, out s_cur.punchLanded)));
-            steps.Add((0.3f, "  kick", () => Idle(Player) && Idle(Rival), () => { Place(1.15f); Strike(Player, MoveSet.normalKick); }));
+            steps.Add((0.3f, "  kick", () => Idle(Player) && Idle(Rival), () => { Place(PointBlank); Strike(Player, MoveSet.normalKick); }));
             steps.Add((1.0f, "  kick measured", null, () => Measure(MoveSet.normalKick, ref s_cur.kick, ref s_cur.kickStun, ref s_cur.kickPush, out s_cur.kickLanded)));
-            steps.Add((0.3f, "  rival punch", () => Idle(Player) && Idle(Rival), () => { Place(1.15f); Strike(Rival, MoveSet.normalPunch); }));
+            steps.Add((0.3f, "  rival punch", () => Idle(Player) && Idle(Rival), () => { Place(PointBlank); Strike(Rival, MoveSet.normalPunch); }));
             steps.Add((1.0f, "  rival punch measured", null, () => { if (!Landed(Rival, out s_cur.taken)) s_cur.taken = Resolve(Rival, Player, MoveSet.normalPunch).FinalDamage; }));
             // The horizontal axis walks towards / away from the rival (facing-relative); pick the sign that walks forward.
             steps.Add((0.3f, "  walk", () => Idle(Player) && Idle(Rival), () => { Place(7f); FightTouchInputState.Horizontal = 1f; }));
@@ -139,13 +147,18 @@ public static class FightBalanceProbe
         }
         // ── The Special: always 30 % of the defender's max health, unblockable, dodgeable — both directions ──
         steps.Add((0.3f, "special: rival → player (no guard)", () => Fighting && Idle(Player) && Idle(Rival), () => { SetCase(3); RivalSpecial(); }));
-        steps.Add((1.4f, "  measured", null, () => s_specialHit = Lost(Player)));
-        steps.Add((0.3f, "special: rival → player guarding", () => Idle(Player) && Idle(Rival), () => { SetCase(3); RivalSpecial(); FightTouchInputState.Horizontal = -s_forwardSign; }));
-        steps.Add((0.35f, "  guard up before the impact?", null, () => s_guardSeen = Player.Guard != null && Player.Guard.State != FighterGuardState.None));
-        steps.Add((1.05f, "  measured", null, () => { FightTouchInputState.Horizontal = 0f; s_specialGuarded = Lost(Player); }));
+        // The Special has a visible ~0.9 s wind-up (÷ attack speed) before the fireball flies (2026-11-04).
+        steps.Add((2.2f, "  measured", null, () => s_specialHit = Lost(Player)));
+        // Guard (hold Back) only once the fireball flies at the player — holding Back through the whole ~0.9 s
+        // wind-up would WALK the player out of the fireball's range.
+        steps.Add((0.3f, "special: rival → player guarding", () => Idle(Player) && Idle(Rival), () => { SetCase(3); RivalSpecial(); }));
+        steps.Add((0f, "  fireball coming: guard", () => FireballNear(Player, 1.8f), () => FightTouchInputState.Horizontal = -s_forwardSign));
+        steps.Add((0.15f, "  guard up before the impact?", null, () => s_guardSeen = Player.Guard != null && Player.Guard.State != FighterGuardState.None));
+        steps.Add((0.8f, "  measured", null, () => { FightTouchInputState.Horizontal = 0f; s_specialGuarded = Lost(Player); }));
         steps.Add((0.3f, "special: rival → player dodging", () => Idle(Player) && Idle(Rival), () => { SetCase(3); s_evaded = false; RivalSpecial(); }));
-        steps.Add((0.3f, "  dodge", null, () => MC(Player).TryExecuteMove(DodgeMove)));
-        steps.Add((1.2f, "  measured", null, () => s_specialDodged = Lost(Player)));
+        // Dodge when the fireball is about to arrive (its flight starts only after the wind-up).
+        steps.Add((0.3f, "  dodge", () => FireballNear(Player, 1.8f), () => MC(Player).TryExecuteMove(DodgeMove)));
+        steps.Add((1.0f, "  measured", null, () => s_specialDodged = Lost(Player)));
         steps.Add((0.3f, "special: player → rival", () => Idle(Player) && Idle(Rival), () =>
         {
             SetCase(0);   // the weakest build: the Special must not care
@@ -153,7 +166,7 @@ public static class FightBalanceProbe
             Place(3f); s_healthBefore = Rival.Health.CurrentHealth;
             MC(Player).TryExecuteSignature();
         }));
-        steps.Add((1.4f, "  measured", null, () =>
+        steps.Add((2.2f, "  measured", null, () =>
         {
             float lost = s_healthBefore - Rival.Health.CurrentHealth;
             float max = Rival.Health.MaxHealth;
@@ -222,6 +235,17 @@ public static class FightBalanceProbe
     }
 
     private static float Lost(FighterActor a) => s_healthBefore - a.Health.CurrentHealth;
+
+    private static bool FireballNear(FighterActor target, float distance)
+    {
+        foreach (var p in UnityEngine.Object.FindObjectsByType<FightProjectile>(FindObjectsSortMode.None))
+        {
+            // Horizontal distance: the fireball flies at chest / head height, the actor's origin is lower.
+            var d = p.transform.position - target.transform.position; d.y = 0f;
+            if (p.Owner != target && d.magnitude <= distance) return true;
+        }
+        return false;
+    }
     private static (int, int, int) s_wallet;
     private static int s_round, s_lives;
     private static (int, int, int) Wallet() { var w = Player.CombatResources; return (w.Specials, w.TripleCombos, w.QuadCombos); }
@@ -239,7 +263,7 @@ public static class FightBalanceProbe
         Rival.SetBuildStats(Balance.RivalBuild(profile, Balance.RivalTuningAt(difficulty).Budget));
         Heal(Rival); Heal(Player);
         FightMatchController.Instance.DebugSetRoundTimeRemaining(120f);   // no round ends by time while measuring
-        Place(1.15f);
+        Place(PointBlank);
         s_cur = new Row { name = c.name, build = build };
     }
 
@@ -256,10 +280,21 @@ public static class FightBalanceProbe
 
     private static void Heal(FighterActor a) => a.Health.GetType().GetProperty("CurrentHealth").SetValue(a.Health, a.Health.MaxHealth);
 
+    // Real-body contact (2026-11-04): a normal punch / kick only lands where the clip touches — ≈ 0.6 m
+    // hips-to-hips (FightReachProbe); minimumFighterSeparation is 0.52.
+    private const float PointBlank = 0.44f; // roots (hips ≈ 0.54 m)
+
     private static void Place(float distance)
     {
         var p = Player.transform.position;
         var fwd = Player.ForwardXZ.sqrMagnitude > 0.01f ? Player.ForwardXZ.normalized : Vector3.right;
+        if (distance < 2f)
+        {
+            // Close range: centre the pair on the arena (spawns are symmetric around the origin), so the push-back
+            // is never cut short by the arena edge (the player drifts forward over the cases while walking).
+            p = new Vector3(-fwd.x * distance * 0.5f, p.y, -fwd.z * distance * 0.5f);
+            Player.transform.position = p;
+        }
         Rival.transform.position = new Vector3(p.x + fwd.x * distance, Rival.transform.position.y, p.z + fwd.z * distance);
     }
 
@@ -346,7 +381,9 @@ public static class FightBalanceProbe
               $"punch stun {min.punchStun:0.00}→{high.punchStun:0.00}, kick stun {min.kickStun:0.00}→{high.kickStun:0.00}");
         var pushed = s_rows.Where(x => x.punchPush >= 0f && x.kickPush >= 0f).ToList();
         Check("push-back: stronger attacks push at least as far; the kick keeps out-pushing the punch (its own character)",
-              (min.punchPush < 0f || high.punchPush < 0f || high.punchPush >= min.punchPush - 0.02f) && pushed.All(x => x.kickPush >= x.punchPush - 0.05f),
+              (min.punchPush < 0f || high.punchPush < 0f || high.punchPush >= min.punchPush - 0.02f)
+              // the kick out-pushes the punch unless the build is clearly a PUNCH build (then the punch may push more)
+              && pushed.All(x => x.build.punchPower > x.build.kickPower + 5f || x.kickPush >= x.punchPush - 0.05f),
               $"punch {Push(min.punchPush)}→{Push(high.punchPush)} m, kick {Push(min.kickPush)}→{Push(high.kickPush)} m (base knockback punch {MoveSet.normalPunch.hits[0].baseKnockback}, kick {MoveSet.normalKick.hits[0].baseKnockback})");
         var r1 = R("Intermèdia vs rival nv.1"); var r4 = R("Intermèdia vs rival nv.4");
         Check("rival level 4 vs 1, same player build: rival hits harder, moves faster, takes less", r4.taken > 1.4f * r1.taken && r4.rivalSpeed > r1.rivalSpeed && r4.punch < r1.punch,

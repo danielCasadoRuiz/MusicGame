@@ -209,6 +209,7 @@ public static class SongCatalogBake
         }
         var app = AppAnalysisVersions.Current(config);
         var derived = new DerivedAnalysisSettings(config);
+        var styleRules = Resources.Load<AppConfigSO>("AppConfig")?.musicStyleRules;   // the rules SongAnalysisController uses
         var list = new List<SongCatalogIndexEntry>();
         var vectors = new List<SongSimilarityVector>();
         missing = new List<string>();
@@ -222,6 +223,7 @@ public static class SongCatalogBake
             if (problem != null) { missing.Add($"{e.songId} ({problem})"); continue; }
             var importer = (AudioImporter)AssetImporter.GetAtPath(assetPath);
             var profile = SongAnalysisPipeline.LoadProfile(bytes, derived, out _);
+            var style = MusicStyleResolver.Resolve(profile, styleRules);
             var vector = SongSimilarityVector.Build(e.songId, profile);
             if (vector != null)
             {
@@ -239,8 +241,11 @@ public static class SongCatalogBake
                 durationSeconds = header.playbackFrequency > 0 ? header.playbackSamples / (float)header.playbackFrequency : 0f,
                 playbackSamples = header.playbackSamples, playbackChannels = header.playbackChannels, playbackFrequency = header.playbackFrequency,
                 playbackLoadType = MasterAudio.EffectiveSettings(importer, target).loadType.ToString(),
+                gameStyle = style.Style, themeStyle = style.ThemeStyle, styleRunnerUp = style.RunnerUp,
+                styleScore = style.Score, styleMargin = style.Margin,
                 similarity = vector,
             });
+            sb.AppendLine($"  style  {e.songId} {e.address}: {style.Style} (score {style.Score:0.00}, margin {style.Margin:0.00} over {style.RunnerUp})");
         }
         index.indexVersion = SongCatalogIndexSO.CurrentIndexVersion;
         index.songs = list;
@@ -261,7 +266,7 @@ public static class SongCatalogBake
         h.Add("MusicGame.SongIndex");
         foreach (var e in list.OrderBy(x => x.songId, StringComparer.Ordinal))
         {
-            h.Add(e.songId); h.Add(e.audioAddress); h.Add(e.masterIdentity); h.Add(e.playbackRevision); h.Add((long)e.profileCrc); h.Add(e.order);
+            h.Add(e.songId); h.Add(e.audioAddress); h.Add(e.masterIdentity); h.Add(e.playbackRevision); h.Add((long)e.profileCrc); h.Add(e.order); h.Add((int)e.gameStyle);
         }
         return h.Value.ToString("x16");
     }

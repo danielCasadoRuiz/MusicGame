@@ -33,8 +33,7 @@ public static class FightMovementUtility
         float minSeparation = config != null ? config.minimumFighterSeparation : 1f;
 
         Vector3 target = currentPos + delta;
-        target.x = Mathf.Clamp(target.x, minX, maxX);
-        target.z = Mathf.Clamp(target.z, minZ, maxZ);
+        target = ClampToArena(target, config, minX, maxX, minZ, maxZ);
 
         Vector2 toTarget = new Vector2(target.x - opponentPos.x, target.z - opponentPos.z);
         float dist = toTarget.magnitude;
@@ -53,8 +52,9 @@ public static class FightMovementUtility
                 pushDir = toCurrent.normalized;
 
             Vector2 corrected = new Vector2(opponentPos.x, opponentPos.z) + pushDir * minSeparation;
-            target.x = Mathf.Clamp(corrected.x, minX, maxX);
-            target.z = Mathf.Clamp(corrected.y, minZ, maxZ);
+            target.x = corrected.x;
+            target.z = corrected.y;
+            target = ClampToArena(target, config, minX, maxX, minZ, maxZ);
         }
 
         target.y = currentPos.y + delta.y; // Y (jump arc) is owned entirely elsewhere — passed through, never clamped here
@@ -75,8 +75,32 @@ public static class FightMovementUtility
     /// angle of the live line between fighters — aligned on X, aligned on Z, or anywhere in between —
     /// never assuming the combat axis is world X (see FightAIContext's own doc).
     /// </summary>
+    /// <summary>Inside the arena: the circle (FightArenaConfig.circularArena) or the old rectangle.</summary>
+    private static Vector3 ClampToArena(Vector3 p, FightArenaConfig config, float minX, float maxX, float minZ, float maxZ)
+    {
+        if (config != null && config.circularArena)
+        {
+            Vector2 c = config.arenaCenterXZ;
+            Vector2 o = new Vector2(p.x - c.x, p.z - c.y);
+            float r = config.arenaRadius;
+            if (o.sqrMagnitude > r * r) { o = o.normalized * r; p.x = c.x + o.x; p.z = c.y + o.y; }
+            return p;
+        }
+        p.x = Mathf.Clamp(p.x, minX, maxX);
+        p.z = Mathf.Clamp(p.z, minZ, maxZ);
+        return p;
+    }
+
     public static float RayDistanceToArenaBounds(Vector2 positionXZ, Vector2 directionXZ, FightArenaConfig config)
     {
+        if (config != null && config.circularArena)
+        {
+            // Ray from inside a circle: t = −b + √(b² − c) with b = o·d, c = |o|² − r².
+            Vector2 o = positionXZ - config.arenaCenterXZ;
+            float b = Vector2.Dot(o, directionXZ), cc = o.sqrMagnitude - config.arenaRadius * config.arenaRadius;
+            float disc = b * b - cc;
+            return disc <= 0f ? 0f : Mathf.Max(0f, -b + Mathf.Sqrt(disc));
+        }
         float minX = config != null ? config.minBoundX : -4f;
         float maxX = config != null ? config.maxBoundX : 4f;
         float minZ = config != null ? config.minDepth : -1.5f;

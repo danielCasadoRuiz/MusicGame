@@ -35,7 +35,7 @@ public class StyleSkinLibrarySO : ScriptableObject
     public class HudSkin
     {
         public GameMusicStyle style;
-        [Tooltip("Runner top bar, 2048×384 (see HudBar* constants).")]
+        [Tooltip("Runner top bar, 3072×320 (see HudBar* constants).")]
         public Sprite bar;
         [Tooltip("Pause glyph (256×256) for the bar's round slot: normal / pressed.")]
         public Sprite pause;
@@ -108,11 +108,33 @@ public class StyleSkinLibrarySO : ScriptableObject
     [Tooltip("Title shown for a style without its own title art (Classical / Unknown).")]
     public GameMusicStyle titleFallback = GameMusicStyle.Cinematic;
 
-    /// <summary>Runner bar art: 2048×384 canvas; inner panel, counters row, separator, progress track and round
+    /// <summary>Runner bar art: 3072×320 canvas; inner panel, counters row, separator, progress track and round
     /// pause slot in its pixels (top-left origin) — shared by every style's bar.</summary>
-    public static readonly Vector2 HudBarCanvas = new(2048f, 384f);
-    public static readonly Vector2 HudPauseCenter = new(1841f, 201f);
-    public const float HudPauseDiameter = 142f;
+    public static readonly Vector2 HudBarCanvas = new(3072f, 320f);
+    public static readonly Vector2 HudPauseCenter = new(2889.976f, 192.845f);
+    public const float HudPauseDiameter = 167.44f;
+
+    /// <summary>Accent shared by runner separators and song progress; fades to classic gold at their position.</summary>
+    public Color HudAccent(GameMusicStyle style) => style switch
+    {
+        GameMusicStyle.Cinematic => new Color32(231, 188, 112, 255),
+        GameMusicStyle.Acoustic => new Color32(148, 184, 133, 255),
+        GameMusicStyle.Rock => new Color32(237, 37, 60, 255),
+        GameMusicStyle.Heavy => new Color32(196, 23, 41, 255),
+        GameMusicStyle.Electronic => new Color32(20, 125, 255, 255),
+        GameMusicStyle.Dance => new Color32(216, 43, 250, 255),
+        GameMusicStyle.Groove => new Color32(255, 181, 38, 255),
+        GameMusicStyle.Funky => new Color32(255, 40, 111, 255),
+        GameMusicStyle.Soulful => new Color32(42, 175, 186, 255),
+        GameMusicStyle.Jazzy => new Color32(233, 186, 80, 255),
+        GameMusicStyle.Catchy => new Color32(255, 73, 198, 255),
+        GameMusicStyle.Energetic => new Color32(242, 245, 37, 255),
+        GameMusicStyle.Chill => new Color32(65, 212, 223, 255),
+        GameMusicStyle.Dreamy => new Color32(173, 138, 255, 255),
+        GameMusicStyle.Dark => new Color32(137, 98, 187, 255),
+        GameMusicStyle.Experimental => new Color32(191, 234, 23, 255),
+        _ => new Color32(255, 199, 70, 255),
+    };
 
     public HudSkin Hud(GameMusicStyle style) => hud.Find(h => h.style == style && h.bar != null);
     public HudSkin ClassicHud => Hud(GameMusicStyle.Classical);

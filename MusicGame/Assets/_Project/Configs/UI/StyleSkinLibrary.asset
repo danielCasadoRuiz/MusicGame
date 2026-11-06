@@ -142,6 +142,10 @@ MonoBehaviour:
     bar: {fileID: 21300000, guid: cd1c57e2263fb3e4aa3b47d8b7556871, type: 3}
     pause: {fileID: 21300000, guid: dbf5c19af0f6a2047bd3a08682f73922, type: 3}
     pauseSelected: {fileID: 21300000, guid: c0ca7b75063c9b24b8ea7857b2fdccd6, type: 3}
+  - style: 3
+    bar: {fileID: 21300000, guid: 9570a765a0012b64093de71a7e1d0559, type: 3}
+    pause: {fileID: 0}
+    pauseSelected: {fileID: 0}
   bonuses:
   - kind: 3
     normal: {fileID: 21300000, guid: b3e5650b57899674b8d0079340f96657, type: 3}

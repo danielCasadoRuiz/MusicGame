@@ -5,6 +5,8 @@ using UnityEngine;
 /// override, so it never touches RenderSettings.skybox / the gameplay Main Camera at all.
 ///
 /// OWNERSHIP: this is the ONLY system that writes to the sky material's shader properties.
+/// When HorizonWorld passes the Runner sun, its rotation follows the same sun vector;
+/// previews without a supplied light keep their lighting unchanged.
 ///
 /// STATIC vs DYNAMIC: noise scale/strength and sun position/size/glow-size are pure art-direction
 /// — applied once in ApplyStaticConfig() (Initialize, or every frame only if
@@ -51,10 +53,27 @@ public class ProceduralSkyController : MonoBehaviour
 
     private HorizonConfig _config;
     private Material      _material;
+    private Light _sunLight;
+    private Quaternion _originalSunRotation, _appliedSunRotation;
+    private bool _ownsSunRotation;
 
-    public void Initialize(HorizonConfig config, Camera horizonCamera)
+    private void OnDisable()
+    {
+        if (_ownsSunRotation && _sunLight != null &&
+            Quaternion.Angle(_sunLight.transform.rotation, _appliedSunRotation) < .01f)
+            _sunLight.transform.rotation = _originalSunRotation;
+        _ownsSunRotation = false;
+    }
+
+    private void OnEnable()
+    {
+        if (_config != null && _material != null) ApplyStaticConfig();
+    }
+
+    public void Initialize(HorizonConfig config, Camera horizonCamera, Light sunLight = null)
     {
         _config = config;
+        _sunLight = sunLight;
 
         var shader = Shader.Find("MusicGame/ProceduralSky");
         if (shader == null)
@@ -150,6 +169,16 @@ public class ProceduralSkyController : MonoBehaviour
         float el = _config.horizonSunElevationDeg * Mathf.Deg2Rad;
         Vector3 sunDir = new Vector3(Mathf.Sin(az) * Mathf.Cos(el), Mathf.Sin(el), Mathf.Cos(az) * Mathf.Cos(el));
         _material.SetVector(SunDirectionID, sunDir);
+        // The sky vector points TOWARDS the sun; a directional light's forward points
+        // along the incoming rays, AWAY from it. Both use this same world-space vector.
+        if (_sunLight != null)
+        {
+            if (!_ownsSunRotation) _originalSunRotation = _sunLight.transform.rotation;
+            Vector3 up = Mathf.Abs(Vector3.Dot(sunDir, Vector3.up)) > .999f ? Vector3.forward : Vector3.up;
+            _appliedSunRotation = Quaternion.LookRotation(-sunDir, up);
+            _sunLight.transform.rotation = _appliedSunRotation;
+            _ownsSunRotation = true;
+        }
         _material.SetFloat(SunSizeID, _config.horizonSunSize);
         _material.SetFloat(SunGlowSizeID, _config.horizonSunGlowSize);
         _material.SetFloat(SunGlowIntensityID, _config.horizonSunGlowIntensity);

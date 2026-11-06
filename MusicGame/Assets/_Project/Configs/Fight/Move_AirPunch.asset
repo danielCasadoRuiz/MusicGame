@@ -15,21 +15,24 @@ MonoBehaviour:
   id: move_air_punch
   debugName: Air Punch
   moveType: 0
-  role: 1
+  role: 22
   scalingStat: 1
   resourceCost: 0
   resourceAmount: 1
   knockdownOnHit: 0
+  damageAsMaxHealthFraction: 0
   invulnerableStart: 0
   invulnerableDuration: 0
-  animationState: AirPunch
-  startupDuration: 0.08
-  activeDuration: 0.1
-  recoveryDuration: 0.15
+  animationState: LowPunch
+  startupDuration: 0.15999997
+  activeDuration: 0.18
+  recoveryDuration: 0.120000035
   cancelWindow: 0
   movementLocked: 1
   movementMultiplier: 0
-  lungeDistance: 0
+  lungeDistance: 0.4
+  contactReach: 1.14
+  forwardCarry: 0.45
   airCarry: 1
   lockFacingDuringMove: 1
   allowedPostures: 02000000
@@ -37,7 +40,7 @@ MonoBehaviour:
   attackDelivery: 0
   hits:
   - shape: 0
-    localOffset: {x: 0.7, y: 1.1, z: 0}
+    localOffset: {x: 0.5, y: 1.1, z: 0}
     size: {x: 0.5, y: 0.5, z: 0.5}
     baseDamage: 9
     baseHitStun: 0.25
@@ -64,4 +67,6 @@ MonoBehaviour:
       chipDamage: 0
       tracking: 0
     destroyOnHit: 1
+  strikingLimb: 0
+  guardBreak: 0
   damage: 0

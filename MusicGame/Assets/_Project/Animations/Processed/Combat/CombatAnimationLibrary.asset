@@ -25,7 +25,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 10.75
     frameRate: 24
-    rootTravel: {x: 1.0834007, y: -0.008593616, z: 1.3576051}
+    rootTravel: {x: 1.0834008, y: -0.008593617, z: 1.3576052}
     rootYaw: -62.700035
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -51,7 +51,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 1.2916667
     frameRate: 24
-    rootTravel: {x: -0.18822189, y: 0.0064139515, z: 1.1046195}
+    rootTravel: {x: -0.18822192, y: 0.0064139524, z: 1.1046196}
     rootYaw: -61.38248
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -76,7 +76,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 17.833334
     frameRate: 24
-    rootTravel: {x: 0.14102185, y: 0.068379216, z: 1.8755457}
+    rootTravel: {x: 0.14102186, y: 0.06837922, z: 1.875546}
     rootYaw: -94.62342
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -101,7 +101,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 2.2083335
     frameRate: 24
-    rootTravel: {x: 0.4256967, y: -0.0134216575, z: 0.43783638}
+    rootTravel: {x: 0.42569676, y: -0.013421658, z: 0.43783644}
     rootYaw: 87.5089
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -115,6 +115,79 @@ MonoBehaviour:
     notes: Reviewed 2026-10-01 (frame-by-frame window render). Tight boxing guard
       with a light bounce; 7.0-9.2 s only (a jab follows at ~10 s). Looped (loop
       pose on).
+  - name: Fight_Boxing_mixamo__FootworkFwd
+    clip: {fileID: 7400000, guid: 2b970bd751777ec4280dbf841d0672c7, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: e3faaea4ff5dee74cb0a84d0e9066c87, type: 2}
+    category: 11
+    categoryReviewed: 1
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/Boxing_mixamo.fbx
+    sourceTake: clip
+    duration: 0.75000006
+    frameRate: 24
+    rootTravel: {x: 0.08742161, y: 0.013529123, z: 0.3827704}
+    rootYaw: -8.898716
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.Spread 1,99)
+    segmentOf: Fight_Boxing_mixamo
+    segmentStart: 0.917
+    segmentEnd: 1.667
+    keepFacing: 1
+    review: 1
+    notes: 'Mocap scan 2026-11-04: guarded forward footwork loop'
+  - name: Fight_Boxing_mixamo__FootworkBack
+    clip: {fileID: 7400000, guid: 5d5ea154129ddb448b2566ed3bc921a7, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 6fe0a0c4041fc9a45bcc61864a79783b, type: 2}
+    category: 11
+    categoryReviewed: 1
+    loop: 1
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/Boxing_mixamo.fbx
+    sourceTake: clip
+    duration: 0.8333335
+    frameRate: 24
+    rootTravel: {x: -0.24140571, y: 0.009489127, z: -0.30605054}
+    rootYaw: -3.4909792
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.Spread 1,99)
+    segmentOf: Fight_Boxing_mixamo
+    segmentStart: 3.208
+    segmentEnd: 4.042
+    keepFacing: 1
+    review: 1
+    notes: 'Mocap scan 2026-11-04: guarded backward footwork loop'
+  - name: Fight_Boxing_mixamo__BodyHook
+    clip: {fileID: 7400000, guid: f9422b1ccb047c84a9e3376a3c6cdced, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: cba097e8b5100c64794b23988d142faf, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/Boxing_mixamo.fbx
+    sourceTake: clip
+    duration: 0.666667
+    frameRate: 24
+    rootTravel: {x: -0.03213642, y: 0.05737902, z: 0.0121461935}
+    rootYaw: -29.469639
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (Left Shoulder Front-Back 2,25)
+    segmentOf: Fight_Boxing_mixamo
+    segmentStart: 13.5
+    segmentEnd: 14.15
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Boxing: right hook-ish body punch, upper belly
+      (peak 13.75) \u2014 LOW punch alt"
   - name: Fight_FightingIdle_mixamo
     clip: {fileID: 7400000, guid: 3fcc682547eadf145a55aaa6876c2667, type: 2}
     inPlaceClip: {fileID: 7400000, guid: dd45d08c8479d9249a51dc1ccc917e38, type: 2}
@@ -127,7 +200,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 52.375
     frameRate: 24
-    rootTravel: {x: 0.16245262, y: 0.016504768, z: 0.31749704}
+    rootTravel: {x: 0.16245264, y: 0.01650477, z: 0.31749707}
     rootYaw: 45.58369
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -153,7 +226,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 22.833334
     frameRate: 24
-    rootTravel: {x: 0.99889493, y: -0.010207274, z: 0.45855582}
+    rootTravel: {x: 0.99889505, y: -0.010207275, z: 0.45855588}
     rootYaw: -71.206894
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -178,7 +251,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 20.458334
     frameRate: 24
-    rootTravel: {x: 0.066487156, y: -0.008482566, z: 0.34220865}
+    rootTravel: {x: 0.06648717, y: -0.008482567, z: 0.3422087}
     rootYaw: 60.598778
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -205,7 +278,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 1.500001
     frameRate: 24
-    rootTravel: {x: 0.33147082, y: -0.23836386, z: -0.17942794}
+    rootTravel: {x: 0.33147085, y: -0.23836389, z: -0.17942797}
     rootYaw: 111.699326
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -231,7 +304,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 3.791667
     frameRate: 24
-    rootTravel: {x: 0.5076713, y: -0.7236534, z: 0.17273708}
+    rootTravel: {x: 0.50767136, y: -0.72365344, z: 0.1727371}
     rootYaw: 87.69399
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -259,7 +332,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 4.125
     frameRate: 24
-    rootTravel: {x: 0.6709259, y: 0.77660173, z: -0.16521885}
+    rootTravel: {x: 0.670926, y: 0.7766018, z: -0.16521887}
     rootYaw: -27.882965
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -285,7 +358,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 0.791667
     frameRate: 24
-    rootTravel: {x: 0.1034762, y: -0.028694592, z: 0.12980366}
+    rootTravel: {x: 0.10347621, y: -0.028694594, z: 0.12980367}
     rootYaw: 15.084391
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -310,7 +383,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 3.000001
     frameRate: 24
-    rootTravel: {x: 0.008073672, y: -0.010122091, z: -0.010398537}
+    rootTravel: {x: 0.008073673, y: -0.010122092, z: -0.010398538}
     rootYaw: 5.418419
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -336,7 +409,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 20.000002
     frameRate: 24
-    rootTravel: {x: 0.34972712, y: 0.0032120903, z: 1.2781812}
+    rootTravel: {x: 0.34972715, y: 0.0032120908, z: 1.2781813}
     rootYaw: -67.137146
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -353,7 +426,7 @@ MonoBehaviour:
     clip: {fileID: 7400000, guid: 382e9037679cb264a829dfa4a6a62aa3, type: 2}
     inPlaceClip: {fileID: 7400000, guid: f63a5458cb19a6344b2d1147dbe2c67b, type: 2}
     category: 2
-    categoryReviewed: 1
+    categoryReviewed: 0
     loop: 0
     rootMotion: 1
     sourcePack: Rokoko Mocap - 13 Free Fight Animations
@@ -361,7 +434,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 11.416667
     frameRate: 24
-    rootTravel: {x: -2.4812608, y: -0.054369565, z: 1.8542024}
+    rootTravel: {x: -2.481261, y: -0.05436957, z: 1.8542026}
     rootYaw: -383.1803
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -371,9 +444,8 @@ MonoBehaviour:
     segmentStart: 0
     segmentEnd: 0
     keepFacing: 0
-    review: 1
-    notes: 'Reviewed 2026-10-01. 11.4 s: punches then a spinning roundhouse at ~7.8
-      s. Total yaw -383 deg (root motion recommended).'
+    review: 0
+    notes: 
   - name: Fight_RoundHouseKick_mixamo__SpinningRoundhouse
     clip: {fileID: 7400000, guid: b7227298c8ce70641823d1598ab98cf8, type: 2}
     inPlaceClip: {fileID: 7400000, guid: 45cf17b2e2b91654990331a1f5a4967a, type: 2}
@@ -386,7 +458,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 1.5000005
     frameRate: 24
-    rootTravel: {x: -0.026051585, y: -0.05833913, z: 1.8661458}
+    rootTravel: {x: -0.026051588, y: -0.058339138, z: 1.8661461}
     rootYaw: -492.58987
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -412,7 +484,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 0.916667
     frameRate: 24
-    rootTravel: {x: -1.1406868, y: 0.3172195, z: 0.72585285}
+    rootTravel: {x: -1.1406869, y: 0.31721953, z: 0.7258529}
     rootYaw: -382.40692
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -437,7 +509,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 31.041668
     frameRate: 24
-    rootTravel: {x: 0.30318695, y: -0.0074548433, z: 1.625999}
+    rootTravel: {x: 0.303187, y: -0.007454844, z: 1.6259992}
     rootYaw: -105.65145
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -463,7 +535,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 1.583333
     frameRate: 24
-    rootTravel: {x: -0.030819433, y: 0.001499728, z: 0.053364024}
+    rootTravel: {x: -0.030819437, y: 0.0014997282, z: 0.05336403}
     rootYaw: 9.476418
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -488,7 +560,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 1.583334
     frameRate: 24
-    rootTravel: {x: -0.11087171, y: 0.034210447, z: -0.10534323}
+    rootTravel: {x: -0.110871725, y: 0.03421045, z: -0.105343245}
     rootYaw: 11.088211
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -514,7 +586,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 1.208334
     frameRate: 24
-    rootTravel: {x: -0.033860516, y: -0.10187139, z: 0.17865957}
+    rootTravel: {x: -0.03386052, y: -0.10187141, z: 0.17865959}
     rootYaw: 4.5243835
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -539,7 +611,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 1.291667
     frameRate: 24
-    rootTravel: {x: -0.021889748, y: 0.09335109, z: -0.19828932}
+    rootTravel: {x: -0.021889752, y: 0.093351096, z: -0.19828935}
     rootYaw: -82.02378
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -565,7 +637,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 0.58333397
     frameRate: 24
-    rootTravel: {x: -0.0984407, y: -0.061280563, z: 0.25352392}
+    rootTravel: {x: -0.098440714, y: -0.06128057, z: 0.25352395}
     rootYaw: -42.455338
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -590,7 +662,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 1.0416679
     frameRate: 24
-    rootTravel: {x: -0.094591536, y: 0.0385221, z: -0.16168135}
+    rootTravel: {x: -0.09459155, y: 0.038522102, z: -0.16168138}
     rootYaw: -13.5453
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -603,6 +675,56 @@ MonoBehaviour:
     review: 1
     notes: "Reviewed 2026-10-01 (window renders). Rotating right hook (landing ~0.45
       s in) \u2014 HeavyAttack clip."
+  - name: Fight_ShadowBoxing_mixamo__Cross
+    clip: {fileID: 7400000, guid: 26880882964c9764e8542ed7753f6bc4, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 2a5d641fa3eb6c24da86531b91741abf, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/ShadowBoxing_mixamo.fbx
+    sourceTake: clip
+    duration: 0.5833335
+    frameRate: 24
+    rootTravel: {x: -0.08167945, y: -0.0048624324, z: -0.075909264}
+    rootYaw: 20.854479
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (Right Shoulder Front-Back 2,30)
+    segmentOf: Fight_ShadowBoxing_mixamo
+    segmentStart: 6.5
+    segmentEnd: 7.1
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: right cross to the chest (peak 6.71) \u2014 MID
+      punch"
+  - name: Fight_ShadowBoxing_mixamo__BodyShot
+    clip: {fileID: 7400000, guid: 973e61c8b49275142ab5640b953d7692, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 7a49041331800334f94baf08d9ee8d0a, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 13 Free Fight Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Fight/ShadowBoxing_mixamo.fbx
+    sourceTake: clip
+    duration: 0.666667
+    frameRate: 24
+    rootTravel: {x: -0.22287071, y: 0.07784183, z: -0.08404438}
+    rootYaw: 45.742676
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.Spread 1,89)
+    segmentOf: Fight_ShadowBoxing_mixamo
+    segmentStart: 11.5
+    segmentEnd: 12.15
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: crouching right body shot (peak 11.75) \u2014
+      LOW punch"
   - name: Fight_SwordFight_mixamo
     clip: {fileID: 7400000, guid: 2211d5f827f4fdc479b5035bd4830f45, type: 2}
     inPlaceClip: {fileID: 7400000, guid: 3c59ef444faed024487dc672e8d57052, type: 2}
@@ -615,7 +737,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 29.583334
     frameRate: 24
-    rootTravel: {x: 0.16044863, y: 0.009208357, z: 1.6076617}
+    rootTravel: {x: 0.16044866, y: 0.009208358, z: 1.607662}
     rootYaw: -76.110214
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -640,7 +762,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 64.50001
     frameRate: 24
-    rootTravel: {x: 0.09573539, y: -0.0048288642, z: 0.24166752}
+    rootTravel: {x: 0.09573541, y: -0.0048288647, z: 0.24166755}
     rootYaw: -9.221344
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -665,7 +787,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 56.333332
     frameRate: 24
-    rootTravel: {x: 0.40527305, y: -0.001765565, z: 0.14700755}
+    rootTravel: {x: 0.4052731, y: -0.0017655652, z: 0.14700757}
     rootYaw: 3.3897362
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -690,7 +812,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 30.366669
     frameRate: 30
-    rootTravel: {x: 0.056184012, y: -0.006451987, z: 0.16033287}
+    rootTravel: {x: 0.05618402, y: -0.006451988, z: 0.16033289}
     rootYaw: 32.510338
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -717,7 +839,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 4.7000003
     frameRate: 30
-    rootTravel: {x: -0.19056351, y: 0.017431436, z: 0.039812952}
+    rootTravel: {x: -0.19056353, y: 0.017431438, z: 0.039812956}
     rootYaw: 3.956761
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -742,7 +864,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 21.7
     frameRate: 30
-    rootTravel: {x: 0.008408242, y: -0.002434214, z: -0.009909421}
+    rootTravel: {x: 0.008408243, y: -0.0024342143, z: -0.009909422}
     rootYaw: 6.6946526
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -771,7 +893,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 25.333336
     frameRate: 30
-    rootTravel: {x: 0.014361615, y: -0.007824146, z: -0.012144058}
+    rootTravel: {x: 0.014361617, y: -0.007824147, z: -0.012144059}
     rootYaw: -2.940174
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -797,7 +919,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 2.000001
     frameRate: 30
-    rootTravel: {x: 0.11612499, y: -0.0306986, z: 0.1403502}
+    rootTravel: {x: 0.116125, y: -0.030698603, z: 0.14035021}
     rootYaw: -49.872173
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -821,7 +943,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 34.300003
     frameRate: 30
-    rootTravel: {x: 0.025508808, y: -0.0057886876, z: 0.024448534}
+    rootTravel: {x: 0.025508812, y: -0.0057886885, z: 0.024448536}
     rootYaw: -11.64336
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -839,8 +961,8 @@ MonoBehaviour:
   - name: MartialArts_thaichitake_12_DEFAULT_QUP
     clip: {fileID: 7400000, guid: 68d1c04bd34938a4497f5ea3772f5f15, type: 2}
     inPlaceClip: {fileID: 7400000, guid: 5f57c69b79a4b3744aca5675392f3d57, type: 2}
-    category: 12
-    categoryReviewed: 1
+    category: 13
+    categoryReviewed: 0
     loop: 0
     rootMotion: 1
     sourcePack: Rokoko Mocap - 6 Free Martial Arts Animations
@@ -848,7 +970,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 32.120003
     frameRate: 100
-    rootTravel: {x: -0.534768, y: 0.009661374, z: -0.30332783}
+    rootTravel: {x: -0.53476804, y: 0.009661375, z: -0.30332786}
     rootYaw: 1.6889486
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -858,10 +980,8 @@ MonoBehaviour:
     segmentStart: 0
     segmentEnd: 0
     keepFacing: 0
-    review: 1
-    notes: Reviewed 2026-09-30 (21 phases). 32 s slow tai chi form, very clean. Different
-      skeleton naming (Unity auto-mapped). Not an attack; usable as a calm 'focus/charge'
-      special or ambient idle.
+    review: 0
+    notes: 
   - name: MartialArts_thaichitake_12_DEFAULT_QUP__RunnerTaiChiRaise
     clip: {fileID: 7400000, guid: 6d65db710c2195e4986297ada9ee3182, type: 2}
     inPlaceClip: {fileID: 7400000, guid: 96f3a2db076115c418ce8ee7c80b5b3a, type: 2}
@@ -874,7 +994,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 5
     frameRate: 100
-    rootTravel: {x: -0.0021811198, y: 0.007214461, z: 0.0034209846}
+    rootTravel: {x: -0.00218112, y: 0.007214462, z: 0.003420985}
     rootYaw: 0.8585207
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -899,7 +1019,7 @@ MonoBehaviour:
     sourceTake: 20210714_s001_teaching_Guestures_tk01_ERJA-mvn001
     duration: 75.99168
     frameRate: 120
-    rootTravel: {x: -0.0022815336, y: -0.0063653933, z: 0.026177645}
+    rootTravel: {x: -0.0022815338, y: -0.006365394, z: 0.026177648}
     rootYaw: -37.902145
     trimmedStartFrames: 1
     fingerCapture: 0
@@ -924,7 +1044,7 @@ MonoBehaviour:
     sourceTake: 20210714_s001_teaching_Guestures_tk01_ERJA-mvn001
     duration: 3.0000038
     frameRate: 120
-    rootTravel: {x: -0.26551777, y: 0.012899154, z: -0.013105313}
+    rootTravel: {x: -0.2655178, y: 0.012899156, z: -0.013105315}
     rootYaw: 6.6138916
     trimmedStartFrames: 0
     fingerCapture: 0
@@ -949,7 +1069,7 @@ MonoBehaviour:
     sourceTake: 20210714_s002_crossStage_Talk_tk01_ERJA-mvn222
     duration: 69.90001
     frameRate: 120
-    rootTravel: {x: 0.49400938, y: -0.000984338, z: 0.9662673}
+    rootTravel: {x: 0.49400944, y: -0.0009843381, z: 0.9662674}
     rootYaw: 13.220512
     trimmedStartFrames: 1
     fingerCapture: 0
@@ -976,7 +1096,7 @@ MonoBehaviour:
     sourceTake: 20210714_s003_fingerWave_atAudience_tk01_ERJA-mvn002
     duration: 85.466675
     frameRate: 120
-    rootTravel: {x: -0.021858612, y: 0.0018320538, z: -0.06351026}
+    rootTravel: {x: -0.021858614, y: 0.001832054, z: -0.06351027}
     rootYaw: 8.634293
     trimmedStartFrames: 1
     fingerCapture: 0
@@ -1001,7 +1121,7 @@ MonoBehaviour:
     sourceTake: 20210714_s003_fingerWave_atAudience_tk01_ERJA-mvn002
     duration: 3.000001
     frameRate: 120
-    rootTravel: {x: -0.14267777, y: 0.011743921, z: 0.065691024}
+    rootTravel: {x: -0.14267778, y: 0.011743922, z: 0.06569103}
     rootYaw: 9.623075
     trimmedStartFrames: 0
     fingerCapture: 0
@@ -1027,7 +1147,7 @@ MonoBehaviour:
     sourceTake: 20210714_s003_fingerWave_atAudience_tk01_ERJA-mvn002
     duration: 3.0000038
     frameRate: 120
-    rootTravel: {x: -0.07074686, y: 0.015838882, z: 0.123134844}
+    rootTravel: {x: -0.07074688, y: 0.015838884, z: 0.12313486}
     rootYaw: -64.7002
     trimmedStartFrames: 0
     fingerCapture: 0
@@ -1052,7 +1172,7 @@ MonoBehaviour:
     sourceTake: 20210714_s004_walk_assaultRiffle_tk01_ERJA-mvn225
     duration: 24.283335
     frameRate: 120
-    rootTravel: {x: -4.617245, y: -0.015058419, z: 7.294144}
+    rootTravel: {x: -4.6172457, y: -0.015058421, z: 7.294145}
     rootYaw: 157.00137
     trimmedStartFrames: 1
     fingerCapture: 0
@@ -1077,7 +1197,7 @@ MonoBehaviour:
     sourceTake: 20210714_s005_runBackward_assultRiffle1_tk01_ERJA-mvn227
     duration: 12.400001
     frameRate: 120
-    rootTravel: {x: 3.9407818, y: 0.019244676, z: -3.1005118}
+    rootTravel: {x: 3.9407823, y: 0.01924468, z: -3.100512}
     rootYaw: -46.762016
     trimmedStartFrames: 1
     fingerCapture: 0
@@ -1102,7 +1222,7 @@ MonoBehaviour:
     sourceTake: 20210714_s006_runBackward_assultRiffle2_tk01_ERJA-mvn226
     duration: 13.525001
     frameRate: 120
-    rootTravel: {x: 5.6480327, y: 0.028331403, z: -0.9831658}
+    rootTravel: {x: 5.6480336, y: 0.028331406, z: -0.9831659}
     rootYaw: -69.5886
     trimmedStartFrames: 1
     fingerCapture: 0
@@ -1127,7 +1247,7 @@ MonoBehaviour:
     sourceTake: 20210714_s007_runForward_assultRiffle_tk01_ERJA-mvn228
     duration: 9.016667
     frameRate: 120
-    rootTravel: {x: -6.0973134, y: 0.009400475, z: 8.266029}
+    rootTravel: {x: -6.097314, y: 0.009400476, z: 8.26603}
     rootYaw: 138.17386
     trimmedStartFrames: 1
     fingerCapture: 0
@@ -1154,7 +1274,7 @@ MonoBehaviour:
     sourceTake: 20210714_s007_runForward_assultRiffle_tk01_ERJA-mvn228
     duration: 1.9000003
     frameRate: 120
-    rootTravel: {x: -3.8428574, y: 0.025617067, z: 5.43255}
+    rootTravel: {x: -3.8428578, y: 0.025617069, z: 5.4325504}
     rootYaw: -7.0644226
     trimmedStartFrames: 0
     fingerCapture: 0
@@ -1180,7 +1300,7 @@ MonoBehaviour:
     sourceTake: 20210714_s007_runForward_assultRiffle_tk02_ERJA-mvn229
     duration: 10.991668
     frameRate: 120
-    rootTravel: {x: -4.2510395, y: -0.020699961, z: 4.280394}
+    rootTravel: {x: -4.25104, y: -0.020699965, z: 4.2803946}
     rootYaw: 131.7751
     trimmedStartFrames: 1
     fingerCapture: 0
@@ -1205,7 +1325,7 @@ MonoBehaviour:
     sourceTake: 20210714_s008_sprintForward_assultRiffle_tk01_ERJA-mvn230
     duration: 12.033334
     frameRate: 120
-    rootTravel: {x: -9.22742, y: 0.009942613, z: 7.2612615}
+    rootTravel: {x: -9.227421, y: 0.009942614, z: 7.2612624}
     rootYaw: 144.11784
     trimmedStartFrames: 1
     fingerCapture: 0
@@ -1230,7 +1350,7 @@ MonoBehaviour:
     sourceTake: 20210714_s008_sprintForward_assultRiffle_tk01_ERJA-mvn230
     duration: 1.5000002
     frameRate: 120
-    rootTravel: {x: -4.9766684, y: 0.007776117, z: 6.0429277}
+    rootTravel: {x: -4.976669, y: 0.007776118, z: 6.0429287}
     rootYaw: -8.1766205
     trimmedStartFrames: 0
     fingerCapture: 0
@@ -1256,7 +1376,7 @@ MonoBehaviour:
     sourceTake: 20210714_s009_runToSprint_swordCarry_tk01_ERJA-mvn231
     duration: 13.175001
     frameRate: 120
-    rootTravel: {x: -5.751324, y: 0.0065074237, z: 7.702375}
+    rootTravel: {x: -5.751325, y: 0.0065074246, z: 7.702376}
     rootYaw: -207.28912
     trimmedStartFrames: 1
     fingerCapture: 0
@@ -1281,7 +1401,7 @@ MonoBehaviour:
     sourceTake: 20210714_s010_runJump_overObstacle_tk01_ERJA-mvn232
     duration: 8.425
     frameRate: 120
-    rootTravel: {x: -4.3016224, y: -0.0128660565, z: 8.954004}
+    rootTravel: {x: -4.301623, y: -0.012866058, z: 8.954005}
     rootYaw: 129.0862
     trimmedStartFrames: 1
     fingerCapture: 0
@@ -1306,7 +1426,7 @@ MonoBehaviour:
     sourceTake: 20210714_s010_runJump_overObstacle_tk01_ERJA-mvn232
     duration: 0.9000001
     frameRate: 120
-    rootTravel: {x: -0.22223482, y: 0.14985329, z: 2.4376338}
+    rootTravel: {x: -0.22223483, y: 0.1498533, z: 2.437634}
     rootYaw: -6.1116943
     trimmedStartFrames: 0
     fingerCapture: 0
@@ -1332,7 +1452,7 @@ MonoBehaviour:
     sourceTake: 20210714_s010_runJump_overObstacle_tk01_ERJA-mvn232
     duration: 0.5500002
     frameRate: 120
-    rootTravel: {x: 0.058933932, y: -0.14318778, z: 1.5767884}
+    rootTravel: {x: 0.05893394, y: -0.14318779, z: 1.5767885}
     rootYaw: -20.806763
     trimmedStartFrames: 0
     fingerCapture: 0
@@ -1358,7 +1478,7 @@ MonoBehaviour:
     sourceTake: 20210714_s010_runJump_overObstacle_tk02_ERJA-mvn233
     duration: 7.6250005
     frameRate: 120
-    rootTravel: {x: -4.8497424, y: 0.0019377536, z: 10.263103}
+    rootTravel: {x: -4.849743, y: 0.0019377539, z: 10.2631035}
     rootYaw: 4.0529785
     trimmedStartFrames: 1
     fingerCapture: 0
@@ -1382,7 +1502,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 23.708334
     frameRate: 24
-    rootTravel: {x: 0.68748283, y: -0.0037753922, z: 1.1882269}
+    rootTravel: {x: 0.6874829, y: -0.0037753927, z: 1.188227}
     rootYaw: -51.36549
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -1407,7 +1527,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 29.000002
     frameRate: 24
-    rootTravel: {x: 0.28051588, y: 0.006472445, z: 1.5663888}
+    rootTravel: {x: 0.2805159, y: 0.006472446, z: 1.5663891}
     rootYaw: -87.684494
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -1420,6 +1540,31 @@ MonoBehaviour:
     keepFacing: 0
     review: 0
     notes: 
+  - name: Superhero_HulkTransformation_mixamo__ChargeSlam
+    clip: {fileID: 7400000, guid: 98857febf04ba8b4e933e200e2288115, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 02f62d35d3911ac41a4c0fa3b7de62fa, type: 2}
+    category: 12
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Rokoko Mocap - 15 Free Superhero Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Superhero/HulkTransformation_mixamo.fbx
+    sourceTake: clip
+    duration: 1.333334
+    frameRate: 24
+    rootTravel: {x: -0.11412863, y: -0.31846318, z: 0.25492138}
+    rootYaw: -10.278582
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 3,52)
+    segmentOf: Superhero_HulkTransformation_mixamo
+    segmentStart: 24.4
+    segmentEnd: 25.75
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: fists gather, arms up, two-handed slam (release
+      \u2248 25.63) \u2014 the Special's visible wind-up"
   - name: Superhero_IronMan_Combat_mixamo
     clip: {fileID: 7400000, guid: e0269d47f294a9348bd339b845aec9d9, type: 2}
     inPlaceClip: {fileID: 7400000, guid: ca50e1d1682f3e34b8cc5742f9106d2d, type: 2}
@@ -1432,7 +1577,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 43.083332
     frameRate: 24
-    rootTravel: {x: 0.47157088, y: -0.011698419, z: 1.4754052}
+    rootTravel: {x: 0.47157094, y: -0.01169842, z: 1.4754055}
     rootYaw: -88.6023
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -1446,6 +1591,33 @@ MonoBehaviour:
     review: 1
     notes: Reviewed 2026-10-01. 43 s of power gestures and stances (repulsor-like
       palm pushes). Special moves, not melee.
+  - name: Superhero_IronMan_Combat_mixamo__EnergyPush
+    clip: {fileID: 7400000, guid: 3bb0a9ccbda2fd94bb44f4b6573cd7ab, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 3534103b89e34a648b3b21b0431ee560, type: 2}
+    category: 12
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Rokoko Mocap - 15 Free Superhero Animations
+    sourceFbx: Assets/_Project/Animations/Source/Rokoko/Superhero/IronMan_Combat_mixamo.fbx
+    sourceTake: clip
+    duration: 1.6666679
+    frameRate: 24
+    rootTravel: {x: -0.05428812, y: -0.005832015, z: -0.31139097}
+    rootYaw: 7.5830555
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 0,67s, 0,71s, 0,75s; muscle beyond limits (Right
+      Shoulder Front-Back 2,70)
+    segmentOf: Superhero_IronMan_Combat_mixamo
+    segmentStart: 33.75
+    segmentEnd: 35.4
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: both hands drawn back to the hip (~0.7 s gather),
+      then thrust forward at mid height (release \u2248 34.62 = 0.87 s in) \u2014
+      the Special's wind-up + throw"
   - name: Superhero_LaserEyes_mixamo
     clip: {fileID: 7400000, guid: e1c9a5da021829f42a9d73f8a2c0574e, type: 2}
     inPlaceClip: {fileID: 7400000, guid: c375df21fe1451e46a76646da4e5fdde, type: 2}
@@ -1458,7 +1630,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 29.291668
     frameRate: 24
-    rootTravel: {x: 0.31476197, y: -0.008719891, z: 1.4037696}
+    rootTravel: {x: 0.314762, y: -0.008719892, z: 1.4037697}
     rootYaw: -89.7029
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -1483,7 +1655,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 35.458332
     frameRate: 24
-    rootTravel: {x: 0.61366504, y: -0.013420011, z: 1.1458954}
+    rootTravel: {x: 0.6136651, y: -0.013420013, z: 1.1458956}
     rootYaw: -38.030376
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -1508,7 +1680,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 33.041668
     frameRate: 24
-    rootTravel: {x: 0.05389942, y: 0.11259612, z: 0.058413763}
+    rootTravel: {x: 0.053899422, y: 0.11259613, z: 0.05841377}
     rootYaw: -88.22771
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -1533,7 +1705,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 21.791668
     frameRate: 24
-    rootTravel: {x: 0.8180763, y: -0.016847322, z: 1.8105012}
+    rootTravel: {x: 0.81807643, y: -0.016847325, z: 1.8105015}
     rootYaw: -66.64498
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -1559,7 +1731,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 0.91666675
     frameRate: 24
-    rootTravel: {x: 0.0017797059, y: 0.021773597, z: -0.0033624205}
+    rootTravel: {x: 0.0017797061, y: 0.021773601, z: -0.003362421}
     rootYaw: -0.587389
     trimmedStartFrames: 0
     fingerCapture: 1
@@ -1584,7 +1756,7 @@ MonoBehaviour:
     sourceTake: clip
     duration: 52.833332
     frameRate: 24
-    rootTravel: {x: 0.23066133, y: -0.015463053, z: 1.1401142}
+    rootTravel: {x: 0.23066136, y: -0.015463055, z: 1.1401143}
     rootYaw: -80.37897
     trimmedStartFrames: 1
     fingerCapture: 1
@@ -1609,13 +1781,2461 @@ MonoBehaviour:
     sourceTake: clip
     duration: 25.708334
     frameRate: 24
-    rootTravel: {x: -0.5687347, y: -0.016372085, z: 1.2246709}
+    rootTravel: {x: -0.56873477, y: -0.016372086, z: 1.224671}
     rootYaw: -123.38232
     trimmedStartFrames: 1
     fingerCapture: 1
     fingerMode: 0
     importWarnings: pose pop(s) at 23,88s, 23,92s, 23,96s; muscle beyond limits (RightHand.Ring.Spread
       3,13)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: CMU_FlyingKick_best_75_16
+    clip: {fileID: 7400000, guid: 7e97bf81a83eccf4f98b429634e0dc72, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: db9711843e7199344967dcb8dd6d4c99, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_FlyingKick_best_75_16.fbx
+    sourceTake: Scene
+    duration: 0.8999964
+    frameRate: 120.00048
+    rootTravel: {x: 0.17777492, y: 0.012694751, z: 2.0309095}
+    rootYaw: -82.14964
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: pose pop(s) at 0,45s, 0,46s; muscle beyond limits (Right Foot
+      Up-Down 1,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: CMU_FlyingKick_best_75_16__FlyingKick
+    clip: {fileID: 7400000, guid: a54759ec66447a449a556b5998f57a42, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 7f74f32d69cf75c4a80d39fba9902ed5, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_FlyingKick_best_75_16.fbx
+    sourceTake: Scene
+    duration: 0.64999735
+    frameRate: 120.00048
+    rootTravel: {x: 1.068701, y: 0.030429533, z: 0.64620733}
+    rootYaw: -32.03505
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: pose pop(s) at 0,20s, 0,21s; muscle beyond limits (Right Foot
+      Up-Down 1,92)
+    segmentOf: CMU_FlyingKick_best_75_16
+    segmentStart: 0.25
+    segmentEnd: 0.9
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 75_16: jump kick, leg extended forward (peak
+      0.46) \u2014 height left to the gameplay jump"
+  - name: CMU_HighKick_alt_135_11
+    clip: {fileID: 7400000, guid: dcce2d09d3ff64848819e1d04732b937, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 1024a65ca7b908546abbc35f14f33383, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_HighKick_alt_135_11.fbx
+    sourceTake: Scene
+    duration: 0.84999657
+    frameRate: 120.00048
+    rootTravel: {x: 0.6119623, y: 0.07528505, z: 0.39279622}
+    rootYaw: -4.891987
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (Right Upper Leg In-Out 1,55)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: CMU_HighKick_alt_135_11__SideKickHead
+    clip: {fileID: 7400000, guid: f533000b639ce4747a38d529617c3c19, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 7f8b28a21a43c5c4991ef0f83d2f3e30, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_HighKick_alt_135_11.fbx
+    sourceTake: Scene
+    duration: 0.73333025
+    frameRate: 120.00048
+    rootTravel: {x: 0.49130422, y: 0.008624187, z: 0.2452189}
+    rootYaw: 0.8463783
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (Right Upper Leg In-Out 1,55)
+    segmentOf: CMU_HighKick_alt_135_11
+    segmentStart: 0.12
+    segmentEnd: 0.85
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 135_11: yoko-geri side kick at head height
+      (peak 0.43) \u2014 HIGH kick alt"
+  - name: CMU_HighKick_best_135_07
+    clip: {fileID: 7400000, guid: 3c5d6822c9186f345be01b66e65b6679, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 7a13bc1a86d62964e94b65e4c3d8f3fe, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_HighKick_best_135_07.fbx
+    sourceTake: Scene
+    duration: 0.8499966
+    frameRate: 120.00048
+    rootTravel: {x: -0.23726983, y: 0.05597335, z: 0.5818586}
+    rootYaw: -101.829865
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (Right Upper Leg In-Out 1,75)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: CMU_HighKick_best_135_07__HighKick
+    clip: {fileID: 7400000, guid: 216e06f65e95cc84eaf8d9e01f68c06a, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 7a46aca919f3f34479963d9c2d587437, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_HighKick_best_135_07.fbx
+    sourceTake: Scene
+    duration: 0.749997
+    frameRate: 120.00048
+    rootTravel: {x: -0.03013862, y: 0.015660757, z: 0.53711885}
+    rootYaw: -83.22461
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (Right Upper Leg In-Out 1,75)
+    segmentOf: CMU_HighKick_best_135_07
+    segmentStart: 0.1
+    segmentEnd: 0.85
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 135_07: roundhouse to the head (\u2248 1.5
+      m, peak 0.41) \u2014 HIGH kick (facing kept: the kata turns 107\xB0)"
+  - name: CMU_HighPunch_alt_13_18
+    clip: {fileID: 7400000, guid: 2ebb362929974ca4694435bfc5ba6bc7, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 2e403f8c7bbba684b9df0d4a6e444635, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_HighPunch_alt_13_18.fbx
+    sourceTake: Scene
+    duration: 0.94999695
+    frameRate: 120.00048
+    rootTravel: {x: -0.10071614, y: -0.018431295, z: 0.20926414}
+    rootYaw: -66.6561
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: CMU_HighPunch_alt_13_18__HeadStraight
+    clip: {fileID: 7400000, guid: f35dfa34c1f341b4087d974a09316d19, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 2ea78baf77e9c9b4998347933367093c, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_HighPunch_alt_13_18.fbx
+    sourceTake: Scene
+    duration: 0.7999954
+    frameRate: 120.00048
+    rootTravel: {x: -0.05109626, y: 0.0125520155, z: 0.22569323}
+    rootYaw: -62.178017
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: CMU_HighPunch_alt_13_18
+    segmentStart: 0.1
+    segmentEnd: 0.9
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 13_18: right straight/hook to the head with
+      a step in (peak 0.42) \u2014 HIGH punch alt"
+  - name: CMU_HighPunch_best_15_13
+    clip: {fileID: 7400000, guid: 18c29727bfa4c984a895a6897b53fbb8, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: d65a5e13b8eb2284db8c5ed4d5a676c8, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_HighPunch_best_15_13.fbx
+    sourceTake: Scene
+    duration: 0.949996
+    frameRate: 120.00048
+    rootTravel: {x: 0.08253407, y: 0.040571436, z: 0.15689838}
+    rootYaw: -59.34624
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (Right Arm Down-Up 1,51)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: CMU_HighPunch_best_15_13__HighPunch
+    clip: {fileID: 7400000, guid: 747b95141839a1547a12e08e35bc4976, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 2001f6a8783f11d499010a1da62e59ab, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_HighPunch_best_15_13.fbx
+    sourceTake: Scene
+    duration: 0.7999964
+    frameRate: 120.00048
+    rootTravel: {x: 0.08017401, y: 0.07244932, z: 0.104479074}
+    rootYaw: -58.520233
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (Right Arm Down-Up 1,51)
+    segmentOf: CMU_HighPunch_best_15_13
+    segmentStart: 0.15
+    segmentEnd: 0.95
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 15_13: right punch rising from low guard to
+      the face (peak 0.47) \u2014 HIGH punch"
+  - name: CMU_LowKick_alt_74_03
+    clip: {fileID: 7400000, guid: a64c1e53159c3a74db813d3d7f8db697, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: f1a37f2a104c61f4e94b15793838c2e3, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_LowKick_alt_74_03.fbx
+    sourceTake: Scene
+    duration: 0.8499967
+    frameRate: 120.00048
+    rootTravel: {x: -0.110229686, y: -0.05595254, z: 0.8058185}
+    rootYaw: -20.30632
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: pose pop(s) at 0,11s, 0,12s, 0,12s, 0,19s, 0,20s...; muscle beyond
+      limits (Right Foot Twist In-Out 6,49)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: CMU_LowKick_alt_74_03__ShinKick
+    clip: {fileID: 7400000, guid: ae59ee93bec1474459b9a9ccbf1710c4, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 80579bf9ddd09db4ba6ba4a6c53d73a7, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_LowKick_alt_74_03.fbx
+    sourceTake: Scene
+    duration: 0.72499716
+    frameRate: 120.00048
+    rootTravel: {x: 0.031822674, y: -0.0022119388, z: 0.66040635}
+    rootYaw: -12.766129
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: pose pop(s) at 0,02s, 0,03s, 0,04s, 0,11s, 0,12s...; muscle beyond
+      limits (Right Foot Twist In-Out 6,49)
+    segmentOf: CMU_LowKick_alt_74_03
+    segmentStart: 0.08
+    segmentEnd: 0.81
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 74_03: right swing kick at shin / knee height
+      (peak 0.33) \u2014 LOW kick alt"
+  - name: CMU_LowKick_best_143_24
+    clip: {fileID: 7400000, guid: 509aeb078349dc74aa9861899a64b795, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 8b5fe54aa4d1497488988f9329572769, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_LowKick_best_143_24.fbx
+    sourceTake: Scene
+    duration: 0.7833302
+    frameRate: 120.00048
+    rootTravel: {x: -0.040085144, y: -0.012003234, z: -0.03308257}
+    rootYaw: -11.667603
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (Left Foot Twist In-Out 5,13)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: CMU_LowKick_best_143_24__LowKick
+    clip: {fileID: 7400000, guid: 3e0ad9b6117dd2d46abb38f3d158122b, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 499d111e351823f4bbcb3b0de6ea700b, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_LowKick_best_143_24.fbx
+    sourceTake: Scene
+    duration: 0.73333037
+    frameRate: 120.00048
+    rootTravel: {x: -0.037992213, y: 0.009116297, z: -0.0826777}
+    rootYaw: -13.8173065
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (Left Foot Twist In-Out 5,13)
+    segmentOf: CMU_LowKick_best_143_24
+    segmentStart: 0.05
+    segmentEnd: 0.78
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 143_24: low front kick to the ankle / shin
+      (foot \u2248 0.3 m, peak 0.30) \u2014 LOW kick"
+  - name: CMU_MidKick_alt_143_24
+    clip: {fileID: 7400000, guid: e6e9878dbf283264eac3496170b8ec2e, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 2cbce2890d616b042975e4202ec6b42f, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_MidKick_alt_143_24.fbx
+    sourceTake: Scene
+    duration: 0.9999962
+    frameRate: 120.00048
+    rootTravel: {x: 0.1203832, y: 0.00693675, z: 0.11522087}
+    rootYaw: -7.2367325
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: pose pop(s) at 0,42s, 0,43s
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: CMU_MidKick_alt_143_24__HipKick
+    clip: {fileID: 7400000, guid: 513b0cfbbe2c35a4fa6ad940c62f2e1d, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: c76586a69efd6ab4eb2cc6eb069c0d8c, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_MidKick_alt_143_24.fbx
+    sourceTake: Scene
+    duration: 0.64999723
+    frameRate: 120.00048
+    rootTravel: {x: -0.1013578, y: 0.05931019, z: 0.5004319}
+    rootYaw: -11.225113
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: pose pop(s) at 0,43s
+    segmentOf: CMU_MidKick_alt_143_24
+    segmentStart: 0
+    segmentEnd: 0.65
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 143_24: right kick at the hip, clean and stationary
+      (peak 0.49) \u2014 MID kick alt"
+  - name: CMU_MidKick_best_143_24
+    clip: {fileID: 7400000, guid: f07d43ca608a1364bb94e56cc8641b44, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 31b85dc0b5dd87b4594dd074a125c39b, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_MidKick_best_143_24.fbx
+    sourceTake: Scene
+    duration: 0.76666355
+    frameRate: 120.00048
+    rootTravel: {x: 0.007659533, y: 0.012116929, z: 0.093488604}
+    rootYaw: -0.17224884
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: CMU_MidKick_best_143_24__MidKick
+    clip: {fileID: 7400000, guid: 1cf6089a16fca3344be4e52ad29312e2, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 2a307d9cea2a8124f8be458394a0f7b6, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_MidKick_best_143_24.fbx
+    sourceTake: Scene
+    duration: 0.71666384
+    frameRate: 120.00048
+    rootTravel: {x: 0.0054935166, y: 0.0077145672, z: 0.018470746}
+    rootYaw: -10.553825
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: CMU_MidKick_best_143_24
+    segmentStart: 0.05
+    segmentEnd: 0.77
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 143_24: kick to the hip / waist (\u2248 1.05
+      m, peak 0.33) \u2014 MID kick"
+  - name: CMU_MidPunch_alt_14_01
+    clip: {fileID: 7400000, guid: 2893c07268ad5cb4ba042fa744455157, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 876314367dee16249a4d32d35a2f7c26, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_MidPunch_alt_14_01.fbx
+    sourceTake: Scene
+    duration: 0.866663
+    frameRate: 120.00048
+    rootTravel: {x: 0.17264138, y: -0.0022978862, z: 0.39774352}
+    rootYaw: -10.750694
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: CMU_MidPunch_alt_14_01__CrossStep
+    clip: {fileID: 7400000, guid: 766279f6ef4edca4b9edc5da730339e1, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: c1c077247d6b4c04fb9540bd078b00c7, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_MidPunch_alt_14_01.fbx
+    sourceTake: Scene
+    duration: 0.71666527
+    frameRate: 120.00048
+    rootTravel: {x: 0.18499227, y: -0.009198834, z: 0.346094}
+    rootYaw: -17.960917
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: CMU_MidPunch_alt_14_01
+    segmentStart: 0.08
+    segmentEnd: 0.8
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 14_01: boxer right cross with a small step
+      in, chest height (peak 0.41) \u2014 MID punch alt"
+  - name: CMU_SpinHeelKick_best_90_06
+    clip: {fileID: 7400000, guid: 63d5ac2798eeb654f9945ff1622f1ae3, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: e1586e4f06597b745b62f3c006cf28bb, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_SpinHeelKick_best_90_06.fbx
+    sourceTake: Scene
+    duration: 1.0999956
+    frameRate: 120.00048
+    rootTravel: {x: -1.2125955, y: -0.109308966, z: 1.2873336}
+    rootYaw: 385.2604
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: pose pop(s) at 0,98s
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: CMU_SpinHeelKick_best_90_06__SpinHeelKick
+    clip: {fileID: 7400000, guid: 735d47bbf10459e41b4ad00c67d9181b, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: e13732edbbda4964e824d327a8513cd7, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: CMU Graphics Lab Motion Capture Database (BVH, converted)
+    sourceFbx: Assets/_Project/Animations/Source/CMU/Fight/CMU_SpinHeelKick_best_90_06.fbx
+    sourceTake: Scene
+    duration: 0.94999623
+    frameRate: 120.00048
+    rootTravel: {x: -1.4854567, y: -0.099177524, z: 0.10030993}
+    rootYaw: 340.10553
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: pose pop(s) at 0,83s
+    segmentOf: CMU_SpinHeelKick_best_90_06
+    segmentStart: 0.15
+    segmentEnd: 1.1
+    keepFacing: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 90_06: jumping spin kick, heel \u2248 1.9
+      m at ~220\xB0 of turn (peak 0.66) \u2014 the spin is baked into the pose"
+  - name: Mixamo_AirSpinKick
+    clip: {fileID: 7400000, guid: f3f9c5b258b1df240a9ac25099c24dd2, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: f80e64b8d93110749980c29dcb0378fa, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_AirSpinKick.fbx
+    sourceTake: mixamo.com
+    duration: 2.6666667
+    frameRate: 30
+    rootTravel: {x: -0.00017648241, y: 0.0000047030007, z: -0.00023604126}
+    rootYaw: -359.9999
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (Right Shoulder Front-Back 2,55)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_AirSpinKick__Strike
+    clip: {fileID: 7400000, guid: eccfaa3275f8b194a929d628c90e607a, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: f3558140bb6982a44b0dba8e855fd6b7, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_AirSpinKick.fbx
+    sourceTake: mixamo.com
+    duration: 0.9000001
+    frameRate: 30
+    rootTravel: {x: -0.08166079, y: -0.0244315, z: 0.09867501}
+    rootYaw: -309.20465
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (Right Shoulder Front-Back 2,55)
+    segmentOf: Mixamo_AirSpinKick
+    segmentStart: 0.9
+    segmentEnd: 1.8
+    keepFacing: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Aerial 360 Front Side Rotation Kick (inside
+      crescent): right foot 1.29 m (peak 1.33, airborne 1.17\u20131.67) \u2014 back
+      jump + Kick"
+  - name: Mixamo_BlockHighLeft
+    clip: {fileID: 7400000, guid: 8ca4cfbc9467f6c43b95193f99975bca, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: de21a190229f08747bce0b7789b9b0ba, type: 2}
+    category: 4
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_BlockHighLeft.fbx
+    sourceTake: mixamo.com
+    duration: 1.5333334
+    frameRate: 30
+    rootTravel: {x: -0.000000005365556, y: 0, z: -0.000000011094348}
+    rootYaw: -0.000032424927
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_BlockHighLeft__Guard
+    clip: {fileID: 7400000, guid: bcf43264c0cdbf14bba38cee13a9ba0f, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 05ddf6098e63afb4ba244f0d2767d2d2, type: 2}
+    category: 4
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_BlockHighLeft.fbx
+    sourceTake: mixamo.com
+    duration: 0.33333334
+    frameRate: 30
+    rootTravel: {x: -0.054911155, y: 0.017498279, z: 0.060950883}
+    rootYaw: -57.46985
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: Mixamo_BlockHighLeft
+    segmentStart: 0
+    segmentEnd: 0.35
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo High Left Block: both forearms up on the
+      left of the head (arms up \u2248 0.40)"
+  - name: Mixamo_BlockHighRight
+    clip: {fileID: 7400000, guid: 1975d3b7eff59194d9cf14b6b01a746f, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 55de3a80210ecc9478a0b91c26891c69, type: 2}
+    category: 4
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_BlockHighRight.fbx
+    sourceTake: mixamo.com
+    duration: 1.7
+    frameRate: 30
+    rootTravel: {x: -0.000000015884256, y: 0.00000005878751, z: -0.00000002152172}
+    rootYaw: -0.000011444092
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_BlockHighRight__Guard
+    clip: {fileID: 7400000, guid: 0fe33f6f7e21cf94dbaa993b2e69cb2b, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 1c8c015677971ac44901db3c3e89c17d, type: 2}
+    category: 4
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_BlockHighRight.fbx
+    sourceTake: mixamo.com
+    duration: 0.26666668
+    frameRate: 30
+    rootTravel: {x: -0.057219103, y: 0.036011524, z: 0.033409465}
+    rootYaw: 13.32885
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: very short (0,27 s); muscle beyond limits (LeftHand.Ring.Spread
+      2,92)
+    segmentOf: Mixamo_BlockHighRight
+    segmentStart: 0
+    segmentEnd: 0.25
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo High Right Block: forearms up on the right
+      of the head (arms up \u2248 0.28)"
+  - name: Mixamo_BlockLowLeft
+    clip: {fileID: 7400000, guid: ab6f602514af09f4b8b6d0164c94cbd9, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 8397f755984539a4990715cb6f26fedc, type: 2}
+    category: 4
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_BlockLowLeft.fbx
+    sourceTake: mixamo.com
+    duration: 1.5000001
+    frameRate: 30
+    rootTravel: {x: -0.0000000405582, y: -0.00000011757502, z: 0.000000010488942}
+    rootYaw: -0.000078201294
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_BlockLowLeft__Guard
+    clip: {fileID: 7400000, guid: e390765e77dca694d80244ce2d3ef6aa, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 712c65f27b4555c45bbf390997583039, type: 2}
+    category: 4
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_BlockLowLeft.fbx
+    sourceTake: mixamo.com
+    duration: 0.36666667
+    frameRate: 30
+    rootTravel: {x: 0.024729729, y: -0.059804182, z: 0.03555788}
+    rootYaw: -49.47202
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: Mixamo_BlockLowLeft
+    segmentStart: 0
+    segmentEnd: 0.38
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Low Left Block: forearms down over the
+      left ribs (\u2248 0.45)"
+  - name: Mixamo_BlockLowRight
+    clip: {fileID: 7400000, guid: 59381e80c45563640b7f95964d2f7686, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 0380eb66526906f42839b2fb0c336b0b, type: 2}
+    category: 4
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_BlockLowRight.fbx
+    sourceTake: mixamo.com
+    duration: 1.4333334
+    frameRate: 30
+    rootTravel: {x: -0.000000076931855, y: 0.00000011757502, z: 0.000000093788955}
+    rootYaw: 0.000022888184
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_BlockLowRight__Guard
+    clip: {fileID: 7400000, guid: f5412c02c92749c4b91a2240da8a85d9, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 7db0db0723f1ff04ca4a8cfaca2c1581, type: 2}
+    category: 4
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_BlockLowRight.fbx
+    sourceTake: mixamo.com
+    duration: 0.3
+    frameRate: 30
+    rootTravel: {x: -0.070369385, y: 0.013811244, z: 0.04216486}
+    rootYaw: 42.12337
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: Mixamo_BlockLowRight
+    segmentStart: 0
+    segmentEnd: 0.3
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Low Right Block: forearms down over the
+      right ribs (\u2248 0.33)"
+  - name: Mixamo_CrossBack
+    clip: {fileID: 7400000, guid: e61c44267a226e24499a653959129dc5, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: acd6c8bfd1d713249b58407e5a0fafab, type: 2}
+    category: 13
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_CrossBack.fbx
+    sourceTake: mixamo.com
+    duration: 2.1333334
+    frameRate: 30
+    rootTravel: {x: 0.00000001888733, y: -0.00000029393755, z: 0.000000014616395}
+    rootYaw: 0.000017166138
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Middle.Spread 3,36)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_CrossPunch
+    clip: {fileID: 7400000, guid: 3ac90eceb8fd52f40aafc8327cf0c8bb, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 741712085b6773a41aeee9a4d323970d, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_CrossPunch.fbx
+    sourceTake: mixamo.com
+    duration: 0.86666673
+    frameRate: 30
+    rootTravel: {x: -0.000000011134206, y: -0.00000005878751, z: -0.000000053976887}
+    rootYaw: 0.000023841858
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 14,52)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_CrossPunch__Strike
+    clip: {fileID: 7400000, guid: 165773319b67b06409693135bbf2d768, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 4579f934214da7944ae07c780ea08ec1, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_CrossPunch.fbx
+    sourceTake: mixamo.com
+    duration: 0.7333334
+    frameRate: 30
+    rootTravel: {x: -0.0029266982, y: 0.0084672235, z: 0.0009234183}
+    rootYaw: -2.5745
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 14,52)
+    segmentOf: Mixamo_CrossPunch
+    segmentStart: 0.05
+    segmentEnd: 0.8
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Cross Punch: right cross to the face (1.20
+      m, peak 0.37) \u2014 CENTRE high punch alt"
+  - name: Mixamo_DodgeAdvance
+    clip: {fileID: 7400000, guid: eeecd766d52b7ec47b067259ede5ad98, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 23e78fd2957d3004093290961d579916, type: 2}
+    category: 5
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_DodgeAdvance.fbx
+    sourceTake: mixamo.com
+    duration: 2.3333335
+    frameRate: 30
+    rootTravel: {x: -0.00046184752, y: -0.00018194734, z: 0.8649121}
+    rootYaw: -0.00046539307
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Middle.Spread 6,81)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_DodgeRetreat
+    clip: {fileID: 7400000, guid: 34b79eb17f30e734f868cac024643f68, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 6bd50c23d88a6dc41ad9b37df5aabd4f, type: 2}
+    category: 5
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_DodgeRetreat.fbx
+    sourceTake: mixamo.com
+    duration: 2.2333333
+    frameRate: 30
+    rootTravel: {x: 0.009169943, y: 0.000041445193, z: -0.50988764}
+    rootYaw: 0.00033187866
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 4,29)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_DodgeRight
+    clip: {fileID: 7400000, guid: 3a13f7052e13881408be74cf94d41337, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: a0cdd3b689ab13e40a7eceb8d4ab209b, type: 2}
+    category: 5
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_DodgeRight.fbx
+    sourceTake: mixamo.com
+    duration: 1.4333334
+    frameRate: 30
+    rootTravel: {x: -0.00021733278, y: 0.00000011757502, z: 0.002314467}
+    rootYaw: 0.000044584274
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.1 Stretched 2,72)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_DodgeRight__Sway
+    clip: {fileID: 7400000, guid: 25d011190b6175b43a645f1d5368753b, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 2a82757c5959ce24995e6e4c74764c57, type: 2}
+    category: 5
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_DodgeRight.fbx
+    sourceTake: mixamo.com
+    duration: 0.9
+    frameRate: 30
+    rootTravel: {x: -0.00796226, y: -0.015203979, z: 0.021464935}
+    rootYaw: 1.9122896
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.1 Stretched 2,72)
+    segmentOf: Mixamo_DodgeRight
+    segmentStart: 0.1
+    segmentEnd: 1
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Dodging Right: the torso sways right (head
+      +0.42 m at 0.55) and back \u2014 the sidestep (mirrored for the left)"
+  - name: Mixamo_HeavyPunch
+    clip: {fileID: 7400000, guid: 36442897098e5dc49826942ba86a4d15, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 34b3f8ce7f9b41e4380b4763e8d9f37e, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HeavyPunch.fbx
+    sourceTake: mixamo.com
+    duration: 2.2
+    frameRate: 30
+    rootTravel: {x: -0.00000007053927, y: 0.00000011757502, z: 0.000000046861786}
+    rootYaw: -0.000022888184
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 3,67)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HeavyPunch__Strike
+    clip: {fileID: 7400000, guid: 40dd1d957e812b34f86a62bf03f8efea, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: c7febda1183162e46901cc2a18a479ac, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HeavyPunch.fbx
+    sourceTake: mixamo.com
+    duration: 0.6333334
+    frameRate: 30
+    rootTravel: {x: 0.10297035, y: -0.018249525, z: 0.0017812798}
+    rootYaw: -37.18756
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 3,67)
+    segmentOf: Mixamo_HeavyPunch
+    segmentStart: 0.68
+    segmentEnd: 1.3
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Boxing Lead Hand Uppercut, steps in (peak
+      0.90) \u2014 strong punch"
+  - name: Mixamo_HeavyPunchAlt
+    clip: {fileID: 7400000, guid: b99ff7011dd87124baff1610c987c035, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 491eb4909a478264e9b5ea94ee227916, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HeavyPunchAlt.fbx
+    sourceTake: mixamo.com
+    duration: 2.266667
+    frameRate: 30
+    rootTravel: {x: 0.000022632688, y: 0.000002998163, z: 0.0000040720256}
+    rootYaw: 0.015705109
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HeavyPunchAlt__Strike
+    clip: {fileID: 7400000, guid: c85c7a86b4989a342a4be552229f10e6, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: f12cf00ab26c7d645b9246e017dbfb2f, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HeavyPunchAlt.fbx
+    sourceTake: mixamo.com
+    duration: 0.6333334
+    frameRate: 30
+    rootTravel: {x: 0.10146214, y: 0.00683346, z: 0.015029771}
+    rootYaw: -29.297783
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: Mixamo_HeavyPunchAlt
+    segmentStart: 0.7
+    segmentEnd: 1.35
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Long Hook Punch To The Head, steps in (peak
+      0.93, reach 1.28) \u2014 strong punch alt"
+  - name: Mixamo_HighBlock
+    clip: {fileID: 7400000, guid: ea568143b5beee74793796a016df99e1, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: fbf7e57076002324e9336009af617e2a, type: 2}
+    category: 4
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighBlock.fbx
+    sourceTake: mixamo.com
+    duration: 1.7666668
+    frameRate: 30
+    rootTravel: {x: -0.00000006092862, y: 0.00000005878751, z: -0.0000000052126428}
+    rootYaw: -0.000015258789
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,93)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HighBlock__Guard
+    clip: {fileID: 7400000, guid: ed8ff8d8497085549beeef630d5707cb, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 5154ae3c6cc976b48ac49afb7d997e5b, type: 2}
+    category: 4
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighBlock.fbx
+    sourceTake: mixamo.com
+    duration: 0.40000004
+    frameRate: 30
+    rootTravel: {x: 0.0070962794, y: -0.1289952, z: 0.0420719}
+    rootYaw: 0.20850754
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,93)
+    segmentOf: Mixamo_HighBlock
+    segmentStart: 0.05
+    segmentEnd: 0.45
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo High Center Block: arms rise to cover the
+      head and HOLD (last frame) \u2014 guard (the old one faced +91\xB0)"
+  - name: Mixamo_HighKick
+    clip: {fileID: 7400000, guid: 88cef70e1cb82ec4e87ccd56e9d5d8ce, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: ed63540a2606bb241a4eedc2756a088f, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighKick.fbx
+    sourceTake: mixamo.com
+    duration: 2
+    frameRate: 30
+    rootTravel: {x: -0.000000015158228, y: -0.00000011757502, z: -0.000000052475738}
+    rootYaw: 0.000034332275
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.1 Stretched 1,68)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HighKick__Strike
+    clip: {fileID: 7400000, guid: 5094b2f0cb5a992428bd83f1882bff4c, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: fd8c788cfad54154cbc9d80ec2ffede2, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighKick.fbx
+    sourceTake: mixamo.com
+    duration: 0.76666665
+    frameRate: 30
+    rootTravel: {x: -0.017200405, y: 0.01061432, z: 0.15309447}
+    rootYaw: -51.19167
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.1 Stretched 1,68)
+    segmentOf: Mixamo_HighKick
+    segmentStart: 0.33
+    segmentEnd: 1.1
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Mma High Kick: head kick, 1.38 m (peak
+      0.73) \u2014 HIGH kick"
+  - name: Mixamo_HighKickAlt
+    clip: {fileID: 7400000, guid: 35177961c2368fa41bc5a1e3230351ce, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 79c075693acb88841ae2fe4b2e1e54de, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighKickAlt.fbx
+    sourceTake: mixamo.com
+    duration: 1.6000001
+    frameRate: 30
+    rootTravel: {x: -0.000000009131751, y: 0, z: -0.000000027204859}
+    rootYaw: 0.000091552734
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.1 Stretched 2,07)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HighKickAlt__Strike
+    clip: {fileID: 7400000, guid: 91271b279a56abc4c83ad72c33281177, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 4187d4db25d70214192c8e3491ece7d5, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighKickAlt.fbx
+    sourceTake: mixamo.com
+    duration: 0.73333335
+    frameRate: 30
+    rootTravel: {x: -0.073854744, y: -0.025899425, z: -0.01295164}
+    rootYaw: -10.746674
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.1 Stretched 2,06)
+    segmentOf: Mixamo_HighKickAlt
+    segmentStart: 0.25
+    segmentEnd: 1
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Mma Side Kick at the head, 1.31 m (peak
+      0.63) \u2014 HIGH kick alt"
+  - name: Mixamo_HighPunch
+    clip: {fileID: 7400000, guid: d8cedfa7868e2304aa91ed9b35a2a217, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 159310181f2f1c94187c03da3371d590, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighPunch.fbx
+    sourceTake: mixamo.com
+    duration: 1.5000001
+    frameRate: 30
+    rootTravel: {x: 0.0000002133733, y: 0, z: 0.00000012039814}
+    rootYaw: -0.000019073486
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HighPunch__Strike
+    clip: {fileID: 7400000, guid: 949462a6acf0e134a8682e04a73f765b, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 1789281e5e2c1b545a525f6945792b36, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighPunch.fbx
+    sourceTake: mixamo.com
+    duration: 0.6333333
+    frameRate: 30
+    rootTravel: {x: -0.39566925, y: 0.0027942879, z: 0.25678623}
+    rootYaw: 22.817707
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: Mixamo_HighPunch
+    segmentStart: 0.1
+    segmentEnd: 0.75
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Med Head Jab: lead jab to the face, 1.35
+      m (peak 0.43) \u2014 HIGH punch"
+  - name: Mixamo_HighPunchAlt
+    clip: {fileID: 7400000, guid: 5152836c62a6430408f0d4963b8eed5a, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 2114438353cd1da4ebf4e7b036531ff1, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighPunchAlt.fbx
+    sourceTake: mixamo.com
+    duration: 2.2
+    frameRate: 30
+    rootTravel: {x: -0.0000000070431136, y: 0.00000011757502, z: -0.00000003841721}
+    rootYaw: 0.000045776367
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Middle.Spread 6,86)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HighPunchAlt__Strike
+    clip: {fileID: 7400000, guid: 597814c0454f6d846988159ff579a8eb, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: f4bdbdbc216dd2b4aa3ebf6d5a792995, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighPunchAlt.fbx
+    sourceTake: mixamo.com
+    duration: 0.70000005
+    frameRate: 30
+    rootTravel: {x: -0.19035286, y: 0.0027272701, z: 0.1738844}
+    rootYaw: -26.13521
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Middle.Spread 6,86)
+    segmentOf: Mixamo_HighPunchAlt
+    segmentStart: 0.32
+    segmentEnd: 1.05
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Boxing Back Hand Uppercut (peak 0.70) \u2014
+      HIGH punch alt"
+  - name: Mixamo_HitBody
+    clip: {fileID: 7400000, guid: a4b11f986d86c564c96d1c5f9247e251, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: f86243a52d86902409d28cdc0e817a0a, type: 2}
+    category: 6
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitBody.fbx
+    sourceTake: mixamo.com
+    duration: 1.6000001
+    frameRate: 30
+    rootTravel: {x: 0.000027153876, y: 0.0000020575628, z: -0.000008732515}
+    rootYaw: -0.012220383
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 4,28)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HitBody__React
+    clip: {fileID: 7400000, guid: 5853d058bf3e50c4cbd0eaf222d38728, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: d251362e41285a24d8d4a9d96c6edefd, type: 2}
+    category: 6
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitBody.fbx
+    sourceTake: mixamo.com
+    duration: 1
+    frameRate: 30
+    rootTravel: {x: 0.012192099, y: -0.093194604, z: 0.012978776}
+    rootYaw: -28.954508
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 4,28)
+    segmentOf: Mixamo_HitBody
+    segmentStart: 0
+    segmentEnd: 1
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Receive Punch To The Body \u2014 hit reaction
+      alt"
+  - name: Mixamo_HitHeadLeft
+    clip: {fileID: 7400000, guid: 411145d79af44fb49a66c6686fa6b93b, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: d0f4dffc00ab468428a089ae999ce836, type: 2}
+    category: 6
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitHeadLeft.fbx
+    sourceTake: mixamo.com
+    duration: 1.2333333
+    frameRate: 30
+    rootTravel: {x: -0.00000009945615, y: 0.00000011757502, z: -0.00000000939505}
+    rootYaw: 0.000062942505
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HitHeadLight
+    clip: {fileID: 7400000, guid: 6d7288ec300f2a04cb0ea7417465c2c0, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 2340e4f3f26fa0b41917684563a05713, type: 2}
+    category: 6
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitHeadLight.fbx
+    sourceTake: mixamo.com
+    duration: 0.8000001
+    frameRate: 30
+    rootTravel: {x: -0.000000030464314, y: 0, z: -0.000000002606321}
+    rootYaw: -0.000038146973
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HitHeadLight__React
+    clip: {fileID: 7400000, guid: 589afc7178d07ac4bb16441b7ae9d417, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 14e48337f0522864bb243a0beb8a3a5f, type: 2}
+    category: 6
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitHeadLight.fbx
+    sourceTake: mixamo.com
+    duration: 0.8000001
+    frameRate: 30
+    rootTravel: {x: -0.000000030464314, y: 0, z: -0.000000002606321}
+    rootYaw: -0.000038146973
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: Mixamo_HitHeadLight
+    segmentStart: 0
+    segmentEnd: 0.8
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Light Hit To Head (straight punch) \u2014
+      hit reaction"
+  - name: Mixamo_HitHeadMedium
+    clip: {fileID: 7400000, guid: cf5fe1420d09907409965994fddf1ba4, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 68b9bcd8872117f4d9910e4416374bd2, type: 2}
+    category: 6
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitHeadMedium.fbx
+    sourceTake: mixamo.com
+    duration: 1
+    frameRate: 30
+    rootTravel: {x: -0.000000047287458, y: 0, z: 0.000000019219124}
+    rootYaw: -0.00007247925
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HitHeadRight
+    clip: {fileID: 7400000, guid: a6ebcbc8185f7044797c0688d1df8064, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: b44baf3955fea6f47849b7bc06e13711, type: 2}
+    category: 6
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitHeadRight.fbx
+    sourceTake: mixamo.com
+    duration: 1.1666667
+    frameRate: 30
+    rootTravel: {x: 0.00000008111638, y: 0.00000005878751, z: -0.000000020977938}
+    rootYaw: 0.000038146973
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HitHeadRight__React
+    clip: {fileID: 7400000, guid: 6dd125388e075f64c923ca7711852cfc, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: a3d94049e8e05634ca21f6a00d4fd701, type: 2}
+    category: 6
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitHeadRight.fbx
+    sourceTake: mixamo.com
+    duration: 1
+    frameRate: 30
+    rootTravel: {x: 0.0017004365, y: 0.011449279, z: 0.00180153}
+    rootYaw: 7.929756
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: Mixamo_HitHeadRight
+    segmentStart: 0
+    segmentEnd: 1
+    keepFacing: 1
+    review: 1
+    notes: 'Mocap scan 2026-11-04: Mixamo Medium Hit To The Head From A Right Punch:
+      head snaps to the right (mirrored for a left hand)'
+  - name: Mixamo_HitHeadStraight
+    clip: {fileID: 7400000, guid: 497e0d53df2e9924f81f2bbd244689df, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 78c3e129f9942cb4f8268f7de7dbf70a, type: 2}
+    category: 6
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitHeadStraight.fbx
+    sourceTake: mixamo.com
+    duration: 1.1
+    frameRate: 30
+    rootTravel: {x: -0.014508503, y: -0.031643316, z: -0.0203877}
+    rootYaw: 0.88365173
+    trimmedStartFrames: 4
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HitSide
+    clip: {fileID: 7400000, guid: 06564726d62e1074b893618192160652, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: bcb85d1d2e02cf2438d52e688c3837f1, type: 2}
+    category: 6
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitSide.fbx
+    sourceTake: mixamo.com
+    duration: 0.9666667
+    frameRate: 30
+    rootTravel: {x: 0, y: 0, z: 0}
+    rootYaw: -0.000022888184
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HitStomach
+    clip: {fileID: 7400000, guid: c7aacc6c10d2ba84aae8c135060c1f1c, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 7a56230891bc77b4299959c0399221b3, type: 2}
+    category: 6
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitStomach.fbx
+    sourceTake: mixamo.com
+    duration: 1.2
+    frameRate: 30
+    rootTravel: {x: 0.000000013518013, y: 0, z: -0.000000077722014}
+    rootYaw: 0.00002670288
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HookBack
+    clip: {fileID: 7400000, guid: 98eea2ad100c7f74786faf1af1044d50, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 356a825273a78f94fb5034baf27f8351, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HookBack.fbx
+    sourceTake: mixamo.com
+    duration: 2.1666667
+    frameRate: 30
+    rootTravel: {x: 0.00000005599515, y: 0.00000035272507, z: 0.000000023162738}
+    rootYaw: 0.0000038146973
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Middle.Spread 4,54)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HookBack__Strike
+    clip: {fileID: 7400000, guid: d0a15badada65b2438fb7478205b3d0e, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 249aeae883b18614987fffd40ca958df, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HookBack.fbx
+    sourceTake: mixamo.com
+    duration: 0.8000001
+    frameRate: 30
+    rootTravel: {x: -0.3698552, y: -0.02620659, z: 0.2811291}
+    rootYaw: -58.02186
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Middle.Spread 4,54)
+    segmentOf: Mixamo_HookBack
+    segmentStart: 0.15
+    segmentEnd: 0.95
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Boxing Back Hand Hook: right hook, 1.06
+      m (peak 0.73) \u2014 SIDE mid punch / close short hook"
+  - name: Mixamo_HookLead
+    clip: {fileID: 7400000, guid: 2377e7cb71902cf4db1ad3c8dc46f248, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: f68b14c1d0bb8b143b3da392c2eb5c0b, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HookLead.fbx
+    sourceTake: mixamo.com
+    duration: 2
+    frameRate: 30
+    rootTravel: {x: 0.000000061500955, y: 0.00000005878751, z: 0.00000017659478}
+    rootYaw: 0.000045776367
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 3,78)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_HookLead__Strike
+    clip: {fileID: 7400000, guid: 507bb8f0bc4a3b3409afa4b59aa3b594, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 8855143e54a0abb4bbd56e7fab9866b0, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HookLead.fbx
+    sourceTake: mixamo.com
+    duration: 0.8000001
+    frameRate: 30
+    rootTravel: {x: -0.27143967, y: -0.0011932101, z: 0.2707067}
+    rootYaw: 37.099922
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 3,78)
+    segmentOf: Mixamo_HookLead
+    segmentStart: 0.15
+    segmentEnd: 0.95
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Boxing Lead Hand Hook: left hook to the
+      head (1.49 m, peak 0.50) \u2014 SIDE high punch"
+  - name: Mixamo_HookPunch
+    clip: {fileID: 7400000, guid: 62ba3caffe723be49b407e123622d3b9, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 7c187035f83a1c447a88eea0125db507, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HookPunch.fbx
+    sourceTake: mixamo.com
+    duration: 2.1666667
+    frameRate: 30
+    rootTravel: {x: 0.000000029503504, y: -0.00000005878751, z: -0.000000047127674}
+    rootYaw: 0.00002670288
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Middle.Spread 3,21)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_JabLead
+    clip: {fileID: 7400000, guid: 7f333c29ca762ef40bb088521a0e26a1, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 261d1aa2f912b7642abf588ee720f0cc, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_JabLead.fbx
+    sourceTake: mixamo.com
+    duration: 1.7333335
+    frameRate: 30
+    rootTravel: {x: 0.000000024695332, y: 0.00000023515004, z: 0.000000045160753}
+    rootYaw: -0.000032424927
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Middle.Spread 4,64)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_JabPunch
+    clip: {fileID: 7400000, guid: 3550546ecf322614b9b8539160f50683, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 7ef959abc35167345b88c4bc958b37c1, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_JabPunch.fbx
+    sourceTake: mixamo.com
+    duration: 1.0333334
+    frameRate: 30
+    rootTravel: {x: -0.0001134581, y: -0.0004857612, z: -0.00005736422}
+    rootYaw: -0.090307236
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 13,77)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_KickLeadFoot
+    clip: {fileID: 7400000, guid: 2d750238db94a804a9f5e9f18c05eee4, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 14373f8c97e42534f9c7f50bfa2001dd, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_KickLeadFoot.fbx
+    sourceTake: mixamo.com
+    duration: 2.3333335
+    frameRate: 30
+    rootTravel: {x: -0.0000016479477, y: -0.00000023515004, z: -0.0000029299035}
+    rootYaw: 0.000022888184
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: pose pop(s) at 0,63s, 0,67s; muscle beyond limits (LeftHand.Ring.Spread
+      5,33)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_KneeBoxing
+    clip: {fileID: 7400000, guid: 7cdfcc08efefd8245b1041378c8fb2cd, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 5393fbf960263534ba42668b08fc67e5, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_KneeBoxing.fbx
+    sourceTake: mixamo.com
+    duration: 2.266667
+    frameRate: 30
+    rootTravel: {x: 0.000016381011, y: 0.000002645438, z: -0.0000021065778}
+    rootYaw: -0.0031700134
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_KneeMuayThai
+    clip: {fileID: 7400000, guid: 9494baa719f6bf04e9e325f91ff935d9, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: c0699b9dba5dd0e47aef51cef67aae32, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_KneeMuayThai.fbx
+    sourceTake: mixamo.com
+    duration: 2.266667
+    frameRate: 30
+    rootTravel: {x: -0.000000036101774, y: -0.00000017636253, z: 0.000000034799655}
+    rootYaw: 0.00009918213
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_KneeMuayThai__Strike
+    clip: {fileID: 7400000, guid: 30898ffb91461df40a4c320eda545e31, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: c54f2c2020798374abe730b92d5155c3, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_KneeMuayThai.fbx
+    sourceTake: mixamo.com
+    duration: 0.8000001
+    frameRate: 30
+    rootTravel: {x: -0.034836456, y: 0.06414217, z: 0.1056921}
+    rootYaw: -14.871574
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: Mixamo_KneeMuayThai
+    segmentStart: 0.35
+    segmentEnd: 1.15
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Muay Thai Illegal Knee: right knee up (peak
+      0.73) \u2014 close range"
+  - name: Mixamo_LowBlock
+    clip: {fileID: 7400000, guid: ce835ab3aa9d4b04787613ac359bfae3, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 17a32e83c10ebfb4fac5dddc130b2e38, type: 2}
+    category: 4
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_LowBlock.fbx
+    sourceTake: mixamo.com
+    duration: 1.6000001
+    frameRate: 30
+    rootTravel: {x: 0.000000036101767, y: 0, z: -0.000000034799662}
+    rootYaw: 0.0000743866
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_LowKick
+    clip: {fileID: 7400000, guid: a975e51b2e6656645b63ea273459d241, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 22238af2d816cbd4b90d7f489be0fdf8, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_LowKick.fbx
+    sourceTake: mixamo.com
+    duration: 1.5000001
+    frameRate: 30
+    rootTravel: {x: 0.000000084504535, y: 0.00000005878751, z: -0.00000011624892}
+    rootYaw: 0.000017166138
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Thumb.1 Stretched 1,80)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_LowKick__Strike
+    clip: {fileID: 7400000, guid: 2e97e22ae5387944382bb0c6cb289549, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: b367a5bdd5c1f5547a676069cc438d5d, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_LowKick.fbx
+    sourceTake: mixamo.com
+    duration: 0.6333333
+    frameRate: 30
+    rootTravel: {x: -0.121231586, y: 0.02962138, z: 0.12241186}
+    rootYaw: -30.259583
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Thumb.1 Stretched 1,80)
+    segmentOf: Mixamo_LowKick
+    segmentStart: 0.25
+    segmentEnd: 0.9
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Mma Low Kick: thigh / knee, 0.62 m (peak
+      0.60) \u2014 LOW kick"
+  - name: Mixamo_LowKickAlt
+    clip: {fileID: 7400000, guid: 74cd43190fd61fc4ab034a9c7cac0a7e, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 2c0c713f608a6cc42a40a2469c4e0fe1, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_LowKickAlt.fbx
+    sourceTake: mixamo.com
+    duration: 1.7333335
+    frameRate: 30
+    rootTravel: {x: -0.91755915, y: -0.046679106, z: 0.3949895}
+    rootYaw: -137.28355
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 6,31)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_LowPunch
+    clip: {fileID: 7400000, guid: e595285568de2ae4f9bf5a38fd57ca36, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 015f220a08b2e584bbca52f667170742, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_LowPunch.fbx
+    sourceTake: mixamo.com
+    duration: 1.8000001
+    frameRate: 30
+    rootTravel: {x: 0.0000020070252, y: 0.00000017636253, z: -0.00000047328055}
+    rootYaw: -0.00002670288
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_LowPunch__Strike
+    clip: {fileID: 7400000, guid: 17951f517bf26b547b4a67ab25c9922a, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: aefb703d9016ece4cb93e46a64a3d8a2, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_LowPunch.fbx
+    sourceTake: mixamo.com
+    duration: 0.70000005
+    frameRate: 30
+    rootTravel: {x: -0.12945393, y: 0.0029478408, z: 0.11494372}
+    rootYaw: 11.155224
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: Mixamo_LowPunch
+    segmentStart: 0.17
+    segmentEnd: 0.85
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Mid Body Jab: lead jab to the belly, 0.91
+      m (peak 0.50) \u2014 LOW punch"
+  - name: Mixamo_LowPunchAlt
+    clip: {fileID: 7400000, guid: e3fb8b9b71c05414eafbdaaa9fe2f7b8, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 5bbdd9621a9dbe44c9d46d2a8530b6a3, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_LowPunchAlt.fbx
+    sourceTake: mixamo.com
+    duration: 1.9000001
+    frameRate: 30
+    rootTravel: {x: 0.00000086758075, y: 0.00000017636253, z: 0.000000054061665}
+    rootYaw: 0.000030517578
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 5,02)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_LowPunchAlt__Strike
+    clip: {fileID: 7400000, guid: 80aaa1272275b954da47617f7e84d77d, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 490a6c2fd4dac054c8420e84ed1fb1f6, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_LowPunchAlt.fbx
+    sourceTake: mixamo.com
+    duration: 0.66666675
+    frameRate: 30
+    rootTravel: {x: -0.26248434, y: -0.02599231, z: 0.11331089}
+    rootYaw: 32.10338
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 5,02)
+    segmentOf: Mixamo_LowPunchAlt
+    segmentStart: 0.37
+    segmentEnd: 1.05
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Short Hook Punch To The Body (peak 0.73)
+      \u2014 LOW punch alt"
+  - name: Mixamo_MidKick
+    clip: {fileID: 7400000, guid: cf21df2d28de08a4b8b7cfb697a622fe, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 15ddc8e5e20eb9546800c2d236a326e4, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_MidKick.fbx
+    sourceTake: mixamo.com
+    duration: 1.6000001
+    frameRate: 30
+    rootTravel: {x: -0.00001526703, y: -0.000009817514, z: 0.000018162676}
+    rootYaw: -0.010372162
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.1 Stretched 1,93)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_MidKick__Strike
+    clip: {fileID: 7400000, guid: 57fff7a95a2b2b24bab67186e5b791d4, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 10ab946bd6707fc4789bca1cf8ca2462, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_MidKick.fbx
+    sourceTake: mixamo.com
+    duration: 0.7333334
+    frameRate: 30
+    rootTravel: {x: -0.10285079, y: 0.003552294, z: 0.09760255}
+    rootYaw: -43.8825
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Thumb.1 Stretched 1,82)
+    segmentOf: Mixamo_MidKick
+    segmentStart: 0.3
+    segmentEnd: 1.05
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Mma Medium Kick: rear-leg kick to the ribs,
+      1.12 m (peak 0.70) \u2014 MID kick"
+  - name: Mixamo_MidKickAlt
+    clip: {fileID: 7400000, guid: 800fa9a62b9083c429bd9e96dd8d67b6, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 0a272471184d9ac48ad318dca1aa0bfa, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_MidKickAlt.fbx
+    sourceTake: mixamo.com
+    duration: 1.5000001
+    frameRate: 30
+    rootTravel: {x: -0.000014530435, y: 0.000018341703, z: -0.00007566986}
+    rootYaw: -0.00027275085
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_MidKickAlt__Strike
+    clip: {fileID: 7400000, guid: 84cf3af874a57ae458d1b096b366c8e9, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 1bccbf293ffd8dc4aa4056bfb8834ab8, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_MidKickAlt.fbx
+    sourceTake: mixamo.com
+    duration: 0.66666675
+    frameRate: 30
+    rootTravel: {x: -0.025303124, y: 0.09110659, z: 0.12321666}
+    rootYaw: 6.2299786
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: 
+    segmentOf: Mixamo_MidKickAlt
+    segmentStart: 0.25
+    segmentEnd: 0.95
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Roundhouse Kick With The Rear Foot, 0.98
+      m (peak 0.63) \u2014 MID kick alt"
+  - name: Mixamo_MidPunch
+    clip: {fileID: 7400000, guid: f0bbcd691bb8f7141832df56e9c58e12, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: c7e67f7e354b8bf4882f227f30645a90, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_MidPunch.fbx
+    sourceTake: mixamo.com
+    duration: 0.86666673
+    frameRate: 30
+    rootTravel: {x: -0.000000011134206, y: -0.00000005878751, z: -0.000000053976887}
+    rootYaw: 0.000023841858
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 14,52)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_MidPunch__Strike
+    clip: {fileID: 7400000, guid: 3d7e0ab30472e994cb2dfdb414dc53da, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 186380915ecae184c819d1591800fad2, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_MidPunch.fbx
+    sourceTake: mixamo.com
+    duration: 0.7
+    frameRate: 30
+    rootTravel: {x: -0.019034747, y: 0.007786876, z: 0.008107599}
+    rootYaw: -14.910454
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 14,52)
+    segmentOf: Mixamo_MidPunch
+    segmentStart: 0.04
+    segmentEnd: 0.72
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Cross Punch: right cross, chest height
+      (peak 0.37) \u2014 MID punch"
+  - name: Mixamo_MidPunchAlt
+    clip: {fileID: 7400000, guid: 88e92b9999426cd45a8c30f3a8f6abe7, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: b6b4a27632ce169478e8055d9feda52e, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_MidPunchAlt.fbx
+    sourceTake: mixamo.com
+    duration: 1.9666668
+    frameRate: 30
+    rootTravel: {x: 0.00000003713405, y: 0, z: 0.000000054137804}
+    rootYaw: 0.000022888184
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_MidPunchAlt__Strike
+    clip: {fileID: 7400000, guid: 1ecf3d423762c9f46853f1e79fc9d296, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 90efd2f6a6afd8f4892cefa6be2d2169, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_MidPunchAlt.fbx
+    sourceTake: mixamo.com
+    duration: 0.6666666
+    frameRate: 30
+    rootTravel: {x: -0.045860752, y: -0.012712387, z: -0.015887992}
+    rootYaw: -23.468832
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (LeftHand.Ring.Spread 2,92)
+    segmentOf: Mixamo_MidPunchAlt
+    segmentStart: 0.32
+    segmentEnd: 1
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Short Jab Cross: the cross (peak 0.67)
+      \u2014 MID punch alt"
+  - name: Mixamo_MmaRoundhouse
+    clip: {fileID: 7400000, guid: bb6825343eacd6043bc08f3bd65d0afb, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 08f45f84eda18774b8945e0e23314dea, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_MmaRoundhouse.fbx
+    sourceTake: mixamo.com
+    duration: 1.6666667
+    frameRate: 30
+    rootTravel: {x: -0.00000003203223, y: -0.00000011757502, z: 0.00000010109077}
+    rootYaw: -360
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (RightHand.Thumb.1 Stretched 1,78)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_SpinKick
+    clip: {fileID: 7400000, guid: 74875b48d08fadd4696aaa25c0bfe69e, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 1f73095e93da96943b88a4d42cb225d9, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_SpinKick.fbx
+    sourceTake: mixamo.com
+    duration: 2.0333335
+    frameRate: 30
+    rootTravel: {x: 0.24277389, y: 0.000038153095, z: 0.45910656}
+    rootYaw: 359.98285
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.1 Stretched 2,37)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_SpinKick__Strike
+    clip: {fileID: 7400000, guid: c9287925e2905a341876a8d4c601accf, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: a9f56b75f2e540e4692388d48c5d8196, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_SpinKick.fbx
+    sourceTake: mixamo.com
+    duration: 0.76666677
+    frameRate: 30
+    rootTravel: {x: -0.36718038, y: 0.012034685, z: -0.00980179}
+    rootYaw: 207.59668
+    trimmedStartFrames: 0
+    fingerCapture: 1
+    fingerMode: 0
+    importWarnings: muscle beyond limits (LeftHand.Thumb.1 Stretched 1,63)
+    segmentOf: Mixamo_SpinKick
+    segmentStart: 0.62
+    segmentEnd: 1.4
+    keepFacing: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Mma Spinning Back Kick, full turn baked
+      into the pose, 1.49 m (peak 0.97) \u2014 Back + Kick"
+  - name: Mixamo_Sweep360
+    clip: {fileID: 7400000, guid: 477f090c4130c5840876e485536b2b7d, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 4d0b6352881599e4eaa05997d55130d3, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_Sweep360.fbx
+    sourceTake: mixamo.com
+    duration: 2.3333335
+    frameRate: 30
+    rootTravel: {x: -0.0000008792586, y: 0.00000005878751, z: -0.00000026488001}
+    rootYaw: 359.99915
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 1,57)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_Sweep360__Strike
+    clip: {fileID: 7400000, guid: daa62d359b534fc45a6a77286e8cd63a, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 07e8a630d6149134a9475a5ee19cb9fc, type: 2}
+    category: 2
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_Sweep360.fbx
+    sourceTake: mixamo.com
+    duration: 1.2000002
+    frameRate: 30
+    rootTravel: {x: -0.06821154, y: 0.03237293, z: 0.10499401}
+    rootYaw: 380.97845
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 1,57)
+    segmentOf: Mixamo_Sweep360
+    segmentStart: 0.4
+    segmentEnd: 1.6
+    keepFacing: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo 360 Degrees Back Leg Sweep: crouched full
+      turn, foot at the floor (peak 1.03) \u2014 Back + Down + Kick"
+  - name: Mixamo_SweepBack
+    clip: {fileID: 7400000, guid: e3d36fc7bd01b5d4bb71b7bc0d6ca871, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 7a1c3b0aa11c789449e1b13ec74915b1, type: 2}
+    category: 2
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 1
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_SweepBack.fbx
+    sourceTake: mixamo.com
+    duration: 2.2333333
+    frameRate: 30
+    rootTravel: {x: -1.1045053, y: -0.010230026, z: 0.33985743}
+    rootYaw: 238.57831
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (Head Turn Left-Right 1,84)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_UppercutBack
+    clip: {fileID: 7400000, guid: 3ad311c9f3f0b9f47bef3af097d2cfb6, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 23c60a76f64f72148832ce3eda79bcc3, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_UppercutBack.fbx
+    sourceTake: mixamo.com
+    duration: 2.2
+    frameRate: 30
+    rootTravel: {x: -0.0000000070431136, y: 0.00000011757502, z: -0.00000003841721}
+    rootYaw: 0.000045776367
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Middle.Spread 6,86)
+    segmentOf: 
+    segmentStart: 0
+    segmentEnd: 0
+    keepFacing: 0
+    review: 0
+    notes: 
+  - name: Mixamo_UppercutBack__Strike
+    clip: {fileID: 7400000, guid: d6a1f659eb22ace4db7d7a25f79d1b3a, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: 005c3ebd78e5e3e4aa5fee787d513742, type: 2}
+    category: 1
+    categoryReviewed: 1
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_UppercutBack.fbx
+    sourceTake: mixamo.com
+    duration: 0.76666665
+    frameRate: 30
+    rootTravel: {x: -0.13326153, y: -0.006530352, z: 0.16491567}
+    rootYaw: -23.628542
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Middle.Spread 6,86)
+    segmentOf: Mixamo_UppercutBack
+    segmentStart: 0.35
+    segmentEnd: 1.1
+    keepFacing: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Boxing Back Hand Uppercut (peak 0.70) \u2014
+      close range, centre"
+  - name: Mixamo_UppercutLead
+    clip: {fileID: 7400000, guid: cfafcf7dba9541c4fba3c0c64fbbe364, type: 2}
+    inPlaceClip: {fileID: 7400000, guid: cd909f6d494628949b6601471e343b0b, type: 2}
+    category: 1
+    categoryReviewed: 0
+    loop: 0
+    rootMotion: 0
+    sourcePack: Mixamo (Adobe) fighting animations
+    sourceFbx: Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_UppercutLead.fbx
+    sourceTake: mixamo.com
+    duration: 2.2
+    frameRate: 30
+    rootTravel: {x: -0.00000007053927, y: 0.00000011757502, z: 0.000000046861786}
+    rootYaw: -0.000022888184
+    trimmedStartFrames: 0
+    fingerCapture: 0
+    fingerMode: 1
+    importWarnings: muscle beyond limits (RightHand.Ring.Spread 3,67)
     segmentOf: 
     segmentStart: 0
     segmentEnd: 0
@@ -1630,6 +4250,7 @@ MonoBehaviour:
     category: 0
     loop: 1
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: Reviewed 2026-10-01 (frame-by-frame window render). Tight boxing guard
       with a light bounce; 7.0-9.2 s only (a jab follows at ~10 s). Looped (loop
@@ -1641,6 +4262,7 @@ MonoBehaviour:
     category: 1
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: Reviewed 2026-10-01 (frame-by-frame window render). Guard -> left jab
       (extended at ~8.35 s) -> right cross (~8.7 s, 7 m/s hand peak) -> back to guard.
@@ -1651,6 +4273,7 @@ MonoBehaviour:
     category: 1
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: Reviewed 2026-10-01 (frame-by-frame window render). Jab then a big rotating
       right hook/overhand (~19.9 s, 6.5 m/s) with full body turn, recovers to guard.
@@ -1662,6 +4285,7 @@ MonoBehaviour:
     category: 2
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: Reviewed 2026-10-01 (frame-by-frame window render). Guard, knee chamber,
       front kick (~3.85 s), recover. The kick is compact (not a high snap).
@@ -1672,6 +4296,7 @@ MonoBehaviour:
     category: 2
     loop: 0
     keepFacing: 0
+    heightToRootMotion: 0
     review: 1
     notes: 'Reviewed 2026-10-01 (frame-by-frame window render). Spinning back roundhouse:
       turns away, chambers, kicks (~7.8 s, 9 m/s foot peak). Ends facing ~away from
@@ -1683,6 +4308,7 @@ MonoBehaviour:
     category: 4
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: 'Reviewed 2026-10-01 (frame-by-frame window render). High cover-up: both
       forearms tight in front of the face while shuffling. A body block, not a parry.'
@@ -1693,6 +4319,7 @@ MonoBehaviour:
     category: 5
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: Reviewed 2026-10-01 (frame-by-frame window render). Drops lower under
       the cover and weaves, then rises. The best 'dodge' in the packs (no dedicated
@@ -1704,6 +4331,7 @@ MonoBehaviour:
     category: 6
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: 'Reviewed 2026-10-01 (frame-by-frame window render). Takes a hit: head
       snaps back, body twists and staggers. Does NOT recover to guard (it continues
@@ -1715,6 +4343,7 @@ MonoBehaviour:
     category: 7
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: 'Reviewed 2026-10-01 (frame-by-frame window render). Hit -> stagger ->
       crouching collapse -> falls onto the back (lying from ~11.7 s). Lying body
@@ -1728,6 +4357,7 @@ MonoBehaviour:
     category: 8
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: 'Reviewed 2026-10-01 (frame-by-frame window render). From lying on the
       back: sits up, crouches, rises hunched to standing. Pairs with KnockedDown.'
@@ -1738,6 +4368,7 @@ MonoBehaviour:
     category: 10
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: Reviewed 2026-10-01 (frame-by-frame window render). Right fist raised
       high and held (~7-11 s), then lowers. The clearest victory pose in the packs.
@@ -1748,6 +4379,7 @@ MonoBehaviour:
     category: 1
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: "Reviewed 2026-10-01 (window renders). Single left jab (extended ~0.2
       s in) \u2014 LightAttack clip."
@@ -1758,6 +4390,7 @@ MonoBehaviour:
     category: 1
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: "Reviewed 2026-10-01 (window renders). Rotating right hook (landing ~0.45
       s in) \u2014 HeavyAttack clip."
@@ -1768,6 +4401,7 @@ MonoBehaviour:
     category: 6
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: "Reviewed 2026-10-01 (window renders). Short head-snap reaction \u2014
       HitReaction clip."
@@ -1778,6 +4412,7 @@ MonoBehaviour:
     category: 7
     loop: 1
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: "Reviewed 2026-10-01 (window renders). Lying on the back (between the
       fall and the get-up) \u2014 Downed loop."
@@ -1788,6 +4423,7 @@ MonoBehaviour:
     category: 11
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: "Runner segment (RunnerClipAnalysis 2026-10-01). Hurdle take-off \u2192
       apex (4.1) \u2192 touchdown (4.5)."
@@ -1798,6 +4434,7 @@ MonoBehaviour:
     category: 11
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: Runner segment (RunnerClipAnalysis 2026-10-01). Touchdown and running
       recovery after the hurdle.
@@ -1808,6 +4445,7 @@ MonoBehaviour:
     category: 11
     loop: 1
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: "Runner segment (RunnerClipAnalysis 2026-10-01). Straight stretch (yaw
       \xB18\xB0), 3 cycles of ~0.63 s; rigid rifle-carry arms."
@@ -1818,6 +4456,7 @@ MonoBehaviour:
     category: 11
     loop: 1
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: Runner segment (RunnerClipAnalysis 2026-10-01). Straight sprint stretch,
       3 cycles of ~0.5 s; rifle-carry arms.
@@ -1828,6 +4467,7 @@ MonoBehaviour:
     category: 11
     loop: 0
     keepFacing: 0
+    heightToRootMotion: 0
     review: 1
     notes: "Runner segment (RunnerClipAnalysis 2026-10-01). Net \u2248 -360\xB0 spin
       (ends facing its start) with a kick."
@@ -1838,6 +4478,7 @@ MonoBehaviour:
     category: 11
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: Runner segment (RunnerClipAnalysis 2026-10-01). Hands up waving at the
       audience.
@@ -1848,6 +4489,7 @@ MonoBehaviour:
     category: 11
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: Runner segment (RunnerClipAnalysis 2026-10-01). Both arms raised high.
   - name: RunnerPresentGesture
@@ -1857,6 +4499,7 @@ MonoBehaviour:
     category: 11
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: Runner segment (RunnerClipAnalysis 2026-10-01). Open presenting arm gesture.
   - name: RunnerTaiChiRaise
@@ -1866,6 +4509,7 @@ MonoBehaviour:
     category: 11
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: Runner segment (RunnerClipAnalysis 2026-10-01). Slow tai chi arm raise.
   - name: RunnerKataStrikes
@@ -1875,6 +4519,7 @@ MonoBehaviour:
     category: 11
     loop: 0
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: Runner segment (RunnerClipAnalysis 2026-10-01). Sharp kata strikes.
   - name: RunnerCrouch
@@ -1884,9 +4529,538 @@ MonoBehaviour:
     category: 11
     loop: 1
     keepFacing: 1
+    heightToRootMotion: 0
     review: 1
     notes: Runner segment (RunnerClipAnalysis 2026-10-01). Superhero-landing crouch
       hold as the runner duck pose.
+  - name: Cross
+    sourceEntry: Fight_ShadowBoxing_mixamo
+    start: 6.5
+    end: 7.1
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: right cross to the chest (peak 6.71) \u2014 MID
+      punch"
+  - name: BodyShot
+    sourceEntry: Fight_ShadowBoxing_mixamo
+    start: 11.5
+    end: 12.15
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: crouching right body shot (peak 11.75) \u2014
+      LOW punch"
+  - name: FootworkFwd
+    sourceEntry: Fight_Boxing_mixamo
+    start: 0.917
+    end: 1.667
+    category: 11
+    loop: 1
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: 'Mocap scan 2026-11-04: guarded forward footwork loop'
+  - name: FootworkBack
+    sourceEntry: Fight_Boxing_mixamo
+    start: 3.208
+    end: 4.042
+    category: 11
+    loop: 1
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: 'Mocap scan 2026-11-04: guarded backward footwork loop'
+  - name: ChargeSlam
+    sourceEntry: Superhero_HulkTransformation_mixamo
+    start: 24.4
+    end: 25.75
+    category: 12
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: fists gather, arms up, two-handed slam (release
+      \u2248 25.63) \u2014 the Special's visible wind-up"
+  - name: HighPunch
+    sourceEntry: CMU_HighPunch_best_15_13
+    start: 0.15
+    end: 0.95
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 15_13: right punch rising from low guard to
+      the face (peak 0.47) \u2014 HIGH punch"
+  - name: LowKick
+    sourceEntry: CMU_LowKick_best_143_24
+    start: 0.05
+    end: 0.78
+    category: 2
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 143_24: low front kick to the ankle / shin
+      (foot \u2248 0.3 m, peak 0.30) \u2014 LOW kick"
+  - name: MidKick
+    sourceEntry: CMU_MidKick_best_143_24
+    start: 0.05
+    end: 0.77
+    category: 2
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 143_24: kick to the hip / waist (\u2248 1.05
+      m, peak 0.33) \u2014 MID kick"
+  - name: HighKick
+    sourceEntry: CMU_HighKick_best_135_07
+    start: 0.1
+    end: 0.85
+    category: 2
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 135_07: roundhouse to the head (\u2248 1.5
+      m, peak 0.41) \u2014 HIGH kick (facing kept: the kata turns 107\xB0)"
+  - name: SpinHeelKick
+    sourceEntry: CMU_SpinHeelKick_best_90_06
+    start: 0.15
+    end: 1.1
+    category: 2
+    loop: 0
+    keepFacing: 0
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 90_06: jumping spin kick, heel \u2248 1.9
+      m at ~220\xB0 of turn (peak 0.66) \u2014 the spin is baked into the pose"
+  - name: FlyingKick
+    sourceEntry: CMU_FlyingKick_best_75_16
+    start: 0.25
+    end: 0.9
+    category: 2
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 1
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 75_16: jump kick, leg extended forward (peak
+      0.46) \u2014 height left to the gameplay jump"
+  - name: EnergyPush
+    sourceEntry: Superhero_IronMan_Combat_mixamo
+    start: 33.75
+    end: 35.4
+    category: 12
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: both hands drawn back to the hip (~0.7 s gather),
+      then thrust forward at mid height (release \u2248 34.62 = 0.87 s in) \u2014
+      the Special's wind-up + throw"
+  - name: CrossStep
+    sourceEntry: CMU_MidPunch_alt_14_01
+    start: 0.08
+    end: 0.8
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 14_01: boxer right cross with a small step
+      in, chest height (peak 0.41) \u2014 MID punch alt"
+  - name: BodyHook
+    sourceEntry: Fight_Boxing_mixamo
+    start: 13.5
+    end: 14.15
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Boxing: right hook-ish body punch, upper belly
+      (peak 13.75) \u2014 LOW punch alt"
+  - name: HeadStraight
+    sourceEntry: CMU_HighPunch_alt_13_18
+    start: 0.1
+    end: 0.9
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 13_18: right straight/hook to the head with
+      a step in (peak 0.42) \u2014 HIGH punch alt"
+  - name: ShinKick
+    sourceEntry: CMU_LowKick_alt_74_03
+    start: 0.08
+    end: 0.81
+    category: 2
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 74_03: right swing kick at shin / knee height
+      (peak 0.33) \u2014 LOW kick alt"
+  - name: HipKick
+    sourceEntry: CMU_MidKick_alt_143_24
+    start: 0
+    end: 0.65
+    category: 2
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 143_24: right kick at the hip, clean and stationary
+      (peak 0.49) \u2014 MID kick alt"
+  - name: SideKickHead
+    sourceEntry: CMU_HighKick_alt_135_11
+    start: 0.12
+    end: 0.85
+    category: 2
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: CMU 135_11: yoko-geri side kick at head height
+      (peak 0.43) \u2014 HIGH kick alt"
+  - name: Strike
+    sourceEntry: Mixamo_MidPunch
+    start: 0.04
+    end: 0.72
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Cross Punch: right cross, chest height
+      (peak 0.37) \u2014 MID punch"
+  - name: Strike
+    sourceEntry: Mixamo_MidPunchAlt
+    start: 0.32
+    end: 1
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Short Jab Cross: the cross (peak 0.67)
+      \u2014 MID punch alt"
+  - name: Strike
+    sourceEntry: Mixamo_HighPunch
+    start: 0.1
+    end: 0.75
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Med Head Jab: lead jab to the face, 1.35
+      m (peak 0.43) \u2014 HIGH punch"
+  - name: Strike
+    sourceEntry: Mixamo_HighPunchAlt
+    start: 0.32
+    end: 1.05
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Boxing Back Hand Uppercut (peak 0.70) \u2014
+      HIGH punch alt"
+  - name: Strike
+    sourceEntry: Mixamo_LowPunch
+    start: 0.17
+    end: 0.85
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Mid Body Jab: lead jab to the belly, 0.91
+      m (peak 0.50) \u2014 LOW punch"
+  - name: Strike
+    sourceEntry: Mixamo_LowPunchAlt
+    start: 0.37
+    end: 1.05
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Short Hook Punch To The Body (peak 0.73)
+      \u2014 LOW punch alt"
+  - name: Strike
+    sourceEntry: Mixamo_HeavyPunch
+    start: 0.68
+    end: 1.3
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Boxing Lead Hand Uppercut, steps in (peak
+      0.90) \u2014 strong punch"
+  - name: Strike
+    sourceEntry: Mixamo_HeavyPunchAlt
+    start: 0.7
+    end: 1.35
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Long Hook Punch To The Head, steps in (peak
+      0.93, reach 1.28) \u2014 strong punch alt"
+  - name: Strike
+    sourceEntry: Mixamo_MidKick
+    start: 0.3
+    end: 1.05
+    category: 2
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Mma Medium Kick: rear-leg kick to the ribs,
+      1.12 m (peak 0.70) \u2014 MID kick"
+  - name: Strike
+    sourceEntry: Mixamo_MidKickAlt
+    start: 0.25
+    end: 0.95
+    category: 2
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Roundhouse Kick With The Rear Foot, 0.98
+      m (peak 0.63) \u2014 MID kick alt"
+  - name: Strike
+    sourceEntry: Mixamo_HighKick
+    start: 0.33
+    end: 1.1
+    category: 2
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Mma High Kick: head kick, 1.38 m (peak
+      0.73) \u2014 HIGH kick"
+  - name: Strike
+    sourceEntry: Mixamo_HighKickAlt
+    start: 0.25
+    end: 1
+    category: 2
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Mma Side Kick at the head, 1.31 m (peak
+      0.63) \u2014 HIGH kick alt"
+  - name: Strike
+    sourceEntry: Mixamo_LowKick
+    start: 0.25
+    end: 0.9
+    category: 2
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Mma Low Kick: thigh / knee, 0.62 m (peak
+      0.60) \u2014 LOW kick"
+  - name: Strike
+    sourceEntry: Mixamo_SpinKick
+    start: 0.62
+    end: 1.4
+    category: 2
+    loop: 0
+    keepFacing: 0
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Mma Spinning Back Kick, full turn baked
+      into the pose, 1.49 m (peak 0.97) \u2014 Back + Kick"
+  - name: React
+    sourceEntry: Mixamo_HitHeadLight
+    start: 0
+    end: 0.8
+    category: 6
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Light Hit To Head (straight punch) \u2014
+      hit reaction"
+  - name: React
+    sourceEntry: Mixamo_HitBody
+    start: 0
+    end: 1
+    category: 6
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Receive Punch To The Body \u2014 hit reaction
+      alt"
+  - name: Guard
+    sourceEntry: Mixamo_HighBlock
+    start: 0.05
+    end: 0.45
+    category: 4
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo High Center Block: arms rise to cover the
+      head and HOLD (last frame) \u2014 guard (the old one faced +91\xB0)"
+  - name: Guard
+    sourceEntry: Mixamo_BlockHighLeft
+    start: 0
+    end: 0.35
+    category: 4
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo High Left Block: both forearms up on the
+      left of the head (arms up \u2248 0.40)"
+  - name: Guard
+    sourceEntry: Mixamo_BlockHighRight
+    start: 0
+    end: 0.25
+    category: 4
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo High Right Block: forearms up on the right
+      of the head (arms up \u2248 0.28)"
+  - name: Guard
+    sourceEntry: Mixamo_BlockLowLeft
+    start: 0
+    end: 0.38
+    category: 4
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Low Left Block: forearms down over the
+      left ribs (\u2248 0.45)"
+  - name: Guard
+    sourceEntry: Mixamo_BlockLowRight
+    start: 0
+    end: 0.3
+    category: 4
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Low Right Block: forearms down over the
+      right ribs (\u2248 0.33)"
+  - name: Sway
+    sourceEntry: Mixamo_DodgeRight
+    start: 0.1
+    end: 1
+    category: 5
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Dodging Right: the torso sways right (head
+      +0.42 m at 0.55) and back \u2014 the sidestep (mirrored for the left)"
+  - name: React
+    sourceEntry: Mixamo_HitHeadRight
+    start: 0
+    end: 1
+    category: 6
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: 'Mocap scan 2026-11-04: Mixamo Medium Hit To The Head From A Right Punch:
+      head snaps to the right (mirrored for a left hand)'
+  - name: Strike
+    sourceEntry: Mixamo_HookLead
+    start: 0.15
+    end: 0.95
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Boxing Lead Hand Hook: left hook to the
+      head (1.49 m, peak 0.50) \u2014 SIDE high punch"
+  - name: Strike
+    sourceEntry: Mixamo_HookBack
+    start: 0.15
+    end: 0.95
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Boxing Back Hand Hook: right hook, 1.06
+      m (peak 0.73) \u2014 SIDE mid punch / close short hook"
+  - name: Strike
+    sourceEntry: Mixamo_CrossPunch
+    start: 0.05
+    end: 0.8
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Cross Punch: right cross to the face (1.20
+      m, peak 0.37) \u2014 CENTRE high punch alt"
+  - name: Strike
+    sourceEntry: Mixamo_UppercutBack
+    start: 0.35
+    end: 1.1
+    category: 1
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Boxing Back Hand Uppercut (peak 0.70) \u2014
+      close range, centre"
+  - name: Strike
+    sourceEntry: Mixamo_KneeMuayThai
+    start: 0.35
+    end: 1.15
+    category: 2
+    loop: 0
+    keepFacing: 1
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Muay Thai Illegal Knee: right knee up (peak
+      0.73) \u2014 close range"
+  - name: Strike
+    sourceEntry: Mixamo_Sweep360
+    start: 0.4
+    end: 1.6
+    category: 2
+    loop: 0
+    keepFacing: 0
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo 360 Degrees Back Leg Sweep: crouched full
+      turn, foot at the floor (peak 1.03) \u2014 Back + Down + Kick"
+  - name: Strike
+    sourceEntry: Mixamo_AirSpinKick
+    start: 0.9
+    end: 1.8
+    category: 2
+    loop: 0
+    keepFacing: 0
+    heightToRootMotion: 0
+    review: 1
+    notes: "Mocap scan 2026-11-04: Mixamo Aerial 360 Front Side Rotation Kick (inside
+      crescent): right foot 1.29 m (peak 1.33, airborne 1.17\u20131.67) \u2014 back
+      jump + Kick"
   roles:
   - role: 0
     entryName: Fight_Boxing_mixamo__GuardIdle
@@ -1939,26 +5113,34 @@ MonoBehaviour:
     entryName: MartialArts_BattleTaunts_WithSword_MIXAMO_769__FistRaised
     partnerEntryName: Fight_KnockOut_Loser_mixamo__KnockedDown
     partnerDelay: 0
-  canonicalFbxHash: 78E5195836D0CAAD41E5D2FE553CB33B13D23E01981D417664D1FEF21A38DC30
+  canonicalFbxHash: F05C4ABC1E88A3EE663B1447D2F70109EF595453B24DD813A55C368066398503
   lastImportReport: "FOUND    Fight: 11 FBX file(s)\nFOUND    MartialArts: 6 FBX
-    file(s)\nFOUND    EricJacobus: 12 FBX file(s)\nFOUND    Superhero: 9 FBX file(s)\nIMPORTED
-    Assets/_Project/Animations/Source/Rokoko/Fight/BigFrontKick_mixamo.fbx: 1 take(s),
-    1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
-    (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_BigFrontKick_mixamo: AttackKick,
-    10,75 s, loop False, RootMotion (travel 1,74 m, yaw -63), fingers captured/Preserve,
-    trimmed 1, facing -11,3 deg, level +0,001; WARN pose pop(s) at 3,88s, 4,00s,
-    4,08s, 8,75s, 8,79s; muscle beyond limits (RightHand.Ring.Spread 3,36)\n   Fight_BigFrontKick_mixamo__FrontKick:
-    AttackKick, 1,29 s, loop False, RootMotion (travel 1,12 m, yaw -61), fingers
-    captured/Preserve, trimmed 0, facing +39,6 deg, level -0,001; WARN muscle beyond
-    limits (LeftHand.Thumb.Spread 2,54)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/Boxing_mixamo.fbx:
+    file(s)\nFOUND    EricJacobus: 12 FBX file(s)\nFOUND    Superhero: 9 FBX file(s)\nFOUND   
+    CMU: 11 FBX file(s)\nFOUND    Mixamo: 48 FBX file(s)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/BigFrontKick_mixamo.fbx:
     1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
-    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_Boxing_mixamo:
-    IdleCombat, 17,83 s, loop False, RootMotion (travel 1,88 m, yaw -95), fingers
-    captured/Preserve, trimmed 1, facing +19,8 deg, level -0,002; WARN muscle beyond
-    limits (RightHand.Ring.Spread 3,64)\n   Fight_Boxing_mixamo__GuardIdle: IdleCombat,
-    2,21 s, loop True, RootMotion (travel 0,61 m, yaw +88), fingers captured/Preserve,
-    trimmed 0, facing -6,9 deg, level -0,030; WARN muscle beyond limits (LeftHand.Thumb.Spread
-    2,01)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/FightingIdle_mixamo.fbx:
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_BigFrontKick_mixamo:
+    AttackKick, 10,75 s, loop False, RootMotion (travel 1,74 m, yaw -63), fingers
+    captured/Preserve, trimmed 1, facing -11,3 deg, level +0,001; WARN pose pop(s)
+    at 3,88s, 4,00s, 4,08s, 8,75s, 8,79s; muscle beyond limits (RightHand.Ring.Spread
+    3,36)\n   Fight_BigFrontKick_mixamo__FrontKick: AttackKick, 1,29 s, loop False,
+    RootMotion (travel 1,12 m, yaw -61), fingers captured/Preserve, trimmed 0, facing
+    +39,6 deg, level -0,001; WARN muscle beyond limits (LeftHand.Thumb.Spread 2,54)\nIMPORTED
+    Assets/_Project/Animations/Source/Rokoko/Fight/Boxing_mixamo.fbx: 1 take(s),
+    4 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_Boxing_mixamo: IdleCombat,
+    17,83 s, loop False, RootMotion (travel 1,88 m, yaw -95), fingers captured/Preserve,
+    trimmed 1, facing +19,8 deg, level -0,002; WARN muscle beyond limits (RightHand.Ring.Spread
+    3,64)\n   Fight_Boxing_mixamo__GuardIdle: IdleCombat, 2,21 s, loop True, RootMotion
+    (travel 0,61 m, yaw +88), fingers captured/Preserve, trimmed 0, facing -6,9 deg,
+    level -0,030; WARN muscle beyond limits (LeftHand.Thumb.Spread 2,01)\n   Fight_Boxing_mixamo__FootworkFwd:
+    Movement, 0,75 s, loop True, RootMotion (travel 0,39 m, yaw -9), fingers captured/Preserve,
+    trimmed 0, facing +18,2 deg, level -0,018; WARN muscle beyond limits (LeftHand.Thumb.Spread
+    1,99)\n   Fight_Boxing_mixamo__FootworkBack: Movement, 0,83 s, loop True, RootMotion
+    (travel 0,39 m, yaw -3), fingers captured/Preserve, trimmed 0, facing +10,5 deg,
+    level -0,006; WARN muscle beyond limits (LeftHand.Thumb.Spread 1,99)\n   Fight_Boxing_mixamo__BodyHook:
+    AttackPunch, 0,67 s, loop False, InPlace (travel 0,03 m, yaw -29), fingers captured/Preserve,
+    trimmed 0, facing +92,4 deg, level -0,003; WARN muscle beyond limits (Left Shoulder
+    Front-Back 2,25)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/FightingIdle_mixamo.fbx:
     1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_FightingIdle_mixamo:
     IdleCombat, 52,38 s, loop True, RootMotion (travel 0,36 m, yaw +46), fingers
@@ -1980,7 +5162,7 @@ MonoBehaviour:
     captured/Preserve, trimmed 0, facing -119,1 deg, level -0,002; WARN muscle beyond
     limits (RightHand.Ring.Spread 5,80)\n   Fight_KnockOut_Loser_mixamo__KnockedDown:
     Knockdown, 3,79 s, loop False, RootMotion (travel 0,54 m, yaw +88), fingers captured/Preserve,
-    trimmed 0, facing -119,1 deg, level -0,034; WARN muscle beyond limits (RightHand.Ring.Spread
+    trimmed 0, facing -119,1 deg, level -0,040; WARN muscle beyond limits (RightHand.Ring.Spread
     5,80)\n   Fight_KnockOut_Loser_mixamo__GetUp: GetUp, 4,13 s, loop False, RootMotion
     (travel 0,69 m, yaw -28), fingers captured/Preserve, trimmed 0, facing +46,0
     deg, level -0,019; WARN pose pop(s) at 2,13s; muscle beyond limits (RightHand.Ring.Spread
@@ -1989,7 +5171,7 @@ MonoBehaviour:
     -54,1 deg, level -0,002; WARN muscle beyond limits (RightHand.Ring.Spread 5,80)\n  
     Fight_KnockOut_Loser_mixamo__Downed: Knockdown, 3,00 s, loop True, InPlace (travel
     0,01 m, yaw +5), fingers captured/Preserve, trimmed 0, facing +45,3 deg, level
-    -0,026; WARN pose pop(s) at 2,92s, 2,96s; muscle beyond limits (RightHand.Ring.Spread
+    -0,028; WARN pose pop(s) at 2,92s, 2,96s; muscle beyond limits (RightHand.Ring.Spread
     1,96)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/KnockOut_Winner_mixamo.fbx:
     1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_KnockOut_Winner_mixamo:
@@ -1998,16 +5180,16 @@ MonoBehaviour:
     limits (RightHand.Ring.Spread 4,08)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/RoundHouseKick_mixamo.fbx:
     1 take(s), 2 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_RoundHouseKick_mixamo:
-    AttackKick, 11,42 s, loop False, RootMotion (travel 3,10 m, yaw -383), fingers
-    captured/Preserve, trimmed 1, facing +140,5 deg, level -0,002; WARN muscle beyond
-    limits (RightHand.Middle.Spread 4,45)\n   Fight_RoundHouseKick_mixamo__SpinningRoundhouse:
+    AttackKick (auto), 11,42 s, loop False, RootMotion (travel 3,10 m, yaw -383),
+    fingers captured/Preserve, trimmed 1, facing +140,5 deg, level -0,002; WARN muscle
+    beyond limits (RightHand.Middle.Spread 4,45)\n   Fight_RoundHouseKick_mixamo__SpinningRoundhouse:
     AttackKick, 1,50 s, loop False, RootMotion (travel 1,87 m, yaw -493), fingers
     captured/Preserve, trimmed 0, facing +90,7 deg, level -0,016; WARN muscle beyond
     limits (RightHand.Middle.Spread 4,45)\n   Fight_RoundHouseKick_mixamo__RunnerSpin360:
     Movement, 0,92 s, loop False, RootMotion (travel 1,35 m, yaw -382), fingers captured/Preserve,
     trimmed 0, facing +136,7 deg, level -0,026; WARN muscle beyond limits (Left Shoulder
     Front-Back 2,94)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/ShadowBoxing_mixamo.fbx:
-    1 take(s), 6 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    1 take(s), 8 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_ShadowBoxing_mixamo:
     AttackPunch, 31,04 s, loop False, RootMotion (travel 1,65 m, yaw -106), fingers
     captured/Preserve, trimmed 1, facing +28,5 deg, level -0,001; WARN pose pop(s)
@@ -2027,16 +5209,21 @@ MonoBehaviour:
     facing +91,4 deg, level -0,001; WARN muscle beyond limits (LeftHand.Thumb.Spread
     2,15)\n   Fight_ShadowBoxing_mixamo__Hook: AttackPunch, 1,04 s, loop False, InPlace
     (travel 0,19 m, yaw -14), fingers captured/Preserve, trimmed 0, facing +44,1
-    deg, level +0,000; WARN muscle beyond limits (LeftHand.Thumb.Spread 1,98)\nIMPORTED
-    Assets/_Project/Animations/Source/Rokoko/Fight/SwordFight_mixamo.fbx: 1 take(s),
-    0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
-    (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_SwordFight_mixamo: Unknown
-    (auto), 29,58 s, loop False, RootMotion (travel 1,62 m, yaw -76), fingers captured/Preserve,
-    trimmed 1, facing -13,5 deg, level -0,001; WARN pose pop(s) at 2,88s, 16,25s,
-    16,42s, 16,46s, 16,50s...; muscle beyond limits (RightHand.Ring.Spread 3,80)\nIMPORTED
-    Assets/_Project/Animations/Source/Rokoko/Fight/SwordIdleLight_mixamo.fbx: 1 take(s),
-    0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
-    (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_SwordIdleLight_mixamo:
+    deg, level +0,000; WARN muscle beyond limits (LeftHand.Thumb.Spread 1,98)\n  
+    Fight_ShadowBoxing_mixamo__Cross: AttackPunch, 0,58 s, loop False, InPlace (travel
+    0,11 m, yaw +21), fingers captured/Preserve, trimmed 0, facing +27,0 deg, level
+    +0,001; WARN muscle beyond limits (Right Shoulder Front-Back 2,30)\n   Fight_ShadowBoxing_mixamo__BodyShot:
+    AttackPunch, 0,67 s, loop False, RootMotion (travel 0,24 m, yaw +46), fingers
+    captured/Preserve, trimmed 0, facing +20,5 deg, level +0,002; WARN muscle beyond
+    limits (LeftHand.Thumb.Spread 1,89)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/SwordFight_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_SwordFight_mixamo:
+    Unknown (auto), 29,58 s, loop False, RootMotion (travel 1,62 m, yaw -76), fingers
+    captured/Preserve, trimmed 1, facing -13,5 deg, level -0,001; WARN pose pop(s)
+    at 2,88s, 16,25s, 16,42s, 16,46s, 16,50s...; muscle beyond limits (RightHand.Ring.Spread
+    3,80)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Fight/SwordIdleLight_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Fight_SwordIdleLight_mixamo:
     IdleCombat (auto), 64,50 s, loop True, InPlace (travel 0,26 m, yaw -9), fingers
     captured/Preserve, trimmed 1, facing +2,1 deg, level +0,002; WARN pose pop(s)
     at 43,96s, 44,00s, 62,92s, 62,96s, 63,08s...; muscle beyond limits (RightHand.Middle.Spread
@@ -2059,7 +5246,7 @@ MonoBehaviour:
     1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   MartialArts_GetUp_WipeBloodfromMouth_MIXAMO_769:
     GetUp, 21,70 s, loop False, InPlace (travel 0,01 m, yaw +7), fingers captured/Preserve,
-    trimmed 1, facing -43,4 deg, level -0,013; WARN pose pop(s) at 10,03s, 10,07s,
+    trimmed 1, facing -43,4 deg, level -0,014; WARN pose pop(s) at 10,03s, 10,07s,
     16,90s, 19,47s, 19,67s; muscle beyond limits (LeftHand.Middle.Spread 2,72)\nIMPORTED
     Assets/_Project/Animations/Source/Rokoko/MartialArts/MartialArtsKata_MIXAMO_769.fbx:
     1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
@@ -2079,10 +5266,10 @@ MonoBehaviour:
     1 take(s), 1 segment(s); Mixamo names not found (Spine, LeftUpperLeg, LeftLowerLeg,
     RightUpperLeg, RightLowerLeg) \u2014 kept Unity auto-mapping (52 bones); source
     T-pose enforced (largest correction 0,1 deg at LeftLowerLeg)\n   MartialArts_thaichitake_12_DEFAULT_QUP:
-    Special, 32,12 s, loop False, RootMotion (travel 0,61 m, yaw +2), fingers captured/Preserve,
-    trimmed 1, facing -0,9 deg, level +0,000; WARN muscle beyond limits (RightHand.Ring.Spread
-    2,40)\n   MartialArts_thaichitake_12_DEFAULT_QUP__RunnerTaiChiRaise: Movement,
-    5,00 s, loop False, InPlace (travel 0,00 m, yaw +1), fingers captured/Preserve,
+    Unknown (auto), 32,12 s, loop False, RootMotion (travel 0,61 m, yaw +2), fingers
+    captured/Preserve, trimmed 1, facing -0,9 deg, level +0,000; WARN muscle beyond
+    limits (RightHand.Ring.Spread 2,40)\n   MartialArts_thaichitake_12_DEFAULT_QUP__RunnerTaiChiRaise:
+    Movement, 5,00 s, loop False, InPlace (travel 0,00 m, yaw +1), fingers captured/Preserve,
     trimmed 0, facing -0,7 deg, level +0,001; WARN muscle beyond limits (RightHand.Ring.Spread
     2,40)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/EricJacobus/20210714_s001_teaching_Guestures_tk01_ERJA-mvn001.fbx:
     1 take(s), 1 segment(s); Mixamo mapping, 22 bones, 0/10 fingers; source T-pose
@@ -2158,20 +5345,25 @@ MonoBehaviour:
     captured/Preserve, trimmed 1, facing +1,5 deg, level +0,000; WARN pose pop(s)
     at 6,50s, 6,54s, 7,38s, 7,42s, 8,42s...; muscle beyond limits (RightHand.Ring.Spread
     5,21)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Superhero/HulkTransformation_mixamo.fbx:
-    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_HulkTransformation_mixamo:
     Unknown (auto), 29,00 s, loop False, RootMotion (travel 1,59 m, yaw -88), fingers
     captured/Preserve, trimmed 1, facing +11,4 deg, level -0,028; WARN pose pop(s)
-    at 20,92s, 21,79s; muscle beyond limits (RightHand.Ring.Spread 4,57)\nIMPORTED
-    Assets/_Project/Animations/Source/Rokoko/Superhero/IronMan_Combat_mixamo.fbx:
-    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    at 20,92s, 21,79s; muscle beyond limits (RightHand.Ring.Spread 4,57)\n   Superhero_HulkTransformation_mixamo__ChargeSlam:
+    Special, 1,33 s, loop False, InPlace (travel 0,28 m, yaw -10), fingers captured/Preserve,
+    trimmed 0, facing +18,8 deg, level -0,003; WARN muscle beyond limits (RightHand.Ring.Spread
+    3,52)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Superhero/IronMan_Combat_mixamo.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_IronMan_Combat_mixamo:
     Special, 43,08 s, loop False, RootMotion (travel 1,55 m, yaw -89), fingers captured/Preserve,
     trimmed 1, facing +3,8 deg, level -0,001; WARN pose pop(s) at 25,25s, 25,29s,
-    25,38s, 25,42s, 26,42s...; muscle beyond limits (RightHand.Ring.Spread 3,69)\nIMPORTED
-    Assets/_Project/Animations/Source/Rokoko/Superhero/LaserEyes_mixamo.fbx: 1 take(s),
-    0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
-    (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_LaserEyes_mixamo:
+    25,38s, 25,42s, 26,42s...; muscle beyond limits (RightHand.Ring.Spread 3,69)\n  
+    Superhero_IronMan_Combat_mixamo__EnergyPush: Special, 1,67 s, loop False, RootMotion
+    (travel 0,32 m, yaw +8), fingers captured/Preserve, trimmed 0, facing +1,1 deg,
+    level -0,001; WARN pose pop(s) at 0,67s, 0,71s, 0,75s; muscle beyond limits (Right
+    Shoulder Front-Back 2,70)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Superhero/LaserEyes_mixamo.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_LaserEyes_mixamo:
     Special (auto), 29,29 s, loop False, RootMotion (travel 1,44 m, yaw -90), fingers
     captured/Preserve, trimmed 1, facing +11,7 deg, level -0,002; WARN pose pop(s)
     at 2,29s; muscle beyond limits (RightHand.Ring.Spread 3,53)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Superhero/MutantClaws_mixamo.fbx:
@@ -2184,7 +5376,7 @@ MonoBehaviour:
     1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_SuperHeroFlying_mixamo:
     Special (auto), 33,04 s, loop False, RootMotion (travel 0,08 m, yaw -88), fingers
-    captured/Preserve, trimmed 1, facing -82,5 deg, level +0,594; WARN pose pop(s)
+    captured/Preserve, trimmed 1, facing -82,5 deg, level +0,602; WARN pose pop(s)
     at 4,96s, 5,25s, 5,29s, 5,33s, 29,25s; muscle beyond limits (RightHand.Ring.Spread
     2,88)\nIMPORTED Assets/_Project/Animations/Source/Rokoko/Superhero/SuperHeroLanding_Takeoff_mixamo.fbx:
     1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
@@ -2205,6 +5397,415 @@ MonoBehaviour:
     enforced (largest correction 0,1 deg at LeftLowerLeg)\n   Superhero_WatchOverCity_mixamo:
     Unknown (auto), 25,71 s, loop False, RootMotion (travel 1,35 m, yaw -123), fingers
     captured/Preserve, trimmed 1, facing +45,2 deg, level -0,001; WARN pose pop(s)
-    at 23,88s, 23,92s, 23,96s; muscle beyond limits (RightHand.Ring.Spread 3,13)\nDEMO    
-    7 step(s): Guard -> Punch -> Punch -> Kick -> Dodge -> Hit Reaction -> Victory
-    (* = unreviewed auto candidate)"
+    at 23,88s, 23,92s, 23,96s; muscle beyond limits (RightHand.Ring.Spread 3,13)\nIMPORTED
+    Assets/_Project/Animations/Source/CMU/Fight/CMU_FlyingKick_best_75_16.fbx: 1
+    take(s), 1 segment(s); CMU mapping, 22 bones, no fingers; source T-pose enforced
+    (largest correction 38,5 deg at LeftLowerLeg)\n   CMU_FlyingKick_best_75_16:
+    AttackKick (auto), 0,90 s, loop False, RootMotion (travel 2,04 m, yaw -82), fingers
+    static/RelaxedRestHand, trimmed 0, facing -0,1 deg, level -0,037; WARN pose pop(s)
+    at 0,45s, 0,46s; muscle beyond limits (Right Foot Up-Down 1,92)\n   CMU_FlyingKick_best_75_16__FlyingKick:
+    AttackKick, 0,65 s, loop False, RootMotion (travel 1,25 m, yaw -32), fingers
+    static/RelaxedRestHand, trimmed 0, facing -50,8 deg, level -0,103; WARN pose
+    pop(s) at 0,20s, 0,21s; muscle beyond limits (Right Foot Up-Down 1,92)\nIMPORTED
+    Assets/_Project/Animations/Source/CMU/Fight/CMU_HighKick_alt_135_11.fbx: 1 take(s),
+    1 segment(s); CMU mapping, 22 bones, no fingers; source T-pose enforced (largest
+    correction 36,7 deg at RightLowerLeg)\n   CMU_HighKick_alt_135_11: AttackKick
+    (auto), 0,85 s, loop False, RootMotion (travel 0,73 m, yaw -5), fingers static/RelaxedRestHand,
+    trimmed 0, facing -63,3 deg, level +0,022; WARN muscle beyond limits (Right Upper
+    Leg In-Out 1,55)\n   CMU_HighKick_alt_135_11__SideKickHead: AttackKick, 0,73
+    s, loop False, RootMotion (travel 0,55 m, yaw +1), fingers static/RelaxedRestHand,
+    trimmed 0, facing -71,5 deg, level +0,024; WARN muscle beyond limits (Right Upper
+    Leg In-Out 1,55)\nIMPORTED Assets/_Project/Animations/Source/CMU/Fight/CMU_HighKick_best_135_07.fbx:
+    1 take(s), 1 segment(s); CMU mapping, 22 bones, no fingers; source T-pose enforced
+    (largest correction 36,3 deg at LeftLowerLeg)\n   CMU_HighKick_best_135_07: AttackKick
+    (auto), 0,85 s, loop False, RootMotion (travel 0,63 m, yaw -102), fingers static/RelaxedRestHand,
+    trimmed 0, facing +14,1 deg, level -0,015; WARN muscle beyond limits (Right Upper
+    Leg In-Out 1,75)\n   CMU_HighKick_best_135_07__HighKick: AttackKick, 0,75 s,
+    loop False, RootMotion (travel 0,54 m, yaw -83), fingers static/RelaxedRestHand,
+    trimmed 0, facing -2,0 deg, level -0,011; WARN muscle beyond limits (Right Upper
+    Leg In-Out 1,75)\nIMPORTED Assets/_Project/Animations/Source/CMU/Fight/CMU_HighPunch_alt_13_18.fbx:
+    1 take(s), 1 segment(s); CMU mapping, 22 bones, no fingers; source T-pose enforced
+    (largest correction 40,3 deg at LeftLowerLeg)\n   CMU_HighPunch_alt_13_18: AttackPunch
+    (auto), 0,95 s, loop False, RootMotion (travel 0,23 m, yaw -67), fingers static/RelaxedRestHand,
+    trimmed 0, facing -0,3 deg, level -0,005\n   CMU_HighPunch_alt_13_18__HeadStraight:
+    AttackPunch, 0,80 s, loop False, RootMotion (travel 0,23 m, yaw -62), fingers
+    static/RelaxedRestHand, trimmed 0, facing -13,7 deg, level -0,004\nIMPORTED Assets/_Project/Animations/Source/CMU/Fight/CMU_HighPunch_best_15_13.fbx:
+    1 take(s), 1 segment(s); CMU mapping, 22 bones, no fingers; source T-pose enforced
+    (largest correction 38,3 deg at RightLowerLeg)\n   CMU_HighPunch_best_15_13:
+    AttackPunch (auto), 0,95 s, loop False, RootMotion (travel 0,18 m, yaw -59),
+    fingers static/RelaxedRestHand, trimmed 0, facing +2,7 deg, level -0,010; WARN
+    muscle beyond limits (Right Arm Down-Up 1,51)\n   CMU_HighPunch_best_15_13__HighPunch:
+    AttackPunch, 0,80 s, loop False, RootMotion (travel 0,13 m, yaw -59), fingers
+    static/RelaxedRestHand, trimmed 0, facing +2,5 deg, level -0,008; WARN muscle
+    beyond limits (Right Arm Down-Up 1,51)\nIMPORTED Assets/_Project/Animations/Source/CMU/Fight/CMU_LowKick_alt_74_03.fbx:
+    1 take(s), 1 segment(s); CMU mapping, 22 bones, no fingers; source T-pose enforced
+    (largest correction 15,2 deg at LeftUpperLeg)\n   CMU_LowKick_alt_74_03: AttackKick
+    (auto), 0,85 s, loop False, RootMotion (travel 0,81 m, yaw -20), fingers static/RelaxedRestHand,
+    trimmed 0, facing -165,5 deg, level +0,007; WARN pose pop(s) at 0,11s, 0,12s,
+    0,12s, 0,19s, 0,20s...; muscle beyond limits (Right Foot Twist In-Out 6,49)\n  
+    CMU_LowKick_alt_74_03__ShinKick: AttackKick, 0,72 s, loop False, RootMotion (travel
+    0,66 m, yaw -13), fingers static/RelaxedRestHand, trimmed 0, facing -171,0 deg,
+    level +0,011; WARN pose pop(s) at 0,02s, 0,03s, 0,04s, 0,11s, 0,12s...; muscle
+    beyond limits (Right Foot Twist In-Out 6,49)\nIMPORTED Assets/_Project/Animations/Source/CMU/Fight/CMU_LowKick_best_143_24.fbx:
+    1 take(s), 1 segment(s); CMU mapping, 22 bones, no fingers; source T-pose enforced
+    (largest correction 40,2 deg at RightLowerLeg)\n   CMU_LowKick_best_143_24: AttackKick
+    (auto), 0,78 s, loop False, InPlace (travel 0,05 m, yaw -12), fingers static/RelaxedRestHand,
+    trimmed 0, facing +101,9 deg, level -0,025; WARN muscle beyond limits (Left Foot
+    Twist In-Out 5,13)\n   CMU_LowKick_best_143_24__LowKick: AttackKick, 0,73 s,
+    loop False, InPlace (travel 0,09 m, yaw -14), fingers static/RelaxedRestHand,
+    trimmed 0, facing +104,1 deg, level -0,027; WARN muscle beyond limits (Left Foot
+    Twist In-Out 5,13)\nIMPORTED Assets/_Project/Animations/Source/CMU/Fight/CMU_MidKick_alt_143_24.fbx:
+    1 take(s), 1 segment(s); CMU mapping, 22 bones, no fingers; source T-pose enforced
+    (largest correction 40,0 deg at LeftLowerLeg)\n   CMU_MidKick_alt_143_24: AttackKick
+    (auto), 1,00 s, loop False, InPlace (travel 0,17 m, yaw -7), fingers static/RelaxedRestHand,
+    trimmed 0, facing +92,5 deg, level +0,003; WARN pose pop(s) at 0,42s, 0,43s\n  
+    CMU_MidKick_alt_143_24__HipKick: AttackKick, 0,65 s, loop False, RootMotion (travel
+    0,51 m, yaw -11), fingers static/RelaxedRestHand, trimmed 0, facing +92,5 deg,
+    level +0,005; WARN pose pop(s) at 0,43s\nIMPORTED Assets/_Project/Animations/Source/CMU/Fight/CMU_MidKick_best_143_24.fbx:
+    1 take(s), 1 segment(s); CMU mapping, 22 bones, no fingers; source T-pose enforced
+    (largest correction 39,2 deg at RightLowerLeg)\n   CMU_MidKick_best_143_24: AttackKick
+    (auto), 0,77 s, loop False, InPlace (travel 0,09 m, yaw +0), fingers static/RelaxedRestHand,
+    trimmed 0, facing +111,3 deg, level -0,002\n   CMU_MidKick_best_143_24__MidKick:
+    AttackKick, 0,72 s, loop False, InPlace (travel 0,02 m, yaw -11), fingers static/RelaxedRestHand,
+    trimmed 0, facing +122,4 deg, level -0,003\nIMPORTED Assets/_Project/Animations/Source/CMU/Fight/CMU_MidPunch_alt_14_01.fbx:
+    1 take(s), 1 segment(s); CMU mapping, 22 bones, no fingers; source T-pose enforced
+    (largest correction 37,7 deg at RightLowerLeg)\n   CMU_MidPunch_alt_14_01: AttackPunch
+    (auto), 0,87 s, loop False, RootMotion (travel 0,43 m, yaw -11), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,023\n   CMU_MidPunch_alt_14_01__CrossStep:
+    AttackPunch, 0,72 s, loop False, RootMotion (travel 0,39 m, yaw -18), fingers
+    static/RelaxedRestHand, trimmed 0, facing -7,9 deg, level -0,023\nIMPORTED Assets/_Project/Animations/Source/CMU/Fight/CMU_SpinHeelKick_best_90_06.fbx:
+    1 take(s), 1 segment(s); CMU mapping, 22 bones, no fingers; source T-pose enforced
+    (largest correction 39,6 deg at RightLowerLeg)\n   CMU_SpinHeelKick_best_90_06:
+    AttackKick (auto), 1,10 s, loop False, RootMotion (travel 1,77 m, yaw +385),
+    fingers static/RelaxedRestHand, trimmed 0, facing +52,8 deg, level -0,048; WARN
+    pose pop(s) at 0,98s\n   CMU_SpinHeelKick_best_90_06__SpinHeelKick: AttackKick,
+    0,95 s, loop False, RootMotion (travel 1,49 m, yaw +340), fingers static/RelaxedRestHand,
+    trimmed 0, facing +74,5 deg, level -0,033; WARN pose pop(s) at 0,83s\nIMPORTED
+    Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_AirSpinKick.fbx: 1 take(s),
+    1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 34,0 deg at RightLowerLeg)\n   Mixamo_AirSpinKick: AttackKick
+    (auto), 2,67 s, loop False, RootMotion (travel 0,00 m, yaw -360), fingers captured/Preserve,
+    trimmed 0, facing +0,0 deg, level -0,047; WARN muscle beyond limits (Right Shoulder
+    Front-Back 2,55)\n   Mixamo_AirSpinKick__Strike: AttackKick, 0,90 s, loop False,
+    RootMotion (travel 0,13 m, yaw -309), fingers captured/Preserve, trimmed 0, facing
+    +0,0 deg, level -0,046; WARN muscle beyond limits (Right Shoulder Front-Back
+    2,55)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_BlockHighLeft.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_BlockHighLeft:
+    Block (auto), 1,53 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,037; WARN muscle beyond limits (LeftHand.Ring.Spread
+    2,92)\n   Mixamo_BlockHighLeft__Guard: Block, 0,33 s, loop False, RootMotion
+    (travel 0,08 m, yaw -57), fingers static/RelaxedRestHand, trimmed 0, facing +0,0
+    deg, level -0,039; WARN muscle beyond limits (LeftHand.Ring.Spread 2,92)\nIMPORTED
+    Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_BlockHighRight.fbx: 1 take(s),
+    1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_BlockHighRight: Block
+    (auto), 1,70 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,038; WARN muscle beyond limits (LeftHand.Ring.Spread
+    2,92)\n   Mixamo_BlockHighRight__Guard: Block, 0,27 s, loop False, InPlace (travel
+    0,07 m, yaw +13), fingers static/RelaxedRestHand, trimmed 0, facing +0,0 deg,
+    level -0,038; WARN very short (0,27 s); muscle beyond limits (LeftHand.Ring.Spread
+    2,92)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_BlockLowLeft.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_BlockLowLeft:
+    Block (auto), 1,50 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,037; WARN muscle beyond limits (LeftHand.Ring.Spread
+    2,92)\n   Mixamo_BlockLowLeft__Guard: Block, 0,37 s, loop False, RootMotion (travel
+    0,04 m, yaw -49), fingers static/RelaxedRestHand, trimmed 0, facing +0,0 deg,
+    level -0,037; WARN muscle beyond limits (LeftHand.Ring.Spread 2,92)\nIMPORTED
+    Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_BlockLowRight.fbx: 1 take(s),
+    1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_BlockLowRight: Block
+    (auto), 1,43 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,038; WARN muscle beyond limits (LeftHand.Ring.Spread
+    2,92)\n   Mixamo_BlockLowRight__Guard: Block, 0,30 s, loop False, InPlace (travel
+    0,08 m, yaw +42), fingers static/RelaxedRestHand, trimmed 0, facing +0,0 deg,
+    level -0,039; WARN muscle beyond limits (LeftHand.Ring.Spread 2,92)\nIMPORTED
+    Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_CrossBack.fbx: 1 take(s),
+    0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 39,3 deg at LeftLowerLeg)\n   Mixamo_CrossBack: Unknown (auto),
+    2,13 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,049; WARN muscle beyond limits (RightHand.Middle.Spread
+    3,36)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_CrossPunch.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,3 deg at RightLowerLeg)\n   Mixamo_CrossPunch:
+    AttackPunch (auto), 0,87 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,050; WARN muscle
+    beyond limits (LeftHand.Ring.Spread 14,52)\n   Mixamo_CrossPunch__Strike: AttackPunch,
+    0,73 s, loop False, InPlace (travel 0,00 m, yaw -3), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,048; WARN muscle beyond limits (LeftHand.Ring.Spread
+    14,52)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_DodgeAdvance.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 38,9 deg at RightLowerLeg)\n   Mixamo_DodgeAdvance:
+    Dodge (auto), 2,33 s, loop False, RootMotion (travel 0,86 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,022; WARN muscle
+    beyond limits (LeftHand.Middle.Spread 6,81)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_DodgeRetreat.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 37,5 deg at RightLowerLeg)\n   Mixamo_DodgeRetreat:
+    Dodge (auto), 2,23 s, loop False, RootMotion (travel 0,51 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,016; WARN muscle
+    beyond limits (RightHand.Ring.Spread 4,29)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_DodgeRight.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,8 deg at RightLowerLeg)\n   Mixamo_DodgeRight:
+    Dodge (auto), 1,43 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers captured/Preserve,
+    trimmed 0, facing +0,0 deg, level -0,046; WARN muscle beyond limits (LeftHand.Thumb.1
+    Stretched 2,72)\n   Mixamo_DodgeRight__Sway: Dodge, 0,90 s, loop False, InPlace
+    (travel 0,02 m, yaw +2), fingers captured/Preserve, trimmed 0, facing +0,0 deg,
+    level -0,041; WARN muscle beyond limits (LeftHand.Thumb.1 Stretched 2,72)\nIMPORTED
+    Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HeavyPunch.fbx: 1 take(s),
+    1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 38,6 deg at RightLowerLeg)\n   Mixamo_HeavyPunch: AttackPunch
+    (auto), 2,20 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,047; WARN muscle beyond limits (RightHand.Ring.Spread
+    3,67)\n   Mixamo_HeavyPunch__Strike: AttackPunch, 0,63 s, loop False, InPlace
+    (travel 0,10 m, yaw -37), fingers static/RelaxedRestHand, trimmed 0, facing +0,0
+    deg, level -0,046; WARN muscle beyond limits (RightHand.Ring.Spread 3,67)\nIMPORTED
+    Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HeavyPunchAlt.fbx: 1 take(s),
+    1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_HeavyPunchAlt: AttackPunch
+    (auto), 2,27 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,036; WARN muscle beyond limits (LeftHand.Ring.Spread
+    2,92)\n   Mixamo_HeavyPunchAlt__Strike: AttackPunch, 0,63 s, loop False, InPlace
+    (travel 0,10 m, yaw -29), fingers static/RelaxedRestHand, trimmed 0, facing +0,0
+    deg, level -0,034; WARN muscle beyond limits (LeftHand.Ring.Spread 2,92)\nIMPORTED
+    Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighBlock.fbx: 1 take(s),
+    1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_HighBlock: Block (auto),
+    1,77 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers captured/Preserve,
+    trimmed 0, facing +0,0 deg, level -0,037; WARN muscle beyond limits (LeftHand.Ring.Spread
+    2,93)\n   Mixamo_HighBlock__Guard: Block, 0,40 s, loop False, InPlace (travel
+    0,04 m, yaw +0), fingers captured/Preserve, trimmed 0, facing +0,0 deg, level
+    -0,037; WARN muscle beyond limits (LeftHand.Ring.Spread 2,93)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighKick.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,7 deg at LeftLowerLeg)\n   Mixamo_HighKick: AttackKick
+    (auto), 2,00 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers captured/Preserve,
+    trimmed 0, facing +0,0 deg, level -0,053; WARN muscle beyond limits (LeftHand.Thumb.1
+    Stretched 1,68)\n   Mixamo_HighKick__Strike: AttackKick, 0,77 s, loop False,
+    RootMotion (travel 0,15 m, yaw -51), fingers captured/Preserve, trimmed 0, facing
+    +0,0 deg, level -0,049; WARN muscle beyond limits (LeftHand.Thumb.1 Stretched
+    1,68)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighKickAlt.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,7 deg at LeftLowerLeg)\n   Mixamo_HighKickAlt:
+    AttackKick (auto), 1,60 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    captured/Preserve, trimmed 0, facing +0,0 deg, level -0,054; WARN muscle beyond
+    limits (LeftHand.Thumb.1 Stretched 2,07)\n   Mixamo_HighKickAlt__Strike: AttackKick,
+    0,73 s, loop False, InPlace (travel 0,07 m, yaw -11), fingers captured/Preserve,
+    trimmed 0, facing +0,0 deg, level -0,041; WARN muscle beyond limits (LeftHand.Thumb.1
+    Stretched 2,06)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighPunch.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_HighPunch:
+    AttackPunch (auto), 1,50 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,035; WARN muscle
+    beyond limits (LeftHand.Ring.Spread 2,92)\n   Mixamo_HighPunch__Strike: AttackPunch,
+    0,63 s, loop False, RootMotion (travel 0,47 m, yaw +23), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,033; WARN muscle beyond limits (LeftHand.Ring.Spread
+    2,92)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HighPunchAlt.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,9 deg at LeftLowerLeg)\n   Mixamo_HighPunchAlt:
+    AttackPunch (auto), 2,20 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,051; WARN muscle
+    beyond limits (RightHand.Middle.Spread 6,86)\n   Mixamo_HighPunchAlt__Strike:
+    AttackPunch, 0,70 s, loop False, InPlace (travel 0,26 m, yaw -26), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,036; WARN muscle beyond limits (RightHand.Middle.Spread
+    6,86)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitBody.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,7 deg at LeftLowerLeg)\n   Mixamo_HitBody: HitReaction
+    (auto), 1,60 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers captured/Preserve,
+    trimmed 0, facing +0,0 deg, level -0,052; WARN muscle beyond limits (LeftHand.Ring.Spread
+    4,28)\n   Mixamo_HitBody__React: HitReaction, 1,00 s, loop False, InPlace (travel
+    0,02 m, yaw -29), fingers captured/Preserve, trimmed 0, facing +0,0 deg, level
+    -0,050; WARN muscle beyond limits (LeftHand.Ring.Spread 4,28)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitHeadLeft.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_HitHeadLeft:
+    HitReaction (auto), 1,23 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,036; WARN muscle
+    beyond limits (LeftHand.Ring.Spread 2,92)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitHeadLight.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_HitHeadLight:
+    HitReaction (auto), 0,80 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,038; WARN muscle
+    beyond limits (LeftHand.Ring.Spread 2,92)\n   Mixamo_HitHeadLight__React: HitReaction,
+    0,80 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,038; WARN muscle beyond limits (LeftHand.Ring.Spread
+    2,92)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitHeadMedium.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_HitHeadMedium:
+    HitReaction (auto), 1,00 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,038; WARN muscle
+    beyond limits (LeftHand.Ring.Spread 2,92)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitHeadRight.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_HitHeadRight:
+    HitReaction (auto), 1,17 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,037; WARN muscle
+    beyond limits (LeftHand.Ring.Spread 2,92)\n   Mixamo_HitHeadRight__React: HitReaction,
+    1,00 s, loop False, InPlace (travel 0,00 m, yaw +8), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,038; WARN muscle beyond limits (LeftHand.Ring.Spread
+    2,92)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitHeadStraight.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_HitHeadStraight:
+    HitReaction (auto), 1,10 s, loop False, InPlace (travel 0,03 m, yaw +1), fingers
+    static/RelaxedRestHand, trimmed 4, facing +0,0 deg, level -0,037; WARN muscle
+    beyond limits (LeftHand.Ring.Spread 2,92)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitSide.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_HitSide: HitReaction
+    (auto), 0,97 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,038; WARN muscle beyond limits (LeftHand.Ring.Spread
+    2,92)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HitStomach.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_HitStomach:
+    HitReaction (auto), 1,20 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,038; WARN muscle
+    beyond limits (LeftHand.Ring.Spread 2,92)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HookBack.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 40,0 deg at RightLowerLeg)\n   Mixamo_HookBack:
+    AttackPunch (auto), 2,17 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,047; WARN muscle
+    beyond limits (RightHand.Middle.Spread 4,54)\n   Mixamo_HookBack__Strike: AttackPunch,
+    0,80 s, loop False, RootMotion (travel 0,46 m, yaw -58), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,046; WARN muscle beyond limits (RightHand.Middle.Spread
+    4,54)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HookLead.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 37,3 deg at RightLowerLeg)\n   Mixamo_HookLead:
+    AttackPunch (auto), 2,00 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,052; WARN muscle
+    beyond limits (RightHand.Ring.Spread 3,78)\n   Mixamo_HookLead__Strike: AttackPunch,
+    0,80 s, loop False, RootMotion (travel 0,38 m, yaw +37), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,049; WARN muscle beyond limits (RightHand.Ring.Spread
+    3,78)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_HookPunch.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 40,2 deg at RightLowerLeg)\n   Mixamo_HookPunch:
+    AttackPunch (auto), 2,17 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,050; WARN muscle
+    beyond limits (LeftHand.Middle.Spread 3,21)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_JabLead.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 38,3 deg at LeftLowerLeg)\n   Mixamo_JabLead: AttackPunch
+    (auto), 1,73 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,041; WARN muscle beyond limits (RightHand.Middle.Spread
+    4,64)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_JabPunch.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 37,7 deg at RightLowerLeg)\n   Mixamo_JabPunch:
+    AttackPunch (auto), 1,03 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,053; WARN muscle
+    beyond limits (LeftHand.Ring.Spread 13,77)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_KickLeadFoot.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,6 deg at LeftLowerLeg)\n   Mixamo_KickLeadFoot:
+    AttackKick (auto), 2,33 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    captured/Preserve, trimmed 0, facing +0,0 deg, level -0,057; WARN pose pop(s)
+    at 0,63s, 0,67s; muscle beyond limits (LeftHand.Ring.Spread 5,33)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_KneeBoxing.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_KneeBoxing:
+    AttackKick (auto), 2,27 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,036; WARN muscle
+    beyond limits (LeftHand.Ring.Spread 2,92)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_KneeMuayThai.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_KneeMuayThai:
+    AttackKick (auto), 2,27 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,036; WARN muscle
+    beyond limits (LeftHand.Ring.Spread 2,92)\n   Mixamo_KneeMuayThai__Strike: AttackKick,
+    0,80 s, loop False, InPlace (travel 0,11 m, yaw -15), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,026; WARN muscle beyond limits (LeftHand.Ring.Spread
+    2,92)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_LowBlock.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_LowBlock: Block
+    (auto), 1,60 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,038; WARN muscle beyond limits (LeftHand.Ring.Spread
+    2,92)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_LowKick.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,7 deg at LeftLowerLeg)\n   Mixamo_LowKick: AttackKick
+    (auto), 1,50 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers captured/Preserve,
+    trimmed 0, facing +0,0 deg, level -0,054; WARN muscle beyond limits (RightHand.Thumb.1
+    Stretched 1,80)\n   Mixamo_LowKick__Strike: AttackKick, 0,63 s, loop False, InPlace
+    (travel 0,17 m, yaw -30), fingers captured/Preserve, trimmed 0, facing +0,0 deg,
+    level -0,052; WARN muscle beyond limits (RightHand.Thumb.1 Stretched 1,80)\nIMPORTED
+    Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_LowKickAlt.fbx: 1 take(s),
+    0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 37,4 deg at RightLowerLeg)\n   Mixamo_LowKickAlt: AttackKick
+    (auto), 1,73 s, loop False, RootMotion (travel 1,00 m, yaw -137), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,050; WARN muscle beyond limits (RightHand.Ring.Spread
+    6,31)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_LowPunch.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_LowPunch: AttackPunch
+    (auto), 1,80 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,035; WARN muscle beyond limits (LeftHand.Ring.Spread
+    2,92)\n   Mixamo_LowPunch__Strike: AttackPunch, 0,70 s, loop False, InPlace (travel
+    0,17 m, yaw +11), fingers static/RelaxedRestHand, trimmed 0, facing +0,0 deg,
+    level -0,034; WARN muscle beyond limits (LeftHand.Ring.Spread 2,92)\nIMPORTED
+    Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_LowPunchAlt.fbx: 1 take(s),
+    1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_LowPunchAlt: AttackPunch
+    (auto), 1,90 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers captured/Preserve,
+    trimmed 0, facing +0,0 deg, level -0,037; WARN muscle beyond limits (LeftHand.Ring.Spread
+    5,02)\n   Mixamo_LowPunchAlt__Strike: AttackPunch, 0,67 s, loop False, InPlace
+    (travel 0,29 m, yaw +32), fingers captured/Preserve, trimmed 0, facing +0,0 deg,
+    level -0,035; WARN muscle beyond limits (LeftHand.Ring.Spread 5,02)\nIMPORTED
+    Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_MidKick.fbx: 1 take(s),
+    1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 39,7 deg at LeftLowerLeg)\n   Mixamo_MidKick: AttackKick
+    (auto), 1,60 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers captured/Preserve,
+    trimmed 0, facing +0,0 deg, level -0,053; WARN muscle beyond limits (LeftHand.Thumb.1
+    Stretched 1,93)\n   Mixamo_MidKick__Strike: AttackKick, 0,73 s, loop False, InPlace
+    (travel 0,14 m, yaw -44), fingers captured/Preserve, trimmed 0, facing +0,0 deg,
+    level -0,052; WARN muscle beyond limits (RightHand.Thumb.1 Stretched 1,82)\nIMPORTED
+    Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_MidKickAlt.fbx: 1 take(s),
+    1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose enforced
+    (largest correction 35,4 deg at LeftLowerLeg)\n   Mixamo_MidKickAlt: AttackKick
+    (auto), 1,50 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,031\n   Mixamo_MidKickAlt__Strike: AttackKick,
+    0,67 s, loop False, InPlace (travel 0,13 m, yaw +6), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,031\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_MidPunch.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,3 deg at RightLowerLeg)\n   Mixamo_MidPunch:
+    AttackPunch (auto), 0,87 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,050; WARN muscle
+    beyond limits (LeftHand.Ring.Spread 14,52)\n   Mixamo_MidPunch__Strike: AttackPunch,
+    0,70 s, loop False, InPlace (travel 0,02 m, yaw -15), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,048; WARN muscle beyond limits (LeftHand.Ring.Spread
+    14,52)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_MidPunchAlt.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,2 deg at LeftLowerLeg)\n   Mixamo_MidPunchAlt:
+    AttackPunch (auto), 1,97 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,037; WARN muscle
+    beyond limits (LeftHand.Ring.Spread 2,92)\n   Mixamo_MidPunchAlt__Strike: AttackPunch,
+    0,67 s, loop False, InPlace (travel 0,05 m, yaw -23), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,039; WARN muscle beyond limits (LeftHand.Ring.Spread
+    2,92)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_MmaRoundhouse.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,7 deg at LeftLowerLeg)\n   Mixamo_MmaRoundhouse:
+    AttackKick (auto), 1,67 s, loop False, RootMotion (travel 0,00 m, yaw -360),
+    fingers captured/Preserve, trimmed 0, facing +0,0 deg, level -0,052; WARN muscle
+    beyond limits (RightHand.Thumb.1 Stretched 1,78)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_SpinKick.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,7 deg at LeftLowerLeg)\n   Mixamo_SpinKick: AttackKick
+    (auto), 2,03 s, loop False, RootMotion (travel 0,52 m, yaw +360), fingers captured/Preserve,
+    trimmed 0, facing +0,0 deg, level -0,053; WARN muscle beyond limits (LeftHand.Thumb.1
+    Stretched 2,37)\n   Mixamo_SpinKick__Strike: AttackKick, 0,77 s, loop False,
+    RootMotion (travel 0,37 m, yaw +208), fingers captured/Preserve, trimmed 0, facing
+    +0,0 deg, level -0,040; WARN muscle beyond limits (LeftHand.Thumb.1 Stretched
+    1,63)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_Sweep360.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 36,9 deg at RightLowerLeg)\n   Mixamo_Sweep360:
+    AttackKick (auto), 2,33 s, loop False, RootMotion (travel 0,00 m, yaw +360),
+    fingers static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,053; WARN
+    muscle beyond limits (RightHand.Ring.Spread 1,57)\n   Mixamo_Sweep360__Strike:
+    AttackKick, 1,20 s, loop False, RootMotion (travel 0,13 m, yaw +381), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,052; WARN muscle
+    beyond limits (RightHand.Ring.Spread 1,57)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_SweepBack.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 36,4 deg at LeftLowerLeg)\n   Mixamo_SweepBack:
+    AttackKick (auto), 2,23 s, loop False, RootMotion (travel 1,16 m, yaw +239),
+    fingers static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,056; WARN
+    muscle beyond limits (Head Turn Left-Right 1,84)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_UppercutBack.fbx:
+    1 take(s), 1 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 39,9 deg at LeftLowerLeg)\n   Mixamo_UppercutBack:
+    AttackPunch (auto), 2,20 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,051; WARN muscle
+    beyond limits (RightHand.Middle.Spread 6,86)\n   Mixamo_UppercutBack__Strike:
+    AttackPunch, 0,77 s, loop False, InPlace (travel 0,21 m, yaw -24), fingers static/RelaxedRestHand,
+    trimmed 0, facing +0,0 deg, level -0,037; WARN muscle beyond limits (RightHand.Middle.Spread
+    6,86)\nIMPORTED Assets/_Project/Animations/Source/Mixamo/Fight/Mixamo_UppercutLead.fbx:
+    1 take(s), 0 segment(s); Mixamo mapping, 52 bones, 10/10 fingers; source T-pose
+    enforced (largest correction 38,6 deg at RightLowerLeg)\n   Mixamo_UppercutLead:
+    AttackPunch (auto), 2,20 s, loop False, InPlace (travel 0,00 m, yaw +0), fingers
+    static/RelaxedRestHand, trimmed 0, facing +0,0 deg, level -0,047; WARN muscle
+    beyond limits (RightHand.Ring.Spread 3,67)\nDEMO     7 step(s): Guard -> Punch
+    -> Punch -> Kick -> Dodge -> Hit Reaction -> Victory (* = unreviewed auto candidate)"

@@ -90,6 +90,8 @@ public class PlayerController : MonoBehaviour
     // ── Public API ─────────────────────────────────────────────────────────────
     public bool  IsRunning          => _running;
     public bool  IsFalling          => _isFalling;
+    /// <summary>A penalty that freezes the player in place (the chaser's contact, trapped) until the respawn.</summary>
+    public bool  IsCaught           => _isFalling && _fallFrozen;
     /// <summary>Signed song-relative offset (negative = behind the song). Kept name for existing readers.</summary>
     public float ForwardOffset      => _forwardOffset;
     public float SongOffset         => _forwardOffset;
@@ -673,6 +675,11 @@ public class PlayerController : MonoBehaviour
     private Transform _visualAnchor;
     private AvatarInstance _avatarInstance;
 
+    /// <summary>False while the player avatar (body + clothes) is being built and bound to its animator. Part of
+    /// GameplayManager's readiness barrier: the analysing overlay stays up until it is true, so the avatar is never
+    /// seen half-built or in T-pose.</summary>
+    public bool IsVisualReady { get; private set; } = true;
+
     private void BuildVisual()
     {
         var anchorGO = new GameObject("VisualAnchor");
@@ -689,15 +696,23 @@ public class PlayerController : MonoBehaviour
 
         var appConfig = Resources.Load<AppConfigSO>("AppConfig");
         var avatarConfig = appConfig != null ? appConfig.playerAvatar : null;
-        // The player's look: their preferred style's outfit when one is authored, else the fixed recipe (as in Fight).
+        // The player's look: the current song's style outfit when one is authored, else the fixed recipe (as in Fight).
         var recipe = PlayerAvatarConfigSO.ResolveRecipe(appConfig);
         if (avatarConfig != null && recipe != null)
         {
             SetVisualRenderersEnabled(false);
             // Nothing exposed while building, so CameraFollow can't re-enable the hidden placeholder.
             VisualRenderers = System.Array.Empty<Renderer>();
-            _ = BuildPlayerAvatar(avatarConfig, recipe);
+            IsVisualReady = false;
+            _ = BuildPlayerAvatarReady(avatarConfig, recipe);
         }
+    }
+
+    private async System.Threading.Tasks.Task BuildPlayerAvatarReady(PlayerAvatarConfigSO avatarConfig, AvatarRecipeSO recipe)
+    {
+        try { await BuildPlayerAvatar(avatarConfig, recipe); }
+        catch (System.Exception e) { Debug.LogException(e); }
+        finally { IsVisualReady = true; }   // built, failed (placeholder shown) or unloaded: never blocks the start
     }
 
     private async System.Threading.Tasks.Task BuildPlayerAvatar(PlayerAvatarConfigSO avatarConfig, AvatarRecipeSO recipe)

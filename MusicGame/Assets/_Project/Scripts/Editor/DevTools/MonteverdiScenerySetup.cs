@@ -31,14 +31,15 @@ public static class MonteverdiScenerySetup
     {
         if(string.IsNullOrEmpty(file)) return null;
         string path=folder+"/"+file;
+        int max=ArenaDistanceQuality.TextureSize(path);
         var importer=AssetImporter.GetAtPath(path) as TextureImporter;
         if(importer==null) throw new Exception("Missing texture "+path);
         bool changed=importer.textureType!=(normal?TextureImporterType.NormalMap:TextureImporterType.Default)
-            ||importer.sRGBTexture!=(!linear&&!normal)||!importer.mipmapEnabled||importer.maxTextureSize!=2048
+            ||importer.sRGBTexture!=(!linear&&!normal)||!importer.mipmapEnabled||importer.maxTextureSize!=max
             ||importer.alphaSource!=TextureImporterAlphaSource.FromInput;
         importer.textureType=normal?TextureImporterType.NormalMap:TextureImporterType.Default;
-        importer.sRGBTexture=!linear&&!normal; importer.mipmapEnabled=true; importer.maxTextureSize=2048;
-        importer.alphaSource=TextureImporterAlphaSource.FromInput; if(changed) importer.SaveAndReimport();
+        importer.sRGBTexture=!linear&&!normal; importer.mipmapEnabled=true; importer.maxTextureSize=max;
+        importer.alphaSource=TextureImporterAlphaSource.FromInput; changed|=ArenaDistanceQuality.ApplyPlatformCaps(importer,max); if(changed) importer.SaveAndReimport();
         return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
     }
     public static void RunFromCommandLine()
@@ -59,7 +60,8 @@ public static class MonteverdiScenerySetup
     [MenuItem("Tools/MusicGame/Content/Arenas/Build Monteverdi Scenery")]
     public static void Build()
     {
-        var manifest=JsonUtility.FromJson<Manifest>(File.ReadAllText(Folder+"/scenery_manifest.json"));
+        ArenaDistanceQuality.Backup("Monteverdi");
+        var manifest=JsonUtility.FromJson<Manifest>(File.ReadAllText("Assets/_Project/Configs/Editor/monteverdi_base_scenery_manifest.json"));
         var report=new List<string>();
         var prefabs=new Dictionary<string,GameObject>();
         foreach(var asset in manifest.assets)
@@ -193,6 +195,7 @@ public static class MonteverdiScenerySetup
         File.WriteAllText("Logs/MonteverdiScenerySetup.txt",string.Join("\n",report));
         Preview(report);
         File.WriteAllText("Logs/MonteverdiScenerySetup.txt",string.Join("\n",report));
+        ComposerSceneryAssembly.BuildOneForReview("Monteverdi");
         Debug.Log(string.Join("\n",report));
     }
     static void Box(Transform parent,string name,Vector3 position,Vector3 scale,Material material)

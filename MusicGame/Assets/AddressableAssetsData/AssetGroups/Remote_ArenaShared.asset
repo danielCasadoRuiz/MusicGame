@@ -1,0 +1,178 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Remote_ArenaShared
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Remote_ArenaShared
+  m_GUID: 4b5c6ea658066724b998636e47e75342
+  m_SerializeEntries:
+  - m_GUID: 0406db5a14f94604a8c57ccfbc9f3b46
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0b6673a418b0b3b439ecfa77ab73fb50
+    m_Address: ArenaShared/Assets/_Project/Shaders/WagnerFlame.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 111b3ca9be85b6a408f6df85336f0a32
+    m_Address: ArenaShared/Assets/_Project/Shaders/SeamlessPanorama360.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1121bb4e615ca3c48b214e79e841e823
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/StopNaN.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1edcd131364091c46a17cbff0b1de97a
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/CameraMotionBlur.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2aed67ad60045d54ba3a00c91e2d2631
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/BokehDepthOfField.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ba319d9098c38b4ab09c16380d54f5e
+    m_Address: ArenaShared/Assets/_Project/Art/Arenas/_Shared/ScenarioVariantFloor.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 31321ba15b8f8eb4c954353edc038b1d
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Runtime/Materials/Lit.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 31a75cbd3bd9af549b9cba253adb9b9f
+    m_Address: ArenaShared/Assets/_Project/Shaders/ScenarioVelvet.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3e1bed329b5292e48917b2b597b23071
+    m_Address: ArenaShared/Assets/_Project/Shaders/ScenarioPolishedFloor.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 562b7ae4f629f144aa97780546fce7c6
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/EdgeAdaptiveSpatialUpsampling.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 573620ae32aec764abd4d728906d2587
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/Debug/HDRDebugView.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e7134d6e63e0bc47a1dd2669cedb379
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/GaussianDepthOfField.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f1864addb451f54bae8c86d230f736e
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/Bloom.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 63eaba0ebfb82cc43bde059b4a8c65f6
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/SubpixelMorphologicalAntialiasing.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 650dd9526735d5b46b79224bc6e94025
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/Unlit.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 65df88701913c224d95fc554db28381a
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/LutBuilderLdr.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 66e573f93221714418094d0e3350b1b5
+    m_Address: ArenaShared/Assets/_Project/Shaders/WagnerWetStone.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6cda457ac28612740adb23da5d39ea92
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/LensFlareDataDriven.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 701880fecb344ea4c9cd0db3407ab287
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/LensFlareScreenSpace.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 87bb4c5fd4cf03a4ea3d47257e37507b
+    m_Address: ArenaShared/Assets/_Project/Shaders/GothicWindowCutout.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c70c1a35ff15f340b38ea84842358bf
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/TemporalAA.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a15b78cf8ca26ca4fb2090293153c62c
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/PaniniProjection.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c49e63ed1bbcb334780a3bd19dfed403
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/FinalPost.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c4ef71216895e3f4fac6827c9fde1a47
+    m_Address: ArenaShared/Assets/_Project/Shaders/BallroomWindowGlass.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf852408f2e174538bcd9b7fda1c5ae7
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/Debug/DebugReplacement.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e7857e9d0c934dc4f83f270f8447b006
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/UberPost.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e8ee25143a34b8c4388709ea947055d1
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/ScalingSetup.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ec60815c9e3acbc469498b01b1f5eebe
+    m_Address: ArenaShared/Assets/_Project/Shaders/SceneryBackdrop.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ec9fec698a3456d4fb18cf8bacb7a2bc
+    m_Address: ArenaShared/Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/LutBuilderHdr.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fcabc088c929f6941a7f5f4cfad10e2d
+    m_Address: ArenaShared/Assets/_Project/Shaders/WindowGlassCorrection.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a4cc0dfc618f344aaae658dde9bb725, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: f272ee7fac522f9428971c463fb3991e, type: 2}
+    - {fileID: 11400000, guid: f19f49a5b26dc8f418fec19550f5d337, type: 2}

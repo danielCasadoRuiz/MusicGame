@@ -299,6 +299,25 @@ public static class CombatContentSetup
             sb.AppendLine($"  added state {role}");
             i++;
         }
+        // Left / right strikes (2026-11-05): every sided strike role also gets a MIRRORED twin ("<Role>_M", same placeholder
+        // clip, so the per-fighter override maps both) — a strike thrown with the other hand / leg (AnimatorFighterAnimationDriver).
+        foreach (CombatRole role in System.Enum.GetValues(typeof(CombatRole)))
+        {
+            if (!AnimatorFighterAnimationDriver.IsMirrorable(role)) continue;
+            string name = AnimatorFighterAnimationDriver.MirrorState(role);
+            if (machine.states.Any(st => st.state.name == name)) continue;
+            var src = machine.states.FirstOrDefault(st => st.state.name == role.ToString()).state;
+            if (src == null) continue;
+            var state = machine.AddState(name, new Vector3(300f + (i % 4) * 220f, (i / 4) * 70f, 0f));
+            state.motion = src.motion;
+            state.writeDefaultValues = true;
+            state.iKOnFeet = true;
+            state.mirror = true;
+            state.speedParameterActive = true;
+            state.speedParameter = AnimatorFighterAnimationDriver.SpeedParameter;
+            sb.AppendLine($"  added mirrored state {name}");
+            i++;
+        }
         EditorUtility.SetDirty(controller);
         AssetDatabase.SaveAssets();
         return sb.ToString();

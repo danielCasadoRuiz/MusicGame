@@ -15,28 +15,32 @@ MonoBehaviour:
   id: move_bbab
   debugName: 'Combo: B-B-A-B Finisher'
   moveType: 1
-  role: 2
+  role: 25
   scalingStat: 2
   resourceCost: 0
   resourceAmount: 1
   knockdownOnHit: 0
+  damageAsMaxHealthFraction: 0
   invulnerableStart: 0
   invulnerableDuration: 0
-  animationState: ComboBBAB
-  startupDuration: 0.12
+  animationState: HighKick
+  startupDuration: 0.32000002
   activeDuration: 0.15
-  recoveryDuration: 0.4
+  recoveryDuration: 0.26999998
   cancelWindow: 0
   movementLocked: 1
   movementMultiplier: 0
-  lungeDistance: 0.6
+  lungeDistance: 0.4
+  contactReach: 0.6
+  forwardCarry: 0
+  airCarry: 1
   lockFacingDuringMove: 1
   allowedPostures: 
   requiredMovementStates: 
   attackDelivery: 0
   hits:
   - shape: 0
-    localOffset: {x: 0.9, y: 1, z: 0}
+    localOffset: {x: 0.55, y: 1, z: 0}
     size: {x: 0.7, y: 0.7, z: 0.7}
     baseDamage: 22
     baseHitStun: 0.5
@@ -63,4 +67,6 @@ MonoBehaviour:
       chipDamage: 0
       tracking: 0
     destroyOnHit: 1
+  strikingLimb: 0
+  guardBreak: 0
   damage: 0

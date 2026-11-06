@@ -99,7 +99,7 @@ public enum RunnerPenaltyCause
 }
 
 /// <summary>Published once per penalty with what was REALLY lost (score + collected pickups removed) and
-/// where — the hook for a future "pickups knocked out and bouncing" effect. Pickups lost can be 0.</summary>
+/// where — RunnerPenaltyScatter knocks that many bonuses out of the player. Pickups lost can be 0.</summary>
 public struct RunnerPenaltyEvent
 {
     public RunnerPenaltyCause Cause;
@@ -107,6 +107,10 @@ public struct RunnerPenaltyEvent
     public float   SongTime;
     public int     ScoreLost;
     public int     PickupsLost;
+    /// <summary>The type of each lost pickup (PickupsLost entries, grouped by type); null when nothing was lost.</summary>
+    public RingType[] LostTypes;
+    /// <summary>The type of each musical pickup the player HELD just before the penalty (grouped by type); null when none.</summary>
+    public RingType[] HeldTypes;
 }
 // CheckpointIndex is a legacy name kept to avoid touching every consumer: 0 still means "a full
 // restart happened" (GameplayHUD/PauseController un-freeze on this); -1 means "a normal mid-song

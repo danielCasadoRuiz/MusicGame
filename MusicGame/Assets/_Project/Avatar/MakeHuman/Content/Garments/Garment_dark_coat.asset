@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6bb79ea8d940c047bf1daf38bb4a2bb, type: 3}
+  m_Name: Garment_dark_coat
+  m_EditorClassIdentifier: Assembly-CSharp::SegmentedGarmentSO
+  garmentId: dark_coat
+  category: jacket
+  layer: 40
+  hidesCategories:
+  - shirt
+  - top
+  - waistcoat
+  - trousers
+  occlusionGap: 0.1
+  bodyCoverage: []
+  garmentCoverage: []
+  coverageConfigured: 1
+  importedCoverageHash: 36feec702af7d7d9a54ed888e87ffac9
+  importedSources:
+  - Dark_coat\Rigged\LOW\Dark_coat_LOW_5k_rigged.fbx
+  - Dark_coat\Rigged\MEDIUM\Dark_coat_MEDIUM_10k_rigged.fbx
+  - Dark_coat\Rigged\MID-HIGH\Dark_coat_MIDHIGH_20k_rigged.fbx
+  - Dark_coat\Rigged\HIGH\Dark_coat_HIGH_30k_rigged.fbx
+  - Dark_coat\Rigged\ULTRA\Dark_coat_ULTRA_50k_rigged.fbx
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Dark_coat\Rigged/Masks
+    (coat)

@@ -79,6 +79,8 @@ public class GameplayManager : MonoBehaviour
     // system used.
     private struct ScoredPickup { public float songTime; public int points; }
     private readonly Dictionary<RingType, List<ScoredPickup>> _pickupHistory = new();
+    private readonly List<RingType> _lostTypes = new(); // filled by the last penalty (RunnerPenaltyEvent.LostTypes)
+    private readonly List<RingType> _heldTypes = new(); // what the player held just before it (RunnerPenaltyEvent.HeldTypes)
 
     // ── Pool infrastructure ───────────────────────────────────────────────────
     private readonly Dictionary<RingType, ObjectPool> _ringPools = new();
@@ -315,6 +317,20 @@ public class GameplayManager : MonoBehaviour
         }
         if (!Current()) yield break;
 
+        // The player avatar (body + clothes, bound to its animator) is built while the analysing overlay is still up:
+        // it must never be seen half-dressed or in T-pose sliding forward at the start.
+        if (playerController != null && !playerController.IsVisualReady)
+        {
+            while (!playerController.IsVisualReady)
+            {
+                if (!Current()) yield break;
+                if (Time.unscaledTime > deadline) { Debug.LogWarning("[GameplayManager] Player avatar still building — starting without waiting longer."); break; }
+                yield return null;
+            }
+            yield return null; // one animator evaluation: the first visible frame is already a running pose
+            if (!Current()) yield break;
+        }
+
         // The countdown / hazard sounds are preloaded at boot: never start the countdown before they are.
         while (GameAudio.Instance != null && !GameAudio.Instance.IsReady)
         {
@@ -331,6 +347,10 @@ public class GameplayManager : MonoBehaviour
         var hazards = GetComponent<RunnerHazardSystem>() ?? gameObject.AddComponent<RunnerHazardSystem>();
         hazards.Initialize(config.hazards, playerController, this, _timeline, path, layout.Record.seed, layout.Record.key.Difficulty,
                            MusicTime.ClipToSong(SongPlayStart, config.core.warmupTime), _songEndSongTime, config.core.playerSpeed);
+        // The bonuses the chaser knocks out of the player (visual only), prewarmed for this run's bonus types.
+        var scatter = GetComponent<RunnerPenaltyScatter>() ?? gameObject.AddComponent<RunnerPenaltyScatter>();
+        scatter.Initialize(config.hazards, this, playerController);
+        _fallRespawn.SetChaserContactExtraHold(config.hazards.chaserContactExtraRespawnDelay);
         _songFinishedAnnounced = false;
         _farewellElapsed       = 0f;
 
@@ -811,8 +831,14 @@ public class GameplayManager : MonoBehaviour
         _fallCount++;
         _resources.OnFall(config.scoring.fallCancelsCombo);
         float scale = config.hazards != null ? config.hazards.PenaltyScale(e.Cause) : 1f;
+        _lostTypes.Clear();
+        _heldTypes.Clear();
+        foreach (var kv in _pickupHistory)
+            for (int i = 0; i < kv.Value.Count; i++) _heldTypes.Add(kv.Key);
         var (score, pickups) = ApplyFallPenaltyToPickups(e.FallSongTime, scale);
-        EventBus.Publish(new RunnerPenaltyEvent { Cause = e.Cause, Position = e.Position, SongTime = e.FallSongTime, ScoreLost = score, PickupsLost = pickups });
+        EventBus.Publish(new RunnerPenaltyEvent { Cause = e.Cause, Position = e.Position, SongTime = e.FallSongTime, ScoreLost = score, PickupsLost = pickups,
+                                                  LostTypes = _lostTypes.Count > 0 ? _lostTypes.ToArray() : null,
+                                                  HeldTypes = _heldTypes.Count > 0 ? _heldTypes.ToArray() : null });
         PublishStatsChanged();
     }
 
@@ -853,6 +879,7 @@ public class GameplayManager : MonoBehaviour
 
             _stats.SubtractScore(lostScore);
             _stats.Unregister(kv.Key, removeCount);
+            for (int i = 0; i < removeCount; i++) _lostTypes.Add(kv.Key);
             totalScore += lostScore;
             totalPickups += removeCount;
         }
@@ -1118,12 +1145,35 @@ public class GameplayManager : MonoBehaviour
         }
     }
 
-    private GameObject BuildPoolObject(RingType type, GameObject prefab)
+    /// <summary>The bonus types this run's pools were built for (the ones the player can collect, and so lose).</summary>
+    public IEnumerable<RingType> PooledRingTypes => _ringPools.Keys;
+
+    /// <summary>A VISUAL-ONLY copy of `type`'s bonus (same prefab / material as its pool, no RingController, no
+    /// collider), created INACTIVE under `parent` — RunnerPenaltyScatter's knocked-out bonuses.</summary>
+    public GameObject BuildRingVisualCopy(RingType type, Transform parent)
+    {
+        var prefab = TryGetThemedRingVisual(type, out var themed) && themed.prefab != null ? themed.prefab : config.collectibles.ResolvePrefab(type);
+        // Built under an inactive holder: nothing on the copy wakes up (no Awake/OnEnable) before it is stripped.
+        var holder = new GameObject("[RingVisualCopy]");
+        holder.SetActive(false);
+        var go = BuildPoolObject(type, prefab, holder.transform, poolable: false);
+        foreach (var b in go.GetComponentsInChildren<MonoBehaviour>(true)) DestroyImmediate(b);
+        foreach (var c in go.GetComponentsInChildren<Collider>(true)) DestroyImmediate(c);
+        foreach (var r in go.GetComponentsInChildren<Rigidbody>(true)) DestroyImmediate(r);
+        go.SetActive(false);
+        go.transform.SetParent(parent, false);
+        Destroy(holder);
+        return go;
+    }
+
+    private GameObject BuildPoolObject(RingType type, GameObject prefab) => BuildPoolObject(type, prefab, _poolParent, poolable: true);
+
+    private GameObject BuildPoolObject(RingType type, GameObject prefab, Transform parent, bool poolable)
     {
         GameObject go;
         if (prefab != null)
         {
-            go = Instantiate(prefab, _poolParent);
+            go = Instantiate(prefab, parent);
         }
         else
         {
@@ -1131,7 +1181,7 @@ public class GameplayManager : MonoBehaviour
             // instead of a visually inconsistent disc/cylinder shape when a type has no
             // assigned prefab.
             go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            go.transform.SetParent(_poolParent);
+            go.transform.SetParent(parent);
             go.transform.localScale = type switch
             {
                 RingType.Peak   => new Vector3(0.9f, 0.9f, 0.9f),  // stands out — there's only one per song
@@ -1145,7 +1195,7 @@ public class GameplayManager : MonoBehaviour
 
         // Textured authored pickups retain their maps. Plain placeholders/fallbacks keep the
         // configured type colour and emission, as before.
-        var renderer = go.GetComponentInChildren<MeshRenderer>();
+        var renderer = go.GetComponentInChildren<MeshRenderer>(!poolable); // a visual copy is built inside an inactive holder
         if (renderer != null)
         {
             var authored = renderer.sharedMaterial;
@@ -1155,9 +1205,10 @@ public class GameplayManager : MonoBehaviour
             if (!textured) renderer.sharedMaterial = GetOrCreateMaterial(type);
         }
 
+        go.name = $"Ring_{type}";
+        if (!poolable) return go;
         var rc = go.GetComponent<RingController>() ?? go.AddComponent<RingController>();
         rc.Setup(type);
-        go.name = $"Ring_{type}";
         return go;
     }
 

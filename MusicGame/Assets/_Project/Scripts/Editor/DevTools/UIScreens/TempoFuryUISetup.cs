@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -146,7 +146,7 @@ public static class TempoFuryUISetup
             lib.hud.Add(new StyleSkinLibrarySO.HudSkin
             {
                 style = style,
-                bar = CopySprite(Path.Combine(dir, "bar.png"), $"{ArtHud}/{name}/bar.png", 2048, log),
+                bar = CopySprite(Path.Combine(dir, "bar.png"), $"{ArtHud}/{name}/bar.png", 4096, log),
                 pause = CopySprite(Path.Combine(dir, "pause.png"), $"{ArtHud}/{name}/pause.png", 256, log),
                 pauseSelected = CopySprite(Path.Combine(dir, "pause_selected.png"), $"{ArtHud}/{name}/pause_selected.png", 256, log),
             });
@@ -626,8 +626,8 @@ public static class TempoFuryUISetup
 
     // The bar art (2048×384) is placed at HudScale, right-aligned with HudMargin to its painted edge (x 2008) and its
     // painted top (y 48) HudMargin below the screen top. Children are placed in ART pixels (top-left origin).
-    private const float HudScale = 0.72f, HudMargin = 8f;
-    private static Vector2 HudBarPos => new(-HudMargin + 40f * HudScale, -HudMargin + 48f * HudScale);   // top-right anchored
+    private const float HudScale = 0.625f, HudMargin = 0f;
+    private static Vector2 HudBarPos => Vector2.zero;   // top-right anchored
     private const float HudLogoScale = 0.29f;
 
     /// <summary>A point of the bar art (art px, top-left origin) in screen units from the screen's top-right corner.</summary>
@@ -639,118 +639,11 @@ public static class TempoFuryUISetup
 
     private static void PatchLiveHud(GameObject root, StyleSkinLibrarySO lib, StringBuilder log)
     {
-        var view = root.GetComponent<LiveHudView>();
-        if (view == null) { log.AppendLine("  FAIL  LiveHud.prefab: no LiveHudView"); return; }
-        if (view.skin != null)
-        {
-            view.skin.library = lib;
-            if (view.skin.logo != null) view.skin.logo.library = lib;
-            if (view.skin.classicBar != null)
-            {
-                view.skin.classicBar.sprite = lib.ClassicHud.bar;
-                view.skin.classicBar.material = lib.curtainMaterial;   // the classic bar is the curtain, over the style bar
-                if (view.skin.styleBar != null && view.skin.classicBar.transform.GetSiblingIndex() < view.skin.styleBar.transform.GetSiblingIndex())
-                    view.skin.classicBar.transform.SetSiblingIndex(view.skin.styleBar.transform.GetSiblingIndex());
-            }
-            foreach (var icon in view.skin.icons)
-            {
-                var b = lib.Bonus(icon.kind);
-                if (b == null) continue;
-                if (icon.normal != null) icon.normal.sprite = b.normal;
-                if (icon.classic != null) icon.classic.sprite = b.classic;
-            }
-            return;
-        }
-        var rt = (RectTransform)root.transform;
-        // The old 44 px top bar and its progress line are replaced as a whole (Runner.unity only overrides the root).
-        foreach (var old in new[] { "TopBar", "SongProgressBg" })
-        {
-            var t = rt.Find(old);
-            if (t != null) UnityEngine.Object.DestroyImmediate(t.gameObject);
-        }
-
-        var bar = UIFactory.CreateRect("HudBar", rt);
-        bar.SetSiblingIndex(0);
-        var tr = new Vector2(1f, 1f);
-        UIFactory.SetBox(bar, tr, tr, tr, HudBarPos, StyleSkinLibrarySO.HudBarCanvas);
-        bar.localScale = Vector3.one * HudScale;
-
-        var skin = root.AddComponent<RunnerHudSkin>();
-        skin.library = lib;
-        skin.styleBar = FullImage("StyleBar", bar);
-        skin.styleBar.enabled = false;
-        skin.classicBar = FullImage("ClassicBar", bar);   // over the style bar: the curtain
-        skin.classicBar.sprite = lib.ClassicHud.bar;
-        skin.classicBar.material = lib.curtainMaterial;
-
-        var ivory = lib.titleColor;
-        var dim = new Color(ivory.r, ivory.g, ivory.b, 0.7f);
-        // Score (left of the counters).
-        var score = ArtRect("Score", bar, 232f, 108f, 290f, 130f);
-        view.scoreLabel = ArtText("Label", score, 0f, 4f, 290f, 34f, 28, dim, TextAlignmentOptions.Left);
-        view.scoreLabel.characterSpacing = 8f;
-        UIScreenPrefabContext.Localized(view.scoreLabel, "HUD.Score");
-        view.scoreValue = ArtText("Value", score, 0f, 38f, 290f, 80f, 64, Color.white, TextAlignmentOptions.Left, FontStyles.Bold);
-        view.scoreValue.text = "000000";
-
-        // The 6 musical bonuses, then past the separator (x 1402) Special and Lives.
-        const float cellsLeft = 530f, cellsRight = 1392f, cellW = (cellsRight - cellsLeft) / 6f, sideW = 142f;
-        var counters = new List<(BonusKind kind, float x, float w)>();
-        for (int i = 0; i < HudCounters.Length; i++) counters.Add((HudCounters[i], cellsLeft + i * cellW, cellW));
-        counters.Add((BonusKind.Special, 1408f, sideW));
-        counters.Add((BonusKind.Life, 1408f + sideW, sideW));
-        foreach (var (kind, x, w) in counters)
-        {
-            var cell = ArtRect($"Cell_{kind}", bar, x, 104f, w, 136f);
-            var normal = ArtImage("Icon", cell, (w - 82f) / 2f, 6f, 82f, 82f);
-            var classic = ArtImage("IconClassic", cell, (w - 82f) / 2f, 6f, 82f, 82f);
-            var art = lib.Bonus(kind);
-            normal.sprite = art != null ? art.normal : null;
-            classic.sprite = art != null ? art.classic : null;
-            classic.color = new Color(1f, 1f, 1f, 0f);
-            classic.enabled = false;
-            skin.icons.Add(new RunnerHudSkin.BonusIcon { kind = kind, normal = normal, classic = classic });
-            var value = ArtText("Value", cell, 0f, 88f, w, 44f, 38, IconColor(kind), TextAlignmentOptions.Center, FontStyles.Bold);
-            value.text = "0";
-            SetCounter(view, kind, value, normal);
-        }
-
-        // Song progress: played time | bar on the classic art's track | song length.
-        view.elapsedTimeText = ArtText("Elapsed", bar, 214f, 262f, 92f, 40f, 30, ivory, TextAlignmentOptions.Right);
-        view.elapsedTimeText.text = "0:00";
-        var track = ArtImage("ProgressTrack", bar, 318f, 274f, 1214f, 18f);
-        track.preserveAspect = false;
-        track.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Art/UI/White.png");
-        track.color = new Color(0f, 0f, 0f, 0.55f);
-        var fill = ArtImage("ProgressFill", bar, 318f, 274f, 1214f, 18f);
-        fill.preserveAspect = false;
-        fill.sprite = track.sprite;
-        fill.type = Image.Type.Filled;
-        fill.fillMethod = Image.FillMethod.Horizontal;
-        fill.fillOrigin = (int)Image.OriginHorizontal.Left;
-        fill.fillAmount = 0.35f;
-        fill.color = ivory;
-        view.progressFill = fill;
-        view.totalTimeText = ArtText("Total", bar, 1544f, 262f, 92f, 40f, 30, ivory, TextAlignmentOptions.Left);
-        view.totalTimeText.text = "0:00";
-        view.totalValue = null; view.totalLabel = null;           // no ring total in the new bar
-        view.kickLabel = view.snareLabel = view.hiHatLabel = view.beatLabel = view.onsetLabel = view.impactLabel = null;
-        view.lifeLabel = view.specialLabel = null;                 // the icons say what they are
-
-        // The TEMPO FURY logo of the song's style, on the left, slightly over the bar's angled end.
-        var logo = BuildStyledTitle("Logo", rt, lib, log);
-        if (logo != null)
-        {
-            var tl = new Vector2(0f, 1f);
-            UIFactory.SetBox((RectTransform)logo.transform, tl, tl, tl, new Vector2(4f - 73f * HudLogoScale, -(2f - 96f * HudLogoScale)), new Vector2(1920f, 1080f));
-            logo.transform.localScale = Vector3.one * HudLogoScale;
-            skin.logo = logo;
-        }
-
-        var tags = rt.Find("TagsStrip") as RectTransform;   // debug-only strip: below the bar
-        if (tags != null) tags.anchoredPosition = new Vector2(tags.anchoredPosition.x, HudPoint(new Vector2(0f, 340f)).y - 6f);
-        view.skin = skin;
-        log.AppendLine("  PASS  LiveHud: Tempo Fury bar, bonus icons, logo, progress");
+        var skin = root.GetComponent<RunnerHudSkin>();
+        if (skin == null) skin = root.AddComponent<RunnerHudSkin>();
+        if (skin.logo == null) skin.logo = BuildStyledTitle("Logo", root.transform, lib, log);
+        RunnerHudLayoutSetup.PatchLiveHud(root, lib);
+        log.AppendLine("  PASS  Compact runner HUD: artist · song, bonus counters, progress and shared curtain");
     }
 
     private static void SetCounter(LiveHudView view, BonusKind kind, TextMeshProUGUI value, Image icon)
@@ -805,6 +698,7 @@ public static class TempoFuryUISetup
 
         var group = C<StyleBlendGroup>(view.pauseButtonRoot) ?? view.pauseButtonRoot.AddComponent<StyleBlendGroup>();
         group.library = lib;
+        RunnerHudLayoutSetup.PatchPause(view, lib);
         var existing = C<StyleBlendButton>(button.gameObject);
         if (existing != null) { existing.library = lib; return; }
 
@@ -936,7 +830,8 @@ public static class TempoFuryUISetup
                     float w = lib.RunnerWeight(p);
                     if (v.skin != null) v.skin.Apply(s, w);
                     Txt(v.scoreLabel, "HUD.Score");
-                    v.scoreValue.text = "012450";
+                    if (v.scoreValue != null) v.scoreValue.text = "012450";
+                    if (v.artistSongText != null) v.artistSongText.text = "ARTISTA · CANÇÓ";
                     var n = new[] { v.kickValue, v.snareValue, v.hiHatValue, v.beatValue, v.onsetValue, v.impactValue, v.specialValue, v.lifeValue };
                     var sample = new[] { 14, 11, 35, 18, 6, 3, 1, 3 };
                     for (int i = 0; i < n.Length; i++) if (n[i] != null) n[i].text = sample[i].ToString();

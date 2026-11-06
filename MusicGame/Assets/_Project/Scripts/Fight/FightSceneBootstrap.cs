@@ -306,6 +306,10 @@ public class FightSceneBootstrap : MonoBehaviour
         WireFighter(_opponentActor, _playerActor, isPlayer: false, aiProfile: aiProfile);
 
         ApplyPlayerCombatSetup();
+        if (GetComponent<FightHitFeedback>() == null) gameObject.AddComponent<FightHitFeedback>(); // spark + hit-stop
+        if (GetComponent<FighterHitFlinch>() == null) gameObject.AddComponent<FighterHitFlinch>(); // the struck body reacts where it was hit
+        if (GetComponent<FighterAuraFx>() == null) gameObject.AddComponent<FighterAuraFx>();       // Power white aura + bulk, Special gold aura
+        (GetComponent<FighterPoseOverlay>() ?? gameObject.AddComponent<FighterPoseOverlay>()).Initialize(_playerActor, _opponentActor); // diving air punch, first-person side guard
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         (GetComponent<FightDebugCombatInput>() ?? gameObject.AddComponent<FightDebugCombatInput>()).Initialize(_playerActor, _opponentActor); // TEMPORARY debug keys 1-9
@@ -496,6 +500,7 @@ public class FightSceneBootstrap : MonoBehaviour
             if (this == null || opponentActor == null || stageToken != _stageBuildToken) { built.Dispose(); return; }
             if (!keep(built)) { built.Dispose(); return; }
             opponentActor.ReplaceVisual(built.Root);
+            opponentActor.BodyMorph = built.MorphController;
             // The actor's gameplay origin sits at spawn height (the capsule's centre); the avatar's feet
             // must be on the arena floor (y = 0).
             built.Root.localPosition = new Vector3(0f, -opponentActor.transform.position.y, 0f);

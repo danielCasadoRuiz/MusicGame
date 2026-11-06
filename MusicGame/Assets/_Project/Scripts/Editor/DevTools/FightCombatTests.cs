@@ -144,7 +144,10 @@ public static class FightCombatTests
               Mathf.Approximately(player.BuildStats.punchPower, expected.punchPower) && Mathf.Approximately(player.BuildStats.kickPower, expected.kickPower) &&
               Mathf.Approximately(player.BuildStats.agility, expected.agility) && Mathf.Approximately(player.BuildStats.resistance, expected.resistance) &&
               player.BuildStats.Total > 0f);
-        Check($"G: player resources from RunnerResults.Resources [{player.CombatResources}]", player.CombatResources.Specials == 0 && player.CombatResources.Lives == 2);
+        // Since 2026-10-25 the fighter spends the RUN's own wallet (one counter for runner + fight), not a copy of
+        // RunnerResults.Resources (lives belong to the run / campaign).
+        Check($"G: player resources = the run's own wallet [{player.CombatResources}]",
+              ReferenceEquals(player.CombatResources, GameSession.Instance.Run.Wallet) && player.CombatResources.Specials == 0);
 
         var mc = player.MoveController;
         var captures = new List<Task>();
@@ -240,16 +243,27 @@ public static class FightCombatTests
         bool interrupted = mc.CurrentMove == null && player.HitReaction.State == FighterReactionState.Knockdown && player.IsInvulnerable;
         bool rejectedWhileDown = !mc.TryExecuteRole(CombatRole.LightAttack);
         var states = new List<FighterReactionState>();
-        until = Time.realtimeSinceStartup + 6f;
+        // Tekken-like: it lies on the floor until the get-up input (Up / Jump) — wait well past the minimum lying
+        // time, check it is still down, then "press Up".
+        float waitStart = Time.realtimeSinceStartup;
+        bool stillDownWithoutInput = false, requested = false;
+        until = Time.realtimeSinceStartup + 8f;
         while (Time.realtimeSinceStartup < until)
         {
             if (states.Count == 0 || states[states.Count - 1] != player.HitReaction.State) states.Add(player.HitReaction.State);
             if (player.HitReaction.State == FighterReactionState.None) break;
+            if (!requested && Time.realtimeSinceStartup - waitStart > 2.5f)
+            {
+                stillDownWithoutInput = player.HitReaction.WaitingForGetUp;
+                player.HitReaction.RequestGetUp();
+                requested = true;
+            }
             await Task.Yield();
         }
         await kdCap;
-        Check($"F: knockdown interrupts the attack, blocks new moves, flows {string.Join(" → ", states)}",
-              interrupted && rejectedWhileDown && states.SequenceEqual(new[] { FighterReactionState.Knockdown, FighterReactionState.Downed, FighterReactionState.GetUp, FighterReactionState.None }));
+        Check($"F: knockdown interrupts the attack, blocks new moves, stays down until Up ({stillDownWithoutInput}), flows {string.Join(" → ", states)}",
+              interrupted && rejectedWhileDown && stillDownWithoutInput &&
+              states.SequenceEqual(new[] { FighterReactionState.Knockdown, FighterReactionState.Downed, FighterReactionState.GetUp, FighterReactionState.None }));
         await WaitSeconds(0.5f);
         Check("F: after GetUp the fighter can act again", mc.TryExecuteRole(CombatRole.LightAttack));
         await WaitSeconds(1.0f);
@@ -275,12 +289,15 @@ public static class FightCombatTests
         return $"{a.Side} {drv?.CurrentRole} pos {a.transform.position:F2} hips {(hips != null ? hips.position.ToString("F2") : "-")} root {(anim != null ? anim.transform.position.ToString("F2") : "-")}";
     }
 
-    /// <summary>Knockback pushes the fighters apart — put them back in reach (1.1 m) before each action.</summary>
+    /// <summary>Knockback pushes the fighters apart — put them back in reach before each action. Since the
+    /// real-body contact (2026-11-04) a hit only lands where the clip visibly touches: the cross / hook / mid
+    /// kick reach ≈ 0.6 m hips-to-hips (FightReachProbe) and in guard each hips sit ≈ 5 cm behind the root, so roots
+    /// 0.44 m apart (≥ minimumFighterSeparation 0.40) ≈ hips 0.54 m (a shorter rival, e.g. Mozart ×0.93, still reaches).</summary>
     private static void Reposition()
     {
         if (_player == null || _opponent == null) return;
-        _player.transform.position   = new Vector3(-0.55f, _player.transform.position.y, 0f);
-        _opponent.transform.position = new Vector3(0.55f, _opponent.transform.position.y, 0f);
+        _player.transform.position   = new Vector3(-0.22f, _player.transform.position.y, 0f);
+        _opponent.transform.position = new Vector3(0.22f, _opponent.transform.position.y, 0f);
     }
 
     private static async Task Sequence(FighterActor actor, CombatRole role, string file, float seconds)

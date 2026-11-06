@@ -30,6 +30,7 @@ Shader "MusicGame/Art/WindowGlassCorrection"
             Cull [_Cull]
             HLSLPROGRAM
             #pragma target 3.0
+            #pragma multi_compile_instancing
             #pragma vertex Vertex
             #pragma fragment Fragment
             #pragma shader_feature_local _NORMALMAP
@@ -48,11 +49,13 @@ Shader "MusicGame/Art/WindowGlassCorrection"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             half4 _GlassColor;
             half _GlassEmission;
-            struct Attributes {float4 positionOS:POSITION;float3 normalOS:NORMAL;float4 tangentOS:TANGENT;float2 uv:TEXCOORD0;};
-            struct Varyings {float4 positionCS:SV_POSITION;float3 positionWS:TEXCOORD0;half3 normalWS:TEXCOORD1;half4 tangentWS:TEXCOORD2;float2 uv:TEXCOORD3;half fog:TEXCOORD4;};
+            struct Attributes {float4 positionOS:POSITION;float3 normalOS:NORMAL;float4 tangentOS:TANGENT;float2 uv:TEXCOORD0;UNITY_VERTEX_INPUT_INSTANCE_ID};
+            struct Varyings {float4 positionCS:SV_POSITION;float3 positionWS:TEXCOORD0;half3 normalWS:TEXCOORD1;half4 tangentWS:TEXCOORD2;float2 uv:TEXCOORD3;half fog:TEXCOORD4;UNITY_VERTEX_OUTPUT_STEREO};
             Varyings Vertex(Attributes input)
             {
                 Varyings output;
+                UNITY_SETUP_INSTANCE_ID(input);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
                 VertexPositionInputs p=GetVertexPositionInputs(input.positionOS.xyz);
                 VertexNormalInputs n=GetVertexNormalInputs(input.normalOS,input.tangentOS);
                 output.positionCS=p.positionCS;output.positionWS=p.positionWS;
@@ -62,11 +65,12 @@ Shader "MusicGame/Art/WindowGlassCorrection"
             }
             half4 Fragment(Varyings input):SV_Target
             {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 SurfaceData surface;
                 InitializeStandardLitSurfaceData(input.uv,surface);
                 // The exported window atlas contains saturated pink placeholder panes.
                 // Correct only those pixels; retain the original timber, gold, UVs and normal map.
-                half pink=smoothstep(0.08h,0.25h,min(surface.albedo.r,surface.albedo.b)-surface.albedo.g);
+                half pink=smoothstep(0.005h,0.04h,min(surface.albedo.r,surface.albedo.b)-surface.albedo.g);
                 surface.albedo=lerp(surface.albedo,_GlassColor.rgb,pink);
                 surface.metallic=lerp(surface.metallic,0.0h,pink);
                 surface.smoothness=lerp(surface.smoothness,0.7h,pink);

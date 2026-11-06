@@ -15,26 +15,7 @@ MonoBehaviour:
   garmentId: monteverdi_pants
   category: trousers
   layer: 20
-  bodyCoverage:
-  - pelvis_front_center
-  - pelvis_front_l
-  - pelvis_front_r
-  - buttocks
-  - thigh_upper_front_l
-  - thigh_upper_back_l
-  - thigh_lower_front_l
-  - thigh_lower_back_l
-  - thigh_upper_front_r
-  - thigh_upper_back_r
-  - thigh_lower_front_r
-  - thigh_lower_back_r
-  garmentCoverage: []
-  coverageConfigured: 1
-  importedCoverageHash: a5e2c1fe10c3e4abc9c72b5263b51b60
-  importedSources:
-  - monteverdi_pants_4\Rigged\LOW\monteverdi_pants_4_LOW_5k_rigged.fbx
-  - monteverdi_pants_4\Rigged\MEDIUM\monteverdi_pants_4_MEDIUM_10k_rigged.fbx
-  - monteverdi_pants_4\Rigged\MID-HIGH\monteverdi_pants_4_MIDHIGH_20k_rigged.fbx
-  - monteverdi_pants_4\Rigged\HIGH\monteverdi_pants_4_HIGH_30k_rigged.fbx
-  - monteverdi_pants_4\Rigged\ULTRA\monteverdi_pants_4_ULTRA_50k_rigged.fbx
-  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\monteverdi_pants_4\Rigged\Segmented
+  hidesCategories: []
+  occlusionGap: 0.1
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\monteverdi_pants_4\Rigged/Masks
+    (trousers)

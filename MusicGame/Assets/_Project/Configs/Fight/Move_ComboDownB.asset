@@ -15,29 +15,33 @@ MonoBehaviour:
   id: move_down_b
   debugName: 'Combo: Down+B Low Kick'
   moveType: 1
-  role: 3
+  role: 24
   scalingStat: 2
   resourceCost: 0
   resourceAmount: 1
   knockdownOnHit: 0
+  damageAsMaxHealthFraction: 0
   invulnerableStart: 0
   invulnerableDuration: 0
   animationState: LowKick
-  startupDuration: 0.12
+  startupDuration: 0.26
   activeDuration: 0.1
-  recoveryDuration: 0.25
-  cancelWindow: 0
-  movementLocked: 1
-  movementMultiplier: 0
+  recoveryDuration: 0.24000004
+  cancelWindow: 0.12000002
+  movementLocked: 0
+  movementMultiplier: 0.3
   lungeDistance: 0
+  contactReach: 1.41
+  forwardCarry: 0
+  airCarry: 1
   lockFacingDuringMove: 1
   allowedPostures: 
   requiredMovementStates: 
   attackDelivery: 0
   hits:
   - shape: 0
-    localOffset: {x: 0.8, y: -0.35, z: 0}
-    size: {x: 0.65, y: 0.6, z: 0.6}
+    localOffset: {x: 0.55, y: -0.8, z: 0}
+    size: {x: 0.7, y: 0.4, z: 0.6}
     baseDamage: 13
     baseHitStun: 0.3
     baseKnockback: 1.1
@@ -63,4 +67,6 @@ MonoBehaviour:
       chipDamage: 0
       tracking: 0
     destroyOnHit: 1
+  strikingLimb: 0
+  guardBreak: 0
   damage: 0

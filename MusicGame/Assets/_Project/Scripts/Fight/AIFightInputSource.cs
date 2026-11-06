@@ -17,8 +17,17 @@ public class AIFightInputSource : IFightInputSource
     public float Vertical { get; private set; }
     public bool PunchPressed { get; private set; }
     public bool KickPressed { get; private set; }
-    public bool PunchHeld => false; // the AI taps; it never charges the Power hold
-    public bool KickHeld => false;
+    // The AI taps — except the POWER chord (Down + Punch + Kick held), which it holds like a player (HoldPowerChord).
+    public bool PunchHeld => UnityEngine.Time.time < _holdButtonsUntil;
+    public bool KickHeld => UnityEngine.Time.time < _holdButtonsUntil;
+    private float _holdButtonsUntil = -1f;
+    /// <summary>Presses Punch + Kick and keeps both held for `seconds` (with Down held by the caller: the Power chord).</summary>
+    public void HoldPowerChord(float seconds) { _punchRequested = true; _kickRequested = true; _holdButtonsUntil = UnityEngine.Time.time + seconds; }
+    public void ReleaseButtons() => _holdButtonsUntil = -1f;
+    public bool JumpPressed { get; private set; }
+    private bool _jumpRequested;
+    /// <summary>The jump button (instant jump; the held direction decides forward / back / straight up).</summary>
+    public void RequestJump() => _jumpRequested = true;
 
     private float _desiredHorizontal;
     private float _desiredVertical;
@@ -47,6 +56,8 @@ public class AIFightInputSource : IFightInputSource
         Vertical = _desiredVertical;
         PunchPressed = _punchRequested;
         KickPressed = _kickRequested;
+        JumpPressed = _jumpRequested;
+        _jumpRequested = false;
         _punchRequested = false;
         _kickRequested = false;
     }

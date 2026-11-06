@@ -15,22 +15,19 @@ MonoBehaviour:
   garmentId: acoustic_waistcoat
   category: waistcoat
   layer: 30
-  bodyCoverage:
-  - back_upper
-  - back_lower
-  garmentCoverage:
-  - targetCategories:
-    - shirt
-    - top
-    zones:
-    - back_upper
-    - back_lower
+  hidesCategories:
+  - shirt
+  - top
+  occlusionGap: 0.1
+  bodyCoverage: []
+  garmentCoverage: []
   coverageConfigured: 1
-  importedCoverageHash: 66fb4f763ea74ddb0c4bfb9e4b8a709d
+  importedCoverageHash: 29a0aba3a61d6256777ead0cc9e175bc
   importedSources:
   - Acoustic_waistcoat\Rigged\LOW\Acoustic_waistcoat_LOW_5k_rigged.fbx
   - Acoustic_waistcoat\Rigged\MEDIUM\Acoustic_waistcoat_MEDIUM_10k_rigged.fbx
   - Acoustic_waistcoat\Rigged\MID-HIGH\Acoustic_waistcoat_MIDHIGH_20k_rigged.fbx
   - Acoustic_waistcoat\Rigged\HIGH\Acoustic_waistcoat_HIGH_30k_rigged.fbx
   - Acoustic_waistcoat\Rigged\ULTRA\Acoustic_waistcoat_ULTRA_50k_rigged.fbx
-  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Acoustic_waistcoat\Rigged\Segmented
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Acoustic_waistcoat\Rigged/Masks
+    (waistcoat)

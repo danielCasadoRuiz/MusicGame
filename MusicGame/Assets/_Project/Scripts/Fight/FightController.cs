@@ -195,6 +195,7 @@ public class FightController : MonoBehaviour
         UpdateRoundPips();
         UpdateTimerText();
         UpdateBuildPanel();
+        UpdateOpponentPanel();
     }
 
     // Esc / the pause button pause only while rounds are being played. In VersusIntro / MatchFarewell ESC belongs to
@@ -293,6 +294,70 @@ public class FightController : MonoBehaviour
             yield return null;
         }
         if (rt != null) rt.localScale = Vector3.one;
+    }
+
+    // ── The RIVAL's panel (2026-11-05): the same reading as the player's — its build (bars), its charges (Special, x3,
+    // x4 = Power seconds) straight from its own wallet, and its LEVEL: pips filled by the fight difficulty
+    // (FightSceneBootstrap.RivalTuning — 1 pip at the start of the campaign, 5 at the end / the final rival).
+    private FighterActor _opponentActor;
+    private readonly System.Collections.Generic.Dictionary<BonusKind, int> _shownRivalCharges = new();
+
+    private void UpdateOpponentPanel()
+    {
+        var panel = _view != null ? _view.opponentBuildPanel : null;
+        if (panel == null) return;
+        FitOpponentPanel(panel);
+        if (_opponentActor == null)
+            foreach (var a in FindObjectsByType<FighterActor>(FindObjectsSortMode.None)) if (a.Side == FighterSide.Opponent) _opponentActor = a;
+        if (_opponentActor == null) return;
+        if (_hudBalance == null) _hudBalance = Resources.Load<AppConfigSO>("AppConfig")?.combatBalance;
+        var build = _opponentActor.BuildStats;
+        foreach (var row in panel.stats)
+            if (row != null) BonusConversionController.ShowStat(panel, row.stat, PowerDisplayPoints(BuildValue(build, row.stat), row.stat, _opponentActor.Power, _hudBalance));
+        foreach (var cell in panel.resources)
+        {
+            if (cell == null) continue;
+            int v = ChargeValue(_opponentActor.CombatResources, cell.kind);
+            if (cell.kind == BonusKind.QuadCombo)
+                BonusConversionController.ShowPowerSeconds(cell, _opponentActor.Power.IsActive
+                    ? _opponentActor.Power.Remaining : CombatResourceUse.PowerSeconds(v, _hudBalance));
+            else BonusConversionController.ShowResource(cell, v);
+            if (_shownRivalCharges.TryGetValue(cell.kind, out int before) && before != v && cell.root != null)
+                StartCoroutine(PulseCell(cell.root));
+            _shownRivalCharges[cell.kind] = v;
+        }
+        var boot = FightSceneBootstrap.Instance;
+        float d = boot != null ? boot.RivalTuning.Difficulty : 0f;
+        bool boss = GameSession.Instance != null && GameSession.Instance.CurrentBossStage >= 0;
+        int lit = RivalLevelPips(d, boss, panel.levelPips.Length);
+        for (int i = 0; i < panel.levelPips.Length; i++)
+        {
+            var pip = panel.levelPips[i];
+            if (pip == null) continue;
+            pip.color = i < lit ? (boss ? new Color(1f, 0.78f, 0.25f, 1f) : new Color(1f, 0.42f, 0.32f, 1f)) : new Color(1f, 1f, 1f, 0.16f);
+        }
+    }
+
+    /// <summary>Lit level pips for a fight difficulty (0..1): at least one, all of them for the final rival.</summary>
+    public static int RivalLevelPips(float difficulty, bool boss, int pips)
+    {
+        if (pips <= 0) return 0;
+        if (boss) return pips;
+        return Mathf.Clamp(1 + Mathf.FloorToInt(Mathf.Clamp01(difficulty) * pips * 0.999f), 1, pips);
+    }
+
+    // Mirror of FitBuildPanel: the rival panel starts left of the rival's health bar and must end after the timer.
+    private void FitOpponentPanel(FightBuildPanelView panel)
+    {
+        var rt = panel.root;
+        if (rt == null || _timerText == null || !(rt.parent is RectTransform bar)) return;
+        var corners = new Vector3[4];
+        _timerText.rectTransform.GetWorldCorners(corners);
+        float limit = bar.InverseTransformPoint(corners[2]).x + 12f;
+        float right = rt.localPosition.x + (1f - rt.pivot.x) * rt.rect.width;
+        float width = rt.rect.width;
+        float scale = width > 0f ? Mathf.Clamp((right - limit) / width, 0.55f, 1f) : 1f;
+        if (!Mathf.Approximately(rt.localScale.x, scale)) rt.localScale = new Vector3(scale, scale, 1f);
     }
 
     // The panel starts right of the player's health bar and must end before the centred timer at ANY aspect: scaled
@@ -517,6 +582,8 @@ public class FightController : MonoBehaviour
         if (view.movesHelpButton != null) view.movesHelpButton.onClick.AddListener(OpenHelpFromPause);
         else Debug.LogError("[FightController] FightHud.prefab: movesHelpButton not assigned — run Tools > MusicGame > UI > Help Placeholders + Prefabs.");
         WireBuildPanel(view.buildPanel);
+        if (view.opponentBuildPanel != null) WireBuildPanel(view.opponentBuildPanel);
+        else Debug.LogWarning("[FightController] FightHud.prefab: opponentBuildPanel not assigned — rebuild the UI prefabs (UIScreenPrefabBuilder).");
         if (view.cameraToggleButton != null)
             view.cameraToggleButton.onClick.AddListener(() => { if (FightCameraController.Instance != null) FightCameraController.Instance.ToggleView(); });
 
@@ -555,6 +622,10 @@ public class FightController : MonoBehaviour
                 () => { FightTouchInputState.KickRequested = true; FightTouchInputState.KickHeld = true; },
                 () => FightTouchInputState.KickHeld = false);
         else Debug.LogError("[FightController] FightHud.prefab: kickAction (TouchActionButton) not assigned.");
+
+        if (view.jumpAction != null)
+            view.jumpAction.Initialize(() => FightTouchInputState.JumpRequested = true, () => { });
+        else Debug.LogError("[FightController] FightHud.prefab: jumpAction (TouchActionButton) not assigned — rebuild the UI prefabs.");
     }
 
     // Icons from the central HelpUIConfig (placeholders until the final art) — never set in the prefab itself.

@@ -44,6 +44,9 @@ public class AvatarRecipeSO : ScriptableObject
     public HairItemSO hairOverride;
     public FaceProfileSO faceOverride;
 
+    [Header("Eyes (baked once at creation)")]
+    public AvatarIrisSettings iris = new AvatarIrisSettings();
+
     [Header("Color overrides")]
     public AvatarColorOverride[] colorOverrides = System.Array.Empty<AvatarColorOverride>();
 
@@ -77,6 +80,7 @@ public class AvatarRecipeSO : ScriptableObject
         return new AvatarRecipe
         {
             Identity       = runtimeIdentity,
+            Iris = iris,
             BaseAvatar     = baseAvatar,
             Items          = new List<WearableItemSO>(items ?? System.Array.Empty<WearableItemSO>()),
             ColorOverrides = new List<AvatarColorOverride>(colorOverrides ?? System.Array.Empty<AvatarColorOverride>()),

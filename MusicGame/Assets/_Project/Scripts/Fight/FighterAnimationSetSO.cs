@@ -17,8 +17,13 @@ public class FighterAnimationSetSO : ScriptableObject
         public AnimationClip clip;
         [Tooltip("Marks a slot whose clip is a stand-in (reused from another move / not ideal yet).")]
         public bool provisional;
+        [Tooltip("Strike clips: the limb side that strikes in the clip as authored (FightStrikeAim measures it). A strike thrown " +
+                 "with the other side plays the clip MIRRORED (AnimatorFighterAnimationDriver). Unknown = never mirrored.")]
+        public ClipStrikeSide strikeSide;
         [TextArea] public string note;
     }
+
+    public enum ClipStrikeSide { Unknown = 0, Right = 1, Left = -1 }
 
     public RoleClip[] clips = System.Array.Empty<RoleClip>();
 
@@ -41,5 +46,13 @@ public class FighterAnimationSetSO : ScriptableObject
         if (clips == null) return null;
         foreach (var c in clips) if (c != null && c.role == role) return c.clip;
         return null;
+    }
+
+    /// <summary>+1 right / −1 left: the side that strikes in `role`'s clip as authored; 0 unknown.</summary>
+    public int SideOf(CombatRole role)
+    {
+        if (clips == null) return 0;
+        foreach (var c in clips) if (c != null && c.role == role && c.clip != null) return (int)c.strikeSide;
+        return 0;
     }
 }

@@ -4,17 +4,18 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 /// <summary>
-/// The equipped appearance of ONE avatar for its segmented garments: which regions each garment shows
-/// (garmentCoverage of the garments above it) and which skin the body shows (bodyCoverage of all of them).
+/// The equipped appearance of ONE avatar for its layered garments: which triangles each garment shows (its
+/// vertices lying under a higher-layer garment that hides its category are hidden — occlusion masks, see
+/// GarmentOcclusionData) and which skin the body shows (maximum of the equipped garments' skin maps).
 /// Owned by AvatarInstance (AvatarInstance.Appearance); AvatarFactory adds/removes garments and calls
 /// Rebuild after every equipment change — and only then: the derived meshes and the body mask stay as they
 /// are until the equipment changes again.
 ///
-/// Nothing here is shared between avatars except read-only data: the source-mesh topology cache and the
-/// composed body masks (identical region sets reuse one texture). Each avatar has its own runtime meshes,
-/// renderers, blendshape weights and MaterialPropertyBlock; the shared materials are never modified.
+/// Nothing here is shared between avatars except read-only data: the source-mesh topology cache, the decoded
+/// occlusion data and the composed body masks (identical garment sets reuse one texture). Each avatar has its
+/// own runtime meshes, renderers, blendshape weights and MaterialPropertyBlock; shared materials are never modified.
 ///
-/// Unsegmented (legacy) garments never pass through here — see AvatarFactory's legacy section.
+/// Garments without layering metadata never pass through here — see AvatarFactory's legacy section.
 /// </summary>
 public sealed class AvatarAppearance
 {
@@ -25,50 +26,56 @@ public sealed class AvatarAppearance
         public EquippedAvatarItem Item;
         public SegmentedGarmentSO Config;
         public readonly List<SegmentedGarmentRenderer> Renderers = new();
+        /// <summary>Occlusion masks + anchors (null = unusable: the garment hides nothing and is never hidden).</summary>
+        public GarmentOcclusionData Occlusion;
+        public bool[][] Hidden; // per renderer, per vertex (scratch, reused)
     }
 
     private readonly List<Garment> _garments = new();
     private readonly List<Renderer> _bodyRenderers = new();
     private readonly MaterialPropertyBlock _block = new();
-    private GarmentRegionCatalogSO _catalog;
     private string _maskKey;      // key of the mask currently held (null when none)
-    private string _requestedKey; // region set of the last rebuild, even when it produced no mask
+    private string _requestedKey; // garment set of the last rebuild, even when it produced no mask
     private Texture2D _mask;
     private bool _maskBound;
 
     // Rebuild scratch, reused so an equipment change allocates (almost) nothing once warmed up.
-    private readonly List<SegmentedGarmentSO> _configs = new();
-    private readonly List<HashSet<string>> _hidden = new();
-    private readonly SortedSet<string> _bodyRegions = new(StringComparer.Ordinal);
     private readonly List<int> _indices = new();
+    private readonly List<GarmentOcclusionData> _skinMaps = new();
+    private readonly List<Garment> _outers = new();
+    private readonly System.Text.StringBuilder _key = new();
 
-    public GarmentRegionCatalogSO Catalog => _catalog;
     /// <summary>The composed skin mask currently bound to the body (null = whole body visible).</summary>
     public Texture2D BodyMask => _mask;
-    public IReadOnlyCollection<string> CoveredBodyRegions => _bodyRegions;
     public int SegmentedGarmentCount => _garments.Count;
 
-    /// <summary>Body renderers that receive the skin mask, and the region vocabulary/masks of that body.</summary>
-    public void SetBody(IEnumerable<Renderer> bodyRenderers, GarmentRegionCatalogSO catalog)
+    /// <summary>Body renderers that receive the skin mask.</summary>
+    public void SetBody(IEnumerable<Renderer> bodyRenderers)
     {
         _bodyRenderers.Clear();
         foreach (var r in bodyRenderers) if (r != null) _bodyRenderers.Add(r);
-        _catalog = catalog;
     }
 
-    /// <summary>Registers one equipped segmented garment. `runtimeMeshes[i]`/`sourceMeshes[i]` belong to
+    /// <summary>Registers one equipped garment. `runtimeMeshes[i]`/`sourceMeshes[i]` belong to
     /// part.renderers[i]: the avatar's own clone (already bound to the skeleton) and the imported asset.</summary>
     public void AddGarment(EquippedAvatarItem item, SegmentedGarmentSO config, SegmentedGarmentPart part,
                            IReadOnlyList<Mesh> sourceMeshes, IReadOnlyList<Mesh> runtimeMeshes)
     {
         var garment = new Garment { Item = item, Config = config };
-        ValidateConfig(config);
+        garment.Occlusion = GarmentOcclusionData.Acquire(part.occlusion);
+        garment.Hidden = new bool[part.renderers.Count][];
+        for (int i = 0; garment.Occlusion != null && i < part.renderers.Count; i++)
+        {
+            if (garment.Occlusion.VertexCount(i) == runtimeMeshes[i].vertexCount) continue;
+            GarmentDiagnostics.Error($"'{config.garmentId}' occlusion data has {garment.Occlusion.VertexCount(i)} anchors for renderer " +
+                                     $"'{part.renderers[i].renderer.name}' ({runtimeMeshes[i].vertexCount} vertices) - re-import it; it hides nothing.");
+            garment.Occlusion.Release();
+            garment.Occlusion = null;
+        }
         for (int i = 0; i < part.renderers.Count; i++)
         {
-            var layout = part.renderers[i];
-            var regions = ResolveRegions(config, layout);
             var topology = SegmentedGarmentTopology.Acquire(sourceMeshes[i]);
-            garment.Renderers.Add(new SegmentedGarmentRenderer(layout.renderer, runtimeMeshes[i], topology, regions, part.finalMaterial));
+            garment.Renderers.Add(new SegmentedGarmentRenderer(part.renderers[i].renderer, runtimeMeshes[i], topology, part.finalMaterial));
         }
         _garments.Add(garment);
     }
@@ -80,6 +87,7 @@ public sealed class AvatarAppearance
         {
             if (_garments[i].Item != item) continue;
             foreach (var r in _garments[i].Renderers) r.Topology.Release();
+            _garments[i].Occlusion?.Release();
             _garments.RemoveAt(i);
             return true;
         }
@@ -92,31 +100,69 @@ public sealed class AvatarAppearance
         return false;
     }
 
-    /// <summary>Recomputes every garment's visible regions and the body mask from the CURRENT equipment.
-    /// Garments whose visible set did not change keep their meshes untouched.</summary>
+    /// <summary>Recomputes every garment's visible triangles and the body mask from the CURRENT equipment.
+    /// Garments whose hiding garments did not change keep their meshes untouched.</summary>
     public void Rebuild()
     {
-        _configs.Clear();
-        foreach (var g in _garments) _configs.Add(g.Config);
-        while (_hidden.Count < _configs.Count) _hidden.Add(new HashSet<string>(StringComparer.Ordinal));
-
-        GarmentCoverageResolver.ResolveGarmentHiddenRegions(_configs, _hidden);
-        for (int g = 0; g < _garments.Count; g++)
-            foreach (var renderer in _garments[g].Renderers) renderer.Apply(_hidden[g], _indices);
-
-        GarmentCoverageResolver.CollectBodyCoverage(_configs, _bodyRegions);
+        foreach (var g in _garments) ApplyOcclusion(g);
+        _skinMaps.Clear();
+        foreach (var g in _garments) if (g.Occlusion != null) _skinMaps.Add(g.Occlusion);
         UpdateBodyMask();
     }
 
-    /// <summary>Regions currently hidden on `item` by the garments above it (empty if not segmented).</summary>
-    public void GetHiddenRegions(EquippedAvatarItem item, ICollection<string> result)
+    /// <summary>Hides the vertices of `g` lying under the garments above it that hide its category.</summary>
+    private void ApplyOcclusion(Garment g)
     {
-        result.Clear();
-        for (int g = 0; g < _garments.Count && g < _hidden.Count; g++)
-            if (_garments[g].Item == item) foreach (var r in _hidden[g]) result.Add(r);
+        _outers.Clear();
+        _key.Clear();
+        if (g.Occlusion != null)
+            foreach (var o in _garments)
+            {
+                if (o == g || o.Occlusion == null || o.Config == null || g.Config == null) continue;
+                if (o.Config.layer <= g.Config.layer || !Hides(o.Config, g.Config.category)) continue;
+                if (o.Occlusion.Resolution != g.Occlusion.Resolution)
+                {
+                    GarmentDiagnostics.Warn($"'{o.Config.garmentId}' masks are {o.Occlusion.Resolution}, '{g.Config.garmentId}' anchors {g.Occlusion.Resolution} - it does not hide it.");
+                    continue;
+                }
+                _outers.Add(o);
+                _key.Append(o.Occlusion.GetHashCode()).Append(':').Append(o.Config.occlusionGap).Append('|');
+            }
+        string key = _key.ToString();
+        for (int r = 0; r < g.Renderers.Count; r++)
+        {
+            if (_outers.Count == 0) { g.Renderers[r].ApplyHiddenVertices(null, key, _indices); continue; }
+            var texels = g.Occlusion.AnchorTexel[r];
+            var codes = g.Occlusion.AnchorCode[r];
+            var hidden = g.Hidden[r];
+            if (hidden == null || hidden.Length != codes.Length) hidden = g.Hidden[r] = new bool[codes.Length];
+            Array.Clear(hidden, 0, hidden.Length);
+            foreach (var o in _outers)
+            {
+                var cover = o.Occlusion.Cover;
+                int gap = Mathf.RoundToInt(o.Config.occlusionGap * 1000f);
+                for (int v = 0; v < codes.Length; v++)
+                {
+                    if (hidden[v]) continue;
+                    int code = codes[v];
+                    if (code == GarmentOcclusionData.FarCode) continue;
+                    int c = cover[texels[v]];
+                    if (c != 0 && c <= code + gap) hidden[v] = true;
+                }
+            }
+            g.Renderers[r].ApplyHiddenVertices(hidden, key, _indices);
+        }
     }
 
-    /// <summary>The per-renderer runtime state of `item` (empty if not segmented) — diagnostics/tests.</summary>
+    private static bool Hides(SegmentedGarmentSO outer, string category)
+    {
+        if (outer.hidesCategories == null || string.IsNullOrEmpty(category)) return false;
+        foreach (var c in outer.hidesCategories)
+            if (string.Equals(c, category, StringComparison.OrdinalIgnoreCase)) return true;
+        return false;
+    }
+
+    /// <summary>The per-renderer runtime state of `item` (empty if not layered) — diagnostics/tests.</summary>
     public IReadOnlyList<SegmentedGarmentRenderer> RenderersOf(EquippedAvatarItem item)
     {
         foreach (var g in _garments) if (g.Item == item) return g.Renderers;
@@ -125,15 +171,12 @@ public sealed class AvatarAppearance
 
     private void UpdateBodyMask()
     {
-        string key = _bodyRegions.Count == 0 ? null : BodyVisibilityMask.KeyFor(_catalog, _bodyRegions);
+        string key = BodyVisibilityMask.KeyFor(_skinMaps);
         if (key == _requestedKey && _maskBound) return;
         _requestedKey = key;
 
-        if (_bodyRegions.Count > 0 && _catalog == null)
-            GarmentDiagnostics.Warn("Segmented garments cover body regions but the base avatar has no garmentRegionCatalog — the body is not masked.");
-
         var previousKey = _maskKey;
-        _mask = key != null ? BodyVisibilityMask.Acquire(_catalog, _bodyRegions, key) : null;
+        _mask = BodyVisibilityMask.Acquire(_skinMaps, key);
         _maskKey = _mask != null ? key : null;
         BodyVisibilityMask.Release(previousKey);
 
@@ -149,44 +192,16 @@ public sealed class AvatarAppearance
         _maskBound = true;
     }
 
-    private string[] ResolveRegions(SegmentedGarmentSO config, SegmentedGarmentPart.RendererLayout layout)
-    {
-        var regions = new string[layout.submeshRegions.Length];
-        for (int i = 0; i < regions.Length; i++)
-        {
-            string region = layout.submeshRegions[i];
-            if (string.IsNullOrEmpty(region)) continue; // unresolved at import: kept
-            if (_catalog != null && !_catalog.IsKnownRegion(region))
-            {
-                GarmentDiagnostics.Warn($"'{config.garmentId}' renderer '{layout.renderer.name}' submesh {i} uses region '{region}', unknown to catalog '{_catalog.name}' — that geometry is always kept.");
-                continue;
-            }
-            regions[i] = region;
-        }
-        return regions;
-    }
-
-    private void ValidateConfig(SegmentedGarmentSO config)
-    {
-        if (_catalog == null) return;
-        if (!string.IsNullOrEmpty(config.category) && !_catalog.IsKnownCategory(config.category))
-            GarmentDiagnostics.Warn($"'{config.garmentId}' has category '{config.category}', unknown to catalog '{_catalog.name}' (rules can still target it by name).");
-        foreach (var region in config.bodyCoverage)
-            if (!_catalog.IsKnownRegion(region))
-                GarmentDiagnostics.Warn($"'{config.garmentId}' bodyCoverage lists unknown region '{region}' — ignored (skin stays visible).");
-        foreach (var rule in config.garmentCoverage)
-            if (rule?.zones != null)
-                foreach (var zone in rule.zones)
-                    if (!_catalog.IsKnownRegion(zone))
-                        GarmentDiagnostics.Warn($"'{config.garmentId}' garmentCoverage lists unknown region '{zone}' — it can never match any geometry.");
-    }
-
-    /// <summary>Releases this avatar's share of the topology cache and the composed mask.</summary>
+    /// <summary>Releases this avatar's share of the topology cache, the occlusion data and the composed mask.</summary>
     public void Dispose()
     {
         foreach (var g in _garments)
+        {
             foreach (var r in g.Renderers) r.Topology.Release();
+            g.Occlusion?.Release();
+        }
         _garments.Clear();
+        _skinMaps.Clear();
         BodyVisibilityMask.Release(_maskKey);
         _maskKey = null;
         _requestedKey = null;
@@ -201,7 +216,7 @@ public sealed class AvatarAppearance
     {
         public int Garments, Renderers, EnabledRenderers, Submeshes, VisibleTriangles, SourceTriangles, Vertices;
         public long RuntimeMeshBytes, SourceMeshBytes, TopologyBytes, MaskBytes;
-        /// <summary>Draw calls per rendered view for the segmented garments: one per enabled renderer submesh.</summary>
+        /// <summary>Draw calls per rendered view for the layered garments: one per enabled renderer submesh.</summary>
         public int DrawCalls => Submeshes;
     }
 

@@ -51,6 +51,44 @@ public enum CombatRole
     HitReactionAlt = 19,
     LightAttackAlt = 20,
     HeavyAttackAlt = 21,
+    // Height-specific strikes and special moves (2026-11-04). A role without a state/clip falls back to
+    // its generic one (AnimatorFighterAnimationDriver.Fallback): punches → LightAttack, kicks → Kick, …
+    LowPunch         = 22,
+    HighPunch        = 23,
+    LowKick          = 24,
+    HighKick         = 25,
+    SpinHeelKick     = 26,
+    FlyingKick       = 27,
+    SpecialCharge    = 28,
+    GuardWalkBack    = 29,
+    GuardWalkForward = 30,
+    // Second clip per strike height (2026-11-04): consecutive strikes of the same role alternate between the
+    // two (AnimatorFighterAnimationDriver), so a P P P / K K K chain never shows the same clip twice in a row.
+    LowPunchAlt  = 31,
+    HighPunchAlt = 32,
+    KickAlt      = 33,
+    LowKickAlt   = 34,
+    HighKickAlt  = 35,
+    // Sided defence / reactions (Mixamo, 2026-11-05): first-person side guards (each side its own clip), the sidestep
+    // (authored to the right, mirrored for the left) and a head hit from one side (authored: the attacker's right hand).
+    GuardHighLeft   = 36,
+    GuardHighRight  = 37,
+    GuardLowLeft    = 38,
+    GuardLowRight   = 39,
+    Sidestep        = 40,
+    HitReactionSide = 41,
+    // AXES (user design 2026-11-05): every strike lands on the LEFT, CENTRE or RIGHT of the target. The classic height
+    // roles above are the straight (centre) punches and the circular (side) kicks; these add the missing half.
+    PunchHighSide  = 42,   // hook to the head
+    PunchMidSide   = 43,   // hook to the body / short hook (close: the elbow's stand-in)
+    PunchLowSide   = 44,   // short hook to the low body
+    KickHighCenter = 45,   // straight kick to the head (side kick / push kick high)
+    KickMidCenter  = 46,   // front kick (push kick)
+    KickLowCenter  = 47,   // low front kick to the shin
+    Uppercut       = 48,   // close range, centre
+    Knee           = 49,   // close range
+    SpinSweep      = 50,   // Back + Down + Kick: spinning low sweep
+    AirSpinHeel    = 51,   // back jump + Kick: spinning heel in the air
 }
 
 public enum CombatRootMotion
@@ -143,6 +181,9 @@ public class CombatSegmentDefinition
     public bool loop;
     [Tooltip("In-place clip keeps facing forward (turning is extracted, not baked). Off for moves whose turn IS the move (spins).")]
     public bool keepFacing = true;
+    [Tooltip("In-place clip does NOT bake the root height into the pose (it goes to the discarded root motion): for moves " +
+             "played while the gameplay already jumps (air kicks), so the capture's own jump isn't added on top.")]
+    public bool heightToRootMotion;
     public CombatReviewStatus review = CombatReviewStatus.Approved;
     [TextArea] public string notes;
 

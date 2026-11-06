@@ -31,6 +31,7 @@ public class FightProjectile : MonoBehaviour
     private float _traveled;
     private float _lifetime;
     private bool _consumed;
+    private bool _passedTarget; // evaded (lying on the floor / invulnerable): flies on, never re-tests it
 
     private System.Action<FightFlowStateChangedEvent> _onFlowChanged;
 
@@ -83,7 +84,7 @@ public class FightProjectile : MonoBehaviour
             return;
         }
 
-        if (_target == null || _data.hitDefinition == null) return;
+        if (_target == null || _data.hitDefinition == null || _passedTarget) return;
         if (_target.Health != null && _target.Health.IsKO) return;
 
         foreach (var hurtbox in _target.Hurtboxes)
@@ -92,6 +93,9 @@ public class FightProjectile : MonoBehaviour
             if (!FightCombatShapes.Overlaps(transform.position, _data.hitDefinition, hurtbox.WorldCenter, hurtbox.Size)) continue;
 
             var result = FightHitDispatcher.ResolveAndApply(_owner, _target, _move, _data.hitDefinition, _balanceConfig, _bonus);
+            // Passed over a fighter lying on the floor / through an invulnerable one: it keeps flying and never
+            // tries that target again (no repeated evade events while it crosses the body).
+            if (result.IsEvaded) { _passedTarget = true; break; }
             Debug.Log($"[FightProjectile] {(result.IsBlocked ? "Hit BLOCKED" : "Hit landed")}: {(_move != null ? _move.debugName : "?")} -> " +
                       $"{(result.IsBlocked ? result.FinalChipDamage : result.FinalDamage):F1} dmg");
 

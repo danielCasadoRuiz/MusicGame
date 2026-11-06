@@ -51,7 +51,7 @@ public static class WagnerHairSetup
                 string modelPath = folder + "/" + file;
                 File.Copy(Path.Combine(source, SourceDirs[i], file), modelPath, true);
                 foreach (string texture in new[] { "BaseColor", "Normal", "Metallic", "Roughness" })
-                    File.Copy(Path.Combine(source, SourceDirs[i], "Textures", texture + ".png"), folder + "/Textures/" + texture + ".png", true);
+                    File.Copy(SharedTexture(source, SourceDirs[i], texture), folder + "/Textures/" + texture + ".png", true);
                 AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
                 var importer = (ModelImporter)AssetImporter.GetAtPath(modelPath);
                 importer.animationType = ModelImporterAnimationType.Generic;
@@ -131,10 +131,18 @@ public static class WagnerHairSetup
             foreach (var variant in item.sharedVariant.qualityPrefabs.variants)
                 if (variant.prefab.editorAsset == null) throw new Exception("Invalid prefab reference " + variant.qualityName);
             report.Add("PASS Wagner identity uses hair; all five quality references resolve");
+            report.Add(TextureSourceShrinker.Run("Assets/_Project/Art/Opponents/Wagner/Wagner_hair").Trim());
             File.WriteAllLines("Logs/WagnerHairSetup.txt", report);
             if (Application.isBatchMode) EditorApplication.Exit(0);
         }
         catch (Exception e) { report.Add(e.ToString()); File.WriteAllLines("Logs/WagnerHairSetup.txt", report); Debug.LogException(e); if (Application.isBatchMode) EditorApplication.Exit(1); }
     }
+    /// <summary>The object's shared texture of that quality (Output/Wagner_hair/Textures/&lt;Q&gt;, texture_share.py), else the old per-model copy.</summary>
+    static string SharedTexture(string rigged, string quality, string texture)
+    {
+        string shared = Path.Combine(rigged, "..", "Textures", quality, texture + ".png");
+        return File.Exists(shared) ? Path.GetFullPath(shared) : Path.Combine(rigged, quality, "Textures", texture + ".png");
+    }
+
     static Texture2D ReadPng(string path) { var t = new Texture2D(2, 2, TextureFormat.RGBA32, false, true); if (!t.LoadImage(File.ReadAllBytes(path))) throw new Exception(path); return t; }
 }

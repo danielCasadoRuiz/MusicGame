@@ -66,6 +66,8 @@ public class FighterMoveController : MonoBehaviour
     private AttackTag _queuedTag;
     // A charge the REQUEST carries on top of the move asset's own cost (the finishers' x3 — CombatResourceUse).
     private CombatResourceType _queuedCharge;
+    // Extra lunge the REQUEST carries (a finisher thrown while holding Forward / Back).
+    private float _queuedLunge;
 
     // COMBO STRINGS (FightComboRecognizer): every request carries the string it came from. A
     // continuation flagged ReplacesPrevious (PPP → PPPK) cancels the move of the SAME string —
@@ -82,9 +84,58 @@ public class FighterMoveController : MonoBehaviour
     public float PhaseElapsed { get; private set; }
     public string CurrentAnimationState => _animationDriver.CurrentState;
 
+    /// <summary>The current move is past its strike (balance.recoveryCancelDelay into Recovery): guard, crouch,
+    /// sidestep and jump may cut the rest of it short (TryCancelRecovery) — no more waiting out a whole clip.</summary>
+    public bool RecoveryCancellable => CurrentMove != null && CurrentPhase == FighterMoveState.Recovery && !IsHitStunned && !IsMatchLocked &&
+                                       PhaseElapsed >= (_balanceConfig != null ? _balanceConfig.recoveryCancelDelay : 0.1f);
+    /// <summary>Ends the running move now if RecoveryCancellable (true when it did, or when no move was running).</summary>
+    public bool TryCancelRecovery()
+    {
+        if (CurrentPhase == FighterMoveState.Idle) return true;
+        if (!RecoveryCancellable) return false;
+        InterruptMove();
+        return true;
+    }
+
+    /// <summary>FEINT: the running strike is still early in its Startup (balance.startupFeintFraction) — nothing
+    /// committed yet (no hitbox, no projectile, no resource-paid Signature).</summary>
+    public bool StartupFeintable => CurrentMove != null && CurrentPhase == FighterMoveState.Startup && !IsHitStunned && !IsMatchLocked &&
+                                    CurrentTag != AttackTag.Signature && CurrentMove.resourceCost == CombatResourceType.None &&
+                                    CurrentMove.hits != null && CurrentMove.hits.Length > 0 &&
+                                    PhaseElapsed <= CurrentMove.startupDuration * (_balanceConfig != null ? _balanceConfig.startupFeintFraction : 0.6f);
+    /// <summary>Real time the running move started (a defensive input older than it never feints it).</summary>
+    public float MoveStartedAt { get; private set; } = float.NegativeInfinity;
+    /// <summary>A defensive / mobility input that began at `inputSince` may cut the running move: its Recovery
+    /// (RecoveryCancellable) or — a fresh input only, pressed after the strike began — an early Startup (feint).</summary>
+    public bool CanCancelFor(float inputSince) =>
+        CurrentPhase == FighterMoveState.Idle || RecoveryCancellable || (StartupFeintable && inputSince > MoveStartedAt + FeintGrace);
+    // Presses this close after the strike are part of the SAME gesture (side key + button a frame apart), never a feint.
+    private const float FeintGrace = 0.08f;
+    /// <summary>Ends the running move now when CanCancelFor(inputSince) (true when it did, or nothing was running).</summary>
+    public bool TryCancelFor(float inputSince)
+    {
+        if (CurrentPhase == FighterMoveState.Idle) return true;
+        if (!CanCancelFor(inputSince)) return false;
+        if (CurrentPhase == FighterMoveState.Startup) LastFeintInfo = $"{CurrentMove.debugName} feinted at {PhaseElapsed:0.00}s";
+        InterruptMove();
+        return true;
+    }
+    /// <summary>Debug: the last strike cut in its Startup.</summary>
+    public string LastFeintInfo { get; private set; } = "";
+
+    /// <summary>LEFT / RIGHT (2026-11-05): +1 right / −1 left — the limb the running strike lands with (the clip plays
+    /// mirrored for the other side). 0 = not a sided strike. Third person and the AI: random per strike; first person:
+    /// the side key held at the press (FighterInputController.CurrentSide), else random.</summary>
+    public int CurrentStrikeSide { get; private set; }
+    /// <summary>Tests: forces every strike's side (+1 / −1); 0 = normal rules.</summary>
+    public int DebugForceStrikeSide { get; set; }
+    private int _queuedSide;
+
     public bool CanAttack => !IsHitStunned && !IsMatchLocked && (CurrentPhase == FighterMoveState.Idle || InCancelWindow());
 
     public FighterCombatProfileSO CombatProfile => _profile;
+    /// <summary>The move set this fighter executes from (profile's, else the default).</summary>
+    public FightMoveSetSO MoveSet => _moveSet;
     /// <summary>Set once the match is decided (Victory/Defeat pose): no move can start until the next round reset.</summary>
     public bool IsMatchLocked { get; private set; }
     /// <summary>Why the last TryExecuteMove call was rejected (debug/tests); empty on success.</summary>
@@ -136,6 +187,14 @@ public class FighterMoveController : MonoBehaviour
     private System.Action<FightPowerRequestedEvent> _onPower;
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
     private System.Action<MatchEndedEvent> _onMatchEnded;
+    private System.Action<HitBlockedEvent> _onBlocked;
+    private float _lastBlockedAt = float.NegativeInfinity, _lastBackdashAt = float.NegativeInfinity;
+    private int? _nextSide;                 // the axis the NEXT request lands on (decided with its technique)
+    private int _sideAtStart;               // first person: side key held when the running strike began (G)
+    private bool _backAtStart;              // first person: Down (= Back) held when it began (a fresh Down feints it)
+    private const string BackdashId = "move_backdash";
+    /// <summary>Debug: which context technique the last press became (counter, dodge-counter, side switch…).</summary>
+    public string LastTechniqueInfo { get; private set; } = "";
 
     public void SetAnimationDriver(IFighterAnimationDriver driver) => _animationDriver = driver ?? new DebugFighterAnimationDriver();
     public void SetMovementDriver(IFighterMovementDriver driver) => _movementDriver = driver ?? new DebugFighterMovementDriver();
@@ -172,8 +231,10 @@ public class FighterMoveController : MonoBehaviour
     private void OnEnable()
     {
         // While grappling (grab hold / ground control) FighterGrapple owns the buttons.
-        _onPunch = e => { if (e.Source == _input && !GrappleBusy) TryExecuteMove(ResolvePunch(), FightAttackBonus.Identity, AttackTag.None, e.StringId, false); };
-        _onKick  = e => { if (e.Source == _input && !GrappleBusy) TryExecuteMove(ResolveKick(), FightAttackBonus.Identity, AttackTag.None, e.StringId, false); };
+        _onPunch = e => { if (e.Source == _input && !GrappleBusy) OnButton(FightButton.Punch, e.StringId); };
+        _onKick  = e => { if (e.Source == _input && !GrappleBusy) OnButton(FightButton.Kick, e.StringId); };
+        _onBlocked = e => { if (e.Defender == _actor && !e.Result.IsGuardBreak) _lastBlockedAt = Time.time; };
+        EventBus.Subscribe(_onBlocked);
         _onCombo = e => { if (e.Source == _input && !GrappleBusy) OnCombo(e.Combo, e.StringId, e.ReplacesPrevious); };
         _onPower = e => { if (e.Source == _input) TryActivatePower(); };
         _onFightFlowChanged = e => _active = e.Current == FightFlowState.Fighting;
@@ -205,6 +266,7 @@ public class FighterMoveController : MonoBehaviour
         EventBus.Unsubscribe(_onPower);
         EventBus.Unsubscribe(_onFightFlowChanged);
         EventBus.Unsubscribe(_onMatchEnded);
+        EventBus.Unsubscribe(_onBlocked);
     }
 
     private void Update()
@@ -224,6 +286,7 @@ public class FighterMoveController : MonoBehaviour
                 var tag = _queuedTag;
                 int stringId = _queuedStringId;
                 var charge = _queuedCharge;
+                float lunge = _queuedLunge;
                 QueuedMove = null;
                 // A queued enhanced Signature that can no longer be paid for falls back to the basic one.
                 if (tag == AttackTag.Signature && !CanAfford(move) && _moveSet != null && _moveSet.signatureBasic != null)
@@ -233,14 +296,20 @@ public class FighterMoveController : MonoBehaviour
                 }
                 // Re-validated at dequeue time too — posture/movement-state may have changed while
                 // this move sat queued, and the resource may no longer be affordable.
-                if (IsContextAllowed(move) && CanAfford(move)) BeginMove(move, bonus, tag, stringId, charge);
+                if (IsContextAllowed(move) && CanAfford(move)) BeginMove(move, bonus, tag, stringId, charge, lunge, _queuedSide);
             }
             else if (!IsHitStunned && !IsMatchLocked)
             {
-                // Holding guard shows Block; otherwise idle/locomotion. Reactions own the animation
-                // while stunned/knocked down (FighterHitReaction), the match end owns it afterwards.
-                if (_actor != null && _actor.Guard != null && _actor.Guard.State != FighterGuardState.None)
-                    _animationDriver.PlayRole(CombatRole.Block);
+                // Holding guard STILL shows Block; walking back while guarding shows the (guarded) backward
+                // walk instead of sliding a frozen block pose. Reactions own the animation while
+                // stunned/knocked down (FighterHitReaction), the match end owns it afterwards.
+                bool guarding = _actor != null && _actor.Guard != null && _actor.Guard.State != FighterGuardState.None;
+                bool walking = _actor != null && _actor.MovementState != FighterMovementState.Idle;
+                bool sidestepping = _actor != null && _actor.MovementState == FighterMovementState.SideStep && _actor.Movement != null;
+                if (sidestepping)
+                    _animationDriver.PlaySided(CombatRole.Sidestep, _actor.Movement.SidestepDirection, _actor.Movement.SidestepSeconds);
+                else if (guarding && !walking)
+                    _animationDriver.PlayGuard(Mathf.Max(_actor.Guard.RaiseTime, _actor.Guard.SideReactTime), _actor.Guard.State, _actor.Guard.CoverSide); // turns to the strike's side
                 else if (_input != null)
                     _animationDriver.SetLocomotion(_input.CurrentHorizontal,
                         _actor != null ? _actor.MovementState : FighterMovementState.Idle,
@@ -248,6 +317,43 @@ public class FighterMoveController : MonoBehaviour
                         _actor != null && _actor.IsTurning);
             }
             return;
+        }
+
+        // A queued request starts as soon as the running move's cancel window opens — not only at Idle — so a press made
+        // during a strike chains out of its Recovery (a fast P P P reaches its strong hit / x3 without waiting the clip out).
+        if (QueuedMove != null && InCancelWindow() && !IsHitStunned && !IsMatchLocked)
+        {
+            var move = QueuedMove;
+            if (IsContextAllowed(move) && CanAfford(move))
+            {
+                var bonus = _queuedBonus; var tag = _queuedTag; int stringId = _queuedStringId; var charge = _queuedCharge; float lunge = _queuedLunge;
+                QueuedMove = null;
+                BeginMove(move, bonus, tag, stringId, charge, lunge, _queuedSide);
+                return;
+            }
+        }
+
+        // FIRST PERSON during the early startup (G): the other side key SWITCHES the strike to that side (it restarts from
+        // that side — the feint costs time); a fresh Down (= Back) cancels it.
+        if (_input != null && _input.ViewRelative && StartupFeintable && Time.time > MoveStartedAt + FeintGrace &&
+            (CurrentTag == AttackTag.None || CurrentTag == AttackTag.Combo))
+        {
+            int key = _input.CurrentSide;
+            if (key != 0 && key != _sideAtStart && key != CurrentStrikeSide)
+            {
+                var m = SideVariant(CurrentMove);
+                var tag = CurrentTag; int sid = _currentStringId;
+                LastFeintInfo = $"{CurrentMove.debugName} switched to the {(key > 0 ? "right" : "left")}";
+                InterruptMove();
+                BeginMove(m, FightAttackBonus.Identity, tag, sid, CombatResourceType.None, 0f, key);
+                return;
+            }
+            if (_input.CurrentHorizontal == FightHorizontalDirection.Back && !_backAtStart)
+            {
+                LastFeintInfo = $"{CurrentMove.debugName} feinted (Down) at {PhaseElapsed:0.00}s";
+                InterruptMove();
+                return;
+            }
         }
 
         // A frame hitch must never skip a phase (skipping Active would mean the hitbox never
@@ -280,10 +386,22 @@ public class FighterMoveController : MonoBehaviour
         }
 
         FightMoveDefinition move;
-        if (string.IsNullOrEmpty(combo.moveId))
+        bool finisherNormal = string.IsNullOrEmpty(combo.moveId);
+        if (finisherNormal)
         {
+            // The strong hit of a fast triple press (FighterInputController): the normal for the direction
+            // held NOW — height from Up/Down, never the heel kick / flying kick variants.
             var last = combo.steps != null && combo.steps.Length > 0 ? combo.steps[combo.steps.Length - 1].button : FightButton.None;
-            move = last == FightButton.Kick ? ResolveKick() : last == FightButton.Punch ? ResolvePunch() : null;
+            int axis = RequestedSide();
+            move = last == FightButton.Kick ? ResolveKick(axis, special: false) : last == FightButton.Punch ? ResolvePunch(axis) : null;
+            _nextSide = axis;
+        }
+        else if (combo.moveId == "move_down_b")
+        {
+            // Down + Kick is just the LOW kick: it follows the axis rules like any normal.
+            int axis = RequestedSide();
+            move = ResolveKick(axis, special: false);
+            _nextSide = axis;
         }
         else move = _moveSet.GetByMoveId(combo.moveId);
 
@@ -299,7 +417,15 @@ public class FighterMoveController : MonoBehaviour
             bonus = ComboBonus(combo.attackBonus);
             tag = AttackTag.Finisher;
         }
-        if (TryExecuteMove(move, bonus, tag, stringId, replaces, charge))
+        else if (combo.attackBonus != FightComboBonus.None && _balanceConfig != null)
+            bonus = _balanceConfig.unpoweredFinisher; // no x3: still a stronger hit than a normal (user design 2026-11-04)
+        // The strong hit follows the direction held at the 3rd press: Forward = it advances into the
+        // opponent (lunge, capped at contact), Back = it is thrown while stepping back.
+        float drift = 0f;
+        if (finisherNormal && _input != null && _balanceConfig != null)
+            drift = _input.CurrentHorizontal == FightHorizontalDirection.Forward ? _balanceConfig.finisherAdvance
+                  : _input.CurrentHorizontal == FightHorizontalDirection.Back ? -_balanceConfig.finisherRetreat : 0f;
+        if (TryExecuteMove(move, bonus, tag, stringId, replaces, charge, drift))
             LastComboInfo = $"{(string.IsNullOrEmpty(combo.debugName) ? combo.id : combo.debugName)} → {move.debugName}{(bonus.IsIdentity ? "" : $" ({bonus})")}";
     }
 
@@ -402,7 +528,7 @@ public class FighterMoveController : MonoBehaviour
     /// If the string's move isn't current any more (finished, interrupted by a hit) it is a plain request.
     /// </summary>
     public bool TryExecuteMove(FightMoveDefinition move, FightAttackBonus bonus, AttackTag tag, int stringId, bool replaces,
-                               CombatResourceType charge = CombatResourceType.None)
+                               CombatResourceType charge = CombatResourceType.None, float extraLunge = 0f)
     {
         LastRejection = "";
         if (move == null)             { LastRejection = "no move"; return false; }
@@ -417,7 +543,7 @@ public class FighterMoveController : MonoBehaviour
             var cancelled = CurrentMove;
             var cancelledPhase = CurrentPhase;
             InterruptMove();
-            BeginMove(move, bonus, tag, stringId, charge);
+            BeginMove(move, bonus, tag, stringId, charge, extraLunge, RequestedSide());
             LastReplaceInfo = $"{cancelled.debugName} ({cancelledPhase}) → {move.debugName}";
             Debug.Log($"[FighterMoveController] Combo extended: cancelled {LastReplaceInfo}");
             return true;
@@ -425,15 +551,21 @@ public class FighterMoveController : MonoBehaviour
         if (replaces && stringId != 0 && QueuedMove != null && _queuedStringId == stringId)
             LastReplaceInfo = $"{QueuedMove.debugName} (queued) → {move.debugName}";
 
-        if (CurrentPhase == FighterMoveState.Idle || InCancelWindow())
-            BeginMove(move, bonus, tag, stringId, charge);
+        int side = RequestedSide();
+        // DASH / BACKDASH (no hits) cut a strike's Recovery — or, pressed after it began, its early Startup (feint).
+        bool mobility = (move.hits == null || move.hits.Length == 0) && move.attackDelivery == AttackDelivery.Melee &&
+                        CurrentPhase != FighterMoveState.Idle && TryCancelFor(Time.time);
+        if (mobility || CurrentPhase == FighterMoveState.Idle || InCancelWindow())
+            BeginMove(move, bonus, tag, stringId, charge, extraLunge, side);
         else
         {
+            _queuedSide = side;
             QueuedMove = move; // latest request wins — a single queue slot, see class doc
             _queuedBonus = bonus;
             _queuedTag = tag;
             _queuedStringId = stringId;
             _queuedCharge = charge;
+            _queuedLunge = extraLunge;
         }
         return true;
     }
@@ -476,11 +608,141 @@ public class FighterMoveController : MonoBehaviour
     /// safety regardless.</summary>
     private bool GrappleBusy => _actor != null && _actor.Grapple != null && _actor.Grapple.IsBusy;
 
-    private FightMoveDefinition ResolvePunch() =>
-        _moveSet == null ? null : ResolveNormal(_moveSet.airNormalPunch, _moveSet.runNormalPunch, _moveSet.highNormalPunch, _moveSet.normalPunch, _moveSet.lowNormalPunch);
+    // ── A button press → its technique (user design 2026-11-05) ─────────────────────────────────
+    // Priority: the counter (right after a correct block) → first-person step-back spin (Kick right after Down Down) →
+    // the dodge-counter (right after a sidestep, to that side) → the normal reading: AXIS (centre / left / right),
+    // HEIGHT (Up / none / Down), CONTEXT (air, run, Back / Forward in third person) and DISTANCE (close: uppercut, short
+    // hook, knee). Recognised combos and the Special never come through here (FightComboDetectedEvent).
+    private void OnButton(FightButton button, int stringId)
+    {
+        if (_moveSet == null) return;
+        float now = Time.time;
+        float counterWindow = _balanceConfig != null ? _balanceConfig.counterWindow : 0.2f;
+        float dodgeWindow = _balanceConfig != null ? _balanceConfig.dodgeCounterWindow : 0.3f;
+        bool airborne = _actor != null && _actor.Posture == FighterPosture.Airborne;
+        if (_moveSet.counterStrike != null && now - _lastBlockedAt <= counterWindow && !airborne)
+        {
+            _lastBlockedAt = float.NegativeInfinity;
+            _actor?.HitReaction?.ReleaseStun();   // the block's stun gives way to the counter
+            _nextSide = 0;
+            LastTechniqueInfo = "counter";
+            TryExecuteMove(_moveSet.counterStrike, FightAttackBonus.Identity, AttackTag.None, stringId, false);
+            return;
+        }
+        int axis = RequestedSide();
+        FightMoveDefinition move;
+        if (button == FightButton.Kick && _input != null && _input.ViewRelative && !airborne && _moveSet.stepBackSpin != null &&
+            now - _lastBackdashAt <= dodgeWindow)
+        {
+            if (CurrentMove != null && CurrentMove.id == BackdashId) InterruptMove(); // the backdash BECOMES the spin
+            move = _moveSet.stepBackSpin;
+            LastTechniqueInfo = "step-back spin";
+        }
+        else if (!airborne && _actor != null && _actor.Movement != null && now - _actor.Movement.LastSidestepAt <= dodgeWindow &&
+                 _actor.Movement.LastSidestepDirection != 0)
+        {
+            axis = _actor.Movement.LastSidestepDirection;   // hits from the side it moved to
+            move = button == FightButton.Punch ? ResolvePunch(axis) : ResolveKick(axis, special: false);
+            LastTechniqueInfo = "dodge-counter";
+        }
+        else
+        {
+            move = button == FightButton.Punch ? ResolvePunch(axis) : ResolveKick(axis);
+            LastTechniqueInfo = "";
+        }
+        _nextSide = axis;
+        TryExecuteMove(move, FightAttackBonus.Identity, AttackTag.None, stringId, false);
+    }
 
-    private FightMoveDefinition ResolveKick() =>
-        _moveSet == null ? null : ResolveNormal(_moveSet.airNormalKick, _moveSet.runNormalKick, _moveSet.highNormalKick, _moveSet.normalKick, _moveSet.lowNormalKick);
+    private bool CloseRange => _actor != null && _actor.Opponent != null &&
+                               _actor.DistanceToOpponent <= (_balanceConfig != null ? _balanceConfig.closeStrikeRange : 0.85f);
+
+    // The height held at the press (an Up / Down used as a height is consumed: never also a jump / sidestep).
+    private FightVerticalDirection TakeHeight()
+    {
+        var v = _input != null ? _input.CurrentVertical : FightVerticalDirection.Neutral;
+        if (v != FightVerticalDirection.Neutral) _actor?.Movement?.ConsumeVerticalPress();
+        return v;
+    }
+
+    /// <summary>Punch: air / run first; then close range (high / mid): centre = uppercut, side = the short hook; else
+    /// CENTRE = the straight punches (height normals), SIDE = the hooks.</summary>
+    private FightMoveDefinition ResolvePunch(int axis)
+    {
+        var s = _moveSet;
+        if (s == null) return null;
+        if (_actor != null && _actor.Posture == FighterPosture.Airborne && s.airNormalPunch != null) return s.airNormalPunch;
+        if (_actor != null && _actor.MovementState == FighterMovementState.Run && s.runNormalPunch != null) return s.runNormalPunch;
+        var v = TakeHeight();
+        bool up = v == FightVerticalDirection.Up, down = v == FightVerticalDirection.Down;
+        if (!down && CloseRange)
+        {
+            if (axis == 0 && s.closeUppercut != null) return s.closeUppercut;
+            if (axis != 0 && s.punchMidSide != null) return up && s.punchHighSide != null ? s.punchHighSide : s.punchMidSide;
+        }
+        if (axis == 0) return up ? s.highNormalPunch ?? s.normalPunch : down ? s.lowNormalPunch ?? s.normalPunch : s.normalPunch;
+        return up ? s.punchHighSide ?? s.highNormalPunch ?? s.normalPunch
+             : down ? s.punchLowSide ?? s.lowNormalPunch ?? s.normalPunch
+             : s.punchMidSide ?? s.normalPunch;
+    }
+
+    /// <summary>Kick. `special` = the button press itself (not a finisher). Air: running jump = flying kick, Down = axe kick,
+    /// a back jump (third person) = spinning heel. Ground: running kick; third person Back + Kick = the spins (Up high,
+    /// Down = the sweep); Forward + Kick (third person) / Up + Kick at the centre (first person) = the push kick; close
+    /// (high / mid) = knee; else CENTRE = straight kicks, SIDE = circular kicks.</summary>
+    private FightMoveDefinition ResolveKick(int axis, bool special = true)
+    {
+        var s = _moveSet;
+        if (s == null) return null;
+        var v = _input != null ? _input.CurrentVertical : FightVerticalDirection.Neutral;
+        bool up = v == FightVerticalDirection.Up, down = v == FightVerticalDirection.Down;
+        bool thirdPerson = _input == null || !_input.ViewRelative;
+        if (_actor != null && _actor.Posture == FighterPosture.Airborne)
+        {
+            if (special)
+            {
+                if (s.flyingKick != null && _actor.Movement != null && _actor.Movement.IsRunningJump) return s.flyingKick;
+                if (down && s.axeKick != null) return s.axeKick;
+                if (thirdPerson && s.airSpinHeel != null && _actor.Movement != null && _actor.Movement.JumpTakeoffSpeed < -0.5f) return s.airSpinHeel;
+            }
+            return s.airNormalKick ?? s.normalKick;
+        }
+        if (_actor != null && _actor.MovementState == FighterMovementState.Run && s.runNormalKick != null) return s.runNormalKick;
+        if (special && thirdPerson && _input != null && _input.CurrentHorizontal == FightHorizontalDirection.Back && s.backNormalKick != null)
+        {
+            TakeHeight();
+            return up ? s.backNormalKick : down ? s.spinSweep ?? s.backNormalKick : s.spinKickMid ?? s.backNormalKick;
+        }
+        bool push = special && _input != null &&
+                    (thirdPerson ? _input.CurrentHorizontal == FightHorizontalDirection.Forward : up && axis == 0);
+        if (push && (s.pushKickMid != null || s.pushKickHigh != null))
+        {
+            TakeHeight();
+            return up ? s.pushKickHigh ?? s.kickHighCenter ?? s.highNormalKick
+                 : down ? s.kickLowCenter ?? s.lowNormalKick ?? s.normalKick
+                 : s.pushKickMid ?? s.kickMidCenter ?? s.normalKick;
+        }
+        TakeHeight();
+        if (!down && CloseRange && s.closeKnee != null) return s.closeKnee;
+        if (axis == 0) return up ? s.kickHighCenter ?? s.highNormalKick ?? s.normalKick
+                            : down ? s.kickLowCenter ?? s.lowNormalKick ?? s.normalKick
+                            : s.kickMidCenter ?? s.normalKick;
+        return up ? s.highNormalKick ?? s.normalKick : down ? s.lowNormalKick ?? s.normalKick : s.normalKick;
+    }
+
+    /// <summary>The same technique thrown from a side (first-person side switch during the startup).</summary>
+    private FightMoveDefinition SideVariant(FightMoveDefinition m)
+    {
+        var s = _moveSet;
+        if (s == null || m == null) return m;
+        if (m == s.normalPunch || m == s.closeUppercut) return s.punchMidSide ?? m;
+        if (m == s.highNormalPunch) return s.punchHighSide ?? m;
+        if (m == s.lowNormalPunch) return s.punchLowSide ?? m;
+        if (m == s.kickMidCenter || m == s.pushKickMid) return s.normalKick ?? m;
+        if (m == s.kickHighCenter || m == s.pushKickHigh) return s.highNormalKick ?? m;
+        if (m == s.kickLowCenter) return s.lowNormalKick ?? m;
+        return m;
+    }
 
     /// <summary>Context first (airborne → air move, running → running move), then the ATTACK HEIGHT
     /// from the vertical direction held at the press: Up = HIGH, none = MID, Down = LOW. An Up/Down
@@ -497,13 +759,28 @@ public class FighterMoveController : MonoBehaviour
         return mid;
     }
 
-    private void BeginMove(FightMoveDefinition move, FightAttackBonus bonus, AttackTag tag, int stringId,
-                           CombatResourceType charge = CombatResourceType.None)
+    /// <summary>The AXIS a strike requested NOW lands on (+1 right / 0 centre / −1 left — the attacker's own side): first
+    /// person = the side key held (none = centre); third person and the AI = ⅓ left, ⅓ centre, ⅓ right.</summary>
+    private int RequestedSide()
     {
+        if (_nextSide.HasValue) { int n = _nextSide.Value; _nextSide = null; return n; }
+        if (DebugForceStrikeSide != 0) return DebugForceStrikeSide;
+        if (_input != null && _input.ViewRelative) return _input.CurrentSide;
+        return Random.Range(0, 3) - 1;
+    }
+
+    private void BeginMove(FightMoveDefinition move, FightAttackBonus bonus, AttackTag tag, int stringId,
+                           CombatResourceType charge = CombatResourceType.None, float extraLunge = 0f, int side = 0)
+    {
+        MoveStartedAt = Time.time;
+        if (move.id == BackdashId) _lastBackdashAt = Time.time;
+        _sideAtStart = _input != null ? _input.CurrentSide : 0;
+        _backAtStart = _input != null && _input.CurrentHorizontal == FightHorizontalDirection.Back;
         QueuedMove = null; // this move supersedes whatever was queued, if anything
         _queuedTag = AttackTag.None;
         _queuedStringId = 0;
         _queuedCharge = CombatResourceType.None;
+        _queuedLunge = 0f;
         _currentStringId = stringId;
         CurrentMove = move;
         MoveElapsed = 0f;
@@ -550,11 +827,22 @@ public class FighterMoveController : MonoBehaviour
         float carry = airborneMove ? move.airCarry : move.forwardCarry;
         float speedIn = _actor != null && _actor.Movement != null ? Mathf.Abs(_actor.Movement.ForwardSpeed + _actor.Movement.CarryVelocity) : 0f;
         _movementDriver.SetMovementLock(move.movementLocked, move.movementMultiplier, carry);
-        if (!Mathf.Approximately(move.lungeDistance, 0f)) _movementDriver.ApplyLunge(move.lungeDistance);
-        if (airborneMove && _moveSet != null && move == _moveSet.airNormalKick && speedIn >= 2.5f)
+        float lungeTotal = move.lungeDistance + extraLunge;
+        // STEP-IN: a grounded strike started out of its clip's reach steps forward so it actually lands.
+        if (!airborneMove && _actor != null && _actor.Opponent != null && _balanceConfig != null && _balanceConfig.strikeStepIn > 0f &&
+            move.contactReach > 0f && move.attackDelivery == AttackDelivery.Melee && move.hits != null && move.hits.Length > 0 && lungeTotal >= 0f)
+        {
+            float gap = _actor.DistanceToOpponent - (move.contactReach - _balanceConfig.strikeStepMargin);
+            if (gap > 0f) lungeTotal = Mathf.Max(lungeTotal, Mathf.Min(gap, _balanceConfig.strikeStepIn));
+        }
+        if (!Mathf.Approximately(lungeTotal, 0f)) _movementDriver.ApplyLunge(lungeTotal);
+        if (airborneMove && _moveSet != null && (move == _moveSet.flyingKick || (move == _moveSet.airNormalKick && speedIn >= 2.5f)))
             EventBus.Publish(new FightFlyingKickEvent { Fighter = _actor, Speed = speedIn });
-        _attackSpeed = _balanceConfig != null && _actor != null ? _balanceConfig.ComputeModifiers(_actor.BuildStats).AttackSpeedMultiplier : 1f;
-        _animationDriver.PlayMoveAnimation(move, (move.startupDuration + move.activeDuration + move.recoveryDuration) / _attackSpeed);
+        // Agility speeds up only STRIKES (melee hits / the Special's projectile) and the Block move — never a dash,
+        // backdash, taunt or dodge (those are movement: agility already moves the fighter faster).
+        bool agilityScaled = (move.hits != null && move.hits.Length > 0) || move.attackDelivery == AttackDelivery.Projectile || move.role == CombatRole.Block;
+        _attackSpeed = agilityScaled && _balanceConfig != null && _actor != null ? _balanceConfig.ComputeModifiers(_actor.BuildStats).AttackSpeedMultiplier : 1f;
+        CurrentStrikeSide = _animationDriver.PlayMoveAnimation(move, move.startupDuration + move.activeDuration + move.recoveryDuration, _attackSpeed, side);
 
         Debug.Log($"[FighterMoveController] Move started: {move.debugName} ({move.moveType})");
 

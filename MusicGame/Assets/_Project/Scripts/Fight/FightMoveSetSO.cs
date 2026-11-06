@@ -34,6 +34,31 @@ public class FightMoveSetSO : ScriptableObject
     [Tooltip("Down + Kick is normally caught first by the down_b combo (also LOW); this is the plain fallback.")]
     public FightMoveDefinition lowNormalKick;
 
+    [Header("Special normals (2026-11-04)")]
+    [Tooltip("Back + Kick (grounded, not running): the spinning heel kick.")]
+    public FightMoveDefinition backNormalKick;
+    [Tooltip("Kick during a RUNNING jump (FighterMovement.IsRunningJump): the flying kick — momentum, hard to stop.")]
+    public FightMoveDefinition flyingKick;
+
+    [Header("Axes, distance and context (user design 2026-11-05) — FighterMoveController.ResolvePunch/ResolveKick")]
+    [Tooltip("SIDE punches (hooks) per height; the height normals above are the CENTRE (straight) punches.")]
+    public FightMoveDefinition punchHighSide, punchMidSide, punchLowSide;
+    [Tooltip("CENTRE kicks (straight) per height; the height normals above are the SIDE (circular) kicks.")]
+    public FightMoveDefinition kickHighCenter, kickMidCenter, kickLowCenter;
+    [Tooltip("Forward + Kick (third person) / Up + Kick at the centre (first person): the push kick — pushes the opponent away.")]
+    public FightMoveDefinition pushKickMid, pushKickHigh;
+    [Tooltip("Close range (FightCombatBalanceConfig.closeStrikeRange), high / mid only: centre punch → uppercut, kick → knee " +
+             "(a side punch close in is the short hook).")]
+    public FightMoveDefinition closeUppercut, closeKnee;
+    [Tooltip("Third person Back + Kick: mid (backNormalKick = the high one), Back + Down + Kick = the sweep.")]
+    public FightMoveDefinition spinKickMid, spinSweep;
+    [Tooltip("Air: back jump + Kick (third person) = spinning heel; jump + Down + Kick = the axe kick (also hits a downed rival).")]
+    public FightMoveDefinition airSpinHeel, axeKick;
+    [Tooltip("A button within balance.counterWindow of a correct block: the fast counter (unblockable).")]
+    public FightMoveDefinition counterStrike;
+    [Tooltip("First person Down Down + Kick: the backdash becomes a step-back spinning kick.")]
+    public FightMoveDefinition stepBackSpin;
+
     [Tooltip("Combo-triggered moves (including Dash/Specials — see this phase's own scope note) — " +
              "looked up by id via GetByMoveId, matched against the detected FightComboDefinition's " +
              "own moveId.")]

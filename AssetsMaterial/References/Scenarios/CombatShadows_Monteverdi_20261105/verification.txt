@@ -1,0 +1,22 @@
+Production scenes upgraded=15; two character lights remain shadowless; one environment-receiver/character-caster spot added.
+PASS sun coherence: centre-ray difference=0 degrees; sun azimuth125 elevation19; distant character shadow proxy80m, ring rays nearly parallel. Sky disc rotation39.19027 verticalOffset0.00751844 calibrated from image centroid.
+Body | cast=On | layer=3 | shader=MusicGame/Avatar/Skin Visibility Lit:ShadowCaster=True
+Eyes | cast=On | layer=3 | shader=MusicGame/Avatar/Skin Visibility Lit:ShadowCaster=True
+GARMENT | cast=On | layer=3 | shader=Universal Render Pipeline/Lit:ShadowCaster=True
+GARMENT | cast=On | layer=3 | shader=Universal Render Pipeline/Lit:ShadowCaster=True
+GARMENT | cast=On | layer=3 | shader=Universal Render Pipeline/Lit:ShadowCaster=True
+GARMENT | cast=On | layer=3 | shader=Universal Render Pipeline/Lit:ShadowCaster=True
+GARMENT | cast=On | layer=3 | shader=Universal Render Pipeline/Lit:ShadowCaster=True
+Body | cast=On | layer=3 | shader=MusicGame/Avatar/Skin Visibility Lit:ShadowCaster=True
+Eyes | cast=On | layer=3 | shader=MusicGame/Avatar/Skin Visibility Lit:ShadowCaster=True
+GARMENT | cast=On | layer=3 | shader=Universal Render Pipeline/Lit:ShadowCaster=True
+GARMENT | cast=On | layer=3 | shader=Universal Render Pipeline/Lit:ShadowCaster=True
+GARMENT | cast=On | layer=3 | shader=Universal Render Pipeline/Lit:ShadowCaster=True
+GARMENT | cast=On | layer=3 | shader=Universal Render Pipeline/Lit:ShadowCaster=True
+GARMENT | cast=On | layer=3 | shader=Universal Render Pipeline/Lit:ShadowCaster=True
+PASS High: one shadow-casting spot, lighting mask4 / caster mask2; no realtime AO added.
+PASS Low: two soft contact quads, no extra shadow atlas or light.
+PASS Mid: scoped 512px shadow atlas and character-only caster mask.
+PASS lifecycle: receiver masks, caster settings and pipeline restored.
+High pilot lightmaps=2 probes=255
+PASS saved scenes and dependencies=15

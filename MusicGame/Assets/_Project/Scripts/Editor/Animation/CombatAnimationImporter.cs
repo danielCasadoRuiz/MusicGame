@@ -48,11 +48,14 @@ public static class CombatAnimationImporter
     public const string FixtureProcessed = FixtureFolder + "/Processed";
     public const string FixtureLibraryPath = FixtureFolder + "/PipelineFixtureLibrary.asset";
 
+    public const string CmuSourceFolder = AnimationsRoot + "/Source/CMU/Fight";
+    public const string MixamoSourceFolder = AnimationsRoot + "/Source/Mixamo/Fight";
+
     public readonly struct Pack
     {
-        public readonly string Folder, Title, Page;
-        public Pack(string folder, string title, string page) { Folder = folder; Title = title; Page = page; }
-        public string SourceFolder => SourceRoot + "/" + Folder;
+        public readonly string Folder, Title, Page, ExplicitSource;
+        public Pack(string folder, string title, string page, string sourceFolder = null) { Folder = folder; Title = title; Page = page; ExplicitSource = sourceFolder; }
+        public string SourceFolder => ExplicitSource ?? SourceRoot + "/" + Folder;
         public string ProcessedFolder => ProcessedRoot + "/" + Folder;
     }
 
@@ -66,6 +69,13 @@ public static class CombatAnimationImporter
                  "https://www.rokoko.com/resources/motion-library-10-free-motion-assets-from-eric-jacobus-god-of-war"),
         new Pack("Superhero", "Rokoko Mocap - 15 Free Superhero Animations",
                  "https://www.rokoko.com/resources/rokoko-mocap-15-free-superhero-animations"),
+        // CMU Graphics Lab mocap (BVH → FBX with the project's cmu_bvh_to_fbx converter, one FBX per strike
+        // already cut to its window — mocap scan 2026-11-04). CMU skeleton: mapped with
+        // MakeHumanAnimationTestSetup.CmuBoneMap (no fingers → relaxed rest hand).
+        new Pack("CMU", "CMU Graphics Lab Motion Capture Database (BVH, converted)", "http://mocap.cs.cmu.edu", CmuSourceFolder),
+        // Mixamo strikes / blocks / hit reactions (playtest 2026-11-04: much better punches and kicks than the
+        // CMU lab captures). FBX "without skin", 30 fps, X Bot, one clip per file named Mixamo_<Role>.fbx.
+        new Pack("Mixamo", "Mixamo (Adobe) fighting animations", "https://www.mixamo.com", MixamoSourceFolder),
     };
 
     private const float RootMotionTravel = 0.3f;  // m — more net travel than this: recommend root motion
@@ -374,7 +384,8 @@ public static class CombatAnimationImporter
                                               settings.loopBlend = entry.loop;
                                               settings.loopBlendOrientation = !entry.keepFacing; // bake root yaw into the pose (or extract it: keeps facing)
                                               settings.keepOriginalOrientation = true;
-                                              settings.loopBlendPositionY = true;    // bake root height into the pose
+                                              // bake root height into the pose (unless the gameplay jump owns it)
+                                              settings.loopBlendPositionY = segment == null || !segment.heightToRootMotion;
                                               settings.keepOriginalPositionY = true;
                                               settings.loopBlendPositionXZ = false;  // XZ travel -> root motion (not applied)
                                               // Root XZ follows the body (centre of mass), not the capture volume's
@@ -390,7 +401,10 @@ public static class CombatAnimationImporter
             // Root-motion clip keeps the importer's loop flag off; the library entry says how to play it.
             float humanScale = avatarGO.GetComponent<Animator>().humanScale;
             MeasureRoot(entry, source, humanScale > 0f ? humanScale : 1f);
-            float yaw = CalibrateStartFacing(entry.inPlaceClip, avatarGO);
+            // Mixamo exports the character facing +Z already; its fighting stance is BLADED (hips turned ≈35°), so
+            // squaring the hips to +Z would turn every strike that much to the side (playtest 2026-11-04: "els cops
+            // de puny no van rectes sinó en lateral"). Captures with an arbitrary actor heading still calibrate.
+            float yaw = prefix == "Mixamo" ? 0f : CalibrateStartFacing(entry.inPlaceClip, avatarGO);
             float level = CalibrateGroundRobust(entry.inPlaceClip, avatarGO);
             entry.importWarnings = Warnings(source, entry);
             EditorUtility.SetDirty(entry.clip);
@@ -457,6 +471,30 @@ public static class CombatAnimationImporter
     /// phalanges exist); otherwise keeps Unity's own auto-mapping from pass 1.</summary>
     private static string ApplyMixamoMapping(ref HumanDescription description)
     {
+        // CMU skeleton (LowerBack / LHipJoint / Neck1 …): its own explicit, finger-free map.
+        var boneNames = new HashSet<string>(description.skeleton.Select(b => b.name));
+        if (boneNames.Contains("LowerBack") && boneNames.Contains("LeftUpLeg") && boneNames.Contains("Spine1"))
+        {
+            var cmu = new List<HumanBone>();
+            foreach (var (humanName, bone) in MakeHumanAnimationTestSetup.CmuBoneMap)
+            {
+                if (!boneNames.Contains(bone)) continue;
+                var hb = new HumanBone { humanName = humanName, boneName = bone };
+                hb.limit.useDefaultValues = true;
+                cmu.Add(hb);
+            }
+            description.human = cmu.ToArray();
+            description.upperArmTwist = 0.5f;
+            description.lowerArmTwist = 0.5f;
+            description.upperLegTwist = 0.5f;
+            description.lowerLegTwist = 0.5f;
+            description.armStretch = 0.05f;
+            description.legStretch = 0.05f;
+            description.feetSpacing = 0f;
+            description.hasTranslationDoF = false;
+            return $"CMU mapping, {cmu.Count} bones, no fingers";
+        }
+
         var human = new List<HumanBone>();
         var used = new HashSet<string>();
         foreach (var bone in description.skeleton)

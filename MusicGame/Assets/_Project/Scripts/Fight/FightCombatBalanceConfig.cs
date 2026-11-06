@@ -159,7 +159,10 @@ public class FightCombatBalanceConfig : ScriptableObject
     public float blockKnockbackMultiplier = 0.5f;
     [Tooltip("BLOCK/CHIP DAMAGE: a correctly blocked hit still deals this fraction of its would-be damage " +
              "(never 0 — holding guard forever must not be a strategy). A move's own chipDamage is a floor.")]
-    [Range(0f, 1f)] public float blockDamageMultiplier = 0.2f;
+    [Range(0f, 1f)] public float blockDamageMultiplier = 0.06f;
+    [Tooltip("GUARD BREAK: the strong hit of a POWERED triple press (x3 finisher) breaks a correct guard — it lands as a " +
+             "hit, scaled by this factor (damage, stun, push) so it is a bit weaker than the same hit unguarded. 0 = it is blocked.")]
+    [Range(0f, 1f)] public float finisherGuardBreakFactor = 0.75f;
 
     [Header("Grab / takedown (FighterGrapple) — Punch + Kick together")]
     [Tooltip("Grab reach beyond FightArenaConfig.minimumFighterSeparation (short).")]
@@ -190,10 +193,93 @@ public class FightCombatBalanceConfig : ScriptableObject
     [Tooltip("The defender can escape early with Punch + Kick after this many seconds on the ground.")]
     public float groundEscapeMinTime = 0.6f;
 
-    [Header("Knockdown flow — Knockdown → Downed → GetUp → CombatIdle (fighter invulnerable throughout)")]
-    [Min(0.05f)] public float knockdownDuration = 1.2f;
-    [Min(0f)] public float downedDuration = 0.8f;
-    [Min(0.05f)] public float getUpDuration = 1.6f;
+    [Header("Knockdown flow — Knockdown → Downed → GetUp → CombatIdle (invulnerable while falling and getting up)")]
+    [Min(0.05f)] public float knockdownDuration = 0.8f;
+    [Tooltip("MINIMUM seconds lying on the floor before getting up is possible.")]
+    [Min(0f)] public float downedDuration = 0.45f;
+    [Tooltip("Tekken-like: a downed fighter STAYS on the floor until it presses Up (or Jump) — so it can let a Special " +
+             "fly over it. False = it gets up by itself after downedDuration (old behaviour).")]
+    public bool downedWaitsForGetUpInput = true;
+    [Tooltip("Seconds after which a downed fighter gets up anyway, even without input (0 = never: it may lie as long as it wants).")]
+    [Min(0f)] public float downedMaxDuration = 0f;
+    [Tooltip("The rival AI gets up after a random delay in this range (s) once it can — longer if a Special is flying at it.")]
+    public Vector2 aiGetUpDelay = new(0.15f, 0.9f);
+    [Min(0.05f)] public float getUpDuration = 0.9f;
+    [Tooltip("While DOWNED a fighter can still be hit by LOW attacks (ground hits), at this damage share…")]
+    [Range(0f, 1f)] public float groundHitDamageMultiplier = 0.5f;
+    [Tooltip("…at most this many per knockdown (then it is invulnerable until it is up again)…")]
+    [Min(0)] public int groundHitsPerKnockdown = 2;
+    [Tooltip("…and each one keeps it down this much longer (never more than once per hit).")]
+    [Min(0f)] public float groundHitExtraDown = 0.15f;
+    [Tooltip("A POWERED kick finisher (paid with an x3) knocks the defender down.")]
+    public bool poweredKickFinisherKnocksDown = true;
+
+    [Header("Guard speed — Agility vs Agility (FighterGuard)")]
+    [Tooltip("Seconds a guard needs from the moment Back is pressed until it actually blocks, for a fighter of " +
+             "attack speed ×1. Divided by the defender's own attack speed (Agility): a fast fighter raises it sooner, " +
+             "and a fast attacker's shorter startup can beat a slow defender's guard.")]
+    [Range(0f, 0.4f)] public float guardRaiseTime = 0.12f;
+
+    [Header("Hit flinch — the struck body reacts where it was hit (FighterHitFlinch)")]
+    [Tooltip("Overall strength of the body's reaction to a landed hit (0 = off).")]
+    [Range(0f, 3f)] public float hitFlinchStrength = 1f;
+    [Tooltip("Angular impulse (rad/s per metre of lever between hips and contact) for a light hit.")]
+    [Range(0f, 20f)] public float hitFlinchImpulse = 5f;
+    [Tooltip("Spring stiffness back to the clip pose: higher = snappier, shorter reaction.")]
+    [Range(20f, 600f)] public float hitFlinchStiffness = 170f;
+    [Tooltip("Damping ratio (1 = no overshoot, lower = a small rebound).")]
+    [Range(0.1f, 1.5f)] public float hitFlinchDamping = 0.5f;
+    [Tooltip("Upper limit of the whole spine chain's bend (degrees).")]
+    [Range(5f, 60f)] public float hitFlinchMaxDegrees = 35f;
+    [Tooltip("A BLOCKED hit still jolts the guard a little (× strength).")]
+    [Range(0f, 1f)] public float hitFlinchBlockedScale = 0.35f;
+
+    [Header("Hit effects (FightHitFeedback) — hit-stop off (2026-11-04 playtest), spark back on (2026-11-05: \"no tinc sensació de cop\")")]
+    [Tooltip("Near-freeze of time on impact (the classic hit-stop).")]
+    public bool hitStopEnabled = false;
+    [Tooltip("Spark burst + flash at the contact point.")]
+    public bool hitSparkEnabled = true;
+
+    [Header("Recovery cancel (FighterMoveController.RecoveryCancellable)")]
+    [Tooltip("Move-time seconds into an attack's Recovery after which guard, crouch, sidestep or jump cancel the rest " +
+             "of it (the strike itself — Active + the late-contact margin — always plays out). Large = stiffer.")]
+    [Range(0f, 0.5f)] public float recoveryCancelDelay = 0.1f;
+    [Tooltip("FEINT (2026-11-05): a strike can be cut in the first part of its Startup — this fraction of it — by a FRESH " +
+             "guard, sidestep, jump or dash (pressed after the strike began). 0 = strikes always commit.")]
+    [Range(0f, 1f)] public float startupFeintFraction = 0.6f;
+    [Tooltip("SIDE REACTION (user design 2026-11-05, both views): the guard ANIMATION towards the side a strike comes from " +
+             "lasts this many seconds (÷ the defender's Agility attack speed), from the moment the defender reacts (the " +
+             "strike starting with a held guard, a fresh guard press, a first-person side change). It blocks only once it is " +
+             "complete — a race against the strike's own (Agility-scaled) startup: shorter than a whole strike, but close to " +
+             "the time it takes to arrive, so it is never guaranteed — the faster fighter wins the mismatch.")]
+    [Range(0f, 0.5f)] public float guardSideReactTime = 0.16f;
+    [Tooltip("A guard ALREADY held only starts turning to the strike's side after seeing it: this perception delay (s, " +
+             "÷ Agility). A guard pressed after the strike started needs none — that press IS the reaction.")]
+    [Range(0f, 0.3f)] public float guardSidePerception = 0.08f;
+    [Tooltip("Root-to-root distance at or under which a high / mid strike becomes its close-range technique " +
+             "(uppercut, short hook, knee — FighterMoveController.ResolvePunch/ResolveKick).")]
+    [Range(0.5f, 1.2f)] public float closeStrikeRange = 0.72f;
+    [Tooltip("After a CORRECT block, a button within this many seconds throws the counter (unblockable).")]
+    [Range(0f, 0.5f)] public float counterWindow = 0.2f;
+    [Tooltip("A button within this many seconds after a sidestep starts throws the dodge-counter to that side; " +
+             "first person: Kick this soon after a backdash = the step-back spinning kick.")]
+    [Range(0f, 0.6f)] public float dodgeCounterWindow = 0.3f;
+
+    [Header("Strike step-in (FighterMoveController.BeginMove)")]
+    [Tooltip("A grounded strike thrown from farther than its clip reaches (FightMoveDefinition.contactReach) steps " +
+             "towards the opponent by up to this much during its startup, so fighters do not have to stand glued " +
+             "together to connect (the in-place mocap clips have no step of their own). 0 = off.")]
+    [Range(0f, 1f)] public float strikeStepIn = 0.5f;
+    [Tooltip("Root distance kept below the measured hips-to-hips reach (hips sit ≈ 5 cm behind each root + margin).")]
+    [Range(0f, 0.3f)] public float strikeStepMargin = 0.14f;
+
+    [Header("Double / triple press strong hit (FighterInputController)")]
+    [Tooltip("The strong hit of a fast triple press WITHOUT an x3 to power it: still stronger than a normal.")]
+    public FightAttackBonus unpoweredFinisher = new(1.2f, 1.3f, 1.4f);
+    [Tooltip("Strong hit thrown while holding FORWARD: lunge into the opponent (capped at contact).")]
+    [Min(0f)] public float finisherAdvance = 0.8f;
+    [Tooltip("Strong hit thrown while holding BACK: steps back this far while hitting.")]
+    [Min(0f)] public float finisherRetreat = 0.5f;
 
     [Header("Finishers (combo definitions with attackBonus = Punch/KickFinisher)")]
     [Tooltip("Multipliers on the Punch Finisher (combo P P P) — only when it is POWERED by one x3 (CombatResourceUse). Its timing lives on the combo definition.")]
@@ -219,6 +305,12 @@ public class FightCombatBalanceConfig : ScriptableObject
     [Min(0f)] public float powerDamageMultiplier = 1.3f;
     [Min(0f)] public float powerStaggerMultiplier = 1.25f;
     [Min(0f)] public float powerKnockbackMultiplier = 1.25f;
+    [Tooltip("Power look: the avatar's Muscle body shape grows by this much (added, clamped to 1) while Power lasts.")]
+    [Range(0f, 1f)] public float powerMuscleBoost = 0.4f;
+    [Tooltip("Seconds the Muscle shape takes to grow from 0 to powerMuscleBoost when Power starts (progressive).")]
+    [Min(0.01f)] public float powerMuscleRampIn = 1f;
+    [Tooltip("Seconds the Muscle shape takes to go back from powerMuscleBoost to 0 when Power ends (progressive).")]
+    [Min(0.01f)] public float powerMuscleRampOut = 1.2f;
 
     public FightAttackBonus PowerMultipliers => new(powerDamageMultiplier, powerStaggerMultiplier, powerKnockbackMultiplier);
 

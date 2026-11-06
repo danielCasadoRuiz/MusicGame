@@ -57,6 +57,10 @@ public class FightComboDefinition
              "normal (posture-aware Punch/Kick) — e.g. the Punch/Kick finishers.")]
     public string moveId;
 
+    [Tooltip("Only in the third-person (side) view. First person: Up already means FORWARD and is the HIGH modifier, so " +
+             "e.g. 'Forward, Punch' must stay the high punch there (FighterInputController plays the press's own normal).")]
+    public bool thirdPersonOnly;
+
     /// <summary>"Punch Punch Kick"-style text for debug.</summary>
     public string StepsText => string.Join(" ", System.Array.ConvertAll(steps, s => s.ToString()));
 }

@@ -53,6 +53,8 @@ public class FightHudView : MonoBehaviour
 
     [Header("Fight preparation (build stats + run resources) — the conversion animation's destinations")]
     public FightBuildPanelView buildPanel;
+    [Tooltip("The RIVAL's mirror of the build panel (2026-11-05): its build, its charges (Special / x3 / x4) and its level.")]
+    public FightBuildPanelView opponentBuildPanel;
 
     [Header("Mobile controls — visible ONLY during FightFlowState.Fighting, on real/simulated mobile")]
     public GameObject mobileControlsRoot;
@@ -65,4 +67,8 @@ public class FightHudView : MonoBehaviour
     public GameObject kickButton;
     public TouchActionButton kickAction;
     public TextMeshProUGUI kickButtonLabel;
+    [Tooltip("The jump button (above Punch / Kick) — the fight's third button.")]
+    public GameObject jumpButton;
+    public TouchActionButton jumpAction;
+    public TextMeshProUGUI jumpButtonLabel;
 }

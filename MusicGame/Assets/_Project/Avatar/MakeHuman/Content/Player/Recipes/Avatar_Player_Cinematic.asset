@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab777b6a62eedf740a4071a4f76a7744, type: 3}
+  m_Name: Avatar_Player_Cinematic
+  m_EditorClassIdentifier: Assembly-CSharp::AvatarRecipeSO
+  identity: {fileID: 11400000, guid: dd0fd2461eea97642ac45f892840b23d, type: 2}
+  baseAvatar: {fileID: 11400000, guid: edb208ecbe0ae364cb01448c90f6cb52, type: 2}
+  items:
+  - {fileID: 11400000, guid: b340026aad2f6ae40aca03fba7565bc8, type: 2}
+  - {fileID: 11400000, guid: 21d14f1f32e96174f9d6d593ccfe3f7b, type: 2}
+  - {fileID: 11400000, guid: 5989d936561dc6d44bc37af8975d8663, type: 2}
+  - {fileID: 11400000, guid: cede0f7341015684baaff23beedebcf8, type: 2}
+  - {fileID: 11400000, guid: 1f6f715f2df8e4a45af190e334c10106, type: 2}
+  bodyOverride:
+    overrideWeight: 0
+    weight: 0.5
+    overrideMuscle: 0
+    muscle: 0
+    overrideGender: 0
+    gender: 0
+  hairOverride: {fileID: 0}
+  faceOverride: {fileID: 0}
+  colorOverrides: []

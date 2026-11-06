@@ -33,4 +33,7 @@ public class FightBuildPanelView : MonoBehaviour
     public RectTransform root;
     public StatRow[] stats = System.Array.Empty<StatRow>();
     public ResourceCell[] resources = System.Array.Empty<ResourceCell>();
+    [Tooltip("Rival panel only (2026-11-05): the rival's level — a label and pips filled by the fight difficulty.")]
+    public TextMeshProUGUI levelText;
+    public Image[] levelPips = System.Array.Empty<Image>();
 }

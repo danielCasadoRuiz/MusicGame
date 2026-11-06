@@ -92,6 +92,38 @@ public class RunnerHazardsConfig : ScriptableObject
     [Tooltip("After a respawn, no obstacle is rebuilt closer than this ahead of the player (metres).")]
     [Min(0f)] public float respawnClearAhead = 6f;
 
+    [Header("Knocked-out bonuses (chaser contact) — RunnerPenaltyScatter")]
+    [Tooltip("The player's bonuses fly out of the player in every direction and bounce around (visual only — never collectable).")]
+    public bool scatterOnChaserContact = true;
+    [Tooltip("Also on the other penalties (falls, trapped by an obstacle).")]
+    public bool scatterOnOtherPenalties = false;
+    [Tooltip("Most bonuses thrown by one penalty: as many as the player had (none → nothing), up to this.")]
+    [Range(1, 40)] public int scatterMaxPieces = 14;
+    [Tooltip("Built when the run starts, so the first scatter never instantiates anything.")]
+    [Range(0, 40)] public int scatterPrewarm = 14;
+    [Tooltip("Horizontal launch speed range (m/s).")]
+    public Vector2 scatterOutSpeed = new(3.5f, 6.5f);
+    [Tooltip("Upward launch speed range (m/s).")]
+    public Vector2 scatterUpSpeed = new(5f, 8.5f);
+    [Tooltip("Random spin (rad/s).")]
+    [Min(0f)] public float scatterSpin = 12f;
+    [Tooltip("Seconds a thrown bonus lives (its last scatterBlinkSeconds blinking, then gone).")]
+    [Min(0.3f)] public float scatterLifetime = 2.6f;
+    [Min(0f)] public float scatterBlinkSeconds = 0.8f;
+    [Tooltip("Bounciness of the thrown bonuses (0..1).")]
+    [Range(0f, 1f)] public float scatterBounciness = 0.75f;
+    [Tooltip("Size of a thrown bonus relative to the collectable one (smaller: they read as the player's stash).")]
+    [Min(0.1f)] public float scatterScale = 0.55f;
+    [Tooltip("Extra seconds the player stays down after the chaser's contact before respawning, so the knocked-out bonuses are seen.")]
+    [Min(0f)] public float chaserContactExtraRespawnDelay = 1f;
+
+    [Header("Caught by the chaser — the player's body (RunnerAvatarAnimator.PlayCaught) and camera (CameraFollow)")]
+    [Tooltip("Played once on the chaser's contact: the fall to the floor (in place). Empty = the plain Fall role.")]
+    public AnimationClip caughtKnockdownClip;
+    [Tooltip("Looped after the knockdown until the respawn: lying on the floor.")]
+    public AnimationClip caughtDownedClip;
+    [Min(0.1f)] public float caughtKnockdownSpeed = 1.5f;
+
     [Header("TEST — development builds / editor only, OFF by default")]
     [Tooltip("Replaces the generated placement by a gallery: every obstacle kind in turn, then a chaser, repeated.")]
     public bool testGallery = false;

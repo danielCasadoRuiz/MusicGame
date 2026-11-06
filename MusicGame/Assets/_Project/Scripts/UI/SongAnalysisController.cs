@@ -193,9 +193,14 @@ public class SongAnalysisController : MonoBehaviour
         // ONE publish of the complete profile for this selection (GameSession fills Profile from it).
         EventBus.Publish(new SongProfileReadyEvent { Profile = loader.Profile, SelectionGeneration = generation });
 
-        // Style from the PUBLISHED profile (its stored tags + features): the semantic model is never touched.
+        // Style baked in the published index (SongCatalogBake): read, never resolved again. An index baked before
+        // the style was stored falls back to resolving it from the published profile's tags + features.
         SongPreparation.Enter(generation, SongPreparationStage.ResolvingStyle);
-        PublishFinal(MusicStyleResolver.Resolve(loader.Profile, _styleRules), loader.Profile);
+        var entry = loader.Entry;
+        PublishFinal(entry != null && entry.gameStyle != GameMusicStyle.Unknown
+            ? new MusicStyleResolution { Style = entry.gameStyle, ThemeStyle = entry.themeStyle, RunnerUp = entry.styleRunnerUp,
+                                         Score = entry.styleScore, Margin = entry.styleMargin, UsedFeatures = true, Conclusive = true }
+            : MusicStyleResolver.Resolve(loader.Profile, _styleRules), loader.Profile);
         yield return FinishPreparation(token, generation);
     }
 

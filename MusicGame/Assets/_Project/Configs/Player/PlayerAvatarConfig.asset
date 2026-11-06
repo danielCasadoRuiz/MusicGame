@@ -16,9 +16,23 @@ MonoBehaviour:
   runnerAnimatorController: {fileID: 9100000, guid: 24d5e9cec9344b943ba5336b19368e68, type: 2}
   runnerAnimationStyles: {fileID: 11400000, guid: 143bf9a232e90e34ca2909373eff6bfd, type: 2}
   styleRecipes:
+  - style: 1
+    recipe: {fileID: 11400000, guid: 9408b142886063e4e9e107f45db4c428, type: 2}
+  - style: 2
+    recipe: {fileID: 11400000, guid: c306cc4bc7d5e104f8475457c49b087f, type: 2}
   - style: 3
     recipe: {fileID: 11400000, guid: e7cd988c9b302974691ca71ae2c0a1ee, type: 2}
+  - style: 6
+    recipe: {fileID: 11400000, guid: 8d5cfbe7ed0fd5e49ac44e47e87210c9, type: 2}
+  - style: 7
+    recipe: {fileID: 11400000, guid: 54c196c3f1efc8444808867b4359820b, type: 2}
   - style: 12
     recipe: {fileID: 11400000, guid: 87f306f436394f747aa4554e1f8779b7, type: 2}
+  - style: 13
+    recipe: {fileID: 11400000, guid: 6ac957c8d6ab61d4a9543af210f0a7d3, type: 2}
   - style: 14
     recipe: {fileID: 11400000, guid: ecd7cba07173ab34ba4ec3017717bfcd, type: 2}
+  - style: 15
+    recipe: {fileID: 11400000, guid: 2892a0de1ddf98442902e4ca5403a0dc, type: 2}
+  - style: 16
+    recipe: {fileID: 11400000, guid: 10b73f72003f8fa4b907647164fbabaa, type: 2}

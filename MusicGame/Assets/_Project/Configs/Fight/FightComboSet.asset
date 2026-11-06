@@ -19,54 +19,50 @@ MonoBehaviour:
     - button: 0
       horizontal: 0
       vertical: 0
+      anyDirection: 0
     - button: 0
       horizontal: 0
       vertical: 0
+      anyDirection: 0
     - button: 0
       horizontal: 0
       vertical: 0
+      anyDirection: 0
     - button: 1
       horizontal: 0
       vertical: 0
+      anyDirection: 0
     maxTimeBetweenInputs: 0.5
     maxTotalDuration: 0
     attackBonus: 0
     priority: 0
     moveId: move_aaa_b
-  - id: bb
-    debugName: B-B
-    steps:
-    - button: 1
-      horizontal: 0
-      vertical: 0
-    - button: 1
-      horizontal: 0
-      vertical: 0
-    maxTimeBetweenInputs: 0.5
-    maxTotalDuration: 0
-    attackBonus: 0
-    priority: 0
-    moveId: move_bb
+    thirdPersonOnly: 0
   - id: bbab
     debugName: B-B-A-B
     steps:
     - button: 1
       horizontal: 0
       vertical: 0
+      anyDirection: 0
     - button: 1
       horizontal: 0
       vertical: 0
+      anyDirection: 0
     - button: 0
       horizontal: 0
       vertical: 0
+      anyDirection: 0
     - button: 1
       horizontal: 0
       vertical: 0
+      anyDirection: 0
     maxTimeBetweenInputs: 0.5
     maxTotalDuration: 0
     attackBonus: 0
     priority: 0
     moveId: move_bbab
+    thirdPersonOnly: 0
   - id: forward_a
     debugName: Forward + A
     steps:
@@ -83,73 +79,88 @@ MonoBehaviour:
     attackBonus: 0
     priority: 0
     moveId: move_forward_a
+    thirdPersonOnly: 1
   - id: down_b
     debugName: Down + B
     steps:
     - button: 1
       horizontal: 0
       vertical: 2
+      anyDirection: 0
     maxTimeBetweenInputs: 0.5
     maxTotalDuration: 0
     attackBonus: 0
     priority: 0
     moveId: move_down_b
+    thirdPersonOnly: 0
   - id: back_aab
     debugName: Back + A-A-B
     steps:
     - button: 0
       horizontal: 2
       vertical: 0
+      anyDirection: 0
     - button: 0
       horizontal: 0
       vertical: 0
+      anyDirection: 0
     - button: 1
       horizontal: 0
       vertical: 0
+      anyDirection: 0
     maxTimeBetweenInputs: 0.5
     maxTotalDuration: 0
     attackBonus: 0
     priority: 0
     moveId: move_back_aab
+    thirdPersonOnly: 0
   - id: dash_forward
     debugName: Forward-Forward Dash
     steps:
     - button: 2
       horizontal: 1
       vertical: 0
+      anyDirection: 0
     - button: 2
       horizontal: 1
       vertical: 0
+      anyDirection: 0
     maxTimeBetweenInputs: 0.35
     maxTotalDuration: 0
     attackBonus: 0
     priority: 0
     moveId: move_dash_forward
+    thirdPersonOnly: 0
   - id: special_fireball
     debugName: Down+Forward+A Special
     steps:
     - button: 0
       horizontal: 1
       vertical: 2
+      anyDirection: 0
     maxTimeBetweenInputs: 0.5
     maxTotalDuration: 0
     attackBonus: 0
-    priority: 0
+    priority: 10
     moveId: move_special_fireball
+    thirdPersonOnly: 0
   - id: backdash
     debugName: Back-Back Backdash
     steps:
     - button: 2
       horizontal: 2
       vertical: 0
+      anyDirection: 0
     - button: 2
       horizontal: 2
       vertical: 0
+      anyDirection: 0
     maxTimeBetweenInputs: 0.35
     maxTotalDuration: 0
     attackBonus: 0
     priority: 0
     moveId: move_backdash
+    thirdPersonOnly: 0
   - id: punch_finisher
     debugName: Punch Finisher
     steps:
@@ -170,6 +181,7 @@ MonoBehaviour:
     attackBonus: 1
     priority: 0
     moveId: 
+    thirdPersonOnly: 0
   - id: kick_finisher
     debugName: Kick Finisher
     steps:
@@ -190,3 +202,4 @@ MonoBehaviour:
     attackBonus: 2
     priority: 0
     moveId: 
+    thirdPersonOnly: 0

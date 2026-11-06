@@ -300,7 +300,8 @@ public class FightCameraController : MonoBehaviour
 
         // offset.x slides ALONG the fighters' line (screen-right), meaningful at any orbit angle.
         Vector3 desiredPosition = midpoint + viewSide * backDistance + alongLine * offset.x + Vector3.up * offset.y;
-        Quaternion desiredRotation = Quaternion.LookRotation((midpoint - desiredPosition).normalized, Vector3.up);
+        Vector3 aim = midpoint + Vector3.up * (_config != null ? _config.lookHeight : 0f);
+        Quaternion desiredRotation = Quaternion.LookRotation((aim - desiredPosition).normalized, Vector3.up);
         ReferenceRightXZ = alongLine;
 
         if (ViewMode == CameraViewMode.FirstPerson)
@@ -378,5 +379,9 @@ public class FightCameraController : MonoBehaviour
     }
 
     private static float DirToYaw(Vector3 dir) => Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+    /// <summary>XZ direction from the fighters towards the SIDE (third-person) camera — kept up to date in first
+    /// person too, so "towards / away from the camera" sidesteps mean the same in both views.</summary>
+    public Vector3 SideViewDirection => YawToDir(_yaw);
+
     private static Vector3 YawToDir(float yaw) => new Vector3(Mathf.Sin(yaw * Mathf.Deg2Rad), 0f, Mathf.Cos(yaw * Mathf.Deg2Rad));
 }

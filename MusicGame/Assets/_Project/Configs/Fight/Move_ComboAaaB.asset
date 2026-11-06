@@ -20,23 +20,27 @@ MonoBehaviour:
   resourceCost: 0
   resourceAmount: 1
   knockdownOnHit: 0
+  damageAsMaxHealthFraction: 0
   invulnerableStart: 0
   invulnerableDuration: 0
   animationState: ComboAAAB
-  startupDuration: 0.12
+  startupDuration: 0.19999996
   activeDuration: 0.15
-  recoveryDuration: 0.35
+  recoveryDuration: 0.27000004
   cancelWindow: 0
   movementLocked: 1
   movementMultiplier: 0
-  lungeDistance: 0.5
+  lungeDistance: 0.35
+  contactReach: 1.13
+  forwardCarry: 0
+  airCarry: 1
   lockFacingDuringMove: 1
   allowedPostures: 
   requiredMovementStates: 
   attackDelivery: 0
   hits:
   - shape: 0
-    localOffset: {x: 0.9, y: 1, z: 0}
+    localOffset: {x: 0.55, y: 1, z: 0}
     size: {x: 0.7, y: 0.7, z: 0.7}
     baseDamage: 20
     baseHitStun: 0.45
@@ -63,4 +67,6 @@ MonoBehaviour:
       chipDamage: 0
       tracking: 0
     destroyOnHit: 1
+  strikingLimb: 0
+  guardBreak: 0
   damage: 0

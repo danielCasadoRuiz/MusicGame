@@ -15,38 +15,7 @@ MonoBehaviour:
   garmentId: wagner_pants
   category: trousers
   layer: 20
-  bodyCoverage:
-  - pelvis_front_center
-  - pelvis_front_l
-  - pelvis_front_r
-  - buttocks
-  - thigh_upper_front_l
-  - thigh_upper_back_l
-  - thigh_lower_front_l
-  - thigh_lower_back_l
-  - knee_back_l
-  - knee_front_l
-  - shin_upper_back_l
-  - shin_upper_front_l
-  - shin_lower_back_l
-  - shin_lower_front_l
-  - thigh_upper_front_r
-  - thigh_upper_back_r
-  - thigh_lower_front_r
-  - thigh_lower_back_r
-  - knee_back_r
-  - knee_front_r
-  - shin_upper_back_r
-  - shin_upper_front_r
-  - shin_lower_back_r
-  - shin_lower_front_r
-  garmentCoverage: []
-  coverageConfigured: 1
-  importedCoverageHash: 9e176c25141b6325364c64f844c40cf3
-  importedSources:
-  - Wagner_pants\Rigged\LOW\Wagner_pants_LOW_5k_rigged.fbx
-  - Wagner_pants\Rigged\MEDIUM\Wagner_pants_MEDIUM_10k_rigged.fbx
-  - Wagner_pants\Rigged\MID-HIGH\Wagner_pants_MIDHIGH_20k_rigged.fbx
-  - Wagner_pants\Rigged\HIGH\Wagner_pants_HIGH_30k_rigged.fbx
-  - Wagner_pants\Rigged\ULTRA\Wagner_pants_ULTRA_50k_rigged.fbx
-  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Wagner_pants\Rigged\Segmented
+  hidesCategories: []
+  occlusionGap: 0.1
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Wagner_pants\Rigged/Masks
+    (trousers)

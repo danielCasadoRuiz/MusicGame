@@ -43,9 +43,13 @@ public static class PlayerProgressStore
         }
     }
 
+    /// <summary>Dev tools (FightPracticeMode): while true nothing is written — practice never touches the real save.</summary>
+    public static bool SuspendWrites { get; set; }
+
     public static void Save(PlayerProgressData data)
     {
         if (data == null) return;
+        if (SuspendWrites) { Debug.Log("[PlayerProgressStore] save skipped (writes suspended — practice / dev tool)"); return; }
         string path = FilePath;
         try
         {

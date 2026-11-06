@@ -15,30 +15,33 @@ MonoBehaviour:
   id: move_high_kick
   debugName: High Kick
   moveType: 0
-  role: 11
+  role: 25
   scalingStat: 2
   resourceCost: 0
   resourceAmount: 1
   knockdownOnHit: 0
+  damageAsMaxHealthFraction: 0
   invulnerableStart: 0
   invulnerableDuration: 0
   animationState: HighKick
-  startupDuration: 0.24
+  startupDuration: 0.3
   activeDuration: 0.12
-  recoveryDuration: 0.45
-  cancelWindow: 0.05
-  movementLocked: 1
-  movementMultiplier: 0
+  recoveryDuration: 0.3
+  cancelWindow: 0.15
+  movementLocked: 0
+  movementMultiplier: 0.25
   lungeDistance: 0
+  contactReach: 0.6
   forwardCarry: 0.3
+  airCarry: 1
   lockFacingDuringMove: 1
   allowedPostures: 
   requiredMovementStates: 
   attackDelivery: 0
   hits:
   - shape: 0
-    localOffset: {x: 0.85, y: 0.95, z: 0}
-    size: {x: 0.65, y: 0.55, z: 0.6}
+    localOffset: {x: 0.55, y: 0.6, z: 0}
+    size: {x: 0.65, y: 0.45, z: 0.6}
     baseDamage: 13
     baseHitStun: 0.3
     baseKnockback: 1
@@ -64,4 +67,6 @@ MonoBehaviour:
       chipDamage: 0
       tracking: 0
     destroyOnHit: 1
+  strikingLimb: 0
+  guardBreak: 0
   damage: 0

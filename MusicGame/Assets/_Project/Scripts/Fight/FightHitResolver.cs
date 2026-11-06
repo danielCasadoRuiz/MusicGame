@@ -1,3 +1,5 @@
+using UnityEngine;
+
 /// <summary>
 /// One hit's fully-resolved outcome — see FightHitResolver.Resolve. Carries every intermediate
 /// modifier alongside the base/final pairs specifically for FightDebugHUD's "Last Hit" section
@@ -37,6 +39,14 @@ public struct FightHitResult
 
     /// <summary>Per-attack multipliers that were applied (finisher / Signature / Power) — identity otherwise.</summary>
     public FightAttackBonus Bonus;
+
+    /// <summary>World point where the strike touched (real-body contact, or the hitbox centre) — hit spark.</summary>
+    public Vector3 ContactPoint;
+    public bool HasContact;
+    /// <summary>The defender was lying on the floor (a ground hit: reduced, no new knockdown).</summary>
+    public bool IsGroundHit;
+    /// <summary>A correct guard was BROKEN (powered x3 finisher): landed as a hit, scaled by finisherGuardBreakFactor.</summary>
+    public bool IsGuardBreak;
 }
 
 /// <summary>
@@ -117,13 +127,56 @@ public static class FightHitResolver
 /// </summary>
 public static class FightHitDispatcher
 {
+    /// <summary>SIDE (2026-11-05): the attacker's striking limb, seen from the defender — a right hand / foot arrives on
+    /// the defender's LEFT. 0 = central / unsided.</summary>
+    public static int IncomingSide(FighterActor attacker, FightMoveDefinition move) =>
+        attacker != null && attacker.MoveController != null && attacker.MoveController.CurrentMove == move
+            ? -attacker.MoveController.CurrentStrikeSide : 0;
+
+    /// <summary>The defender's guard stops this strike right now (height, side + reaction time, from above → high guard only).</summary>
+    public static bool GuardStops(FighterActor attacker, FighterActor defender, FightMoveDefinition move, FightHitDefinition hitDef) =>
+        defender != null && defender.Guard != null && hitDef != null && (move == null || !move.guardBreak) &&
+        defender.Guard.WouldBlock(hitDef.attackHeight, hitDef.guardType, IncomingSide(attacker, move),
+                                  attacker != null && attacker.Posture == FighterPosture.Airborne);
+
     public static FightHitResult ResolveAndApply(FighterActor attacker, FighterActor defender, FightMoveDefinition move,
         FightHitDefinition hitDef, FightCombatBalanceConfig config) =>
         ResolveAndApply(attacker, defender, move, hitDef, config, FightAttackBonus.Identity);
 
     public static FightHitResult ResolveAndApply(FighterActor attacker, FighterActor defender, FightMoveDefinition move,
-        FightHitDefinition hitDef, FightCombatBalanceConfig config, FightAttackBonus bonus)
+        FightHitDefinition hitDef, FightCombatBalanceConfig config, FightAttackBonus bonus) =>
+        ResolveAndApply(attacker, defender, move, hitDef, config, bonus, null);
+
+    /// <summary>`contact` = where the strike touched (FighterAttack's real-body contact) — carried on the
+    /// result for the hit spark; null = the defender's centre.
+    /// GROUND HITS (2026-11-04): a DOWNED defender can only be hit by LOW attacks, at
+    /// groundHitDamageMultiplier, a limited number of times per knockdown (FighterHitReaction.ApplyGroundHit).
+    /// GUARD BREAK: move.guardBreak ignores guard. A POWERED kick finisher knocks down.</summary>
+    public static FightHitResult ResolveAndApply(FighterActor attacker, FighterActor defender, FightMoveDefinition move,
+        FightHitDefinition hitDef, FightCombatBalanceConfig config, FightAttackBonus bonus, Vector3? contact)
     {
+        Vector3 point = contact ?? (defender != null ? defender.transform.position : Vector3.zero);
+
+        // Lying on the floor: only LOW attacks reach, reduced, no new knockdown.
+        var reaction = defender != null ? defender.HitReaction : null;
+        if (reaction != null && reaction.State == FighterReactionState.Downed && reaction.CanTakeGroundHit)
+        {
+            if (hitDef.attackHeight != AttackHeight.Low)
+            {
+                EventBus.Publish(new HitEvadedEvent { Attacker = attacker, Defender = defender, Move = move });
+                return new FightHitResult { Attacker = attacker, Defender = defender, Move = move, HitDef = hitDef, IsEvaded = true };
+            }
+            var ground = FightHitResolver.Resolve(attacker, defender, move, hitDef, config, false, bonus);
+            ground.FinalDamage *= config != null ? config.groundHitDamageMultiplier : 0.5f;
+            ground.CausesKnockdown = false;
+            ground.IsGroundHit = true;
+            ground.ContactPoint = point; ground.HasContact = true;
+            EventBus.Publish(new HitLandedEvent { Attacker = attacker, Defender = defender, Move = move, Result = ground });
+            defender.Health?.ApplyDamage(ground.FinalDamage);
+            if (defender.Health == null || !defender.Health.IsKO) reaction.ApplyGroundHit();
+            return ground;
+        }
+
         // Invulnerable (Dodge window, knockdown flow): the hit whiffs — nothing is applied.
         if (defender != null && defender.IsInvulnerable)
         {
@@ -132,8 +185,28 @@ public static class FightHitDispatcher
             return evaded;
         }
 
-        bool blocked = defender != null && defender.Guard != null && defender.Guard.WouldBlock(hitDef.attackHeight, hitDef.guardType);
+        int incomingSide = IncomingSide(attacker, move);
+        bool blocked = GuardStops(attacker, defender, move, hitDef);
+        bool poweredFinisher = attacker != null && attacker.MoveController != null &&
+                               attacker.MoveController.CurrentTag == FighterMoveController.AttackTag.Finisher;
+        // GUARD BREAK: the strong hit of a POWERED triple press goes through a correct guard, a bit weaker than unguarded.
+        bool guardBreak = blocked && poweredFinisher && config != null && config.finisherGuardBreakFactor > 0f;
+        if (guardBreak) blocked = false;
         var result = FightHitResolver.Resolve(attacker, defender, move, hitDef, config, blocked, bonus);
+        result.ContactPoint = point;
+        result.HasContact = true;
+        if (guardBreak)
+        {
+            float f = config.finisherGuardBreakFactor;
+            result.IsGuardBreak = true;
+            result.FinalDamage *= f;
+            result.FinalHitStun *= f;
+            result.FinalKnockback *= f;
+        }
+        // A POWERED kick finisher (paid with an x3) knocks down — not through a guard; the punch one is a big stagger.
+        if (!blocked && !guardBreak && config != null && config.poweredKickFinisherKnocksDown && move != null &&
+            move.scalingStat == FighterBuildStat.KickPower && poweredFinisher)
+            result.CausesKnockdown = true;
 
         if (blocked)
         {
@@ -148,7 +221,7 @@ public static class FightHitDispatcher
             if (result.CausesKnockdown && defender?.Health != null && !defender.Health.IsKO)
                 defender.HitReaction?.ApplyKnockdown(result.FinalKnockback);
             else
-                defender?.HitReaction?.ApplyHit(result.FinalHitStun, result.FinalKnockback);
+                defender?.HitReaction?.ApplyHit(result.FinalHitStun, result.FinalKnockback, -incomingSide);
         }
 
         return result;

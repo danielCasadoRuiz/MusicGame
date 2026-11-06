@@ -60,6 +60,14 @@ public class SongCatalogIndexEntry
     [Tooltip("Informational: the load type the playback clip was published with.")]
     public string playbackLoadType = "";
 
+    // ── Music style (resolved ONCE at bake time from the published profile, MusicStyleResolver + AppConfig
+    //    rules; the runtime reads it instead of resolving again — Unknown = an index baked before this) ──
+    public GameMusicStyle gameStyle;
+    public MusicStyleId   themeStyle;
+    public GameMusicStyle styleRunnerUp;
+    public float          styleScore;
+    public float          styleMargin;
+
     // ── Similarity (progression routes) ──
     public SongSimilarityVector similarity;
 

@@ -82,8 +82,8 @@ public static class RivalAIProbe
             Check("hard rival stops a punch spam: guards at least 40 % of the punches", Ratio(s_hard) >= 0.4f, $"{s_hard.guarded} guarded / {s_hard.landed} landed");
             Check("the easy rival guards clearly less than the hard one", Ratio(s_easy) + 0.15f <= Ratio(s_hard), $"easy {Ratio(s_easy):P0} vs hard {Ratio(s_hard):P0}");
             Check("the hard rival hits back (punishes) more than the easy one", s_hard.rivalHits > s_easy.rivalHits, $"rival hits easy {s_easy.rivalHits}, hard {s_hard.rivalHits}");
-            Check("Specials are thrown on openings, not on a timer", s_hard.specials + s_easy.specials == 0 ||
-                  (s_hard.specialsOnOpening + s_easy.specialsOnOpening) >= 0.75f * (s_hard.specials + s_easy.specials),
+            // Since 2026-11-04 the rival throws its Special freely (the player can always sidestep it or stay down).
+            Check("the rival uses its Specials (does not hoard them waiting for an opening)", s_hard.specials + s_easy.specials >= 1,
                   $"easy: {string.Join("; ", s_easy.specialNotes)} | hard: {string.Join("; ", s_hard.specialNotes)}");
         }),
     };
@@ -95,7 +95,9 @@ public static class RivalAIProbe
         foreach (var a in new[] { Player, Rival })
             if (a.Health.CurrentHealth < a.Health.MaxHealth * 0.5f) a.Health.GetType().GetProperty("CurrentHealth").SetValue(a.Health, a.Health.MaxHealth);
         float dist = Vector3.Distance(Player.transform.position, Rival.transform.position);
-        FightTouchInputState.Horizontal = dist > 1.3f ? (Player.FacingRight ? 1f : -1f) : 0f;
+        // Just outside the closest distance (FightArenaConfig.minimumFighterSeparation 0.60 since the Mixamo strikes): holding
+        // Forward permanently would turn every press into advancing lunges / finishers instead of a plain jab spam.
+        FightTouchInputState.Horizontal = dist > 0.7f ? (Player.FacingRight ? 1f : -1f) : 0f;
         if (Time.time >= s_nextPress) { FightTouchInputState.PunchRequested = true; s_nextPress = Time.time + 0.18f; }
         return true;
     }

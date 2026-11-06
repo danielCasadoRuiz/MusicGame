@@ -150,9 +150,20 @@ public class FightFlowConfig : ScriptableObject
              "button (Down + Punch + Kick = Power charge) before being processed normally. Only " +
              "Down + button presses are ever delayed, and only by this much.")]
     [Range(0f, 0.25f)] public float simultaneousPressWindow = 0.1f;
+    [Tooltip("First person swaps the AXIS (user design 2026-11-05): Up/Down = towards / away from the opponent (+ the " +
+             "high / low strike modifier; double tap = run / backdash), Left/Right + Punch/Kick = that hand / foot, held " +
+             "alone = guard THAT side (+ Up high, + Down low), double tap = sidestep. False = the third-person keys.")]
+    public bool firstPersonViewRelativeControls = true;
     [Tooltip("GRAB chord: Punch and Kick count as pressed together (grab / grab escape) when the second " +
              "arrives within this many seconds of the first (Down NOT held: Down + both = Power).")]
     [Range(0f, 0.2f)] public float grabChordWindow = 0.08f;
+
+    [Header("Double / triple press (FighterInputController class doc)")]
+    [Tooltip("A 2nd press of the same button this soon after the 1st is held to see whether a 3rd comes.")]
+    [Range(0.1f, 0.8f)] public float chainSecondPressWindow = 0.4f;
+    [Tooltip("How long the held 2nd press waits for the 3rd. 3rd in time = ONE strong hit (finisher); " +
+             "otherwise the 2nd plays as a plain normal, this much later.")]
+    [Range(0.05f, 0.35f)] public float chainThirdPressWait = 0.24f; // 0.16 missed ordinary-speed triples (playtest 2026-11-04)
 
     [Tooltip("After a combo has COMPLETED (and its move started), how long the next input may take to " +
              "extend it into a longer registered combo (PPP → PPPK), which then cancels and replaces " +
