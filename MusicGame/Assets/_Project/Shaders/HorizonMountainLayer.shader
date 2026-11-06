@@ -10,6 +10,9 @@ Shader "MusicGame/HorizonMountainLayer"
         _MainTex("Silhouette (alpha = shape)", 2D) = "white" {}
         _Tint("Tint (brightness + haze already applied)", Color) = (1,1,1,1)
         _Opacity("Opacity", Range(0,1)) = 1
+        _ShadowBrightness("Side and Back Brightness", Range(0,1)) = 1
+        _SunHorizontal("Sun Horizontal Direction", Vector) = (0,0,1,0)
+        _HorizonCenter("Horizon Center", Vector) = (0,0,0,0)
         _WaterBlend("Soft Water Transition", Range(0,1)) = 0
         _WaterFadeStart("Water Fade Start UV", Float) = 0.18
         _WaterFadeEnd("Water Fade End UV", Float) = 0.40
@@ -30,12 +33,13 @@ Shader "MusicGame/HorizonMountainLayer"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
             struct Attributes { float4 positionOS : POSITION; float2 uv : TEXCOORD0; };
-            struct Varyings   { float4 positionHCS : SV_POSITION; float2 uv : TEXCOORD0; };
+            struct Varyings   { float4 positionHCS : SV_POSITION; float2 uv : TEXCOORD0; float3 radial : TEXCOORD1; };
 
             TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
 
             CBUFFER_START(UnityPerMaterial)
             float4 _Tint;
+            float _ShadowBrightness; float4 _SunHorizontal, _HorizonCenter;
             float  _Opacity;
             float _WaterBlend, _WaterFadeStart, _WaterFadeEnd;
             CBUFFER_END
@@ -45,6 +49,7 @@ Shader "MusicGame/HorizonMountainLayer"
                 Varyings OUT;
                 OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
                 OUT.uv = IN.uv;
+                OUT.radial = TransformObjectToWorld(IN.positionOS.xyz) - _HorizonCenter.xyz;
                 return OUT;
             }
 
@@ -55,7 +60,9 @@ Shader "MusicGame/HorizonMountainLayer"
                 // affects the lower texture region; the skyline and peaks stay untouched.
                 float waterFade = smoothstep(_WaterFadeStart, _WaterFadeEnd, IN.uv.y);
                 float alpha = tex.a * _Tint.a * _Opacity * lerp(1.0, waterFade, _WaterBlend);
-                return half4(tex.rgb * _Tint.rgb, alpha);
+                float towardSun = saturate(dot(normalize(IN.radial.xz), normalize(_SunHorizontal.xz)) * 0.5 + 0.5);
+                float shade = lerp(_ShadowBrightness, 1.0, towardSun * towardSun * towardSun);
+                return half4(tex.rgb * _Tint.rgb * shade, alpha);
             }
             ENDHLSL
         }

@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Visual test bench for dressed enemy avatars (scene Scenes/Debug/AvatarsClothesChecker) — completely
-/// outside the game flow. Pick any opponent (and tier), it is built through the SAME runtime path the
+/// Visual test bench for dressed avatars (scene Scenes/Debug/AvatarsClothesChecker) — completely
+/// outside the game flow. Pick any opponent (and tier), or the player in any music style's outfit
+/// (PlayerAvatarConfigSO: the fixed recipe + styleRecipes), it is built through the SAME runtime path the
 /// Fight uses (AvatarRecipeSO → AvatarFactory.CreateAsync, composer height scale), then any combat or
 /// runner clip can be played / paused / scrubbed to look for clipping. Switching the Unity quality
 /// level rebuilds the avatar so every wearable quality variant can be inspected.
@@ -17,6 +18,7 @@ public class AvatarsClothesChecker : MonoBehaviour
 {
     [Header("Content (refreshed from the project on Play in the Editor)")]
     public OpponentDefinition[] opponents = System.Array.Empty<OpponentDefinition>();
+    public PlayerAvatarConfigSO playerAvatar;
     public CombatAnimationLibrarySO combatLibrary;
     public RunnerAnimationStyleSO[] runnerStyles = System.Array.Empty<RunnerAnimationStyleSO>();
 
@@ -38,9 +40,10 @@ public class AvatarsClothesChecker : MonoBehaviour
     private ClipItem? _currentClip;
     private int _buildToken;
     private bool _building;
-    private string _status = "Tria un enemic.";
+    private string _status = "Tria un enemic o el jugador.";
 
     private int _opponent = -1, _level;
+    private int _playerLook = -1;   // 0 = the fixed player recipe, i + 1 = playerAvatar.styleRecipes[i]
     private bool _applyHeight = true;
     private int _originalQuality;
     private BodyMorphValues _recipeBody;
@@ -127,6 +130,12 @@ public class AvatarsClothesChecker : MonoBehaviour
             var o = UnityEditor.AssetDatabase.LoadAssetAtPath<OpponentDefinition>(UnityEditor.AssetDatabase.GUIDToAssetPath(guid));
             if (o != null) found.Add(o);
         }
+        if (playerAvatar == null)
+            foreach (var guid in UnityEditor.AssetDatabase.FindAssets("t:PlayerAvatarConfigSO", new[] { "Assets/_Project" }))
+            {
+                playerAvatar = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerAvatarConfigSO>(UnityEditor.AssetDatabase.GUIDToAssetPath(guid));
+                if (playerAvatar != null) break;
+            }
         if (found.Count > 0)
         {
             found.Sort((a, b) => string.CompareOrdinal(a.displayName ?? a.name, b.displayName ?? b.name));
@@ -208,10 +217,33 @@ public class AvatarsClothesChecker : MonoBehaviour
         return o.defaultConfig?.avatarRecipe;
     }
 
+    private PlayerAvatarConfigSO.StyleRecipe[] PlayerStyles =>
+        playerAvatar != null && playerAvatar.styleRecipes != null ? playerAvatar.styleRecipes : System.Array.Empty<PlayerAvatarConfigSO.StyleRecipe>();
+
+    private string PlayerLookName(int look) =>
+        look == 0 ? "Base" : PlayerStyles[look - 1]?.style.ToString() ?? "?";
+
+    private AvatarRecipeSO CurrentRecipe()
+    {
+        if (_playerLook == 0) return playerAvatar != null ? playerAvatar.avatarRecipe : null;
+        if (_playerLook > 0) return _playerLook - 1 < PlayerStyles.Length ? PlayerStyles[_playerLook - 1]?.recipe : null;
+        return RecipeFor(_opponent >= 0 && _opponent < opponents.Length ? opponents[_opponent] : null, _level);
+    }
+
+    private bool HasSelection => _opponent >= 0 || _playerLook >= 0;
+
     private void Select(int opponent, int level)
     {
+        _playerLook = -1;
         _opponent = opponent;
         _level = level;
+        _ = BuildAsync();
+    }
+
+    private void SelectPlayer(int look)
+    {
+        _opponent = -1;
+        _playerLook = look;
         _ = BuildAsync();
     }
 
@@ -220,8 +252,9 @@ public class AvatarsClothesChecker : MonoBehaviour
         int token = ++_buildToken;
         ReleaseAvatar();
         var o = _opponent >= 0 && _opponent < opponents.Length ? opponents[_opponent] : null;
-        var recipe = RecipeFor(o, _level);
-        if (recipe == null) { _status = $"{(o != null ? o.displayName : "?")}: sense AvatarRecipe."; return; }
+        var recipe = CurrentRecipe();
+        string who = _playerLook >= 0 ? "Jugador " + PlayerLookName(_playerLook) : o != null ? o.displayName : "?";
+        if (recipe == null) { _status = $"{who}: sense AvatarRecipe."; return; }
 
         _building = true;
         _status = $"Muntant {recipe.name} ({QualitySettings.names[QualitySettings.GetQualityLevel()]})...";
@@ -245,7 +278,7 @@ public class AvatarsClothesChecker : MonoBehaviour
         _itemVisible.Clear();
         foreach (var item in _instance.EquippedItems) _itemVisible[item] = true;
         if (_instance.Animator != null) _instance.Animator.applyRootMotion = false;
-        _status = $"{o.displayName} — {recipe.name}: {_instance.EquippedItems.Count} peça(es).";
+        _status = $"{who} — {recipe.name}: {_instance.EquippedItems.Count} peça(es).";
 
         if (_currentClip.HasValue) PlayClip(_currentClip.Value, keepTime: false);
     }
@@ -351,6 +384,7 @@ public class AvatarsClothesChecker : MonoBehaviour
         GUILayout.Label("<b>AVATARS CLOTHES CHECKER</b>", Rich());
         GUILayout.Label(_status, Wrap());
 
+        DrawPlayer();
         DrawOpponents();
         DrawQuality();
         DrawItems();
@@ -360,6 +394,17 @@ public class AvatarsClothesChecker : MonoBehaviour
 
         GUILayout.EndScrollView();
         GUILayout.EndArea();
+    }
+
+    private void DrawPlayer()
+    {
+        Header("Jugador (roba per estil de música)");
+        if (playerAvatar == null) { GUILayout.Label("Cap PlayerAvatarConfig trobat."); return; }
+        var names = new string[PlayerStyles.Length + 1];
+        for (int i = 0; i < names.Length; i++) names[i] = PlayerLookName(i);
+        int picked = GUILayout.SelectionGrid(_playerLook, names, 4);
+        if (picked != _playerLook) SelectPlayer(picked);
+        if (PlayerStyles.Length == 0) GUILayout.Label("(cap estil amb roba: PlayerAvatarConfig.styleRecipes buit)", Wrap());
     }
 
     private void DrawOpponents()
@@ -382,7 +427,7 @@ public class AvatarsClothesChecker : MonoBehaviour
             var recipe = RecipeFor(o, _level);
             GUILayout.Label($"Recepta: {(recipe != null ? recipe.name : "cap")}");
         }
-        GUI.enabled = _opponent >= 0 && !_building;
+        GUI.enabled = HasSelection && !_building;
         if (GUILayout.Button("Tornar a muntar")) _ = BuildAsync();
         GUI.enabled = true;
     }
@@ -395,7 +440,7 @@ public class AvatarsClothesChecker : MonoBehaviour
         if (picked != current)
         {
             QualitySettings.SetQualityLevel(picked, true);
-            if (_opponent >= 0) _ = BuildAsync();
+            if (HasSelection) _ = BuildAsync();
         }
     }
 

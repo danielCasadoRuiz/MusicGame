@@ -908,12 +908,16 @@ MonoBehaviour:
   posSmoothTime: 0.06
   thirdPersonAllowYawRotation: 0
   framePanDegrees: 16.7
-  energyHeightPeak: 2
-  energySmooth: 2
-  kickStrength: 0.35
-  kickDecay: 20
   firstPersonCameraTarget: {fileID: 9000000000000011}
   hideInFirstPerson: []
+  firstPersonEyeUp: 0.06
+  firstPersonEyeForward: 0.14
+  firstPersonFieldOfView: 80
+  firstPersonNearClip: 0.03
+  firstPersonMaxRoll: 1
+  firstPersonMaxYaw: 10
+  firstPersonPitchFollow: 1
+  firstPersonPitchOffset: -22.5
   viewTransitionDuration: 0.4
   enableDebugToggleKey: 1
 --- !u!1 &9000000000000010
@@ -1152,6 +1156,10 @@ PrefabInstance:
     - target: {fileID: 1273730975205897764, guid: ae027c9909d16964a95bee0d6a5e4b38, type: 3}
       propertyPath: m_Name
       value: EndScreen
+      objectReference: {fileID: 0}
+    - target: {fileID: 1283700393051503036, guid: ae027c9909d16964a95bee0d6a5e4b38, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2877092509637129076, guid: ae027c9909d16964a95bee0d6a5e4b38, type: 3}
       propertyPath: m_Pivot.x

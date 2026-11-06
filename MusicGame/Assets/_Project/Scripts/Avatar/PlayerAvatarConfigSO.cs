@@ -31,7 +31,8 @@ public class PlayerAvatarConfigSO : ScriptableObject
     }
 
     [Tooltip("How the player looks for their PREFERRED style (the music style they pick most, PlayerProgressService." +
-             "PreferredStyle). Empty for now — no outfits authored yet: the fixed avatarRecipe above is used.")]
+             "PreferredStyle) in the Runner and Fight; styles without an outfit use the fixed avatarRecipe above. " +
+             "Written by SegmentedOutfitSetup (Avatar_Player_<Style>: the player recipe + that style's garments).")]
     public StyleRecipe[] styleRecipes = System.Array.Empty<StyleRecipe>();
 
     /// <summary>The player's look: their preferred style's recipe when one is authored, else the fixed recipe.</summary>

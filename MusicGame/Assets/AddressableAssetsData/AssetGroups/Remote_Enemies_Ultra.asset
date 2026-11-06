@@ -15,10 +15,26 @@ MonoBehaviour:
   m_GroupName: Remote_Enemies_Ultra
   m_GUID: 6456621fda15b304ebf93a92c686eba8
   m_SerializeEntries:
+  - m_GUID: 06b6809575f418a43adf11a5af1e34ab
+    m_Address: Enemy_brahms/Wearable_brahms_pants/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_brahms
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 093813d67af95054d90ea932665a5a13
     m_Address: Assets/_Project/Art/Opponents/Monteverdi/Monteverdi_jacket/Ultra/Monteverdi_jacket_Ultra.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0957af49fdf42424d93f00f7daf24b9c
+    m_Address: Enemy_bach/Hair_Bach_hair/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_bach
+    - Q_Ultra
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0a57bbaf0000bbf408e6a455ad304e1a
     m_Address: Enemy_monteverdi/Wearable_Monteverdi_pants/sharedVariant/qualityPrefabs@Ultra
@@ -36,12 +52,52 @@ MonoBehaviour:
     - Enemy_monteverdi
     - Q_Ultra
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3cd66f4dd67416f48aa562df0a817e2b
+    m_Address: Enemy_bach/Wearable_bach_pants/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_bach
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 63a652aa8b6389e45a2008af3ed6c236
     m_Address: Enemy_wagner/Wearable_Wagner_shirt/sharedVariant/qualityPrefabs@Ultra
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_Enemies
     - Enemy_wagner
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 756d71a96d5d65f4d9c844d8b7372575
+    m_Address: Enemy_beethoven/Hair_Beethoven_hair/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_beethoven
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 78cd2846112c36140b3f0b1f36c19962
+    m_Address: Enemy_chopin/Wearable_chopin_pants/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_chopin
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7bacb3ec3a18c62499ceeb0b0cf0f147
+    m_Address: Enemy_beethoven/Wearable_beethoven_pants/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_beethoven
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8b61731c34332804c975f9ff8a2ee8f8
+    m_Address: Enemy_bach/Wearable_bach_shirt/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_bach
     - Q_Ultra
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9963dbff3122fcd4583b45262f8ca348
@@ -52,12 +108,28 @@ MonoBehaviour:
     - Enemy_wagner
     - Q_Ultra
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: adfa063a23e1b8b43ac98b455d04bc50
+    m_Address: Enemy_brahms/Wearable_brahms_beard/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_brahms
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ae880ada0e89757448c639a7a0816e2e
     m_Address: Enemy_wagner/Wearable_Wagner_pants/sharedVariant/qualityPrefabs@Ultra
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_Enemies
     - Enemy_wagner
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b18c86598ff3a9448a8b6db1e659e18d
+    m_Address: Enemy_chopin/Wearable_chopin_shirt/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_chopin
     - Q_Ultra
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b5f2ae9332ec6b145809ac5b3d3b001a
@@ -82,6 +154,46 @@ MonoBehaviour:
     m_SerializedLabels:
     - Category_Enemies
     - Enemy_wagner
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dc582967157972146ab83527fa8caf9f
+    m_Address: Enemy_beethoven/Wearable_beethoven_jacket/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_beethoven
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e1470400a5fd7e54c866106ca3f0d9c8
+    m_Address: Enemy_chopin/Wearable_chopin_jacket/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_chopin
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee172a22edecc824ab54f60e0e2e5ebc
+    m_Address: Enemy_beethoven/Wearable_beethoven_shoes/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_beethoven
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f7f2e140a35761743bf79749486d8784
+    m_Address: Enemy_brahms/Wearable_brahms_jacket/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_brahms
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fdb81b12f9f894648b1b2004b408dfc2
+    m_Address: Enemy_beethoven/Wearable_beethoven_shirt/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_beethoven
     - Q_Ultra
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0

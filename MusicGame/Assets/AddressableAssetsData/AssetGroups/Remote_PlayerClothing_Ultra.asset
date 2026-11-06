@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Remote_PlayerClothing_Ultra
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Remote_PlayerClothing_Ultra
+  m_GUID: 4c8318bce8a112b408246aa43b2f381c
+  m_SerializeEntries:
+  - m_GUID: 0c02614fde4627945be8ea745e91aca6
+    m_Address: PlayerClothing_catchy_sneakers/Wearable_catchy_sneakers/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_catchy_sneakers
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1c2cc6c6dd3b4f34589216e4e7ab89c6
+    m_Address: PlayerClothing_acoustic_shirt/Wearable_acoustic_shirt/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_acoustic_shirt
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 36f9c61cd92a7c44c95b81b26db5927f
+    m_Address: PlayerClothing_chill_sneakers/Wearable_chill_sneakers/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_chill_sneakers
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3d8179256bb5f0646a20e6d561cd4cda
+    m_Address: PlayerClothing_acoustic_boots/Wearable_acoustic_boots/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_acoustic_boots
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 65db462ed6460274eaa14791d436e38b
+    m_Address: PlayerClothing_acoustic_waistcoat/Wearable_acoustic_waistcoat/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_acoustic_waistcoat
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d7061cbbcb028c4e8f2b51e118ea4a3
+    m_Address: PlayerClothing_chill_trousers/Wearable_chill_trousers/sharedVariant/qualityPrefabs@Ultra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_chill_trousers
+    - Q_Ultra
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a4cc0dfc618f344aaae658dde9bb725, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: ce099d3e368c6604bb064d78eb792468, type: 2}
+    - {fileID: 11400000, guid: 2714400db37cd40469c640d00bbd79a1, type: 2}

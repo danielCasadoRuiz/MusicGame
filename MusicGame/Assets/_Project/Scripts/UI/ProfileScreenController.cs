@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 ///     received), with the best total and the last run — how good this player usually arrives at a fight, the seed of
 ///     a future matchmaking against other players;
 ///   · the music styles the player picks themselves (manual Song Selection choices), the most picked one deciding how
-///     their avatar should look (PlayerAvatarConfigSO.styleRecipes — no outfits authored yet: the picture is a
+///     their avatar should look (PlayerAvatarConfigSO.styleRecipes, used by the Runner and Fight avatar; the picture here is still a
 ///     placeholder tinted by the style).
 /// Read-only. Lives in the UI scene (UIFlowController); ProfileScreen.prefab (UIPrefabLibrarySO.profileScreen).
 /// </summary>

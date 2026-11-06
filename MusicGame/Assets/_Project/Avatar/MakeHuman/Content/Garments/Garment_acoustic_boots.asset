@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6bb79ea8d940c047bf1daf38bb4a2bb, type: 3}
+  m_Name: Garment_acoustic_boots
+  m_EditorClassIdentifier: Assembly-CSharp::SegmentedGarmentSO
+  garmentId: acoustic_boots
+  category: shoes
+  layer: 30
+  bodyCoverage:
+  - foot_l
+  - foot_r
+  garmentCoverage: []
+  coverageConfigured: 1
+  importedCoverageHash: 8b8e21f26f13754cd4e052e2e4dd090d
+  importedSources:
+  - Acoustic_boots\Rigged\LOW\Acoustic_boots_LOW_5k_rigged.fbx
+  - Acoustic_boots\Rigged\MEDIUM\Acoustic_boots_MEDIUM_10k_rigged.fbx
+  - Acoustic_boots\Rigged\MID-HIGH\Acoustic_boots_MIDHIGH_20k_rigged.fbx
+  - Acoustic_boots\Rigged\HIGH\Acoustic_boots_HIGH_30k_rigged.fbx
+  - Acoustic_boots\Rigged\ULTRA\Acoustic_boots_ULTRA_50k_rigged.fbx
+  lastImportedPackage: C:\Users\VISYON\Documents\MusicGame\AssetsMaterial\3D_pipeline\Output\Acoustic_boots\Rigged\Segmented

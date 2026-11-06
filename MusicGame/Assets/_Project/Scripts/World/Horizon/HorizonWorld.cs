@@ -35,6 +35,7 @@ public class HorizonWorld : MonoBehaviour
     }
 
     private HorizonConfig _config;
+    private HorizonPaletteDriver _palette;
     private HorizonCameraController      _cameraController;
     private HorizonWater                 _water;
     private ProceduralSkyController      _sky;
@@ -60,6 +61,8 @@ public class HorizonWorld : MonoBehaviour
         _cameraController.Initialize(config);
         if (!_cameraController.IsActive) return; // e.g. missing "Horizon" layer — already logged
 
+        _palette = gameObject.AddComponent<HorizonPaletteDriver>();
+        _palette.Initialize(config);
         var root = _cameraController.HorizonRoot;
 
         // Water FIRST — SpectrumBars3D reads its WaterLevelWorldY (single source of truth) to
@@ -169,6 +172,10 @@ public class HorizonWorld : MonoBehaviour
         // Order is deliberate — see class doc. Camera FIRST (HorizonMountainLayers' parallax
         // depends on its CameraDelta being current this frame), everything else after.
         _cameraController.Tick();
+        var env = MusicEnvironmentController.Instance;
+        _palette.Tick(env != null ? env.SongRelativeEnergy : .5f,
+            env != null && env.HasHarmonicHue ? HorizonPaletteDriver.HarmonicOffset(env.HarmonicHue) : 0f,
+            env != null ? env.SongProgress : 0f);
         _water.Tick();
         _environment.Tick(RunnerEnvironmentSlot.MusicReactive, world, clock.SongTime, clock.ClipTime);
         _sky.Tick();

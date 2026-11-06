@@ -39,6 +39,8 @@ public class HorizonMountainLayers : MonoBehaviour, IRunnerEnvironmentModule
     {
         if (_farMaterial != null) Destroy(_farMaterial);
         if (_nearMaterial != null) Destroy(_nearMaterial);
+        if (_farGO != null) Destroy(_farGO.GetComponent<MeshFilter>().sharedMesh);
+        if (_nearGO != null) Destroy(_nearGO.GetComponent<MeshFilter>().sharedMesh);
     }
 
     private static readonly int MainTexID = Shader.PropertyToID("_MainTex");
@@ -61,20 +63,20 @@ public class HorizonMountainLayers : MonoBehaviour, IRunnerEnvironmentModule
         var shader = Shader.Find("MusicGame/HorizonMountainLayer") ?? Shader.Find("Universal Render Pipeline/Unlit");
         int layer = LayerMask.NameToLayer(HorizonCameraController.HorizonLayerName);
 
-        (_farGO, _farRenderer, _farMaterial) = BuildLayer(root, layer, "HorizonMountains_Far", shader, config.horizonMountainMirrorEdges);
-        (_nearGO, _nearRenderer, _nearMaterial) = BuildLayer(root, layer, "HorizonMountains_Near", shader, config.horizonMountainMirrorEdges);
+        (_farGO, _farRenderer, _farMaterial) = BuildLayer(root, layer, "HorizonMountains_Far", shader, config.horizonMountainMirrorEdges, config.horizonMountains360);
+        (_nearGO, _nearRenderer, _nearMaterial) = BuildLayer(root, layer, "HorizonMountains_Near", shader, config.horizonMountainMirrorEdges, config.horizonMountains360);
 
         ApplyStaticConfig();
         ApplyDynamic(0f);
     }
 
-    private static (GameObject, MeshRenderer, Material) BuildLayer(Transform root, int layer, string name, Shader shader, bool mirrorEdges)
+    private static (GameObject, MeshRenderer, Material) BuildLayer(Transform root, int layer, string name, Shader shader, bool mirrorEdges, bool surround)
     {
         var go = new GameObject(name);
         go.layer = Mathf.Max(0, layer);
         go.transform.SetParent(root, false);
 
-        var mesh = BuildQuad(mirrorEdges);
+        var mesh = surround ? BuildCylinder() : BuildQuad(mirrorEdges);
         // The panorama importer supplies mirrored U wrapping for this optional extension.
         go.AddComponent<MeshFilter>().sharedMesh = mesh;
         var mr = go.AddComponent<MeshRenderer>();
@@ -103,6 +105,29 @@ public class HorizonMountainLayers : MonoBehaviour, IRunnerEnvironmentModule
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
         return mesh;
+    }
+
+    private static Mesh BuildCylinder()
+    {
+        const int segments=128;
+        var vertices=new Vector3[(segments+1)*2];
+        var uv=new Vector2[vertices.Length]; var triangles=new int[segments*6];
+        for(int i=0;i<=segments;i++)
+        {
+            float t=(float)i/segments, angle=(t-.5f)*Mathf.PI*2;
+            var radial=new Vector3(Mathf.Sin(angle),0,Mathf.Cos(angle));
+            vertices[i*2]=radial+Vector3.down*.5f;
+            vertices[i*2+1]=radial+Vector3.up*.5f;
+            // Four mirrored repetitions close with identical UV samples and derivative.
+            uv[i*2]=new Vector2((t-.5f)*4+.5f,0); uv[i*2+1]=new Vector2(uv[i*2].x,1);
+            if(i==segments) continue;
+            int a=i*2,j=i*6;
+            triangles[j]=a; triangles[j+1]=a+1; triangles[j+2]=a+2;
+            triangles[j+3]=a+2; triangles[j+4]=a+1; triangles[j+5]=a+3;
+        }
+        var mesh=new Mesh{name="Horizon Mountains — closed 360 panorama"};
+        mesh.vertices=vertices; mesh.uv=uv; mesh.triangles=triangles;
+        mesh.RecalculateBounds(); return mesh;
     }
 
     public void Tick()
@@ -143,6 +168,14 @@ public class HorizonMountainLayers : MonoBehaviour, IRunnerEnvironmentModule
     private void ApplyTint(Material mat, Color baseTint, Color intenseTint, float brightness, float macroIntensity, float distance01)
     {
         Color tint = Color.Lerp(baseTint, intenseTint, macroIntensity);
+        // The style palette tints the haze a little, so the panorama follows the sky's colours.
+        var palette = HorizonPaletteDriver.Instance;
+        if (palette != null && palette.HasPalette)
+        {
+            Color glow = palette.Frame.glow;
+            float max = Mathf.Max(0.001f, Mathf.Max(glow.r, Mathf.Max(glow.g, glow.b)));
+            tint *= Color.Lerp(Color.white, glow / max, 0.3f);
+        }
 
         // Haze applied once here (CPU side) rather than per-pixel in the shader — a static
         // backdrop image doesn't need a real per-pixel gradient; blending the whole layer's tint
@@ -154,6 +187,10 @@ public class HorizonMountainLayers : MonoBehaviour, IRunnerEnvironmentModule
         hazed = Color.Lerp(tint * brightness, hazed, _config.horizonMountainHazeAmount);
         hazed.a = baseTint.a;
         mat.SetColor(TintID, hazed);
+        mat.SetVector("_HorizonCenter", _root.position);
+        float azimuth=_config.horizonSunAzimuthDeg*Mathf.Deg2Rad;
+        mat.SetVector("_SunHorizontal", new Vector4(Mathf.Sin(azimuth),0,Mathf.Cos(azimuth),0));
+        mat.SetFloat("_ShadowBrightness", _config.horizonMountainShadowBrightness);
     }
 
     private void ConfigureWaterBlend(Material material)
@@ -190,10 +227,10 @@ public class HorizonMountainLayers : MonoBehaviour, IRunnerEnvironmentModule
             _farMaterial.SetFloat(OpacityID, Mathf.Clamp01(_config.horizonMountainFarOpacity));
 
             float dist = _config.horizonArcRadius * _config.horizonMountainFarDistance;
-            _farBaseLocalPos = new Vector3(0f, ridgeBase + _config.horizonMountainFarVerticalOffset, dist);
+            _farBaseLocalPos = new Vector3(0f, ridgeBase + _config.horizonMountainFarVerticalOffset, _config.horizonMountains360 ? 0f : dist);
             _farGO.transform.localPosition = _farBaseLocalPos;
             _farGO.transform.localRotation = Quaternion.identity;
-            _farGO.transform.localScale = new Vector3(_config.horizonMountainFarScale.x, _config.horizonMountainFarScale.y, 1f);
+            _farGO.transform.localScale = _config.horizonMountains360 ? new Vector3(dist, _config.horizonMountainFarScale.y, dist) : new Vector3(_config.horizonMountainFarScale.x, _config.horizonMountainFarScale.y, 1f);
         }
 
         if (nearVisible)
@@ -202,10 +239,10 @@ public class HorizonMountainLayers : MonoBehaviour, IRunnerEnvironmentModule
             _nearMaterial.SetFloat(OpacityID, Mathf.Clamp01(_config.horizonMountainNearOpacity));
 
             float dist = _config.horizonArcRadius * _config.horizonMountainNearDistance;
-            _nearBaseLocalPos = new Vector3(0f, ridgeBase + _config.horizonMountainNearVerticalOffset, dist);
+            _nearBaseLocalPos = new Vector3(0f, ridgeBase + _config.horizonMountainNearVerticalOffset, _config.horizonMountains360 ? 0f : dist);
             _nearGO.transform.localPosition = _nearBaseLocalPos;
             _nearGO.transform.localRotation = Quaternion.identity;
-            _nearGO.transform.localScale = new Vector3(_config.horizonMountainNearScale.x, _config.horizonMountainNearScale.y, 1f);
+            _nearGO.transform.localScale = _config.horizonMountains360 ? new Vector3(dist, _config.horizonMountainNearScale.y, dist) : new Vector3(_config.horizonMountainNearScale.x, _config.horizonMountainNearScale.y, 1f);
         }
     }
 }

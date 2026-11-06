@@ -66,6 +66,8 @@ public class AvatarRecipeSO : ScriptableObject
             if (bodyOverride.overrideMuscle) runtimeIdentity.Body.Muscle = bodyOverride.muscle;
             if (bodyOverride.overrideGender) runtimeIdentity.Body.Gender = bodyOverride.gender;
         }
+        // For now every avatar is the plain male base body (BaseAvatarDefinitionSO.neutralBodyForAll).
+        if (baseAvatar != null && baseAvatar.neutralBodyForAll) runtimeIdentity.Body = BodyMorphValues.Default(BodyBaseType.Male);
         if (hairOverride != null) runtimeIdentity.Hair = hairOverride;
         if (faceOverride != null) runtimeIdentity.Face = faceOverride;
 

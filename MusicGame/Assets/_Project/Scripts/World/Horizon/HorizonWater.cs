@@ -89,6 +89,8 @@ public class HorizonWater : MonoBehaviour
     private void ApplyDynamic(float intensity)
     {
         Color tint = Color.Lerp(_config.horizonWaterHorizonTint, _config.horizonWaterHorizonTintIntense, intensity);
+        var palette = HorizonPaletteDriver.Instance;
+        if(palette != null && palette.HasPalette) tint = palette.Frame.water;
         _material.SetColor(HorizonTintID, tint);
     }
 

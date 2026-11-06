@@ -16,8 +16,8 @@ MonoBehaviour:
   enableHorizonWorld: 1
   horizonParallaxFactor: 0
   horizonParallaxMaxOffsetFraction: 0.3
-  horizonBloomIntensity: 1.1
-  horizonBloomThreshold: 0.95
+  horizonBloomIntensity: 1.15
+  horizonBloomThreshold: 0.85
   horizonBloomScatter: 0.7
   horizonBloomForceApply: 1
   horizonBarCount: 34
@@ -61,15 +61,15 @@ MonoBehaviour:
     m_NumColorKeys: 6
     m_NumAlphaKeys: 2
   horizonBarPlasticColor: {r: 0.85, g: 0.85, b: 0.88, a: 1}
-  horizonBarPlasticTintStrength: 1
-  horizonBarSmoothness: 0.42
-  horizonBarAmbientFloor: 0.41
+  horizonBarPlasticTintStrength: 0.82
+  horizonBarSmoothness: 0.78
+  horizonBarAmbientFloor: 0.25
   horizonBarRimPower: 2.5
-  horizonBarRimStrength: 0.73
-  horizonBarTransmissionStrength: 1.35
-  horizonBarBaseEmission: 0.45
-  horizonBarAmplitudeEmissionBoost: 2.2
-  horizonBarMaxEmission: 3
+  horizonBarRimStrength: 0.45
+  horizonBarTransmissionStrength: 0.6
+  horizonBarBaseEmission: 1.2
+  horizonBarAmplitudeEmissionBoost: 1.8
+  horizonBarMaxEmission: 3.2
   horizonBarGain: 1
   horizonBarAttack: 0.15
   horizonBarRelease: 0.6
@@ -95,24 +95,24 @@ MonoBehaviour:
   horizonWaterSpecularIntensity: 0.5
   horizonWaterHorizonTint: {r: 0.886, g: 0.055, b: 0.671, a: 1}
   horizonWaterHorizonTintStrength: 0.07
-  horizonWaterRefractionStrength: 0.157
+  horizonWaterRefractionStrength: 0.06
   horizonWaterReflectionVisibility: 0.161
   horizonSkyZenithColor: {r: 0.025, g: 0.035, b: 0.09, a: 1}
   horizonSkyUpperColor: {r: 0.055, g: 0.06, b: 0.145, a: 1}
   horizonSkyLowerColor: {r: 0.16, g: 0.075, b: 0.19, a: 1}
   horizonSkyHorizonColor: {r: 0.26, g: 0.105, b: 0.21, a: 1}
   horizonSkyGradientStart: 0
-  horizonSkyGradientEnd: 0.18
+  horizonSkyGradientEnd: 0.6
   horizonSkyNoiseScale: 5
   horizonSkyNoiseStrength: 0.025
   horizonGlowColor: {r: 0.65, g: 0.18, b: 0.25, a: 1}
-  horizonGlowIntensity: 0.18
+  horizonGlowIntensity: 0.38
   horizonSunColor: {r: 1, g: 0.58, b: 0.30, a: 1}
   horizonSunAzimuthDeg: 0
   horizonSunElevationDeg: 3.2
-  horizonSunSize: 0.003
-  horizonSunGlowSize: 0.006
-  horizonSunGlowIntensity: 1.1
+  horizonSunSize: 0.005
+  horizonSunGlowSize: 0.025
+  horizonSunGlowIntensity: 0.85
   horizonSkyMacroResponseCurve: 0.55
   horizonSkyZenithColorIntense: {r: 0.025, g: 0.025, b: 0.085, a: 1}
   horizonSkyUpperColorIntense: {r: 0.065, g: 0.045, b: 0.16, a: 1}
@@ -125,6 +125,18 @@ MonoBehaviour:
   horizonMountainFarTintIntense: {r: 0.96, g: 0.90, b: 1, a: 1}
   horizonMountainNearTintIntense: {r: 0.1, g: 0.05, b: 0.14, a: 1}
   horizonWaterHorizonTintIntense: {r: 0.5, g: 0.25, b: 0.55, a: 1}
+  horizonPalettes: {fileID: 11400000, guid: e42c07da38ba415bbe7a48f4c4c39825, type: 2}
+  horizonPaletteTransitionSeconds: 2.5
+  horizonPaletteHueShift: 0.15
+  horizonPaletteHueSeconds: 4
+  horizonPaletteGlowVariation: 0.2
+  horizonPaletteProgressHueDrift: 0.1
+  horizonPaletteSunKeepDegrees: 20
+  horizonPaletteNearSunVariation: 0.12
+  horizonPaletteAnchorEnergy: 0.75
+  horizonBarBevel: 0.07
+  horizonMountains360: 1
+  horizonMountainShadowBrightness: 0.55
   horizonMountainsEnabled: 1
   horizonMountainMirrorEdges: 1
   horizonMountainBlendIntoWater: 1
@@ -141,7 +153,7 @@ MonoBehaviour:
   horizonMountainNearScale: {x: 90, y: 14}
   horizonMountainFarVerticalOffset: 0.6
   horizonMountainNearVerticalOffset: -1
-  horizonMountainFarBrightness: 0.68
+  horizonMountainFarBrightness: 1.35
   horizonMountainNearBrightness: 1
   horizonMountainFarDistance: 10.5
   horizonMountainNearDistance: 1.3

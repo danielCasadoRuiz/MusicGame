@@ -60,6 +60,7 @@ public static class VoiceDefinitionDefaults
         new() { key = "Announcer.Tempo", text = "Tempo!", phrase = EnTempo, segment = 3 },
         new() { key = "Announcer.Fury", text = "Fury!", phrase = EnFury, segment = 3 },
         new() { key = "Announcer.Perfect", text = "Perfect!" },
+        new() { key = "Announcer.Title", text = "Tempo Fury!" },   // the main menu's title at launch
         new() { key = "Announcer.Three", text = "Tres!", language = "ca", engineLanguage = "es", phrase = CaCount, segment = 0 },
         new() { key = "Announcer.Two", text = "Dos!", language = "ca", engineLanguage = "es", phrase = CaCount, segment = 1 },
         new() { key = "Announcer.One", text = "U!", language = "ca", engineLanguage = "es", phrase = CaCount, segment = 2 },

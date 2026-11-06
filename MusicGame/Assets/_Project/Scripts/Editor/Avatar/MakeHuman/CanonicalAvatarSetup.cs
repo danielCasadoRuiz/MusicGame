@@ -75,7 +75,6 @@ public class CanonicalAvatarSetup : EditorWindow
         // 3. Materials (created once — safe for an artist to tweak afterwards).
         // Skin uses URP Lit + the per-avatar skin visibility mask of segmented garments (SkinVisibilityShaderSetup).
         var skin = GetOrCreateMaterial($"{GeneratedFolder}/Materials/MakeHuman_Skin.mat", DefaultSkinTone, 0.35f, SkinVisibilityShaderSetup.ShaderName);
-        var eyes = GetOrCreateMaterial($"{GeneratedFolder}/Materials/MakeHuman_Eyes.mat", new Color(0.92f, 0.92f, 0.9f), 0.8f);
 
         // 5. Avatar prefab = a variant of the canonical FBX model + the MusicGame avatar components.
         var model = CanonicalAvatarModel.LoadModel();
@@ -100,7 +99,7 @@ public class CanonicalAvatarSetup : EditorWindow
                     success = false;
                     return $"[CanonicalAvatarSetup] The FBX has no '{part.Name}' SkinnedMeshRenderer.";
                 }
-                smr.sharedMaterial = p == 0 ? skin : eyes;
+                smr.sharedMaterial = skin;   // one skin texture atlas holds the eyes too (Art/skinTest.jpg for now)
                 smr.updateWhenOffscreen = false;
                 smr.localBounds = BoundsIn(smr.rootBone != null ? smr.rootBone : smr.transform, result.RendererBounds);
                 renderers[p] = smr;

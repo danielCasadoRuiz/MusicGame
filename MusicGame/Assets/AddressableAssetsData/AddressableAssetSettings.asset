@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: b6a74b078fdb85d4e92febd53261d5c7
   m_currentHash:
     serializedVersion: 2
-    Hash: 00000000000000000000000000000000
+    Hash: 4b9d9a58ee0e5b287b85af967691a467
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_CatalogRequestsTimeout: 10
@@ -64,6 +64,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4ec1a5080a686b34aa1939c7ed41ed09, type: 2}
   - {fileID: 11400000, guid: b54c35e6b8acfcf4db1592082c34b613, type: 2}
   - {fileID: 11400000, guid: c5f03bbc96c6c694ca96ca77522d9572, type: 2}
+  - {fileID: 11400000, guid: 153417f860f647544b6356aa88aa6138, type: 2}
   - {fileID: 11400000, guid: 29c371a3dbb9e99489733289cbafea8e, type: 2}
   - {fileID: 11400000, guid: 6d27d9b0231808d419ce3bbffc3039d5, type: 2}
   - {fileID: 11400000, guid: f97197788b45239459d14804805f0246, type: 2}
@@ -86,7 +87,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 57a60a7824f6ad241a83616bbf7475dc, type: 2}
   - {fileID: 11400000, guid: 568e2077709a41b45a5386716f347bce, type: 2}
   - {fileID: 11400000, guid: 18eaf6e8708aa2743801dc6fa2371fea, type: 2}
+  - {fileID: 11400000, guid: ce39d50f52f54e1499e19d85cff9071a, type: 2}
+  - {fileID: 11400000, guid: 9cb8f5d188ba0784a899f28c39dcf5ab, type: 2}
+  - {fileID: 11400000, guid: c86b48eea0d18584d925636e59a884ae, type: 2}
   - {fileID: 11400000, guid: e6a1d37aa7cda4649b725ecf2ce93ffa, type: 2}
+  - {fileID: 11400000, guid: 419e1227270420c44a384ef15c0749d7, type: 2}
   m_BuildSettings:
     m_LogResourceManagerExceptions: 1
     m_BundleBuildPath: Temp/com.unity.addressables/AssetBundles
@@ -254,6 +259,16 @@ MonoBehaviour:
     - VoicePack
     - VoiceLang_en
     - VoiceLang_fx
+    - PlayerClothing_acoustic_boots
+    - PlayerClothing_acoustic_shirt
+    - PlayerClothing_acoustic_waistcoat
+    - Enemy_bach
+    - Enemy_beethoven
+    - Enemy_brahms
+    - PlayerClothing_catchy_sneakers
+    - PlayerClothing_chill_sneakers
+    - PlayerClothing_chill_trousers
+    - Enemy_chopin
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: cd29a083091ea7f4ba6a985471056ec6, type: 2}

@@ -32,6 +32,13 @@ public class ProceduralSkyController : MonoBehaviour
     private static readonly int UpperColorID   = Shader.PropertyToID("_UpperColor");
     private static readonly int LowerColorID   = Shader.PropertyToID("_LowerColor");
     private static readonly int HorizonColorID = Shader.PropertyToID("_HorizonColor");
+    private static readonly int BelowColorID = Shader.PropertyToID("_BelowColor");
+    private static readonly int ZenithFarID  = Shader.PropertyToID("_ZenithFar");
+    private static readonly int UpperFarID   = Shader.PropertyToID("_UpperFar");
+    private static readonly int LowerFarID   = Shader.PropertyToID("_LowerFar");
+    private static readonly int HorizonFarID = Shader.PropertyToID("_HorizonFar");
+    private static readonly int SunKeepRadiusID = Shader.PropertyToID("_SunKeepRadius");
+    private static readonly int FarNearSunID    = Shader.PropertyToID("_FarNearSun");
     private static readonly int NoiseScaleID    = Shader.PropertyToID("_NoiseScale");
     private static readonly int NoiseStrengthID = Shader.PropertyToID("_NoiseStrength");
     private static readonly int GlowColorID     = Shader.PropertyToID("_GlowColor");
@@ -93,8 +100,38 @@ public class ProceduralSkyController : MonoBehaviour
         _material.SetColor(UpperColorID,   Color.Lerp(_config.horizonSkyUpperColor,   _config.horizonSkyUpperColorIntense,   response));
         _material.SetColor(LowerColorID,   Color.Lerp(_config.horizonSkyLowerColor,   _config.horizonSkyLowerColorIntense,   response));
         _material.SetColor(HorizonColorID, Color.Lerp(_config.horizonSkyHorizonColor, _config.horizonSkyHorizonColorIntense, response));
+        _material.SetColor(BelowColorID, _config.horizonWaterColor);
         _material.SetColor(GlowColorID,    Color.Lerp(_config.horizonGlowColor,       _config.horizonGlowColorIntense,       response));
         _material.SetColor(SunColorID,     Color.Lerp(_config.horizonSunColor,        _config.horizonSunColorIntense,        response));
+
+        var palette = HorizonPaletteDriver.Instance;
+        if (palette != null && palette.HasPalette)
+        {
+            // Near the sun: the style's fixed sunset (Anchor). Far from it: the music-varied Frame
+            // (the shader blends them by distance from the sun). The sun itself never changes.
+            var a = palette.Anchor;
+            var f = palette.Frame;
+            _material.SetColor(ZenithColorID, a.zenith);
+            _material.SetColor(UpperColorID, a.upper);
+            _material.SetColor(LowerColorID, a.lower);
+            _material.SetColor(HorizonColorID, a.horizon);
+            _material.SetColor(ZenithFarID, f.zenith);
+            _material.SetColor(UpperFarID, f.upper);
+            _material.SetColor(LowerFarID, f.lower);
+            _material.SetColor(HorizonFarID, f.horizon);
+            _material.SetColor(BelowColorID, f.water * 0.5f);
+            _material.SetFloat(SunKeepRadiusID, _config.horizonPaletteSunKeepDegrees * Mathf.Deg2Rad);
+            _material.SetFloat(FarNearSunID, _config.horizonPaletteNearSunVariation);
+            _material.SetColor(GlowColorID, f.glow);
+            _material.SetColor(SunColorID, f.sun);
+        }
+        else
+        {
+            _material.SetColor(ZenithFarID, _material.GetColor(ZenithColorID));
+            _material.SetColor(UpperFarID, _material.GetColor(UpperColorID));
+            _material.SetColor(LowerFarID, _material.GetColor(LowerColorID));
+            _material.SetColor(HorizonFarID, _material.GetColor(HorizonColorID));
+        }
 
         float glowMul = Mathf.Lerp(1f, Mathf.Max(0f, _config.horizonGlowIntensityIntenseMultiplier), response);
         _material.SetFloat(GlowIntensityID, Mathf.Max(0f, _config.horizonGlowIntensity) * glowMul);

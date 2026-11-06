@@ -74,6 +74,8 @@ public class AnnouncerSet
     [Tooltip("Part of the random pick at app start. Off = kept in the project but never chosen (e.g. a rejected voice).")]
     public bool inRotation = true;
     public AudioClip three, two, one, tempo, fury, perfect;
+    [Tooltip("\"Tempo Fury!\" shouted as the main menu's title animates in at launch (optional: without it the title animates silently).")]
+    public AudioClip title;
     [Tooltip("The countdown numbers in other game languages (Tempo! / Fury! / Perfect! are reserved words: always English).")]
     public System.Collections.Generic.List<AnnouncerNumbers> numbers = new();
     public bool IsComplete => three && two && one && tempo && fury && perfect;
@@ -86,7 +88,7 @@ public class AnnouncerSet
     }
     public System.Collections.Generic.IEnumerable<AudioClip> All()
     {
-        yield return three; yield return two; yield return one; yield return tempo; yield return fury; yield return perfect;
+        yield return three; yield return two; yield return one; yield return tempo; yield return fury; yield return perfect; yield return title;
         if (numbers != null) foreach (var n in numbers) if (n != null) { yield return n.three; yield return n.two; yield return n.one; }
     }
 }

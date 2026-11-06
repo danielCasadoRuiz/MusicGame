@@ -34,6 +34,12 @@ public class BaseAvatarDefinitionSO : ScriptableObject
              "base's own AvatarVisualPart.faceRenderer, when both are assigned.")]
     public string faceTextureShaderProperty = "_BaseMap";
 
+    [Header("Body")]
+    [Tooltip("Every avatar built on this base (player, runner, fighter, enemies) uses the plain base body — male, " +
+             "Weight 0.5, Muscle 0: no body blendshape — ignoring the per-character body profiles / recipe overrides, " +
+             "which are kept for later. Heights (OpponentDefinition.heightMeters) are not affected.")]
+    public bool neutralBodyForAll = true;
+
     [Header("Segmented garments")]
     [Tooltip("Region vocabulary + per-region skin masks on THIS body's UV layout (cuts package). Null = segmented " +
              "garments still assemble per region, but the body is never masked.")]

@@ -303,6 +303,44 @@ public class GameAudio : MonoBehaviour
         return o;
     }
 
+    /// <summary>Where the second word of a two-word shout ("Tempooooo… Fury!", the long name then the short one) starts,
+    /// in seconds from the clip's start: the quietest moment between 35 % of the voiced part and 0.3 s before its end
+    /// (the pause, or the fricative F), moved on to where the voice comes back. Cached.</summary>
+    public float SecondWordAt(AudioClip clip)
+    {
+        if (clip == null) return 0f;
+        if (_secondWords.TryGetValue(clip, out float at)) return at;
+        at = clip.length * 0.5f;
+        var data = new float[clip.samples * clip.channels];
+        int hop = Mathf.Max(1, clip.frequency / 100);   // 10 ms windows
+        if (data.Length > 0 && clip.GetData(data, 0))
+        {
+            int n = clip.samples / hop;
+            var rms = new float[n];
+            float peak = 0f;
+            for (int w = 0; w < n; w++)
+            {
+                double sum = 0;
+                for (int i = w * hop * clip.channels; i < (w + 1) * hop * clip.channels; i++) sum += data[i] * data[i];
+                rms[w] = Mathf.Sqrt((float)(sum / (hop * clip.channels)));
+                peak = Mathf.Max(peak, rms[w]);
+            }
+            int first = System.Array.FindIndex(rms, r => r > peak * 0.1f), last = System.Array.FindLastIndex(rms, r => r > peak * 0.1f);
+            if (first >= 0 && last > first + 40)
+            {
+                int best = -1;
+                for (int w = first + (last - first) * 35 / 100; w <= last - 30; w++)
+                    if (best < 0 || rms[w] < rms[best]) best = w;
+                while (best < last && rms[best] < peak * 0.1f) best++;   // through a pause, to the word's attack
+                at = best * hop / (float)clip.frequency;
+            }
+        }
+        _secondWords[clip] = at;
+        return at;
+    }
+
+    private readonly Dictionary<AudioClip, float> _secondWords = new();
+
     private AudioSource FreeSource()
     {
         foreach (var s in _pool) if (!s.isPlaying && !_playing.ContainsKey(s)) return s;   // a scheduled source is not free yet

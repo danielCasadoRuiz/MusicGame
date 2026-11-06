@@ -11,6 +11,9 @@ import numpy as np, soundfile as sf
 import voicegen
 from announcer_takes import ACCEPT
 ACCEPT = {**ACCEPT, "Announcer.One": ACCEPT["Announcer.One"] | {"uu", "uuu", "uh", "uuh", "uuuh", "ooh", "oooh"}}
+# The menu title shout: both words must be heard ("Tempo Fury!" — "Fyury!" spelling for voices that say "Furry").
+ACCEPT["Announcer.Title"] = {"tempo", "fury"}
+REQUIRE_ALL = {"Announcer.Title"}
 from announcer_candidates import REF_TEXT as OLD_REF
 from announcer_hype import REF_TEXT as HYPE_REF
 
@@ -90,9 +93,12 @@ def main():
                 ok = False; continue
             hyp = asr(s["file"], generate_kwargs={"language": t["asr"]})["text"].strip()
             s["heard"] = hyp
-            words = re.findall(r"[a-z0-9]+", hyp.lower())
-            s["ok"] = 1 <= len(words) <= 2 and bool(set(words) & ACCEPT[s["key"]]) and "?" not in hyp
-            ok = ok and s["ok"] and s["duration"] <= 1.0
+            words = [re.sub(r"(.)\1+", r"\1", w) for w in re.findall(r"[a-z0-9]+", hyp.lower())]
+            words = ["tempo" if w == "tempaw" else w.rstrip("h") for w in words]   # "tempooooh" / "tempaw" = tempo
+            words = [w for w in words if w not in ("", "o")]   # a held "oh" heard as its own word
+            hit = set(words) >= ACCEPT[s["key"]] if s["key"] in REQUIRE_ALL else bool(set(words) & ACCEPT[s["key"]])
+            s["ok"] = 1 <= len(words) <= 2 and hit and "?" not in hyp
+            ok = ok and s["ok"] and s["duration"] <= (4.0 if s["key"] in REQUIRE_ALL else 1.0)
         t["ok"] = ok
     best = {}
     for vid in {t["voice"] for t in takes}:

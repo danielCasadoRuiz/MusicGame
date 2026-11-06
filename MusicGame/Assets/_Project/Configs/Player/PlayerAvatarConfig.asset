@@ -15,3 +15,10 @@ MonoBehaviour:
   avatarRecipe: {fileID: 11400000, guid: 583a5e11431603248aada55510f59c35, type: 2}
   runnerAnimatorController: {fileID: 9100000, guid: 24d5e9cec9344b943ba5336b19368e68, type: 2}
   runnerAnimationStyles: {fileID: 11400000, guid: 143bf9a232e90e34ca2909373eff6bfd, type: 2}
+  styleRecipes:
+  - style: 3
+    recipe: {fileID: 11400000, guid: e7cd988c9b302974691ca71ae2c0a1ee, type: 2}
+  - style: 12
+    recipe: {fileID: 11400000, guid: 87f306f436394f747aa4554e1f8779b7, type: 2}
+  - style: 14
+    recipe: {fileID: 11400000, guid: ecd7cba07173ab34ba4ec3017717bfcd, type: 2}

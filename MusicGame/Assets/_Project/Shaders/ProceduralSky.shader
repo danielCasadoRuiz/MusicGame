@@ -15,6 +15,14 @@ Shader "MusicGame/ProceduralSky"
         _UpperColor    ("Upper Color",    Color) = (0.20, 0.08, 0.38, 1)
         _LowerColor    ("Lower Color",    Color) = (0.75, 0.25, 0.45, 1)
         _HorizonColor  ("Horizon Color",  Color) = (0.95, 0.55, 0.35, 1)
+        _BelowColor    ("Below Horizon Color (seen through / refracted by the water)", Color) = (0.95, 0.55, 0.35, 1)
+        // Music-varied gradient, blended in by distance from the sun (higher / sides / behind).
+        _ZenithFar     ("Zenith Color (far from sun)",  Color) = (0.05, 0.04, 0.14, 1)
+        _UpperFar      ("Upper Color (far from sun)",   Color) = (0.20, 0.08, 0.38, 1)
+        _LowerFar      ("Lower Color (far from sun)",   Color) = (0.75, 0.25, 0.45, 1)
+        _HorizonFar    ("Horizon Color (far from sun)", Color) = (0.95, 0.55, 0.35, 1)
+        _FarNearSun    ("Variation right at the sun", Range(0,1)) = 0.12
+        _SunKeepRadius ("Fixed-colour radius around the sun (radians)", Float) = 0.35
         _GradientStart ("Gradient Start Height", Float) = -1
         _GradientEnd ("Gradient End Height", Float) = 1
         _NoiseScale    ("Noise Scale", Float) = 1.5
@@ -45,7 +53,9 @@ Shader "MusicGame/ProceduralSky"
             struct Varyings   { float4 positionHCS : SV_POSITION; float3 viewDir : TEXCOORD0; };
 
             CBUFFER_START(UnityPerMaterial)
-            float4 _ZenithColor, _UpperColor, _LowerColor, _HorizonColor, _GlowColor, _SunColor, _SunDirection;
+            float4 _ZenithColor, _UpperColor, _LowerColor, _HorizonColor, _GlowColor, _SunColor, _SunDirection, _BelowColor;
+            float4 _ZenithFar, _UpperFar, _LowerFar, _HorizonFar;
+            float _FarNearSun, _SunKeepRadius;
             float _GradientStart, _GradientEnd;
             float _NoiseScale, _NoiseStrength, _GlowIntensity, _SunSize, _SunGlowSize, _SunGlowIntensity;
             CBUFFER_END
@@ -77,13 +87,20 @@ Shader "MusicGame/ProceduralSky"
                 float n = (ValueNoise(dir.xz * _NoiseScale + h * 2.0) - 0.5) * _NoiseStrength;
                 float t = saturate((h - _GradientStart) / max(0.01, _GradientEnd - _GradientStart) + n);
 
-                float3 col;
-                if (t > 0.66)
-                    col = lerp(_UpperColor.rgb, _ZenithColor.rgb, saturate((t - 0.66) / 0.34));
-                else if (t > 0.33)
-                    col = lerp(_LowerColor.rgb, _UpperColor.rgb, saturate((t - 0.33) / 0.33));
-                else
-                    col = lerp(_HorizonColor.rgb, _LowerColor.rgb, saturate(t / 0.33));
+                // Smooth 4-colour gradient: smoothstep inside each segment so the slope never jumps
+                // at a colour stop (linear segments read as hard bands, especially upper→zenith).
+                float s1 = smoothstep(0.0, 0.33, t);
+                float s2 = smoothstep(0.33, 0.66, t);
+                float s3 = smoothstep(0.66, 1.0, t);
+                float3 col = lerp(lerp(lerp(_HorizonColor.rgb, _LowerColor.rgb, s1), _UpperColor.rgb, s2), _ZenithColor.rgb, s3);
+                float3 far = lerp(lerp(lerp(_HorizonFar.rgb,   _LowerFar.rgb,   s1), _UpperFar.rgb,   s2), _ZenithFar.rgb,   s3);
+                // Only a patch around the sun keeps the style's fixed colours (_SunKeepRadius, radians);
+                // everywhere else — including the sky straight ahead above it — follows the music.
+                float sunAngle = acos(clamp(dot(dir, normalize(_SunDirection.xyz)), -1.0, 1.0));
+                float keep = 1.0 - smoothstep(_SunKeepRadius * 0.5, _SunKeepRadius * 2.0, sunAngle);
+                col = lerp(far, col, keep * (1.0 - _FarNearSun));
+                // Below the horizon the sky is only ever seen through the water: fade to the water colour.
+                col = lerp(col, _BelowColor.rgb, saturate(-h * 10.0));
 
                 // Horizon glow — brightest right at the horizon line (h == 0), fading with |h|.
                 float glow = exp(-abs(h) * 6.0) * _GlowIntensity;

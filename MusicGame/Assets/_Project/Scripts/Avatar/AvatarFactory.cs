@@ -619,6 +619,9 @@ public static class AvatarFactory
         foreach (var renderer in bodyPart.skinToneRenderers)
         {
             if (renderer == null) continue;
+            // A skin with an albedo texture (skin + eyes atlas) takes its colour from it: never tinted.
+            var material = renderer.sharedMaterial;
+            if (material != null && material.HasProperty("_BaseMap") && material.GetTexture("_BaseMap") != null) continue;
             renderer.GetPropertyBlock(block);
             block.SetColor(baseAvatar.skinColorShaderProperty, face.skinTone);
             renderer.SetPropertyBlock(block);

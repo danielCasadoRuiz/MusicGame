@@ -122,7 +122,7 @@ public class SpectrumBars3D : MonoBehaviour, IRunnerEnvironmentModule
         barsRootGO.transform.SetParent(root, false);
         _barsRoot = barsRootGO.transform;
 
-        _cubeMesh = BuildCubeMesh();
+        _cubeMesh = HorizonBeveledBarMesh.Build(config.horizonBarBevel);
         _mpb = new MaterialPropertyBlock();
 
         var barShader = Shader.Find("MusicGame/HorizonBarPlastic") ?? Shader.Find("Universal Render Pipeline/Lit");
@@ -282,6 +282,10 @@ public class SpectrumBars3D : MonoBehaviour, IRunnerEnvironmentModule
             // transmission/emission terms, so raising emission can never wash the surface itself
             // toward white.
             Color gradientColor = _config.horizonBarAmplitudeGradient.Evaluate(current);
+            var palette = HorizonPaletteDriver.Instance;
+            // Palette LEDs run along the ARC (edges → centre, like the reference: cool at the sides, hot in
+            // the middle behind the sun); loudness drives height and emission, not hue.
+            if(palette != null && palette.HasPalette) gradientColor = palette.Frame.LED(1f - Mathf.Abs(tCenter * 2f - 1f));
             float emissionAmount = Mathf.Min(
                 _config.horizonBarMaxEmission,
                 _config.horizonBarBaseEmission + current * _config.horizonBarAmplitudeEmissionBoost);
@@ -292,7 +296,7 @@ public class SpectrumBars3D : MonoBehaviour, IRunnerEnvironmentModule
             // plane) can never overlap it either.
             float barBase = waterLevelLocalY + Mathf.Max(0f, _config.horizonBarOffsetAboveWater);
 
-            Color hazedLED = HorizonHaze.Apply(gradientColor, barBase, 0f, macroIntensity, _config);
+            Color hazedLED = Color.Lerp(gradientColor, HorizonHaze.Apply(gradientColor, barBase, 0f, macroIntensity, _config), 0.22f);
             hazedLED.a = 1f;
             _barColor[c] = hazedLED * (1f + emissionAmount); // exposed for debug/HUD use only
 
@@ -349,17 +353,11 @@ public class SpectrumBars3D : MonoBehaviour, IRunnerEnvironmentModule
         }
     }
 
-    private void OnDestroy() => DestroyBarObjects();
-
-    /// <summary>Unity's own built-in cube primitive mesh, copied once — guaranteed-correct
-    /// winding/normals/UVs with zero hand-derived geometry risk, shared by every bar AND its
-    /// reflection (never per-bar/per-instance).</summary>
-    private static Mesh BuildCubeMesh()
+    private void OnDestroy()
     {
-        var temp = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        var mesh = Object.Instantiate(temp.GetComponent<MeshFilter>().sharedMesh);
-        mesh.name = "HorizonBarCube";
-        Object.Destroy(temp);
-        return mesh;
+        DestroyBarObjects();
+        if(_cubeMesh != null) Destroy(_cubeMesh);
+        if(_barMaterial != null) Destroy(_barMaterial);
+        if(_reflectionMaterial != null) Destroy(_reflectionMaterial);
     }
 }

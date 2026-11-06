@@ -50,6 +50,7 @@ Shader "MusicGame/HorizonBarPlastic"
             {
                 float4 positionOS : POSITION;
                 float3 normalOS   : NORMAL;
+                float2 uv : TEXCOORD0;
             };
 
             struct Varyings
@@ -57,6 +58,8 @@ Shader "MusicGame/HorizonBarPlastic"
                 float4 positionHCS : SV_POSITION;
                 float3 positionWS  : TEXCOORD0;
                 float3 normalWS    : TEXCOORD1;
+                float2 uv : TEXCOORD2;
+                float3 local : TEXCOORD3;
             };
 
             CBUFFER_START(UnityPerMaterial)
@@ -74,6 +77,7 @@ Shader "MusicGame/HorizonBarPlastic"
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
+                OUT.uv=IN.uv; OUT.local=IN.positionOS.xyz;
                 OUT.positionWS  = TransformObjectToWorld(IN.positionOS.xyz);
                 OUT.positionHCS = TransformWorldToHClip(OUT.positionWS);
                 OUT.normalWS    = TransformObjectToWorldNormal(IN.normalOS);
@@ -94,7 +98,7 @@ Shader "MusicGame/HorizonBarPlastic"
                 half lightAmount = max(_AmbientFloor, wrapNdotL);
 
                 half3 baseColor = lerp(_PlasticColor.rgb, _LEDColor.rgb, _PlasticTintStrength);
-                half3 litColor  = baseColor * lightAmount * mainLight.color;
+                half3 litColor = baseColor * (0.3 + lightAmount * mainLight.color * 0.45);
 
                 // Specular — kept WHITE/light-tinted (dielectric plastic highlight, not colored by
                 // the LED) so it still reads as a real lit surface, not a glowing decal.
@@ -114,7 +118,16 @@ Shader "MusicGame/HorizonBarPlastic"
 
                 // Emission — the ONLY term that actually drives Bloom, deliberately separate from
                 // BaseColor so raising it never washes the surface color toward white.
-                half3 emission = _LEDColor.rgb * _EmissionAmount;
+                // UV/core shading and two analytic softbox reflections: no new lights,
+                // texture lookups, transparent shell pass, or real-time reflection captures.
+                half core = pow(saturate(1.0 - abs(IN.uv.x - 0.5) * 1.75), 1.4);
+                half vertical = lerp(0.7, 1.15, saturate(IN.local.y + 0.5));
+                half3 emission = _LEDColor.rgb * _EmissionAmount * (0.32 + core * 0.68) * vertical;
+                half3 reflected = reflect(-viewDir, normalWS);
+                half softbox = pow(saturate(dot(reflected, normalize(half3(-0.45,0.65,-0.6)))), 24.0);
+                half ribbon = pow(saturate(dot(reflected, normalize(half3(0.8,0.4,0.2)))), 48.0);
+                specular += (softbox * 0.5 + ribbon * 0.22) * _Smoothness;
+                transmission *= (0.35 + core * 0.25);
 
                 half3 rgb = litColor + specular + rim + transmission + emission;
                 return half4(rgb, 1.0);

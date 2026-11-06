@@ -49,6 +49,7 @@ public class MainMenuController : MonoBehaviour
 
     private MainMenuView _view;
     private float _buttonStackGap = 18f;
+    private Vector3[] _buttonSlots;
     private StyledTitleView _logo;
     private StyleBlendGroup _buttonStyle;
     private CampaignPopup _popup;
@@ -117,6 +118,7 @@ public class MainMenuController : MonoBehaviour
         _profileText   = view.profileText;
         _menuStatusText = view.menuStatusText;
         _buttonStackGap = view.buttonStackGap;
+        _buttonSlots    = view.buttonSlots;
         _logo          = view.logo;
         _buttonStyle   = view.buttonStyle;
 
@@ -159,14 +161,23 @@ public class MainMenuController : MonoBehaviour
         _menuStatusText.gameObject.SetActive(!string.IsNullOrEmpty(text));
     }
 
-    // Visible buttons stacked top → bottom from the PLAY slot.
+    // Visible buttons top → bottom: into the fan slots (MainMenuView.buttonSlots) when the prefab has them,
+    // else stacked straight down from the PLAY slot.
     private void LayoutButtons()
     {
         if (_buttonStack.Count == 0 || _buttonStack[0] == null) return;
         float x = _buttonStack[0].anchoredPosition.x, y = _buttonStack[0].anchoredPosition.y, step = _buttonStack[0].sizeDelta.y + _buttonStackGap;
+        int slot = 0;
         foreach (var rt in _buttonStack)
         {
             if (rt == null || !rt.gameObject.activeSelf) continue;
+            if (_buttonSlots != null && slot < _buttonSlots.Length)
+            {
+                var s = _buttonSlots[slot++];
+                rt.anchoredPosition = new Vector2(s.x, s.y);
+                rt.localRotation = Quaternion.Euler(0f, 0f, s.z);
+                continue;
+            }
             rt.anchoredPosition = new Vector2(x, y);
             y -= step;
         }
@@ -237,10 +248,10 @@ public class MainMenuController : MonoBehaviour
 
     private void Show(GameMusicStyle playedStyle)
     {
-        ApplyMenuStyle(playedStyle);
         RefreshProgressUI();
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
+        ApplyMenuStyle(playedStyle);   // once active: the title's intro runs on the logo itself
         _settingsPanel.gameObject.SetActive(false);
         ShowNextNotice(); // after the menu is up, so the popup sits on top
         if (CampaignService.LapPromptPending) ShowLapFinished(); // a just-finished lap: offered once
@@ -249,9 +260,17 @@ public class MainMenuController : MonoBehaviour
     // The logo and the buttons share one random style per launch (StyledTitleView.MenuStyle) — kept for all the UI
     // outside play. Coming back from a game (`playedStyle` known and different) they start in the played style and
     // cross-fade to it.
+    // The title's letters animate in (StyledTitleView.Intro) the first time the menu shows in a launch — with the
+    // session announcer shouting "Tempo Fury!" on them — and, silently, every time a game returns to the menu (the
+    // played style's title animates, then the cross-fade).
     private const float StyleFadeDelay = 0.4f, StyleFadeDuration = 1.6f;
+    private const float IntroVoiceLead = 0.35f;   // the shout's attack (and the T's landing) this long after the menu shows
     private Coroutine _styleFade;
     private GameObject _fadingLogo;
+    private static bool s_launchIntroDone;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetLaunchIntro() => s_launchIntroDone = false;   // each Play session is a new launch
 
     private void ApplyMenuStyle(GameMusicStyle playedStyle)
     {
@@ -259,11 +278,33 @@ public class MainMenuController : MonoBehaviour
         if (_styleFade != null) { StopCoroutine(_styleFade); _styleFade = null; }
         if (_fadingLogo != null) Destroy(_fadingLogo);
         SetLogoAlpha(1f);
+        _logo.StopIntro();
         var style = StyledTitleView.MenuStyle(_logo.library);
         _logo.Show(style);
-        bool fade = playedStyle != GameMusicStyle.Unknown && playedStyle != style && isActiveAndEnabled;
-        if (!fade) { if (_buttonStyle != null) _buttonStyle.Apply(style, 1f); return; }
+        bool fromGame = playedStyle != GameMusicStyle.Unknown;
+        bool fade = fromGame && playedStyle != style && isActiveAndEnabled;
+        if (!fade)
+        {
+            if (_buttonStyle != null) _buttonStyle.Apply(style, 1f);
+            if (!s_launchIntroDone) LaunchIntro();
+            else if (fromGame) _logo.Intro();
+            return;
+        }
+        s_launchIntroDone = true;
         _styleFade = StartCoroutine(FadeFromPlayedStyle(playedStyle, style));
+    }
+
+    // First menu of the launch: the letters land on the announcer's two words (the shout's attack on the T, the F on
+    // "Fury"). Without the clip (no announcer, not loaded yet) the title animates on its own timing, silently.
+    private void LaunchIntro()
+    {
+        s_launchIntroDone = true;
+        var audio = GameAudio.Instance;
+        var clip = audio != null && audio.Announcer != null ? audio.Announcer.title : null;
+        if (clip != null && audio.PlayAnnouncer(clip, GameAudioScope.UI, IntroVoiceLead))
+            _logo.Intro(IntroVoiceLead, IntroVoiceLead + audio.SecondWordAt(clip) - audio.Onset(clip));
+        else
+            _logo.Intro();
     }
 
     private void SetLogoAlpha(float alpha)
@@ -288,8 +329,12 @@ public class MainMenuController : MonoBehaviour
         group.alpha = 1f;
         SetLogoAlpha(0f);
         group.blocksRaycasts = group.interactable = false;
-        _fadingLogo.GetComponent<StyledTitleView>().Show(from);
+        var played = _fadingLogo.GetComponent<StyledTitleView>();
+        played.Show(from);
         if (_buttonStyle != null) _buttonStyle.Apply(to, 0f, from);
+        // The played style's title animates in first (silently), then the cross-fade starts.
+        played.Intro();
+        for (float t = 0f; t < played.IntroDuration(); t += Time.unscaledDeltaTime) yield return null;
 
         for (float t = -StyleFadeDelay; t < StyleFadeDuration; t += Time.unscaledDeltaTime)
         {

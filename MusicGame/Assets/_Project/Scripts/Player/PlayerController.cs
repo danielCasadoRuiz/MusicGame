@@ -687,26 +687,29 @@ public class PlayerController : MonoBehaviour
 
         VisualRenderers = GetComponentsInChildren<Renderer>(true);
 
-        var avatarConfig = Resources.Load<AppConfigSO>("AppConfig")?.playerAvatar;
-        if (avatarConfig != null && avatarConfig.avatarRecipe != null)
+        var appConfig = Resources.Load<AppConfigSO>("AppConfig");
+        var avatarConfig = appConfig != null ? appConfig.playerAvatar : null;
+        // The player's look: their preferred style's outfit when one is authored, else the fixed recipe (as in Fight).
+        var recipe = PlayerAvatarConfigSO.ResolveRecipe(appConfig);
+        if (avatarConfig != null && recipe != null)
         {
             SetVisualRenderersEnabled(false);
             // Nothing exposed while building, so CameraFollow can't re-enable the hidden placeholder.
             VisualRenderers = System.Array.Empty<Renderer>();
-            _ = BuildPlayerAvatar(avatarConfig);
+            _ = BuildPlayerAvatar(avatarConfig, recipe);
         }
     }
 
-    private async System.Threading.Tasks.Task BuildPlayerAvatar(PlayerAvatarConfigSO avatarConfig)
+    private async System.Threading.Tasks.Task BuildPlayerAvatar(PlayerAvatarConfigSO avatarConfig, AvatarRecipeSO recipe)
     {
         var placeholder = new System.Collections.Generic.List<Transform>();
         foreach (Transform child in _visualAnchor) placeholder.Add(child);
 
-        var instance = await AvatarFactory.CreateAsync(avatarConfig.avatarRecipe.ToRuntime(), _visualAnchor);
+        var instance = await AvatarFactory.CreateAsync(recipe.ToRuntime(), _visualAnchor);
         if (this == null || _visualAnchor == null) { instance.Dispose(); return; } // Runner unloaded mid-build
         if (instance.Root == null)
         {
-            Debug.LogError($"[PlayerController] Player AvatarRecipe '{avatarConfig.avatarRecipe.name}' failed to build — showing the placeholder capsule (NOT the production visual).");
+            Debug.LogError($"[PlayerController] Player AvatarRecipe '{recipe.name}' failed to build — showing the placeholder capsule (NOT the production visual).");
             instance.Dispose();
             VisualRenderers = _visualAnchor.GetComponentsInChildren<Renderer>(true);
             SetVisualRenderersEnabled(true);
@@ -728,7 +731,7 @@ public class PlayerController : MonoBehaviour
 
         VisualRenderers = instance.Root.GetComponentsInChildren<Renderer>(true);
         VisualChanged?.Invoke();
-        Debug.Log($"[PlayerController] Runner player avatar '{avatarConfig.avatarRecipe.name}' built — controller " +
+        Debug.Log($"[PlayerController] Runner player avatar '{recipe.name}' built — controller " +
                   $"'{(avatarConfig.runnerAnimatorController != null ? avatarConfig.runnerAnimatorController.name : "(none)")}'.");
     }
 

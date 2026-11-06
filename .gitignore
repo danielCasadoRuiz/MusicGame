@@ -110,3 +110,11 @@ local.properties
 # Large local assets: backed up separately, excluded from Git
 /AssetsMaterial/3D_pipeline/
 /MusicGame/Assets/_Project/Art/Arenas/
+
+# Local recoverable scenario snapshots
+/tools/scenario-backups/
+/tools/
+
+# Heavy 3D art (player + opponents): backed up / versioned outside GitHub (2026-11-06)
+/MusicGame/Assets/_Project/Art/Opponents/
+/MusicGame/Assets/_Project/Art/Player/

@@ -461,7 +461,7 @@ public static class VoiceProduction
         var set = new AnnouncerSet
         {
             voiceId = voice, inRotation = old == null || old.inRotation, three = Clip("Announcer.Three"), two = Clip("Announcer.Two"), one = Clip("Announcer.One"),
-            tempo = Clip("Announcer.Tempo"), fury = Clip("Announcer.Fury"), perfect = Clip("Announcer.Perfect"),
+            tempo = Clip("Announcer.Tempo"), fury = Clip("Announcer.Fury"), perfect = Clip("Announcer.Perfect"), title = Clip("Announcer.Title"),
             numbers = old?.numbers ?? new List<AnnouncerNumbers>(),
         };
         list.Add(set);

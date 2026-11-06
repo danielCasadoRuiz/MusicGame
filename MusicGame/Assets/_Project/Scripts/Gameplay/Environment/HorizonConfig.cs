@@ -369,6 +369,26 @@ public class HorizonConfig : ScriptableObject
     // PNG silhouette WITH ALPHA that you assign below, tinted/scaled/positioned from here. Assign
     // NOTHING and a layer simply doesn't render (no procedural fallback texture is generated —
     // see HorizonMountainLayers.cs doc for exactly what kind of PNG to provide).
+    public HorizonPaletteLibrarySO horizonPalettes;
+    [Tooltip("Seconds the palette takes to follow the song-relative energy (calm↔buildup↔peak).")]
+    [Min(0.01f)] public float horizonPaletteTransitionSeconds = 2.5f;
+    [Tooltip("Max hue rotation (0..1 of the colour wheel) the song's harmonic centre can apply to the sky far from the sun. The sun never changes.")]
+    [Range(0f,0.5f)] public float horizonPaletteHueShift = 0.15f;
+    [Tooltip("Seconds the harmonic hue shift takes to follow the music.")]
+    [Min(0.01f)] public float horizonPaletteHueSeconds = 4f;
+    [Tooltip("Extra hue rotation spread over the song (start → end), so the sky keeps evolving as the song advances. Same units as the hue shift.")]
+    [Range(0f,0.5f)] public float horizonPaletteProgressHueDrift = 0.1f;
+    [Tooltip("Angular radius (degrees) around the sun that keeps the style's fixed colours; beyond ~2× this the sky fully follows the music.")]
+    [Range(2f,60f)] public float horizonPaletteSunKeepDegrees = 20f;
+    [Tooltip("How much even the area right at the sun follows the music (0 = fully fixed).")]
+    [Range(0f,1f)] public float horizonPaletteNearSunVariation = 0.12f;
+    [Tooltip("Energy (0..1 across calm→buildup→peak) of the fixed look kept around the sun.")]
+    [Range(0f,1f)] public float horizonPaletteAnchorEnergy = 0.75f;
+    [Tooltip("How much the glow right around the sun follows the music (0 = fixed sunset, 1 = like the rest of the sky).")]
+    [Range(0f,1f)] public float horizonPaletteGlowVariation = 0.2f;
+    [Range(0.005f,0.2f)] public float horizonBarBevel = 0.07f;
+    public bool horizonMountains360 = false;
+    [Range(0f,1f)] public float horizonMountainShadowBrightness = 1f;
     public bool  horizonMountainsEnabled = true;
     [Tooltip("Mirror the panorama beyond its side edges so wide first-person views and head turns cannot expose the edge of the plane.")]
     public bool horizonMountainMirrorEdges = false;

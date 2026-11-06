@@ -530,11 +530,30 @@ public static class TempoFuryUISetup
 
     /// <summary>A screen point (1920×1080, top-left origin) as a centre-anchored position.</summary>
     private static Vector2 ScreenPos(float x, float y) => new(x - 960f, 540f - y);
-    private const float MenuTitleScale = 0.51f;                              // title content 905×452
-    private static readonly Vector2 MenuTitleTopLeft = new(340f, 430f);       // title content's top-left on screen
-    private static readonly Rect MenuComposers = new(435f, 150f, 770f, 434f);  // composers.png 1670×942 at 0.46
-    private const float MenuButtonLeft = 1095f, MenuButtonTop = 262f, MenuButtonW = 480f, MenuButtonH = 96f, MenuButtonGap = 20f;
-    private const float MenuButtonHidden = 150f;   // left part of each button behind the title: the label centres on the rest
+    // Layout measured on AssetsMaterial/References/PrimeraPantalla_unity.png (1920×1080 screen px, top-left origin),
+    // regularised: logo group (composers over the TEMPO FURY title) + the plates fanning out from behind it.
+    private const float MenuTitleScale = 0.48f;                              // title content 852×426
+    private static readonly Vector2 MenuTitleTopLeft = new(309.24f, 427f);    // title content's top-left on screen
+    private static readonly Rect MenuComposers = new(390f, 151f, 750f, 423f);  // composers.png 1670×942 at 0.449
+    // The measured layout spans x 300…1540 (title's left stroke … top plate's tip) and y 150…860: this offset
+    // centres that whole block on the screen, leaving room underneath for the campaign status.
+    private static readonly Vector2 MenuCentreOffset = new(40f, -25f);
+    // Whole logo group (composers + title) nudged by hand in Play mode (2026-11-01).
+    private static readonly Vector2 MenuLogoOffset = new(-6f, -53f);
+    private static Vector2 MenuPos(float x, float y) => ScreenPos(x + MenuCentreOffset.x, y + MenuCentreOffset.y);
+    private const float MenuButtonW = 470f, MenuButtonH = 100f, MenuButtonGap = 33f;
+    // Fan: one slot per VISIBLE plate (top → bottom; the 5th only when QUIT shows). Right edge follows an arc
+    // around the logo, and the tilt eases gradually from + (rising to the right) to flat. Hand-tuned in Play mode
+    // (2026-11-01); QUIT's slot is extrapolated from the other four.
+    private static readonly (float right, float centreY, float tilt)[] MenuButtonFan =
+    {
+        (1489f,    415f,    3.59f),
+        (1471.7f,  548.23f, 2.233f),
+        (1447.41f, 681.55f, 0.94f),
+        (1415.11f, 814.98f, 0f),
+        (1375f,    948.5f, -1f),
+    };
+    private const float MenuButtonHidden = 140f;   // left part of each button behind the title: the label centres on the rest
 
     private static void PatchMainMenu(GameObject root, StyleSkinLibrarySO lib, StringBuilder log)
     {
@@ -555,6 +574,7 @@ public static class TempoFuryUISetup
         }
         view.logo.library = lib;
         var logoRoot = view.logo.transform.parent;
+        ((RectTransform)logoRoot).anchoredPosition = MenuLogoOffset;
         logoRoot.SetAsLastSibling();   // over the buttons, which come out from behind it…
         var settings = view.settingsPanel != null ? view.settingsPanel.transform : null;
         if (settings != null && settings.parent == logoRoot.parent) settings.SetAsLastSibling();   // …but under the settings panel
@@ -562,12 +582,12 @@ public static class TempoFuryUISetup
         if (composers != null)
         {
             composers.sprite = lib.composers;
-            UIFactory.SetBox(composers.rectTransform, c, c, c, ScreenPos(MenuComposers.center.x, MenuComposers.center.y), MenuComposers.size);
+            UIFactory.SetBox(composers.rectTransform, c, c, c, MenuPos(MenuComposers.center.x, MenuComposers.center.y), MenuComposers.size);
         }
         // Title content (73,96)-(1847,983) of its 1920×1080 canvas → its top-left at MenuTitleTopLeft.
         float s = MenuTitleScale;
         var titleRt = (RectTransform)view.logo.transform;
-        UIFactory.SetBox(titleRt, c, c, c, ScreenPos(MenuTitleTopLeft.x + (960f - 73f) * s, MenuTitleTopLeft.y + (540f - 96f) * s), new Vector2(1920f, 1080f));
+        UIFactory.SetBox(titleRt, c, c, c, MenuPos(MenuTitleTopLeft.x + (960f - 73f) * s, MenuTitleTopLeft.y + (540f - 96f) * s), new Vector2(1920f, 1080f));
         titleRt.localScale = Vector3.one * s;
         if (view.titleText != null) view.titleText.gameObject.SetActive(false);   // the logo is the title
 
@@ -575,11 +595,12 @@ public static class TempoFuryUISetup
         view.buttonStyle = C<StyleBlendGroup>(view.root);
         var buttons = new[] { view.playButton, view.rivalsButton, view.progressionButton, view.settingsButton, view.quitButton }.Where(b => b != null).ToArray();
         foreach (var b in buttons) SkinButton(b, b.GetComponentInChildren<TextMeshProUGUI>(true), lib);
-        float buttonX = MenuButtonLeft + MenuButtonW / 2f;
+        var slots = MenuButtonFan.Select(f => { var p = MenuPos(f.right - MenuButtonW / 2f, f.centreY); return new Vector3(p.x, p.y, f.tilt); }).ToArray();
         for (int i = 0; i < buttons.Length; i++)
         {
-            UIFactory.SetBox((RectTransform)buttons[i].transform, c, c, c,
-                ScreenPos(buttonX, MenuButtonTop + MenuButtonH / 2f + i * (MenuButtonH + MenuButtonGap)), new Vector2(MenuButtonW, MenuButtonH));
+            var slot = slots[Mathf.Min(i, slots.Length - 1)];
+            UIFactory.SetBox((RectTransform)buttons[i].transform, c, c, c, new Vector2(slot.x, slot.y), new Vector2(MenuButtonW, MenuButtonH));
+            buttons[i].transform.localRotation = Quaternion.Euler(0f, 0f, slot.z);
             var label = buttons[i].GetComponentInChildren<TextMeshProUGUI>(true);
             if (label == null) continue;
             // Spaced capitals as in the reference; a long word shrinks to stay on the visible part of the plate.
@@ -589,14 +610,15 @@ public static class TempoFuryUISetup
             label.enableAutoSizing = true;
             label.fontSizeMax = 32f;
             label.fontSizeMin = 18f;
-            label.margin = new Vector4(MenuButtonHidden, 0f, 56f, 0f);
+            label.margin = new Vector4(MenuButtonHidden, 0f, 78f, 0f);
         }
         view.buttonStackGap = MenuButtonGap;
-        float below = MenuButtonTop + buttons.Length * (MenuButtonH + MenuButtonGap) + 6f;
+        view.buttonSlots = slots;
+        // Status line ("catalog complete" / load failure) under the logo group, above the campaign status.
         if (view.menuStatusText != null)
-            UIFactory.SetBox(view.menuStatusText.rectTransform, c, c, c, ScreenPos(buttonX, below + 16f), new Vector2(620f, 32f));
+            UIFactory.SetBox(view.menuStatusText.rectTransform, c, c, c, ScreenPos(960f, 925f), new Vector2(900f, 32f));
         if (view.profileText != null)   // campaign status: centred under the whole group
-            UIFactory.SetBox(view.profileText.rectTransform, c, c, c, ScreenPos(960f, 1000f), new Vector2(1200f, 110f));
+            UIFactory.SetBox(view.profileText.rectTransform, c, c, c, ScreenPos(960f, 978f), new Vector2(1200f, 110f));
         log.AppendLine("  PASS  MainMenu: PrimeraPantalla layout");
     }
 
@@ -894,7 +916,14 @@ public static class TempoFuryUISetup
                     foreach (var loc in r.GetComponentsInChildren<LocalizedText>(true))
                         if (loc.TryGetComponent<TMP_Text>(out var t)) Txt(t, loc.key);
                     Txt(v.playButtonLabel, "MainMenu.Play");
-                    if (v.profileText != null) v.profileText.gameObject.SetActive(false);
+                    // As in the game (QUIT hidden, campaign status shown), with readable sample labels.
+                    if (v.quitButton != null) v.quitButton.gameObject.SetActive(false);
+                    foreach (var (b, text) in new[] { (v.playButton, "CONTINUE"), (v.rivalsButton, "COLLECTION"), (v.progressionButton, "PROGRESSION"), (v.settingsButton, "SETTINGS") })
+                    {
+                        var l = b != null ? b.GetComponentInChildren<TMP_Text>(true) : null;
+                        if (l != null) l.text = text;
+                    }
+                    if (v.profileText != null) { v.profileText.gameObject.SetActive(true); v.profileText.text = "<size=130%>LEVEL 2 · match 1 of 5</size>\nLap 1  ·  Mastered matches 0/22  ·  Extra lives 3"; }
                     if (v.logo != null) v.logo.Show(s);
                     if (v.buttonStyle != null) v.buttonStyle.Apply(s, 1f);
                     C<StyleBlendButton>(v.playButton.gameObject)?.OnPointerEnter(null);

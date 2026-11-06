@@ -86,6 +86,38 @@ public class MusicEnvironmentController : MonoBehaviour
     public float SmoothedMacroIntensity =>
         _config != null && _config.enableMusicEnvironmentModulation ? _smoothedMacroIntensity : 0f;
 
+    /// <summary>0..1 UNSMOOTHED intensity/buildup mix, rescaled to THIS song's own range (its 10th..90th
+    /// percentile → 0..1), so every song spans its whole calm→peak palette instead of loud songs
+    /// living at "peak" and quiet ones at "calm". The Horizon palette driver smooths it itself.</summary>
+    public float SongRelativeEnergy { get; private set; }
+
+    /// <summary>Harmonic centre (0..1 on the circle of fifths, see WeightedHue) — slow-smoothed and
+    /// held through atonal passages. Only meaningful once HasHarmonicHue is true.</summary>
+    public float HarmonicHue => _targetHue;
+    public bool  HasHarmonicHue { get; private set; }
+
+    /// <summary>0..1 position in the current song (clip time / duration).</summary>
+    public float SongProgress { get; private set; }
+
+    private float _energyLow, _energyHigh = 1f;
+
+    private static float RawEnergy(SongProfile p, float clipTime) =>
+        Mathf.Clamp01(p.GetIntensityAt(clipTime) * 0.5f + p.GetBuildupAt(clipTime) * 0.5f);
+
+    // Song-relative range: 10th/90th percentile of the raw energy over the whole song.
+    private void ComputeEnergyRange(SongProfile p)
+    {
+        _energyLow = 0f; _energyHigh = 1f;
+        if (p == null || p.analysisHopTime <= 0f) return;
+        int frames = Mathf.Max(p.intensity != null ? p.intensity.Length : 0, p.buildupCurve != null ? p.buildupCurve.Length : 0);
+        if (frames < 16) return;
+        var values = new float[frames];
+        for (int i = 0; i < frames; i++) values[i] = RawEnergy(p, (i + 0.5f) * p.analysisHopTime);
+        System.Array.Sort(values);
+        _energyLow  = values[(int)(frames * 0.10f)];
+        _energyHigh = Mathf.Max(_energyLow + 0.05f, values[(int)(frames * 0.90f)]);
+    }
+
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(this); return; }
@@ -107,6 +139,8 @@ public class MusicEnvironmentController : MonoBehaviour
             _profile             = e.Profile;
             _featuresInitialized = false; // a new song's chroma must not ease in from the old one's
             _sampleTimer         = 0f;
+            HasHarmonicHue       = false;
+            ComputeEnergyRange(_profile);
         };
         _onMacro   = e =>
         {
@@ -144,24 +178,31 @@ public class MusicEnvironmentController : MonoBehaviour
         // if that legacy fallback is disabled.
         if (_config.enableMusicEnvironmentModulation && _profile != null && clockRunning)
         {
-            float rawIntensity = Mathf.Clamp01(
-                _profile.GetIntensityAt(clipTime) * 0.5f +
-                _profile.GetBuildupAt(clipTime)   * 0.5f);
+            float rawIntensity = RawEnergy(_profile, clipTime);
+            SongRelativeEnergy = Mathf.InverseLerp(_energyLow, _energyHigh, rawIntensity);
             float rate = 1f - Mathf.Exp(-Time.deltaTime / Mathf.Max(0.01f, _config.paletteMacroSmoothingTime));
             _smoothedMacroIntensity = Mathf.Lerp(_smoothedMacroIntensity, rawIntensity, rate);
+        }
+
+        if (_profile == null || !clockRunning) return;
+        SongProgress = _profile.duration > 0f ? Mathf.Clamp01(clipTime / _profile.duration) : 0f;
+
+        // Chroma/hue sampling also feeds the Horizon palette (HarmonicHue), so it runs whenever
+        // either consumer is enabled.
+        if (_config.enableMusicEnvironment || _config.enableMusicEnvironmentModulation)
+        {
+            _sampleTimer -= Time.deltaTime;
+            if (_sampleTimer <= 0f)
+            {
+                _sampleTimer = Mathf.Max(0.05f, _config.colorSampleInterval);
+                SampleFeatures(clipTime);
+            }
         }
 
         // ── Legacy plain-camera background color (fallback for when Horizon World is disabled,
         // or a genuine no-op — harmless either way — when it's enabled and controls its own sky
         // instead) ───────────────────────────────────────────────────────────────────────────
-        if (!_config.enableMusicEnvironment || _profile == null || !clockRunning) return;
-
-        _sampleTimer -= Time.deltaTime;
-        if (_sampleTimer <= 0f)
-        {
-            _sampleTimer = Mathf.Max(0.05f, _config.colorSampleInterval);
-            SampleFeatures(clipTime);
-        }
+        if (!_config.enableMusicEnvironment) return;
 
         float colorRate = 1f - Mathf.Exp(-Time.deltaTime / Mathf.Max(0.01f, _config.colorSmoothingTimeConstant));
         _currentColor = Color.Lerp(_currentColor, _targetColor, colorRate);
@@ -204,7 +245,10 @@ public class MusicEnvironmentController : MonoBehaviour
         var (candidateHue, clarity) = WeightedHue(_chromaEMA);
         _lastClarity = clarity;
         if (clarity >= _config.hueConfidenceThreshold)
-            _targetHue = candidateHue;
+        {
+            _targetHue     = candidateHue;
+            HasHarmonicHue = true;
+        }
 
         _lastBuildup = _profile.GetBuildupAt(clipTime);
         float boost  = Mathf.Lerp(1f, _config.buildupIntensityBoost, _lastBuildup);

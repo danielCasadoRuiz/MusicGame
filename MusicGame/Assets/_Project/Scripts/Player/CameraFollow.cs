@@ -18,7 +18,7 @@ using UnityEngine.InputSystem;
 ///  - Camera position smoothed with SmoothDamp to absorb path-sample discontinuities
 ///  - LookAt uses Vector3.up (not camSample.up) to prevent roll jitter on curves
 ///  - LookAt target itself smoothed to prevent rapid rotation snaps
-///  - Energy modulates height only (not Z-distance), no path-curve interaction
+///  - The music never moves the camera (no energy height, no beat kick): framing is fully authored
 ///
 /// This is 100% visual — it never touches songTime/musicDistance/player movement/scoring. Music
 /// stays the sole temporal authority regardless of which view is active.
@@ -71,19 +71,6 @@ public class CameraFollow : MonoBehaviour
              "rotation, not a viewport crop, so large values will visibly swing the horizon.")]
     [SerializeField] private float framePanDegrees = 0f;
 
-    [Header("Energy Response")]
-    [SerializeField] private float energyHeightPeak = 2f;   // extra height at max intensity
-    [SerializeField] private float energySmooth     = 2f;
-
-    [Header("Beat Kick")]
-    [Tooltip("World-unit height impulse at full onset strength")]
-    [SerializeField] private float kickStrength = 0.35f;
-    [Tooltip("Higher = the kick snaps back to rest faster")]
-    [SerializeField] private float kickDecay    = 20f;
-    [Tooltip("Pulses whose MUSICAL time (eventTime) lies within this many seconds of an already-applied " +
-             "one are the same audible hit: only the extra strength is added (max, not sum). Distinct " +
-             "times always add, even in the same frame; nothing is delayed.")]
-    [SerializeField] private float kickMergeWindow = 0.03f;
 
     [Header("View Mode — First Person")]
     [Tooltip("Child transform under the Player representing roughly the head/eyes — the First " +
@@ -112,6 +99,11 @@ public class CameraFollow : MonoBehaviour
     [Tooltip("Max yaw (degrees) the first-person view may turn away from the player's heading — side-on clips " +
              "(the jump) turn the head; the 360° AutoReturn spin is exempt and turns freely.")]
     [SerializeField] private float firstPersonMaxYaw = 25f;
+    [Tooltip("How much of the head's up/down movement the first-person view follows (1 = all of it, as the " +
+             "animation looks; 0 = always level). Running clips look down a lot — lower this to look ahead.")]
+    [Range(0f, 1f)] [SerializeField] private float firstPersonPitchFollow = 0.5f;
+    [Tooltip("Extra vertical aim in first person (degrees). Negative = look UP (more sky/horizon), positive = down.")]
+    [Range(-30f, 30f)] [SerializeField] private float firstPersonPitchOffset = -5f;
 
     [Header("View Mode — Transition")]
     [SerializeField] private float viewTransitionDuration = 0.4f;
@@ -131,16 +123,12 @@ public class CameraFollow : MonoBehaviour
 
     // ── Runtime: Third Person smoothing state (kept up to date regardless of active view mode,
     // so switching back to Third Person never has to "catch up" from stale values) ─────────────
-    private SongProfile _profile;
     private float       _velX;
     private float       _smoothedLateral;
-    private float       _energyHeight;
     private Vector3     _velPos;
     private Vector3     _smoothedLookAt;
     private bool        _initialized;
     private bool        _running;
-    private float       _kick;
-    private float       _kickVel;
 
     // ── Runtime: view mode / transition ─────────────────────────────────────────────────────
     private CameraViewMode _viewMode = CameraViewMode.ThirdPerson;
@@ -166,6 +154,7 @@ public class CameraFollow : MonoBehaviour
         bool spinning = _runnerAnimator != null && _runnerAnimator.CurrentRole == RunnerAnimationRole.AutoReturn;
         if (!spinning) yaw = Mathf.Clamp(yaw, -firstPersonMaxYaw, firstPersonMaxYaw);
         roll = Mathf.Clamp(roll, -firstPersonMaxRoll, firstPersonMaxRoll);
+        pitch = pitch * firstPersonPitchFollow + firstPersonPitchOffset;
         return frame * Quaternion.Euler(pitch, yaw, roll);
     }
 
@@ -183,11 +172,7 @@ public class CameraFollow : MonoBehaviour
         roll = Mathf.DeltaAngle(0f, transform.eulerAngles.z);
     }
 
-    private Action<SongProfileReadyEvent> _onProfile;
     private Action<GameStartedEvent>      _onStart;
-    private Action<BeatPulseEvent>        _onPulse;
-    private Action<MusicTimeDiscontinuityEvent> _onDiscontinuity;
-    private MusicalPulseDeduplicator      _pulseDedup;
 
     private void Awake()
     {
@@ -217,8 +202,6 @@ public class CameraFollow : MonoBehaviour
     /// from a stale lateral offset — only _velX was zeroed, so it then took several more frames of
     /// SmoothDamp to visibly crawl from the old lateral position to the new (correct) one. That
     /// multi-frame crawl was the whole bug; resetting the value itself here removes it entirely.
-    /// _energyHeight is reset for the same reason (no stale smoothed value carried across a hard
-    /// reset) — a fresh gameplay moment should read its energy fresh, not ease into it.
     /// </summary>
     public void SnapToPlayer()
     {
@@ -226,10 +209,7 @@ public class CameraFollow : MonoBehaviour
         _transitioning   = false;
         _velPos          = Vector3.zero;
         _velX            = 0f;
-        _kick            = 0f;
-        _kickVel         = 0f;
         _smoothedLateral = playerController != null ? playerController.LateralOffset : 0f;
-        _energyHeight    = 0f;
     }
 
     /// <summary>
@@ -325,32 +305,15 @@ public class CameraFollow : MonoBehaviour
 
     private void OnEnable()
     {
-        _onProfile = e => _profile = e.Profile;
         // Also re-applies renderer visibility here (not just Awake) — PlayerController's visual
         // is built in ITS OWN Awake(), whose ordering relative to this one isn't guaranteed; by
         // GameStartedEvent time (GameplayManager's coroutine, well after every Awake) it's
         // definitely built, so a persisted First Person session starts with the body correctly
         // hidden from frame one instead of only on the next manual toggle.
         _onStart   = _ => { _running = true; ApplyRendererVisibility(); };
-        // Capped: a dense burst of pulses (many onsets in quick succession) shouldn't be able
-        // to stack past a sane ceiling — otherwise rapid-fire beats can pile the kick up faster
-        // than it decays and the camera reads as constantly launching upward.
-        // Deduplicated by musical identity first (MusicalPulseDeduplicator — same event, or the same
-        // onset time within kickMergeWindow), so coinciding timeline events (an Impact plus a Kick
-        // on one onset) kick once instead of stacking.
-        _pulseDedup ??= new MusicalPulseDeduplicator(kickMergeWindow);
-        _onPulse   = e =>
-        {
-            _pulseDedup.MergeWindow = kickMergeWindow;
-            float add = _pulseDedup.Accept(e.EventIndex, e.EventTime, e.Strength);
-            if (add > 0f) _kick = Mathf.Min(_kick + add * kickStrength, kickStrength * 1.5f);
-        };
-        // Seek/respawn/restart: the same event indices legitimately pulse again.
-        _onDiscontinuity = _ => _pulseDedup.Reset();
-        EventBus.Subscribe(_onProfile);
+        // The music deliberately does NOT move the camera (no energy height, no beat kick): the
+        // framing stays exactly what is authored here.
         EventBus.Subscribe(_onStart);
-        EventBus.Subscribe(_onPulse);
-        EventBus.Subscribe(_onDiscontinuity);
         // The real avatar is built asynchronously, after the visibility above was applied.
         if (playerController != null) playerController.VisualChanged += ApplyRendererVisibility;
     }
@@ -358,10 +321,7 @@ public class CameraFollow : MonoBehaviour
     private void OnDisable()
     {
         if (playerController != null) playerController.VisualChanged -= ApplyRendererVisibility;
-        EventBus.Unsubscribe(_onProfile);
         EventBus.Unsubscribe(_onStart);
-        EventBus.Unsubscribe(_onPulse);
-        EventBus.Unsubscribe(_onDiscontinuity);
     }
 
     private void Update()
@@ -411,17 +371,9 @@ public class CameraFollow : MonoBehaviour
         float targetLateral = playerController != null ? playerController.LateralOffset : 0f;
         _smoothedLateral = Mathf.SmoothDamp(_smoothedLateral, targetLateral, ref _velX, xSmoothTime);
 
-        if (_profile != null && clock.IsRunning && clock.HasPlaybackStarted)
-        {
-            float e = _profile.GetIntensityAt(clock.ClipTime); // SongProfile is clip-time indexed
-            _energyHeight = Mathf.Lerp(_energyHeight, e * energyHeightPeak, energySmooth * Time.deltaTime);
-        }
-
-        _kick = Mathf.SmoothDamp(_kick, 0f, ref _kickVel, 1f / kickDecay);
-
         Vector3 thirdPersonPos = camSample.position
                                + camSample.right * _smoothedLateral
-                               + Vector3.up      * (heightAbovePath + extraHeight + _energyHeight + _kick);
+                               + Vector3.up      * (heightAbovePath + extraHeight);
 
         Vector3 playerLookPoint = playerController != null
             ? playerController.transform.position + Vector3.up * (PlayerController.CapsuleHeight * 0.5f)
