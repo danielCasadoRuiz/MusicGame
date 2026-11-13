@@ -19,6 +19,9 @@ public class AvatarIdentitySO : ScriptableObject
     public BodyMorphProfileSO bodyMorphProfile;
     public FaceProfileSO face;
     public HairItemSO hair;
+    public AvatarNailSettings nails = new AvatarNailSettings();
+    [Range(0,1)] public float skinTone = 1f/3f;
+    [Range(-1,1)] public float skinUndertone;
 
     public AvatarIdentity ToRuntime()
     {

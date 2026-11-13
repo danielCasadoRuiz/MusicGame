@@ -170,8 +170,16 @@ public class ProceduralSkyController : MonoBehaviour
         Vector3 sunDir = new Vector3(Mathf.Sin(az) * Mathf.Cos(el), Mathf.Sin(el), Mathf.Cos(az) * Mathf.Cos(el));
         _material.SetVector(SunDirectionID, sunDir);
         // The sky vector points TOWARDS the sun; a directional light's forward points
-        // along the incoming rays, AWAY from it. Both use this same world-space vector.
-        if (_sunLight != null)
+        // along the incoming rays, AWAY from it. Both use this same world-space vector — but only when
+        // HorizonConfig.syncSceneLightToSkySun is on. Off (default): the scene's directional light keeps
+        // the rotation authored in Runner.unity (art direction over physical accuracy).
+        if (_sunLight != null && !_config.syncSceneLightToSkySun)
+        {
+            if (_ownsSunRotation && Quaternion.Angle(_sunLight.transform.rotation, _appliedSunRotation) < .01f)
+                _sunLight.transform.rotation = _originalSunRotation; // toggled off live: hand it back
+            _ownsSunRotation = false;
+        }
+        else if (_sunLight != null)
         {
             if (!_ownsSunRotation) _originalSunRotation = _sunLight.transform.rotation;
             Vector3 up = Mathf.Abs(Vector3.Dot(sunDir, Vector3.up)) > .999f ? Vector3.forward : Vector3.up;

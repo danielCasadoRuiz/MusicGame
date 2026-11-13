@@ -71,7 +71,7 @@ public static class SegmentedOutfitSetup
         var args = Environment.GetCommandLineArgs();
         int r = Array.IndexOf(args, "-reimport");
         var reimport = r >= 0 && r + 1 < args.Length ? args[r + 1].Split(',', StringSplitOptions.RemoveEmptyEntries) : null;
-        string report = Run(args.Contains("-onlyNew"), reimport);
+        string report = Run(args.Contains("-onlyNew"), reimport, args.Contains("-onlyMissing"));
         Debug.Log(report);
         bool failed = report.Contains("FAIL");
         if (!failed && Environment.GetCommandLineArgs().Contains("-validateOutfit"))
@@ -79,7 +79,7 @@ public static class SegmentedOutfitSetup
         else if (Application.isBatchMode) EditorApplication.Exit(failed ? 1 : 0);
     }
 
-    public static string Run(bool onlyNew = false, IEnumerable<string> reimport = null)
+    public static string Run(bool onlyNew = false, IEnumerable<string> reimport = null, bool onlyMissing = false)
     {
         var log = new StringBuilder("[SegmentedOutfitSetup]\n");
         try
@@ -96,6 +96,12 @@ public static class SegmentedOutfitSetup
             log.AppendLine($"  body  {bodyRenderer.sharedMesh.name}: {body.Positions.Length} vertices, {body.Triangles.Length / 3} triangles");
             foreach (var piece in pieces)
             {
+                if (onlyMissing && Directory.Exists(piece.Art))
+                {
+                    LoadExisting(piece, requireCurrentMasks: false); // Load existing items for complete recipes, without importing their assets.
+                    log.AppendLine($"  keep  {piece.Name}: already in Unity (only missing requested)");
+                    continue;
+                }
                 bool forced = reimport != null && (reimport.Contains(piece.Name, StringComparer.OrdinalIgnoreCase) || reimport.Contains(piece.Folder, StringComparer.OrdinalIgnoreCase));
                 if (onlyNew && !forced && LoadExisting(piece)) { log.AppendLine($"  keep  {piece.Name}: already in the game with current masks"); continue; }
                 try
@@ -113,6 +119,10 @@ public static class SegmentedOutfitSetup
                 Directory.CreateDirectory("Logs");
                 File.WriteAllText("Logs/SegmentedOutfitSetup.txt", log.ToString());
             }
+            // Import cleanup can unload asset objects held by the managed Piece records.
+            // Reload persisted items before assigning any recipe or identity references.
+            foreach (var piece in pieces)
+                if (!LoadExisting(piece, requireCurrentMasks: !onlyMissing)) log.AppendLine($"  FAIL  {piece.Name}: incomplete imported outfit assets");
             DressComposers(pieces.Where(p => p.Composer).ToList(), log);
             DressPlayer(pieces.Where(p => !p.Composer).ToList(), log);
             EditorUtility.SetDirty(settings);
@@ -138,6 +148,7 @@ public static class SegmentedOutfitSetup
                 continue;
             }
             string name = GameNames.TryGetValue(folder, out var renamed) ? renamed : folder;
+            if (name.StartsWith("H�ndel_", StringComparison.OrdinalIgnoreCase)) name = "Handel_" + name.Substring("H�ndel_".Length);
             int cut = name.IndexOf('_');
             if (cut <= 0) { log.AppendLine($"  skip  {folder}: no owner prefix"); continue; }
             string owner = name.Substring(0, cut);
@@ -163,19 +174,23 @@ public static class SegmentedOutfitSetup
     private static string Kind(string name)
     {
         string[] words = name.ToLowerInvariant().Split('_');
+        if (int.TryParse(words[^1], out _)) words = words.Take(words.Length - 1).ToArray();
         string kind = words[^1];
+        if (words.Contains("trousers") || words.Contains("pants") || words.Contains("jeans")) return "trousers";
         if (kind == "belt" && words.Length > 2 && words[^2] is "trousers" or "pants") kind = words[^2];   // trousers with their belt
         return kind switch
         {
             "tshirt" or "top" => "shirt",
-            "cardigan" or "overshirt" => "jacket",
+            "cardigan" or "overshirt" or "blazer" => "jacket",
+            "loafers" => "shoes",
+            "vest" => "waistcoat",
             _ => kind,
         };
     }
 
     /// <summary>A piece already in the game with current masks: its item (or hair) exists and every quality has its
     /// prefab and an occlusion file at least as new as the pipeline's mask.</summary>
-    private static bool LoadExisting(Piece piece)
+    private static bool LoadExisting(Piece piece, bool requireCurrentMasks = true)
     {
         string folder = piece.Composer ? ComposerContent + "/Items" : PlayerContent + "/Items";
         var manifest = MaskManifest(piece);
@@ -184,7 +199,7 @@ public static class SegmentedOutfitSetup
             string prefab = $"{piece.Art}/{q.quality}/{piece.Name}_{q.quality}.prefab";
             string bytes = $"{piece.Art}/{q.quality}/{piece.Name}_{q.quality}_occlusion.bytes";
             string gmask = GmaskPath(piece, manifest, q.dir);
-            return File.Exists(prefab) && File.Exists(bytes) && gmask != null && File.GetLastWriteTimeUtc(bytes) >= File.GetLastWriteTimeUtc(gmask);
+            return File.Exists(prefab) && File.Exists(bytes) && gmask != null && (!requireCurrentMasks || File.GetLastWriteTimeUtc(bytes) >= File.GetLastWriteTimeUtc(gmask));
         });
         if (piece.Kind == "hair")
         {
@@ -240,7 +255,13 @@ public static class SegmentedOutfitSetup
             // The object's shared texture set of this quality (texture_share.py); the old per-model copy as fallback.
             string textures = Path.Combine(source, "..", "Textures", q.dir);
             if (!Directory.Exists(textures)) textures = Path.Combine(riggedDir, "Textures");
-            var material = AuthoredMaterial(prefabPath, $"{folder}/Materials/M_{prefix}.mat")
+            string materialPath = $"{folder}/Materials/M_{prefix}.mat";
+            var currentMaterial = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
+            bool unchanged = currentMaterial != null && GarmentMaskImporter.SameModelFile(fbx[0], modelPath)
+                && Directory.Exists(textures)
+                && Directory.GetFiles(textures).All(path => File.GetLastWriteTimeUtc(path) <= File.GetLastWriteTimeUtc(materialPath));
+            var material = (unchanged ? currentMaterial : null)
+                           ?? AuthoredMaterial(prefabPath, materialPath)
                            ?? RicherMaterial($"{folder}/Materials/M_{prefix}.mat", textures)
                            ?? BuildMaterial(textures, folder, prefix, q.maxSize, template);
             // Trouser legs are never hidden by upper garments (the gmask's keep map, from step 08).
@@ -487,13 +508,23 @@ public static class SegmentedOutfitSetup
 
     // ── Avatars ──────────────────────────────────────────────────────────────────
 
+    // All alternatives remain selectable items. Prefer numbered revisions and belted trousers in recipes.
+    private static IEnumerable<Piece> PreferredPieces(IEnumerable<Piece> pieces) => pieces
+        .GroupBy(p => p.Kind)
+        .Select(g => g.OrderByDescending(p => int.TryParse(p.Name.Split('_').Last(), out int n) ? n : 0)
+            .ThenByDescending(p => p.Name.IndexOf("_belt", StringComparison.OrdinalIgnoreCase) >= 0)
+            .ThenBy(p => p.Name, StringComparer.OrdinalIgnoreCase).First());
+
     private static void DressComposers(List<Piece> pieces, StringBuilder log)
     {
         foreach (var composer in pieces.GroupBy(p => p.Owner))
         {
             var recipe = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>($"{ComposerContent}/Recipes/Avatar_{composer.Key}.asset");
             var items = recipe.items.Where(i => i != null).ToList();
-            foreach (var p in composer.Where(p => p.Item != null))
+            var preferred = PreferredPieces(composer.Where(p => p.Item != null)).ToList();
+            var alternatives = composer.Where(p => p.Item != null && !preferred.Contains(p)).Select(p => p.Item).ToList();
+            items.RemoveAll(i => alternatives.Contains(i));
+            foreach (var p in preferred)
                 if (!items.Contains(p.Item)) items.Add(p.Item);
             recipe.items = items.ToArray();
             EditorUtility.SetDirty(recipe);
@@ -524,7 +555,10 @@ public static class SegmentedOutfitSetup
                 AssetDatabase.CreateAsset(recipe, path);
             }
             recipe.name = Path.GetFileNameWithoutExtension(path);
-            recipe.items = style.Select(p => p.Item).ToArray();
+            // Preserve imported items whose source is temporarily absent from Output.
+            var knownItems = pieces.Where(p => p.Item != null).Select(p => p.Item).ToHashSet();
+            var retained = recipe.items.Where(item => item != null && !knownItems.Contains(item));
+            recipe.items = PreferredPieces(style).Select(p => p.Item).Concat(retained).Distinct().ToArray();
             EditorUtility.SetDirty(recipe);
             styleRecipes.RemoveAll(r => r.style == style.Key);
             styleRecipes.Add(new PlayerAvatarConfigSO.StyleRecipe { style = style.Key, recipe = recipe });

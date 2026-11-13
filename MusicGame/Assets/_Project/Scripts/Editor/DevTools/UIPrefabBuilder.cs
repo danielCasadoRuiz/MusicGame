@@ -691,8 +691,9 @@ public static class UIPrefabBuilder
         view.root = root.gameObject;
 
         var text = UIFactory.CreateText("Text", root, Loc.Get("Countdown.Finish"), 96, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
-        UIFactory.SetBox(text.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(700f, 200f));
+        // At 2/3 of the screen height, not the centre: the centre is where the running player is.
+        UIFactory.SetBox(text.rectTransform, new Vector2(0.5f, 0.6667f), new Vector2(0.5f, 0.6667f), new Vector2(0.5f, 0.5f),
+            Vector2.zero, new Vector2(1800f, 286f));
         text.gameObject.AddComponent<ThemeTextReceiver>().Initialize(UIColorToken.Accent, UIFontToken.Display);
         view.text = text;
 

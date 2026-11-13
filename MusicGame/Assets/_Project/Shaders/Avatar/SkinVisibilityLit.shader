@@ -18,8 +18,18 @@ Shader "MusicGame/Avatar/Skin Visibility Lit"
         _IrisOuterRadius("Rim start", Range(0.65,0.98)) = 0.87
         _IrisDetailGain("Fiber brightness", Range(0.5,4)) = 2.2
         _EyeSmoothness("Eyeball smoothness", Range(0,1)) = 0.8
-        [HideInInspector] _IrisRightUV("Right iris UV", Vector) = (0.7759774,0.9251543,0.02494856,0)
-        [HideInInspector] _IrisLeftUV("Left iris UV", Vector) = (0.9238683,0.8991770,0.02494856,0)
+        [HideInInspector] _IrisRightUV("Right iris UV", Vector) = (0.7760985,0.9250188,0.02527,0)
+        [HideInInspector] _IrisLeftUV("Left iris UV", Vector) = (0.9239943,0.8990489,0.02527,0)
+        [HideInInspector] _IrisUseGradient("Use gradient", Float) = 1
+        [HideInInspector] _IrisDefaultColor("Uniform iris", Color) = (0.28,0.49,0.64,1)
+        [HideInInspector] _IrisDetailEnabled("Use iris image", Float) = 0
+        [NoScaleOffset] _IrisDetailMap("Iris fibers (RGBA)", 2D) = "white" {}
+        [HideInInspector] _IrisDetailOuter("Source outer annulus", Vector) = (0.5,0.5,0.44,0)
+        [HideInInspector] _IrisDetailPupil("Source pupil", Vector) = (0.5,0.5,0.14,0)
+        [HideInInspector] _IrisVariation("Gradient offset and seed", Vector) = (0,0,1,0)
+        [HideInInspector] _IrisDistortion("Gradient distortion", Float) = 0
+        _IrisPupilRadius("Pupil fraction", Range(0.2,0.45)) = 0.34
+        _IrisEdgeFeather("Iris edge feather", Range(0.01,0.1)) = 0.035
 
         // Specular vs Metallic workflow
         _WorkflowMode("WorkflowMode", Float) = 1.0

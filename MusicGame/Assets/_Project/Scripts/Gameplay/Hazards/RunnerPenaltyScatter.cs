@@ -91,8 +91,9 @@ public class RunnerPenaltyScatter : MonoBehaviour
     private void OnPenalty(RunnerPenaltyEvent e)
     {
         if (_cfg == null || _manager == null) return;
-        // Caught: the body falls to the floor and lies there (not a frozen pose) until the respawn.
-        if (e.Cause == RunnerPenaltyCause.ChaserContact && _player != null && _player.TryGetComponent(out RunnerAvatarAnimator body))
+        // Caught by the chaser or trapped against a wall by the back limit: the body falls to the floor and
+        // lies there (not a frozen pose, not the Fall/Jump role) until the respawn.
+        if ((e.Cause == RunnerPenaltyCause.ChaserContact || e.Cause == RunnerPenaltyCause.Trapped) && _player != null && _player.TryGetComponent(out RunnerAvatarAnimator body))
             body.PlayCaught(_cfg.caughtKnockdownClip, _cfg.caughtDownedClip, _cfg.caughtKnockdownSpeed);
         bool wanted = e.Cause == RunnerPenaltyCause.ChaserContact ? _cfg.scatterOnChaserContact : _cfg.scatterOnOtherPenalties;
         if (!wanted) return;

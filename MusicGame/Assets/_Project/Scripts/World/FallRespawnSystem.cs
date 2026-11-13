@@ -202,7 +202,7 @@ public class FallRespawnSystem : MonoBehaviour
         clock?.Hold();
         _audio.Pause();
 
-        float hold = _config.checkpointRespawnDelay + (_cause == RunnerPenaltyCause.ChaserContact ? _chaserContactExtraHold : 0f);
+        float hold = _config.checkpointRespawnDelay + (_cause == RunnerPenaltyCause.ChaserContact || _cause == RunnerPenaltyCause.Trapped ? _chaserContactExtraHold : 0f); // both lie on the floor (caught pose)
         yield return new WaitForSeconds(Mathf.Max(0f, hold));
 
         yield return StartCoroutine(RespawnAtSongTime(fallSongTime, origVol));

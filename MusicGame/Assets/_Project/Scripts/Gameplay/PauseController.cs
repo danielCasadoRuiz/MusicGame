@@ -305,6 +305,52 @@ public class PauseController : MonoBehaviour
             view.cameraToggleButton.onClick.AddListener(() => CameraFollow.Instance?.ToggleView());
         else
             Debug.LogError("[PauseController] PauseView.cameraToggleButton not assigned — run Tools > MusicGame > UI > Build All UI Prefabs (patches PauseMenu.prefab).", view);
+        if (_cameraToggleButtonRoot != null)
+        {
+            var anchor = _cameraToggleButtonRoot.GetComponent<RunnerHudArtAnchor>();
+            if (anchor == null) anchor = _cameraToggleButtonRoot.gameObject.AddComponent<RunnerHudArtAnchor>();
+            anchor.entireBar = false;
+            anchor.artCenter = new Vector2(2960f, 228f);
+            anchor.artSize = new Vector2(164f, 72f);
+            anchor.Fit();
+            // Quiet outline control; its interior stays transparent.
+            void Edge(string name, Vector2 min, Vector2 max, Vector2 size)
+            {
+                var go = new GameObject(name, typeof(RectTransform), typeof(Image));
+                var rt = (RectTransform)go.transform;
+                rt.SetParent(_cameraToggleButtonRoot, false);
+                rt.anchorMin = min; rt.anchorMax = max;
+                rt.anchoredPosition = Vector2.zero; rt.sizeDelta = size;
+                var image = go.GetComponent<Image>();
+                image.color = new Color(.8f, .86f, .94f, .3f);
+                image.raycastTarget = false;
+            }
+            Edge("OutlineTop", new Vector2(0f, 1f), Vector2.one, new Vector2(0f, 1f));
+            Edge("OutlineBottom", Vector2.zero, Vector2.right, new Vector2(0f, 1f));
+            Edge("OutlineLeft", Vector2.zero, Vector2.up, new Vector2(1f, 0f));
+            Edge("OutlineRight", Vector2.right, Vector2.one, new Vector2(1f, 0f));
+            if (view.cameraToggleButton != null && view.cameraToggleButton.targetGraphic != null)
+                view.cameraToggleButton.targetGraphic.color = Color.clear;
+        }
+        if (_cameraToggleIcon != null)
+        {
+            var rt = _cameraToggleIcon.rectTransform;
+            rt.anchorMin = new Vector2(.52f, 0f); rt.anchorMax = Vector2.one;
+            rt.offsetMin = rt.offsetMax = Vector2.zero;
+            _cameraToggleIcon.preserveAspect = true;
+            _cameraToggleIcon.color = new Color(.85f, .9f, 1f, .65f);
+        }
+        if (_cameraToggleLabel != null)
+        {
+            var rt = _cameraToggleLabel.rectTransform;
+            rt.anchorMin = Vector2.zero; rt.anchorMax = new Vector2(.5f, 1f);
+            rt.offsetMin = rt.offsetMax = Vector2.zero;
+            _cameraToggleLabel.alignment = TextAlignmentOptions.MidlineRight;
+            _cameraToggleLabel.enableAutoSizing = true;
+            _cameraToggleLabel.fontSizeMin = 12f; _cameraToggleLabel.fontSizeMax = 20f;
+            _cameraToggleLabel.fontStyle = FontStyles.Normal;
+            _cameraToggleLabel.color = new Color(.85f, .9f, 1f, .65f);
+        }
         RefreshCameraToggleDisplay(CameraFollow.Instance != null ? CameraFollow.Instance.ViewMode : CameraViewMode.ThirdPerson);
 
         // Same reasoning as GameplayHUD's own label re-set — baked once at Editor-bake time, so
@@ -335,10 +381,10 @@ public class PauseController : MonoBehaviour
     private void RefreshCameraToggleDisplay(CameraViewMode mode)
     {
         bool isThird = mode == CameraViewMode.ThirdPerson;
-        if (_cameraToggleLabel != null) Loc.Set(_cameraToggleLabel, isThird ? "Pause.FirstPerson" : "Pause.ThirdPerson");
+        if (_cameraToggleLabel != null) Loc.Set(_cameraToggleLabel, isThird ? "Camera.FirstShort" : "Camera.ThirdShort");
         if (_cameraToggleIcon != null)
         {
-            var sprite = isThird ? _firstPersonIcon : _thirdPersonIcon;
+            var sprite = Resources.Load<Sprite>("UI/CameraViewOutline");
             _cameraToggleIcon.sprite = sprite;
             _cameraToggleIcon.enabled = sprite != null;
         }

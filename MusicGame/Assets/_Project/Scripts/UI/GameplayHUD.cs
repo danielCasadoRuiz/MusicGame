@@ -63,6 +63,7 @@ public class GameplayHUD : MonoBehaviour
     private int              _finalMaxPossibleScore;
     private bool             _resultsReady;   // this run's RunnerResults exist (RunnerResultsReadyEvent)
 
+    private Action<RingCollectedEvent> _onHudPickup;
     private Action<LevelGeneratedEvent>   _onLevel;
     private Action<GameEndedEvent>        _onEnd;
     private Action<SongProfileReadyEvent> _onProfile;
@@ -98,6 +99,54 @@ public class GameplayHUD : MonoBehaviour
     private TextMeshProUGUI _lifeValueText, _specialValueText;
     private int _shownLives = -1, _shownSpecials = -1;
 
+    // One restartable pulse per cell; always scale from the authored baseline.
+    private sealed class PickupPulse
+    {
+        public RectTransform Root;
+        public Vector3 BaseScale;
+        public float Elapsed = 1f;
+    }
+    private readonly Dictionary<RingType, PickupPulse> _pickupPulses = new();
+    private const float PickupPulseSeconds = .18f;
+    private const float PickupPulseScale = 1.16f;
+
+    private void RegisterPickupPulse(RingType type, Image icon, TextMeshProUGUI value)
+    {
+        // Modern HUD cells contain both icon layers and the count. Legacy layouts pulse only the count.
+        var root = icon != null && value != null && icon.transform.parent == value.transform.parent
+            ? value.transform.parent as RectTransform : value != null ? value.rectTransform : null;
+        if (root != null) _pickupPulses[type] = new PickupPulse { Root = root, BaseScale = root.localScale };
+    }
+
+    private void PulsePickup(RingType type)
+    {
+        if (!_built || _gameEnded || _liveRoot == null || !_liveRoot.gameObject.activeInHierarchy) return;
+        if (!_pickupPulses.TryGetValue(type, out var pulse) || pulse.Root == null) return;
+        pulse.Elapsed = 0f; // Discard the previous pulse, including when pickups arrive in the same frame.
+        pulse.Root.localScale = pulse.BaseScale * PickupPulseScale;
+    }
+
+    private void UpdatePickupPulses()
+    {
+        foreach (var pulse in _pickupPulses.Values)
+        {
+            if (pulse.Root == null || pulse.Elapsed >= PickupPulseSeconds) continue;
+            pulse.Elapsed = Mathf.Min(PickupPulseSeconds, pulse.Elapsed + Time.unscaledDeltaTime);
+            float t = pulse.Elapsed / PickupPulseSeconds;
+            float remaining = (1f - t) * (1f - t);
+            pulse.Root.localScale = pulse.BaseScale * (1f + (PickupPulseScale - 1f) * remaining);
+        }
+    }
+
+    private void ResetPickupPulses()
+    {
+        foreach (var pulse in _pickupPulses.Values)
+        {
+            pulse.Elapsed = PickupPulseSeconds;
+            if (pulse.Root != null) pulse.Root.localScale = pulse.BaseScale;
+        }
+    }
+
     // ── Lifecycle ────────────────────────────────────────────────────────────
 
     private void UpdateResourceHud()
@@ -114,6 +163,8 @@ public class GameplayHUD : MonoBehaviour
 
     private void OnEnable()
     {
+        _onHudPickup = e => PulsePickup(e.Type);
+        EventBus.Subscribe(_onHudPickup);
         _onLevel = e => _totalRings = e.RingCount;
         _onEnd   = e =>
         {
@@ -161,6 +212,8 @@ public class GameplayHUD : MonoBehaviour
 
     private void OnDisable()
     {
+        EventBus.Unsubscribe(_onHudPickup);
+        ResetPickupPulses();
         EventBus.Unsubscribe(_onLevel);
         EventBus.Unsubscribe(_onEnd);
         EventBus.Unsubscribe(_onProfile);
@@ -185,10 +238,12 @@ public class GameplayHUD : MonoBehaviour
         if (_gameEnded || _liveRoot == null) return;
         UpdateLiveHud();
         UpdateResourceHud();
+        UpdatePickupPulses();
     }
 
     private void SetGameEnded(bool ended)
     {
+        ResetPickupPulses();
         _gameEnded = ended;
         if (!ended)
         {
@@ -242,6 +297,14 @@ public class GameplayHUD : MonoBehaviour
 
         // LIFE / SPECIAL cells: static label from the prefab (LocalizedText), tint from the collectibles
         // config — the same colour the pickups have in the world.
+        RegisterPickupPulse(RingType.Kick, view.kickIcon, view.kickValue);
+        RegisterPickupPulse(RingType.Snare, view.snareIcon, view.snareValue);
+        RegisterPickupPulse(RingType.HiHat, view.hiHatIcon, view.hiHatValue);
+        RegisterPickupPulse(RingType.Beat, view.beatIcon, view.beatValue);
+        RegisterPickupPulse(RingType.Onset, view.onsetIcon, view.onsetValue);
+        RegisterPickupPulse(RingType.Impact, view.impactIcon, view.impactValue);
+        RegisterPickupPulse(RingType.Life, view.lifeIcon, view.lifeValue);
+        RegisterPickupPulse(RingType.Special, view.specialIcon, view.specialValue);
         _lifeValueText    = view.lifeValue;
         _specialValueText = view.specialValue;
         if (view.lifeLabel != null && config != null)    view.lifeLabel.color    = config.collectibles.lifeColor;

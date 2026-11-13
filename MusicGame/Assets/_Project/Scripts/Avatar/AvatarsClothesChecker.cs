@@ -493,6 +493,14 @@ public class AvatarsClothesChecker : MonoBehaviour
         if (_instance == null) return;
 
         var b = _instance.BodyMorphValues;
+        var skin = _instance.SkinToneController;
+        if (skin != null)
+        {
+            float tone = Slider("Pell (clar-fosc)",skin.tone);
+            float undertone = Slider("Subto (fred-calid)",skin.undertone,-1,1);
+            if (!Mathf.Approximately(tone,skin.tone)) _instance.SetSkinTone(tone);
+            if (!Mathf.Approximately(undertone,skin.undertone)) _instance.SetSkinUndertone(undertone);
+        }
         float gender = Slider("Gender", b.Gender);
         float weight = Slider("Weight", b.Weight);
         float muscle = Slider("Muscle", b.Muscle);

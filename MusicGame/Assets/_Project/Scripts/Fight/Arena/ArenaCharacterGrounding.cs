@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-/// <summary>One character-caster shadow map for the ring; static decor keeps its baked lighting.</summary>
+/// <summary>Character-caster shadows and soft foot contacts; static decor keeps its baked lighting.</summary>
 public sealed class ArenaCharacterGrounding : MonoBehaviour
 {
     public const uint ReceiverMask = 4;
@@ -11,6 +11,10 @@ public sealed class ArenaCharacterGrounding : MonoBehaviour
     public Light shadowKey;
     public UniversalRenderPipelineAsset midPipeline;
     public Material lowContactMaterial;
+    public bool contactOnly;
+    [Range(0,2)] public float contactStrength = 1.2f;
+    [Range(0,1)] public float mappedContactStrength = .4f;
+    MaterialPropertyBlock contactProperties;
     readonly Dictionary<Renderer,uint> receivers = new();
     readonly Dictionary<Renderer,ShadowCastingMode> casting = new();
     readonly Dictionary<Light,LightShadows> suppressed = new();
@@ -40,7 +44,7 @@ public sealed class ArenaCharacterGrounding : MonoBehaviour
         foreach (var pair in contacts)
         {
             if (!pair.Key || !pair.Value) continue;
-            pair.Value.SetActive(UsingContactFallback);
+            pair.Value.SetActive(true);
             pair.Value.transform.position = new Vector3(pair.Key.position.x, floorY + .012f, pair.Key.position.z);
         }
     }
@@ -76,6 +80,7 @@ public sealed class ArenaCharacterGrounding : MonoBehaviour
         look.RegisterFighterRoot(root); // One owner restores the shared character rendering bit.
         if (roots.Contains(root)) return;
         roots.Add(root);
+        if (!contactOnly)
         foreach (var r in root.GetComponentsInChildren<SkinnedMeshRenderer>(true))
         {
             casting[r] = r.shadowCastingMode;
@@ -104,9 +109,19 @@ public sealed class ArenaCharacterGrounding : MonoBehaviour
     void RefreshMode()
     {
         var p = QualitySettings.renderPipeline as UniversalRenderPipelineAsset;
-        bool full = p && p.supportsAdditionalLightShadows && p.additionalLightsRenderingMode == LightRenderingMode.PerPixel;
+        bool full = !contactOnly && p && p.supportsAdditionalLightShadows && p.additionalLightsRenderingMode == LightRenderingMode.PerPixel;
         UsingContactFallback = !full;
         if (shadowKey) shadowKey.enabled = full && active;
+        // A small local contact remains under mapped shadows to anchor the feet.
+        if (lowContactMaterial)
+        {
+            if (contactProperties == null) contactProperties = new MaterialPropertyBlock();
+            var tint = lowContactMaterial.GetColor("_BaseColor");
+            tint.a = Mathf.Clamp01(tint.a * (full ? mappedContactStrength : contactStrength));
+            contactProperties.SetColor("_BaseColor", tint);
+            foreach (var contact in contacts.Values)
+                if (contact) contact.GetComponent<Renderer>().SetPropertyBlock(contactProperties);
+        }
     }
     void OnEnable() { if (shadowKey) shadowKey.enabled = false; nextScan = 0; }
     void OnDisable()

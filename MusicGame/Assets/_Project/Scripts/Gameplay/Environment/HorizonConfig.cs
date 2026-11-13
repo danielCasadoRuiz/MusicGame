@@ -319,6 +319,10 @@ public class HorizonConfig : ScriptableObject
     public float horizonSunAzimuthDeg   = 0f;
     [Tooltip("Sun height, degrees above the horizon.")]
     public float horizonSunElevationDeg = 2.3f;
+    [Tooltip("ON: the Runner scene's directional light is rotated to match the sky sun above (physically " +
+             "consistent, but a sun near the horizon gives grazing light). OFF (default): the sky sun and the " +
+             "scene light are independent — rotate the Directional Light in Runner.unity freely.")]
+    public bool syncSceneLightToSkySun = false;
     [Range(0.001f, 0.2f)] public float horizonSunSize = 0.005f;
     [Range(0f, 1f)] public float horizonSunGlowSize = 0.03f;
     public float horizonSunGlowIntensity = 3.21f;

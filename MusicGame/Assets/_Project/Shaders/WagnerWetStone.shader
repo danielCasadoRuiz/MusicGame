@@ -37,19 +37,22 @@ Shader "MusicGame/Art/WagnerWetStone"
             #pragma shader_feature_local_fragment _EMISSION
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
+            #pragma multi_compile _ _LIGHT_LAYERS
             #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
             #pragma multi_compile _ _CLUSTER_LIGHT_LOOP
             #pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING
             #pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION
             #pragma multi_compile_fragment _ _REFLECTION_PROBE_ATLAS
+            #pragma multi_compile _ LIGHTMAP_ON
+            #pragma multi_compile _ DIRLIGHTMAP_COMBINED
             #pragma multi_compile_fog
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             half _Wetness;
             half _EnvironmentReflectionStrength;
-            struct Attributes {float4 positionOS:POSITION;float3 normalOS:NORMAL;float4 tangentOS:TANGENT;float2 uv:TEXCOORD0;};
-            struct Varyings {float4 positionCS:SV_POSITION;float3 positionWS:TEXCOORD0;half3 normalWS:TEXCOORD1;half4 tangentWS:TEXCOORD2;float2 uv:TEXCOORD3;half fog:TEXCOORD4;};
+            struct Attributes {float4 positionOS:POSITION;float3 normalOS:NORMAL;float4 tangentOS:TANGENT;float2 uv:TEXCOORD0;float2 staticLightmapUV:TEXCOORD1;};
+            struct Varyings {float4 positionCS:SV_POSITION;float3 positionWS:TEXCOORD0;half3 normalWS:TEXCOORD1;half4 tangentWS:TEXCOORD2;float2 uv:TEXCOORD3;half fog:TEXCOORD4;DECLARE_LIGHTMAP_OR_SH(lightmapUV,vertexSH,5);};
             Varyings Vertex(Attributes input)
             {
                 Varyings output;
@@ -57,6 +60,7 @@ Shader "MusicGame/Art/WagnerWetStone"
                 VertexNormalInputs n=GetVertexNormalInputs(input.normalOS,input.tangentOS);
                 output.positionCS=p.positionCS;output.positionWS=p.positionWS;
                 output.normalWS=n.normalWS;output.tangentWS=half4(n.tangentWS,input.tangentOS.w*GetOddNegativeScale());
+                OUTPUT_LIGHTMAP_UV(input.staticLightmapUV,unity_LightmapST,output.lightmapUV);OUTPUT_SH(output.normalWS,output.vertexSH);
                 output.uv=TRANSFORM_TEX(input.uv,_BaseMap);output.fog=ComputeFogFactor(p.positionCS.z);
                 return output;
             }
@@ -81,9 +85,9 @@ Shader "MusicGame/Art/WagnerWetStone"
                 data.viewDirectionWS=GetWorldSpaceNormalizeViewDir(input.positionWS);
                 data.shadowCoord=TransformWorldToShadowCoord(input.positionWS);
                 data.fogCoord=input.fog;data.vertexLighting=VertexLighting(input.positionWS,data.normalWS);
-                data.bakedGI=SampleSH(data.normalWS);
+                data.bakedGI=SAMPLE_GI(input.lightmapUV,input.vertexSH,data.normalWS);
                 data.normalizedScreenSpaceUV=GetNormalizedScreenSpaceUV(input.positionCS);
-                data.shadowMask=half4(1,1,1,1);
+                data.shadowMask=SAMPLE_SHADOWMASK(input.lightmapUV);
                 half4 color=UniversalFragmentPBR(data,surface);
                 // Keep direct fire/sun highlights, while controlling the strong blue sky reflection.
                 BRDFData brdf;InitializeBRDFData(surface,brdf);
@@ -92,6 +96,33 @@ Shader "MusicGame/Art/WagnerWetStone"
                 color.rgb=max(0,color.rgb-environment*(1-_EnvironmentReflectionStrength));
                 color.rgb=MixFog(color.rgb,data.fogCoord);
                 return color;
+            }
+            ENDHLSL
+        }
+
+        Pass {
+            Name "Meta" Tags {"LightMode"="Meta"} Cull Off
+            HLSLPROGRAM
+            #pragma vertex WetMetaVertex
+            #pragma fragment WetMetaFragment
+            #pragma shader_feature_local_fragment _EMISSION
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/MetaInput.hlsl"
+            half _Wetness;
+            struct WetMetaAttributes {float4 positionOS:POSITION;float2 uv:TEXCOORD0;float2 uv1:TEXCOORD1;float2 uv2:TEXCOORD2;};
+            struct WetMetaVaryings {float4 positionCS:SV_POSITION;float2 uv:TEXCOORD0;float3 positionWS:TEXCOORD1;};
+            WetMetaVaryings WetMetaVertex(WetMetaAttributes input){WetMetaVaryings output;output.positionCS=UnityMetaVertexPosition(input.positionOS.xyz,input.uv1,input.uv2);output.positionWS=TransformObjectToWorld(input.positionOS.xyz);output.uv=TRANSFORM_TEX(input.uv,_BaseMap);return output;}
+            half4 WetMetaFragment(WetMetaVaryings input):SV_Target {
+                SurfaceData surface;InitializeStandardLitSurfaceData(input.uv,surface);
+                // Large, non-repeating wet patches preserve the paving texture and its joints.
+                float2 p=input.positionWS.xz;
+                half patch=saturate(.5h+.24h*sin(p.x*1.15+p.y*.47)+.18h*sin(p.y*1.83-p.x*.71)+.12h*sin(p.x*3.1+p.y*2.7));
+                half wet=smoothstep(.25h,.75h,patch)*_Wetness;
+                surface.smoothness=lerp(.5h,_Smoothness,wet);
+                surface.albedo*=lerp(1.0h,.65h,wet);
+                surface.metallic=0;
+
+                MetaInput data=(MetaInput)0;data.Albedo=surface.albedo;data.Emission=surface.emission;return UnityMetaFragment(data);
             }
             ENDHLSL
         }

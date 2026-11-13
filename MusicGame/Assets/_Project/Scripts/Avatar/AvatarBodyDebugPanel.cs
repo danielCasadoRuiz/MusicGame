@@ -93,6 +93,16 @@ public class AvatarBodyDebugPanel : MonoBehaviour
         var instance = Selected;
         if (instance == null) { GUILayout.Label("No built avatar (press Play / Build)."); GUILayout.EndArea(); return; }
 
+        var skin = instance.SkinToneController;
+        if (skin != null)
+        {
+            GUILayout.Label($"Skin tone (light to dark): {skin.tone:0.00}");
+            float tone = GUILayout.HorizontalSlider(skin.tone,0,1);
+            if (!Mathf.Approximately(tone,skin.tone)) instance.SetSkinTone(tone);
+            GUILayout.Label($"Undertone (cool to warm): {skin.undertone:0.00}");
+            float undertone = GUILayout.HorizontalSlider(skin.undertone,-1,1);
+            if (!Mathf.Approximately(undertone,skin.undertone)) instance.SetSkinUndertone(undertone);
+        }
         var body = instance.BodyMorphValues;
         var edited = body;
         var transition = instance.Root.GetComponent<AvatarBodyTransition>();
@@ -388,6 +398,16 @@ public class AvatarBodyDebugPanel : MonoBehaviour
 
     private string DescribeWeights(AvatarInstance instance)
     {
+        var skin = instance.SkinToneController;
+        if (skin != null)
+        {
+            GUILayout.Label($"Skin tone (light to dark): {skin.tone:0.00}");
+            float tone = GUILayout.HorizontalSlider(skin.tone,0,1);
+            if (!Mathf.Approximately(tone,skin.tone)) instance.SetSkinTone(tone);
+            GUILayout.Label($"Undertone (cool to warm): {skin.undertone:0.00}");
+            float undertone = GUILayout.HorizontalSlider(skin.undertone,-1,1);
+            if (!Mathf.Approximately(undertone,skin.undertone)) instance.SetSkinUndertone(undertone);
+        }
         var body = instance.BodyMorphValues;
         _sb.Clear();
         _sb.AppendLine($"Gender {body.Gender:0.00}   Weight {body.Weight * 2f - 1f:+0.00;-0.00;0.00}   Muscle {body.Muscle:0.00}");

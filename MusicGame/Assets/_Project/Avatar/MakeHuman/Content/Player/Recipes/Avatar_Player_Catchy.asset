@@ -28,4 +28,18 @@ MonoBehaviour:
     gender: 0
   hairOverride: {fileID: 0}
   faceOverride: {fileID: 0}
+  iris:
+    baseTextures: []
+    textureIndex: 0
+    randomizeOnSpawn: 1
+    useGradient: 0
+    defaultColor: {r: 0.28, g: 0.49, b: 0.64, a: 1}
+    inner: {r: 0.42, g: 0.32, b: 0.14, a: 1}
+    middle: {r: 0.28, g: 0.49, b: 0.64, a: 1}
+    outer: {r: 0.08, g: 0.16, b: 0.21, a: 1}
+    innerExtent: 0.55
+    outerStart: 0.87
+    offset: {x: 0, y: 0}
+    distortion: 0.1
+    seed: 1
   colorOverrides: []

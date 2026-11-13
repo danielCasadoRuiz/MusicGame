@@ -153,6 +153,8 @@ public class FighterMovement : MonoBehaviour
 
     /// <summary>This jump started from a real run (Forward-Forward charge at speed): its kick is the flying kick.</summary>
     public bool IsRunningJump => _isJumping && _runningJump;
+    /// <summary>In the air (a jump, still falling back to the ground).</summary>
+    public bool IsAirborne => _isJumping;
     /// <summary>Horizontal speed at take-off (signed, along ForwardXZ) — the flying kick's momentum.</summary>
     public float JumpTakeoffSpeed { get; private set; }
     private bool _runningJump;
@@ -296,7 +298,10 @@ public class FighterMovement : MonoBehaviour
     {
         if (_actor == null) return;
         ApplyTimedDisplacements(); // knockback/lunge keep travelling even outside Fighting (e.g. a KO hit)
-        if (!_active || _input == null) return;
+        // Gravity too: a round won (or lost) in the air — e.g. a KO by a jumping kick — must still land
+        // instead of freezing mid-air once Fighting ends.
+        if (!_active) { UpdateVerticalPhysics(); return; }
+        if (_input == null) return;
 
         if (!_groundYCaptured)
         {

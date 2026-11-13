@@ -44,7 +44,14 @@ public class AvatarRecipeSO : ScriptableObject
     public HairItemSO hairOverride;
     public FaceProfileSO faceOverride;
 
-    [Header("Eyes (baked once at creation)")]
+    [Header("Skin (live, detail-preserving)")]
+    [Range(0,1)] public float skinTone = 1f/3f;
+    [Range(-1,1)] public float skinUndertone;
+
+    [Header("Nails: natural, groups or individual")]
+    public AvatarNailSettings nails = new AvatarNailSettings();
+
+    [Header("Eyes")]
     public AvatarIrisSettings iris = new AvatarIrisSettings();
 
     [Header("Color overrides")]
@@ -79,8 +86,12 @@ public class AvatarRecipeSO : ScriptableObject
 
         return new AvatarRecipe
         {
+            SourceRecipe = this,
             Identity       = runtimeIdentity,
             Iris = iris,
+            Nails = nails?.Copy() ?? new AvatarNailSettings(),
+            SkinTone = Mathf.Clamp01(skinTone),
+            SkinUndertone = Mathf.Clamp(skinUndertone,-1,1),
             BaseAvatar     = baseAvatar,
             Items          = new List<WearableItemSO>(items ?? System.Array.Empty<WearableItemSO>()),
             ColorOverrides = new List<AvatarColorOverride>(colorOverrides ?? System.Array.Empty<AvatarColorOverride>()),

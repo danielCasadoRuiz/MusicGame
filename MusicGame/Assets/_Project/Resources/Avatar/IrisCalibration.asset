@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d7bca1651e499549997e79ea3eb45a0, type: 3}
+  m_Name: IrisCalibration
+  m_EditorClassIdentifier: Assembly-CSharp::AvatarIrisTextureLibrary
+  entries:
+  - texture: {fileID: 2800000, guid: b2727732c190aac4c865d21f4d85c824, type: 3}
+    outer: {x: 0.4910912, y: 0.52488416, z: 0.3939505, w: 0}
+    pupil: {x: 0.4937915, y: 0.52757776, z: 0.12445557, w: 0}
+  - texture: {fileID: 2800000, guid: 17141b80f0f184a46909f71896e52446, type: 3}
+    outer: {x: 0.49609196, y: 0.49609807, z: 0.43248302, w: 0}
+    pupil: {x: 0.49900422, y: 0.4990445, z: 0.1366789, w: 0}
+  - texture: {fileID: 2800000, guid: 249c7dcd53c7e484a8561b6cea06cd45, type: 3}
+    outer: {x: 0.49609196, y: 0.49609807, z: 0.43248302, w: 0}
+    pupil: {x: 0.49900422, y: 0.4990445, z: 0.1366789, w: 0}
+  - texture: {fileID: 2800000, guid: 2a74e0c239699e246999957fcf198f7e, type: 3}
+    outer: {x: 0.49609196, y: 0.49609807, z: 0.43248302, w: 0}
+    pupil: {x: 0.49900422, y: 0.4990445, z: 0.1366789, w: 0}

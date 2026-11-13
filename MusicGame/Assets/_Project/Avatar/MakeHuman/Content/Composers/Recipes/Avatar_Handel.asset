@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AvatarRecipeSO
   identity: {fileID: 11400000, guid: e81679ed2fcf482459911c022773180b, type: 2}
   baseAvatar: {fileID: 11400000, guid: edb208ecbe0ae364cb01448c90f6cb52, type: 2}
-  items: []
+  items:
+  - {fileID: 11400000, guid: 1cbeb5680c2011c4e9c8e865e5913d5e, type: 2}
+  - {fileID: 11400000, guid: 4a4c5a7510631bd4e8216752a1eb7140, type: 2}
+  - {fileID: 11400000, guid: c99b8f03f2918df46ad5b589a8d9cdad, type: 2}
+  - {fileID: 11400000, guid: 852ef03715bf5a547af3c002dee8694f, type: 2}
   bodyOverride:
     overrideWeight: 0
     weight: 0.5
@@ -24,4 +28,18 @@ MonoBehaviour:
     gender: 0
   hairOverride: {fileID: 0}
   faceOverride: {fileID: 0}
+  iris:
+    baseTextures: []
+    textureIndex: 0
+    randomizeOnSpawn: 1
+    useGradient: 0
+    defaultColor: {r: 0.28, g: 0.49, b: 0.64, a: 1}
+    inner: {r: 0.42, g: 0.32, b: 0.14, a: 1}
+    middle: {r: 0.28, g: 0.49, b: 0.64, a: 1}
+    outer: {r: 0.08, g: 0.16, b: 0.21, a: 1}
+    innerExtent: 0.55
+    outerStart: 0.87
+    offset: {x: 0, y: 0}
+    distortion: 0.1
+    seed: 1
   colorOverrides: []

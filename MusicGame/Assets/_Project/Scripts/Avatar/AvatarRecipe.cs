@@ -12,6 +12,10 @@ using System.Collections.Generic;
 /// </summary>
 public class AvatarRecipe
 {
+    public AvatarRecipeSO SourceRecipe;
+    public float SkinTone = 1f/3f;
+    public float SkinUndertone;
+    public AvatarNailSettings Nails = new AvatarNailSettings();
     public AvatarIrisSettings Iris;
     public AvatarIdentity Identity;
     public BaseAvatarDefinitionSO BaseAvatar;

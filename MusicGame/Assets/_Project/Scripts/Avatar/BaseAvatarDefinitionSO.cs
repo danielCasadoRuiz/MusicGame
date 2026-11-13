@@ -22,6 +22,9 @@ public class BaseAvatarDefinitionSO : ScriptableObject
 {
     public string id;
 
+    [Tooltip("Unified skin material for this base UV layout, shared by body and eyes before per-avatar iris setup.")]
+    public Material skinMaterial;
+
     [Header("Base geometry (Addressable) — ONE prefab, shared by both genders")]
     public AssetReferenceGameObject baseAvatarPrefab;
 

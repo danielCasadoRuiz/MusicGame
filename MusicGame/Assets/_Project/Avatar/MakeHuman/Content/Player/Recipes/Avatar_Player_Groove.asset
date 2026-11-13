@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab777b6a62eedf740a4071a4f76a7744, type: 3}
+  m_Name: Avatar_Player_Groove
+  m_EditorClassIdentifier: Assembly-CSharp::AvatarRecipeSO
+  identity: {fileID: 11400000, guid: dd0fd2461eea97642ac45f892840b23d, type: 2}
+  baseAvatar: {fileID: 11400000, guid: edb208ecbe0ae364cb01448c90f6cb52, type: 2}
+  items:
+  - {fileID: 11400000, guid: 26b6802505213e64e8dfee68d3ca6f8d, type: 2}
+  - {fileID: 11400000, guid: f36f40adaef97a94bae88c4e9f648340, type: 2}
+  - {fileID: 11400000, guid: d9bfd50589c05f04bb36f0843125b6ed, type: 2}
+  - {fileID: 11400000, guid: 90c2cf66c27a74346b6ea826624823cf, type: 2}
+  - {fileID: 11400000, guid: bdfbd35cd1502af45adaa0b705f2b38c, type: 2}
+  bodyOverride:
+    overrideWeight: 0
+    weight: 0.5
+    overrideMuscle: 0
+    muscle: 0
+    overrideGender: 0
+    gender: 0
+  hairOverride: {fileID: 0}
+  faceOverride: {fileID: 0}
+  iris:
+    baseTextures: []
+    textureIndex: 0
+    randomizeOnSpawn: 1
+    useGradient: 0
+    defaultColor: {r: 0.28, g: 0.49, b: 0.64, a: 1}
+    inner: {r: 0.42, g: 0.32, b: 0.14, a: 1}
+    middle: {r: 0.28, g: 0.49, b: 0.64, a: 1}
+    outer: {r: 0.08, g: 0.16, b: 0.21, a: 1}
+    innerExtent: 0.55
+    outerStart: 0.87
+    offset: {x: 0, y: 0}
+    distortion: 0.1
+    seed: 1
+  colorOverrides: []

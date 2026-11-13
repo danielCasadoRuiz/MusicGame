@@ -79,13 +79,14 @@ Shader "MusicGame/Art/GothicWindowCutout"
             ClipOpening(p,_WindowCenter2,_WindowRight2,_WindowUp2,_WindowNormal2,_WindowShape2);
             ClipOpening(p,_WindowCenter3,_WindowRight3,_WindowUp3,_WindowNormal3,_WindowShape3);
         }
-        struct A {float4 positionOS:POSITION;float3 normalOS:NORMAL;float4 tangentOS:TANGENT;float2 uv:TEXCOORD0;UNITY_VERTEX_INPUT_INSTANCE_ID};
-        struct V {float4 positionCS:SV_POSITION;float3 positionWS:TEXCOORD0;half3 normalWS:TEXCOORD1;half4 tangentWS:TEXCOORD2;float2 uv:TEXCOORD3;half fog:TEXCOORD4;UNITY_VERTEX_OUTPUT_STEREO};
+        struct A {float4 positionOS:POSITION;float3 normalOS:NORMAL;float4 tangentOS:TANGENT;float2 uv:TEXCOORD0;float2 staticLightmapUV:TEXCOORD1;UNITY_VERTEX_INPUT_INSTANCE_ID};
+        struct V {float4 positionCS:SV_POSITION;float3 positionWS:TEXCOORD0;half3 normalWS:TEXCOORD1;half4 tangentWS:TEXCOORD2;float2 uv:TEXCOORD3;half fog:TEXCOORD4;DECLARE_LIGHTMAP_OR_SH(lightmapUV,vertexSH,5);UNITY_VERTEX_OUTPUT_STEREO};
         V Vertex(A i)
         {
             V o=(V)0;UNITY_SETUP_INSTANCE_ID(i);UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
             VertexPositionInputs p=GetVertexPositionInputs(i.positionOS.xyz);VertexNormalInputs n=GetVertexNormalInputs(i.normalOS,i.tangentOS);
             o.positionCS=p.positionCS;o.positionWS=p.positionWS;o.normalWS=n.normalWS;o.tangentWS=half4(n.tangentWS,i.tangentOS.w*GetOddNegativeScale());
+            OUTPUT_LIGHTMAP_UV(i.staticLightmapUV,unity_LightmapST,o.lightmapUV);OUTPUT_SH(o.normalWS,o.vertexSH);
             o.uv=TRANSFORM_TEX(i.uv,_BaseMap);o.fog=ComputeFogFactor(p.positionCS.z);return o;
         }
         half3 SurfaceNormal(V i,SurfaceData surface)
@@ -94,8 +95,8 @@ Shader "MusicGame/Art/GothicWindowCutout"
         {
             UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);ClipWindows(i.positionWS);SurfaceData surface;InitializeStandardLitSurfaceData(i.uv,surface);
             InputData data=(InputData)0;data.positionWS=i.positionWS;data.normalWS=SurfaceNormal(i,surface);data.viewDirectionWS=GetWorldSpaceNormalizeViewDir(i.positionWS);
-            data.shadowCoord=TransformWorldToShadowCoord(i.positionWS);data.fogCoord=i.fog;data.vertexLighting=VertexLighting(i.positionWS,data.normalWS);data.bakedGI=SampleSH(data.normalWS);
-            data.normalizedScreenSpaceUV=GetNormalizedScreenSpaceUV(i.positionCS);data.shadowMask=half4(1,1,1,1);
+            data.shadowCoord=TransformWorldToShadowCoord(i.positionWS);data.fogCoord=i.fog;data.vertexLighting=VertexLighting(i.positionWS,data.normalWS);data.bakedGI=SAMPLE_GI(i.lightmapUV,i.vertexSH,data.normalWS);
+            data.normalizedScreenSpaceUV=GetNormalizedScreenSpaceUV(i.positionCS);data.shadowMask=SAMPLE_SHADOWMASK(i.lightmapUV);
             half4 color=UniversalFragmentPBR(data,surface);color.rgb=MixFog(color.rgb,data.fogCoord);return color;
         }
         half4 Depth(V i):SV_Target {UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);ClipWindows(i.positionWS);return 0;}
@@ -122,12 +123,15 @@ Shader "MusicGame/Art/GothicWindowCutout"
             #pragma shader_feature_local_fragment _EMISSION
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
+            #pragma multi_compile _ _LIGHT_LAYERS
             #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
             #pragma multi_compile _ _CLUSTER_LIGHT_LOOP
             #pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING
             #pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION
             #pragma multi_compile_fragment _ _REFLECTION_PROBE_ATLAS
+            #pragma multi_compile _ LIGHTMAP_ON
+            #pragma multi_compile _ DIRLIGHTMAP_COMBINED
             #pragma multi_compile_fog
             ENDHLSL
         }
@@ -177,6 +181,20 @@ Shader "MusicGame/Art/GothicWindowCutout"
             #pragma shader_feature_local _NORMALMAP
             #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
             #pragma multi_compile_instancing
+            ENDHLSL
+        }
+
+        Pass {
+            Name "Meta" Tags {"LightMode"="Meta"} Cull Off
+            HLSLPROGRAM
+            #pragma vertex GothicMetaVertex
+            #pragma fragment GothicMetaFragment
+            #pragma shader_feature_local_fragment _EMISSION
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/MetaInput.hlsl"
+            struct GothicMetaAttributes {float4 positionOS:POSITION;float2 uv:TEXCOORD0;float2 uv1:TEXCOORD1;float2 uv2:TEXCOORD2;};
+            struct GothicMetaVaryings {float4 positionCS:SV_POSITION;float2 uv:TEXCOORD0;float3 positionWS:TEXCOORD1;};
+            GothicMetaVaryings GothicMetaVertex(GothicMetaAttributes input){GothicMetaVaryings output;output.positionCS=UnityMetaVertexPosition(input.positionOS.xyz,input.uv1,input.uv2);output.positionWS=TransformObjectToWorld(input.positionOS.xyz);output.uv=TRANSFORM_TEX(input.uv,_BaseMap);return output;}
+            half4 GothicMetaFragment(GothicMetaVaryings input):SV_Target {ClipWindows(input.positionWS);SurfaceData surface;InitializeStandardLitSurfaceData(input.uv,surface);MetaInput data=(MetaInput)0;data.Albedo=surface.albedo;data.Emission=surface.emission;return UnityMetaFragment(data);}
             ENDHLSL
         }
     }

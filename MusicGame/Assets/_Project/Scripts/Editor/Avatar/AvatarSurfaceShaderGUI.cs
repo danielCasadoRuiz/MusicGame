@@ -9,11 +9,30 @@ public sealed class AvatarSurfaceShaderGUI : ShaderGUI
     private ShaderGUI _lit;
     public override void OnGUI(MaterialEditor editor, MaterialProperty[] properties)
     {
+        if(FindProperty("_SkinTone",properties,false)!=null)
+        {
+            EditorGUILayout.LabelField("Avatar — skin tone",EditorStyles.boldLabel);
+            foreach(var name in new[]{"_SkinToneEnabled","_SkinTone","_SkinUndertone","_SkinSoftness","_SkinWrap","_SkinScatterColor"})
+            {var p=FindProperty(name,properties,false);if(p!=null)editor.ShaderProperty(p,p.displayName);}
+        }
+        if(FindProperty("_NailColor0",properties,false)!=null)
+        {
+            EditorGUILayout.LabelField("Nails",EditorStyles.boldLabel);
+            var mode=FindProperty("_NailMode",properties);editor.ShaderProperty(mode,mode.displayName);
+            if(mode.floatValue>.5f && mode.floatValue<1.5f)
+                for(int i=0;i<4;i++)
+                {
+                    var enabled=FindProperty("_NailGroup"+i+"Enabled",properties);editor.ShaderProperty(enabled,enabled.displayName);
+                    if(enabled.floatValue>.5f){var color=FindProperty("_NailGroupColor"+i,properties);editor.ShaderProperty(color,color.displayName);}
+                }
+            else if(mode.floatValue>=1.5f)
+                for(int i=0;i<20;i++){var color=FindProperty("_NailColor"+i,properties);editor.ShaderProperty(color,color.displayName);}
+        }
         EditorGUILayout.LabelField("Avatar — iris gradient", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox("One shared skin/face/eyes atlas. Tint affects only the two iris UV circles. " +
             "FaceProfile can override the three colors per character.", MessageType.Info);
         foreach (string name in new[] { "_IrisEnabled", "_IrisInnerColor", "_IrisMainColor", "_IrisOuterColor",
-                     "_IrisInnerRadius", "_IrisOuterRadius", "_IrisDetailGain", "_EyeSmoothness" })
+                     "_IrisInnerRadius", "_IrisOuterRadius", "_IrisDetailGain", "_EyeSmoothness", "_IrisPupilRadius", "_IrisEdgeFeather" })
         {
             var property = FindProperty(name, properties, false);
             if (property != null) editor.ShaderProperty(property, property.displayName);

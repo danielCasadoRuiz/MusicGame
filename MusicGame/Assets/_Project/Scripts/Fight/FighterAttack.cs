@@ -184,11 +184,14 @@ public class FighterAttack : MonoBehaviour
                 contact = hitCenter;
             }
 
-            var result = FightHitDispatcher.ResolveAndApply(_actor, _opponent, _activeMove, hitDef, _balanceConfig,
+            // Captured: a KO inside ResolveAndApply ends the round synchronously (RoundEndedEvent → InterruptMove),
+            // which clears _activeMove before we log.
+            var move = _activeMove;
+            var result = FightHitDispatcher.ResolveAndApply(_actor, _opponent, move, hitDef, _balanceConfig,
                                                             _moveController != null ? _moveController.CurrentAttackBonus : FightAttackBonus.Identity,
                                                             contact);
             _hitTargetsThisWindow.Add(_opponent);
-            Debug.Log($"[FighterAttack] {(result.IsBlocked ? "Hit BLOCKED" : "Hit landed")}: {_activeMove.debugName} -> " +
+            Debug.Log($"[FighterAttack] {(result.IsBlocked ? "Hit BLOCKED" : "Hit landed")}: {move.debugName} -> " +
                       $"{(result.IsBlocked ? result.FinalChipDamage : result.FinalDamage):F1} dmg");
             break; // one resolved hit per target per Active window, even if several hitDefs would overlap this same frame
         }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -251,10 +251,28 @@ public static class AvatarFactory
         instance.Appearance.SetBody(bodyPart.skinnedRenderers);
         instance.ApplyBody(recipe.Identity.Body);
 
+        // Promote only this base body's skin/eye slots, before runtime iris creates its owned instance.
+        if (recipe.BaseAvatar != null && recipe.BaseAvatar.skinMaterial != null)
+            foreach (var renderer in bodyGO.GetComponentsInChildren<Renderer>(true))
+            {
+                var materials = renderer.sharedMaterials;
+                for (int i=0;i<materials.Length;i++)
+                    if (materials[i] != null && materials[i].HasProperty("_IrisEnabled"))
+                        materials[i] = recipe.BaseAvatar.skinMaterial;
+                renderer.sharedMaterials = materials;
+            }
         // 7. Face/Skin.
         ApplySkinTone(bodyPart, recipe.BaseAvatar, recipe.Identity.Face);
         ApplyFaceTexture(bodyPart, recipe.BaseAvatar, recipe.Identity.Face);
         AvatarIrisAppearance.Apply(bodyGO, recipe.Identity.Face, recipe.Iris);
+        instance.SkinToneController = bodyGO.GetComponent<AvatarSkinToneController>();
+        if (instance.SkinToneController == null) instance.SkinToneController = bodyGO.AddComponent<AvatarSkinToneController>();
+        instance.SkinToneController.SourceRecipe = recipe.SourceRecipe;
+        instance.SkinToneController.Instance = instance;
+        instance.SetSkinTone(recipe.SkinTone);
+        instance.SetSkinUndertone(recipe.SkinUndertone);
+        instance.SkinToneController.nails = recipe.Nails?.Copy() ?? new AvatarNailSettings();
+        instance.SkinToneController.Apply();
 
         return bodyPart;
     }

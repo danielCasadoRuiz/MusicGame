@@ -10,3 +10,12 @@ half _IrisDetailGain;
 half _EyeSmoothness;
 
 half _IrisBaked;
+half _IrisUseGradient;
+half4 _IrisDefaultColor;
+half _IrisDetailEnabled;
+float4 _IrisDetailOuter;
+float4 _IrisDetailPupil;
+float4 _IrisVariation;
+half _IrisDistortion;
+half _IrisPupilRadius;
+half _IrisEdgeFeather;

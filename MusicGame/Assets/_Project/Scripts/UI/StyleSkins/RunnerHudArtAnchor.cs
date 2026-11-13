@@ -18,6 +18,11 @@ public sealed class RunnerHudArtAnchor : MonoBehaviour
         var parent = transform.parent as RectTransform;
         if (_fitting || rt == null || parent == null) return;
         if (!entireBar && (artSize.x <= 0f || artSize.y <= 0f)) return;
+        if (!entireBar && GetComponent<StyleBlendButton>() != null)
+        {
+            artCenter = new Vector2(2996f, 118f);
+            artSize = Vector2.one * 112f;
+        }
         float width = parent.rect.width;
         if (width <= 0f) return;
         float scale = width / StyleSkinLibrarySO.HudBarCanvas.x;

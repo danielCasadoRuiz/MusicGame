@@ -47,6 +47,21 @@ public class AvatarInstance
     public AvatarSkeletonMapper SkeletonMapper;
     public readonly List<EquippedAvatarItem> EquippedItems = new();
     public AvatarRecipe Recipe;
+    public AvatarSkinToneController SkinToneController { get; internal set; }
+    public void SetSkinTone(float value)
+    {
+        if (_disposed) return;
+        value = Mathf.Clamp01(value);
+        if (Recipe != null) Recipe.SkinTone = value;
+        SkinToneController?.SetTone(value);
+    }
+    public void SetSkinUndertone(float value)
+    {
+        if (_disposed) return;
+        value = Mathf.Clamp(value,-1,1);
+        if (Recipe != null) Recipe.SkinUndertone = value;
+        SkinToneController?.SetUndertone(value);
+    }
 
     /// <summary>Segmented-garment state of this avatar (derived garment meshes + body skin mask).</summary>
     public readonly AvatarAppearance Appearance = new();

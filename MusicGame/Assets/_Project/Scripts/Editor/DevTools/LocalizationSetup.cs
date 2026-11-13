@@ -64,6 +64,8 @@ public static class LocalizationSetup
         ("Pause.RestartSong", "RESTART SONG",    "REINICIA LA CANÇÓ"),
         ("Pause.MainMenu",    "MAIN MENU",       "MENÚ PRINCIPAL"),
         ("Pause.ThirdPerson", "Third Person",    "Tercera Persona"),
+        ("Camera.FirstShort", "1st", "1a"),
+        ("Camera.ThirdShort", "3rd", "3a"),
         ("Pause.FirstPerson", "First Person",    "Primera Persona"),
 
         // ── Live HUD — top-bar column headers, reused by EndScreen's performance rows ──────────

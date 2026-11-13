@@ -46,13 +46,15 @@ Shader "MusicGame/Art/ScenarioPolishedFloor"
             #pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING
             #pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION
             #pragma multi_compile_fragment _ _REFLECTION_PROBE_ATLAS
+            #pragma multi_compile _ LIGHTMAP_ON
+            #pragma multi_compile _ DIRLIGHTMAP_COMBINED
             #pragma multi_compile_fog
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             half _Wetness;
             half _EnvironmentReflectionStrength;
-            struct Attributes {float4 positionOS:POSITION;float3 normalOS:NORMAL;float4 tangentOS:TANGENT;float2 uv:TEXCOORD0;UNITY_VERTEX_INPUT_INSTANCE_ID};
-            struct Varyings {float4 positionCS:SV_POSITION;float3 positionWS:TEXCOORD0;half3 normalWS:TEXCOORD1;half4 tangentWS:TEXCOORD2;float2 uv:TEXCOORD3;half fog:TEXCOORD4;UNITY_VERTEX_OUTPUT_STEREO UNITY_VERTEX_INPUT_INSTANCE_ID};
+            struct Attributes {float4 positionOS:POSITION;float3 normalOS:NORMAL;float4 tangentOS:TANGENT;float2 uv:TEXCOORD0;float2 staticLightmapUV:TEXCOORD1;UNITY_VERTEX_INPUT_INSTANCE_ID};
+            struct Varyings {float4 positionCS:SV_POSITION;float3 positionWS:TEXCOORD0;half3 normalWS:TEXCOORD1;half4 tangentWS:TEXCOORD2;float2 uv:TEXCOORD3;half fog:TEXCOORD4;DECLARE_LIGHTMAP_OR_SH(lightmapUV,vertexSH,5);UNITY_VERTEX_OUTPUT_STEREO UNITY_VERTEX_INPUT_INSTANCE_ID};
             Varyings Vertex(Attributes input)
             {
                 Varyings output;
@@ -62,6 +64,7 @@ Shader "MusicGame/Art/ScenarioPolishedFloor"
                 VertexNormalInputs n=GetVertexNormalInputs(input.normalOS,input.tangentOS);
                 output.positionCS=p.positionCS;output.positionWS=p.positionWS;
                 output.normalWS=n.normalWS;output.tangentWS=half4(n.tangentWS,input.tangentOS.w*GetOddNegativeScale());
+                OUTPUT_LIGHTMAP_UV(input.staticLightmapUV,unity_LightmapST,output.lightmapUV);OUTPUT_SH(output.normalWS,output.vertexSH);
                 output.uv=TRANSFORM_TEX(input.uv,_BaseMap);output.fog=ComputeFogFactor(p.positionCS.z);
                 return output;
             }
@@ -82,9 +85,9 @@ Shader "MusicGame/Art/ScenarioPolishedFloor"
                 data.viewDirectionWS=GetWorldSpaceNormalizeViewDir(input.positionWS);
                 data.shadowCoord=TransformWorldToShadowCoord(input.positionWS);
                 data.fogCoord=input.fog;data.vertexLighting=VertexLighting(input.positionWS,data.normalWS);
-                data.bakedGI=SampleSH(data.normalWS);
+                data.bakedGI=SAMPLE_GI(input.lightmapUV,input.vertexSH,data.normalWS);
                 data.normalizedScreenSpaceUV=GetNormalizedScreenSpaceUV(input.positionCS);
-                data.shadowMask=half4(1,1,1,1);
+                data.shadowMask=SAMPLE_SHADOWMASK(input.lightmapUV);
                 half4 color=UniversalFragmentPBR(data,surface);
                 // Keep direct fire/sun highlights, while controlling the strong blue sky reflection.
                 BRDFData brdf;InitializeBRDFData(surface,brdf);
@@ -97,6 +100,7 @@ Shader "MusicGame/Art/ScenarioPolishedFloor"
             ENDHLSL
         }
         UsePass "Universal Render Pipeline/Lit/ShadowCaster"
+        UsePass "Universal Render Pipeline/Lit/Meta"
         UsePass "Universal Render Pipeline/Lit/DepthOnly"
         UsePass "Universal Render Pipeline/Lit/DepthNormals"
     }

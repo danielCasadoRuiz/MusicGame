@@ -191,6 +191,9 @@ public class PlayerController : MonoBehaviour
     /// the edge or jump, for the rest of the farewell. Idempotent; only ResetMotionState (a genuine
     /// new run) clears it.</summary>
     public void EnterFarewellMode() => _farewellMode = true;
+    /// <summary>The farewell stretch: the song is over and the player no longer takes input (CameraFollow's
+    /// closing travelling shot keys off this).</summary>
+    public bool IsInFarewell => _farewellMode;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -552,14 +555,16 @@ public class PlayerController : MonoBehaviour
 
     // ── Fall state ────────────────────────────────────────────────────────────
 
-    /// <param name="freeze">true = stay where it is (a penalty that is not a fall: chaser contact, trapped);
-    /// false = free-fall under gravity (a real fall off the track).</param>
+    /// <param name="freeze">true = stop advancing (a penalty that is not a fall: chaser contact, trapped) — but
+    /// gravity still applies: caught in the air, the body drops straight down onto whatever is below
+    /// (the CharacterController stays on for that). false = free-fall off the track (no collisions).</param>
     public void EnterFallState(bool freeze = false)
     {
         _isFalling    = true;
         _fallFrozen   = freeze;
-        _fallVelocity = Vector3.zero;
-        if (_cc != null) _cc.enabled = false; // hand off to manual world-space fall movement below
+        // Frozen: keep only a downward vertical speed (a rising jump stops; a falling one keeps falling).
+        _fallVelocity = freeze ? Vector3.up * Mathf.Min(0f, _verticalVelocity) : Vector3.zero;
+        if (_cc != null) _cc.enabled = freeze; // free fall: manual world-space movement below, no collisions
     }
 
     public void ExitFallState()
@@ -635,8 +640,17 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateFall()
     {
+        if (_fallFrozen)
+        {
+            // Caught / trapped: no more advancing, but never left floating — drop onto the ground (or
+            // whatever is below) through the CharacterController, so it lands instead of passing through.
+            if (_cc == null || !_cc.enabled) return;
+            _fallVelocity.y += config.gravity * Time.deltaTime;
+            var flags = _cc.Move(Vector3.up * (_fallVelocity.y * Time.deltaTime));
+            if ((flags & CollisionFlags.Below) != 0) _fallVelocity.y = -2f;
+            return;
+        }
         // World-space free-fall (CharacterController disabled — see EnterFallState)
-        if (_fallFrozen) return;
         _fallVelocity      += Vector3.up * config.gravity * Time.deltaTime;
         transform.position += _fallVelocity * Time.deltaTime;
     }

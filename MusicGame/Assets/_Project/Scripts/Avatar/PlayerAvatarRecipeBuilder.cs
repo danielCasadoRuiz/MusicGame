@@ -27,6 +27,9 @@ public static class PlayerAvatarRecipeBuilder
         var recipe = new AvatarRecipe
         {
             Identity   = runtimeIdentity,
+            Nails = playerIdentity != null ? playerIdentity.nails?.Copy() ?? new AvatarNailSettings() : new AvatarNailSettings(),
+            SkinTone = playerIdentity != null ? Mathf.Clamp01(playerIdentity.skinTone) : 1f/3f,
+            SkinUndertone = playerIdentity != null ? Mathf.Clamp(playerIdentity.skinUndertone,-1,1) : 0,
             BaseAvatar = baseAvatar,
             Items      = new List<WearableItemSO>(),
             ColorOverrides = new List<AvatarColorOverride>(),

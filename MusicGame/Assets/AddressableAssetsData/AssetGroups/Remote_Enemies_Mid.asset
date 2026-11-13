@@ -15,6 +15,22 @@ MonoBehaviour:
   m_GroupName: Remote_Enemies_Mid
   m_GUID: b8010d5d53921c1459474e8870dd8d12
   m_SerializeEntries:
+  - m_GUID: 009f5bbb13f3bdf43a7427f2b36cac0a
+    m_Address: Enemy_pachelbel/Wearable_pachelbel_waistcoat/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_pachelbel
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 02f29337b0bc9b04183ae9120ae90d1b
+    m_Address: Enemy_mozart/Wearable_mozart_shirt_2/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_mozart
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 09592fb17d9e50541a33d752185a5a47
     m_Address: Enemy_wagner/Hair_Wagner_hair/sharedVariant/qualityPrefabs@Mid
     m_ReadOnly: 0
@@ -31,6 +47,38 @@ MonoBehaviour:
     - Enemy_monteverdi
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 257a0d36962544c408c47918b7d882d2
+    m_Address: Enemy_haydn/Hair_Haydn_hair/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_haydn
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 28beed8d425ce314ea7baa4b0846e318
+    m_Address: Enemy_handel/Wearable_handel_pants/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_handel
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3015f64c0c865fe43b4199d6fa773051
+    m_Address: Enemy_haydn/Wearable_haydn_jacket/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_haydn
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 33318978f9e21954c8147f4c7d154b4f
+    m_Address: Enemy_tchaikovsky/Wearable_tchaikovsky_jacket/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_tchaikovsky
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3419e1a6e0c530848b904e26f620689c
     m_Address: Enemy_brahms/Wearable_brahms_pants/sharedVariant/qualityPrefabs@Mid
     m_ReadOnly: 0
@@ -39,12 +87,44 @@ MonoBehaviour:
     - Enemy_brahms
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 36f76b6d8b09cfb44a5d3ec596747de2
+    m_Address: Enemy_tchaikovsky/Wearable_tchaikovsky_waistcoat/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_tchaikovsky
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 38325e9210de62b448538db57bf3d41e
+    m_Address: Enemy_mozart/Hair_Mozart_hair/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_mozart
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3a4ce226d3403b14d8c8a5807ffe856e
     m_Address: Enemy_brahms/Wearable_brahms_shirt/sharedVariant/qualityPrefabs@Mid
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_Enemies
     - Enemy_brahms
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a87009739f77f84d9fc4389557c5dcc
+    m_Address: Enemy_pachelbel/Hair_Pachelbel_hair/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_pachelbel
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 42204150f26e44a42a07f2eee6ce926d
+    m_Address: Enemy_tchaikovsky/Wearable_tchaikovsky_shoes/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_tchaikovsky
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 50b4e16e05af1784da9a451de0a4d703
@@ -79,6 +159,14 @@ MonoBehaviour:
     - Enemy_beethoven
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6560ac438da89d9488900c180cf415fe
+    m_Address: Enemy_mozart/Wearable_mozart_pants/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_mozart
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 68d951643b7e57a4aa5152f9cfee6300
     m_Address: Enemy_beethoven/Wearable_beethoven_shirt/sharedVariant/qualityPrefabs@Mid
     m_ReadOnly: 0
@@ -103,12 +191,44 @@ MonoBehaviour:
     - Enemy_brahms
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 82a8fc61ac4d55a4db265cc7e1c446c0
+    m_Address: Enemy_vivaldi/Wearable_vivaldi_pants/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_vivaldi
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 853860896d9908d4f9bc7f24a669ba06
+    m_Address: Enemy_tchaikovsky/Wearable_tchaikovsky_pants/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_tchaikovsky
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a6ee931ddc977049807b5e59e223fd4
+    m_Address: Enemy_vivaldi/Wearable_vivaldi_shoes/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_vivaldi
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 90b9ac45e89d8c5419a99ea3f1b3c8da
     m_Address: Enemy_bach/Hair_Bach_hair/sharedVariant/qualityPrefabs@Mid
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_Enemies
     - Enemy_bach
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 918f5abd1f6777743a1e455551172c18
+    m_Address: Enemy_handel/Wearable_handel_shirt_2/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_handel
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 990ea0506af4f014db1f4caea5d902ad
@@ -135,6 +255,14 @@ MonoBehaviour:
     - Enemy_monteverdi
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9f0427d8581085945a63d8c5565df12e
+    m_Address: Enemy_mozart/Wearable_mozart_jacket/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_mozart
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a14b03418ad5cf545b4b3e7a468c9351
     m_Address: Enemy_monteverdi/Wearable_Monteverdi_shoes/sharedVariant/qualityPrefabs@Mid
     m_ReadOnly: 0
@@ -143,12 +271,44 @@ MonoBehaviour:
     - Enemy_monteverdi
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6f2cff51bcf89a499a4446a94038f12
+    m_Address: Enemy_handel/Wearable_handel_shoes/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_handel
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad446b273d6d28846ae759c3c743e4a9
+    m_Address: Enemy_vivaldi/Wearable_vivaldi_wig/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_vivaldi
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b08e73737c845ef4daa910493fac4520
     m_Address: Enemy_chopin/Wearable_chopin_jacket/sharedVariant/qualityPrefabs@Mid
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_Enemies
     - Enemy_chopin
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b15b086c128450246a369db1bfee1236
+    m_Address: Enemy_pachelbel/Wearable_pachelbel_jacket/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_pachelbel
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b2034781b7d89774a9203940bcef013d
+    m_Address: Enemy_handel/Wearable_handel_shoes_2/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_handel
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b729e9d9d4fa8f4469093b6bf24a2dbf
@@ -167,6 +327,38 @@ MonoBehaviour:
     - Enemy_bach
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ba71a05a435119f4aa3f846b2f96638f
+    m_Address: Enemy_handel/Wearable_handel_shirt/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_handel
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bcc0382ea07143740821a38334489395
+    m_Address: Enemy_handel/Wearable_handel_jacket_2/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_handel
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be1578e864d79de48b2ad7ca87507da3
+    m_Address: Enemy_haydn/Wearable_haydn_shirt/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_haydn
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c16009ad0b88df144bfeba18b2eae546
+    m_Address: Enemy_handel/Hair_Handel_hair_2/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_handel
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c28e779ca87e57049bbea6d1f3c72e0a
     m_Address: Enemy_wagner/Wearable_Wagner_pants/sharedVariant/qualityPrefabs@Mid
     m_ReadOnly: 0
@@ -175,10 +367,34 @@ MonoBehaviour:
     - Enemy_wagner
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c6371b5c002bac44a95b3d670f2a18fc
+    m_Address: Enemy_tchaikovsky/Wearable_tchaikovsky_shirt/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_tchaikovsky
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cd65ceb321b53ec4abc29d5330952e1e
     m_Address: Assets/_Project/Art/Opponents/Monteverdi/Monteverdi_jacket/Mid/Monteverdi_jacket_Mid.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cddb8128c97a04047b5025d6616692cd
+    m_Address: Enemy_vivaldi/Wearable_vivaldi_jacket/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_vivaldi
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dac9aae084d978c438e938ac46320c45
+    m_Address: Enemy_pachelbel/Wearable_pachelbel_pants/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_pachelbel
+    - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dc661d84c49c2c64a91517889227162e
     m_Address: Enemy_beethoven/Hair_Beethoven_hair/sharedVariant/qualityPrefabs@Mid
@@ -212,12 +428,44 @@ MonoBehaviour:
     - Enemy_bach
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e839f6c263c7945418db4adb17cf814e
+    m_Address: Enemy_pachelbel/Wearable_pachelbel_shirt_2/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_pachelbel
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e9e3fd99755fe8546829669235c1df4b
+    m_Address: Enemy_haydn/Wearable_haydn_shoes/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_haydn
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ea76bab66dd54a543994a737b0bf363f
+    m_Address: Enemy_vivaldi/Wearable_vivaldi_shirt/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_vivaldi
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f474d9a1626a03b498b9c67e984cea50
     m_Address: Enemy_monteverdi/Wearable_Monteverdi_beard/sharedVariant/qualityPrefabs@Mid
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_Enemies
     - Enemy_monteverdi
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f9f8a1ab0882aa443b1716e470c6a49b
+    m_Address: Enemy_haydn/Wearable_haydn_pants/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Enemy_haydn
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0

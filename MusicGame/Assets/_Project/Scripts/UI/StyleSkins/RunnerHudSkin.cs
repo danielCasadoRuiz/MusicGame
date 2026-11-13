@@ -42,6 +42,53 @@ public class RunnerHudSkin : MonoBehaviour
     private Material _curtain;
     private float[] _iconX;   // each icon's centre across the bar (0..1), as the curtain sees it
 
+    private TMPro.TextMeshProUGUI _styleLabel;
+
+    private void Awake()
+    {
+        var bar = transform.Find("HudBar");
+        if (bar == null) return;
+        foreach (string name in new[] { "StyleBar", "ClassicBar", "PauseWell" })
+        {
+            var graphic = bar.Find(name)?.GetComponent<Image>();
+            if (graphic != null) graphic.color = Color.clear;
+        }
+        void Place(string name, float x, float y, float w, float h)
+        {
+            var rt = bar.Find(name) as RectTransform;
+            if (rt == null) return;
+            rt.anchorMin = rt.anchorMax = rt.pivot = Vector2.up;
+            rt.anchoredPosition = new Vector2(x, -y);
+            rt.sizeDelta = new Vector2(w, h);
+        }
+        Place("Logo", 16, 8, 1920, 1080);
+        if (logo != null) logo.transform.localScale = Vector3.one * .21f;
+        string[] cells = { "Kick", "Snare", "HiHat", "Beat", "Onset", "Impact", "Life", "Special" };
+        for (int i = 0; i < cells.Length; i++)
+            Place("Cell_" + cells[i], i < 6 ? 440 + i * 148 : 1384 + (i - 6) * 148, 66, 148, 112);
+        int separator = 0;
+        foreach (Transform child in bar)
+            if (child.name == "Separator")
+            {
+                var rt = (RectTransform)child;
+                rt.anchoredPosition = new Vector2(separator++ == 0 ? 1350 : 1708, -66);
+            }
+        Place("ArtistSong", 1742, 40, 810, 58);
+        Place("ProgressBorder", 1742, 104, 1080, 28);
+        Place("ProgressTrack", 1745, 107, 1074, 22);
+        Place("ProgressFill", 1745, 107, 1074, 22);
+        var title = bar.Find("ArtistSong")?.GetComponent<TMPro.TextMeshProUGUI>();
+        if (title != null)
+        {
+            _styleLabel = Instantiate(title, bar);
+            _styleLabel.name = "PlayingStyle";
+            _styleLabel.fontSizeMin = _styleLabel.fontSizeMax = _styleLabel.fontSize = 30;
+            _styleLabel.alignment = TMPro.TextAlignmentOptions.MidlineRight;
+            Place("PlayingStyle", 2568, 40, 254, 58);
+        }
+        _iconX = null;
+    }
+
     public void Apply(GameMusicStyle style, float styleWeight)
     {
         if (library == null) return;
@@ -49,6 +96,7 @@ public class RunnerHudSkin : MonoBehaviour
         if (style != _style)
         {
             _style = style;
+            if (_styleLabel != null) _styleLabel.text = style.ToString();
             var skin = style == GameMusicStyle.Classical ? null : library.Hud(style);
             if (styleBar != null)
             {

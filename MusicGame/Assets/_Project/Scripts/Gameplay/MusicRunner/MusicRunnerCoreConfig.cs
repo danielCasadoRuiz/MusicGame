@@ -169,4 +169,20 @@ public class MusicRunnerCoreConfig : ScriptableObject
     [Tooltip("How many extra seconds the player keeps running afterward — flat ground, silent " +
              "(the song has already finished) — before the end screen actually appears.")]
     public float farewellSeconds = 5f;
+
+    [Header("Ending — the closing stretch (waves, arch, camera)")]
+    [Tooltip("ON: after the song ends and the flat hold, the ground returns to the countdown's waves (one hill per " +
+             "second) instead of flattening — the run ends the way it began. OFF: the old flat farewell.")]
+    public bool endingWaves = true;
+    [Tooltip("Flat ground after the song ends, before closing hills begin. The finish arch marks this boundary.")]
+    [Min(0f)] public float endingFlatSeconds = 1f;
+    [Tooltip("Decoration the player runs through during the farewell (e.g. a classical arch: entering the " +
+             "classical world). Placed on the path facing along it, its pivot on the ground at the centre " +
+             "of the track. Empty = a simple grey placeholder arch (if finishArchPlaceholder).")]
+    public GameObject finishArchPrefab;
+    [Tooltip("Seconds AFTER the song's end (into the farewell) where the arch stands. A whole number puts " +
+             "it in a trough between two waves. Keep it below farewellSeconds so the player reaches it.")]
+    [HideInInspector] public float finishArchSecondsAfterEnd = 3f; // Legacy serialized value; arch follows endingFlatSeconds.
+    [Tooltip("No prefab assigned: build a plain placeholder arch so the moment can be judged already.")]
+    public bool finishArchPlaceholder = true;
 }

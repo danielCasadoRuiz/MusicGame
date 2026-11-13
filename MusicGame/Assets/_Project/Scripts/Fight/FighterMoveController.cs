@@ -187,7 +187,12 @@ public class FighterMoveController : MonoBehaviour
     private System.Action<FightPowerRequestedEvent> _onPower;
     private System.Action<FightFlowStateChangedEvent> _onFightFlowChanged;
     private System.Action<MatchEndedEvent> _onMatchEnded;
+    private System.Action<RoundEndedEvent> _onRoundEnded;
     private System.Action<HitBlockedEvent> _onBlocked;
+    // A round/match won: the celebration role waits until the fighter is back on the ground (a KO from a
+    // jumping kick lands first — FighterMovement keeps gravity running outside Fighting).
+    private CombatRole? _pendingEndPose;
+    private bool _celebratedRound;
     private float _lastBlockedAt = float.NegativeInfinity, _lastBackdashAt = float.NegativeInfinity;
     private int? _nextSide;                 // the axis the NEXT request lands on (decided with its technique)
     private int _sideAtStart;               // first person: side key held when the running strike began (G)
@@ -246,10 +251,24 @@ public class FighterMoveController : MonoBehaviour
             _input?.ResetComboString();
             _actor.Power?.Clear(_actor);
             bool won = e.Winner == _actor.Side;
-            // A KO'd loser stays down (FighterHitReaction's Downed); otherwise show the pose.
+            // Already celebrating the deciding round: keep that pose playing instead of restarting it.
+            if (won && _celebratedRound) return;
+            // A KO'd loser stays down (FighterHitReaction's Downed); otherwise show the pose (once landed).
             if (won || _actor.HitReaction == null || !_actor.HitReaction.IsInKnockdownFlow)
-                _animationDriver.PlayRole(won ? CombatRole.Victory : CombatRole.Defeat);
+                _pendingEndPose = won ? CombatRole.Victory : CombatRole.Defeat;
+            TryPlayPendingEndPose();
         };
+        // Every round won (not only the match): stop the interrupted move — never frozen on its last frame —
+        // land, and celebrate.
+        _onRoundEnded = e =>
+        {
+            if (_actor == null || e.Winner != _actor.Side) return;
+            InterruptMove();
+            _celebratedRound = true;
+            _pendingEndPose = CombatRole.Victory;
+            TryPlayPendingEndPose();
+        };
+        EventBus.Subscribe(_onRoundEnded);
         EventBus.Subscribe(_onMatchEnded);
         EventBus.Subscribe(_onPunch);
         EventBus.Subscribe(_onKick);
@@ -266,11 +285,21 @@ public class FighterMoveController : MonoBehaviour
         EventBus.Unsubscribe(_onPower);
         EventBus.Unsubscribe(_onFightFlowChanged);
         EventBus.Unsubscribe(_onMatchEnded);
+        EventBus.Unsubscribe(_onRoundEnded);
         EventBus.Unsubscribe(_onBlocked);
+    }
+
+    private void TryPlayPendingEndPose()
+    {
+        if (_pendingEndPose == null || _animationDriver == null) return;
+        if (_actor != null && _actor.Movement != null && _actor.Movement.IsAirborne) return; // still falling
+        _animationDriver.PlayRole(_pendingEndPose.Value);
+        _pendingEndPose = null;
     }
 
     private void Update()
     {
+        TryPlayPendingEndPose();
         if (!_active) return;
 
         _actor?.Power?.Tick(_actor, Time.deltaTime);
@@ -942,6 +971,8 @@ public class FighterMoveController : MonoBehaviour
     {
         var previousPhase = CurrentPhase;
         IsMatchLocked = false;
+        _pendingEndPose = null;
+        _celebratedRound = false;
 
         CurrentMove = null;
         QueuedMove = null;

@@ -1,0 +1,1051 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.2f1 (a9779f353c9b) revision 11106207'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) 64bit Professional' Language: 'es' Physical Memory: 32388 MB
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON" at "2026-11-08T19:00:20.1041716Z"
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+Date: 2026-11-08T19:00:20Z
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Unity.exe
+-batchmode
+-projectPath
+C:\Users\VISYON\Documents\MusicGame\MusicGame
+-executeMethod
+AvatarReferenceAuditCapture.RunFromCommandLine
+-logFile
+C:\Users\VISYON\Documents\MusicGame\avatar-reference-capture.log
+Successfully changed project path to: C:\Users\VISYON\Documents\MusicGame\MusicGame
+C:/Users/VISYON/Documents/MusicGame/MusicGame
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [33108]  Target information:
+
+Player connection [33108]  * "[IP] 192.168.1.15 [Port] 55504 [Flags] 2 [Guid] 2273593023 [EditorId] 2273593023 [Version] 1048832 [Id] WindowsEditor(7,RemoteDani) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [33108] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [33108] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-11508" after 0.3 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              945f84a14ad24828b402643beb329e15
+  Correlation Id:          f1303be8974c293abc5a41551d1e8745
+  External correlation Id: 825209534196671850
+  Machine Id:              x99c5MRpHgESOtEUeZ1qua+TIa8=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-VISYON" (connect: 0.00s, validation: 0.00s, handshake: 1.11s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON-notifications" at "2026-11-08T19:00:21.2149636Z"
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.00
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Module] Licensing Background thread has ended after 1.13s
+[Licensing::Module] Licensing is initialized (took 0.54s).
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Refreshing native plugins compatible for Editor in 1.25 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.2f1 (a9779f353c9b)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/VISYON/Documents/MusicGame/MusicGame/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3070 Laptop GPU (ID=0x249d)
+    Vendor:   NVIDIA
+    VRAM:     8020 MB
+    Driver:   32.0.15.8142
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56508
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/MetroSupport/UnityEditor.UWP.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+Registered in 0.015509 seconds.
+- Loaded All Assemblies, in  0.484 seconds
+Native extension for Android target not found
+Android Extension - Scanning For ADB Devices 2324 ms
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  2.817 seconds
+Domain Reload Profiling: 3296ms
+	BeginReloadAssembly (159ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (6ms)
+	RebuildCommonClasses (39ms)
+	RebuildNativeTypeToScriptingClass (15ms)
+	initialDomainReloadingComplete (67ms)
+	LoadAllAssembliesAndSetupDomain (199ms)
+		LoadAssemblies (151ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (194ms)
+			TypeCache.Refresh (192ms)
+				TypeCache.ScanAssembly (178ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (2817ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (2777ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (2475ms)
+			SetLoadedEditorAssemblies (6ms)
+			BeforeProcessingInitializeOnLoad (98ms)
+			ProcessInitializeOnLoadAttributes (142ms)
+			ProcessInitializeOnLoadMethodAttributes (56ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Application.AssetDatabase Initial Refresh Start
+Package Manager log level set to [2]
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 64 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.addressables@2.3.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.addressables@5d870284b3d9)
+    com.unity.ai.inference@2.6.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.ai.navigation@2.0.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.navigation@5218e4bf7edc)
+    com.unity.collab-proxy@2.10.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collab-proxy@3351acaba9c9)
+    com.unity.ide.rider@3.0.38 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.rider@1f60b3138684)
+    com.unity.ide.visualstudio@2.0.25 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.visualstudio@74aa435fc4bb)
+    com.unity.inputsystem@1.17.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.inputsystem@02433b2481ab)
+    com.unity.localization@1.5.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.localization@f2647f7408bd)
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.timeline@1.8.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.timeline@6b9e48457ddb)
+    com.unity.visualscripting@1.9.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.visualscripting@191c0d7e3b69)
+    com.unity.burst@1.8.26 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.burst@21aa83e7fd8f)
+    com.unity.dt.app-ui@2.1.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.dt.app-ui@8ac7e730dd5d)
+    com.unity.collections@2.6.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collections@aea9d3bd5e19)
+    com.unity.profiling.core@1.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.profiling.core@8a49f7027d06)
+    com.unity.scriptablebuildpipeline@2.4.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.scriptablebuildpipeline@ca3e2d96aa2f)
+    com.unity.searcher@4.9.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.mathematics@1.3.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.mathematics@19a9377c4ffa)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.test-framework.performance@3.2.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework.performance@0840f58e4562)
+  Built-in packages:
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.multiplayer.center@f01f4ba8d00a)
+    com.unity.render-pipelines.universal@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal@66e99ffa09c7)
+    com.unity.test-framework@1.6.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework@0b7a23ab2e1d)
+    com.unity.ugui@2.0.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ugui@52e65280e89e)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.0.5 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ext.nunit@d8c07649098d)
+    com.unity.render-pipelines.core@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.core@ce86d16dfe9d)
+    com.unity.shadergraph@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.shadergraph@3cfe1d1f3f8c)
+    com.unity.render-pipelines.universal-config@17.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal-config@8dc1aab4af1d)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.06 seconds
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+DisplayProgressbar: Compiling Scripts
+ExitCode: 4 Duration: 1s103ms
+Rebuilding DAG because FileSignature timestamp changed: Library/Bee/1900b0aEDbg-inputdata.json
+[ 897/1159  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+*** Tundra requires additional run (1.06 seconds), 1 items updated, 896 evaluated
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\netcorerun\netcorerun.exe "C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\ScriptCompilationBuildProgram.exe" "Library/Bee/1900b0aEDbg.dag.json" "Library/Bee/1900b0aEDbg-inputdata.json" "Library\Bee\buildprogram0.traceevents"
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+ExitCode: 0 Duration: 0s938ms
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --dagfilejson="Library\Bee\1900b0aEDbg.dag.json" --profile="Library/Bee/backend2.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+ExitCode: 0 Duration: 10s
+Finished compiling graph: 1163 nodes, 22718 flattened edges (18670 ToBuild, 186 ToUse), maximum node priority 1210
+[ 619/1159  0s] WriteText Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.rsp
+[ 896/1159  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[BUSY       6s] Csc Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll (+2 others)
+[1155/1159  6s] Csc Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+[1156/1159  1s] ILPostProcess Library/Bee/artifacts/1900b0aEDbg.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll, with 137 defines and 359 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1157/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[1158/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (10.13 seconds), 6 items updated, 1159 evaluated
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+AssetDatabase: script compilation time: 12.992631s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  2.409 seconds
+Refreshing native plugins compatible for Editor in 5.91 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in 10.575 seconds
+Domain Reload Profiling: 12973ms
+	BeginReloadAssembly (357ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (13ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (151ms)
+	RebuildCommonClasses (43ms)
+	RebuildNativeTypeToScriptingClass (15ms)
+	initialDomainReloadingComplete (47ms)
+	LoadAllAssembliesAndSetupDomain (1937ms)
+		LoadAssemblies (1685ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (396ms)
+			TypeCache.Refresh (298ms)
+				TypeCache.ScanAssembly (279ms)
+			BuildScriptInfoCaches (77ms)
+			ResolveRequiredComponents (16ms)
+	FinalizeReload (10576ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (10230ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (51ms)
+			SetLoadedEditorAssemblies (8ms)
+			BeforeProcessingInitializeOnLoad (359ms)
+			ProcessInitializeOnLoadAttributes (9444ms)
+			ProcessInitializeOnLoadMethodAttributes (356ms)
+			AfterProcessingInitializeOnLoad (11ms)
+			EditorAssembliesLoaded (1ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (12ms)
+Start importing Packages/com.unity.render-pipelines.core/Tests/Editor/UnifiedRayTracing/TraceRays.urtshader using Guid(1142bbad8b9e8c44c83a9775ff120d37) (ScriptedImporter)Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+ -> (artifact id: 'cceac4cf20873eb0011fa8ccba0dc673') in 0.1850763 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/RendererFeatures/SurfaceCacheGI/SurfaceCacheCore/RisEstimation.urtshader using Guid(713f6141bd66a134383b787f2eaa7c11) (ScriptedImporter) -> (artifact id: 'f0771ef43c0a2c174292e51e0746f18a') in 0.2067724 seconds
+Start importing Packages/com.unity.render-pipelines.core/Editor/Lighting/ProbeVolume/RenderingLayerMask/TraceRenderingLayerMask.urtshader using Guid(94a070d33e408384bafc1dea4a565df9) (ScriptedImporter) -> (artifact id: '93a3daaaaac623176a2de0e8e71440c4') in 0.1371221 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/RendererFeatures/SurfaceCacheGI/SurfaceCacheCore/UniformEstimation.urtshader using Guid(94a39d12848d8d64ca962a72b74e7c50) (ScriptedImporter) -> (artifact id: '72c9e72b3dd91c05a1830535415a155e') in 0.0398851 seconds
+Start importing Packages/com.unity.render-pipelines.core/Tests/Editor/UnifiedRayTracing/TraceTransparentRays.urtshader using Guid(6513c3b892e933c4f8d00c19d5c47532) (ScriptedImporter) -> (artifact id: '82b1681c6b84a9364f3e72207dbd6f33') in 0.0280692 seconds
+Start importing Packages/com.unity.render-pipelines.core/Editor/Lighting/ProbeVolume/DynamicGI/DynamicGISkyOcclusion.urtshader using Guid(5a2a534753fbdb44e96c3c78b5a6999d) (ScriptedImporter) -> (artifact id: 'c690ce6e301f911bb4469739a966ce02') in 0.0294225 seconds
+Start importing Packages/com.unity.render-pipelines.core/Tests/Editor/UnifiedRayTracing/TraceRaysAndFetchAttributes.urtshader using Guid(fbc59f55df2416344b008dc23753cae2) (ScriptedImporter) -> (artifact id: 'd628240c15eb4fd0c1cef0e49e142500') in 0.0265408 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/RendererFeatures/SurfaceCacheGI/SurfaceCacheCore/RestirCandidateTemporal.urtshader using Guid(ad3a9f9982f8c4f4a839a78955e78458) (ScriptedImporter) -> (artifact id: '6c65030a1743673baeccb6742e82c637') in 0.0462813 seconds
+Start importing Packages/com.unity.render-pipelines.core/Editor/Lighting/ProbeVolume/VirtualOffset/TraceVirtualOffset.urtshader using Guid(ff2cbab5da58bf04d82c5f34037ed123) (ScriptedImporter) -> (artifact id: 'eafc8a60bcdb1e68c9f4854d04a42b30') in 0.0646645 seconds
+Script 'Library/PackageCache/com.unity.test-framework@0b7a23ab2e1d/Tests/TestNewCustomAssembly/TestNewCustomAssembly.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/VerifyEditorInPlaymode/Unity.AI.Navigation.Tests.EditorInPlaymode.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.mathematics@19a9377c4ffa/Tests/Unity.Mathematics.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.xml' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/ResourceManager/Unity.ResourceManager.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/DocCodeSamples.Tests/DocCodeSamples.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.dt.app-ui@8ac7e730dd5d/Tests/Runtime/Unity.AppUI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/Unity.Addressables.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/TestAssets/Unity.ScriptableBuildPipelineTests.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.PerformanceTests/Unity.Collections.PerformanceTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/Unity.AI.Navigation.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.timeline@6b9e48457ddb/DocCodeExamples/DocCodeExamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.localization@f2647f7408bd/DocCodeSamples.Tests/DocCodeSamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.multiplayer.center@f01f4ba8d00a/Tests/Runtime/Unity.Multiplayer.Center.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.core@ce86d16dfe9d/Tests/Runtime/Threading/FunctionTestsGroup.compute' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/OffMeshLinkTests/Unity.AI.Navigation.LegacyOffMeshLink.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/UGUI/UnityEngine.UI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.inputsystem@02433b2481ab/Tests/IntegrationTests/Unity.InputSystem.IntegrationTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests.Playmode/FixedListPlayModeTests.tt' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/TMP/Unity.TextMeshPro.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Tests/Runtime/Unity.RenderPipelines.Universal.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/Unity.ScriptableBuildPipeline.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.BurstCompatibilityGen/Unity.Collections.BurstCompatibilityGen.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Refreshing native plugins compatible for Editor in 6.93 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=874ac337ad181e244a605cee206d5700): Total: 35.981 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=3 ms, native=12854 ms
+		Asset DB Callback time: managed=7056 ms, native=473 ms
+		Scripting: domain reloads=1, domain reload time=2409 ms, compile time=12994 ms, other=189 ms
+		Project Asset Count: scripts=6105, non-scripts=19342
+		Asset File Changes: new=1, changed=1, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.002ms
+	InvokePackagesCallback: 115.557ms
+	ApplyChangesToAssetFolders: 0.732ms
+	Scan: 670.787ms
+	OnSourceAssetsModified: 0.755ms
+	CategorizeAssetsWithTransientArtifact: 70.564ms
+	ProcessAssetsWithTransientArtifactChanges: 109.536ms
+	CategorizeAssets: 275.458ms
+	ImportOutOfDateAssets: 11420.772ms (-2423.633ms without children)
+		ImportManagerImport: 809.042ms (30.061ms without children)
+			ImportInProcess: 778.981ms
+		CompileScripts: 12994.006ms
+		ReloadNativeAssets: 0.372ms
+		UnloadImportedAssets: 2.481ms
+		ReloadImportedAssets: 27.963ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 7.090ms
+		InitializingProgressBar: 0.009ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 3.441ms
+	PostProcessAllAssets: 7408.423ms
+	Hotreload: 10.476ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.002ms
+	UnloadStreamsBegin: 3.228ms
+	PersistCurrentRevisions: 1.649ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 4.712ms
+	Untracked: 15893.378ms
+
+Application.AssetDatabase Initial Refresh End
+Scanning for USB devices : 2.148ms
+Initializing Unity extensions:
+Script 'Library/PackageCache/com.unity.test-framework@0b7a23ab2e1d/Tests/TestNewCustomAssembly/TestNewCustomAssembly.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/VerifyEditorInPlaymode/Unity.AI.Navigation.Tests.EditorInPlaymode.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.mathematics@19a9377c4ffa/Tests/Unity.Mathematics.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.xml' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/ResourceManager/Unity.ResourceManager.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/DocCodeSamples.Tests/DocCodeSamples.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.dt.app-ui@8ac7e730dd5d/Tests/Runtime/Unity.AppUI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/Unity.Addressables.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/TestAssets/Unity.ScriptableBuildPipelineTests.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.PerformanceTests/Unity.Collections.PerformanceTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/Unity.AI.Navigation.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.timeline@6b9e48457ddb/DocCodeExamples/DocCodeExamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.localization@f2647f7408bd/DocCodeSamples.Tests/DocCodeSamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.multiplayer.center@f01f4ba8d00a/Tests/Runtime/Unity.Multiplayer.Center.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.core@ce86d16dfe9d/Tests/Runtime/Threading/FunctionTestsGroup.compute' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/OffMeshLinkTests/Unity.AI.Navigation.LegacyOffMeshLink.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/UGUI/UnityEngine.UI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.inputsystem@02433b2481ab/Tests/IntegrationTests/Unity.InputSystem.IntegrationTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests.Playmode/FixedListPlayModeTests.tt' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/TMP/Unity.TextMeshPro.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Tests/Runtime/Unity.RenderPipelines.Universal.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/Unity.ScriptableBuildPipeline.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.BurstCompatibilityGen/Unity.Collections.BurstCompatibilityGen.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-MusicGame
+Unloading 68 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 9409 unused Assets / (22.8 MB). Loaded Objects now: 10414.
+Memory consumption went from 336.8 MB to 314.0 MB.
+Total: 21.293300 ms (FindLiveObjects: 0.891600 ms CreateObjectMapping: 1.032600 ms MarkObjects: 12.297000 ms  DeleteObjects: 7.070000 ms)
+
+Opening scene 'Assets/_Project/Scenes/Debug/AvatarsClothesChecker.unity'
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Assets/_Project/Scenes/Debug/AvatarsClothesChecker.unity'
+	Deserialize:            12.443 ms
+	Integration:            255.451 ms
+	Integration of assets:  0.011 ms
+	Thread Wait Time:       0.011 ms
+	Total Operation Time:   267.916 ms
+Unloading 2 unused Assets / (1.0 KB). Loaded Objects now: 10425.
+Memory consumption went from 296.7 MB to 296.7 MB.
+Total: 12.079900 ms (FindLiveObjects: 0.425200 ms CreateObjectMapping: 0.499200 ms MarkObjects: 11.112500 ms  DeleteObjects: 0.041600 ms)
+
+[Project] Loading completed in 45.767 seconds
+	Project init time: 				43.714 seconds
+		Template init time: 		0.000 seconds
+		Package Manager init time: 		0.849 seconds
+		Asset Database init time: 		0.637 seconds
+		Global illumination init time: 	0.003 seconds
+		Assemblies load time: 			3.324 seconds
+		Unity extensions init time: 	0.016 seconds
+		Asset Database refresh time: 	35.981 seconds
+	Scene opening time: 			1.744 seconds
+##utp:{"type":"ProjectInfo","version":2,"phase":"Immediate","time":1794164465842,"processId":11508,"projectLoad":45.7674491,"projectInit":43.7139602,"templateInit":0.0,"packageManagerInit":0.8486432,"assetDatabaseInit":0.6368369,"globalIlluminationInit":0.0028624,"assembliesLoad":3.3240864,"unityExtensionsInit":0.0157461,"assetDatabaseRefresh":35.9814567,"sceneOpening":1.7441254}
+##utp:{"type":"EditorInfo","version":2,"phase":"Immediate","time":1794164465842,"processId":11508,"editorVersion":"6000.3.2f1 (a9779f353c9b)","branch":"6000.3/staging","buildType":"Release","platform":"Windows"}
+Reloading assemblies for play mode.
+Reloading assemblies after forced synchronous recompile.
+Begin MonoManager ReloadAssembly
+20:01:06.036 |V| RiderPlugin                    | :1                             | AppDomain.CurrentDomain.DomainUnload lifetimeDefinition.Terminate
+- Loaded All Assemblies, in  1.006 seconds
+Refreshing native plugins compatible for Editor in 6.80 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.714 seconds
+Domain Reload Profiling: 2715ms
+	BeginReloadAssembly (539ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (53ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (314ms)
+	RebuildCommonClasses (33ms)
+	RebuildNativeTypeToScriptingClass (13ms)
+	initialDomainReloadingComplete (39ms)
+	LoadAllAssembliesAndSetupDomain (377ms)
+		LoadAssemblies (211ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (271ms)
+			TypeCache.Refresh (9ms)
+				TypeCache.ScanAssembly (0ms)
+			BuildScriptInfoCaches (241ms)
+			ResolveRequiredComponents (15ms)
+	FinalizeReload (1715ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (1272ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (60ms)
+			SetLoadedEditorAssemblies (7ms)
+			BeforeProcessingInitializeOnLoad (441ms)
+			ProcessInitializeOnLoadAttributes (577ms)
+			ProcessInitializeOnLoadMethodAttributes (176ms)
+			AfterProcessingInitializeOnLoad (10ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (47ms)
+Asset Pipeline Refresh (id=c87dc1bfc6a9542448365d713679b907): Total: 3.158 seconds - Initiated by StopAssetImportingV2(ForceSynchronousImport | ForceDomainReload)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=2088 ms
+		Asset DB Callback time: managed=26 ms, native=1 ms
+		Scripting: domain reloads=1, domain reload time=1040 ms, compile time=1 ms, other=0 ms
+		Project Asset Count: scripts=6105, non-scripts=19342
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 4.791ms
+	ApplyChangesToAssetFolders: 0.390ms
+	Scan: 0.001ms
+	OnSourceAssetsModified: 0.002ms
+	CategorizeAssetsWithTransientArtifact: 0.004ms
+	ProcessAssetsWithTransientArtifactChanges: 6.266ms
+	CategorizeAssets: 264.625ms
+	ImportOutOfDateAssets: 1743.067ms (1732.629ms without children)
+		CompileScripts: 1.197ms
+		CollectScriptTypesHashes: 2.285ms
+		ReloadNativeAssets: 1.253ms
+		UnloadImportedAssets: 0.109ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 4.480ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.000ms
+		OnDemandSchedulerStart: 1.113ms
+	PostProcessAllAssets: 26.950ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.480ms
+	UnloadStreamsBegin: 0.081ms
+	PersistCurrentRevisions: 1.042ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 7.593ms
+	Untracked: 1109.555ms
+
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            0.505 ms
+	Integration:            16742.143 ms
+	Integration of assets:  0.006 ms
+	Thread Wait Time:       0.010 ms
+	Total Operation Time:   16742.664 ms
+Asset Pipeline Refresh (id=f17df83d83f3e024eaa56d51bfb62d1c): Total: 0.168 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[Indexing] Starting Initial Indexing for Assets
+Created GICache directory at C:/Users/VISYON/AppData/LocalLow/Unity/Caches/GiCache. Took: 0.020s, timestamps: [65.836 - 65.856]
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Unloading 82 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 661 unused Assets / (212.3 MB). Loaded Objects now: 11435.
+Memory consumption went from 1.03 GB to 0.82 GB.
+Total: 28.569000 ms (FindLiveObjects: 0.491000 ms CreateObjectMapping: 0.396300 ms MarkObjects: 14.293500 ms  DeleteObjects: 13.386600 ms)
+
+Unloading 43 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 737 unused Assets / (281.1 MB). Loaded Objects now: 11435.
+Memory consumption went from 1.09 GB to 0.82 GB.
+Total: 37.644100 ms (FindLiveObjects: 0.588900 ms CreateObjectMapping: 0.414000 ms MarkObjects: 16.317900 ms  DeleteObjects: 20.322100 ms)
+
+Unloading 43 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 731 unused Assets / (166.0 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.08 GB to 0.91 GB.
+Total: 22.463500 ms (FindLiveObjects: 0.494600 ms CreateObjectMapping: 0.437500 ms MarkObjects: 9.235600 ms  DeleteObjects: 12.294400 ms)
+
+Unloading 30 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 495 unused Assets / (176.6 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.03 GB to 0.86 GB.
+Total: 27.497700 ms (FindLiveObjects: 0.523800 ms CreateObjectMapping: 0.634100 ms MarkObjects: 14.347400 ms  DeleteObjects: 11.991000 ms)
+
+Unloading 43 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 743 unused Assets / (240.3 MB). Loaded Objects now: 11435.
+Memory consumption went from 1.18 GB to 0.95 GB.
+Total: 34.030500 ms (FindLiveObjects: 0.553500 ms CreateObjectMapping: 0.510300 ms MarkObjects: 16.051900 ms  DeleteObjects: 16.913200 ms)
+
+Unloading 43 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 737 unused Assets / (172.1 MB). Loaded Objects now: 11435.
+Memory consumption went from 1.09 GB to 0.92 GB.
+Total: 31.752900 ms (FindLiveObjects: 0.645600 ms CreateObjectMapping: 0.496200 ms MarkObjects: 17.639300 ms  DeleteObjects: 12.970500 ms)
+
+Unloading 41 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 735 unused Assets / (100.9 MB). Loaded Objects now: 11435.
+Memory consumption went from 0.99 GB to 0.89 GB.
+Total: 20.245400 ms (FindLiveObjects: 0.703500 ms CreateObjectMapping: 0.506600 ms MarkObjects: 10.551700 ms  DeleteObjects: 8.482200 ms)
+
+Unloading 36 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 609 unused Assets / (127.7 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.03 GB to 0.90 GB.
+Total: 24.643100 ms (FindLiveObjects: 0.552200 ms CreateObjectMapping: 0.403500 ms MarkObjects: 13.112600 ms  DeleteObjects: 10.573500 ms)
+
+Unloading 22 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 377 unused Assets / (107.8 MB). Loaded Objects now: 11435.
+Memory consumption went from 0.94 GB to 0.83 GB.
+Total: 23.784700 ms (FindLiveObjects: 0.546900 ms CreateObjectMapping: 0.423100 ms MarkObjects: 15.203800 ms  DeleteObjects: 7.609400 ms)
+
+Unloading 37 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 617 unused Assets / (125.7 MB). Loaded Objects now: 11435.
+Memory consumption went from 1.02 GB to 0.89 GB.
+Total: 18.116100 ms (FindLiveObjects: 0.557700 ms CreateObjectMapping: 0.393100 ms MarkObjects: 8.852900 ms  DeleteObjects: 8.311200 ms)
+
+Unloading 37 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 611 unused Assets / (106.5 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.01 GB to 0.90 GB.
+Total: 23.847600 ms (FindLiveObjects: 0.491300 ms CreateObjectMapping: 0.388500 ms MarkObjects: 16.248500 ms  DeleteObjects: 6.717900 ms)
+
+Unloading 37 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 617 unused Assets / (262.3 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.09 GB to 0.84 GB.
+Total: 32.215300 ms (FindLiveObjects: 0.513800 ms CreateObjectMapping: 0.375500 ms MarkObjects: 14.047200 ms  DeleteObjects: 17.277700 ms)
+
+Unloading 44 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 739 unused Assets / (177.2 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.17 GB to 1.00 GB.
+Total: 28.503900 ms (FindLiveObjects: 0.552700 ms CreateObjectMapping: 0.394200 ms MarkObjects: 15.020600 ms  DeleteObjects: 12.535000 ms)
+
+Unloading 44 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 739 unused Assets / (186.3 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.15 GB to 0.97 GB.
+Total: 33.962000 ms (FindLiveObjects: 0.579700 ms CreateObjectMapping: 0.446600 ms MarkObjects: 17.486400 ms  DeleteObjects: 15.447900 ms)
+
+Unloading 30 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 495 unused Assets / (170.6 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.01 GB to 0.85 GB.
+Total: 21.421400 ms (FindLiveObjects: 0.531300 ms CreateObjectMapping: 0.432600 ms MarkObjects: 9.259000 ms  DeleteObjects: 11.196700 ms)
+
+Unloading 44 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 739 unused Assets / (268.3 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.17 GB to 0.91 GB.
+Total: 37.841400 ms (FindLiveObjects: 0.619500 ms CreateObjectMapping: 0.427400 ms MarkObjects: 16.603200 ms  DeleteObjects: 20.189600 ms)
+
+Unloading 44 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 739 unused Assets / (205.9 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.18 GB to 0.98 GB.
+Total: 30.329400 ms (FindLiveObjects: 0.528700 ms CreateObjectMapping: 0.411800 ms MarkObjects: 14.855800 ms  DeleteObjects: 14.531500 ms)
+
+TrimDiskCacheJob: Current cache size 3725mb
+Unloading 37 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 617 unused Assets / (99.9 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.11 GB to 1.02 GB.
+Total: 22.867700 ms (FindLiveObjects: 0.542900 ms CreateObjectMapping: 0.443000 ms MarkObjects: 15.412400 ms  DeleteObjects: 6.468100 ms)
+
+Unloading 37 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 617 unused Assets / (243.2 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.11 GB to 0.87 GB.
+Total: 28.567000 ms (FindLiveObjects: 0.541600 ms CreateObjectMapping: 0.400600 ms MarkObjects: 8.838600 ms  DeleteObjects: 18.784800 ms)
+
+Unloading 37 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 617 unused Assets / (135.1 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.10 GB to 0.97 GB.
+Total: 24.409800 ms (FindLiveObjects: 0.528700 ms CreateObjectMapping: 0.386400 ms MarkObjects: 14.643000 ms  DeleteObjects: 8.850600 ms)
+
+Unloading 37 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 623 unused Assets / (6.8 MB). Loaded Objects now: 11435.
+Memory consumption went from 1.09 GB to 1.08 GB.
+Total: 11.054100 ms (FindLiveObjects: 0.582300 ms CreateObjectMapping: 0.417800 ms MarkObjects: 9.573000 ms  DeleteObjects: 0.479700 ms)
+
+Unloading 44 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 733 unused Assets / (160.3 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.09 GB to 0.94 GB.
+Total: 31.304600 ms (FindLiveObjects: 0.534400 ms CreateObjectMapping: 0.434300 ms MarkObjects: 16.554300 ms  DeleteObjects: 13.780500 ms)
+
+Unloading 44 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 745 unused Assets / (348.3 MB). Loaded Objects now: 11435.
+Memory consumption went from 1.19 GB to 0.85 GB.
+Total: 32.663200 ms (FindLiveObjects: 0.514900 ms CreateObjectMapping: 0.416700 ms MarkObjects: 8.349900 ms  DeleteObjects: 23.380600 ms)
+
+Unloading 44 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 733 unused Assets / (254.4 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.08 GB to 0.83 GB.
+Total: 34.980900 ms (FindLiveObjects: 0.555700 ms CreateObjectMapping: 0.426900 ms MarkObjects: 16.102900 ms  DeleteObjects: 17.893900 ms)
+
+Unloading 30 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 495 unused Assets / (116.2 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.02 GB to 0.90 GB.
+Total: 22.766900 ms (FindLiveObjects: 0.488900 ms CreateObjectMapping: 0.369000 ms MarkObjects: 15.130200 ms  DeleteObjects: 6.777600 ms)
+
+Unloading 30 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 495 unused Assets / (132.8 MB). Loaded Objects now: 11441.
+Memory consumption went from 1.02 GB to 0.89 GB.
+Total: 25.452900 ms (FindLiveObjects: 0.584800 ms CreateObjectMapping: 0.403500 ms MarkObjects: 15.102900 ms  DeleteObjects: 9.360000 ms)
+
+Unloading 8 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 134 unused Assets / (50.3 KB). Loaded Objects now: 11437.
+Memory consumption went from 0.80 GB to 0.80 GB.
+Total: 15.573800 ms (FindLiveObjects: 0.466800 ms CreateObjectMapping: 0.357600 ms MarkObjects: 14.541900 ms  DeleteObjects: 0.206500 ms)
+
+Unloading 8 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 128 unused Assets / (24.5 KB). Loaded Objects now: 11437.
+Memory consumption went from 0.72 GB to 0.72 GB.
+Total: 10.158800 ms (FindLiveObjects: 0.513000 ms CreateObjectMapping: 0.432900 ms MarkObjects: 9.029500 ms  DeleteObjects: 0.182300 ms)
+
+Unloading 36 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 609 unused Assets / (79.5 MB). Loaded Objects now: 11441.
+Memory consumption went from 0.97 GB to 0.90 GB.
+Total: 23.870900 ms (FindLiveObjects: 0.614100 ms CreateObjectMapping: 0.420300 ms MarkObjects: 16.702300 ms  DeleteObjects: 6.132600 ms)
+
+PASS Avatar_Bach Ultra built
+PASS Avatar_Bach Ultra items equipped: 3/3
+PASS Avatar_Bach Ultra assembled (masks): 3/3
+PASS Avatar_Bach Ultra hair
+PASS Avatar_Bach Ultra masks
+PASS Avatar_Bach Ultra bach_pants one draw: 76454/90875 triangles visible
+PASS Avatar_Bach Ultra bach_shirt one draw: 10799/86476 triangles visible
+PASS Avatar_Bach Ultra bach_jacket one draw: 103556/103556 triangles visible
+PASS Avatar_Beethoven Ultra built
+PASS Avatar_Beethoven Ultra items equipped: 4/4
+PASS Avatar_Beethoven Ultra assembled (masks): 4/4
+PASS Avatar_Beethoven Ultra hair
+PASS Avatar_Beethoven Ultra masks
+PASS Avatar_Beethoven Ultra beethoven_jacket one draw: 77878/77878 triangles visible
+PASS Avatar_Beethoven Ultra beethoven_pants one draw: 78256/94161 triangles visible
+PASS Avatar_Beethoven Ultra beethoven_shirt one draw: 41278/118236 triangles visible
+PASS Avatar_Beethoven Ultra beethoven_shoes one draw: 168988/168988 triangles visible
+PASS Avatar_Brahms Ultra built
+PASS Avatar_Brahms Ultra items equipped: 4/4
+PASS Avatar_Brahms Ultra assembled (masks): 4/4
+PASS Avatar_Brahms Ultra hair
+PASS Avatar_Brahms Ultra masks
+PASS Avatar_Brahms Ultra brahms_beard one draw: 99264/99264 triangles visible
+PASS Avatar_Brahms Ultra brahms_jacket one draw: 91618/91618 triangles visible
+PASS Avatar_Brahms Ultra brahms_pants one draw: 58740/77742 triangles visible
+PASS Avatar_Brahms Ultra brahms_shirt one draw: 46661/101634 triangles visible
+PASS Avatar_Chopin Ultra built
+PASS Avatar_Chopin Ultra items equipped: 3/3
+PASS Avatar_Chopin Ultra assembled (masks): 3/3
+PASS Avatar_Chopin Ultra masks
+PASS Avatar_Chopin Ultra chopin_jacket one draw: 82753/82753 triangles visible
+PASS Avatar_Chopin Ultra chopin_pants one draw: 60254/77106 triangles visible
+PASS Avatar_Chopin Ultra chopin_shirt one draw: 22734/79434 triangles visible
+PASS Avatar_Handel Ultra built
+PASS Avatar_Handel Ultra items equipped: 4/4
+PASS Avatar_Handel Ultra assembled (masks): 4/4
+PASS Avatar_Handel Ultra hair
+PASS Avatar_Handel Ultra masks
+PASS Avatar_Handel Ultra handel_jacket_2 one draw: 79805/79805 triangles visible
+PASS Avatar_Handel Ultra handel_pants one draw: 88279/94970 triangles visible
+PASS Avatar_Handel Ultra handel_shirt_2 one draw: 34375/114605 triangles visible
+PASS Avatar_Handel Ultra handel_shoes_2 one draw: 178164/178164 triangles visible
+PASS Avatar_Haydn Ultra built
+PASS Avatar_Haydn Ultra items equipped: 4/4
+PASS Avatar_Haydn Ultra assembled (masks): 4/4
+PASS Avatar_Haydn Ultra hair
+PASS Avatar_Haydn Ultra masks
+PASS Avatar_Haydn Ultra haydn_jacket one draw: 98378/98378 triangles visible
+PASS Avatar_Haydn Ultra haydn_pants one draw: 88989/101778 triangles visible
+PASS Avatar_Haydn Ultra haydn_shirt one draw: 36993/90381 triangles visible
+PASS Avatar_Haydn Ultra haydn_shoes one draw: 165326/165326 triangles visible
+PASS Avatar_Monteverdi Ultra built
+PASS Avatar_Monteverdi Ultra items equipped: 4/4
+PASS Avatar_Monteverdi Ultra assembled (masks): 4/4
+PASS Avatar_Monteverdi Ultra hair
+PASS Avatar_Monteverdi Ultra masks
+PASS Avatar_Monteverdi Ultra monteverdi_pants one draw: 54462/81244 triangles visible
+PASS Avatar_Monteverdi Ultra monteverdi_shoes one draw: 188272/188272 triangles visible
+PASS Avatar_Monteverdi Ultra monteverdi_jacket one draw: 93759/93759 triangles visible
+PASS Avatar_Monteverdi Ultra monteverdi_beard one draw: 96910/96910 triangles visible
+PASS Avatar_Mozart Ultra built
+PASS Avatar_Mozart Ultra items equipped: 3/3
+PASS Avatar_Mozart Ultra assembled (masks): 3/3
+PASS Avatar_Mozart Ultra hair
+PASS Avatar_Mozart Ultra masks
+PASS Avatar_Mozart Ultra mozart_jacket one draw: 91524/91524 triangles visible
+PASS Avatar_Mozart Ultra mozart_pants one draw: 57090/77420 triangles visible
+PASS Avatar_Mozart Ultra mozart_shirt_2 one draw: 48947/124992 triangles visible
+PASS Avatar_Pachelbel Ultra built
+PASS Avatar_Pachelbel Ultra items equipped: 1/1
+PASS Avatar_Pachelbel Ultra assembled (masks): 1/1
+PASS Avatar_Pachelbel Ultra hair
+PASS Avatar_Pachelbel Ultra masks
+PASS Avatar_Pachelbel Ultra pachelbel_jacket one draw: 79510/79510 triangles visible
+PASS Avatar_Player_Acoustic Ultra built
+PASS Avatar_Player_Acoustic Ultra items equipped: 4/4
+PASS Avatar_Player_Acoustic Ultra assembled (masks): 4/4
+PASS Avatar_Player_Acoustic Ultra masks
+PASS Avatar_Player_Acoustic Ultra acoustic_boots one draw: 196358/196358 triangles visible
+PASS Avatar_Player_Acoustic Ultra acoustic_shirt one draw: 51935/81194 triangles visible
+PASS Avatar_Player_Acoustic Ultra acoustic_trousers_belt one draw: 77259/77259 triangles visible
+PASS Avatar_Player_Acoustic Ultra acoustic_waistcoat one draw: 90433/90433 triangles visible
+PASS Avatar_Player_Catchy Ultra built
+PASS Avatar_Player_Catchy Ultra items equipped: 4/4
+PASS Avatar_Player_Catchy Ultra assembled (masks): 4/4
+PASS Avatar_Player_Catchy Ultra masks
+PASS Avatar_Player_Catchy Ultra catchy_jacket one draw: 91707/91707 triangles visible
+PASS Avatar_Player_Catchy Ultra catchy_shirt one draw: 21103/82029 triangles visible
+PASS Avatar_Player_Catchy Ultra catchy_sneakers one draw: 170682/170682 triangles visible
+PASS Avatar_Player_Catchy Ultra catchy_trousers one draw: 70500/70500 triangles visible
+PASS Avatar_Player_Chill Ultra built
+PASS Avatar_Player_Chill Ultra items equipped: 4/4
+PASS Avatar_Player_Chill Ultra assembled (masks): 4/4
+PASS Avatar_Player_Chill Ultra masks
+PASS Avatar_Player_Chill Ultra chill_cardigan one draw: 91724/91724 triangles visible
+PASS Avatar_Player_Chill Ultra chill_sneakers one draw: 176548/176548 triangles visible
+PASS Avatar_Player_Chill Ultra chill_trousers one draw: 65552/77453 triangles visible
+PASS Avatar_Player_Chill Ultra chill_tshirt one draw: 20718/81608 triangles visible
+PASS Avatar_Player_Cinematic Ultra built
+PASS Avatar_Player_Cinematic Ultra items equipped: 5/5
+PASS Avatar_Player_Cinematic Ultra assembled (masks): 5/5
+PASS Avatar_Player_Cinematic Ultra masks
+PASS Avatar_Player_Cinematic Ultra cinematic_boots one draw: 195478/195478 triangles visible
+PASS Avatar_Player_Cinematic Ultra cinematic_coat one draw: 70348/70348 triangles visible
+PASS Avatar_Player_Cinematic Ultra cinematic_shirt one draw: 7128/82988 triangles visible
+PASS Avatar_Player_Cinematic Ultra cinematic_trousers one draw: 56118/75359 triangles visible
+PASS Avatar_Player_Cinematic Ultra cinematic_waistcoat one draw: 22499/89082 triangles visible
+PASS Avatar_Player_Classical Ultra built
+PASS Avatar_Player_Classical Ultra items equipped: 5/5
+PASS Avatar_Player_Classical Ultra assembled (masks): 5/5
+PASS Avatar_Player_Classical Ultra masks
+PASS Avatar_Player_Classical Ultra classical_jacket one draw: 78688/78688 triangles visible
+PASS Avatar_Player_Classical Ultra classical_shirt one draw: 18971/77728 triangles visible
+PASS Avatar_Player_Classical Ultra classical_shoes one draw: 155002/155002 triangles visible
+PASS Avatar_Player_Classical Ultra classical_trousers one draw: 57479/74532 triangles visible
+PASS Avatar_Player_Classical Ultra classical_waistcoat one draw: 21674/85874 triangles visible
+PASS Avatar_Player_Dance Ultra built
+PASS Avatar_Player_Dance Ultra items equipped: 3/3
+PASS Avatar_Player_Dance Ultra assembled (masks): 3/3
+PASS Avatar_Player_Dance Ultra masks
+PASS Avatar_Player_Dance Ultra dance_jacket one draw: 88358/88358 triangles visible
+PASS Avatar_Player_Dance Ultra dance_sneakers one draw: 158374/158374 triangles visible
+PASS Avatar_Player_Dance Ultra dance_tshirt one draw: 19270/79000 triangles visible
+PASS Avatar_Player_Dark Ultra built
+PASS Avatar_Player_Dark Ultra items equipped: 5/5
+PASS Avatar_Player_Dark Ultra assembled (masks): 5/5
+PASS Avatar_Player_Dark Ultra masks
+PASS Avatar_Player_Dark Ultra dark_boots one draw: 204290/204290 triangles visible
+PASS Avatar_Player_Dark Ultra dark_coat one draw: 83465/83465 triangles visible
+PASS Avatar_Player_Dark Ultra dark_shirt one draw: 6187/75502 triangles visible
+PASS Avatar_Player_Dark Ultra dark_trousers one draw: 57243/72210 triangles visible
+PASS Avatar_Player_Dark Ultra dark_waistcoat one draw: 22456/82394 triangles visible
+PASS Avatar_Player_Dreamy Ultra built
+PASS Avatar_Player_Dreamy Ultra items equipped: 5/5
+PASS Avatar_Player_Dreamy Ultra assembled (masks): 5/5
+PASS Avatar_Player_Dreamy Ultra masks
+PASS Avatar_Player_Dreamy Ultra dreamy_necklace one draw: 97333/97333 triangles visible
+PASS Avatar_Player_Dreamy Ultra dreamy_overshirt one draw: 90492/90492 triangles visible
+PASS Avatar_Player_Dreamy Ultra dreamy_shirt one draw: 8416/81618 triangles visible
+PASS Avatar_Player_Dreamy Ultra dreamy_shoes one draw: 150012/150012 triangles visible
+PASS Avatar_Player_Dreamy Ultra dreamy_trousers one draw: 63384/76290 triangles visible
+PASS Avatar_Player_Electronic Ultra built
+PASS Avatar_Player_Electronic Ultra items equipped: 4/4
+PASS Avatar_Player_Electronic Ultra assembled (masks): 4/4
+PASS Avatar_Player_Electronic Ultra masks
+PASS Avatar_Player_Electronic Ultra electronic_jacket one draw: 95406/95406 triangles visible
+PASS Avatar_Player_Electronic Ultra electronic_sneakers one draw: 185512/185512 triangles visible
+PASS Avatar_Player_Electronic Ultra electronic_top one draw: 20738/82718 triangles visible
+PASS Avatar_Player_Electronic Ultra electronic_trousers one draw: 80465/88245 triangles visible
+PASS Avatar_Player_Energetic Ultra built
+PASS Avatar_Player_Energetic Ultra items equipped: 4/4
+PASS Avatar_Player_Energetic Ultra assembled (masks): 4/4
+PASS Avatar_Player_Energetic Ultra masks
+PASS Avatar_Player_Energetic Ultra energetic_jacket one draw: 84575/84575 triangles visible
+PASS Avatar_Player_Energetic Ultra energetic_sneakers one draw: 200890/200890 triangles visible
+PASS Avatar_Player_Energetic Ultra energetic_trousers one draw: 93271/99264 triangles visible
+PASS Avatar_Player_Energetic Ultra energetic_tshirt one draw: 14489/72622 triangles visible
+PASS Avatar_Player_Experimental Ultra built
+PASS Avatar_Player_Experimental Ultra items equipped: 4/4
+PASS Avatar_Player_Experimental Ultra assembled (masks): 4/4
+PASS Avatar_Player_Experimental Ultra masks
+PASS Avatar_Player_Experimental Ultra experimental_jacket one draw: 86711/86711 triangles visible
+PASS Avatar_Player_Experimental Ultra experimental_shoes one draw: 215046/215046 triangles visible
+PASS Avatar_Player_Experimental Ultra experimental_top one draw: 11708/97571 triangles visible
+PASS Avatar_Player_Experimental Ultra experimental_trousers one draw: 55610/81673 triangles visible
+PASS Avatar_Player_Funky Ultra built
+PASS Avatar_Player_Funky Ultra items equipped: 4/4
+PASS Avatar_Player_Funky Ultra assembled (masks): 4/4
+PASS Avatar_Player_Funky Ultra masks
+PASS Avatar_Player_Funky Ultra funky_belt one draw: 90153/90153 triangles visible
+PASS Avatar_Player_Funky Ultra funky_shirt one draw: 83174/83174 triangles visible
+PASS Avatar_Player_Funky Ultra funky_shoes one draw: 167742/167742 triangles visible
+PASS Avatar_Player_Funky Ultra funky_trousers_belt one draw: 83705/83705 triangles visible
+PASS Avatar_Player_Groove Ultra built
+PASS Avatar_Player_Groove Ultra items equipped: 5/5
+PASS Avatar_Player_Groove Ultra assembled (masks): 5/5
+PASS Avatar_Player_Groove Ultra masks
+PASS Avatar_Player_Groove Ultra groove_jacket one draw: 96107/96107 triangles visible
+PASS Avatar_Player_Groove Ultra groove_necklace one draw: 105963/105963 triangles visible
+PASS Avatar_Player_Groove Ultra groove_sneakers one draw: 216558/216558 triangles visible
+PASS Avatar_Player_Groove Ultra groove_trousers one draw: 90176/94261 triangles visible
+PASS Avatar_Player_Groove Ultra groove_tshirt one draw: 14332/80108 triangles visible
+PASS Avatar_Player_Heavy Ultra built
+PASS Avatar_Player_Heavy Ultra items equipped: 5/5
+PASS Avatar_Player_Heavy Ultra assembled (masks): 5/5
+PASS Avatar_Player_Heavy Ultra masks
+PASS Avatar_Player_Heavy Ultra heavy_boots one draw: 208694/208694 triangles visible
+PASS Avatar_Player_Heavy Ultra heavy_trousers_belt_chain one draw: 90097/90097 triangles visible
+PASS Avatar_Player_Heavy Ultra heavy_tshirt one draw: 20734/86904 triangles visible
+PASS Avatar_Player_Heavy Ultra heavy_vest one draw: 80561/80561 triangles visible
+PASS Avatar_Player_Heavy Ultra heavy_wrist_cuffs one draw: 211184/211184 triangles visible
+PASS Avatar_Player_Jazzy Ultra built
+PASS Avatar_Player_Jazzy Ultra items equipped: 5/5
+PASS Avatar_Player_Jazzy Ultra assembled (masks): 5/5
+PASS Avatar_Player_Jazzy Ultra masks
+PASS Avatar_Player_Jazzy Ultra jazzy_jacket one draw: 80957/80957 triangles visible
+PASS Avatar_Player_Jazzy Ultra jazzy_shirt one draw: 14198/81486 triangles visible
+PASS Avatar_Player_Jazzy Ultra jazzy_shoes one draw: 180164/180164 triangles visible
+PASS Avatar_Player_Jazzy Ultra jazzy_trousers one draw: 40648/74898 triangles visible
+PASS Avatar_Player_Jazzy Ultra jazzy_waistcoat one draw: 8114/78792 triangles visible
+PASS Avatar_Player_Rock Ultra built
+PASS Avatar_Player_Rock Ultra items equipped: 3/3
+PASS Avatar_Player_Rock Ultra assembled (masks): 3/3
+PASS Avatar_Player_Rock Ultra masks
+PASS Avatar_Player_Rock Ultra rock_boots one draw: 199664/199664 triangles visible
+PASS Avatar_Player_Rock Ultra rock_jacket one draw: 82126/82126 triangles visible
+PASS Avatar_Player_Rock Ultra rock_tshirt one draw: 20573/73938 triangles visible
+PASS Avatar_Player_Soulful Ultra built
+PASS Avatar_Player_Soulful Ultra items equipped: 3/3
+PASS Avatar_Player_Soulful Ultra assembled (masks): 3/3
+PASS Avatar_Player_Soulful Ultra masks
+PASS Avatar_Player_Soulful Ultra soulful_blazer one draw: 106937/106937 triangles visible
+PASS Avatar_Player_Soulful Ultra soulful_loafers one draw: 153554/153554 triangles visible
+PASS Avatar_Player_Soulful Ultra soulful_shirt one draw: 22145/83542 triangles visible
+PASS Avatar_Tchaikovsky Ultra built
+PASS Avatar_Tchaikovsky Ultra items equipped: 0/0
+PASS Avatar_Tchaikovsky Ultra assembled (masks): 0/0
+PASS Avatar_Tchaikovsky Ultra masks
+PASS Avatar_Vivaldi Ultra built
+PASS Avatar_Vivaldi Ultra items equipped: 0/0
+PASS Avatar_Vivaldi Ultra assembled (masks): 0/0
+PASS Avatar_Vivaldi Ultra masks
+PASS Avatar_Wagner Ultra built
+PASS Avatar_Wagner Ultra items equipped: 3/3
+PASS Avatar_Wagner Ultra assembled (masks): 3/3
+PASS Avatar_Wagner Ultra hair
+PASS Avatar_Wagner Ultra masks
+PASS Avatar_Wagner Ultra wagner_jacket one draw: 93020/93020 triangles visible
+PASS Avatar_Wagner Ultra wagner_shirt one draw: 17993/86247 triangles visible
+PASS Avatar_Wagner Ultra wagner_pants one draw: 60123/74658 triangles visible
+PASS Body masks released
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AvatarReferenceAuditCapture/<Run>d__7:MoveNext () (at Assets/_Project/Scripts/Editor/Avatar/Garments/AvatarReferenceAuditCapture.cs:96)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Runtime.CompilerServices.YieldAwaitable/YieldAwaiter:RunAction (object)
+UnityEngine.UnitySynchronizationContext/WorkRequest:Invoke ()
+UnityEngine.UnitySynchronizationContext:Exec ()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+(Filename: Assets/_Project/Scripts/Editor/Avatar/Garments/AvatarReferenceAuditCapture.cs Line: 96)
+
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            0.468 ms
+	Integration:            224.701 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.016 ms
+	Total Operation Time:   225.187 ms
+Unloading 818 unused Assets / (1.4 MB). Loaded Objects now: 10472.
+Memory consumption went from 0.73 GB to 0.73 GB.
+Total: 17.464300 ms (FindLiveObjects: 0.481200 ms CreateObjectMapping: 0.385700 ms MarkObjects: 15.263700 ms  DeleteObjects: 1.332400 ms)
+
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[UnityConnectServicesConfig] config is NOT valid, switching to default
+Killing ADB server in 0,0682891 seconds.
+Start importing ProjectSettings/EditorBuildSettings.asset using Guid(0000000000000000b000000000000000) (LibraryAssetImporter) -> (artifact id: '11f8fdea987aecd2948effa50908fb0c') in 0.0085878 seconds
+Refreshing native plugins compatible for Editor in 3.96 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.09 ms.
+Asset Pipeline Refresh (id=2ded6e127c2a41f47b3830dc8a2efd7a): Total: 0.146 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-VISYON-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-VISYON channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+20:02:15.029 |V| RiderPlugin                    | :1                             | AppDomain.CurrentDomain.DomainUnload lifetimeDefinition.Terminate
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1794164535249,"processId":11508,"allocatedMemory":45912614,"memoryLabels":[{"Default":29313},{"Permanent":15524},{"NewDelete":68957},{"Thread":4230464},{"Manager":824413},{"VertexData":776},{"Geometry":816},{"Texture":296},{"Shader":86046},{"Material":24},{"GfxDevice":55617},{"Animation":392},{"Audio":3040},{"FontEngine":256},{"Physics":2090},{"Physics2D":16},{"Input":14984},{"JobScheduler":33024},{"TextLib":192},{"Mono":32},{"MonoCode":2048},{"ScriptingNativeRuntime":155060},{"BaseObject":1620400},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":3953},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":19001},{"DynamicArray":128841},{"HashMap":84338},{"Utility":2660678},{"Curl":4238},{"PoolAlloc":2824},{"AI":40},{"TypeTree":5341},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":6480},{"WebRequest":15058},{"VR":47994},{"SceneManager":504},{"Video":208},{"LazyScriptCache":32},{"Camera":17},{"Secure":2113},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":384},{"Hierarchy":608},{"CoreStats":13000},{"Identifiers":12960},{"Gui":88},{"EditorUtility":143519},{"VersionControl":4},{"Undo":947},{"AssetDatabase":35185645},{"EditorGi":328},{"UnityConnect":29232},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":212},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2870},{"Licensing":664},{"AssetReference":32},{"IPCStream":32}]}

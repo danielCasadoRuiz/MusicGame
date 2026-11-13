@@ -218,6 +218,11 @@ public class MusicWorldManager : MonoBehaviour
         if (float.IsNaN(_groundWindowCenter) || Mathf.Abs(dist - _groundWindowCenter) > GroundRebuildStep)
             RebuildGroundWindow(dist, syncCollider: false);
 
+        // Near the path end the mesh window may stop moving; still check the reveal.
+        if (_finishArch == null && _bufferRow0 != int.MinValue && _bufferRows > 1)
+            PlaceFinishArch(_bufferRow0 * _rowSpacing,
+                Mathf.Min((_bufferRow0 + _bufferRows - 1) * _rowSpacing, Path.TotalLength));
+
         UpdatePlayheadGlobals(dist);
     }
 
@@ -302,12 +307,68 @@ public class MusicWorldManager : MonoBehaviour
         if (_meshMaterial != null) Destroy(_meshMaterial);
         _meshMaterial = VertexColorMaterial();
 
+        if (_finishArch != null) { Destroy(_finishArch); _finishArch = null; }
         _groundWindowCenter = float.NaN;
         ComputeGlobalGrid(); // the whole path's terrain, once — windows are slices of it
         _bufferRow0 = int.MinValue; // buffered rows belonged to the previous path
         RebuildGroundWindow(0f, syncCollider: true); // real ground under the player before the first Update() tick
 
+
         EventBus.Publish(new MusicPathReadyEvent { Path = Path });
+    }
+
+    // ── Finish arch: the decoration the player runs through during the farewell ──────────────
+
+    private GameObject _finishArch;
+
+    private void PlaceFinishArch(float windowStart, float windowEnd)
+    {
+        if (_finishArch != null) return;
+        var core = _config.core;
+        if (core.playerSpeed <= 0f || _playRangeEnd <= 0f) return;
+        if (core.finishArchPrefab == null && !core.finishArchPlaceholder) return;
+
+        // Stream the arch with the ground window containing it (normally 60 m ahead),
+        // even while the song is still playing. Waiting for the closing section makes it pop in.
+        float clipTime = _playRangeEnd + Mathf.Max(0f, core.endingFlatSeconds);
+        float distance = MusicTime.SongToDistance(MusicTime.ClipToSong(clipTime, core.warmupTime), core.playerSpeed);
+        if (distance < windowStart || distance > windowEnd) return;
+        if (distance > Path.TotalLength) return; // the farewell tail is shorter than that
+        var sample = Path.GetSample(distance);
+        var ground = SampleSurface(distance, 0f).position;
+        Vector3 fwd = new Vector3(sample.tangent.x, 0f, sample.tangent.z);
+        var rot = Quaternion.LookRotation(fwd.sqrMagnitude > 1e-6f ? fwd.normalized : Vector3.forward, Vector3.up);
+
+        _finishArch = core.finishArchPrefab != null
+            ? Instantiate(core.finishArchPrefab, ground, rot, transform)
+            : BuildPlaceholderArch(ground, rot, sample.width);
+        _finishArch.name = "FinishArch";
+    }
+
+    /// <summary>A plain grey arch (two pillars + a lintel, no colliders) standing in for the real decoration.</summary>
+    private GameObject BuildPlaceholderArch(Vector3 ground, Quaternion rot, float trackWidth)
+    {
+        var root = new GameObject("FinishArch");
+        root.transform.SetParent(transform, false);
+        root.transform.SetPositionAndRotation(ground, rot);
+        float half = Mathf.Max(2f, trackWidth * 0.5f + 0.8f), height = 6f, thick = 0.9f;
+        var shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+        var mat = new Material(shader);
+        mat.color = new Color(0.86f, 0.84f, 0.78f);
+        void Block(string name, Vector3 localPos, Vector3 size)
+        {
+            var b = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            b.name = name;
+            Destroy(b.GetComponent<Collider>()); // decoration only: the player runs straight through
+            b.transform.SetParent(root.transform, false);
+            b.transform.localPosition = localPos;
+            b.transform.localScale = size;
+            b.GetComponent<Renderer>().sharedMaterial = mat;
+        }
+        Block("PillarL", new Vector3(-half, height * 0.5f - 1f, 0f), new Vector3(thick, height + 2f, thick));
+        Block("PillarR", new Vector3( half, height * 0.5f - 1f, 0f), new Vector3(thick, height + 2f, thick));
+        Block("Lintel",  new Vector3(0f, height + thick * 0.5f, 0f), new Vector3(half * 2f + thick * 1.6f, thick, thick * 1.3f));
+        return root;
     }
 
     // ── Ground window: banded height grid → one mesh (visual + collision) ──────
@@ -336,7 +397,12 @@ public class MusicWorldManager : MonoBehaviour
         float norm = _bandReference[b] > 0.0001f ? _profile.GetVisualBandEnergyAtSmooth(b, time) / _bandReference[b] : 0f;
         norm = Mathf.Clamp01(norm);
         norm = Mathf.Pow(norm, Mathf.Max(0.01f, _config.levelGeneration.frequencyContrastGamma));
-        return norm * EndingFadeMultiplier(time);
+        float fade = EndingFadeMultiplier(time);
+        // Fade the song terrain to flat, hold it, then begin the closing hills.
+        float wavesStart = _playRangeEnd + Mathf.Max(0f, _config.core.endingFlatSeconds);
+        if (_config.core.endingWaves && time >= wavesStart)
+            return SyntheticCountdownValue(time - wavesStart);
+        return norm * fade;
     }
 
     // One hill per second of countdown, peaking at exactly the half-second mark and back to 0 at
@@ -357,7 +423,9 @@ public class MusicWorldManager : MonoBehaviour
     // window so the terrain and the music go silent/flat together).
     private float EndingFadeMultiplier(float time)
     {
-        if (_playRangeEnd <= 0f || _config.core.fadeOutSeconds <= 0f) return 1f;
+        if (_playRangeEnd <= 0f) return 1f;
+        if (time >= _playRangeEnd) return 0f;
+        if (_config.core.fadeOutSeconds <= 0f) return 1f;
         float fadeStart = _playRangeEnd - _config.core.fadeOutSeconds;
         if (time < fadeStart) return 1f;
         return Mathf.Clamp01(1f - (time - fadeStart) / _config.core.fadeOutSeconds);
@@ -633,6 +701,8 @@ public class MusicWorldManager : MonoBehaviour
 
         float startDistance = Mathf.Min(rowIndex0 * _rowSpacing, total);
         float endDistance   = Mathf.Min((rowIndex0 + rows - 1) * _rowSpacing, total);
+
+        PlaceFinishArch(startDistance, endDistance);
 
         // Render mesh: updated in place (no GameObject/Mesh churn).
         if (resized) _groundMesh.Clear();

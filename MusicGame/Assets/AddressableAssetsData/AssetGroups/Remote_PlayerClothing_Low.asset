@@ -15,12 +15,36 @@ MonoBehaviour:
   m_GroupName: Remote_PlayerClothing_Low
   m_GUID: e6bcaefd995fea84e9757b3f30e5c981
   m_SerializeEntries:
+  - m_GUID: 000c0b81ebbcf23448d27b1de07b2bbb
+    m_Address: PlayerClothing_funky_belt/Wearable_funky_belt/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_funky_belt
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 04c4cfdb56876c64397110ef0cb30fb3
     m_Address: PlayerClothing_dreamy_shirt/Wearable_dreamy_shirt/sharedVariant/qualityPrefabs@Low
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_dreamy_shirt
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0a3e4c900f143ce4abc1aea810d0a473
+    m_Address: PlayerClothing_soulful_trousers_belt/Wearable_soulful_trousers_belt/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_soulful_trousers_belt
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0cdfd38848bab4d4d842587933936f6f
+    m_Address: PlayerClothing_soulful_loafers/Wearable_soulful_loafers/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_soulful_loafers
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0e2a24d28eb8bb841b55591dc3aa4e40
@@ -55,12 +79,28 @@ MonoBehaviour:
     - PlayerClothing_dark_shirt
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1b00e0b7a68a9214cb355a6f4964d366
+    m_Address: PlayerClothing_experimental_trousers/Wearable_experimental_trousers/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_experimental_trousers
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1e816f548d6646b4f93253b73b153447
     m_Address: PlayerClothing_chill_cardigan/Wearable_chill_cardigan/sharedVariant/qualityPrefabs@Low
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_chill_cardigan
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 23c6e875662ade844a309a1f3e19a9c2
+    m_Address: PlayerClothing_jazzy_waistcoat/Wearable_jazzy_waistcoat/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_jazzy_waistcoat
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 26ba3936fada4484aa7fc99fdf86c84d
@@ -71,12 +111,28 @@ MonoBehaviour:
     - PlayerClothing_chill_trousers
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ab05551748fed8479076fd7158bc546
+    m_Address: PlayerClothing_jazzy_trousers/Wearable_jazzy_trousers/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_jazzy_trousers
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2ef17eb0fe0da144380e8853c3e6019d
     m_Address: PlayerClothing_dreamy_overshirt/Wearable_dreamy_overshirt/sharedVariant/qualityPrefabs@Low
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_dreamy_overshirt
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ef3a7746e8686241b2c199fc2dbaa41
+    m_Address: PlayerClothing_experimental_shoes/Wearable_experimental_shoes/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_experimental_shoes
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 31450b45561d51f45b67073dd8a9b005
@@ -87,12 +143,36 @@ MonoBehaviour:
     - PlayerClothing_electronic_top
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3da007fa2c2751f48b8f7fd8cfe0498f
+    m_Address: PlayerClothing_groove_trousers/Wearable_groove_trousers/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_groove_trousers
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3e555c92ff2e32244be4021cea592540
+    m_Address: PlayerClothing_jazzy_shirt/Wearable_jazzy_shirt/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_jazzy_shirt
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 412a1a3a5441666439ce457eb92fa23f
     m_Address: PlayerClothing_dark_boots/Wearable_dark_boots/sharedVariant/qualityPrefabs@Low
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_dark_boots
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47ba4685f59e09344bbb62a267523757
+    m_Address: PlayerClothing_soulful_shirt/Wearable_soulful_shirt/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_soulful_shirt
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4ab8220b6e895aa48ab41c066290dbf1
@@ -119,6 +199,22 @@ MonoBehaviour:
     - PlayerClothing_cinematic_boots
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 50cacc5e685497943bc0db2a97f2fb9f
+    m_Address: PlayerClothing_rock_boots/Wearable_rock_boots/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_rock_boots
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5183fb77c2a90114b98a6e5318043c0c
+    m_Address: PlayerClothing_groove_jacket/Wearable_groove_jacket/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_groove_jacket
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 563e322993d7d95488fa20b655311151
     m_Address: PlayerClothing_dreamy_trousers/Wearable_dreamy_trousers/sharedVariant/qualityPrefabs@Low
     m_ReadOnly: 0
@@ -127,12 +223,36 @@ MonoBehaviour:
     - PlayerClothing_dreamy_trousers
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 57e2d56f6407dab4eba3bca36b6fd7a7
+    m_Address: PlayerClothing_rock_jeans_belt/Wearable_rock_jeans_belt/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_rock_jeans_belt
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5be55c54b26e9274c8062e94e34fc7d4
     m_Address: PlayerClothing_catchy_jacket/Wearable_catchy_jacket/sharedVariant/qualityPrefabs@Low
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_catchy_jacket
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e48c23a4fcccda4a94cfac7bbbcc2a6
+    m_Address: PlayerClothing_funky_shoes/Wearable_funky_shoes/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_funky_shoes
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 66d20312f162f2543824444aa093e61e
+    m_Address: PlayerClothing_jazzy_shoes/Wearable_jazzy_shoes/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_jazzy_shoes
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6780d6d6e3b8b0c478e35df6c0002f85
@@ -151,6 +271,14 @@ MonoBehaviour:
     - PlayerClothing_electronic_jacket
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c2f93887c201e04fa2b1a7bc197cc40
+    m_Address: PlayerClothing_heavy_trousers_belt_chain/Wearable_heavy_trousers_belt_chain/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_heavy_trousers_belt_chain
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6e3aa691a587ca24e841494b1c6b35c4
     m_Address: PlayerClothing_classical_shoes/Wearable_classical_shoes/sharedVariant/qualityPrefabs@Low
     m_ReadOnly: 0
@@ -165,6 +293,22 @@ MonoBehaviour:
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_electronic_sneakers
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 708b7e47f2db5e5459ae3bd94ba0855d
+    m_Address: PlayerClothing_soulful_blazer/Wearable_soulful_blazer/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_soulful_blazer
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 711039a49324ec3419e064a4172d3192
+    m_Address: PlayerClothing_heavy_tshirt/Wearable_heavy_tshirt/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_heavy_tshirt
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 714399ece5e87c54cad2b5c2bc8bb703
@@ -189,6 +333,22 @@ MonoBehaviour:
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_energetic_jacket
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7fcadead7f82fd944a7e03609970af3f
+    m_Address: PlayerClothing_energetic_tshirt/Wearable_energetic_tshirt/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_energetic_tshirt
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 832099a484a8f1a48b078e27d67661b3
+    m_Address: PlayerClothing_groove_necklace/Wearable_groove_necklace/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_groove_necklace
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 87206c76f2cae424c8bdbc2aeb3795e7
@@ -223,6 +383,22 @@ MonoBehaviour:
     - PlayerClothing_energetic_trousers
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a0715ca5ff84e474987a28ac596510ac
+    m_Address: PlayerClothing_experimental_jacket/Wearable_experimental_jacket/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_experimental_jacket
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a1b772c7bcc933545878d234a0c46421
+    m_Address: PlayerClothing_heavy_vest/Wearable_heavy_vest/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_heavy_vest
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: abe23fcb3b3d3f241b7753f55fd6885f
     m_Address: PlayerClothing_classical_waistcoat/Wearable_classical_waistcoat/sharedVariant/qualityPrefabs@Low
     m_ReadOnly: 0
@@ -231,12 +407,36 @@ MonoBehaviour:
     - PlayerClothing_classical_waistcoat
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b3ca033d529031f41b7b94ac165ac082
+    m_Address: PlayerClothing_heavy_wrist_cuffs/Wearable_heavy_wrist_cuffs/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_heavy_wrist_cuffs
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b421b9164c6bb66449bb4daaae13c066
     m_Address: PlayerClothing_classical_shirt/Wearable_classical_shirt/sharedVariant/qualityPrefabs@Low
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_classical_shirt
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b5a30d470cc89e8438a16ac56543146b
+    m_Address: PlayerClothing_funky_trousers_belt/Wearable_funky_trousers_belt/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_funky_trousers_belt
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b9f5e1e2db134b846964dfa23c74c291
+    m_Address: PlayerClothing_heavy_boots/Wearable_heavy_boots/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_heavy_boots
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bc45170bfbaf6804886ec5ab53f649d6
@@ -263,6 +463,22 @@ MonoBehaviour:
     - PlayerClothing_dreamy_shoes
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1478c2410bd7684fa5ed2d57f20400c
+    m_Address: PlayerClothing_groove_sneakers/Wearable_groove_sneakers/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_groove_sneakers
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c57fd0f03083c5b45b9a04b1e6c45ca2
+    m_Address: PlayerClothing_funky_shirt/Wearable_funky_shirt/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_funky_shirt
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c719d8ed6ed765445a11c354864c09f5
     m_Address: PlayerClothing_acoustic_trousers_belt/Wearable_acoustic_trousers_belt/sharedVariant/qualityPrefabs@Low
     m_ReadOnly: 0
@@ -287,6 +503,14 @@ MonoBehaviour:
     - PlayerClothing_cinematic_waistcoat
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d2ff3e19768558e4abb20f7852563b83
+    m_Address: PlayerClothing_rock_tshirt/Wearable_rock_tshirt/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_rock_tshirt
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d5a7744165fa35444977849b72114af9
     m_Address: PlayerClothing_dance_sneakers/Wearable_dance_sneakers/sharedVariant/qualityPrefabs@Low
     m_ReadOnly: 0
@@ -303,12 +527,36 @@ MonoBehaviour:
     - PlayerClothing_catchy_sneakers
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dc80c3b628af1124a8268e80f8a96906
+    m_Address: PlayerClothing_experimental_top/Wearable_experimental_top/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_experimental_top
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: de0f89a4964e19d468a7cead7eb4523b
     m_Address: PlayerClothing_dreamy_necklace/Wearable_dreamy_necklace/sharedVariant/qualityPrefabs@Low
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_dreamy_necklace
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e1ea6341e06dd77488989c50b8ba6c58
+    m_Address: PlayerClothing_groove_tshirt/Wearable_groove_tshirt/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_groove_tshirt
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e6e2b76f9d35e1a45bb63cc3278d95c1
+    m_Address: PlayerClothing_jazzy_jacket/Wearable_jazzy_jacket/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_jazzy_jacket
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e9f8088d89bdbec42a7585df6871167c
@@ -341,6 +589,22 @@ MonoBehaviour:
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_chill_sneakers
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f3882a7269f9b8849b24d677f592c335
+    m_Address: PlayerClothing_rock_jacket/Wearable_rock_jacket/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_rock_jacket
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f3baa0f8063d0724182cb85982635f4c
+    m_Address: PlayerClothing_funky_trousers/Wearable_funky_trousers/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_funky_trousers
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fc65523108da4d247bd6674f837a0126

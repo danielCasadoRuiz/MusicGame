@@ -92,15 +92,26 @@ public static class GarmentMaskImporter
 
     // ── One quality ──────────────────────────────────────────────────────────────
 
+    public static bool SameModelFile(string source, string target)
+    {
+        if (!File.Exists(source) || !File.Exists(target) || new FileInfo(source).Length != new FileInfo(target).Length) return false;
+        using var hash = System.Security.Cryptography.SHA256.Create();
+        using var a = File.OpenRead(source);
+        using var b = File.OpenRead(target);
+        return hash.ComputeHash(a).SequenceEqual(hash.ComputeHash(b));
+    }
+
     public static Result ImportQuality(string riggedFbx, string gmaskPath, string modelPath, string prefabPath,
                                        Material finalMaterial, Body body, bool plainPrefab, StringBuilder log)
     {
         var (res, cover, skin, keep, meta) = ReadGmask(gmaskPath);
         bool known = AssetImporter.GetAtPath(modelPath) is ModelImporter;
-        File.Copy(riggedFbx, modelPath, overwrite: true);
+        bool changed = !SameModelFile(riggedFbx, modelPath);
+        if (changed) File.Copy(riggedFbx, modelPath, overwrite: true);
         // Settings first when the model already exists (e.g. the old cut model): one import with materials off,
         // instead of one with every embedded texture and a second one.
-        if (!known || !ConfigureModelImporter(modelPath))
+        bool configured = known && ConfigureModelImporter(modelPath);
+        if (!known || (changed && !configured))
             AssetDatabase.ImportAsset(modelPath, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
         if (!known) ConfigureModelImporter(modelPath);
         var model = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath) ?? throw new InvalidOperationException(modelPath + " did not import as a model");
@@ -118,14 +129,17 @@ public static class GarmentMaskImporter
             var xs = new ushort[verts.Length];
             var ys = new ushort[verts.Length];
             var codes = new byte[verts.Length];
-            for (int i = 0; i < verts.Length; i++)
+            System.Threading.Tasks.Parallel.For(0, verts.Length,
+                new System.Threading.Tasks.ParallelOptions { MaxDegreeOfParallelism = Math.Min(8, Environment.ProcessorCount) },
+                () => (farCount: 0, nearCount: 0, selfCount: 0), (i, state, counts) =>
             {
+                if (plainPrefab) { codes[i] = GarmentOcclusionData.FarCode; counts.farCount++; return counts; }
                 var p = toWorld.MultiplyPoint3x4(verts[i]);
                 if (!body.Grid.Nearest(p, MaxAnchorDistance, out int tri, out var closest, out var bary))
                 {
                     codes[i] = GarmentOcclusionData.FarCode;
-                    far++;
-                    continue;
+                    counts.farCount++;
+                    return counts;
                 }
                 int a = body.Triangles[tri * 3], b = body.Triangles[tri * 3 + 1], c = body.Triangles[tri * 3 + 2];
                 var uv = body.Uvs[a] * bary.x + body.Uvs[b] * bary.y + body.Uvs[c] * bary.z;
@@ -135,14 +149,20 @@ public static class GarmentMaskImporter
                 int y = Mathf.Clamp(Mathf.FloorToInt(uv.y * res), 0, res - 1);
                 xs[i] = (ushort)x; ys[i] = (ushort)y;
                 codes[i] = (byte)Mathf.Clamp(1 + Mathf.RoundToInt((d + 0.03f) * 1000f), 1, 254);
-                if (keep != null && keep[y * res + x] != 0) { codes[i] = GarmentOcclusionData.FarCode; continue; }
+                if (keep != null && keep[y * res + x] != 0) { codes[i] = GarmentOcclusionData.FarCode; return counts; }
                 int own = cover[y * res + x];
                 if (Mathf.Abs(d) < 0.05f)
                 {
-                    near++;
-                    if (own != 0 && Mathf.Abs(own - codes[i]) <= 30) selfCovered++;
+                    counts.nearCount++;
+                    if (own != 0 && Mathf.Abs(own - codes[i]) <= 30) counts.selfCount++;
                 }
-            }
+                return counts;
+            }, counts =>
+            {
+                System.Threading.Interlocked.Add(ref far, counts.farCount);
+                System.Threading.Interlocked.Add(ref near, counts.nearCount);
+                System.Threading.Interlocked.Add(ref selfCovered, counts.selfCount);
+            });
             total += verts.Length;
             anchors.Add((xs, ys, codes));
         }
@@ -279,8 +299,13 @@ public static class GarmentMaskImporter
         private readonly Vector3 _min;
         private readonly int _nx, _ny, _nz;
         private readonly Dictionary<int, List<int>> _cells = new();
-        private readonly int[] _stamp;
-        private int _query;
+        private sealed class QueryState
+        {
+            public readonly int[] Stamp;
+            public int Id;
+            public QueryState(int count) { Stamp = new int[count]; }
+        }
+        private readonly System.Threading.ThreadLocal<QueryState> _queries;
 
         public TriangleGrid(Vector3[] positions, int[] triangles, float cell)
         {
@@ -289,7 +314,7 @@ public static class GarmentMaskImporter
             foreach (var v in positions) b.Encapsulate(v);
             _min = b.min - Vector3.one * cell;
             _nx = Mathf.CeilToInt(b.size.x / cell) + 3; _ny = Mathf.CeilToInt(b.size.y / cell) + 3; _nz = Mathf.CeilToInt(b.size.z / cell) + 3;
-            _stamp = new int[triangles.Length / 3];
+            _queries = new System.Threading.ThreadLocal<QueryState>(() => new QueryState(triangles.Length / 3));
             for (int t = 0; t < triangles.Length / 3; t++)
             {
                 var tb = new Bounds(positions[triangles[t * 3]], Vector3.zero);
@@ -316,7 +341,8 @@ public static class GarmentMaskImporter
 
         public bool Nearest(Vector3 p, float maxDistance, out int triangle, out Vector3 closest, out Vector3 bary)
         {
-            _query++;
+            var query = _queries.Value;
+            query.Id++;
             triangle = -1; closest = default; bary = default;
             float best = maxDistance * maxDistance;
             var c = new Vector3Int(Mathf.FloorToInt((p.x - _min.x) / _cell), Mathf.FloorToInt((p.y - _min.y) / _cell), Mathf.FloorToInt((p.z - _min.z) / _cell));
@@ -333,8 +359,8 @@ public static class GarmentMaskImporter
                             if (!_cells.TryGetValue(Key(x, y, z), out var list)) continue;
                             foreach (int t in list)
                             {
-                                if (_stamp[t] == _query) continue;
-                                _stamp[t] = _query;
+                                if (query.Stamp[t] == query.Id) continue;
+                                query.Stamp[t] = query.Id;
                                 var q = ClosestOnTriangle(p, _p[_t[t * 3]], _p[_t[t * 3 + 1]], _p[_t[t * 3 + 2]], out var w);
                                 float d = (q - p).sqrMagnitude;
                                 if (d < best) { best = d; triangle = t; closest = q; bary = w; }

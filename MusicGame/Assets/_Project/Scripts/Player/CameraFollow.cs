@@ -52,6 +52,13 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private float caughtSide   = 3.5f;   // metres to the side (a three-quarter view)
     [SerializeField] private float caughtHeight = 5.5f;   // metres above the player
     [SerializeField] private float caughtBlendSeconds = 0.9f;
+    [Header("Farewell (PlayerController.IsInFarewell) — a slow cinematic travelling until the end screen")]
+    [SerializeField] private float farewellBlendSeconds = 2.5f;  // from the normal follow into the travelling
+    [SerializeField] private float farewellBehind       = 6f;    // metres behind the player when the travelling starts
+    [SerializeField] private float farewellHeight       = 3.5f;
+    [SerializeField] private float farewellPullBack     = 1.6f;  // m/s the camera keeps drifting back (never stops)
+    [SerializeField] private float farewellRise         = 0.7f;  // m/s up
+    [SerializeField] private float farewellOrbit        = 4f;    // degrees/s it slowly swings around the player
     [Tooltip("true: exact original behavior — Third Person's rotation is a full LookAt toward the " +
              "player, which can wobble side to side as the player strafes laterally. false (new " +
              "default): yaw is LOCKED to the path's own heading at the camera's position instead — " +
@@ -135,6 +142,10 @@ public class CameraFollow : MonoBehaviour
     private float       _caughtT;
     private Vector3     _caughtFromPos, _caughtAnchor, _caughtTargetPos;
     private Quaternion  _caughtFromRot;
+    private bool        _farewellActive;
+    private float       _farewellT;
+    private Vector3     _farewellFromOffset, _farewellLookAt;
+    private Quaternion  _farewellFromRot;
     private Vector3     _smoothedLookAt;
     private bool        _initialized;
     private bool        _running;
@@ -426,12 +437,43 @@ public class CameraFollow : MonoBehaviour
             }
             _caughtT += Time.deltaTime / Mathf.Max(0.01f, caughtBlendSeconds);
             float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(_caughtT));
-            Vector3 lookAt = _caughtAnchor + Vector3.up * 0.4f;
+            Vector3 lookAt = playerController.transform.position + Vector3.up * 0.4f; // follows the body dropping to the floor
             transform.position = Vector3.Lerp(_caughtFromPos, _caughtTargetPos, k);
             transform.rotation = Quaternion.Slerp(_caughtFromRot, Quaternion.LookRotation(lookAt - _caughtTargetPos, Vector3.up), k);
             return;
         }
         _caughtActive = false;
+
+        // ── Farewell: the song is over and input is gone — a slow travelling that keeps pulling back,
+        // rising and swinging around the player riding the closing waves, never stopping, until the end
+        // screen covers it. Anchored to the path (not the body), so the waves' up-and-down shows as the
+        // player's motion instead of shaking the camera.
+        if (_initialized && playerController != null && playerController.IsInFarewell)
+        {
+            var anchorSample = path.GetSample(playerController.ActualDistance);
+            Vector3 anchor = anchorSample.position + anchorSample.right * playerController.LateralOffset;
+            Vector3 fwd = new Vector3(anchorSample.tangent.x, 0f, anchorSample.tangent.z);
+            fwd = fwd.sqrMagnitude > 1e-6f ? fwd.normalized : Vector3.forward;
+            if (!_farewellActive)
+            {
+                _farewellActive     = true;
+                _farewellT          = 0f;
+                _farewellFromOffset = transform.position - anchor;
+                _farewellFromRot    = transform.rotation;
+                _farewellLookAt     = playerLookPoint;
+            }
+            _farewellT += Time.deltaTime;
+            float t = _farewellT;
+            Vector3 dir = Quaternion.AngleAxis(farewellOrbit * t, Vector3.up) * -fwd;  // slowly orbiting
+            Vector3 shot = dir * (farewellBehind + farewellPullBack * t) + Vector3.up * (farewellHeight + farewellRise * t);
+            float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / Mathf.Max(0.01f, farewellBlendSeconds)));
+            Vector3 pos = anchor + Vector3.Lerp(_farewellFromOffset, shot, k);
+            _farewellLookAt = Vector3.Lerp(_farewellLookAt, playerLookPoint, 4f * Time.deltaTime); // soft, no wave jitter
+            transform.position = pos;
+            transform.rotation = Quaternion.Slerp(_farewellFromRot, Quaternion.LookRotation(_farewellLookAt - pos, Vector3.up), k);
+            return;
+        }
+        _farewellActive = false;
 
         // ── Apply ────────────────────────────────────────────────────────────────────────────
         if (!_initialized)
