@@ -12,6 +12,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MusicRunnerLevelConfig", menuName = "MusicGame/MusicRunner/Level Generation Config")]
 public class MusicRunnerLevelConfig : ScriptableObject
 {
+    public enum EdgeTrimFinish { Black, TrackLowestLayer, Custom }
+    [Header("Optional visual edge trim — no collision")]
+    public bool edgeTrimEnabled = true;
+    [Range(.05f,.3f)] public float edgeTrimWidth = .125f;
+    [Range(0f,.08f)] public float edgeTrimHeight = .025f;
+    public EdgeTrimFinish edgeTrimFinish = EdgeTrimFinish.Black;
+    public Material edgeTrimBlackMaterial;
+    [Tooltip("Used by Custom finish. TrackLowestLayer uses the current floor's lowest texture layer.")]
+    public Material edgeTrimCustomMaterial;
+
     // ── Path / World Generation ───────────────────────────────────────────────
     [Header("Path Generation")]
     [Tooltip("World Y of the path's start and neutral height")]

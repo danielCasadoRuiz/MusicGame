@@ -121,6 +121,7 @@ public class MusicWorldManager : MonoBehaviour
     private MeshRenderer _groundMR;
     private MeshCollider _groundMC;
     private Mesh         _groundMesh;
+    private RunnerEdgeTrim _edgeTrim;
     private readonly Mesh[] _colliderMeshes = new Mesh[2];
     private int          _colliderBuffer;
     private JobHandle    _bakeHandle;
@@ -205,6 +206,7 @@ public class MusicWorldManager : MonoBehaviour
     {
         if (Instance == this) Instance = null;
         _bakeHandle.Complete();
+        _edgeTrim?.Dispose();
         ReleaseFinishArch();
         if (_groundGO != null) Destroy(_groundGO);
         if (_groundMesh != null) Destroy(_groundMesh);
@@ -223,6 +225,8 @@ public class MusicWorldManager : MonoBehaviour
 
         float dist = clock.MusicDistance;
         StreamGround(dist);
+        if(_edgeTrim!=null && _bufferRows>1 && _edgeTrim.NeedsUpdate(_config.levelGeneration,_meshMaterial))
+            RefreshEdgeTrim();
 
         // Near the path end the mesh window may stop moving; still check the reveal.
         if (_finishArch == null && _bufferRow0 != int.MinValue && _bufferRows > 1)
@@ -796,6 +800,14 @@ public class MusicWorldManager : MonoBehaviour
         _groundMPB.SetFloat(StartMusicDistanceID, startDistance);
         _groundMPB.SetFloat(EndMusicDistanceID, endDistance);
         _groundMR.SetPropertyBlock(_groundMPB);
+        RefreshEdgeTrim();
+    }
+
+    private void RefreshEdgeTrim()
+    {
+        _edgeTrim ??= new RunnerEdgeTrim();
+        _edgeTrim.Rebuild(_groundGO.transform,_verts,_normals,_surfaceUVs,_colors,_bufferRows,_gridCols,
+            _config.levelGeneration,_meshMaterial,_groundMPB);
     }
 
     // Vertex position / colour / normal for buffer rows [fromRow, toRow) of the window starting at

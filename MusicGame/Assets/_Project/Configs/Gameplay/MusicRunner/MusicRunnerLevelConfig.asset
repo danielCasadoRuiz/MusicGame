@@ -12,6 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb3484ecaf20408191d885b4f731de28, type: 3}
   m_Name: MusicRunnerLevelConfig
   m_EditorClassIdentifier: Assembly-CSharp::MusicRunnerLevelConfig
+  edgeTrimEnabled: 1
+  edgeTrimWidth: 0.125
+  edgeTrimHeight: 0.025
+  edgeTrimFinish: 0
+  edgeTrimBlackMaterial: {fileID: 2100000, guid: 8a05c3a4d26a2484b8027f8160f9692a, type: 2}
+  edgeTrimCustomMaterial: {fileID: 0}
   pathBaseHeight: 0
   pathControlPointInterval: 1
   pathSampleSpacing: 0.5
@@ -33,6 +39,11 @@ MonoBehaviour:
   midEnergyColor: {r: 0.95, g: 0.85, b: 0.1, a: 1}
   highEnergyColor: {r: 0.95, g: 0.15, b: 0.1, a: 1}
   terrainColorRedThreshold: 0.75
+  terrainSurfaceMaterial: {fileID: 0}
+  finishSurfaceBlendMeters: 5
+  finishSurfaceRevealSeconds: 10
+  finishSurfacePatchSize: 1.8
+  finishSurfacePatchSoftness: 0.07
   terrainAmbientFloor: 0.35
   playheadEnabled: 1
   playheadOffset: 0
@@ -47,7 +58,3 @@ MonoBehaviour:
   useBeatGrid: 1
   beatGridSubdivision: 0.7
   classificationConfidenceMargin: 0.24
-  finishSurfaceBlendMeters: 5
-  finishSurfaceRevealSeconds: 10
-  finishSurfacePatchSize: 1.8
-  finishSurfacePatchSoftness: 0.07
