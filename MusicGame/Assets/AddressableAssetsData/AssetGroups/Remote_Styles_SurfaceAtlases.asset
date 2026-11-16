@@ -1,0 +1,131 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Remote_Styles_SurfaceAtlases
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Remote_Styles_SurfaceAtlases
+  m_GUID: 979a9d721639f6e438d1b92d63067883
+  m_SerializeEntries:
+  - m_GUID: 063afb817068f0e408a7b7fc028dbf2f
+    m_Address: RunnerSurfaceAtlas/RaveWarehouse_Coherent
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 06e94d3f14d62e84ab2c17985bc0b9a4
+    m_Address: RunnerSurfaceAtlas/DanceDiscoFour
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 07689b3c094399e499f032769bf7ba2c
+    m_Address: RunnerSurfaceAtlas/Guitars
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 08bbfa8dbf5c016439164e3bc047099a
+    m_Address: RunnerSurfaceAtlas/DanceClubWood
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0a9208cae4e268c4199cccad28a6d614
+    m_Address: RunnerSurfaceAtlas/AcousticTrail_Coherent
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1be06681d28a8174eb3dbc719d826fd7
+    m_Address: RunnerSurfaceAtlas/ElectronicOpticGlass
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4850e3312dca8b94f8d73cc8e8f22815
+    m_Address: RunnerSurfaceAtlas/DanceRaveFour
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6e8d8be39d8b4a14fbaec800e46d6b8d
+    m_Address: RunnerSurfaceAtlas/Moods
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 77f7990c2ebe26b4f842f0d687954dfe
+    m_Address: RunnerSurfaceAtlas/SoulClub_Coherent
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 87aec0e0e6393fa418d75b41966fdccf
+    m_Address: RunnerSurfaceAtlas/Voices
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 89d2b4e8a5f767545b716a14d6999524
+    m_Address: RunnerSurfaceAtlas/Palace_Coherent
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b28b3eb0d4de5743b0df979e02dd97c
+    m_Address: RunnerSurfaceAtlas/Orchestral
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c8128542fd233104ba34382502ecaa5c
+    m_Address: RunnerSurfaceAtlas/Shadows
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c95b98c5ffd50684c84f6ee1c20193d5
+    m_Address: RunnerSurfaceAtlas/ElectronicCircuitLED
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c9dcd3125fdba9446a691ea42beb7b8e
+    m_Address: RunnerSurfaceAtlas/Rhythm
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d2398aa092cef584a894689486961583
+    m_Address: RunnerSurfaceAtlas/ElectronicDeck_Coherent
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e7017dacc25edf74a8f41b4ac32cff0b
+    m_Address: RunnerSurfaceAtlas/CatchyPop_Coherent
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: efe8f1749430b124899d9119e5eb71ca
+    m_Address: RunnerSurfaceAtlas/RockStage_Coherent
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a4cc0dfc618f344aaae658dde9bb725, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: e4aeb6708368dbc40ab4c11a51125599, type: 2}
+    - {fileID: 11400000, guid: ffaa41c380359c94dbb458702be8e792, type: 2}

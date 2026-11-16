@@ -1,0 +1,31 @@
+# Musical style path proposals
+
+This is the musical-style collection. The earlier Families collection groups shader surface experiments, not musical styles.
+
+Source of truth: `GameMusicStyle.cs` (17 named gameplay styles, excluding Unknown), `StyleSkinLibrarySO.HudAccent`, and the actual HUD art under `Art/UI/RunnerHud/<style>/bar.png`. The legacy `MusicStyleId` registry is not the gameplay style list.
+
+Each gameplay style has three different authored material swatches, packed in six generated 3×3 atlases. These are distinct wood/stone/metal/ceramic/mosaic surface proposals, not three recolours of a shared paving texture. The HTML gallery displays the actual style HUD beside its three paths. New atlases are prototype resolution and still need production seam/padding review.
+
+Build via **MusicGame > Runner > Build Musical Style Paths**. The builder validates exact enum coverage and numeric identifiers, creates 51 material presets and renders 51 curved-path previews, then saves `MusicalStylePaths.unity`. `MusicStyleSurfaces.json` records style names, enum values, atlas names, cell indices and variant names.
+
+All presets use the existing terrain shader. Each proposal uses a single atlas cell; colour by altitude remains independently editable. Selected electronic/club styles enable low-strength emission from saturated texture detail. The preview builder only authors the alternatives. **MusicGame > Runner > Install Musical Surfaces Into Themes** connects them to the existing theme architecture (installed in this workspace): MusicStyleRegistry → MusicStyleVisualSO.track → TrackStyleSO.terrainSurfaces. Several gameplay styles can share a legacy theme key without sharing their terrain sets. Existing world/environment/UI fields are preserved.
+
+GameplayManager resolves the terrain through the current theme using DetectedGameStyle and RunnerPickupLayout.CurrentSeed. The latter is the saved pending-match seed already restored with the song and rival; no new per-frame random draw or separate song-state store is introduced. A new assignment has a new seed. Retry, scene reload and pending-run resume retain the seed and therefore the surface, as long as the configured alternatives remain unchanged. Local-file assignments use their existing session-only seed. Explicit Initialize(pathMaterial) is now consumed by MusicWorldManager, which clones one material per run. The level config terrainSurfaceMaterial remains a fallback when no themed material is selected.
+
+IntegrationVerification checks every gameplay style across 128 match seeds, saved JSON round-trips, selection variety, global random-state isolation, fallback handling, theme resolution and the real world material factory. Actual device frame time and full interactive gameplay remain separate validation steps.
+
+Atlas rows are mapped top-to-bottom in the design and bottom-to-top in shader cell indices. All three alternatives for a style belong to the same atlas, so choosing between them does not require loading another source image.
+
+## Bundle layout and editor crash fix
+Style visual roots are now in Remote_Styles_Visuals, Pack Separately, labelled Style_<legacy theme key> and Category_Styles. Their TrackStyle and material alternatives are dependencies. The six shared atlas assets are explicit entries in Remote_Styles_SurfaceAtlases, also Pack Separately, so style bundles can depend on one shared atlas rather than embed duplicate copies. GUIDs and existing addresses are preserved. Physical bundles must be rebuilt before testing Use Existing Build or distributing updated content; Asset Database Fast Mode sees edited assets immediately.
+
+ContentDownloadManager skips bundle download/cache enumeration only when the actual editor AssetDatabase locator is active. In this mode content is local and typed asset loading still runs normally. This avoids the native GetPlayerObjectIdentifiersInAsset crash observed twice during untyped quality-label queries. Built-catalog and player download paths are unchanged.
+
+## Height-blended revision
+All 51 existing preset assets now use HeightBlend mode and three distinct surfaces from their own musical-style row. Low/middle/high weights favour different materials; two-scale continuous masks break the boundaries into irregular patches. Each preset has its own stable mask seed, patch size, blend width, layer order and independent texture scale. Source atlases and asset GUIDs are reused, so current theme assignments and saved-match material selection remain valid. Three colour samples per pixel replace the former single-surface sample; no extra terrain renderer or material slot is added. The gallery identifies low/middle/high materials explicitly. Refresh with MusicGame > Runner > Upgrade Height Layers and Refresh Gallery.
+
+## Classical finish boundary
+TrackStyleSO.finishMaterial selects the common single-texture marble/gold finish destination (ClassicalFinish). The base theme provides the fallback and authored track themes reference it too. MusicWorldManager receives this alongside the selected song-style material; its existing material samples the finish atlas only when needed. The transition is spatial: finishSurfaceBlendMeters (default 5 m) before the played clip end, fully classical at the boundary and beyond it, including farewell waves. Style emission fades away with the transition. The finish arch now uses exactly that playback-end distance (including warmup), matching SongFinishedEvent / FINISH; endingFlatSeconds only controls the subsequent flat hold, not the arch offset. Verified through FinishTerrainSetup.InstallAndCheck without captures.
+
+## Patch-based finish anticipation
+The final reveal now starts about finishSurfaceRevealSeconds (default 10 s) before the arch, converted to path metres using player speed. Two-scale stationary noise reveals sparse classical islands first, then increases their coverage; the arc and everything beyond it remain 100% classical. Patch size (1.8 m) and edge softness (0.07) are configurable. The legacy 5 m value is a minimum reveal distance, not a straight end fade. No texture mask asset, extra renderer or time-driven pattern is introduced, so streaming, pause and retries keep the islands in the same place.

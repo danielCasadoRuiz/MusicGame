@@ -28,7 +28,7 @@ public class FinishArchStreamingTests
         _world.Initialize(_config);
         const float playEnd = 120f;
         _archDistance = MusicTime.SongToDistance(
-            MusicTime.ClipToSong(playEnd + _core.endingFlatSeconds, _core.warmupTime), _core.playerSpeed);
+            MusicTime.ClipToSong(playEnd, _core.warmupTime), _core.playerSpeed);
         typeof(MusicWorldManager).GetField("_playRangeEnd", BindingFlags.NonPublic | BindingFlags.Instance)
             .SetValue(_world, playEnd);
         typeof(MusicWorldManager).GetProperty("Path").SetValue(_world, new MusicPath(new[]
@@ -47,6 +47,18 @@ public class FinishArchStreamingTests
         Object.DestroyImmediate(_core);
     }
 
+    [Test]
+    public void ClosingHillsStartAtTheArchWithoutTheLegacyFlatHold()
+    {
+        _core.endingWaves = true;
+        _core.endingFlatSeconds = 9f; // Old serialized values must not add a flat stretch.
+        Assert.That(_world.NormalizedBandValue(0,120f),Is.EqualTo(0f).Within(.0001f));
+        Assert.That(_world.NormalizedBandValue(0,120.01f),Is.GreaterThan(0f));
+        Assert.That(_world.NormalizedBandValue(0,120.5f),Is.EqualTo(.5f).Within(.0001f));
+        Assert.That(_world.NormalizedBandValue(3,121f),Is.EqualTo(0f).Within(.0001f));
+        Assert.That(_world.NormalizedBandValue(3,121.5f),Is.EqualTo(.5f).Within(.0001f));
+    }
+
     private void StreamWindow(float start, float end) => typeof(MusicWorldManager)
         .GetMethod("PlaceFinishArch", BindingFlags.NonPublic | BindingFlags.Instance)
         .Invoke(_world, new object[] { start, end });
@@ -54,7 +66,7 @@ public class FinishArchStreamingTests
     [Test]
     public void ArchAppearsWithItsGroundWhileSongIsStillAheadOfTheClosingSection()
     {
-        // Player is 60 m before the arch, and 30 m before the flat closing section.
+        // Player is 60 m before the arch, and 60 m before the playback-end boundary.
         // A loaded window is sufficient: no clock/end-of-song event may gate this decoration.
         StreamWindow(_archDistance - 80f, _archDistance);
         var arch = _host.transform.Find("FinishArch");
@@ -62,6 +74,27 @@ public class FinishArchStreamingTests
         Assert.AreEqual(_archDistance, arch.position.z, 0.001f);
         StreamWindow(_archDistance - 64f, _archDistance + 16f);
         Assert.AreEqual(1, _host.transform.childCount, "Later windows must not duplicate the arch.");
+    }
+
+    [Test]
+    public void RestartWindowRemovesOldArchAndRecreatesItOnlyNearFinish()
+    {
+        StreamWindow(_archDistance - 80f, _archDistance + 10f);
+        var previous = _host.transform.Find("FinishArch");
+        Assert.IsNotNull(previous);
+        int oldId = previous.gameObject.GetInstanceID();
+        // Same backward window jump that RestartSong -> RebuildNow performs.
+        StreamWindow(0, 100);
+        Assert.IsTrue(previous == null || !previous.gameObject.activeSelf,
+            "The old finish arch must not remain visible after rewinding.");
+        Assert.IsNull(_host.transform.Find("FinishArch"));
+        StreamWindow(20, 120);
+        Assert.IsNull(_host.transform.Find("FinishArch"));
+        StreamWindow(_archDistance - 80f, _archDistance + 10f);
+        var recreated = _host.transform.Find("FinishArch");
+        Assert.IsNotNull(recreated);
+        Assert.AreNotEqual(oldId, recreated.gameObject.GetInstanceID());
+        Assert.AreEqual(1, _host.transform.childCount);
     }
 
     [TestCase(-80f, -0.01f)]

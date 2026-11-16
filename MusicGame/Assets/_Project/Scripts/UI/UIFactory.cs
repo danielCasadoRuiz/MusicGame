@@ -151,6 +151,7 @@ public static class UIFactory
         img.color = new Color(1f, 1f, 1f, 0.12f);
 
         var btn = rt.gameObject.AddComponent<Button>();
+        UIButtonClickSound.Attach(rt.gameObject);
         var colors = btn.colors;
         colors.normalColor      = new Color(1f, 1f, 1f, 0.12f);
         colors.highlightedColor = new Color(1f, 1f, 1f, 0.22f);

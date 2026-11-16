@@ -15,7 +15,7 @@ using System.Collections.Generic;
 [System.Serializable]
 public class PlayerProgressData
 {
-    public const int CurrentVersion = 8; // 2: song history; 3: pendingRun; 4: stable songId; 5: campaign + song cycles + records; 6: song use per lap; 7: played history; 8: player profile
+    public const int CurrentVersion = 9; // 2: song history; 3: pendingRun; 4: stable songId; 5: campaign + song cycles + records; 6: song use per lap; 7: played history; 8: player profile; 9: stable terrain assignment
 
     public int version = CurrentVersion;
 
@@ -57,6 +57,7 @@ public class PlayerProgressData
     /// a lost fight and Fight Again; cleared only by the victory (or replaced by a confirmed manual
     /// SELECT SONG). Ids only — no song/fight state (a resumed run restarts the song).</summary>
     public PendingRunData pendingRun = new();
+    public TerrainSelectionHistory terrainSelection = new();
 
     // ── Campaign (v5) — see CampaignProgressData / CampaignService ──────────────────────────
     /// <summary>Lap, current level + position, per-position best records, final rival progress, seal.</summary>
@@ -131,6 +132,8 @@ public class PendingRunData
     public int pickupSeed;
     /// <summary>RunnerPickupLayout.GeneratorVersion the seed was last generated with (0 = unknown).</summary>
     public int pickupLayoutVersion;
+    public int terrainStyle;
+    public string terrainMaterialId = "";
 
     public bool IsSet => !string.IsNullOrEmpty(songId) || bossStage >= 0;
     public bool IsBoss => bossStage >= 0;
@@ -153,4 +156,12 @@ public class DefeatedOpponentRecord
 {
     public string opponentId;
     public List<int> levels = new();
+}
+
+/// <summary>Last floor actually entered, used only to exclude an immediate repeat.</summary>
+[System.Serializable]
+public class TerrainSelectionHistory
+{
+    public int style;
+    public string materialId="";
 }

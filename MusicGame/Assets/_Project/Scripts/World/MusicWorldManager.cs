@@ -32,6 +32,7 @@ public class MusicWorldManager : MonoBehaviour
 
     private MusicRunnerGameplayConfig _config;
     private Material       _pathMaterial; // optional
+    private Material       _finishMaterial;
 
     public MusicPath Path    { get; private set; }
     public bool      IsReady => Path != null;
@@ -40,6 +41,7 @@ public class MusicWorldManager : MonoBehaviour
     private float[]     _bandReference;
     private Material    _meshMaterial;
     private System.Action<SongProfileReadyEvent> _onProfile;
+    private System.Action<PlayerFellEvent> _onPlayerFell;
 
     // The played window's own end (song-time seconds, same convention as GameplayManager.SongPlayEnd
     // — see PlayRangeResolver) — 0 until BuildWorld resolves it. Used only by NormalizedBandValue's
@@ -124,6 +126,7 @@ public class MusicWorldManager : MonoBehaviour
     private JobHandle    _bakeHandle;
     private Mesh         _pendingColliderMesh;
     private float        _groundWindowCenter = float.NaN;
+    private bool         _holdGroundWindow;
 
     private float[,] _globalGrid;
     private float    _rowSpacing;
@@ -134,6 +137,7 @@ public class MusicWorldManager : MonoBehaviour
     private Vector3[] _verts, _normals;
     private Color32[] _colors;
     private Vector2[] _uvs;
+    private Vector3[] _surfaceUVs;
     private int[]     _tris;
     private int       _bufferRows = -1;
     private int       _bufferRow0 = int.MinValue; // global row index held in buffer row 0
@@ -148,6 +152,7 @@ public class MusicWorldManager : MonoBehaviour
     private const float GroundWindowBehind = 20f;
     private const float GroundWindowAhead  = 60f;
     private const float GroundRebuildStep  = 15f;
+    private const float FallWindowExtraBehind = 20f;
 
     // ── Playhead scanline (see MusicRunnerLevelConfig's own doc for the design) ─────────
     // Per-chunk (set once per rebuild via MaterialPropertyBlock — no Material cloning):
@@ -176,10 +181,11 @@ public class MusicWorldManager : MonoBehaviour
         return host.AddComponent<MusicWorldManager>();
     }
 
-    public void Initialize(MusicRunnerGameplayConfig config, Material pathMaterial = null)
+    public void Initialize(MusicRunnerGameplayConfig config, Material pathMaterial = null, Material finishMaterial = null)
     {
         _config       = config;
         _pathMaterial = pathMaterial;
+        _finishMaterial = finishMaterial;
     }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
@@ -199,6 +205,7 @@ public class MusicWorldManager : MonoBehaviour
     {
         if (Instance == this) Instance = null;
         _bakeHandle.Complete();
+        ReleaseFinishArch();
         if (_groundGO != null) Destroy(_groundGO);
         if (_groundMesh != null) Destroy(_groundMesh);
         foreach (var m in _colliderMeshes) if (m != null) Destroy(m);
@@ -215,8 +222,7 @@ public class MusicWorldManager : MonoBehaviour
         if (_pendingColliderMesh != null && _bakeHandle.IsCompleted) ApplyPendingCollider();
 
         float dist = clock.MusicDistance;
-        if (float.IsNaN(_groundWindowCenter) || Mathf.Abs(dist - _groundWindowCenter) > GroundRebuildStep)
-            RebuildGroundWindow(dist, syncCollider: false);
+        StreamGround(dist);
 
         // Near the path end the mesh window may stop moving; still check the reveal.
         if (_finishArch == null && _bufferRow0 != int.MinValue && _bufferRows > 1)
@@ -224,6 +230,24 @@ public class MusicWorldManager : MonoBehaviour
                 Mathf.Min((_bufferRow0 + _bufferRows - 1) * _rowSpacing, Path.TotalLength));
 
         UpdatePlayheadGlobals(dist);
+    }
+
+    private void StreamGround(float distance)
+    {
+        // A death camera stays with the body while the music keeps advancing. Never let
+        // that advancing clock discard the ground visible behind the stationary player.
+        if (_holdGroundWindow) return;
+        if (float.IsNaN(_groundWindowCenter) || Mathf.Abs(distance - _groundWindowCenter) > GroundRebuildStep)
+            RebuildGroundWindow(distance, syncCollider: false);
+    }
+
+    private void HoldGroundForFall(PlayerFellEvent e)
+    {
+        if (Path == null || _holdGroundWindow) return;
+        _holdGroundWindow = true;
+        // Extend the existing slice backwards once, without dropping any of its forward rows.
+        float center = float.IsNaN(_groundWindowCenter) ? MusicClock.Instance?.MusicDistance ?? 0f : _groundWindowCenter;
+        RebuildGroundWindow(center, syncCollider: false);
     }
 
     // Everything here is GLOBAL shader state (Shader.SetGlobalX) — touches zero renderers/
@@ -284,11 +308,15 @@ public class MusicWorldManager : MonoBehaviour
     {
         _onProfile = e => BuildWorld(e.Profile);
         EventBus.Subscribe(_onProfile);
+        _onPlayerFell = HoldGroundForFall;
+        EventBus.Subscribe(_onPlayerFell);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onProfile);
+        EventBus.Unsubscribe(_onPlayerFell);
+        _holdGroundWindow = false;
     }
 
     // ── World generation ──────────────────────────────────────────────────────
@@ -307,7 +335,8 @@ public class MusicWorldManager : MonoBehaviour
         if (_meshMaterial != null) Destroy(_meshMaterial);
         _meshMaterial = VertexColorMaterial();
 
-        if (_finishArch != null) { Destroy(_finishArch); _finishArch = null; }
+        ReleaseFinishArch();
+        _holdGroundWindow = false;
         _groundWindowCenter = float.NaN;
         ComputeGlobalGrid(); // the whole path's terrain, once — windows are slices of it
         _bufferRow0 = int.MinValue; // buffered rows belonged to the previous path
@@ -320,20 +349,22 @@ public class MusicWorldManager : MonoBehaviour
     // ── Finish arch: the decoration the player runs through during the farewell ──────────────
 
     private GameObject _finishArch;
+    private Material _finishArchMaterial;
 
     private void PlaceFinishArch(float windowStart, float windowEnd)
     {
-        if (_finishArch != null) return;
         var core = _config.core;
-        if (core.playerSpeed <= 0f || _playRangeEnd <= 0f) return;
-        if (core.finishArchPrefab == null && !core.finishArchPlaceholder) return;
+        if (core.playerSpeed <= 0f || _playRangeEnd <= 0f ||
+            (core.finishArchPrefab == null && !core.finishArchPlaceholder))
+        { ReleaseFinishArch(); return; }
 
         // Stream the arch with the ground window containing it (normally 60 m ahead),
         // even while the song is still playing. Waiting for the closing section makes it pop in.
-        float clipTime = _playRangeEnd + Mathf.Max(0f, core.endingFlatSeconds);
+        float clipTime = _playRangeEnd; // same boundary that publishes SongFinishedEvent / FINISH
         float distance = MusicTime.SongToDistance(MusicTime.ClipToSong(clipTime, core.warmupTime), core.playerSpeed);
-        if (distance < windowStart || distance > windowEnd) return;
-        if (distance > Path.TotalLength) return; // the farewell tail is shorter than that
+        if (distance < windowStart || distance > windowEnd || distance > Path.TotalLength)
+        { ReleaseFinishArch(); return; }
+        if (_finishArch != null) return;
         var sample = Path.GetSample(distance);
         var ground = SampleSurface(distance, 0f).position;
         Vector3 fwd = new Vector3(sample.tangent.x, 0f, sample.tangent.z);
@@ -345,6 +376,22 @@ public class MusicWorldManager : MonoBehaviour
         _finishArch.name = "FinishArch";
     }
 
+    private void ReleaseFinishArch()
+    {
+        if (_finishArch != null)
+        {
+            // Hide immediately: Destroy is deferred until frame end during a restart.
+            _finishArch.SetActive(false);
+            if (Application.isPlaying) Destroy(_finishArch); else DestroyImmediate(_finishArch);
+            _finishArch = null;
+        }
+        if (_finishArchMaterial != null)
+        {
+            if (Application.isPlaying) Destroy(_finishArchMaterial); else DestroyImmediate(_finishArchMaterial);
+            _finishArchMaterial = null;
+        }
+    }
+
     /// <summary>A plain grey arch (two pillars + a lintel, no colliders) standing in for the real decoration.</summary>
     private GameObject BuildPlaceholderArch(Vector3 ground, Quaternion rot, float trackWidth)
     {
@@ -354,6 +401,7 @@ public class MusicWorldManager : MonoBehaviour
         float half = Mathf.Max(2f, trackWidth * 0.5f + 0.8f), height = 6f, thick = 0.9f;
         var shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
         var mat = new Material(shader);
+        _finishArchMaterial = mat;
         mat.color = new Color(0.86f, 0.84f, 0.78f);
         void Block(string name, Vector3 localPos, Vector3 size)
         {
@@ -393,15 +441,16 @@ public class MusicWorldManager : MonoBehaviour
         // full width of the path, not a left-to-right spectrum silhouette.
         if (time < 0f) return SyntheticCountdownValue(time);
 
+        // The closing hills begin exactly at the finish arch (the playback-end boundary).
+        // Synthetic terrain does not require live analysis data beyond that point.
+        if (_playRangeEnd > 0f && _config.core.endingWaves && time >= _playRangeEnd)
+            return SyntheticCountdownValue(time - _playRangeEnd);
+
         if (_bandReference == null || b < 0 || b >= _bandReference.Length || _profile == null) return 0f;
         float norm = _bandReference[b] > 0.0001f ? _profile.GetVisualBandEnergyAtSmooth(b, time) / _bandReference[b] : 0f;
         norm = Mathf.Clamp01(norm);
         norm = Mathf.Pow(norm, Mathf.Max(0.01f, _config.levelGeneration.frequencyContrastGamma));
         float fade = EndingFadeMultiplier(time);
-        // Fade the song terrain to flat, hold it, then begin the closing hills.
-        float wavesStart = _playRangeEnd + Mathf.Max(0f, _config.core.endingFlatSeconds);
-        if (_config.core.endingWaves && time >= wavesStart)
-            return SyntheticCountdownValue(time - wavesStart);
         return norm * fade;
     }
 
@@ -471,7 +520,12 @@ public class MusicWorldManager : MonoBehaviour
     /// already exists there the instant normal movement resumes, instead of waiting up to a
     /// frame for Update()'s own distance-drift check to notice and rebuild on its own.
     /// </summary>
-    public void RebuildNow(float distance) => RebuildGroundWindow(distance, syncCollider: true);
+    public void RebuildNow(float distance)
+    {
+        // Respawn/restart explicitly rebuild before teleporting the player and camera.
+        _holdGroundWindow = false;
+        RebuildGroundWindow(distance, syncCollider: true);
+    }
 
     /// <summary>
     /// The processed normalized height field for the WHOLE path (rows on the global distance grid,
@@ -568,8 +622,9 @@ public class MusicWorldManager : MonoBehaviour
         // Constant window length (slid inside [0, total] near the path's ends) → constant row count,
         // so every rebuild reuses the buffers and only computes the newly exposed rows.
         float total = Path.TotalLength;
-        float span = GroundWindowBehind + GroundWindowAhead;
-        float lo = Mathf.Clamp(centerDistance - GroundWindowBehind, 0f, Mathf.Max(0f, total - span));
+        float behind = GroundWindowBehind + (_holdGroundWindow ? FallWindowExtraBehind : 0f);
+        float span = behind + GroundWindowAhead;
+        float lo = Mathf.Clamp(centerDistance - behind, 0f, Mathf.Max(0f, total - span));
         float hi = Mathf.Min(total, lo + span);
         if (hi - lo < _rowSpacing) return;
 
@@ -665,7 +720,7 @@ public class MusicWorldManager : MonoBehaviour
         if (resized)
         {
             int n = rows * cols;
-            _verts = new Vector3[n]; _normals = new Vector3[n]; _colors = new Color32[n]; _uvs = new Vector2[n];
+            _verts = new Vector3[n]; _normals = new Vector3[n]; _colors = new Color32[n]; _uvs = new Vector2[n]; _surfaceUVs = new Vector3[n];
             _tris = new int[(rows - 1) * (cols - 1) * 6];
             int ti = 0;
             for (int r = 0; r < rows - 1; r++)
@@ -687,6 +742,7 @@ public class MusicWorldManager : MonoBehaviour
             System.Array.Copy(_verts,   shift * cols, _verts,   0, keep * cols);
             System.Array.Copy(_normals, shift * cols, _normals, 0, keep * cols);
             System.Array.Copy(_colors,  shift * cols, _colors,  0, keep * cols);
+            System.Array.Copy(_surfaceUVs, shift * cols, _surfaceUVs, 0, keep * cols);
         }
         FillRows(rowIndex0, keep, rows, cols, scale, total);
         _bufferRow0 = rowIndex0;
@@ -710,6 +766,7 @@ public class MusicWorldManager : MonoBehaviour
         _groundMesh.SetNormals(_normals);
         _groundMesh.SetColors(_colors);
         _groundMesh.SetUVs(0, _uvs);
+        _groundMesh.SetUVs(1, _surfaceUVs);
         if (resized) _groundMesh.SetTriangles(_tris, 0);
         _groundMesh.RecalculateBounds();
 
@@ -764,6 +821,7 @@ public class MusicWorldManager : MonoBehaviour
                 float xOff = -hw + hw * 2f * lateralFrac;
                 float norm = Mathf.Clamp01(_globalGrid[g, c]);
 
+                _surfaceUVs[v] = new Vector3(xOff, Mathf.Min(g * _rowSpacing, total), norm);
                 _verts[v]  = s.position + s.right * xOff + s.up * (norm * scale);
                 // COLOR reads the SAME processed value as HEIGHT (norm = smoothed + slope-clamped);
                 // terrainColorRedThreshold is a pure COLOR remap (see TerrainVuColor).
@@ -796,10 +854,40 @@ public class MusicWorldManager : MonoBehaviour
     {
         var shader = Shader.Find("MusicGame/VertexColorLit") ?? Shader.Find("Sprites/Default")
                      ?? Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
-        var mat = new Material(shader) { color = Color.white };
+        var preset = _pathMaterial != null ? _pathMaterial : _config.levelGeneration.terrainSurfaceMaterial;
+        var mat = preset != null ? new Material(preset) : new Material(shader);
         if (mat.HasProperty("_AmbientFloor"))
             mat.SetFloat("_AmbientFloor", Mathf.Clamp01(_config.levelGeneration.terrainAmbientFloor));
+        ApplyFinishSurface(mat);
         return mat;
+    }
+
+    private void ApplyFinishSurface(Material mat)
+    {
+        if(!mat.HasProperty("_FinishSurfaceEnabled")) return;
+        mat.SetFloat("_FinishSurfaceEnabled",0);
+        if(_finishMaterial==null || _playRangeEnd<=0 || !_finishMaterial.HasProperty("_SurfaceAtlas"))return;
+        var atlas=_finishMaterial.GetTexture("_SurfaceAtlas");
+        if(atlas==null)return;
+        mat.SetTexture("_FinishAtlas",atlas);
+        mat.SetVector("_FinishGrid",_finishMaterial.GetVector("_AtlasGrid"));
+        mat.SetFloat("_FinishIndex",_finishMaterial.GetVector("_LayerIndices").x);
+        mat.SetFloat("_FinishMeters",Mathf.Max(.01f,_finishMaterial.GetFloat("_Meters")));
+        mat.SetFloat("_FinishPadding",_finishMaterial.GetFloat("_Padding"));
+        // Bind the full classical height palette, not just its first atlas cell.
+        mat.SetFloat("_FinishMode",_finishMaterial.GetFloat("_SurfaceMode"));
+        mat.SetFloat("_FinishLayerPatchSize",_finishMaterial.GetFloat("_PatchSize"));
+        foreach(string property in new[]{"SurfaceSeed","PatchAmount","BlendWidth","WeatherStrength"})
+            mat.SetFloat("_Finish"+property,_finishMaterial.GetFloat("_"+property));
+        foreach(string property in new[]{"LayerIndices","LayerTiling","HeightStops","LowWeights","MidWeights","HighWeights","Foundation"})
+            mat.SetVector("_Finish"+property,_finishMaterial.GetVector("_"+property));
+        mat.SetFloat("_FinishDistance",MusicTime.SongToDistance(MusicTime.ClipToSong(_playRangeEnd,_config.core.warmupTime),_config.core.playerSpeed));
+        var finishConfig=_config.levelGeneration;
+        float anticipation=Mathf.Max(0,finishConfig.finishSurfaceRevealSeconds)*Mathf.Max(0,_config.core.playerSpeed);
+        mat.SetFloat("_FinishBlendMeters",Mathf.Max(finishConfig.finishSurfaceBlendMeters,anticipation));
+        mat.SetFloat("_FinishPatchSize",Mathf.Max(.1f,finishConfig.finishSurfacePatchSize));
+        mat.SetFloat("_FinishPatchSoftness",Mathf.Clamp(finishConfig.finishSurfacePatchSoftness,.005f,.25f));
+        mat.SetFloat("_FinishSurfaceEnabled",1);
     }
 
     // Per-band reference over the whole song, so a column's height/colour reflects how

@@ -122,6 +122,7 @@ public static class TempoFuryUISetup
             lib.titles.Add(skin);
         }
         ImportHud(lib, log);
+        RunnerUICurtainSetup.ConfigureLibrary(lib);
         lib.composers = CopySprite(Path.Combine(SourceRoot, "Composers.png"), $"{ArtTitles}/Composers.png", 2048, log);
 
         EditorUtility.SetDirty(lib);

@@ -28,15 +28,18 @@ public class StyleBlendButton : MonoBehaviour, IPointerEnterHandler, IPointerExi
     private GameMusicStyle _style = GameMusicStyle.Unknown;
     private GameMusicStyle _base = GameMusicStyle.Unknown;   // what the bottom layer shows: Unknown = the classic art
     private float _weight;
+    private bool _curtain;
+    private Material _transition;
     private bool _hovered, _selected, _pressed;
 
     /// <param name="baseStyle">Bottom layer: Unknown = the classic art (default); a style = cross-fade from that
     /// style's button to `style` (the main menu coming back from a game).</param>
-    public void SetBlend(GameMusicStyle style, float styleWeight, GameMusicStyle baseStyle = GameMusicStyle.Unknown)
+    public void SetBlend(GameMusicStyle style, float styleWeight, GameMusicStyle baseStyle = GameMusicStyle.Unknown, bool useCurtain = false)
     {
         _style = style;
         _base = baseStyle;
         _weight = Mathf.Clamp01(styleWeight);
+        _curtain = useCurtain;
         Refresh();
     }
 
@@ -77,15 +80,37 @@ public class StyleBlendButton : MonoBehaviour, IPointerEnterHandler, IPointerExi
             classic = b != null ? (on ? b.selected : b.normal) : on ? library.classicSelected : library.classicNormal;
             styled = s != null ? (on ? s.selected : s.normal) : null;
         }
-        if (classicLayer != null) classicLayer.sprite = classic;
+        if (classicLayer != null)
+        {
+            classicLayer.sprite = classic;
+            classicLayer.enabled = true;
+            classicLayer.material = art == Art.HudPause ? library.classicPauseMaterial : null;
+            var classicColor=classicLayer.color;
+            classicColor.a=art==Art.HudPause ? 1-_weight : 1;
+            classicLayer.color=classicColor;
+        }
         if (styleLayer != null)
         {
             styleLayer.sprite = styled;
             styleLayer.enabled = styled != null && _weight > 0.001f;
             var col = styleLayer.color; col.a = _weight; styleLayer.color = col;
+            styleLayer.material = null;
+            if (_curtain && classic != null && styled != null)
+            {
+                if(_transition==null)_transition=UIStyleTransition.Create(library,"Button style curtain");
+                if(_transition!=null)
+                {
+                    styleLayer.enabled=true;
+                    // Every pause button has the same left/right frontier, including its glow margin.
+                    UIStyleTransition.Apply(_transition,styleLayer,styleLayer.rectTransform,library,1-_weight,classic,Color.white,Color.white);
+                    if(classicLayer!=null)classicLayer.enabled=false;
+                }
+            }
         }
         if (label != null) label.color = on ? library.labelSelected : library.labelNormal;
     }
+
+    private void OnDestroy() => UIStyleTransition.Release(_transition);
 
     // The art's body (1152×192 of 1280×320) matches the button rect; the glow margin hangs outside it.
     private void FitLayers()

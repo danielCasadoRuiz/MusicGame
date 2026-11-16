@@ -320,6 +320,16 @@ public class PlayerProgressService : MonoBehaviour
         Changed("pending");
     }
 
+    public Material ResolveTerrainMaterial(TrackStyleSO track,GameMusicStyle style,int seed)
+    {
+        var pending=_data.pendingRun;
+        if(pending==null || !pending.IsSet || pending.pickupSeed!=seed)return RunnerTerrainSelection.ResolveSession(track,style,seed);
+        _data.terrainSelection ??= new TerrainSelectionHistory();
+        var material=RunnerTerrainSelection.ResolvePending(track,style,seed,pending,_data.terrainSelection,out bool changed);
+        if(changed)Changed("terrain");
+        return material;
+    }
+
     /// <summary>Clears the pending assignment. `save` false = part of a batched change (victory).</summary>
     public void ClearPendingRun(bool save = true)
     {

@@ -359,6 +359,15 @@ public class ContentDownloadManager : MonoBehaviour, IAppModule
 
     private static async Task<IList<IResourceLocation>> Locations(object key)
     {
+#if UNITY_EDITOR
+        // Fast Mode serves these assets straight from AssetDatabase: there are no bundles
+        // to download or clear. Untyped label queries in this locator call Unity's native
+        // GetPlayerObjectIdentifiersInAsset, which crashes this editor while enumerating
+        // quality labels. Keep real catalog / player download behaviour unchanged.
+        foreach (var locator in Addressables.ResourceLocators)
+            if (locator.GetType().FullName == "UnityEditor.AddressableAssets.Settings.AddressableAssetSettingsLocator")
+                return new List<IResourceLocation>();
+#endif
         var op = Addressables.LoadResourceLocationsAsync(key);
         await op.Task;
         var list = op.Status == AsyncOperationStatus.Succeeded && op.Result != null

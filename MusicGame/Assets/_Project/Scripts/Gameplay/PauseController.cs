@@ -43,7 +43,7 @@ public class PauseController : MonoBehaviour
     // Initialize() supplies `_manager`; RefreshVisibility() (called from WireUI) needs it.
     private bool _built;
 
-    public void Initialize(AudioSource audio, GameplayManager manager, PauseView view = null)
+    public void Initialize(AudioSource audio, GameplayManager manager, PauseView view = null, LiveHudView liveHud = null)
     {
         _audio   = audio;
         _manager = manager;
@@ -56,6 +56,20 @@ public class PauseController : MonoBehaviour
         // logic itself still works).
         if (view != null) WireUI(view);
         else Debug.LogError("[PauseController] No PauseView wired (UIRegistry in Runner.unity missing/empty) — the pause menu is disabled.", this);
+        if (liveHud != null)
+        {
+            var bar = liveHud.transform.Find("HudBar");
+            if (bar != null)
+            {
+                var parentCanvas = bar.GetComponentInParent<Canvas>();
+                _scoreCanvas = bar.GetComponent<Canvas>();
+                if (_scoreCanvas == null) _scoreCanvas = bar.gameObject.AddComponent<Canvas>();
+                _scoreCanvas.overrideSorting = false;
+                _scoreCanvas.sortingLayerID = parentCanvas != null ? parentCanvas.sortingLayerID : 0;
+                _scoreCanvas.sortingOrder = (parentCanvas != null ? parentCanvas.sortingOrder : 0) + 1;
+                if (parentCanvas != null) _scoreCanvas.additionalShaderChannels = parentCanvas.additionalShaderChannels;
+            }
+        }
     }
 
     // ── uGUI refs ────────────────────────────────────────────────────────────
@@ -68,6 +82,7 @@ public class PauseController : MonoBehaviour
     private Sprite        _firstPersonIcon;
     private StyleBlendGroup _styleGroup;
     private StyleBlendGroup _hudPauseGroup;   // the pause glyph in the Runner bar's round slot
+    private Canvas _scoreCanvas;
 
     private void Awake()
     {
@@ -207,7 +222,7 @@ public class PauseController : MonoBehaviour
         float weight = lib.RunnerWeight(GameplayHUD.SongProgress);
         if (group == _hudPauseGroup)
             weight = 1f - lib.CurtainClassic(1f - weight, StyleSkinLibrarySO.HudPauseCenter.x / StyleSkinLibrarySO.HudBarCanvas.x);
-        group.Apply(StyleSkinLibrarySO.CurrentStyle(), weight);
+        group.Apply(StyleSkinLibrarySO.CurrentStyle(), weight, useCurtain: group == _styleGroup);
     }
 
     public void Resume()
@@ -284,6 +299,8 @@ public class PauseController : MonoBehaviour
     {
         _pauseButtonRoot = view.pauseButtonRoot.GetComponent<RectTransform>();
         _overlayRoot     = view.overlayRoot.GetComponent<RectTransform>();
+        // The veil covers the camera toggle and gameplay controls. Only HudBar is raised over it.
+        view.transform.SetAsLastSibling();
         _styleGroup      = view.overlayRoot.GetComponentInChildren<StyleBlendGroup>(true);
         _hudPauseGroup   = view.pauseButtonRoot.GetComponentInChildren<StyleBlendGroup>(true);
 
@@ -368,11 +385,24 @@ public class PauseController : MonoBehaviour
     private void RefreshVisibility()
     {
         if (_overlayRoot == null || _pauseButtonRoot == null) return; // no PauseView wired (already logged)
-        _overlayRoot.gameObject.SetActive(!_ended && _paused && !HelpScreenController.IsOpen);
+        bool showOverlay = !_ended && _paused && !HelpScreenController.IsOpen;
+        _overlayRoot.gameObject.SetActive(showOverlay);
+        if (_scoreCanvas != null)
+        {
+            _scoreCanvas.overrideSorting = showOverlay;
+            if (showOverlay)
+            {
+                // Unity inherits/resets the order while overrideSorting is off. Set the
+                // elevated order when opening pause, after enabling the override.
+                var parentCanvas = _scoreCanvas.transform.parent.GetComponentInParent<Canvas>();
+                _scoreCanvas.sortingOrder = (parentCanvas != null ? parentCanvas.sortingOrder : 0) + 1;
+            }
+        }
 
         bool showPersistentButtons = !_ended && !_paused && _manager != null && _manager.IsRunning;
         _pauseButtonRoot.gameObject.SetActive(showPersistentButtons);
-        if (_cameraToggleButtonRoot != null) _cameraToggleButtonRoot.gameObject.SetActive(showPersistentButtons);
+        if (_cameraToggleButtonRoot != null)
+            _cameraToggleButtonRoot.gameObject.SetActive(!_ended && _manager != null && _manager.IsRunning);
     }
 
     /// <summary>Purely cosmetic — the toggle button's icon/text name the perspective it SWITCHES TO

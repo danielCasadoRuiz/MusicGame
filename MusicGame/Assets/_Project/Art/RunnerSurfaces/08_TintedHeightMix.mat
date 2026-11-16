@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: MusicGame/VertexColorLit
+  m_Shader: {fileID: 4800000, guid: 50559600f1890b44fa6cdda531937398, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _SurfaceAtlas:
+        m_Texture: {fileID: 2800000, guid: 4e9cb4ca386f4a04292287ae6c7b91c4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AmbientFloor: 0.65
+    - _BlendWidth: 0.13
+    - _ColorVariation: 0.08
+    - _CustomHeightPalette: 0
+    - _EdgeRoughness: 0
+    - _EdgeSoftness: 0.01
+    - _EmissionPattern: 0
+    - _EmissionPulse: 0
+    - _EmissionScale: 2
+    - _EmissionWidth: 0.015
+    - _EndMusicDistance: 1
+    - _Meters: 3
+    - _MissingPieces: 0
+    - _OverlapOrder: 0
+    - _Padding: 4
+    - _PatchAmount: 0.15
+    - _PatchSize: 2
+    - _PieceJitter: 0
+    - _RotatePieces: 1
+    - _StartMusicDistance: 0
+    - _SurfaceEmissionStrength: 0
+    - _SurfaceMode: 2
+    - _TintNoise: 0
+    - _TintSmoothness: 1
+    - _TintStrength: 0.5
+    - _UVWarp: 0
+    - _WeatherStrength: 0
+    m_Colors:
+    - _AtlasGrid: {r: 2, g: 2, b: 0, a: 0}
+    - _BaseColor: {r: 0.21999997, g: 0.17999998, b: 0.11999995, a: 1}
+    - _HeightStops: {r: 0, g: 0.5, b: 1, a: 0}
+    - _HighHeightColor: {r: 0.9, g: 0.85, b: 0.7, a: 1}
+    - _HighWeights: {r: 0, g: 0, b: 1, a: 0}
+    - _LayerIndices: {r: 0, g: 1, b: 3, a: 0}
+    - _LowHeightColor: {r: 0.19999996, g: 0.45, b: 0.24999997, a: 1}
+    - _LowWeights: {r: 1, g: 0, b: 0, a: 0}
+    - _MidHeightColor: {r: 0.8, g: 0.65, b: 0.39999998, a: 1}
+    - _MidWeights: {r: 0, g: 1, b: 0, a: 0}
+    - _PieceScale: {r: 0.9, g: 1.1, b: 0, a: 0}
+    - _SurfaceEmissionColor: {r: 0, g: 1, b: 1, a: 1}
+    - _TintTransitions: {r: 0.25, g: 0.5, b: 0.75, a: 0.5}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

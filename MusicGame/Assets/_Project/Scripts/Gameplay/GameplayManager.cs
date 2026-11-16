@@ -87,6 +87,9 @@ public class GameplayManager : MonoBehaviour
     private BonusTypeUsage[] _usedBonusTypes = Array.Empty<BonusTypeUsage>();
     private Transform                                  _poolParent;
     private readonly Dictionary<RingType, Material>    _materials = new();
+    private Material _bonusHaloMaterial;
+    private Mesh _bonusHaloMesh;
+    private readonly Dictionary<(RingType, Material), Material> _bonusGlowMaterials = new();
 
     // ── Active events ─────────────────────────────────────────────────────────
     private readonly List<ActiveEvent> _activeEvents = new();
@@ -153,7 +156,7 @@ public class GameplayManager : MonoBehaviour
         // MusicWorldManager must be created before GameplayManager subscribes to SongProfileReadyEvent
         // so its OnEnable() fires first and its subscription runs first (path ready before GameplayManager's coroutine checks it)
         var world = MusicWorldManager.GetOrCreate(gameObject);
-        world.Initialize(config, ResolveTrackMaterial());
+        world.Initialize(config, ResolveTrackMaterial(), ResolveFinishMaterial());
 
         _checkpoints = GetComponent<CheckpointSystem>()  ?? gameObject.AddComponent<CheckpointSystem>();
 
@@ -168,7 +171,7 @@ public class GameplayManager : MonoBehaviour
         hud.Initialize(audioSource, config, this, uiRegistry?.LiveHud, uiRegistry?.EndScreen);
 
         var pause = GetComponent<PauseController>() ?? gameObject.AddComponent<PauseController>();
-        pause.Initialize(audioSource, this, uiRegistry?.Pause);
+        pause.Initialize(audioSource, this, uiRegistry?.Pause, uiRegistry?.LiveHud);
 
         var environment = GetComponent<MusicEnvironmentController>() ?? gameObject.AddComponent<MusicEnvironmentController>();
         environment.Initialize(config.environment);
@@ -195,8 +198,25 @@ public class GameplayManager : MonoBehaviour
 
     // Null is a legitimate, already-handled result — MusicWorldManager.Initialize falls back to
     // its own default shader/material when pathMaterial is null, so no further fallback needed here.
-    private Material ResolveTrackMaterial() =>
-        ThemeManager.Instance != null ? ThemeManager.Instance.CurrentTheme?.Track?.trackMaterial : null;
+    private Material ResolveFinishMaterial()
+    {
+        var theme=ThemeManager.Instance;
+        return theme?.CurrentTheme?.Track?.finishMaterial ?? theme?.Config?.baseTheme?.track?.finishMaterial
+            ?? Resources.Load<AppConfigSO>("AppConfig")?.theme?.baseTheme?.track?.finishMaterial;
+    }
+
+    private Material ResolveTrackMaterial()
+    {
+        var track = ThemeManager.Instance != null ? ThemeManager.Instance.CurrentTheme?.Track : null;
+        if (track == null) return null;
+        var style = GameSession.Instance != null ? GameSession.Instance.DetectedGameStyle : GameMusicStyle.Unknown;
+        int seed = RunnerPickupLayout.CurrentSeed ?? (config.collectibles != null ? config.collectibles.collectibleSeed : 0);
+        var material = PlayerProgressService.Instance!=null
+            ? PlayerProgressService.Instance.ResolveTerrainMaterial(track,style,seed)
+            : RunnerTerrainSelection.ResolveSession(track,style,seed);
+        Debug.Log($"[RunnerSurface] {style}, match seed {seed}: {(material != null ? material.name : "original vertex colours")}");
+        return material;
+    }
 
     private void OnEnable()
     {
@@ -1195,20 +1215,43 @@ public class GameplayManager : MonoBehaviour
 
         // Textured authored pickups retain their maps. Plain placeholders/fallbacks keep the
         // configured type colour and emission, as before.
-        var renderer = go.GetComponentInChildren<MeshRenderer>(!poolable); // a visual copy is built inside an inactive holder
-        if (renderer != null)
+        foreach (var renderer in go.GetComponentsInChildren<MeshRenderer>(true))
         {
             var authored = renderer.sharedMaterial;
             bool textured = authored != null &&
                 ((authored.HasProperty("_BaseMap") && authored.GetTexture("_BaseMap") != null) ||
                  (authored.HasProperty("_MainTex") && authored.GetTexture("_MainTex") != null));
-            if (!textured) renderer.sharedMaterial = GetOrCreateMaterial(type);
+            if (config.collectibles.ringUnlitEnabled && textured)
+            {
+                var key = (type, authored);
+                if (!_bonusGlowMaterials.TryGetValue(key, out var glow))
+                {
+                    Color color = TryGetThemedRingVisual(type, out var themed) ? themed.color : config.collectibles.RingColor(type);
+                    glow = BonusVisibilityMaterial.Create(authored, config.collectibles, color);
+                    _bonusGlowMaterials[key] = glow;
+                }
+                renderer.sharedMaterial = glow;
+            }
+            else if (!textured) renderer.sharedMaterial = GetOrCreateMaterial(type);
         }
 
         go.name = $"Ring_{type}";
         if (!poolable) return go;
         var rc = go.GetComponent<RingController>() ?? go.AddComponent<RingController>();
         rc.Setup(type);
+        if(config.collectibles.bonusHaloEnabled && config.collectibles.bonusHaloShader!=null)
+        {
+            if(_bonusHaloMaterial==null)
+            {
+                _bonusHaloMaterial=new Material(config.collectibles.bonusHaloShader){name="Shared bonus ivory halo"};
+                _bonusHaloMaterial.SetColor("_HaloColor",config.collectibles.bonusHaloColor);
+                _bonusHaloMesh=BonusHalo.CreateMesh();
+            }
+            Color bonusColor = TryGetThemedRingVisual(type, out var haloVisual) ? haloVisual.color : config.collectibles.RingColor(type);
+            bonusColor = config.collectibles.HaloSourceColor(type, bonusColor);
+            Color haloColor = BonusHalo.LightenedColor(bonusColor, config.collectibles.bonusHaloColor);
+            BonusHalo.Attach(go,_bonusHaloMesh,_bonusHaloMaterial,config.collectibles.bonusHaloSize,haloColor);
+        }
         return go;
     }
 
@@ -1226,6 +1269,12 @@ public class GameplayManager : MonoBehaviour
         bool  emissionEnabled    = hasThemed ? themedVisual.emissionEnabled : config.collectibles.ringEmissionEnabled;
         float emissionIntensity  = hasThemed ? themedVisual.emissionIntensity : config.collectibles.ringEmissionIntensity;
 
+        if (config.collectibles.ringUnlitEnabled)
+        {
+            mat = BonusVisibilityMaterial.Create(null, config.collectibles, ringColor);
+            _materials[type] = mat;
+            return mat;
+        }
         mat = new Material(Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard"))
             { color = ringColor };
 
@@ -1263,6 +1312,10 @@ public class GameplayManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        if(_bonusHaloMaterial!=null)Destroy(_bonusHaloMaterial);
+        if(_bonusHaloMesh!=null)Destroy(_bonusHaloMesh);
+        foreach (var mat in _bonusGlowMaterials.Values)
+            if (mat != null) Destroy(mat);
         foreach (var mat in _materials.Values)
             if (mat != null) Destroy(mat);
         if (_poolParent != null) Destroy(_poolParent.gameObject);

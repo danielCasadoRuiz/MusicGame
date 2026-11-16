@@ -208,6 +208,7 @@ public static class RunnerScreenPrefabs
         view.cameraToggleButtonRoot = toggle.gameObject;
         view.cameraToggleButton = toggle.GetComponent<UnityEngine.UI.Button>();
         if (view.cameraToggleLabel == null) view.cameraToggleLabel = Text(toggle, "CameraToggleButtonLabel");
+        PausePresentationSetup.Configure(view);
     }
 
     private static TextMeshProUGUI Text(Transform parent, string path)

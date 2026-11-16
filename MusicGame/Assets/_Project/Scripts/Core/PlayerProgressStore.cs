@@ -127,6 +127,9 @@ public static class PlayerProgressStore
         data.songRoute.signature ??= "";
         // v2 → v3: no pending assignment (content validity is checked on CONTINUE — RunAssignment).
         data.pendingRun ??= new PendingRunData();
+        data.terrainSelection ??= new TerrainSelectionHistory();
+        data.terrainSelection.materialId ??= "";
+        data.pendingRun.terrainMaterialId ??= "";
         data.pendingRun.songId ??= "";
         data.pendingRun.opponentId ??= "";
         // v3 → v4: song ids were Addressable addresses — map each to its stable songId through the

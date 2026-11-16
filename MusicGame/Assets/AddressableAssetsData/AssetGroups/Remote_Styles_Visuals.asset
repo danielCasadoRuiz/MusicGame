@@ -1,0 +1,128 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Remote_Styles_Visuals
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Remote_Styles_Visuals
+  m_GUID: 8adf3fa530478ed48adaf5b876b7b248
+  m_SerializeEntries:
+  - m_GUID: 28913981d054df04bb50d83f6787a57a
+    m_Address: ExperimentalVisual
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_Experimental
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3ba085e70e2d9b748a1911baff6a7383
+    m_Address: AcousticVisual
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_Acoustic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3c626acd139ada34ea1a22d1e5729670
+    m_Address: RockVisual
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_Rock
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 427a5c596645d684797b8a42a0cd11dd
+    m_Address: SoulVisual
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_Soul
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4c97cca8af4647789e370f17c50331c3
+    m_Address: Assets/_Project/Configs/Theme/Styles/Funk/FunkVisual.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_Funk
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c7a8cd2298cb784aa016786b799d386
+    m_Address: JazzVisual
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_Jazz
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 76eb5eeeb201dc9408394744e8349791
+    m_Address: PunkVisual
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_Punk
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8eaece93114ce9143a99d3d075327b9b
+    m_Address: ClassicalVisual
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_Classical
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9ee852dbbab079943adcabdbd6a5f34d
+    m_Address: PopVisual
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_Pop
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a251f468e65630b4dab8332804f11311
+    m_Address: MetalVisual
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_Metal
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a59ab8234ee5bcc4fb16845a5317abd6
+    m_Address: HipHopVisual
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_HipHop
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b3904ce3d1ed2dc479debdfbf3086024
+    m_Address: HouseVisual
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_House
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dcdf77bf5997d8a488ee04da34769961
+    m_Address: BluesVisual
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_Blues
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fdb5695eb67628347a11ba7dc65db4a8
+    m_Address: AmbientVisual
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_Ambient
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fef82a17aea46c245a1a9dd5864b46ad
+    m_Address: ElectronicVisual
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Styles
+    - Style_Electronic
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 8a4cc0dfc618f344aaae658dde9bb725, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 903758f85dbfd0b43819cba579fc9a95, type: 2}
+    - {fileID: 11400000, guid: 212db8cdbcc6b74419d939147162f348, type: 2}

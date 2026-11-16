@@ -60,6 +60,7 @@ public static class OverlayScreenPrefabs
         fill.fillAmount = 0f;
         fill.gameObject.AddComponent<ThemeColorReceiver>().Initialize(UIColorToken.Accent);
         view.progressFill = fill;
+        AnalysisUISetup.Configure(root.gameObject);
 
         root.gameObject.SetActive(false);
         return root.gameObject;

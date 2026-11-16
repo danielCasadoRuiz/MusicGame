@@ -121,6 +121,7 @@ public class MainMenuController : MonoBehaviour
         _buttonSlots    = view.buttonSlots;
         _logo          = view.logo;
         _buttonStyle   = view.buttonStyle;
+        PrewarmFadingLogo();
 
         view.playButton.onClick.AddListener(OnPlayClicked);
         view.rivalsButton.onClick.AddListener(OnRivalsClicked);
@@ -249,10 +250,22 @@ public class MainMenuController : MonoBehaviour
     private void Show(GameMusicStyle playedStyle)
     {
         RefreshProgressUI();
-        _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
-        ApplyMenuStyle(playedStyle);   // once active: the title's intro runs on the logo itself
+        if(_menuEntrance!=null){StopCoroutine(_menuEntrance);_menuEntrance=null;}
+        if(playedStyle!=GameMusicStyle.Unknown)
+        {
+            // Keep the entire composition hidden during scene disposal, not just the lettering.
+            _root.gameObject.SetActive(false);
+            _menuEntrance=StartCoroutine(EnterAfterSceneCleanup(playedStyle));
+        }
+        else RevealMenu(playedStyle);
         _settingsPanel.gameObject.SetActive(false);
+    }
+
+    private void RevealMenu(GameMusicStyle playedStyle)
+    {
+        _root.gameObject.SetActive(true);
+        ApplyMenuStyle(playedStyle);
         ShowNextNotice(); // after the menu is up, so the popup sits on top
         if (CampaignService.LapPromptPending) ShowLapFinished(); // a just-finished lap: offered once
     }
@@ -263,20 +276,41 @@ public class MainMenuController : MonoBehaviour
     // The title's letters animate in (StyledTitleView.Intro) the first time the menu shows in a launch — with the
     // session announcer shouting "Tempo Fury!" on them — and, silently, every time a game returns to the menu (the
     // played style's title animates, then the cross-fade).
-    private const float StyleFadeDelay = 0.4f, StyleFadeDuration = 1.6f;
+    private const float StyleFadeDelay = 0.12f, StyleFadeDuration = 0.85f;
     private const float IntroVoiceLead = 0.35f;   // the shout's attack (and the T's landing) this long after the menu shows
     private Coroutine _styleFade;
+    private Coroutine _menuEntrance;
     private GameObject _fadingLogo;
     private static bool s_launchIntroDone;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetLaunchIntro() => s_launchIntroDone = false;   // each Play session is a new launch
 
+    private void PrewarmFadingLogo()
+    {
+        if(_logo==null||_fadingLogo!=null)return;
+        _fadingLogo=Instantiate(_logo.gameObject,_logo.transform.parent);
+        _fadingLogo.name="Logo (fading, reused)";
+        _fadingLogo.transform.SetSiblingIndex(_logo.transform.GetSiblingIndex()+1);
+        if(_fadingLogo.GetComponent<CanvasGroup>()==null)_fadingLogo.AddComponent<CanvasGroup>();
+        _fadingLogo.SetActive(false);
+    }
+    private System.Collections.IEnumerator EnterAfterSceneCleanup(GameMusicStyle playedStyle)
+    {
+        // The flow event can reach UI before the scene loader has entered its coroutine.
+        yield return null;yield return null;
+        var flow=AppBootstrap.Context?.SceneFlow;
+        while(flow!=null && (flow.IsModeTransitionInProgress || flow.CurrentMode!=GameMode.Frontend))yield return null;
+        yield return null;
+        _menuEntrance=null;
+        RevealMenu(playedStyle);
+    }
+
     private void ApplyMenuStyle(GameMusicStyle playedStyle)
     {
         if (_logo == null) return;
         if (_styleFade != null) { StopCoroutine(_styleFade); _styleFade = null; }
-        if (_fadingLogo != null) Destroy(_fadingLogo);
+        if (_fadingLogo != null) _fadingLogo.SetActive(false);
         SetLogoAlpha(1f);
         _logo.StopIntro();
         var style = StyledTitleView.MenuStyle(_logo.library);
@@ -286,8 +320,12 @@ public class MainMenuController : MonoBehaviour
         if (!fade)
         {
             if (_buttonStyle != null) _buttonStyle.Apply(style, 1f);
-            if (!s_launchIntroDone) LaunchIntro();
-            else if (fromGame) _logo.Intro();
+            if (fromGame)
+            {
+                s_launchIntroDone = true;
+                _logo.Intro(limitFrameStep: true);
+            }
+            else if (!s_launchIntroDone) LaunchIntro();
             return;
         }
         s_launchIntroDone = true;
@@ -321,9 +359,8 @@ public class MainMenuController : MonoBehaviour
         // A cross-fade: the played style's logo (a copy, on top) fades out while the menu's fades in under it — background,
         // letters and foreground alike, so nothing of the new one is there before it appears. The composers stay. The
         // buttons go from the played style's art to the menu's.
-        _fadingLogo = Instantiate(_logo.gameObject, _logo.transform.parent);
-        _fadingLogo.name = "Logo (fading)";
-        _fadingLogo.transform.SetSiblingIndex(_logo.transform.GetSiblingIndex() + 1);
+        PrewarmFadingLogo();
+        _fadingLogo.SetActive(true);
         var group = _fadingLogo.GetComponent<CanvasGroup>();
         if (group == null) group = _fadingLogo.AddComponent<CanvasGroup>();
         group.alpha = 1f;
@@ -333,10 +370,10 @@ public class MainMenuController : MonoBehaviour
         played.Show(from);
         if (_buttonStyle != null) _buttonStyle.Apply(to, 0f, from);
         // The played style's title animates in first (silently), then the cross-fade starts.
-        played.Intro();
-        for (float t = 0f; t < played.IntroDuration(); t += Time.unscaledDeltaTime) yield return null;
+        played.Intro(limitFrameStep: true);
+        while(played.IsIntroPlaying) yield return null;
 
-        for (float t = -StyleFadeDelay; t < StyleFadeDuration; t += Time.unscaledDeltaTime)
+        for (float t = -StyleFadeDelay; t < StyleFadeDuration; t += Mathf.Min(Time.unscaledDeltaTime,.05f))
         {
             float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / StyleFadeDuration));
             group.alpha = 1f - k;
@@ -346,13 +383,15 @@ public class MainMenuController : MonoBehaviour
         }
         if (_buttonStyle != null) _buttonStyle.Apply(to, 1f);
         SetLogoAlpha(1f);
-        Destroy(_fadingLogo);
-        _fadingLogo = null;
+        _fadingLogo.SetActive(false);
         _styleFade = null;
     }
 
     private void Hide()
     {
+        if(_menuEntrance!=null){StopCoroutine(_menuEntrance);_menuEntrance=null;}
+        if(_styleFade!=null){StopCoroutine(_styleFade);_styleFade=null;}
+        if(_fadingLogo!=null)_fadingLogo.SetActive(false);
         if (_root != null) _root.gameObject.SetActive(false);
     }
 

@@ -61,6 +61,7 @@ public partial class UIPrefabLibrarySO : ScriptableObject
         }
         var instance = Instantiate(prefab, parent, false);
         instance.name = prefab.name;
+        UIButtonClickSound.Attach(instance.gameObject);
         return instance;
     }
 }

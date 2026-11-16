@@ -13,15 +13,17 @@ public class StyleBlendGroup : MonoBehaviour
     private StyleBlendButton[] _buttons;
     private GameMusicStyle _style = GameMusicStyle.Unknown, _base = GameMusicStyle.Unknown;
     private float _weight = -1f;
+    private bool _curtain;
 
     /// <param name="baseStyle">Unknown = classic underneath (default); a style = cross-fade from it (StyleBlendButton.SetBlend).</param>
-    public void Apply(GameMusicStyle style, float styleWeight, GameMusicStyle baseStyle = GameMusicStyle.Unknown)
+    public void Apply(GameMusicStyle style, float styleWeight, GameMusicStyle baseStyle = GameMusicStyle.Unknown, bool useCurtain = false)
     {
         if (_buttons == null || _buttons.Length == 0) _buttons = GetComponentsInChildren<StyleBlendButton>(true);
-        else if (style == _style && baseStyle == _base && Mathf.Abs(styleWeight - _weight) < 0.002f) return;
+        else if (style == _style && baseStyle == _base && useCurtain == _curtain && Mathf.Abs(styleWeight - _weight) < 0.002f) return;
         _style = style;
         _base = baseStyle;
         _weight = styleWeight;
-        foreach (var button in _buttons) if (button != null) button.SetBlend(style, styleWeight, baseStyle);
+        _curtain = useCurtain;
+        foreach (var button in _buttons) if (button != null) button.SetBlend(style, styleWeight, baseStyle, useCurtain);
     }
 }

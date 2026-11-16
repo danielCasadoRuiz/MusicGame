@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f9caa3fd28a44eb93679a95b1d90de9, type: 3}
+  m_Name: TrackStyle_HipHop
+  m_EditorClassIdentifier: Assembly-CSharp::TrackStyleSO
+  trackMaterial: {fileID: 0}
+  finishMaterial: {fileID: 2100000, guid: b7de6ac3ef0280a4db98c224e0317773, type: 2}
+  terrainSurfaces:
+  - style: 8
+    variants:
+    - {fileID: 2100000, guid: 6086e4ffe5df5f5489ba7053be011863, type: 2}
+    - {fileID: 2100000, guid: e7fcd80ef647d89449e2435cd74fd4c5, type: 2}
+    - {fileID: 2100000, guid: 21a5aae826c7853479893a695896c128, type: 2}
+  musicLineColor: {r: 1, g: 1, b: 1, a: 1}
+  sideDecorationPrefab: {fileID: 0}
+  sideDecorationSpacing: 10

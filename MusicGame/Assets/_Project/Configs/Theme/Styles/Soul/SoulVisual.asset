@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MusicStyleVisualSO
   ui: {fileID: 11400000, guid: 44406ed0e019f6e4a9681b129b37c99d, type: 2}
   world: {fileID: 0}
-  track: {fileID: 0}
+  track: {fileID: 11400000, guid: 42861765cf6c04640b65ad948bf15862, type: 2}
   player: {fileID: 0}
   collectibles: {fileID: 0}
   vfx: {fileID: 0}
+  runnerEnvironment: {fileID: 0}
   style: 8

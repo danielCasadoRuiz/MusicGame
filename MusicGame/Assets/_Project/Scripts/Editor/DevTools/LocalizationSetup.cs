@@ -34,19 +34,19 @@ public static class LocalizationSetup
     // English text below rather than being left blank.
     internal static readonly (string key, string en, string ca)[] Entries =
     {
-        ("Analyzing.Title", "Analyzing song...",                 "Analitzant la cançó..."),
-        ("Analyzing.Tip01", "Extracting musical style...",        "Extraient l'estil musical..."),
-        ("Analyzing.Tip02", "Measuring the flow...",              "Mesurant el flow..."),
-        ("Analyzing.Tip03", "Counting beats per minute...",       "Comptant els beats per minut..."),
-        ("Analyzing.Tip04", "Untangling the rhythm...",           "Desxifrant el ritme..."),
-        ("Analyzing.Tip05", "Listening for the kick drum...",     "Escoltant el bombo..."),
-        ("Analyzing.Tip06", "Mapping the hi-hats...",             "Mapejant els hi-hats..."),
-        ("Analyzing.Tip07", "Detecting the drops...",             "Detectant els drops..."),
-        ("Analyzing.Tip08", "Reading the song's mood...",         "Llegint l'ànim de la cançó..."),
-        ("Analyzing.Tip09", "Calibrating the jump physics...",    "Calibrant la física dels salts..."),
-        ("Analyzing.Tip10", "Tuning into the frequencies...",     "Sintonitzant les freqüències..."),
-        ("Analyzing.Tip11", "Teaching the track to run...",       "Ensenyant el circuit a córrer..."),
-        ("Analyzing.Tip12", "Syncing the beat to the world...",   "Sincronitzant el ritme amb el món..."),
+        ("Analyzing.Title", "ANALYSING SONG",                 "ANALITZANT CANÇÓ"),
+        ("Analyzing.Tip01", "Finding the beat…",        "Buscant el beat…"),
+        ("Analyzing.Tip02", "Feeling the flow…",              "Sentint el flow…"),
+        ("Analyzing.Tip03", "Catching the pulse…",       "Seguint el pols…"),
+        ("Analyzing.Tip04", "Untangling the rhythm…",           "Desxifrant el ritme…"),
+        ("Analyzing.Tip05", "Listening for the kick…",     "Escoltant el bombo…"),
+        ("Analyzing.Tip06", "Following the hi-hats…",             "Seguint els hi-hats…"),
+        ("Analyzing.Tip07", "Waiting for the drop…",             "Esperant el drop…"),
+        ("Analyzing.Tip08", "Reading the mood…",         "Captant l’ambient…"),
+        ("Analyzing.Tip09", "Shaping your journey…",    "Donant forma al viatge…"),
+        ("Analyzing.Tip10", "Exploring the frequencies…",     "Explorant les freqüències…"),
+        ("Analyzing.Tip11", "Bringing the track to life…",       "Donant vida al circuit…"),
+        ("Analyzing.Tip12", "Syncing music and motion…",   "Unint música i moviment…"),
 
         // Analyzing.CacheHit01-03 are currently unused (AnalyzingScreenController's progress-phase
         // redesign replaced the old fixed cache-hit caption sequence with the more informative

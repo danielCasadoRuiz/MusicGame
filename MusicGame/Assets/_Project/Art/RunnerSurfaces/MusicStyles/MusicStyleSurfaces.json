@@ -1,0 +1,250 @@
+{
+  "styles": [
+    {
+      "style": "Classical",
+      "styleId": 1,
+      "atlas": "Palace_Coherent",
+      "firstCell": 0,
+      "variants": [
+        "Palau conservat",
+        "Palau reparat",
+        "Palau erosionat"
+      ],
+      "atlasSize": 2,
+      "layerNames": [
+        "Morter i fragments",
+        "Marbre reparat",
+        "Marbre i or",
+        "Marbre erosionat"
+      ]
+    },
+    {
+      "style": "Cinematic",
+      "styleId": 2,
+      "atlas": "Orchestral",
+      "firstCell": 3,
+      "variants": [
+        "Basalt monumental",
+        "Temple de gres",
+        "Obsidiana i bronze"
+      ]
+    },
+    {
+      "style": "Acoustic",
+      "styleId": 3,
+      "atlas": "AcousticTrail_Coherent",
+      "firstCell": 0,
+      "variants": [
+        "Sender de terra",
+        "Sender de grava",
+        "Sender humit"
+      ],
+      "atlasSize": 2,
+      "layerNames": [
+        "Herba baixa",
+        "Terra solta",
+        "Terra compactada",
+        "Grava"
+      ]
+    },
+    {
+      "style": "Rock",
+      "styleId": 4,
+      "atlas": "RockStage_Coherent",
+      "firstCell": 0,
+      "variants": [
+        "Escenari negre",
+        "Escenari amb marques",
+        "Escenari gastat"
+      ],
+      "atlasSize": 2,
+      "layerNames": [
+        "Fusta descoberta",
+        "Cinta d’escenari",
+        "Pintura negra",
+        "Pintura gastada"
+      ]
+    },
+    {
+      "style": "Heavy",
+      "styleId": 5,
+      "atlas": "Guitars",
+      "firstCell": 3,
+      "variants": [
+        "Planxa de ferro",
+        "Basalt esquerdat",
+        "Metall cremat"
+      ]
+    },
+    {
+      "style": "Electronic",
+      "styleId": 6,
+      "atlas": "ElectronicDeck_Coherent",
+      "firstCell": 0,
+      "variants": [
+        "Coberta de nau",
+        "Circuits i LED de festival",
+        "Vidre i fibra òptica"
+      ],
+      "atlasSize": 2,
+      "layerNames": [
+        "Subestructura de grafit",
+        "Coberta violeta",
+        "Coberta blau petroli",
+        "Metall coure descobert"
+      ],
+      "variantAtlases": [
+        "ElectronicDeck_Coherent",
+        "ElectronicCircuitLED",
+        "ElectronicOpticGlass"
+      ]
+    },
+    {
+      "style": "Dance",
+      "styleId": 7,
+      "atlas": "DanceRaveFour",
+      "firstCell": 0,
+      "variants": [
+        "Rave pintada dels 90",
+        "Disco lluminosa",
+        "Club de fusta pintada"
+      ],
+      "atlasSize": 2,
+      "layerNames": [
+        "Ciment trencat",
+        "Acabat nou de pista",
+        "Ciment sencer",
+        "Acabat gastat"
+      ],
+      "variantAtlases": [
+        "DanceRaveFour",
+        "DanceDiscoFour",
+        "DanceClubWood"
+      ]
+    },
+    {
+      "style": "Groove",
+      "styleId": 8,
+      "atlas": "Rhythm",
+      "firstCell": 3,
+      "variants": [
+        "Formigó urbà",
+        "Llambordes i llautó",
+        "Escenari de goma"
+      ]
+    },
+    {
+      "style": "Funky",
+      "styleId": 9,
+      "atlas": "Rhythm",
+      "firstCell": 0,
+      "variants": [
+        "Mosaic retro",
+        "Onades i or",
+        "Terratzo coral"
+      ]
+    },
+    {
+      "style": "Soulful",
+      "styleId": 10,
+      "atlas": "SoulClub_Coherent",
+      "firstCell": 0,
+      "variants": [
+        "Club de noguera",
+        "Parquet reparat",
+        "Club gastat"
+      ],
+      "atlasSize": 2,
+      "layerNames": [
+        "Fusta sense vernís",
+        "Parquet reparat",
+        "Parquet envernissat",
+        "Vernís gastat"
+      ]
+    },
+    {
+      "style": "Jazzy",
+      "styleId": 11,
+      "atlas": "Voices",
+      "firstCell": 3,
+      "variants": [
+        "Mosaic art déco",
+        "Parquet de club",
+        "Terratzo de mitjanit"
+      ]
+    },
+    {
+      "style": "Catchy",
+      "styleId": 12,
+      "atlas": "CatchyPop_Coherent",
+      "firstCell": 0,
+      "variants": [
+        "Terratzo pop",
+        "Terratzo préssec",
+        "Pista pop gastada"
+      ],
+      "atlasSize": 2,
+      "layerNames": [
+        "Base de ciment rosat",
+        "Terratzo préssec",
+        "Terratzo crema",
+        "Terratzo erosionat"
+      ]
+    },
+    {
+      "style": "Energetic",
+      "styleId": 13,
+      "atlas": "Moods",
+      "firstCell": 6,
+      "variants": [
+        "Pista de grafit",
+        "Panells de competició",
+        "Mosaic de velocitat"
+      ]
+    },
+    {
+      "style": "Chill",
+      "styleId": 14,
+      "atlas": "Moods",
+      "firstCell": 3,
+      "variants": [
+        "Pedra de platja",
+        "Fusta vora el mar",
+        "Còdols de riu"
+      ]
+    },
+    {
+      "style": "Dreamy",
+      "styleId": 15,
+      "atlas": "Moods",
+      "firstCell": 0,
+      "variants": [
+        "Marbre nacrat",
+        "Mosaic de cristall",
+        "Pedra còsmica"
+      ]
+    },
+    {
+      "style": "Dark",
+      "styleId": 16,
+      "atlas": "Shadows",
+      "firstCell": 6,
+      "variants": [
+        "Pedra d’ametista",
+        "Paviment gòtic",
+        "Esquist violeta"
+      ]
+    },
+    {
+      "style": "Experimental",
+      "styleId": 17,
+      "atlas": "Shadows",
+      "firstCell": 3,
+      "variants": [
+        "Terratzo fracturat",
+        "Panells glitch",
+        "Mosaic alienígena"
+      ]
+    }
+  ]
+}

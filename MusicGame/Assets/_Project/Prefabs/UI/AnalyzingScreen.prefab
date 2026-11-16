@@ -390,6 +390,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7431060946484328637}
   - component: {fileID: 2457283559265868426}
+  - component: {fileID: 1625321895255057953}
   m_Layer: 0
   m_Name: AnalyzingScreen
   m_TagString: Untagged
@@ -436,6 +437,25 @@ MonoBehaviour:
   titleText: {fileID: 674938612858524257}
   tipText: {fileID: 5935823812494834630}
   progressFill: {fileID: 4071181862272496247}
+--- !u!114 &1625321895255057953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3433936135781080532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff69169db6935f48abd34d561834de0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnalysisPresentation
+  library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  barAtlas: {fileID: 2800000, guid: 6c320a699b3237b419fdd27e144bca63, type: 3}
+  motifAtlas: {fileID: 2800000, guid: ebdecf0344072f14db2a4138355fb1c1, type: 3}
+  styleFlashShader: {fileID: 4800000, guid: 3c45fd6a65ce25646957381fed559c59, type: 3}
+  styleRevealClip: {fileID: 8300000, guid: 2253ccd971f8f6944b68e84887e59cf3, type: 3}
+  motifOpacity: 0.72
+  provisionalBackground: {r: 0.018, g: 0.024, b: 0.035, a: 1}
 --- !u!1 &5733025875124515606
 GameObject:
   m_ObjectHideFlags: 0

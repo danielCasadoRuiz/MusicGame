@@ -131,6 +131,17 @@ public class MusicRunnerLevelConfig : ScriptableObject
              "never reads as red/hot; 1.0 = no exaggeration (original behavior).")]
     [Range(0.05f, 1f)] public float terrainColorRedThreshold = 0.75f;
 
+    [Header("World Mesh — Surface")]
+    [Tooltip("Optional MusicGame/VertexColorLit surface preset. Null preserves the original vertex colours. Shared by all terrain in this run.")]
+    public Material terrainSurfaceMaterial;
+    [Tooltip("Minimum length in metres for the classical reveal. The normal anticipation length is Reveal Seconds × player speed.")]
+    [Min(0)] public float finishSurfaceBlendMeters = 5f;
+    [Tooltip("Seconds before the finish where sparse classical patches begin appearing; coverage increases and is complete at the arch.")]
+    [Min(0)] public float finishSurfaceRevealSeconds = 10f;
+    [Tooltip("Size of the irregular classical islands in world metres.")]
+    [Min(.1f)] public float finishSurfacePatchSize = 1.8f;
+    [Range(.005f,.25f)] public float finishSurfacePatchSoftness = .07f;
+
     [Header("World Mesh — Lighting")]
     [Tooltip("Minimum light contribution in full shadow, as a fraction of the vertex's musical " +
              "colour (0 = can go to black, 1 = shadow has no visible effect). Keeps the green/" +

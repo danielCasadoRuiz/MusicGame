@@ -27,6 +27,7 @@ public class StyleSkinLibrarySO : ScriptableObject
         public GameMusicStyle style;
         public Sprite background;
         public Sprite foreground;
+        public Material material;
         [Tooltip("T, E, M, P, O, F, U, R, Y — same order as StyledTitleView.letters.")]
         public Sprite[] letters = new Sprite[9];
     }
@@ -90,6 +91,9 @@ public class StyleSkinLibrarySO : ScriptableObject
     [Range(0.01f, 1f)] public float runnerCurtainSoftness = 0.2f;
     [Tooltip("UI material with the MusicGame/UI/CurtainFade shader (the classic bar over the style bar).")]
     public Material curtainMaterial;
+    public Material styleTransitionMaterial;
+    public Material classicTitleMaterial;
+    public Material classicPauseMaterial;
     [Tooltip("Fight: how much one round of difference counts against a full health bar of difference.")]
     [Range(0f, 1f)] public float fightRoundWeight = 0.5f;
 

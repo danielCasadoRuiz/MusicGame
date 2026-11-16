@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f9caa3fd28a44eb93679a95b1d90de9, type: 3}
+  m_Name: TrackStyle_Punk
+  m_EditorClassIdentifier: Assembly-CSharp::TrackStyleSO
+  trackMaterial: {fileID: 0}
+  finishMaterial: {fileID: 2100000, guid: b7de6ac3ef0280a4db98c224e0317773, type: 2}
+  terrainSurfaces:
+  - style: 13
+    variants:
+    - {fileID: 2100000, guid: ff2986712350b8243b7b7915d82d2893, type: 2}
+    - {fileID: 2100000, guid: 6f36f4cbee2e68b4e9e426e9e7591def, type: 2}
+    - {fileID: 2100000, guid: 7976c3e15b90ab6429bfcb83c45c193d, type: 2}
+  musicLineColor: {r: 1, g: 1, b: 1, a: 1}
+  sideDecorationPrefab: {fileID: 0}
+  sideDecorationSpacing: 10

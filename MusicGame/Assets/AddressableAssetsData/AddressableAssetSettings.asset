@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: b6a74b078fdb85d4e92febd53261d5c7
   m_currentHash:
     serializedVersion: 2
-    Hash: dfae835b67fcce8dcc08079a9ebb828e
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_CatalogRequestsTimeout: 10
@@ -76,7 +76,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0f7066264d9bef94788cab17d14cb305, type: 2}
   - {fileID: 11400000, guid: 4d1980d10440e1c4095feb818402f93e, type: 2}
   - {fileID: 11400000, guid: 1fe25087c9411cd40bd24353687b1456, type: 2}
+  - {fileID: 11400000, guid: 2a48b5de20081d14db5ed2e765057723, type: 2}
   - {fileID: 11400000, guid: 12f5286ae1f8f8941ba7ae377a0c83c1, type: 2}
+  - {fileID: 11400000, guid: 0922a90152fe0134f88fe4a4b3c2b1f5, type: 2}
   - {fileID: 11400000, guid: 3a5ba1a88f1cf93408b6e0b89306dac0, type: 2}
   - {fileID: 11400000, guid: e3a68542ffcbb0b41b06afd86568c660, type: 2}
   - {fileID: 11400000, guid: 83eadc83884b2b047aad794fbfc48d3b, type: 2}
@@ -1423,6 +1425,21 @@ MonoBehaviour:
     - PlayerClothing_soulful_trousers_belt
     - Enemy_tchaikovsky
     - Enemy_vivaldi
+    - Style_Classical
+    - Style_Experimental
+    - Style_Acoustic
+    - Style_Rock
+    - Style_Metal
+    - Style_Electronic
+    - Style_House
+    - Style_HipHop
+    - Style_Funk
+    - Style_Soul
+    - Style_Jazz
+    - Style_Pop
+    - Style_Punk
+    - Style_Ambient
+    - Style_Blues
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: cd29a083091ea7f4ba6a985471056ec6, type: 2}

@@ -32,6 +32,25 @@ MonoBehaviour:
   lifeColor: {r: 1, g: 1, b: 1, a: 1}
   specialColor: {r: 1, g: 0.15, b: 0.85, a: 1}
   ringEmissionEnabled: 0
+  ringUnlitEnabled: 1
+  ringGlowShader: {fileID: 4800000, guid: a6d0178f4c6c4d9a9935c981f87293d8, type: 3}
+  bonusHaloEnabled: 1
+  bonusHaloShader: {fileID: 4800000, guid: 70c160c253838974587dd7fa85cbc120, type: 3}
+  bonusHaloSize: 3
+  bonusHaloColor: {r: 1, g: 1, b: 1, a: 0.55}
+  authoredBonusHaloColors:
+  - {r: 0.024982065, g: 1, b: 0.48320818, a: 1}
+  - {r: 0.43232802, g: 0.04656074, b: 1, a: 1}
+  - {r: 1, g: 0.657149, b: 0.19765638, a: 1}
+  - {r: 0.028797386, g: 0.6680828, b: 1, a: 1}
+  - {r: 1, g: 0.15811083, b: 0.5619772, a: 1}
+  - {r: 0, g: 0, b: 0, a: 0}
+  - {r: 1, g: 0.37323382, b: 0.031600174, a: 1}
+  - {r: 1, g: 0.09000382, b: 0.12880482, a: 1}
+  - {r: 1, g: 0.79208773, b: 0.3656725, a: 1}
+  ringGlowIntensity: 2.5
+  ringGlowFlowSpeed: 0.8
+  ringGlowPulseAmount: 0.15
   ringEmissionIntensity: 0.8
   uiCollectFlashDuration: 0.6
   spawnKick: 1

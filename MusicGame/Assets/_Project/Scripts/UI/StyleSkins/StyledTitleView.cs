@@ -21,6 +21,7 @@ public class StyledTitleView : MonoBehaviour
     public Image foreground;
 
     public GameMusicStyle Shown { get; private set; } = GameMusicStyle.Unknown;
+    private readonly System.Collections.Generic.Dictionary<Image,Material> _classicTransitions = new();
 
     public bool Show(GameMusicStyle style)
     {
@@ -30,7 +31,34 @@ public class StyledTitleView : MonoBehaviour
         Set(background, skin.background);
         Set(foreground, skin.foreground);
         for (int i = 0; i < letters.Length; i++) Set(letters[i], i < skin.letters.Length ? skin.letters[i] : null);
+        if(background!=null)background.material=skin.material;
+        if(foreground!=null)foreground.material=skin.material;
+        foreach(var letter in letters)if(letter!=null)letter.material=skin.material;
         return true;
+    }
+
+    public void ApplyClassicCurtain(float classicShare, RectTransform reference)
+    {
+        var classic=library!=null?library.Title(GameMusicStyle.Classical):null;
+        void Apply(Image image,Sprite classicSprite)
+        {
+            if(image==null)return;
+            if(!_classicTransitions.TryGetValue(image,out var material))
+            {
+                material=UIStyleTransition.Create(library,"Title classic curtain");
+                if(material==null)return;
+                _classicTransitions.Add(image,material);
+            }
+            UIStyleTransition.Apply(material,image,reference,library,classicShare,classicSprite,Color.white,Color.white,true);
+        }
+        Apply(background,classic?.background);
+        for(int i=0;i<letters.Length;i++)Apply(letters[i],classic!=null&&i<classic.letters.Length?classic.letters[i]:null);
+        Apply(foreground,classic?.foreground);
+    }
+
+    private void OnDestroy()
+    {
+        foreach(var material in _classicTransitions.Values)UIStyleTransition.Release(material);
     }
 
     // ── Intro animation ─────────────────────────────────────────────────────────
@@ -44,14 +72,15 @@ public class StyledTitleView : MonoBehaviour
     private Vector2[] _letterHome;
     private Vector3 _baseScale;
     private Coroutine _intro;
+    public bool IsIntroPlaying => _intro != null;
 
     /// <summary>Animates the title in (unscaled time). The letters land on their beats: the k-th letter of a word
     /// lands k×stagger after the word's moment. Safe to call again (restarts); StopIntro jumps to the end.</summary>
-    public void Intro(float tempoAt = DefaultTempoAt, float furyAt = DefaultFuryAt)
+    public void Intro(float tempoAt = DefaultTempoAt, float furyAt = DefaultFuryAt, bool limitFrameStep = false)
     {
         StopIntro();
         if (!isActiveAndEnabled) return;
-        _intro = StartCoroutine(IntroRoutine(tempoAt, furyAt));
+        _intro = StartCoroutine(IntroRoutine(tempoAt, furyAt, limitFrameStep));
     }
 
     public float IntroDuration(float furyAt = DefaultFuryAt) => furyAt + 3 * FuryStagger + ThumpTime;
@@ -66,11 +95,11 @@ public class StyledTitleView : MonoBehaviour
         transform.localScale = _baseScale;
     }
 
-    private IEnumerator IntroRoutine(float tempoAt, float furyAt)
+    private IEnumerator IntroRoutine(float tempoAt, float furyAt, bool limitFrameStep)
     {
         PrepareLetters();
         float end = IntroDuration(furyAt);
-        for (float t = 0f; ; t += Time.unscaledDeltaTime)
+        for (float t = 0f; ; t += limitFrameStep ? Mathf.Min(Time.unscaledDeltaTime,.05f) : Time.unscaledDeltaTime)
         {
             // Background: a quick burst just before TEMPO. Letters: each with its own landing moment.
             float b = Mathf.Clamp01((t - (tempoAt - BurstTime * 0.5f)) / BurstTime);
@@ -164,7 +193,8 @@ public class StyledTitleView : MonoBehaviour
         if (_launchStyle.HasValue) return _launchStyle.Value;
         if (library == null || library.titles.Count == 0) return GameMusicStyle.Unknown;
         int last = PlayerPrefs.GetInt(LastStyleKey, -1);
-        var choices = library.titles.FindAll(t => (int)t.style != last);
+        var choices = library.titles.FindAll(t => t.style != GameMusicStyle.Classical && (int)t.style != last);
+        if (choices.Count == 0) choices = library.titles.FindAll(t => t.style != GameMusicStyle.Classical);
         if (choices.Count == 0) choices = library.titles;
         var style = choices[Random.Range(0, choices.Count)].style;
         PlayerPrefs.SetInt(LastStyleKey, (int)style);

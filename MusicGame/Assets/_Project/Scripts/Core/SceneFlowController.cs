@@ -12,9 +12,9 @@ using UnityEngine.SceneManagement;
 ///
 /// Target runtime layout: Core (this object's home, whichever scene happens to load first — see
 /// AppBootstrap's own doc) + UI (loaded once here, right after boot, never unloaded) + exactly one
-/// Mode Scene, with a brief overlap of two Mode Scenes while LoadMode is transitioning (load next,
-/// THEN unload previous — never the reverse, same ordering discipline as ThemeManager's Addressables
-/// swaps). Every GameFlowState maps to exactly one Mode Scene (see ModeFor) — Frontend and Runner
+/// Mode Scene. Outgoing Runner/Fight scenes are released before loading their replacement to
+/// avoid overlapping avatar and arena allocations. Lightweight Frontend may overlap briefly.
+/// Every GameFlowState maps to exactly one Mode Scene (see ModeFor) — Frontend and Runner
 /// and Fight genuinely REPLACE each other now, they don't coexist as overlays.
 ///
 /// No `.Instance` singleton here — reached only via AppContext.SceneFlow, per this project's "new
@@ -38,6 +38,8 @@ public class SceneFlowController : MonoBehaviour, IAppModule
     public bool UiSceneLoaded { get; private set; }
 
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
+    private bool _modeTransitionInProgress;
+    public bool IsModeTransitionInProgress => _modeTransitionInProgress;
 
     void IAppModule.Initialize(AppContext context)
     {
@@ -46,7 +48,7 @@ public class SceneFlowController : MonoBehaviour, IAppModule
         // "AppFlow decideix l'estat, SceneFlow executa les càrregues" — this is the one place that
         // translates a GameFlowState transition into an actual scene load/unload. Every state maps
         // to exactly one Mode Scene (ModeFor) — Frontend/Runner/Fight fully replace each other via
-        // LoadMode's own load-next-then-unload-previous sequence, so this never needs a separate
+        // LoadMode's memory-aware replacement sequence, so this never needs a separate
         // "unload" branch of its own.
         _onFlowStateChanged = e =>
         {
@@ -98,10 +100,21 @@ public class SceneFlowController : MonoBehaviour, IAppModule
         Debug.Log($"[SceneFlowController] '{UiSceneName}' scene loaded.");
     }
 
-    /// <summary>Loads `mode`'s scene additively, makes it the active scene, then unloads whatever
-    /// Mode Scene was previously active — Core and UI are never touched. Safe to call again with the
+    /// <summary>Replaces the active mode scene. Heavy outgoing Runner/Fight scenes are disposed and
+    /// unloaded before the next scene constructs its avatars; Core and UI remain loaded. Safe with the
     /// same mode already active (no-op).</summary>
     public IEnumerator LoadMode(GameMode mode)
+    {
+        // Several flow events can arrive during unloading / collection. Serialize them so
+        // two runners or avatar builds cannot start concurrently.
+        while (_modeTransitionInProgress) yield return null;
+        if (CurrentMode == mode) yield break;
+        _modeTransitionInProgress = true;
+        try { yield return LoadModeCore(mode); }
+        finally { _modeTransitionInProgress = false; }
+    }
+
+    private IEnumerator LoadModeCore(GameMode mode)
     {
         if (CurrentMode == mode) yield break;
 
@@ -111,7 +124,26 @@ public class SceneFlowController : MonoBehaviour, IAppModule
             yield break;
         }
 
+        // Validate before releasing the current scene so a missing destination cannot
+        // leave the app without its current mode.
+        if (!Application.CanStreamedLevelBeLoaded(sceneName))
+        {
+            Debug.LogError($"[SceneFlowController] '{sceneName}' isn't in Build Settings — cannot load it.");
+            yield break;
+        }
         var previousMode = CurrentMode;
+        bool releaseBeforeLoad = previousMode == GameMode.Fight || previousMode == GameMode.Runner;
+        if (releaseBeforeLoad)
+        {
+            // Loading the next scene runs its Awake/avatar construction before LoadSceneAsync
+            // completes. Release the outgoing avatars and arena BEFORE that allocation peak.
+            yield return UnloadMode(previousMode.Value);
+            CurrentMode = null;
+            yield return null; // flush deferred mesh / renderer Destroy calls
+            yield return Resources.UnloadUnusedAssets();
+            System.GC.Collect();
+            Debug.Log($"[SceneFlowController] Released {previousMode.Value} before loading {mode}; allocated {UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong() / (1024 * 1024)} MB.");
+        }
 
         var loadOp = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
         if (loadOp == null)
@@ -126,20 +158,25 @@ public class SceneFlowController : MonoBehaviour, IAppModule
 
         CurrentMode = mode;
 
-        if (previousMode.HasValue && SceneNames.TryGetValue(previousMode.Value, out string previousSceneName))
-        {
-            if (previousMode.Value == GameMode.Fight && FightSceneBootstrap.Instance != null)
-            {
-                var cleanup = FightSceneBootstrap.Instance.ShutdownStageAsync();
-                while (!cleanup.IsCompleted) yield return null;
-                if (cleanup.IsFaulted) Debug.LogException(cleanup.Exception);
-            }
-            var unloadOp = SceneManager.UnloadSceneAsync(previousSceneName);
-            if (unloadOp != null) yield return unloadOp;
-        }
+        if (previousMode.HasValue && !releaseBeforeLoad)
+            yield return UnloadMode(previousMode.Value);
 
         Debug.Log($"[SceneFlowController] Mode Scene now '{sceneName}'" +
                   (previousMode.HasValue ? $" (unloaded '{SceneNames[previousMode.Value]}')." : "."));
+    }
+
+    private IEnumerator UnloadMode(GameMode mode)
+    {
+        if (mode == GameMode.Fight && FightSceneBootstrap.Instance != null)
+        {
+            var cleanup = FightSceneBootstrap.Instance.ShutdownStageAsync();
+            while (!cleanup.IsCompleted) yield return null;
+            if (cleanup.IsFaulted) Debug.LogException(cleanup.Exception);
+        }
+        if (!SceneNames.TryGetValue(mode, out string previousSceneName)) yield break;
+        if (!SceneManager.GetSceneByName(previousSceneName).isLoaded) yield break;
+        var unloadOp = SceneManager.UnloadSceneAsync(previousSceneName);
+        if (unloadOp != null) yield return unloadOp;
     }
 
     /// <summary>Declares that `mode`'s scene is ALREADY loaded and active — for a Mode Scene opened

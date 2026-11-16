@@ -76,6 +76,9 @@ MonoBehaviour:
   runnerProgressTowardsStyle: 0
   runnerCurtainSoftness: 0.2
   curtainMaterial: {fileID: 2100000, guid: cf1e3c2380ca34b4fbc4dc7fbfed9156, type: 2}
+  styleTransitionMaterial: {fileID: 2100000, guid: 1ad5d3447864b5042bfda720eddd0e93, type: 2}
+  classicTitleMaterial: {fileID: 2100000, guid: 2d868cbc96d330a40afea00523c5ffed, type: 2}
+  classicPauseMaterial: {fileID: 2100000, guid: 7b80bd0cfd272774f8d4595dfedf42a9, type: 2}
   fightRoundWeight: 0.5
   hud:
   - style: 12
@@ -176,6 +179,7 @@ MonoBehaviour:
   - style: 3
     background: {fileID: 21300000, guid: 9297b4d30eff0a245bfbbc4e5a831635, type: 3}
     foreground: {fileID: 21300000, guid: 6e21e6d09caaf1644bc43fe4c3de2399, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: 862a241d0b99f27498ca840a255a017a, type: 3}
     - {fileID: 21300000, guid: 579bfcf2982ed734a8dce8b0b1602977, type: 3}
@@ -189,6 +193,7 @@ MonoBehaviour:
   - style: 12
     background: {fileID: 21300000, guid: fe277f4d8d0f666408ad59c9fcb454ee, type: 3}
     foreground: {fileID: 21300000, guid: a3a3020386a6cee469f5abd4bc0a7913, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: 77b0ba3914c5ed34984f09ce16fc274e, type: 3}
     - {fileID: 21300000, guid: 255675dc11231ba4e9c63dc65e16f392, type: 3}
@@ -202,6 +207,7 @@ MonoBehaviour:
   - style: 14
     background: {fileID: 21300000, guid: e3ea3c35d26a6b84090d2b5b8cf43897, type: 3}
     foreground: {fileID: 21300000, guid: 24c1d8798c14a4e4fa02da48cb62c0c6, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: bcfbc360dd6e5284ca61ba98779cefae, type: 3}
     - {fileID: 21300000, guid: f71ef5245f35be245a61452c62f9a9cd, type: 3}
@@ -215,6 +221,7 @@ MonoBehaviour:
   - style: 2
     background: {fileID: 21300000, guid: d1edc07dd1dd45d4ca0c93d72d933b24, type: 3}
     foreground: {fileID: 21300000, guid: dfab86cc9bbb7f74e9d644092382b83c, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: ad4eed075ed07a849b99d3f18413c53e, type: 3}
     - {fileID: 21300000, guid: 79029dbc8e1bf244fb926ad73d527339, type: 3}
@@ -228,6 +235,7 @@ MonoBehaviour:
   - style: 7
     background: {fileID: 21300000, guid: 8b527ded138af804e81fe1856033b899, type: 3}
     foreground: {fileID: 21300000, guid: e2ff0763cba22e04987419cc28a93bc7, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: c18d9ac44115cd84aa859bee8e8f6bfc, type: 3}
     - {fileID: 21300000, guid: 2dab14a8272b33e4288b7116aa913609, type: 3}
@@ -241,6 +249,7 @@ MonoBehaviour:
   - style: 16
     background: {fileID: 21300000, guid: a3e9077e0493b7f449e5e13371216ca4, type: 3}
     foreground: {fileID: 21300000, guid: 00d4390a883fe3240a0be9601a9e2bac, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: 5935bf0067aa23641988491ea300f7bf, type: 3}
     - {fileID: 21300000, guid: aa75eeba985591344808b08fb35215b2, type: 3}
@@ -254,6 +263,7 @@ MonoBehaviour:
   - style: 15
     background: {fileID: 21300000, guid: dc565990f7fbba148a2899d172f12a5b, type: 3}
     foreground: {fileID: 21300000, guid: 4ce8fe5ae700fb441aef301a16a37769, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: a2be1c332fe0bc54ebf110e0709850a7, type: 3}
     - {fileID: 21300000, guid: 93bcb9bb5e07b904ba4a8c0afd43181d, type: 3}
@@ -267,6 +277,7 @@ MonoBehaviour:
   - style: 6
     background: {fileID: 21300000, guid: bc43fb7140877e944a8a9bec592640e3, type: 3}
     foreground: {fileID: 21300000, guid: 940411d2f02b1a4429de7df934afdb42, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: 83689d689d06a824e96bce934c3dfb29, type: 3}
     - {fileID: 21300000, guid: e59511ffba6782d4990f029ea32e4ea9, type: 3}
@@ -280,6 +291,7 @@ MonoBehaviour:
   - style: 13
     background: {fileID: 21300000, guid: 359cc40127002e64ca370e24a55871f0, type: 3}
     foreground: {fileID: 21300000, guid: 61db2366d218af440bc13af20f9bb9f4, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: 06e2d6e1acee07e48ae43f86b1a5a835, type: 3}
     - {fileID: 21300000, guid: 70501aa213c001242ade9d1cd5f80d26, type: 3}
@@ -293,6 +305,7 @@ MonoBehaviour:
   - style: 17
     background: {fileID: 21300000, guid: 539760658f7e4f142844c8d3c0147992, type: 3}
     foreground: {fileID: 21300000, guid: 275fd01bc4715b04986ade34e763646f, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: f2632b7ead0a6ba4f9893c5c523217ff, type: 3}
     - {fileID: 21300000, guid: 675f2ef3d8d4c9e47a12cc049e594b89, type: 3}
@@ -306,6 +319,7 @@ MonoBehaviour:
   - style: 9
     background: {fileID: 21300000, guid: 485c1f2cdd325f947bfdbf1c4b49f529, type: 3}
     foreground: {fileID: 21300000, guid: f6ea1ecd15301c343adbd3e22b4c17c2, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: 659a951fbcfa02c47bfa41b7501da2ef, type: 3}
     - {fileID: 21300000, guid: cd9349a3e067fb4449ed39ae39d24a7d, type: 3}
@@ -319,6 +333,7 @@ MonoBehaviour:
   - style: 8
     background: {fileID: 21300000, guid: 14dd08e0a821ea84e943e1f25d10c088, type: 3}
     foreground: {fileID: 21300000, guid: d7ce74eb63bec6c4e94d46bd7dc508c8, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: a1f01c533aa497f468653c49b5b49d6e, type: 3}
     - {fileID: 21300000, guid: fc72622add7a75a46940e81602a183ac, type: 3}
@@ -332,6 +347,7 @@ MonoBehaviour:
   - style: 5
     background: {fileID: 21300000, guid: 1e7e4b7f91f0075439e7b557d7367b37, type: 3}
     foreground: {fileID: 21300000, guid: b0429cde7514b6c42ac8f3b559f71a4d, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: fa8c3dae9a143e148bec72ef0d430560, type: 3}
     - {fileID: 21300000, guid: 5078d4499f020ff4a827158e897b8252, type: 3}
@@ -345,6 +361,7 @@ MonoBehaviour:
   - style: 11
     background: {fileID: 21300000, guid: be2888b28cb0fc2478dc6932b5b4f6bc, type: 3}
     foreground: {fileID: 21300000, guid: 9804df1fdd2af064ebc427b8048f5714, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: 67a56ca8bf0f76a4fa99d580e2686ccd, type: 3}
     - {fileID: 21300000, guid: 3b7c0c7fcc30240498792dfc09125659, type: 3}
@@ -358,6 +375,7 @@ MonoBehaviour:
   - style: 4
     background: {fileID: 21300000, guid: 725e28a6b6dda3f4cb75ab0279f0acfe, type: 3}
     foreground: {fileID: 21300000, guid: 3c1ddfe0e8ce54e42aa5b4f1a06565c0, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: 1cda693acf0439b409b5827367a97927, type: 3}
     - {fileID: 21300000, guid: 5b44e9a7b9f389f42a1b9deb875ea187, type: 3}
@@ -371,6 +389,7 @@ MonoBehaviour:
   - style: 10
     background: {fileID: 21300000, guid: bd190333c407a5e44afee6c1a63bcd0b, type: 3}
     foreground: {fileID: 21300000, guid: aa01261e24594ab45bc1732db7f50b50, type: 3}
+    material: {fileID: 0}
     letters:
     - {fileID: 21300000, guid: 835ef4eda59bd614998b5f149d7fb426, type: 3}
     - {fileID: 21300000, guid: e8f43c0ea87e0b24995c6423a7cc0192, type: 3}
@@ -381,4 +400,18 @@ MonoBehaviour:
     - {fileID: 21300000, guid: f1e8a62694cac6347beafdfe139af38d, type: 3}
     - {fileID: 21300000, guid: e867bcdfd1ea1fd44ba3a862c18d6ea2, type: 3}
     - {fileID: 21300000, guid: d4942a0fa0b37554b8b2d3388fb70c15, type: 3}
+  - style: 1
+    background: {fileID: 21300000, guid: 725e28a6b6dda3f4cb75ab0279f0acfe, type: 3}
+    foreground: {fileID: 21300000, guid: 3c1ddfe0e8ce54e42aa5b4f1a06565c0, type: 3}
+    material: {fileID: 2100000, guid: 2d868cbc96d330a40afea00523c5ffed, type: 2}
+    letters:
+    - {fileID: 21300000, guid: 1cda693acf0439b409b5827367a97927, type: 3}
+    - {fileID: 21300000, guid: 5b44e9a7b9f389f42a1b9deb875ea187, type: 3}
+    - {fileID: 21300000, guid: e4bf8f22b1ec1244da3c40de2f3fb278, type: 3}
+    - {fileID: 21300000, guid: b1b0986614f257642abb66bc4e435cde, type: 3}
+    - {fileID: 21300000, guid: 7554aeb5b17225448bf5f3183fa55dea, type: 3}
+    - {fileID: 21300000, guid: 60f4c7b25e5db3348b85c657c871060a, type: 3}
+    - {fileID: 21300000, guid: a75c6bc559ce1204daa3029dd481f72d, type: 3}
+    - {fileID: 21300000, guid: 89a4eef1b5e80ea41991ea8208b79ef5, type: 3}
+    - {fileID: 21300000, guid: 807c7ee57dddddf47b42539ca2888e16, type: 3}
   titleFallback: 2

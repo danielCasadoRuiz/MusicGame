@@ -41,6 +41,7 @@ public class RunnerHudSkin : MonoBehaviour
     private float _weight = -1f;
     private Material _curtain;
     private float[] _iconX;   // each icon's centre across the bar (0..1), as the curtain sees it
+    private readonly Dictionary<Image,Material> _transitions = new();
 
     private TMPro.TextMeshProUGUI _styleLabel;
 
@@ -82,6 +83,12 @@ public class RunnerHudSkin : MonoBehaviour
         {
             _styleLabel = Instantiate(title, bar);
             _styleLabel.name = "PlayingStyle";
+            if(library!=null && library.titleFont!=null)
+            {
+                _styleLabel.font=library.titleFont;_styleLabel.fontSharedMaterial=library.titleFont.material;
+                _styleLabel.color=library.titleColor;
+            }
+            DetectedStyleLabel.RegisterHud(_styleLabel);
             _styleLabel.fontSizeMin = _styleLabel.fontSizeMax = _styleLabel.fontSize = 30;
             _styleLabel.alignment = TMPro.TextAlignmentOptions.MidlineRight;
             Place("PlayingStyle", 2568, 40, 254, 58);
@@ -96,7 +103,7 @@ public class RunnerHudSkin : MonoBehaviour
         if (style != _style)
         {
             _style = style;
-            if (_styleLabel != null) _styleLabel.text = style.ToString();
+            if (_styleLabel != null) _styleLabel.text = DetectedStyleLabel.Caption(style);
             var skin = style == GameMusicStyle.Classical ? null : library.Hud(style);
             if (styleBar != null)
             {
@@ -117,24 +124,33 @@ public class RunnerHudSkin : MonoBehaviour
         foreach (var separator in separators) Tint(separator, accent, gold, classicShare);
         Tint(progressFill, accent, gold, classicShare);
         Tint(progressBorder, accent, gold, classicShare);
-        EnsureIconPositions();
+        var reference = classicBar != null ? classicBar.rectTransform : (RectTransform)transform;
+        if(logo!=null)logo.ApplyClassicCurtain(classicShare,reference);
         for (int i = 0; i < icons.Count; i++)
         {
             var classic = icons[i].classic;
-            if (classic == null) continue;
-            float a = library.CurtainClassic(classicShare, _iconX[i]);
-            classic.enabled = classic.sprite != null && a > 0.001f;
-            var c = classic.color; c.a = a; classic.color = c;
+            if (classic == null || icons[i].normal == null) continue;
+            var normal=icons[i].normal;
+            if(Transition(normal,reference,classicShare,classic.sprite,Color.white,Color.white))classic.enabled=false;
         }
     }
 
     private void Tint(Image image, Color style, Color classic, float classicShare)
     {
         if (image == null || classicBar == null) return;
-        var bar = classicBar.rectTransform;
-        var center = bar.InverseTransformPoint(image.rectTransform.TransformPoint(image.rectTransform.rect.center));
-        float x = Mathf.InverseLerp(bar.rect.xMin, bar.rect.xMax, center.x);
-        image.color = Color.Lerp(style, classic, library.CurtainClassic(classicShare, x));
+        Transition(image,classicBar.rectTransform,classicShare,null,style,classic);
+    }
+
+    private bool Transition(Image image,RectTransform reference,float share,Sprite classic,Color styleColor,Color classicColor)
+    {
+        if(!_transitions.TryGetValue(image,out var material))
+        {
+            material=UIStyleTransition.Create(library,"HUD spatial style transition");
+            if(material==null)return false;
+            _transitions.Add(image,material);
+        }
+        UIStyleTransition.Apply(material,image,reference,library,share,classic,styleColor,classicColor);
+        return true;
     }
 
     private void SetCurtain(float classicShare)
@@ -169,6 +185,7 @@ public class RunnerHudSkin : MonoBehaviour
 
     private void OnDestroy()
     {
+        foreach(var material in _transitions.Values)UIStyleTransition.Release(material);
         if (_curtain == null) return;
         if (Application.isPlaying) Destroy(_curtain); else DestroyImmediate(_curtain);
     }

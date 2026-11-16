@@ -50,6 +50,29 @@ public class MusicRunnerCollectiblesConfig : ScriptableObject
              "by Ring Emission Intensity) so the player can spot them quickly — kept OFF by " +
              "default so bloom stays selective to the Horizon World's neon bars.")]
     public bool  ringEmissionEnabled = false;
+
+    [Header("Bonus visibility — unlit glow and flow")]
+    [Tooltip("Keep authored bonus textures readable independently of scene lighting, with HDR rim and travelling light. Disable to restore original materials.")]
+    public bool ringUnlitEnabled = true;
+    public Shader ringGlowShader;
+    [Header("Bonus backing — soft lightened bonus colour")]
+    public bool bonusHaloEnabled = true;
+    public Shader bonusHaloShader;
+    [Range(1.1f,3.5f)] public float bonusHaloSize = 3f;
+    [Tooltip("Each bonus colour blends 60% toward this highlight. Alpha controls the halo opacity.")]
+    public Color bonusHaloColor = new Color(1f,1f,1f,.55f);
+    [HideInInspector] public Color[] authoredBonusHaloColors;
+
+    public Color HaloSourceColor(RingType type, Color fallback)
+    {
+        int index = (int)type;
+        return authoredBonusHaloColors != null && index >= 0 && index < authoredBonusHaloColors.Length && authoredBonusHaloColors[index].a > 0
+            ? authoredBonusHaloColors[index] : fallback;
+    }
+
+    [Min(0)] public float ringGlowIntensity = 2.5f;
+    [Min(0)] public float ringGlowFlowSpeed = 0.8f;
+    [Range(0,1)] public float ringGlowPulseAmount = 0.15f;
     [Tooltip("HDR multiplier on top of RingColor when Ring Emission Enabled is on — keep this " +
              "modest (well under the bars' own emission boost) so rings read as 'a bit brighter', " +
              "never competing with the bars as the scene's brightest element.")]
