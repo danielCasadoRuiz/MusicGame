@@ -1,0 +1,1228 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.2f1 (a9779f353c9b) revision 11106207'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) 64bit Professional' Language: 'es' Physical Memory: 32388 MB
+BatchMode: 0, IsHumanControllingUs: 1, StartBugReporterOnCrash: 1, Is64bit: 1
+Date: 2026-11-16T18:44:43Z
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON" at "2026-11-16T18:44:43.1989091Z"
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Unity.exe
+-projectPath
+C:/Users/VISYON/Documents/MusicGame/MusicGame
+-executeMethod
+DancePreparationPlayCheck.RunTypography
+-force-d3d12
+-logFile
+C:/Users/VISYON/Documents/MusicGame/typography-fit-validation.log
+Successfully changed project path to: C:/Users/VISYON/Documents/MusicGame/MusicGame
+C:/Users/VISYON/Documents/MusicGame/MusicGame
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [34916]  Target information:
+
+Player connection [34916]  * "[IP] 192.168.1.15 [Port] 55504 [Flags] 2 [Guid] 428703153 [EditorId] 428703153 [Version] 1048832 [Id] WindowsEditor(7,RemoteDani) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [34916] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [34916] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-44476" after 0.7 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              a4c6bd75e3dc449cb05e4021a69e89e1
+  Correlation Id:          7f7ecca5a2e297700e2028d0c0579c52
+  External correlation Id: 7373316405824965854
+  Machine Id:              x99c5MRpHgESOtEUeZ1qua+TIa8=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-VISYON" (connect: 0.00s, validation: 0.00s, handshake: 1.30s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON-notifications" at "2026-11-16T18:44:44.5050359Z"
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.00
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Module] Licensing Background thread has ended after 1.32s
+[Licensing::Module] Licensing is initialized (took 0.10s).
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Artifact Garbage Collection - Removed 9 unused hashed content files
+Refreshing native plugins compatible for Editor in 0.83 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.2f1 (a9779f353c9b)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/VISYON/Documents/MusicGame/MusicGame/Assets
+Forcing GfxDevice: Direct3D 12
+GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 3070 Laptop GPU (ID=0x249d)
+    Vendor:          NVIDIA
+    VRAM:            8020 MB
+    App VRAM Budget: 7252 MB
+    Driver:          32.0.15.8142
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 3070 Laptop GPU
+[D3D12 Device Filter] Driver Version: 32.0.15.8142
+[D3D12 Device Filter] Feature Level: 12.2
+[D3D12 Device Filter] Graphics Memory: 8020 MB
+[D3D12 Device Filter] Processor Count: 16
+[D3D12 Device Filter] Device Type: Discrete
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56476
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/MetroSupport/UnityEditor.UWP.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+Registered in 0.014565 seconds.
+- Loaded All Assemblies, in  1.129 seconds
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Package Manager log level set to [2]
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.547 seconds
+Domain Reload Profiling: 1671ms
+	BeginReloadAssembly (237ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (2ms)
+	RebuildCommonClasses (337ms)
+	RebuildNativeTypeToScriptingClass (17ms)
+	initialDomainReloadingComplete (75ms)
+	LoadAllAssembliesAndSetupDomain (458ms)
+		LoadAssemblies (230ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (452ms)
+			TypeCache.Refresh (451ms)
+				TypeCache.ScanAssembly (438ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (548ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (512ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (140ms)
+			SetLoadedEditorAssemblies (5ms)
+			BeforeProcessingInitializeOnLoad (90ms)
+			ProcessInitializeOnLoadAttributes (199ms)
+			ProcessInitializeOnLoadMethodAttributes (78ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Application.AssetDatabase Initial Refresh Start
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 64 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.addressables@2.3.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.addressables@5d870284b3d9)
+    com.unity.ai.inference@2.6.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.ai.navigation@2.0.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.navigation@5218e4bf7edc)
+    com.unity.collab-proxy@2.10.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collab-proxy@3351acaba9c9)
+    com.unity.ide.rider@3.0.38 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.rider@1f60b3138684)
+    com.unity.ide.visualstudio@2.0.25 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.visualstudio@74aa435fc4bb)
+    com.unity.inputsystem@1.17.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.inputsystem@02433b2481ab)
+    com.unity.localization@1.5.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.localization@f2647f7408bd)
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.timeline@1.8.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.timeline@6b9e48457ddb)
+    com.unity.visualscripting@1.9.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.visualscripting@191c0d7e3b69)
+    com.unity.burst@1.8.26 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.burst@21aa83e7fd8f)
+    com.unity.dt.app-ui@2.1.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.dt.app-ui@8ac7e730dd5d)
+    com.unity.collections@2.6.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collections@aea9d3bd5e19)
+    com.unity.profiling.core@1.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.profiling.core@8a49f7027d06)
+    com.unity.scriptablebuildpipeline@2.4.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.scriptablebuildpipeline@ca3e2d96aa2f)
+    com.unity.searcher@4.9.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.mathematics@1.3.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.mathematics@19a9377c4ffa)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.test-framework.performance@3.2.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework.performance@0840f58e4562)
+  Built-in packages:
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.multiplayer.center@f01f4ba8d00a)
+    com.unity.render-pipelines.universal@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal@66e99ffa09c7)
+    com.unity.test-framework@1.6.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework@0b7a23ab2e1d)
+    com.unity.ugui@2.0.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ugui@52e65280e89e)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.0.5 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ext.nunit@d8c07649098d)
+    com.unity.render-pipelines.core@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.core@ce86d16dfe9d)
+    com.unity.shadergraph@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.shadergraph@3cfe1d1f3f8c)
+    com.unity.render-pipelines.universal-config@17.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal-config@8dc1aab4af1d)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.05 seconds
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+ExitCode: 0 Duration: 11s
+[ 895/1159  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1151/1159  3s] Csc Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp.dll (+2 others)
+Assets\_Project\Scripts\UI\UIFactory.cs(138,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\World\MusicWorldManager.cs(150,34): warning CS0618: 'Physics.BakeMesh(int, bool, MeshColliderCookingOptions)' is obsolete: 'BakeMesh(int, bool, MeshColliderCookingOptions) is obsolete. Use BakeMesh(EntityId, bool, MeshColliderCookingOptions) instead.'
+[1152/1159  4s] Csc Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+[1153/1159  5s] ILPostProcess Library/Bee/artifacts/1900b0aEDbg.dag/post-processed/Assembly-CSharp.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp.dll, with 139 defines and 338 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1154/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.pdb
+[1155/1159  0s] ILPostProcess Library/Bee/artifacts/1900b0aEDbg.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll, with 137 defines and 359 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1156/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.dll
+[1157/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[1158/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (11.20 seconds), 9 items updated, 1159 evaluated
+Assets\_Project\Scripts\UI\UIFactory.cs(138,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\World\MusicWorldManager.cs(150,34): warning CS0618: 'Physics.BakeMesh(int, bool, MeshColliderCookingOptions)' is obsolete: 'BakeMesh(int, bool, MeshColliderCookingOptions) is obsolete. Use BakeMesh(EntityId, bool, MeshColliderCookingOptions) instead.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+AssetDatabase: script compilation time: 12.037168s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  2.520 seconds
+Refreshing native plugins compatible for Editor in 7.76 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in 11.895 seconds
+Domain Reload Profiling: 14397ms
+	BeginReloadAssembly (459ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (21ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (159ms)
+	RebuildCommonClasses (64ms)
+	RebuildNativeTypeToScriptingClass (22ms)
+	initialDomainReloadingComplete (75ms)
+	LoadAllAssembliesAndSetupDomain (1880ms)
+		LoadAssemblies (1736ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (357ms)
+			TypeCache.Refresh (272ms)
+				TypeCache.ScanAssembly (255ms)
+			BuildScriptInfoCaches (66ms)
+			ResolveRequiredComponents (13ms)
+	FinalizeReload (11896ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (10374ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (56ms)
+			SetLoadedEditorAssemblies (7ms)
+			BeforeProcessingInitializeOnLoad (379ms)
+			ProcessInitializeOnLoadAttributes (9658ms)
+			ProcessInitializeOnLoadMethodAttributes (254ms)
+			AfterProcessingInitializeOnLoad (20ms)
+			EditorAssembliesLoaded (1ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (15ms)
+Refreshing native plugins compatible for Editor in 7.34 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=82ad8dc748f5ab54493b9a36cae41141): Total: 28.960 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=13472 ms
+		Asset DB Callback time: managed=613 ms, native=116 ms
+		Scripting: domain reloads=1, domain reload time=2521 ms, compile time=12039 ms, other=197 ms
+		Project Asset Count: scripts=6447, non-scripts=20492
+		Asset File Changes: new=0, changed=4, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.002ms
+	InvokePackagesCallback: 101.410ms
+	ApplyChangesToAssetFolders: 0.906ms
+	Scan: 504.314ms
+	OnSourceAssetsModified: 0.900ms
+	CategorizeAssetsWithTransientArtifact: 175.094ms
+	ProcessAssetsWithTransientArtifactChanges: 108.161ms
+	CategorizeAssets: 406.004ms
+	ImportOutOfDateAssets: 11938.425ms (-115.358ms without children)
+		CompileScripts: 12038.636ms
+		ReloadNativeAssets: 0.299ms
+		UnloadImportedAssets: 4.265ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 7.045ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.002ms
+		OnDemandSchedulerStart: 3.534ms
+	PostProcessAllAssets: 618.023ms
+	Hotreload: 14.604ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.003ms
+	UnloadStreamsBegin: 4.618ms
+	PersistCurrentRevisions: 2.045ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 9.838ms
+	Untracked: 15085.741ms
+
+Application.AssetDatabase Initial Refresh End
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+Scanning for USB devices : 2.316ms
+Initializing Unity extensions:
+Script 'Library/PackageCache/com.unity.test-framework@0b7a23ab2e1d/Tests/TestNewCustomAssembly/TestNewCustomAssembly.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/VerifyEditorInPlaymode/Unity.AI.Navigation.Tests.EditorInPlaymode.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.mathematics@19a9377c4ffa/Tests/Unity.Mathematics.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.xml' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/ResourceManager/Unity.ResourceManager.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/DocCodeSamples.Tests/DocCodeSamples.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.dt.app-ui@8ac7e730dd5d/Tests/Runtime/Unity.AppUI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/Unity.Addressables.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/TestAssets/Unity.ScriptableBuildPipelineTests.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.PerformanceTests/Unity.Collections.PerformanceTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/Unity.AI.Navigation.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.timeline@6b9e48457ddb/DocCodeExamples/DocCodeExamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.localization@f2647f7408bd/DocCodeSamples.Tests/DocCodeSamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.multiplayer.center@f01f4ba8d00a/Tests/Runtime/Unity.Multiplayer.Center.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.core@ce86d16dfe9d/Tests/Runtime/Threading/FunctionTestsGroup.compute' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/OffMeshLinkTests/Unity.AI.Navigation.LegacyOffMeshLink.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/UGUI/UnityEngine.UI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.inputsystem@02433b2481ab/Tests/IntegrationTests/Unity.InputSystem.IntegrationTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests.Playmode/FixedListPlayModeTests.tt' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/TMP/Unity.TextMeshPro.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Tests/Runtime/Unity.RenderPipelines.Universal.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/Unity.ScriptableBuildPipeline.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.BurstCompatibilityGen/Unity.Collections.BurstCompatibilityGen.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-MusicGame
+Unloading 60 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Assets/_Project/Scenes/Core.unity'
+	Deserialize:            13.360 ms
+	Integration:            226.195 ms
+	Integration of assets:  0.012 ms
+	Thread Wait Time:       0.052 ms
+	Total Operation Time:   239.619 ms
+Unloading 9443 unused Assets / (21.3 MB). Loaded Objects now: 10469.
+Memory consumption went from 374.3 MB to 353.0 MB.
+Total: 18.185100 ms (FindLiveObjects: 0.761400 ms CreateObjectMapping: 0.696900 ms MarkObjects: 11.481700 ms  DeleteObjects: 5.243600 ms)
+
+[LAYOUT] About to load UserSettings\Layouts\default-6000.dwlt, keepMainWindow=False
+[LAYOUT] About to save layout C:\Users\VISYON\Documents\MusicGame\MusicGame\UserSettings\Layouts\default-6000.dwlt
+[LAYOUT] About to save layout C:/Users/VISYON/AppData/Roaming/Unity/Editor-5.x/Preferences\Layouts\current\default-6000.dwlt
+[MODES] ModeService[default].InitializeCurrentMode
+[MODES] ModeService[default].RaiseModeChanged(default, default)
+Opening scene 'Assets/_Project/Scenes/Core.unity'
+Unloading 255 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Assets/_Project/Scenes/Core.unity'
+	Deserialize:            0.653 ms
+	Integration:            267.039 ms
+	Integration of assets:  0.001 ms
+	Thread Wait Time:       0.165 ms
+	Total Operation Time:   267.858 ms
+Unloading 2 unused Assets / (90.1 KB). Loaded Objects now: 10931.
+Memory consumption went from 397.5 MB to 397.5 MB.
+Total: 16.707000 ms (FindLiveObjects: 0.508100 ms CreateObjectMapping: 0.334200 ms MarkObjects: 15.803000 ms  DeleteObjects: 0.060100 ms)
+
+<RI> Initializing input.
+Using Windows.Gaming.Input
+[Project] Loading completed in 47.711 seconds
+	Project init time: 				41.410 seconds
+		Template init time: 		0.000 seconds
+		Package Manager init time: 		0.776 seconds
+		Asset Database init time: 		0.435 seconds
+		Global illumination init time: 	0.005 seconds
+		Assemblies load time: 			1.736 seconds
+		Unity extensions init time: 	0.015 seconds
+		Asset Database refresh time: 	28.960 seconds
+	Scene opening time: 			6.016 seconds
+##utp:{"type":"ProjectInfo","version":2,"phase":"Immediate","time":1794854730877,"processId":44476,"projectLoad":47.7112969,"projectInit":41.4104904,"templateInit":0.0,"packageManagerInit":0.7758619,"assetDatabaseInit":0.4345166,"globalIlluminationInit":0.0048066,"assembliesLoad":1.7362489,"unityExtensionsInit":0.0152777,"assetDatabaseRefresh":28.9604016,"sceneOpening":6.0160867}
+##utp:{"type":"EditorInfo","version":2,"phase":"Immediate","time":1794854730877,"processId":44476,"editorVersion":"6000.3.2f1 (a9779f353c9b)","branch":"6000.3/staging","buildType":"Release","platform":"Windows"}
+Reloading assemblies for play mode.
+Reloading assemblies after forced synchronous recompile.
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  1.551 seconds
+Refreshing native plugins compatible for Editor in 7.28 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  3.645 seconds
+Domain Reload Profiling: 5189ms
+	BeginReloadAssembly (947ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (146ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (1ms)
+		CreateAndSetChildDomain (518ms)
+	RebuildCommonClasses (99ms)
+	RebuildNativeTypeToScriptingClass (18ms)
+	initialDomainReloadingComplete (76ms)
+	LoadAllAssembliesAndSetupDomain (403ms)
+		LoadAssemblies (286ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (290ms)
+			TypeCache.Refresh (10ms)
+				TypeCache.ScanAssembly (0ms)
+			BuildScriptInfoCaches (258ms)
+			ResolveRequiredComponents (17ms)
+	FinalizeReload (3646ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (1888ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (46ms)
+			SetLoadedEditorAssemblies (6ms)
+			BeforeProcessingInitializeOnLoad (390ms)
+			ProcessInitializeOnLoadAttributes (1153ms)
+			ProcessInitializeOnLoadMethodAttributes (274ms)
+			AfterProcessingInitializeOnLoad (18ms)
+			EditorAssembliesLoaded (1ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (1181ms)
+Asset Pipeline Refresh (id=b73df200487a0a145a61e7a2fca457b5): Total: 5.726 seconds - Initiated by StopAssetImportingV2(ForceSynchronousImport | ForceDomainReload)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=4092 ms
+		Asset DB Callback time: managed=46 ms, native=1 ms
+		Scripting: domain reloads=1, domain reload time=1584 ms, compile time=1 ms, other=0 ms
+		Project Asset Count: scripts=6447, non-scripts=20492
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 5.240ms
+	ApplyChangesToAssetFolders: 0.357ms
+	Scan: 0.000ms
+	OnSourceAssetsModified: 0.002ms
+	CategorizeAssetsWithTransientArtifact: 0.005ms
+	ProcessAssetsWithTransientArtifactChanges: 6.104ms
+	CategorizeAssets: 314.363ms
+	ImportOutOfDateAssets: 3686.186ms (3667.623ms without children)
+		CompileScripts: 1.125ms
+		CollectScriptTypesHashes: 1.905ms
+		ReloadNativeAssets: 2.819ms
+		UnloadImportedAssets: 1.349ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 7.375ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.002ms
+		OnDemandSchedulerStart: 3.988ms
+	PostProcessAllAssets: 46.969ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.476ms
+	UnloadStreamsBegin: 1.343ms
+	PersistCurrentRevisions: 1.792ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 9.496ms
+	Untracked: 1662.095ms
+
+d3d12: upload buffer was too small for the requested resource! Size: 16777216. Requested: 56401920.
+[DeviceGraphicsApplier] Ultra: desktop: quality level VSync
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+DeviceGraphicsApplier:Apply (DeviceProfileDatabase,string,DeviceProfileDatabase/GraphicsOverrides,DeviceInfo) (at Assets/_Project/Scripts/Content/DeviceGraphicsApplier.cs:86)
+DeviceQualityResolver:ApplyRules (DeviceProfileDatabase,string) (at Assets/_Project/Scripts/Content/DeviceQualityResolver.cs:119)
+DeviceQualityResolver:ApplyAtStartup () (at Assets/_Project/Scripts/Content/DeviceQualityResolver.cs:102)
+AppBootstrap:Initialize () (at Assets/_Project/Scripts/Core/AppBootstrap.cs:64)
+
+(Filename: Assets/_Project/Scripts/Content/DeviceGraphicsApplier.cs Line: 86)
+
+[DeviceQualityResolver] Quality 'Ultra' (startup; hardware rule (Windows ≥16000 MB RAM, ≥8000 MB VRAM, ≥0 cores); rules local v1) — Windows 'ASUS TUF Dash F15 FX517ZR_FX517ZR (ASUSTeK COMPUTER INC.)', GPU 'NVIDIA GeForce RTX 3070 Laptop GPU' 8020 MB, RAM 32388 MB, 16 cores
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+DeviceQualityResolver:ApplyRules (DeviceProfileDatabase,string) (at Assets/_Project/Scripts/Content/DeviceQualityResolver.cs:123)
+DeviceQualityResolver:ApplyAtStartup () (at Assets/_Project/Scripts/Content/DeviceQualityResolver.cs:102)
+AppBootstrap:Initialize () (at Assets/_Project/Scripts/Core/AppBootstrap.cs:64)
+
+(Filename: Assets/_Project/Scripts/Content/DeviceQualityResolver.cs Line: 123)
+
+[PlayerProgress] Loaded save: 2 extra lives, 1 rivals with defeated versions, 1 completed songs (C:/Users/VISYON/AppData/LocalLow/DefaultCompany/MusicGame\player_progress.json)
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+PlayerProgressService:Awake () (at Assets/_Project/Scripts/Core/PlayerProgressService.cs:43)
+UnityEngine.GameObject:Internal_AddComponentWithType (System.Type)
+UnityEngine.GameObject:AddComponent (System.Type)
+UnityEngine.GameObject:AddComponent<PlayerProgressService> ()
+AppBootstrap:Initialize () (at Assets/_Project/Scripts/Core/AppBootstrap.cs:75)
+
+(Filename: Assets/_Project/Scripts/Core/PlayerProgressService.cs Line: 43)
+
+Refreshing native plugins compatible for Editor in 8.32 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.25 ms.
+Refreshing native plugins compatible for Editor in 10.29 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.22 ms.
+Refreshing native plugins compatible for Editor in 9.37 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.23 ms.
+Refreshing native plugins compatible for Editor in 8.27 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.17 ms.
+[GameAudio] Announcer for this session: announcer_f
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GameAudio:PickAnnouncer () (at Assets/_Project/Scripts/Audio/Game/GameAudio.cs:121)
+GameAudio:Awake () (at Assets/_Project/Scripts/Audio/Game/GameAudio.cs:76)
+UnityEngine.GameObject:Internal_AddComponentWithType (System.Type)
+UnityEngine.GameObject:AddComponent (System.Type)
+UnityEngine.GameObject:AddComponent<GameAudio> ()
+AppBootstrap:Initialize () (at Assets/_Project/Scripts/Core/AppBootstrap.cs:84)
+
+(Filename: Assets/_Project/Scripts/Audio/Game/GameAudio.cs Line: 121)
+
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            0.365 ms
+	Integration:            11559.398 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.122 ms
+	Total Operation Time:   11559.888 ms
+[UIFactory] 'UI' scene not loaded yet — '[UI Canvas]' will live in whatever scene is currently active instead.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+UIFactory:MoveToUiSceneIfLoaded (UnityEngine.GameObject) (at Assets/_Project/Scripts/UI/UIFactory.cs:106)
+UIFactory:RootCanvas () (at Assets/_Project/Scripts/UI/UIFactory.cs:40)
+AnalyzingScreenController:Awake () (at Assets/_Project/Scripts/UI/AnalyzingScreenController.cs:134)
+UnityEngine.GameObject:Internal_AddComponentWithType (System.Type)
+UnityEngine.GameObject:AddComponent (System.Type)
+UnityEngine.GameObject:AddComponent<AnalyzingScreenController> ()
+UIFlowController:AddScreen<AnalyzingScreenController> () (at Assets/_Project/Scripts/UI/UIFlowController.cs:72)
+UIFlowController:Awake () (at Assets/_Project/Scripts/UI/UIFlowController.cs:38)
+
+(Filename: Assets/_Project/Scripts/UI/UIFactory.cs Line: 106)
+
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Loaded scene 'Assets/_Project/Scenes/UI.unity'
+	Deserialize:            1.530 ms
+	Integration:            1379.713 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       333.198 ms
+	Total Operation Time:   1714.443 ms
+[SceneFlowController] 'UI' scene loaded.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SceneFlowController/<EnsureUiSceneLoaded>d__22:MoveNext () (at Assets/_Project/Scripts/Core/SceneFlowController.cs:106)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Core/SceneFlowController.cs Line: 106)
+
+[AppFlowController] Boot -> Intro
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AppFlowController:RequestState (GameFlowState) (at Assets/_Project/Scripts/Core/AppFlowController.cs:51)
+AppFlowController:Start () (at Assets/_Project/Scripts/Core/AppFlowController.cs:39)
+
+(Filename: Assets/_Project/Scripts/Core/AppFlowController.cs Line: 51)
+
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+AssetDatabase: script compilation time: 0.001022s
+Refreshing native plugins compatible for Editor in 6.39 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.12 ms.
+Asset Pipeline Refresh (id=2f0d4d1311460a544b5e9ad1b43bdbb5): Total: 0.302 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=263 ms
+		Asset DB Callback time: managed=25 ms, native=12 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=1 ms, other=0 ms
+		Project Asset Count: scripts=6447, non-scripts=20492
+		Asset File Changes: new=0, changed=1, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 0.001ms
+	ApplyChangesToAssetFolders: 0.209ms
+	Scan: 43.945ms
+	OnSourceAssetsModified: 0.785ms
+	CategorizeAssetsWithTransientArtifact: 0.040ms
+	ProcessAssetsWithTransientArtifactChanges: 0.270ms
+	CategorizeAssets: 168.057ms
+	ImportOutOfDateAssets: 7.662ms (0.662ms without children)
+		CompileScripts: 1.068ms
+		ReloadNativeAssets: 1.023ms
+		UnloadImportedAssets: 0.099ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 3.558ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 1.250ms
+	PostProcessAllAssets: 26.234ms
+	Hotreload: 10.578ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.476ms
+	UnloadStreamsBegin: 5.640ms
+	PersistCurrentRevisions: 1.144ms
+	UnloadStreamsEnd: 0.002ms
+	Untracked: 36.401ms
+
+Asset Pipeline Refresh (id=6e84b4377acd5b94783aa7b4b88ab00f): Total: 0.193 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+Created GICache directory at C:/Users/VISYON/AppData/LocalLow/Unity/Caches/GiCache. Took: 0.031s, timestamps: [69.901 - 69.931]
+[Indexing] Starting Initial Indexing for Assets
+[AppFlowController] Intro -> MainMenu
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AppFlowController:RequestState (GameFlowState) (at Assets/_Project/Scripts/Core/AppFlowController.cs:51)
+DancePreparationPlayCheckRunner/<Run>d__3:MoveNext () (at Assets/_Project/Scripts/Editor/DevTools/DancePreparationPlayCheck.cs:98)
+DancePreparationPlayCheckRunner/<Start>d__1:MoveNext () (at Assets/_Project/Scripts/Editor/DevTools/DancePreparationPlayCheck.cs:84)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Core/AppFlowController.cs Line: 51)
+
+[SongCatalogService] Published index: 22 songs (revision f2e61fc0213a3cfb).
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SongCatalogService/<EnsureReady>d__14:MoveNext () (at Assets/_Project/Scripts/Song/Catalog/SongCatalogService.cs:56)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Song/Catalog/SongCatalogService.cs Line: 56)
+
+Loaded scene 'Assets/_Project/Scenes/Frontend.unity'
+	Deserialize:            5.490 ms
+	Integration:            1.907 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       3450.125 ms
+	Total Operation Time:   3457.523 ms
+[SceneFlowController] Mode Scene now 'Frontend'.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SceneFlowController/<LoadModeCore>d__24:MoveNext () (at Assets/_Project/Scripts/Core/SceneFlowController.cs:181)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Core/SceneFlowController.cs Line: 181)
+
+[Licensing::Client] Successfully updated the access token
+[Licensing::Module] Successfully updated access token: "EOtcO8X3"... (expires: 2026-11-16T19:25:41Z)
+Android Extension - Scanning For ADB Devices 2434 ms
+[Licensing::Client] Successfully resolved entitlement details
+[AppFlowController] MainMenu -> SongAnalysis
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AppFlowController:RequestState (GameFlowState) (at Assets/_Project/Scripts/Core/AppFlowController.cs:51)
+DancePreparationPlayCheckRunner/<Run>d__3:MoveNext () (at Assets/_Project/Scripts/Editor/DevTools/DancePreparationPlayCheck.cs:109)
+DancePreparationPlayCheckRunner/<Start>d__1:MoveNext () (at Assets/_Project/Scripts/Editor/DevTools/DancePreparationPlayCheck.cs:84)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Core/AppFlowController.cs Line: 51)
+
+[SongPreparation] #1 → ResolvingSelection (song_008)
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SongPreparation:Enter (int,SongPreparationStage,string,single,long,SongContentError) (at Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs:87)
+CatalogSongLoader:Stage (SongPreparationStage,string,single,long) (at Assets/_Project/Scripts/Song/Catalog/CatalogSongLoader.cs:126)
+CatalogSongLoader/<Run>d__48:MoveNext () (at Assets/_Project/Scripts/Song/Catalog/CatalogSongLoader.cs:137)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+UnityEngine.MonoBehaviour:StartCoroutineManaged2 (System.Collections.IEnumerator)
+UnityEngine.MonoBehaviour:StartCoroutine (System.Collections.IEnumerator)
+SongAnalysisController:Begin () (at Assets/_Project/Scripts/UI/SongAnalysisController.cs:103)
+SongAnalysisController:<OnEnable>b__20_0 (GameFlowStateChangedEvent) (at Assets/_Project/Scripts/UI/SongAnalysisController.cs:75)
+EventBus:Publish<GameFlowStateChangedEvent> (GameFlowStateChangedEvent) (at Assets/_Project/Scripts/Core/EventBus.cs:28)
+AppFlowController:RequestState (GameFlowState) (at Assets/_Project/Scripts/Core/AppFlowController.cs:52)
+DancePreparationPlayCheckRunner/<Run>d__3:MoveNext () (at Assets/_Project/Scripts/Editor/DevTools/DancePreparationPlayCheck.cs:109)
+DancePreparationPlayCheckRunner/<Start>d__1:MoveNext () (at Assets/_Project/Scripts/Editor/DevTools/DancePreparationPlayCheck.cs:84)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs Line: 87)
+
+[SongPreparation] #1 → LoadingContent
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SongPreparation:Enter (int,SongPreparationStage,string,single,long,SongContentError) (at Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs:87)
+CatalogSongLoader:Stage (SongPreparationStage,string,single,long) (at Assets/_Project/Scripts/Song/Catalog/CatalogSongLoader.cs:126)
+CatalogSongLoader/<Run>d__48:MoveNext () (at Assets/_Project/Scripts/Song/Catalog/CatalogSongLoader.cs:188)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs Line: 87)
+
+[SongPreparation] #1 → ValidatingProfile
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SongPreparation:Enter (int,SongPreparationStage,string,single,long,SongContentError) (at Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs:87)
+CatalogSongLoader:Stage (SongPreparationStage,string,single,long) (at Assets/_Project/Scripts/Song/Catalog/CatalogSongLoader.cs:126)
+CatalogSongLoader/<Run>d__48:MoveNext () (at Assets/_Project/Scripts/Song/Catalog/CatalogSongLoader.cs:206)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs Line: 87)
+
+[SongPreparation] #1 → BuildingProfile
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SongPreparation:Enter (int,SongPreparationStage,string,single,long,SongContentError) (at Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs:87)
+CatalogSongLoader:Stage (SongPreparationStage,string,single,long) (at Assets/_Project/Scripts/Song/Catalog/CatalogSongLoader.cs:126)
+CatalogSongLoader/<Run>d__48:MoveNext () (at Assets/_Project/Scripts/Song/Catalog/CatalogSongLoader.cs:224)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs Line: 87)
+
+[SongPreparation] #1 → PreparingAudio (CompressedInMemory)
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SongPreparation:Enter (int,SongPreparationStage,string,single,long,SongContentError) (at Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs:87)
+CatalogSongLoader:Stage (SongPreparationStage,string,single,long) (at Assets/_Project/Scripts/Song/Catalog/CatalogSongLoader.cs:126)
+CatalogSongLoader/<Run>d__48:MoveNext () (at Assets/_Project/Scripts/Song/Catalog/CatalogSongLoader.cs:238)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs Line: 87)
+
+[SongPreparation] #1 → ContentReady (464 ms)
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SongPreparation:Enter (int,SongPreparationStage,string,single,long,SongContentError) (at Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs:87)
+CatalogSongLoader:Stage (SongPreparationStage,string,single,long) (at Assets/_Project/Scripts/Song/Catalog/CatalogSongLoader.cs:126)
+CatalogSongLoader/<Run>d__48:MoveNext () (at Assets/_Project/Scripts/Song/Catalog/CatalogSongLoader.cs:257)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs Line: 87)
+
+[CatalogSongLoader] 'song_008' #1 ready — no analysis ran. total 464 ms | index 185 | download 0 (0,00 MB, size query 2) | load 139 | validate 4,7 | profile build 67 (worker, 2,62 MB) | audio prepare 56 (clip runtime 7,97 MB) | max main-thread step 4,7
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+CatalogSongLoader/<Run>d__48:MoveNext () (at Assets/_Project/Scripts/Song/Catalog/CatalogSongLoader.cs:258)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Song/Catalog/CatalogSongLoader.cs Line: 258)
+
+[SongPreparation] #1 → ResolvingStyle
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SongPreparation:Enter (int,SongPreparationStage,string,single,long,SongContentError) (at Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs:87)
+SongAnalysisController/<PrepareCatalogSong>d__30:MoveNext () (at Assets/_Project/Scripts/UI/SongAnalysisController.cs:198)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs Line: 87)
+
+[SongAnalysisController] FINAL game style Electronic (score 0,45, margin 0,19, theme Electronic, features yes)
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SongAnalysisController:PublishFinal (MusicStyleResolution,SongProfile) (at Assets/_Project/Scripts/UI/SongAnalysisController.cs:303)
+SongAnalysisController/<PrepareCatalogSong>d__30:MoveNext () (at Assets/_Project/Scripts/UI/SongAnalysisController.cs:200)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/UI/SongAnalysisController.cs Line: 303)
+
+[SongPreparation] #1 → ApplyingTheme
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SongPreparation:Enter (int,SongPreparationStage,string,single,long,SongContentError) (at Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs:87)
+SongAnalysisController/<FinishPreparation>d__34:MoveNext () (at Assets/_Project/Scripts/UI/SongAnalysisController.cs:260)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs Line: 87)
+
+Android Extension - Scanning For ADB Devices 507 ms
+Attempted to call .Dispose on an already disposed CancellationTokenSource
+Android Extension - Scanning For ADB Devices 544 ms
+ExitCode: 0 Duration: 4s544ms
+[ 895/1159  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1151/1159  1s] Csc Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp.dll (+2 others)
+Assets\_Project\Scripts\UI\UIFactory.cs(138,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\World\MusicWorldManager.cs(150,34): warning CS0618: 'Physics.BakeMesh(int, bool, MeshColliderCookingOptions)' is obsolete: 'BakeMesh(int, bool, MeshColliderCookingOptions) is obsolete. Use BakeMesh(EntityId, bool, MeshColliderCookingOptions) instead.'
+[1153/1159  0s] ILPostProcess Library/Bee/artifacts/1900b0aEDbg.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll, with 137 defines and 359 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1155/1159  0s] ILPostProcess Library/Bee/artifacts/1900b0aEDbg.dag/post-processed/Assembly-CSharp.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp.dll, with 139 defines and 338 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1156/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.pdb
+[1157/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.dll
+*** Tundra build success (4.50 seconds), 6 items updated, 1159 evaluated
+[SongPreparation] #1 → LoadingScene
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SongPreparation:Enter (int,SongPreparationStage,string,single,long,SongContentError) (at Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs:87)
+SongAnalysisController/<FinishPreparation>d__34:MoveNext () (at Assets/_Project/Scripts/UI/SongAnalysisController.cs:285)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Song/Catalog/SongPreparation.cs Line: 87)
+
+[AppFlowController] SongAnalysis -> Gameplay
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AppFlowController:RequestState (GameFlowState) (at Assets/_Project/Scripts/Core/AppFlowController.cs:51)
+SongAnalysisController/<FinishPreparation>d__34:MoveNext () (at Assets/_Project/Scripts/UI/SongAnalysisController.cs:286)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Core/AppFlowController.cs Line: 51)
+
+[RunnerSurface] Electronic, match seed 1337: Electronic_3
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+GameplayManager:ResolveTrackMaterial () (at Assets/_Project/Scripts/Gameplay/GameplayManager.cs:217)
+GameplayManager:Awake () (at Assets/_Project/Scripts/Gameplay/GameplayManager.cs:159)
+
+(Filename: Assets/_Project/Scripts/Gameplay/GameplayManager.cs Line: 217)
+
+Android Extension - Scanning For ADB Devices 521 ms
+[HorizonCameraController] Disabled stray screen camera 'Frontend Camera' (scene 'Frontend').
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+HorizonCameraController:DisableStrayScreenCameras () (at Assets/_Project/Scripts/World/Horizon/HorizonCameraController.cs:115)
+HorizonCameraController:Initialize (HorizonConfig) (at Assets/_Project/Scripts/World/Horizon/HorizonCameraController.cs:173)
+HorizonWorld:Initialize (HorizonConfig) (at Assets/_Project/Scripts/World/Horizon/HorizonWorld.cs:61)
+GameplayManager:Awake () (at Assets/_Project/Scripts/Gameplay/GameplayManager.cs:183)
+
+(Filename: Assets/_Project/Scripts/World/Horizon/HorizonCameraController.cs Line: 115)
+
+[RunnerEnvironment] style '(none — base)' → Horizon: PF_HorizonMountains_Default (Base) | MusicReactive: PF_SpectrumBars_Default (Base)
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+RunnerEnvironmentController:Build (RunnerEnvironmentBaseSO,RunnerEnvironmentStyleSO,UnityEngine.Transform,HorizonConfig,HorizonWater) (at Assets/_Project/Scripts/World/Environment/RunnerEnvironmentController.cs:109)
+HorizonWorld:Initialize (HorizonConfig) (at Assets/_Project/Scripts/World/Horizon/HorizonWorld.cs:80)
+GameplayManager:Awake () (at Assets/_Project/Scripts/Gameplay/GameplayManager.cs:183)
+
+(Filename: Assets/_Project/Scripts/World/Environment/RunnerEnvironmentController.cs Line: 109)
+
+Loaded scene 'Assets/_Project/Scenes/Runner.unity'
+	Deserialize:            23.504 ms
+	Integration:            172.206 ms
+	Integration of assets:  1.439 ms
+	Thread Wait Time:       18.092 ms
+	Total Operation Time:   215.241 ms
+Assets\_Project\Scripts\UI\UIFactory.cs(138,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\World\MusicWorldManager.cs(150,34): warning CS0618: 'Physics.BakeMesh(int, bool, MeshColliderCookingOptions)' is obsolete: 'BakeMesh(int, bool, MeshColliderCookingOptions) is obsolete. Use BakeMesh(EntityId, bool, MeshColliderCookingOptions) instead.'
+Reloading assemblies after finishing script compilation.
+Reloading assemblies after forced synchronous recompile.
+Attempted to call .Dispose on an already disposed CancellationTokenSource
+Begin MonoManager ReloadAssembly
+[SceneFlowController] Mode Scene now 'Runner' (unloaded 'Frontend').
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SceneFlowController/<LoadModeCore>d__24:MoveNext () (at Assets/_Project/Scripts/Core/SceneFlowController.cs:181)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/_Project/Scripts/Core/SceneFlowController.cs Line: 181)
+
+Total cache size 268004818
+Total cache size after purge 268004818, took 00:00:01.6072068
+- Loaded All Assemblies, in  3.047 seconds
+Refreshing native plugins compatible for Editor in 6.27 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+NullReferenceException: Object reference not set to an instance of an object
+  at UnityEditor.EditorStyles.get_popup () [0x00001] in <d9024bdc2a414b3c81b047ea3e343594>:0 
+  at UnityEditor.Localization.UI.GameViewLanguageMenu.AddToolbarsToGameViews () [0x0004a] in .\Library\PackageCache\com.unity.localization@f2647f7408bd\Editor\UI\GameViewLanguageMenu.cs:119 
+  at UnityEditor.Localization.UI.GameViewLanguageMenu+<>c.<Show>b__4_0 (UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle`1[TObject] hnd) [0x00000] in .\Library\PackageCache\com.unity.localization@f2647f7408bd\Editor\UI\GameViewLanguageMenu.cs:60 
+  at DelegateList`1[T].Invoke (T res) [0x00038] in .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\Util\DelegateList.cs:75 
+UnityEngine.DebugLogHandler:Internal_LogException_Injected(Exception, IntPtr)
+UnityEngine.DebugLogHandler:Internal_LogException(Exception, Object)
+UnityEngine.DebugLogHandler:LogException(Exception, Object)
+UnityEngine.Logger:LogException(Exception, Object)
+UnityEngine.Debug:LogException(Exception)
+DelegateList`1:Invoke(AsyncOperationHandle`1) (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\Util\DelegateList.cs:79)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:InvokeCompletionEvent() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:387)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:Complete(LocalizationSettings, Boolean, Exception, Boolean) (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:490)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:Complete(LocalizationSettings, Boolean, String, Boolean) (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:443)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:Complete(LocalizationSettings, Boolean, String) (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:427)
+UnityEngine.Localization.Operations.InitializationOperation:FinishInitializing(Boolean, String) (at .\Library\PackageCache\com.unity.localization@f2647f7408bd\Runtime\Operations\InitializationOperation.cs:230)
+UnityEngine.Localization.Operations.InitializationOperation:PreloadTablesCompleted() (at .\Library\PackageCache\com.unity.localization@f2647f7408bd\Runtime\Operations\InitializationOperation.cs:209)
+UnityEngine.Localization.Operations.InitializationOperation:PreloadTables() (at .\Library\PackageCache\com.unity.localization@f2647f7408bd\Runtime\Operations\InitializationOperation.cs:190)
+UnityEngine.Localization.Operations.InitializationOperation:LoadLocalesCompleted(AsyncOperationHandle`1) (at .\Library\PackageCache\com.unity.localization@f2647f7408bd\Runtime\Operations\InitializationOperation.cs:165)
+DelegateList`1:Invoke(AsyncOperationHandle`1) (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\Util\DelegateList.cs:75)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:InvokeCompletionEvent() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:387)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:Complete(Locale, Boolean, Exception, Boolean) (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:490)
+UnityEngine.ResourceManagement.ChainOperationTypelessDepedency`1:OnWrappedCompleted(AsyncOperationHandle`1) (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\ChainOperation.cs:203)
+DelegateList`1:Invoke(AsyncOperationHandle`1) (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\Util\DelegateList.cs:75)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:InvokeCompletionEvent() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:387)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:UnityEngine.ResourceManagement.AsyncOperations.IAsyncOperation.InvokeCompletionEvent() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:573)
+UnityEngine.ResourceManagement.ResourceManager:ExecuteDeferredCallbacks() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\ResourceManager.cs:1057)
+UnityEngine.ResourceManagement.ResourceManager:Update(Single) (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\ResourceManager.cs:1113)
+UnityEngine.ResourceManagement.AsyncOperations.GroupOperation:InvokeWaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\GroupOperation.cs:51)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:WaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:174)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle:WaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationHandle.cs:607)
+UnityEngine.ResourceManagement.ChainOperationTypelessDepedency`1:InvokeWaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\ChainOperation.cs:178)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:WaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:174)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle:WaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationHandle.cs:607)
+UnityEngine.ResourceManagement.ChainOperationTypelessDepedency`1:InvokeWaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\ChainOperation.cs:178)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:WaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:174)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle:WaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationHandle.cs:607)
+UnityEngine.Localization.Operations.WaitForCurrentOperationAsyncOperationBase`1:InvokeWaitForCompletion() (at .\Library\PackageCache\com.unity.localization@f2647f7408bd\Runtime\Operations\WaitForCurrentOperationAsyncOperationBase.cs:51)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:WaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:174)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle:WaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationHandle.cs:607)
+UnityEngine.Localization.Operations.WaitForCurrentOperationAsyncOperationBase`1:InvokeWaitForCompletion() (at .\Library\PackageCache\com.unity.localization@f2647f7408bd\Runtime\Operations\WaitForCurrentOperationAsyncOperationBase.cs:32)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:WaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:174)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle:WaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationHandle.cs:607)
+UnityEngine.Localization.Operations.WaitForCurrentOperationAsyncOperationBase`1:InvokeWaitForCompletion() (at .\Library\PackageCache\com.unity.localization@f2647f7408bd\Runtime\Operations\WaitForCurrentOperationAsyncOperationBase.cs:32)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:WaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:174)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle:WaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationHandle.cs:607)
+UnityEngine.Localization.Operations.WaitForCurrentOperationAsyncOperationBase`1:InvokeWaitForCompletion() (at .\Library\PackageCache\com.unity.localization@f2647f7408bd\Runtime\Operations\WaitForCurrentOperationAsyncOperationBase.cs:32)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationBase`1:WaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationBase.cs:174)
+UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle`1:WaitForCompletion() (at .\Library\PackageCache\com.unity.addressables@5d870284b3d9\Runtime\ResourceManager\AsyncOperations\AsyncOperationHandle.cs:195)
+Loc:Get(String) (at Assets\_Project\Scripts\UI\Loc.cs:54)
+<>c__DisplayClass11_0:<Set>b__0() (at Assets\_Project\Scripts\UI\Loc.cs:91)
+Loc:Bind(TMP_Text, Func`1) (at Assets\_Project\Scripts\UI\Loc.cs:107)
+Loc:Set(TMP_Text, String, Object[]) (at Assets\_Project\Scripts\UI\Loc.cs:91)
+LocalizedText:OnEnable() (at Assets\_Project\Scripts\UI\LocalizedText.cs:15)
+
+(Filename: Assets/_Project/Scripts/UI/Loc.cs Line: 54)
+
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  5.024 seconds
+Domain Reload Profiling: 8065ms
+	BeginReloadAssembly (2567ms)
+		ExecutionOrderSort (2ms)
+		DisableScriptedObjects (211ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (1ms)
+		CreateAndSetChildDomain (564ms)
+	RebuildCommonClasses (41ms)
+	RebuildNativeTypeToScriptingClass (15ms)
+	initialDomainReloadingComplete (45ms)
+	LoadAllAssembliesAndSetupDomain (372ms)
+		LoadAssemblies (261ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (278ms)
+			TypeCache.Refresh (26ms)
+				TypeCache.ScanAssembly (15ms)
+			BuildScriptInfoCaches (231ms)
+			ResolveRequiredComponents (15ms)
+	FinalizeReload (5025ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (1732ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (52ms)
+			SetLoadedEditorAssemblies (7ms)
+			BeforeProcessingInitializeOnLoad (585ms)
+			ProcessInitializeOnLoadAttributes (876ms)
+			ProcessInitializeOnLoadMethodAttributes (196ms)
+			AfterProcessingInitializeOnLoad (16ms)
+			EditorAssembliesLoaded (1ms)
+		ExecutionOrderSort2 (2ms)
+		AwakeInstancesAfterBackupRestoration (1873ms)
+Asset Pipeline Refresh (id=e9c8a332580a10946b7c0a4d5becdc77): Total: 8.554 seconds - Initiated by StopAssetImportingV2(ForceSynchronousImport | ForceDomainReload)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=5432 ms
+		Asset DB Callback time: managed=31 ms, native=1 ms
+		Scripting: domain reloads=1, domain reload time=3087 ms, compile time=2 ms, other=0 ms
+		Project Asset Count: scripts=6447, non-scripts=20492
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.002ms
+	InvokePackagesCallback: 6.088ms
+	ApplyChangesToAssetFolders: 0.428ms
+	Scan: 0.001ms
+	OnSourceAssetsModified: 0.002ms
+	CategorizeAssetsWithTransientArtifact: 0.006ms
+	ProcessAssetsWithTransientArtifactChanges: 6.227ms
+	CategorizeAssets: 296.757ms
+	ImportOutOfDateAssets: 5051.115ms (5032.596ms without children)
+		CompileScripts: 1.579ms
+		CollectScriptTypesHashes: 6.321ms
+		ReloadNativeAssets: 3.917ms
+		UnloadImportedAssets: 0.124ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 5.078ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 1.499ms
+	PostProcessAllAssets: 31.050ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.307ms
+	UnloadStreamsBegin: 3.080ms
+	PersistCurrentRevisions: 1.442ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 9.530ms
+	Untracked: 3156.199ms
+
+TrimDiskCacheJob: Current cache size 3725mb

@@ -66,6 +66,7 @@ public class PlayerController : MonoBehaviour
     private float _lateralOffset;    // path-local right units (negative = left)
     private float _lateralVelocity;  // path-local right units/sec — carried through the air when !allowAirControl
     private float _verticalVelocity; // real gravity-integrated vertical speed
+    private RunnerJumpGrace _jumpGrace;
     private bool  _running;
 
     // Set once by GameplayManager the instant the farewell stretch begins (song already finished,
@@ -304,7 +305,7 @@ public class PlayerController : MonoBehaviour
             if (readKeyboard)
             {
                 var kb = Keyboard.current;
-                want |= kb != null && (kb.cKey.isPressed || kb.leftCtrlKey.isPressed || kb.rightCtrlKey.isPressed);
+                want |= kb != null && (kb.jKey.isPressed || kb.leftCtrlKey.isPressed || kb.rightCtrlKey.isPressed);
             }
         }
 
@@ -474,7 +475,7 @@ public class PlayerController : MonoBehaviour
         // Farewell: no jumping at all — gravity/grounding below still applies unchanged, so the
         // player simply keeps running on the flat farewell ground (see EnterFarewellMode's own doc).
 
-        if (grounded && jumpPressed)
+        if (_jumpGrace.TryJump(grounded, _verticalVelocity, jumpPressed, Time.deltaTime, config.jumpGraceSeconds))
         {
             _verticalVelocity = config.jumpForce;
             Jumped?.Invoke();
@@ -630,6 +631,7 @@ public class PlayerController : MonoBehaviour
         BlockedAtBackLimit = false;
         _lateralVelocity  = 0f;
         _verticalVelocity    = 0f;
+        _jumpGrace.Reset();
         LateralLimit         = 0f;
         IsAtLateralLimit     = false;
         IsBelowTrackSurface  = false;
@@ -734,7 +736,7 @@ public class PlayerController : MonoBehaviour
         var placeholder = new System.Collections.Generic.List<Transform>();
         foreach (Transform child in _visualAnchor) placeholder.Add(child);
 
-        var instance = await AvatarFactory.CreateAsync(recipe.ToRuntime(), _visualAnchor);
+        var instance = await AvatarFactory.CreateAsync(avatarConfig.CreateRuntimeRecipe(recipe, combat: false), _visualAnchor);
         if (this == null || _visualAnchor == null) { instance.Dispose(); return; } // Runner unloaded mid-build
         if (instance.Root == null)
         {

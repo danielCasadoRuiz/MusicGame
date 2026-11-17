@@ -275,6 +275,11 @@ public class FighterAttack : MonoBehaviour
             FightFireballVisual.Build(root.transform, diameter);
         }
 
+        if(move.resourceCost==CombatResourceType.Special || move.role==CombatRole.Special || move.role==CombatRole.SpecialCharge)
+        {
+            float pageDiameter=Mathf.Max(.3f,data.hitDefinition!=null?data.hitDefinition.size.x:.4f);
+            FightScorePages.Launch(_actor,root.transform,pageDiameter,direction);
+        }
         root.AddComponent<FightProjectile>().Initialize(_actor, _opponent, move, data, _balanceConfig, direction,
                                                         _moveController != null ? _moveController.CurrentAttackBonus : FightAttackBonus.Identity);
     }

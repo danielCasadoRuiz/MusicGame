@@ -16,6 +16,22 @@ public class PlayerAvatarConfigSO : ScriptableObject
     [Tooltip("PROVISIONAL player avatar recipe, built via AvatarFactory in both Runner and Fight.")]
     public AvatarRecipeSO avatarRecipe;
 
+    [Tooltip("Extra wearable equipped only by the player in Fight; never in Runner recipes.")]
+    public WearableItemSO combatGloves;
+
+    public AvatarRecipe CreateRuntimeRecipe(AvatarRecipeSO source, bool combat)
+    {
+        var recipe = source != null ? source.ToRuntime() : null;
+        if (recipe == null || combatGloves == null) return recipe;
+        recipe.Items.RemoveAll(item => item == combatGloves);
+        if (combat)
+        {
+            recipe.Items.RemoveAll(item => item != null && (item.occupiedSlots & AvatarSlot.Hands) != 0);
+            recipe.Items.Add(combatGloves);
+        }
+        return recipe;
+    }
+
     [Tooltip("Shared Runner presentation controller (RunnerHumanoid: one state family per " +
              "RunnerAnimationRole). Never the combat controller.")]
     public RuntimeAnimatorController runnerAnimatorController;

@@ -490,7 +490,9 @@ public class FightSceneBootstrap : MonoBehaviour
     private async System.Threading.Tasks.Task TryBuildAvatar(AvatarRecipeSO recipeSO, FighterActor opponentActor, string who, System.Func<AvatarInstance, bool> keep)
     {
         int stageToken = _stageBuildToken;
-        var runtimeRecipe = recipeSO.ToRuntime();
+        var runtimeRecipe = opponentActor == _playerActor && _appConfig?.playerAvatar != null
+            ? _appConfig.playerAvatar.CreateRuntimeRecipe(recipeSO, combat: true)
+            : recipeSO.ToRuntime();
         bool bound = false, applied = false;
         // Built HIDDEN (AvatarFactory.CreateHiddenAsync): the T-pose body and the garments being put on are never
         // seen. Everything below runs in the reveal frame — placed, scaled, animator bound and evaluated — so the

@@ -236,6 +236,7 @@ GameObject:
   m_Component:
   - component: {fileID: 596124070368935210}
   - component: {fileID: 5479958185208051107}
+  - component: {fileID: 453477182209468130}
   m_Layer: 0
   m_Name: MobileControls
   m_TagString: Untagged
@@ -282,6 +283,20 @@ MonoBehaviour:
   joystickHandle: {fileID: 690853283333520974}
   jumpButton: {fileID: 8840167187286291785}
   crouchButton: {fileID: 8570512421392221308}
+--- !u!114 &453477182209468130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3584780821969717485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d742a6615d84ca847a293cf15291584f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobileControlSkin
+  library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  atlas: {fileID: 2800000, guid: ed591a0b30fdf504e8b0e53c3f843288, type: 3}
 --- !u!1 &4019620746875492204
 GameObject:
   m_ObjectHideFlags: 0

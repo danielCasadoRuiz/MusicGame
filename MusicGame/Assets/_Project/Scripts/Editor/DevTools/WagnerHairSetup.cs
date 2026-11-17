@@ -93,6 +93,7 @@ public static class WagnerHairSetup
                 material.SetTexture("_BumpMap", AssetDatabase.LoadAssetAtPath<Texture2D>(folder + "/Textures/Normal.png"));
                 material.SetTexture("_MetallicGlossMap", AssetDatabase.LoadAssetAtPath<Texture2D>(packed));
                 material.EnableKeyword("_NORMALMAP"); material.EnableKeyword("_METALLICSPECGLOSSMAP");
+                AvatarMaterialFinish.Apply(material, "Wagner_hair");
                 EditorUtility.SetDirty(material);
                 var model = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
                 var root = UnityEngine.Object.Instantiate(model);

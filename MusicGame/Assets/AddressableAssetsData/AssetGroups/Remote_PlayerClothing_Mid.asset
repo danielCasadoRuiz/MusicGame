@@ -191,6 +191,27 @@ MonoBehaviour:
     - PlayerClothing_dance_sneakers
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4cf8b9331936740429aea1d1269590d4
+    m_Address: PlayerClothing_classical_gloves/Wearable_classical_gloves/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Category_PlayerClothing
+    - Enemy_bach
+    - Enemy_beethoven
+    - Enemy_brahms
+    - Enemy_chopin
+    - Enemy_handel
+    - Enemy_haydn
+    - Enemy_monteverdi
+    - Enemy_mozart
+    - Enemy_pachelbel
+    - Enemy_tchaikovsky
+    - Enemy_vivaldi
+    - Enemy_wagner
+    - PlayerClothing_classical_gloves
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4cff27f676ab185459465c7f6a7df34f
     m_Address: PlayerClothing_funky_shirt/Wearable_funky_shirt/sharedVariant/qualityPrefabs@Mid
     m_ReadOnly: 0
@@ -431,6 +452,14 @@ MonoBehaviour:
     - PlayerClothing_soulful_shirt
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b5be305161991cc4f9c330028281fcbe
+    m_Address: PlayerClothing_dance_trousers/Wearable_dance_trousers/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_dance_trousers
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b60d6dbe20729ec4b9676615de04de52
     m_Address: PlayerClothing_jazzy_jacket/Wearable_jazzy_jacket/sharedVariant/qualityPrefabs@Mid
     m_ReadOnly: 0
@@ -567,12 +596,28 @@ MonoBehaviour:
     - PlayerClothing_jazzy_trousers
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eab2c63e56b6e354f80f73d61f7c2e26
+    m_Address: PlayerClothing_groove_sweater/Wearable_groove_sweater/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_groove_sweater
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ecbe37745977043469a6d89bbe2fc5cd
     m_Address: PlayerClothing_dreamy_shoes/Wearable_dreamy_shoes/sharedVariant/qualityPrefabs@Mid
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_dreamy_shoes
+    - Q_Mid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: edad0aa61ef5efa409d87684cd591d9e
+    m_Address: PlayerClothing_fight_gloves/Wearable_fight_gloves/sharedVariant/qualityPrefabs@Mid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_fight_gloves
     - Q_Mid
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ef5fcd7980fa05544b9757144e3112d9

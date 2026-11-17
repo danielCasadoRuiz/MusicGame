@@ -1,0 +1,670 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.2f1 (a9779f353c9b) revision 11106207'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) 64bit Professional' Language: 'es' Physical Memory: 32388 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON" at "2026-11-14T00:58:35.228343Z"
+Date: 2026-11-14T00:58:35Z
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Unity.exe
+-batchmode
+-projectPath
+C:/Users/VISYON/Documents/MusicGame/MusicGame
+-executeMethod
+RunnerSurfaceIntegration.InstallAndVerify
+-quit
+-logFile
+C:/Users/VISYON/Documents/MusicGame/style-package-fix-validation.log
+Successfully changed project path to: C:/Users/VISYON/Documents/MusicGame/MusicGame
+C:/Users/VISYON/Documents/MusicGame/MusicGame
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [276]  Target information:
+
+Player connection [276]  * "[IP] 192.168.1.15 [Port] 55505 [Flags] 2 [Guid] 531338770 [EditorId] 531338770 [Version] 1048832 [Id] WindowsEditor(7,RemoteDani) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [276] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [276] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-45424" after 0.3 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              312db5d054a945c6adb391a54e47e6ff
+  Correlation Id:          7f7ecca5a2e297700e2028d0c0579c52
+  External correlation Id: 2062490703646709363
+  Machine Id:              x99c5MRpHgESOtEUeZ1qua+TIa8=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-VISYON" (connect: 0.00s, validation: 0.00s, handshake: 1.17s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON-notifications" at "2026-11-14T00:58:36.3986389Z"
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.00
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Module] Licensing Background thread has ended after 1.18s
+[Licensing::Module] Licensing is initialized (took 0.37s).
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Refreshing native plugins compatible for Editor in 1.09 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.2f1 (a9779f353c9b)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/VISYON/Documents/MusicGame/MusicGame/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3070 Laptop GPU (ID=0x249d)
+    Vendor:   NVIDIA
+    VRAM:     8020 MB
+    Driver:   32.0.15.8142
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56424
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/MetroSupport/UnityEditor.UWP.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+Registered in 0.015041 seconds.
+- Loaded All Assemblies, in  0.549 seconds
+Native extension for Android target not found
+Android Extension - Scanning For ADB Devices 2344 ms
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  2.850 seconds
+Domain Reload Profiling: 3393ms
+	BeginReloadAssembly (183ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (5ms)
+	RebuildCommonClasses (41ms)
+	RebuildNativeTypeToScriptingClass (14ms)
+	initialDomainReloadingComplete (73ms)
+	LoadAllAssembliesAndSetupDomain (231ms)
+		LoadAssemblies (175ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (225ms)
+			TypeCache.Refresh (222ms)
+				TypeCache.ScanAssembly (199ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (2851ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (2811ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (2511ms)
+			SetLoadedEditorAssemblies (4ms)
+			BeforeProcessingInitializeOnLoad (91ms)
+			ProcessInitializeOnLoadAttributes (149ms)
+			ProcessInitializeOnLoadMethodAttributes (56ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Application.AssetDatabase Initial Refresh Start
+Package Manager log level set to [2]
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 64 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.addressables@2.3.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.addressables@5d870284b3d9)
+    com.unity.ai.inference@2.6.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.ai.navigation@2.0.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.navigation@5218e4bf7edc)
+    com.unity.collab-proxy@2.10.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collab-proxy@3351acaba9c9)
+    com.unity.ide.rider@3.0.38 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.rider@1f60b3138684)
+    com.unity.ide.visualstudio@2.0.25 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.visualstudio@74aa435fc4bb)
+    com.unity.inputsystem@1.17.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.inputsystem@02433b2481ab)
+    com.unity.localization@1.5.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.localization@f2647f7408bd)
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.timeline@1.8.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.timeline@6b9e48457ddb)
+    com.unity.visualscripting@1.9.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.visualscripting@191c0d7e3b69)
+    com.unity.burst@1.8.26 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.burst@21aa83e7fd8f)
+    com.unity.dt.app-ui@2.1.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.dt.app-ui@8ac7e730dd5d)
+    com.unity.collections@2.6.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collections@aea9d3bd5e19)
+    com.unity.profiling.core@1.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.profiling.core@8a49f7027d06)
+    com.unity.scriptablebuildpipeline@2.4.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.scriptablebuildpipeline@ca3e2d96aa2f)
+    com.unity.searcher@4.9.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.mathematics@1.3.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.mathematics@19a9377c4ffa)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.test-framework.performance@3.2.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework.performance@0840f58e4562)
+  Built-in packages:
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.multiplayer.center@f01f4ba8d00a)
+    com.unity.render-pipelines.universal@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal@66e99ffa09c7)
+    com.unity.test-framework@1.6.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework@0b7a23ab2e1d)
+    com.unity.ugui@2.0.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ugui@52e65280e89e)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.0.5 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ext.nunit@d8c07649098d)
+    com.unity.render-pipelines.core@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.core@ce86d16dfe9d)
+    com.unity.shadergraph@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.shadergraph@3cfe1d1f3f8c)
+    com.unity.render-pipelines.universal-config@17.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal-config@8dc1aab4af1d)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.04 seconds
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+DisplayProgressbar: Compiling Scripts
+ExitCode: 0 Duration: 6s262ms
+[ 896/1159  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1155/1159  3s] Csc Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+[1156/1159  0s] ILPostProcess Library/Bee/artifacts/1900b0aEDbg.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll, with 137 defines and 359 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1157/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[1158/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (6.21 seconds), 5 items updated, 1159 evaluated
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+AssetDatabase: script compilation time: 7.061246s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  2.392 seconds
+Refreshing native plugins compatible for Editor in 5.75 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  8.402 seconds
+Domain Reload Profiling: 10784ms
+	BeginReloadAssembly (323ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (6ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (155ms)
+	RebuildCommonClasses (37ms)
+	RebuildNativeTypeToScriptingClass (13ms)
+	initialDomainReloadingComplete (41ms)
+	LoadAllAssembliesAndSetupDomain (1968ms)
+		LoadAssemblies (1746ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (341ms)
+			TypeCache.Refresh (255ms)
+				TypeCache.ScanAssembly (239ms)
+			BuildScriptInfoCaches (67ms)
+			ResolveRequiredComponents (13ms)
+	FinalizeReload (8403ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (8087ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (48ms)
+			SetLoadedEditorAssemblies (7ms)
+			BeforeProcessingInitializeOnLoad (445ms)
+			ProcessInitializeOnLoadAttributes (7280ms)
+			ProcessInitializeOnLoadMethodAttributes (291ms)
+			AfterProcessingInitializeOnLoad (16ms)
+			EditorAssembliesLoaded (1ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (14ms)
+Refreshing native plugins compatible for Editor in 7.45 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.19 ms.
+Asset Pipeline Refresh (id=e77e6347fa84b9e45b938b6bed2d3fec): Total: 19.974 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=9704 ms
+		Asset DB Callback time: managed=577 ms, native=55 ms
+		Scripting: domain reloads=1, domain reload time=2392 ms, compile time=7063 ms, other=181 ms
+		Project Asset Count: scripts=6378, non-scripts=20290
+		Asset File Changes: new=0, changed=1, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 46.267ms
+	ApplyChangesToAssetFolders: 0.970ms
+	Scan: 447.173ms
+	OnSourceAssetsModified: 0.807ms
+	CategorizeAssetsWithTransientArtifact: 69.321ms
+	ProcessAssetsWithTransientArtifactChanges: 109.210ms
+	CategorizeAssets: 322.891ms
+	ImportOutOfDateAssets: 8435.996ms (1363.375ms without children)
+		CompileScripts: 7062.665ms
+		ReloadNativeAssets: 0.197ms
+		UnloadImportedAssets: 2.225ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 4.942ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 2.591ms
+	PostProcessAllAssets: 579.383ms
+	Hotreload: 10.084ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.003ms
+	UnloadStreamsBegin: 3.930ms
+	PersistCurrentRevisions: 1.217ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 6.283ms
+	Untracked: 9946.487ms
+
+Application.AssetDatabase Initial Refresh End
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+Scanning for USB devices : 2.418ms
+Initializing Unity extensions:
+Script 'Library/PackageCache/com.unity.test-framework@0b7a23ab2e1d/Tests/TestNewCustomAssembly/TestNewCustomAssembly.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/VerifyEditorInPlaymode/Unity.AI.Navigation.Tests.EditorInPlaymode.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.mathematics@19a9377c4ffa/Tests/Unity.Mathematics.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.xml' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/ResourceManager/Unity.ResourceManager.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/DocCodeSamples.Tests/DocCodeSamples.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.dt.app-ui@8ac7e730dd5d/Tests/Runtime/Unity.AppUI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/Unity.Addressables.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/TestAssets/Unity.ScriptableBuildPipelineTests.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.PerformanceTests/Unity.Collections.PerformanceTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/Unity.AI.Navigation.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.timeline@6b9e48457ddb/DocCodeExamples/DocCodeExamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.localization@f2647f7408bd/DocCodeSamples.Tests/DocCodeSamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.multiplayer.center@f01f4ba8d00a/Tests/Runtime/Unity.Multiplayer.Center.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.core@ce86d16dfe9d/Tests/Runtime/Threading/FunctionTestsGroup.compute' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/OffMeshLinkTests/Unity.AI.Navigation.LegacyOffMeshLink.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/UGUI/UnityEngine.UI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.inputsystem@02433b2481ab/Tests/IntegrationTests/Unity.InputSystem.IntegrationTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests.Playmode/FixedListPlayModeTests.tt' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/TMP/Unity.TextMeshPro.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Tests/Runtime/Unity.RenderPipelines.Universal.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/Unity.ScriptableBuildPipeline.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.BurstCompatibilityGen/Unity.Collections.BurstCompatibilityGen.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-MusicGame
+Unloading 62 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 9411 unused Assets / (21.0 MB). Loaded Objects now: 10426.
+Memory consumption went from 335.9 MB to 314.9 MB.
+Total: 16.787400 ms (FindLiveObjects: 0.678500 ms CreateObjectMapping: 0.728100 ms MarkObjects: 10.468600 ms  DeleteObjects: 4.911000 ms)
+
+Start importing Assets/AddressableAssetsData/AssetGroups/Remote_Styles_Visuals.asset using Guid(2a48b5de20081d14db5ed2e765057723) (NativeFormatImporter) -> (artifact id: '6fa561bc35ccc9be9f13ac6e9e16f1f2') in 0.0094971 seconds
+Refreshing native plugins compatible for Editor in 5.82 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=57c5545661e65df468b1cbab2c8597d3): Total: 0.296 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/AddressableAssetsData/AssetGroups/Schemas/Remote_Styles_Visuals_BundledAssetGroupSchema.asset using Guid(903758f85dbfd0b43819cba579fc9a95) (NativeFormatImporter) -> (artifact id: 'f2640027d0f888d8f034fdea43d193a7') in 0.003963 seconds
+Refreshing native plugins compatible for Editor in 5.84 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.11 ms.
+Asset Pipeline Refresh (id=74674e5b5397f1a4d869d65c6b4615e9): Total: 0.088 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing ProjectSettings/EditorBuildSettings.asset using Guid(0000000000000000b000000000000000) (LibraryAssetImporter) -> (artifact id: '11f8fdea987aecd2948effa50908fb0c') in 0.0045881 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Schemas/Remote_Styles_Visuals_BundledAssetGroupSchema.asset using Guid(903758f85dbfd0b43819cba579fc9a95) (NativeFormatImporter) -> (artifact id: 'bf4ecde8e92219fdb2c588679dc3b822') in 0.0034107 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Remote_Styles_Visuals.asset using Guid(2a48b5de20081d14db5ed2e765057723) (NativeFormatImporter) -> (artifact id: 'ebf3580a203218bd0de7dd031317d76e') in 0.00419 seconds
+Start importing Assets/AddressableAssetsData/AddressableAssetSettings.asset using Guid(8a4cc0dfc618f344aaae658dde9bb725) (NativeFormatImporter) -> (artifact id: '6af7207663e5e9343559dacdcf4f99fd') in 0.0125645 seconds
+Refreshing native plugins compatible for Editor in 6.76 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=a627d5a31af14054a9c0927a7ef67947): Total: 0.134 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/AddressableAssetsData/AssetGroups/Schemas/Remote_Styles_Visuals_ContentUpdateGroupSchema.asset using Guid(212db8cdbcc6b74419d939147162f348) (NativeFormatImporter) -> (artifact id: 'bb5bbdde153cf7947f92256d77615108') in 0.0046192 seconds
+Refreshing native plugins compatible for Editor in 5.91 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=c46403a776736cd4e86b1deefc69c667): Total: 0.091 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/AddressableAssetsData/AssetGroups/Schemas/Remote_Styles_Visuals_ContentUpdateGroupSchema.asset using Guid(212db8cdbcc6b74419d939147162f348) (NativeFormatImporter) -> (artifact id: '8443306bbcc6ed90c52a65d30dcd2dca') in 0.0044936 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Remote_Styles_Visuals.asset using Guid(2a48b5de20081d14db5ed2e765057723) (NativeFormatImporter) -> (artifact id: 'ad2cb5eb6ae2aa91f3331aef2b9e74fb') in 0.0036795 seconds
+Refreshing native plugins compatible for Editor in 6.08 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.11 ms.
+Asset Pipeline Refresh (id=ced6c19d4ceaa534b8fc0c0e50a02f6d): Total: 0.085 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/AddressableAssetsData/AssetGroups/Remote_Styles_SurfaceAtlases.asset using Guid(0922a90152fe0134f88fe4a4b3c2b1f5) (NativeFormatImporter) -> (artifact id: 'd89860c3473da8aa617bedbe7858c859') in 0.0041239 seconds
+Refreshing native plugins compatible for Editor in 6.16 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.11 ms.
+Asset Pipeline Refresh (id=17cf25cd0d727aa459b1ef766e7e3bfe): Total: 0.090 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/AddressableAssetsData/AssetGroups/Schemas/Remote_Styles_SurfaceAtlases_BundledAssetGroupSchema.asset using Guid(e4aeb6708368dbc40ab4c11a51125599) (NativeFormatImporter) -> (artifact id: '499ea89e5cf39c25557a30503f5e2bff') in 0.0039174 seconds
+Refreshing native plugins compatible for Editor in 6.65 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=267add30a2af40b4dbd885d624e8eea4): Total: 0.093 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/AddressableAssetsData/AssetGroups/Schemas/Remote_Styles_Visuals_BundledAssetGroupSchema.asset using Guid(903758f85dbfd0b43819cba579fc9a95) (NativeFormatImporter) -> (artifact id: '635ac4d8d47c980b2f06f553e6262ff0') in 0.0049042 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Schemas/Remote_Styles_SurfaceAtlases_BundledAssetGroupSchema.asset using Guid(e4aeb6708368dbc40ab4c11a51125599) (NativeFormatImporter) -> (artifact id: '5f6fc4e073f089f1aa75702d0b4f30a4') in 0.0040423 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Remote_Styles_SurfaceAtlases.asset using Guid(0922a90152fe0134f88fe4a4b3c2b1f5) (NativeFormatImporter) -> (artifact id: '75da3409b99663a56247192508b92dc4') in 0.0042579 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Remote_Styles_Visuals.asset using Guid(2a48b5de20081d14db5ed2e765057723) (NativeFormatImporter) -> (artifact id: 'ad2cb5eb6ae2aa91f3331aef2b9e74fb') in 0.0035852 seconds
+Start importing Assets/AddressableAssetsData/AddressableAssetSettings.asset using Guid(8a4cc0dfc618f344aaae658dde9bb725) (NativeFormatImporter) -> (artifact id: '432f85164818b9dd24cf4f8b99a59044') in 0.0043807 seconds
+Refreshing native plugins compatible for Editor in 7.87 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=e6e18e74b737cde4eb7b11bafea47de3): Total: 0.120 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/AddressableAssetsData/AssetGroups/Schemas/Remote_Styles_SurfaceAtlases_ContentUpdateGroupSchema.asset using Guid(ffaa41c380359c94dbb458702be8e792) (NativeFormatImporter) -> (artifact id: '57c19fc73d3be67fa2d508f87dd856a9') in 0.0050201 seconds
+Refreshing native plugins compatible for Editor in 8.02 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=306e6891fa5c0e24bae12b881e6c5d01): Total: 0.105 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/AddressableAssetsData/AssetGroups/Remote_Styles_SurfaceAtlases.asset using Guid(0922a90152fe0134f88fe4a4b3c2b1f5) (NativeFormatImporter) -> (artifact id: 'fe40a90807e3d5a9ee648d7f8ca6d6bd') in 0.0044516 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Schemas/Remote_Styles_SurfaceAtlases_ContentUpdateGroupSchema.asset using Guid(ffaa41c380359c94dbb458702be8e792) (NativeFormatImporter) -> (artifact id: '756cd4790cec62bfdddb54d1d6ec3a7d') in 0.0042192 seconds
+Refreshing native plugins compatible for Editor in 8.74 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=dc80ef851b7fc7f44a356605e207a10d): Total: 0.111 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=413ec36c7664046449be8f36dbfc6fe4): Total: 0.026 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=5f64d2be562fec74e8c252b6373e5c58): Total: 0.009 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=d24e5284c2552134793bef9ee98c38ed): Total: 0.009 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=7838e10b737bda74ca0065147bdeab3f): Total: 0.008 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=67407fd0251faf047b340d5414929418): Total: 0.008 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=fb7decfc1361fa341ac5a50c9295e48d): Total: 0.009 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=48908a80a638a6e468cdcc02402cb8e3): Total: 0.008 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=7da6b55c517486a46bce8ba860795428): Total: 0.008 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=2eb40a093895ece46bae9b3ccf9ac55b): Total: 0.008 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=c6b15b32557e79d49875b0de60389e93): Total: 0.013 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=932027e2ca0a27b4090c743253b585ed): Total: 0.008 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=e2166241a1b20754eb7dd80874206b08): Total: 0.008 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=0dcc8ee4c33dc2d40bdf043f5def968d): Total: 0.008 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=2af121b505f19de40b32676bd9e51b96): Total: 0.008 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=108648b146c046a4c97029bfa0a185e3): Total: 0.010 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Groove/Groove_1.mat using Guid(6086e4ffe5df5f5489ba7053be011863) (NativeFormatImporter) -> (artifact id: 'ef4060cc62ffe2d615aac7ce6f616af5') in 0.015187 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Heavy/Heavy_3.mat using Guid(c0d6489f2f16c3147ac11e8ce269ced7) (NativeFormatImporter) -> (artifact id: 'cf5dce4eb7ccb6a765714ee519d5a8f2') in 0.0135395 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Experimental/Experimental_1.mat using Guid(f0602fe036927b64fba6c6327d2dfaf1) (NativeFormatImporter) -> (artifact id: 'e883fffe303fff81831632f65b3e3bb5') in 0.0156055 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Dark/Dark_1.mat using Guid(f02552fc3efb74140945b76876aa5601) (NativeFormatImporter) -> (artifact id: '36466b9c56f57cc2c03def6923ddec40') in 0.0131555 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Groove/Groove_3.mat using Guid(21a5aae826c7853479893a695896c128) (NativeFormatImporter) -> (artifact id: 'a6c5b1bd354c74e7936303218bfad737') in 0.0145121 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Soulful/Soulful_1.mat using Guid(31432f11c4650b04caa3839f85445453) (NativeFormatImporter) -> (artifact id: '5648a233ab9cf7d1bd1cf04c9898aeab') in 0.0139808 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Heavy/Heavy_1.mat using Guid(51e91b390d706c8429bef1b56c642359) (NativeFormatImporter) -> (artifact id: '4f5190b43707171f4b6313716f79a460') in 0.0137092 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Dreamy/Dreamy_1.mat using Guid(811ab79b2b631fb49abba8e32724ba0f) (NativeFormatImporter) -> (artifact id: 'cc8f1c3d5c7f25e0c6ef70482732df47') in 0.0138857 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Rock/Rock_1.mat using Guid(b184b04eb00be174eba512089f52a183) (NativeFormatImporter) -> (artifact id: '8e6b699b6b8f29b74514756194334b97') in 0.0135243 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Rock/Rock_2.mat using Guid(d1103cf69ec698d4280087293a9d26e7) (NativeFormatImporter) -> (artifact id: '0e2b6f148d89b00c4603090dea35a826') in 0.0140768 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Dark/Dark_3.mat using Guid(d1a41cb42b6a8ca408c12b37aa1e4fbd) (NativeFormatImporter) -> (artifact id: 'a547085c2dce471243cb55478b78b607') in 0.0141952 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Electronic/Electronic_3.mat using Guid(e150959a8acea8c48bf096a3b402d91c) (NativeFormatImporter) -> (artifact id: 'af2cacd416878f133750de5e1a6edc0e') in 0.0138931 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Rock/Rock_3.mat using Guid(72847941c8a49554cb0beb3abce1ba82) (NativeFormatImporter) -> (artifact id: '1feaefb5682c9448a73b6248d26e139e') in 0.0140325 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Funky/Funky_1.mat using Guid(d261295b1c5083c40b90fd796caea778) (NativeFormatImporter) -> (artifact id: '63e091347fb43762765f25868efeba35') in 0.0148443 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Chill/Chill_3.mat using Guid(d288370b57d570b4e9e2f6dbc1f57ab1) (NativeFormatImporter) -> (artifact id: '3a8862e90b2c0ee9496e953e4d58e540') in 0.0161352 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Dark/Dark_2.mat using Guid(03c1628516ddd704b88b2835a0906ff5) (NativeFormatImporter) -> (artifact id: '87b95ff20c0f87d00b68e73271bd3a3a') in 0.0128634 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Cinematic/Cinematic_2.mat using Guid(73883bdd16e01274a971eaec2c208c34) (NativeFormatImporter) -> (artifact id: '65f80eff5ae5b0dea8d824bb86ad19a0') in 0.013388 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Heavy/Heavy_2.mat using Guid(a39df5a98e0d6d34ba24ae72b112be07) (NativeFormatImporter) -> (artifact id: '59065b4c6effb57ac12ddfcd7127695b') in 0.0126463 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Jazzy/Jazzy_2.mat using Guid(e3c31a0a3d2a567488963c7496de7f3a) (NativeFormatImporter) -> (artifact id: '96cc4d6156754a2fa82232a7d4a7ecca') in 0.0137949 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Dreamy/Dreamy_3.mat using Guid(e33c2c0acccba9345bd5aabcb7842301) (NativeFormatImporter) -> (artifact id: 'a6d45cb46d28175bdd7cb461c1a94c65') in 0.0124186 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Dreamy/Dreamy_2.mat using Guid(e3fda0f187cf2824c8daca942ac938ad) (NativeFormatImporter) -> (artifact id: 'b3709530631ff5dcfaae975dedc9317d') in 0.0134164 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Catchy/Catchy_2.mat using Guid(24c9fd47a0fb5564e9a25084e7d632f3) (NativeFormatImporter) -> (artifact id: 'afdafad74d445f25a19b47718f890608') in 0.01297 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Dance/Dance_3.mat using Guid(646159044cdd95c4a872c157152602ac) (NativeFormatImporter) -> (artifact id: '76e4cff46359014427401c98aec74958') in 0.0130227 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Classical/Classical_1.mat using Guid(94c30a6d44233a04a87023d56fc19618) (NativeFormatImporter) -> (artifact id: '952b7d49d7f90c13273c8ed34d785743') in 0.0129009 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Acoustic/Acoustic_2.mat using Guid(85e4c5b12ab0e774fa32305871d03770) (NativeFormatImporter) -> (artifact id: '3a46d8b2d619d278b331927d6b07317e') in 0.0132478 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Catchy/Catchy_3.mat using Guid(160dc3f8d32bf9d47b8324baba745334) (NativeFormatImporter) -> (artifact id: 'c5db38cc05bd2ce7de9166ec82fae542') in 0.0137139 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Cinematic/Cinematic_1.mat using Guid(6687a035784d5ee4bb58550ec71e92b7) (NativeFormatImporter) -> (artifact id: '1c6194ee913c7273f4d31c81a8683b97') in 0.0141383 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Acoustic/Acoustic_3.mat using Guid(e6d9d343a753ac74293168af2eeb9c5e) (NativeFormatImporter) -> (artifact id: '36a0d5985fce251e1c67272e17457a4a') in 0.0126395 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Chill/Chill_2.mat using Guid(37421b8c0e7859644b69cb43a4204c46) (NativeFormatImporter) -> (artifact id: '8dbbca7d87e5e9b3771ff3fcaa3a486b') in 0.0122571 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Groove/Groove_2.mat using Guid(e7fcd80ef647d89449e2435cd74fd4c5) (NativeFormatImporter) -> (artifact id: '7ca203b92f7b98b97d4daa6447244ea0') in 0.0130136 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Experimental/Experimental_2.mat using Guid(482486c8935ffa241ae88d013279454c) (NativeFormatImporter) -> (artifact id: 'b52dd4dd03291872cff5ccc6393065e4') in 0.0131913 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Dance/Dance_2.mat using Guid(5801cdf5124555e4b9ef1ab1895db63f) (NativeFormatImporter) -> (artifact id: '1407f0c65354148e0bfcbbdfb3cd3bc1') in 0.0142904 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Chill/Chill_1.mat using Guid(685f740edc2b6064a8a69bc7f3c62374) (NativeFormatImporter) -> (artifact id: 'a47fce6d8ff96926c724a31d83608007') in 0.0127288 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Classical/Classical_2.mat using Guid(29e1ddad13dedc84c8af89b987a3bf1f) (NativeFormatImporter) -> (artifact id: 'e6e69b7608ff4f5e082a5420f80cf3cc') in 0.0125838 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Energetic/Energetic_3.mat using Guid(7976c3e15b90ab6429bfcb83c45c193d) (NativeFormatImporter) -> (artifact id: '453b143bca486b95184d16747e11580c') in 0.0130215 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Acoustic/Acoustic_1.mat using Guid(5a9e4dbf4a0421f4bbe1ba516769405d) (NativeFormatImporter) -> (artifact id: 'd39b714a58f4143129b6ebf0d1dfc068') in 0.0136995 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Electronic/Electronic_1.mat using Guid(8a39c0373afd6d4439828eb50676fae0) (NativeFormatImporter) -> (artifact id: '882b337ad5d9a3e8f002ba7f7808f0a1') in 0.014263 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Dance/Dance_1.mat using Guid(9a0add6edc9060a4f899a25e0340feb0) (NativeFormatImporter) -> (artifact id: 'f425a565880f95bb759f7f28ec06055b') in 0.012777 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Jazzy/Jazzy_3.mat using Guid(1b6d858fa7f1aeb468a0e8574415300e) (NativeFormatImporter) -> (artifact id: '2dd9abb79fd0ee6cb1036fc916b20bbc') in 0.0130444 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Soulful/Soulful_3.mat using Guid(cb84004f189d74c4c84f60e6de96ccf0) (NativeFormatImporter) -> (artifact id: 'ccfe033ef4c39c930decfc918a85e6b1') in 0.0135248 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Soulful/Soulful_2.mat using Guid(5cb75588be71b3245b642377734806d1) (NativeFormatImporter) -> (artifact id: '0c16e81dbda0a02ca9c3fec03b41a721') in 0.0155119 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Cinematic/Cinematic_3.mat using Guid(8c5bdb6ad887c66468d5c69507498cc6) (NativeFormatImporter) -> (artifact id: '6d33390ee5962cf269e8b354ac6a9a62') in 0.0158347 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Electronic/Electronic_2.mat using Guid(6d303b6bee2be9c48b292ca7ee7771d5) (NativeFormatImporter) -> (artifact id: '58f517a91c2d8c81e8381d4aab2d13be') in 0.012603 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Experimental/Experimental_3.mat using Guid(bd0cc21f6b726c44983412211e61e0d2) (NativeFormatImporter) -> (artifact id: 'a659636de93d3b3ccbf2f539e278262f') in 0.0129575 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Jazzy/Jazzy_1.mat using Guid(bdcdc232934806b4f8240897736d8677) (NativeFormatImporter) -> (artifact id: '204ce4560fb398ed7d3a394be689f6df') in 0.0130671 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Catchy/Catchy_1.mat using Guid(0e773266768aec44c8c243ca991a5e56) (NativeFormatImporter) -> (artifact id: '0f45439facc9de01b3a4e44c9d151bcd') in 0.0132232 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Funky/Funky_2.mat using Guid(beb59f6f3b6fa484187a1e48992cc5e4) (NativeFormatImporter) -> (artifact id: '4cb7ce8beb2efd3de403534c9d83d07f') in 0.0136217 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Funky/Funky_3.mat using Guid(3fb33ec1de971ea4cae6196e06943e2d) (NativeFormatImporter) -> (artifact id: 'afe1cdf35348939a342f4929dc7543fb') in 0.012853 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Energetic/Energetic_2.mat using Guid(6f36f4cbee2e68b4e9e426e9e7591def) (NativeFormatImporter) -> (artifact id: '6aef672330465023694321d02758fe52') in 0.0131819 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Classical/Classical_3.mat using Guid(8f8e94fcb74896946bc81d44a6488137) (NativeFormatImporter) -> (artifact id: 'ff5c548123f1975724e06f3859e14bfc') in 0.0136289 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/MusicStyles/Energetic/Energetic_1.mat using Guid(ff2986712350b8243b7b7915d82d2893) (NativeFormatImporter) -> (artifact id: '2184bb44fd434bd7770a371001576042') in 0.013287 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Soul/TrackStyle_Soul.asset using Guid(42861765cf6c04640b65ad948bf15862) (NativeFormatImporter) -> (artifact id: '8ac941cc7a0782cdec7849f31e56b5a3') in 0.0127802 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Soul/SoulVisual.asset using Guid(427a5c596645d684797b8a42a0cd11dd) (NativeFormatImporter) -> (artifact id: '6cc61ec8bda58fd4238e0a2daeff0816') in 0.0123779 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Rock/TrackStyle_Rock.asset using Guid(521b7b5bc3f65934f9d24fe9193108f8) (NativeFormatImporter) -> (artifact id: '9a4b1ab23036148bba779fc69cd04b91') in 0.0128038 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Metal/MetalVisual.asset using Guid(a251f468e65630b4dab8332804f11311) (NativeFormatImporter) -> (artifact id: '8a8a61a91c8e3a3955f08f192eaa07d6') in 0.0121977 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/House/HouseVisual.asset using Guid(b3904ce3d1ed2dc479debdfbf3086024) (NativeFormatImporter) -> (artifact id: 'e0132a84094366101eb29318f7c3dcc9') in 0.0129539 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Schemas/Remote_Styles_SurfaceAtlases_BundledAssetGroupSchema.asset using Guid(e4aeb6708368dbc40ab4c11a51125599) (NativeFormatImporter) -> (artifact id: '188ae7dc3cd76bd008a2a7d9c696d5cf') in 0.0043287 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Default Local Group.asset using Guid(1529eaf75b52a6843a4293cc7c6004bd) (NativeFormatImporter) -> (artifact id: '91955e270c015b5bafd6929a2fba6fb1') in 0.0158832 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/HipHop/HipHopVisual.asset using Guid(a59ab8234ee5bcc4fb16845a5317abd6) (NativeFormatImporter) -> (artifact id: '2c2144c2831f1c1576b88fc3c40cf36a') in 0.0137322 seconds
+Start importing Assets/_Project/Configs/Theme/MusicStyleRegistry.asset using Guid(a5bfc59a26f24c95ae0f1d3c436797bb) (NativeFormatImporter) -> (artifact id: '1e2a37c22d997b4f3cb8ea4380ce5fe5') in 0.0038567 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Punk/PunkVisual.asset using Guid(76eb5eeeb201dc9408394744e8349791) (NativeFormatImporter) -> (artifact id: '31c71dc3326ff896c84d94627e79a527') in 0.0135305 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Experimental/ExperimentalVisual.asset using Guid(28913981d054df04bb50d83f6787a57a) (NativeFormatImporter) -> (artifact id: 'e544d39a493dd86131badc5200e09d3d') in 0.0134232 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Metal/TrackStyle_Metal.asset using Guid(381d3181be6962149901e1795167b788) (NativeFormatImporter) -> (artifact id: '16e2467e75ecd2a35229a0d884e2b976') in 0.0134721 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Electronic/TrackStyle_Electronic.asset using Guid(78a8c695d50b37f4b8ff226df47261e5) (NativeFormatImporter) -> (artifact id: '0235fb1a2e2d29ad07ddc4a0671ee93b') in 0.0141435 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Remote_Styles_SurfaceAtlases.asset using Guid(0922a90152fe0134f88fe4a4b3c2b1f5) (NativeFormatImporter) -> (artifact id: 'bbd858300f2ef46035c361a30ecb610b') in 0.003999 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Acoustic/TrackStyle_Acoustic.asset using Guid(09d6699ec459a3c4ab7289bfcbae1464) (NativeFormatImporter) -> (artifact id: 'e5087e3129069be2fd74eb4e53ab3f69') in 0.013278 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Remote_Styles_Visuals.asset using Guid(2a48b5de20081d14db5ed2e765057723) (NativeFormatImporter) -> (artifact id: '3d6c3154a8ef1fa2e972d6ba5341fd98') in 0.0046959 seconds
+Start importing Assets/AddressableAssetsData/AddressableAssetSettings.asset using Guid(8a4cc0dfc618f344aaae658dde9bb725) (NativeFormatImporter) -> (artifact id: '35405984c50d0985862bac347c199b54') in 0.0045802 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Acoustic/AcousticVisual.asset using Guid(3ba085e70e2d9b748a1911baff6a7383) (NativeFormatImporter) -> (artifact id: 'bd0a54b8aa67a6cb1d75f14cd4c56cd5') in 0.0135645 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Jazz/TrackStyle_Jazz.asset using Guid(1c4099ae892ca324283a83b7de481a4d) (NativeFormatImporter) -> (artifact id: '7e6b16c4e59965efd07c78d07929233f') in 0.0139352 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Punk/TrackStyle_Punk.asset using Guid(1c7d2e446dcf6364899ac7e85e89477c) (NativeFormatImporter) -> (artifact id: 'c87a5066388128f91cc40c99a9f12485') in 0.0138589 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Rock/RockVisual.asset using Guid(3c626acd139ada34ea1a22d1e5729670) (NativeFormatImporter) -> (artifact id: '0a4a8a128557dfb0fcd36193f6ddee12') in 0.013007 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Funk/FunkVisual.asset using Guid(4c97cca8af4647789e370f17c50331c3) (NativeFormatImporter) -> (artifact id: 'f30a4fcbe45457386a9912ba4aba0dc5') in 0.0041215 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Pop/TrackStyle_Pop.asset using Guid(6c065b5c61c871542a0ddb4b1c321b18) (NativeFormatImporter) -> (artifact id: '0062d29c83aef1395365aa793a83cfbd') in 0.0132386 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Jazz/JazzVisual.asset using Guid(6c7a8cd2298cb784aa016786b799d386) (NativeFormatImporter) -> (artifact id: '5ad706eb6108dc7445aff70a71eaed6e') in 0.0129732 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Funk/TrackStyle_Funk.asset using Guid(bc08dc29c0a55ad489628014023b0f0f) (NativeFormatImporter) -> (artifact id: 'cd6c901abee0834257cc65cb2cb89147') in 0.0126505 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Ambient/TrackStyle_Ambient.asset using Guid(dc52b3501e95a434497f45bf05284eb5) (NativeFormatImporter) -> (artifact id: '0724c6e6bc6d5a4a79841d0b1c2efe20') in 0.0128369 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Blues/BluesVisual.asset using Guid(dcdf77bf5997d8a488ee04da34769961) (NativeFormatImporter) -> (artifact id: '1001941ea6429241ed86be83209c353f') in 0.0132783 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/House/TrackStyle_House.asset using Guid(4d017b54954b8bc48a66010efc0972a7) (NativeFormatImporter) -> (artifact id: 'f7f6232f9a72de8e6ba44baafa36cad4') in 0.0149733 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Ambient/AmbientVisual.asset using Guid(fdb5695eb67628347a11ba7dc65db4a8) (NativeFormatImporter) -> (artifact id: 'e06a75617d368e28e19772e4107b2ee0') in 0.0163087 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Classical/ClassicalVisual.asset using Guid(8eaece93114ce9143a99d3d075327b9b) (NativeFormatImporter) -> (artifact id: 'dd28147b4ec6933fed1cc851ce173222') in 0.0167638 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Pop/PopVisual.asset using Guid(9ee852dbbab079943adcabdbd6a5f34d) (NativeFormatImporter) -> (artifact id: '870acf5fc30e2631039e1a8df21d7d67') in 0.0160237 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/HipHop/TrackStyle_HipHop.asset using Guid(ee77d69264d302643aaf748cc2659885) (NativeFormatImporter) -> (artifact id: '2c22e15ff660924c70f63feb98c8ae55') in 0.0153253 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Electronic/ElectronicVisual.asset using Guid(fef82a17aea46c245a1a9dd5864b46ad) (NativeFormatImporter) -> (artifact id: '3812ef0fa971977b588c1afa02dd6607') in 0.0152979 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Blues/TrackStyle_Blues.asset using Guid(feda69c8acc41b84f83c5947bc37c2db) (NativeFormatImporter) -> (artifact id: '1415d3696fd48a59d2591cdf6cb89ea3') in 0.0162298 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Experimental/TrackStyle_Experimental.asset using Guid(2f5acc58591088a4cb617540faf9c0bd) (NativeFormatImporter) -> (artifact id: 'e618ac99931d26427d830cda52c506b0') in 0.0169317 seconds
+Start importing Assets/_Project/Configs/Theme/Styles/Classical/TrackStyle_Classical.asset using Guid(8f68312a54ce88c46aa5ff26b93fb43d) (NativeFormatImporter) -> (artifact id: '3a35036305d948cc4ec0ae4c350225a6') in 0.0187652 seconds
+Refreshing native plugins compatible for Editor in 8.69 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.17 ms.
+Asset Pipeline Refresh (id=804aa4fc7ef1d2640800b53d42cabc3a): Total: 1.443 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+	Summary:
+		Imports: total=87 (actual=87, local cache=0, cache server=0)
+		Asset DB Process Time: managed=9 ms, native=1317 ms
+		Asset DB Callback time: managed=104 ms, native=11 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=6378, non-scripts=20296
+		Asset File Changes: new=0, changed=7, moved=0, deleted=0
+		Scan Filter Count: 130
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 0.001ms
+	ApplyChangesToAssetFolders: 0.123ms
+	Scan: 24.137ms
+	OnSourceAssetsModified: 0.089ms
+	CategorizeAssetsWithTransientArtifact: 0.116ms
+	ProcessAssetsWithTransientArtifactChanges: 0.068ms
+	CategorizeAssets: 36.711ms
+	ImportOutOfDateAssets: 1250.770ms (2.032ms without children)
+		ImportManagerImport: 1240.614ms (34.877ms without children)
+			ImportInProcess: 1204.074ms
+			UpdateCategorizedAssets: 1.663ms
+		ReloadNativeAssets: 1.127ms
+		UnloadImportedAssets: 0.344ms
+		ReloadImportedAssets: 0.010ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 5.150ms
+		InitializingProgressBar: 0.009ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.002ms
+		OnDemandSchedulerStart: 1.482ms
+	PostProcessAllAssets: 107.451ms
+	Hotreload: 9.236ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.287ms
+	UnloadStreamsBegin: 0.015ms
+	PersistCurrentRevisions: 1.732ms
+	UnloadStreamsEnd: 0.419ms
+	Untracked: 11.272ms
+
+[RunnerSurface] Editor play-mode content source: BuildScriptFastMode
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+RunnerSurfaceIntegration:InstallAndVerify () (at Assets/_Project/Scripts/Editor/DevTools/RunnerSurfaceIntegration.cs:75)
+
+(Filename: Assets/_Project/Scripts/Editor/DevTools/RunnerSurfaceIntegration.cs Line: 75)
+
+PASS: 17 gameplay styles / 51 materials connected through existing MusicStyleRegistry → MusicStyleVisual → TrackStyle. Seed stability, saved-run restore, null fallback, style isolation, selection variety, random-state isolation, theme resolution and actual world material cloning verified. 2026-11-14T00:59:12.6446824Z
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+RunnerSurfaceIntegration:InstallAndVerify () (at Assets/_Project/Scripts/Editor/DevTools/RunnerSurfaceIntegration.cs:78)
+
+(Filename: Assets/_Project/Scripts/Editor/DevTools/RunnerSurfaceIntegration.cs Line: 78)
+
+Batchmode quit successfully invoked - shutting down!
+Killing ADB server in 0,08959 seconds.
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-VISYON-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-VISYON channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+01:59:13.793 |V| RiderPlugin                    | :1                             | AppDomain.CurrentDomain.DomainUnload lifetimeDefinition.Terminate
+Exiting batchmode successfully now!
+Exiting without the bug reporter. Application will terminate with return code 0

@@ -31,6 +31,27 @@ MonoBehaviour:
     - PlayerClothing_experimental_jacket
     - Q_High
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 11111c81c05e75149a0b43369c157758
+    m_Address: PlayerClothing_classical_gloves/Wearable_classical_gloves/sharedVariant/qualityPrefabs@High
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Category_PlayerClothing
+    - Enemy_bach
+    - Enemy_beethoven
+    - Enemy_brahms
+    - Enemy_chopin
+    - Enemy_handel
+    - Enemy_haydn
+    - Enemy_monteverdi
+    - Enemy_mozart
+    - Enemy_pachelbel
+    - Enemy_tchaikovsky
+    - Enemy_vivaldi
+    - Enemy_wagner
+    - PlayerClothing_classical_gloves
+    - Q_High
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 161313f720c9b0145b6a7dbbe3f94599
     m_Address: PlayerClothing_dance_jacket/Wearable_dance_jacket/sharedVariant/qualityPrefabs@High
     m_ReadOnly: 0
@@ -117,6 +138,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_heavy_trousers_belt_chain
+    - Q_High
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 33038c2260a797341b6d7aa91ee69192
+    m_Address: PlayerClothing_dance_trousers/Wearable_dance_trousers/sharedVariant/qualityPrefabs@High
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_dance_trousers
     - Q_High
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 33fe429e0d2d7de44a609996f9bdddac
@@ -375,6 +404,14 @@ MonoBehaviour:
     - PlayerClothing_electronic_trousers
     - Q_High
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b2257d4ce04910c449a03aed513d72e1
+    m_Address: PlayerClothing_fight_gloves/Wearable_fight_gloves/sharedVariant/qualityPrefabs@High
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_fight_gloves
+    - Q_High
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b54bcce80116a684f9c22a60fe1230e7
     m_Address: PlayerClothing_experimental_trousers/Wearable_experimental_trousers/sharedVariant/qualityPrefabs@High
     m_ReadOnly: 0
@@ -557,6 +594,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_cinematic_shirt
+    - Q_High
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e44d72988a21a46439bae65e0ef686eb
+    m_Address: PlayerClothing_groove_sweater/Wearable_groove_sweater/sharedVariant/qualityPrefabs@High
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_groove_sweater
     - Q_High
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ec0e5ad3ac1f2e744886b4064a0b8d08

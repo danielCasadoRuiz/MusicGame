@@ -40,6 +40,10 @@ public class SceneFlowController : MonoBehaviour, IAppModule
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
     private bool _modeTransitionInProgress;
     public bool IsModeTransitionInProgress => _modeTransitionInProgress;
+    private SceneTransitionFrame _transitionFrame;
+    public bool IsTransitionFrameVisible => _transitionFrame != null && _transitionFrame.IsVisible;
+    public void ReleaseTransitionFrame() => _transitionFrame?.Release();
+    public void RevealMenuOverTransitionFrame() => _transitionFrame?.RevealMenu();
 
     void IAppModule.Initialize(AppContext context)
     {
@@ -52,6 +56,7 @@ public class SceneFlowController : MonoBehaviour, IAppModule
         // "unload" branch of its own.
         _onFlowStateChanged = e =>
         {
+            if (e.Current != GameFlowState.MainMenu) ReleaseTransitionFrame();
             var mode = ModeFor(e.Current);
             if (mode.HasValue && CurrentMode != mode.Value)
                 StartCoroutine(LoadMode(mode.Value));
@@ -62,6 +67,7 @@ public class SceneFlowController : MonoBehaviour, IAppModule
     void IAppModule.Shutdown()
     {
         EventBus.Unsubscribe(_onFlowStateChanged);
+        ReleaseTransitionFrame();
     }
 
     // Boot/Intro/MainMenu/SongSelection/SongAnalysis all live in Frontend — SongAnalysis
@@ -111,7 +117,13 @@ public class SceneFlowController : MonoBehaviour, IAppModule
         if (CurrentMode == mode) yield break;
         _modeTransitionInProgress = true;
         try { yield return LoadModeCore(mode); }
-        finally { _modeTransitionInProgress = false; }
+        finally
+        {
+            _modeTransitionInProgress = false;
+            if (CurrentMode != GameMode.Frontend ||
+                (AppFlowController.Instance != null && AppFlowController.Instance.CurrentState != GameFlowState.MainMenu))
+                ReleaseTransitionFrame();
+        }
     }
 
     private IEnumerator LoadModeCore(GameMode mode)
@@ -133,6 +145,11 @@ public class SceneFlowController : MonoBehaviour, IAppModule
         }
         var previousMode = CurrentMode;
         bool releaseBeforeLoad = previousMode == GameMode.Fight || previousMode == GameMode.Runner;
+        if (releaseBeforeLoad && mode == GameMode.Frontend)
+        {
+            if (_transitionFrame == null) _transitionFrame = gameObject.AddComponent<SceneTransitionFrame>();
+            yield return _transitionFrame.Capture();
+        }
         if (releaseBeforeLoad)
         {
             // Loading the next scene runs its Awake/avatar construction before LoadSceneAsync

@@ -1,0 +1,1490 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.2f1 (a9779f353c9b) revision 11106207'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) 64bit Professional' Language: 'es' Physical Memory: 32388 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON" at "2026-11-16T13:04:16.8737335Z"
+Date: 2026-11-16T13:04:16Z
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Unity.exe
+-batchmode
+-projectPath
+C:\Users\VISYON\Documents\MusicGame\MusicGame
+-executeMethod
+SegmentedOutfitSetup.RunFromCommandLine
+-onlyPieces
+Groove_sweater
+-validateWearableDelivery
+-logFile
+C:\Users\VISYON\Documents\MusicGame\outfit-six-validation-final-20261116.log
+Successfully changed project path to: C:\Users\VISYON\Documents\MusicGame\MusicGame
+C:/Users/VISYON/Documents/MusicGame/MusicGame
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [27068]  Target information:
+
+Player connection [27068]  * "[IP] 192.168.1.15 [Port] 55504 [Flags] 2 [Guid] 2594293390 [EditorId] 2594293390 [Version] 1048832 [Id] WindowsEditor(7,RemoteDani) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [27068] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [27068] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-37400" after 0.3 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              852d7265402a43adb18c17320f959d32
+  Correlation Id:          7f7ecca5a2e297700e2028d0c0579c52
+  External correlation Id: 2003102600315203731
+  Machine Id:              x99c5MRpHgESOtEUeZ1qua+TIa8=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-VISYON" (connect: 0.00s, validation: 0.00s, handshake: 1.23s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON-notifications" at "2026-11-16T13:04:18.1055604Z"
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.00
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Module] Licensing Background thread has ended after 1.25s
+[Licensing::Module] Licensing is initialized (took 0.41s).
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Refreshing native plugins compatible for Editor in 1.04 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.2f1 (a9779f353c9b)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/VISYON/Documents/MusicGame/MusicGame/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3070 Laptop GPU (ID=0x249d)
+    Vendor:   NVIDIA
+    VRAM:     8020 MB
+    Driver:   32.0.15.8142
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56400
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/MetroSupport/UnityEditor.UWP.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+Registered in 0.020283 seconds.
+- Loaded All Assemblies, in  0.473 seconds
+Native extension for Android target not found
+Android Extension - Scanning For ADB Devices 2393 ms
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  3.078 seconds
+Domain Reload Profiling: 3546ms
+	BeginReloadAssembly (158ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (13ms)
+	RebuildCommonClasses (36ms)
+	RebuildNativeTypeToScriptingClass (13ms)
+	initialDomainReloadingComplete (74ms)
+	LoadAllAssembliesAndSetupDomain (188ms)
+		LoadAssemblies (142ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (183ms)
+			TypeCache.Refresh (181ms)
+				TypeCache.ScanAssembly (167ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (3079ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (3043ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (2555ms)
+			SetLoadedEditorAssemblies (9ms)
+			BeforeProcessingInitializeOnLoad (167ms)
+			ProcessInitializeOnLoadAttributes (228ms)
+			ProcessInitializeOnLoadMethodAttributes (84ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Application.AssetDatabase Initial Refresh Start
+Package Manager log level set to [2]
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 64 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.addressables@2.3.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.addressables@5d870284b3d9)
+    com.unity.ai.inference@2.6.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.ai.navigation@2.0.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.navigation@5218e4bf7edc)
+    com.unity.collab-proxy@2.10.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collab-proxy@3351acaba9c9)
+    com.unity.ide.rider@3.0.38 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.rider@1f60b3138684)
+    com.unity.ide.visualstudio@2.0.25 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.visualstudio@74aa435fc4bb)
+    com.unity.inputsystem@1.17.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.inputsystem@02433b2481ab)
+    com.unity.localization@1.5.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.localization@f2647f7408bd)
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.timeline@1.8.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.timeline@6b9e48457ddb)
+    com.unity.visualscripting@1.9.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.visualscripting@191c0d7e3b69)
+    com.unity.burst@1.8.26 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.burst@21aa83e7fd8f)
+    com.unity.dt.app-ui@2.1.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.dt.app-ui@8ac7e730dd5d)
+    com.unity.collections@2.6.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collections@aea9d3bd5e19)
+    com.unity.profiling.core@1.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.profiling.core@8a49f7027d06)
+    com.unity.scriptablebuildpipeline@2.4.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.scriptablebuildpipeline@ca3e2d96aa2f)
+    com.unity.searcher@4.9.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.mathematics@1.3.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.mathematics@19a9377c4ffa)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.test-framework.performance@3.2.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework.performance@0840f58e4562)
+  Built-in packages:
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.multiplayer.center@f01f4ba8d00a)
+    com.unity.render-pipelines.universal@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal@66e99ffa09c7)
+    com.unity.test-framework@1.6.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework@0b7a23ab2e1d)
+    com.unity.ugui@2.0.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ugui@52e65280e89e)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.0.5 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ext.nunit@d8c07649098d)
+    com.unity.render-pipelines.core@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.core@ce86d16dfe9d)
+    com.unity.shadergraph@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.shadergraph@3cfe1d1f3f8c)
+    com.unity.render-pipelines.universal-config@17.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal-config@8dc1aab4af1d)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.15 seconds
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+DisplayProgressbar: Compiling Scripts
+ExitCode: 0 Duration: 7s417ms
+[ 896/1159  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1155/1159  4s] Csc Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+[1156/1159  0s] ILPostProcess Library/Bee/artifacts/1900b0aEDbg.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll, with 137 defines and 359 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1157/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[1158/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (7.34 seconds), 5 items updated, 1159 evaluated
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+AssetDatabase: script compilation time: 8.367644s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  2.274 seconds
+Refreshing native plugins compatible for Editor in 7.35 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  9.589 seconds
+Domain Reload Profiling: 11854ms
+	BeginReloadAssembly (314ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (11ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (150ms)
+	RebuildCommonClasses (35ms)
+	RebuildNativeTypeToScriptingClass (11ms)
+	initialDomainReloadingComplete (39ms)
+	LoadAllAssembliesAndSetupDomain (1866ms)
+		LoadAssemblies (1583ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (396ms)
+			TypeCache.Refresh (300ms)
+				TypeCache.ScanAssembly (281ms)
+			BuildScriptInfoCaches (74ms)
+			ResolveRequiredComponents (16ms)
+	FinalizeReload (9590ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (9203ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (83ms)
+			SetLoadedEditorAssemblies (11ms)
+			BeforeProcessingInitializeOnLoad (464ms)
+			ProcessInitializeOnLoadAttributes (8433ms)
+			ProcessInitializeOnLoadMethodAttributes (196ms)
+			AfterProcessingInitializeOnLoad (16ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (10ms)
+Refreshing native plugins compatible for Editor in 7.19 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=d33b242a3ed26bf4ab3079a7b829218b): Total: 22.669 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=11045 ms
+		Asset DB Callback time: managed=534 ms, native=170 ms
+		Scripting: domain reloads=1, domain reload time=2275 ms, compile time=8369 ms, other=273 ms
+		Project Asset Count: scripts=6447, non-scripts=20476
+		Asset File Changes: new=0, changed=1, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 161.914ms
+	ApplyChangesToAssetFolders: 0.780ms
+	Scan: 522.004ms
+	OnSourceAssetsModified: 0.829ms
+	CategorizeAssetsWithTransientArtifact: 81.542ms
+	ProcessAssetsWithTransientArtifactChanges: 110.950ms
+	CategorizeAssets: 257.752ms
+	ImportOutOfDateAssets: 9629.209ms (1246.992ms without children)
+		CompileScripts: 8369.088ms
+		ReloadNativeAssets: 0.241ms
+		UnloadImportedAssets: 2.969ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 6.019ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 3.898ms
+	PostProcessAllAssets: 536.726ms
+	Hotreload: 9.307ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.003ms
+	UnloadStreamsBegin: 3.826ms
+	PersistCurrentRevisions: 1.327ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 4.578ms
+	Untracked: 11352.400ms
+
+Application.AssetDatabase Initial Refresh End
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+Scanning for USB devices : 2.431ms
+Initializing Unity extensions:
+Script 'Library/PackageCache/com.unity.test-framework@0b7a23ab2e1d/Tests/TestNewCustomAssembly/TestNewCustomAssembly.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/VerifyEditorInPlaymode/Unity.AI.Navigation.Tests.EditorInPlaymode.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.mathematics@19a9377c4ffa/Tests/Unity.Mathematics.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.xml' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/ResourceManager/Unity.ResourceManager.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/DocCodeSamples.Tests/DocCodeSamples.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.dt.app-ui@8ac7e730dd5d/Tests/Runtime/Unity.AppUI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/Unity.Addressables.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/TestAssets/Unity.ScriptableBuildPipelineTests.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.PerformanceTests/Unity.Collections.PerformanceTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/Unity.AI.Navigation.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.timeline@6b9e48457ddb/DocCodeExamples/DocCodeExamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.localization@f2647f7408bd/DocCodeSamples.Tests/DocCodeSamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.multiplayer.center@f01f4ba8d00a/Tests/Runtime/Unity.Multiplayer.Center.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.core@ce86d16dfe9d/Tests/Runtime/Threading/FunctionTestsGroup.compute' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/OffMeshLinkTests/Unity.AI.Navigation.LegacyOffMeshLink.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/UGUI/UnityEngine.UI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.inputsystem@02433b2481ab/Tests/IntegrationTests/Unity.InputSystem.IntegrationTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests.Playmode/FixedListPlayModeTests.tt' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/TMP/Unity.TextMeshPro.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Tests/Runtime/Unity.RenderPipelines.Universal.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/Unity.ScriptableBuildPipeline.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.BurstCompatibilityGen/Unity.Collections.BurstCompatibilityGen.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-MusicGame
+Unloading 61 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 9435 unused Assets / (20.2 MB). Loaded Objects now: 10464.
+Memory consumption went from 341.9 MB to 321.7 MB.
+Total: 29.145000 ms (FindLiveObjects: 1.066500 ms CreateObjectMapping: 1.450100 ms MarkObjects: 19.571000 ms  DeleteObjects: 7.055400 ms)
+
+Start importing Assets/_Project/Art/Player/Groove/Groove_sweater/Low/Groove_sweater_Low_occlusion.bytes using Guid(a01039cb07f4c7f468affeeb3cde2cc6) (TextScriptImporter) -> (artifact id: '0d6b3d4db8625b5e3cc85bbcf61375bf') in 0.0110611 seconds
+Refreshing native plugins compatible for Editor in 6.42 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=757c5e281e6870947bf6687e2d3cc507): Total: 0.316 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+	Summary:
+		Imports: total=1 (actual=1, local cache=0, cache server=0)
+		Asset DB Process Time: managed=2 ms, native=291 ms
+		Asset DB Callback time: managed=4 ms, native=18 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=6447, non-scripts=20476
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 8
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 0.001ms
+	ApplyChangesToAssetFolders: 0.218ms
+	Scan: 46.500ms
+	OnSourceAssetsModified: 0.001ms
+	CategorizeAssetsWithTransientArtifact: 0.026ms
+	ProcessAssetsWithTransientArtifactChanges: 0.127ms
+	CategorizeAssets: 179.348ms
+	ImportOutOfDateAssets: 22.242ms (1.946ms without children)
+		ImportManagerImport: 14.324ms (2.699ms without children)
+			ImportInProcess: 11.587ms
+			UpdateCategorizedAssets: 0.037ms
+		ReloadNativeAssets: 0.389ms
+		UnloadImportedAssets: 0.197ms
+		ReloadImportedAssets: 0.000ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 3.782ms
+		InitializingProgressBar: 0.006ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 1.597ms
+	PostProcessAllAssets: 15.513ms
+	Hotreload: 6.984ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.344ms
+	UnloadStreamsBegin: 2.239ms
+	PersistCurrentRevisions: 1.356ms
+	UnloadStreamsEnd: 0.007ms
+	Untracked: 40.538ms
+
+Loaded scene 'Library/Unused/59f6f5e59561eab4499c85d10a83333c'
+	Deserialize:            1.924 ms
+	Integration:            0.556 ms
+	Integration of assets:  0.005 ms
+	Thread Wait Time:       0.011 ms
+	Total Operation Time:   2.497 ms
+Asset Pipeline Refresh (id=c0b7de5eba6d6b34f995584682949dd8): Total: 0.018 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/Player/Groove/Groove_sweater/Mid/Groove_sweater_Mid_occlusion.bytes using Guid(3fb0da8e807170e4a882abe535de8d35) (TextScriptImporter) -> (artifact id: '3991c6bcc961dc74d394e3f4fb51d680') in 0.0040886 seconds
+Refreshing native plugins compatible for Editor in 9.87 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=ed65dda0de0941047857cc2aae4328dc): Total: 0.095 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Loaded scene 'Library/Unused/ea52cf85cf1a79541896dfc16d1ec4e7'
+	Deserialize:            1.382 ms
+	Integration:            0.255 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.059 ms
+	Total Operation Time:   1.698 ms
+Asset Pipeline Refresh (id=bd18c6a22c914fe48b872834a6468606): Total: 0.028 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/Player/Groove/Groove_sweater/HighMid/Groove_sweater_HighMid_occlusion.bytes using Guid(db7d9bc608ffc894c983f31c76d71dc0) (TextScriptImporter) -> (artifact id: '28394268580b0cf001861020892c67b8') in 0.005324 seconds
+Refreshing native plugins compatible for Editor in 9.70 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.19 ms.
+Asset Pipeline Refresh (id=4cc4a93f5268a2c4ba10a7db88574876): Total: 0.347 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+	Summary:
+		Imports: total=1 (actual=1, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=331 ms
+		Asset DB Callback time: managed=2 ms, native=12 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=6447, non-scripts=20476
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 8
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 0.001ms
+	ApplyChangesToAssetFolders: 0.150ms
+	Scan: 286.970ms
+	OnSourceAssetsModified: 0.001ms
+	CategorizeAssetsWithTransientArtifact: 0.018ms
+	ProcessAssetsWithTransientArtifactChanges: 0.164ms
+	CategorizeAssets: 11.430ms
+	ImportOutOfDateAssets: 18.302ms (2.117ms without children)
+		ImportManagerImport: 8.521ms (1.872ms without children)
+			ImportInProcess: 6.593ms
+			UpdateCategorizedAssets: 0.055ms
+		ReloadNativeAssets: 0.439ms
+		UnloadImportedAssets: 0.363ms
+		ReloadImportedAssets: 0.000ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 5.136ms
+		InitializingProgressBar: 0.008ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 1.718ms
+	PostProcessAllAssets: 4.859ms
+	Hotreload: 10.216ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.498ms
+	UnloadStreamsBegin: 0.102ms
+	PersistCurrentRevisions: 1.644ms
+	UnloadStreamsEnd: 0.002ms
+	Untracked: 11.182ms
+
+Loaded scene 'Library/Unused/b226a797a939b9f48bcfa71e76572dd9'
+	Deserialize:            1.992 ms
+	Integration:            0.329 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.030 ms
+	Total Operation Time:   2.353 ms
+Asset Pipeline Refresh (id=2f560fdf7f3486b4eb95d095fe337adf): Total: 0.115 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/Player/Groove/Groove_sweater/High/Groove_sweater_High_occlusion.bytes using Guid(ec09352ad687df2479c3e125b164409f) (TextScriptImporter) -> (artifact id: 'c100115ccb607596a9c96712be9fc29a') in 0.0040753 seconds
+Refreshing native plugins compatible for Editor in 6.50 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.12 ms.
+Asset Pipeline Refresh (id=fa8817204b703af498ae5e8b3d2841f6): Total: 0.083 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Loaded scene 'Library/Unused/235abbc1b1c7dad4dadd42d145d53449'
+	Deserialize:            1.117 ms
+	Integration:            0.208 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.017 ms
+	Total Operation Time:   1.344 ms
+Asset Pipeline Refresh (id=dc4b51f97bb4b334c8b66fd6f2befbd3): Total: 0.023 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/Player/Groove/Groove_sweater/Ultra/Groove_sweater_Ultra_occlusion.bytes using Guid(1ec4e665e2904744e9448e54f2182d1b) (TextScriptImporter) -> (artifact id: '037170a993b299d1d14c15574b856956') in 0.0056142 seconds
+Refreshing native plugins compatible for Editor in 13.37 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.26 ms.
+Asset Pipeline Refresh (id=6cd63cba2d15eac4a80d550ca25d7669): Total: 0.102 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Loaded scene 'Library/Unused/13ad9ce0bba244046bfa1fc76fcf0460'
+	Deserialize:            2.289 ms
+	Integration:            0.396 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.031 ms
+	Total Operation Time:   2.717 ms
+Asset Pipeline Refresh (id=01a6950f941bfb64b8604a8cff040745): Total: 0.044 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=f9e18bbed9b321a4ba03aedeed293d53): Total: 0.004 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=e297dc6574a1d6441827d5970121f630): Total: 0.003 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing ProjectSettings/EditorBuildSettings.asset using Guid(0000000000000000b000000000000000) (LibraryAssetImporter) -> (artifact id: '11f8fdea987aecd2948effa50908fb0c') in 0.0121717 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Garments/Garment_groove_sweater.asset using Guid(f5681898a1a359841bd5455fd684cd4d) (NativeFormatImporter) -> (artifact id: '84b3e55c6c2f2efe621b0366fe0788ea') in 0.0058599 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Items/Wearable_Groove_sweater.asset using Guid(9747f02af5f122e458d0f76d81fb15a0) (NativeFormatImporter) -> (artifact id: 'f1b10a279af345b9c0acb5a1276769cd') in 0.0057338 seconds
+Refreshing native plugins compatible for Editor in 13.26 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.47 ms.
+Asset Pipeline Refresh (id=eb59d7e7f814ec74d801893afe7b8cb0): Total: 0.174 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 1489 unused Assets / (496.5 KB). Loaded Objects now: 10476.
+Memory consumption went from 355.5 MB to 355.0 MB.
+Total: 20.088500 ms (FindLiveObjects: 0.678400 ms CreateObjectMapping: 0.814300 ms MarkObjects: 17.212000 ms  DeleteObjects: 1.381400 ms)
+
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Dark.asset using Guid(10b73f72003f8fa4b907647164fbabaa) (NativeFormatImporter) -> (artifact id: '5be1ef50510de70102fe0f30dea2f74a') in 0.0043823 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Haydn.asset using Guid(9027677e3fcbcdc48b06665831fdcc5a) (NativeFormatImporter) -> (artifact id: '816f0c97123a533cab1a35359d2afcb7') in 0.0084506 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Haydn.asset using Guid(3184c966ae4871142a48da865dc8c06a) (NativeFormatImporter) -> (artifact id: '8e28753b671521a68430021c73316350') in 0.0047845 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Wagner.asset using Guid(4171ab1929a1e714da86ef33553e069e) (NativeFormatImporter) -> (artifact id: 'afb37d81cfa90e73f87bd4821a1cc315') in 0.0037203 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Chopin.asset using Guid(416b036510376c64f9829a9865fec787) (NativeFormatImporter) -> (artifact id: '6078f2eb536480690459d9b1c3486387') in 0.0040583 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Heavy.asset using Guid(d112aa6ad931da443bc8cf9aea28092f) (NativeFormatImporter) -> (artifact id: '2d458b320672e9a8f446f68e75ec6602') in 0.003855 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Groove.asset using Guid(32c10662440706448a3d56e1bcbbe696) (NativeFormatImporter) -> (artifact id: 'd1c2579e9cb282a400debe6f9199b3e2') in 0.0038997 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Wagner.asset using Guid(d25906c655f2c7544a45c69319b9f91d) (NativeFormatImporter) -> (artifact id: '35235b43120979bc6895f1f103b4ce7f') in 0.0036957 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Funky.asset using Guid(b3808915cb63ee44dad227ee77e6a9df) (NativeFormatImporter) -> (artifact id: 'aea3ef4f092129fad8219e35f2a86464') in 0.0083523 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Cinematic.asset using Guid(c306cc4bc7d5e104f8475457c49b087f) (NativeFormatImporter) -> (artifact id: 'bc3bdc048b1fdd1403cfdd277e77b63b') in 0.0036877 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Dance.asset using Guid(54c196c3f1efc8444808867b4359820b) (NativeFormatImporter) -> (artifact id: 'fa75787f3a18d8cd4e1980f7bfee5323') in 0.0040598 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Classical.asset using Guid(9408b142886063e4e9e107f45db4c428) (NativeFormatImporter) -> (artifact id: 'f2e3f90b9bafc8fcd2baee22d1959780') in 0.0042234 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Monteverdi.asset using Guid(e4cc1d30ad8d38b45b49cd7b160ba0fd) (NativeFormatImporter) -> (artifact id: 'fcd242500c1dcf5568c761299fa9c306') in 0.0043345 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Pachelbel.asset using Guid(656f0b01d64201042aad0608eb4b3175) (NativeFormatImporter) -> (artifact id: 'b6cfb96a39e5a3b0be6551ef6f68b068') in 0.0042216 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Mozart.asset using Guid(163d50509c11621428db2cca9c185f13) (NativeFormatImporter) -> (artifact id: '6f19facfa0cd3a4a761dd6ad13552dc1') in 0.0041339 seconds
+Start importing Assets/_Project/Configs/Player/PlayerAvatarConfig.asset using Guid(277f13c89f6de3d4786000c86fcebfdd) (NativeFormatImporter) -> (artifact id: 'e2fc321848a30bd230c98b8d77ca3f8c') in 0.0082279 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Catchy.asset using Guid(87f306f436394f747aa4554e1f8779b7) (NativeFormatImporter) -> (artifact id: '878f1babae8a5dfec9f8b0d6c595cce2') in 0.0041562 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Acoustic.asset using Guid(e7cd988c9b302974691ca71ae2c0a1ee) (NativeFormatImporter) -> (artifact id: '469a4283e33e420e9570304d91951d7b') in 0.0047716 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Dreamy.asset using Guid(2892a0de1ddf98442902e4ca5403a0dc) (NativeFormatImporter) -> (artifact id: '97400264e14809ab10822c2f27cfb00c') in 0.0043863 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Rock.asset using Guid(a81c9e93143b90c418af6855fc78bb94) (NativeFormatImporter) -> (artifact id: 'a823e82e00968ef36108a0840e74b2ef') in 0.0039766 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Handel.asset using Guid(e81679ed2fcf482459911c022773180b) (NativeFormatImporter) -> (artifact id: 'ee3ca020da2c8532198eaf5ea189c760') in 0.0040664 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Experimental.asset using Guid(5929bb8e3d31a954cae561a948307598) (NativeFormatImporter) -> (artifact id: '7ad921769bdf77e78fc22220b43d95e2') in 0.0038982 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Monteverdi.asset using Guid(79847c84a610e194dbf8b5a7258b8423) (NativeFormatImporter) -> (artifact id: '94767632166f171393418a4366768a76') in 0.0129867 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Bach.asset using Guid(a92b1e973e6dcdd448eee4cb3ce52319) (NativeFormatImporter) -> (artifact id: '16298941680e8d3bdf5695af0ef23f00') in 0.0039934 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Soulful.asset using Guid(f9bd5149c0a3cf34aa927cbd929fed8d) (NativeFormatImporter) -> (artifact id: '07bbef7e71c48d0976fd3c1b78e39ed6') in 0.0041087 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Energetic.asset using Guid(6ac957c8d6ab61d4a9543af210f0a7d3) (NativeFormatImporter) -> (artifact id: 'a493f5323d1296f7b56674c309662a92') in 0.003741 seconds
+Start importing Assets/AddressableAssetsData/AddressableAssetSettings.asset using Guid(8a4cc0dfc618f344aaae658dde9bb725) (NativeFormatImporter) -> (artifact id: '2d1b67451a536271d25306558fc3b415') in 0.0040496 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Brahms.asset using Guid(9aaf6bfc606f8e2449752e83e608d228) (NativeFormatImporter) -> (artifact id: '2006f68499196b8477a689fb742df7fa') in 0.0039233 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Handel.asset using Guid(fa69a30c9e30b4045be872eee794cb84) (NativeFormatImporter) -> (artifact id: '5705b79c8b0ede92c4f55d944d4a15b8') in 0.0036588 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Brahms.asset using Guid(9ba2de59bbb29a840854f32eb09053af) (NativeFormatImporter) -> (artifact id: '5cff05e395fa20f5936aed7b9cf3462f') in 0.0125936 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Bach.asset using Guid(ab5f1453144b37b45b716ea4762a7cd7) (NativeFormatImporter) -> (artifact id: '9a1276e78355db6a065c4cf09bc448de') in 0.0037366 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Vivaldi.asset using Guid(9c4626d866b695e40839ccb31ecbc925) (NativeFormatImporter) -> (artifact id: '9dc166d6e059697d8d8c1c23e1f3b900') in 0.0034986 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Beethoven.asset using Guid(ac3f6fb8baa70994989e25c43ce97fa6) (NativeFormatImporter) -> (artifact id: '4916745b06257ed4862c9a07a4e860a6') in 0.0038741 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Chill.asset using Guid(ecd7cba07173ab34ba4ec3017717bfcd) (NativeFormatImporter) -> (artifact id: '692e9eb81670570a42603c99da439026') in 0.0040083 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Electronic.asset using Guid(8d5cfbe7ed0fd5e49ac44e47e87210c9) (NativeFormatImporter) -> (artifact id: 'a99e02fe143c30094ee42a7e28ed00d0') in 0.0040313 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Beethoven.asset using Guid(ade4e4a265ea22d46b4ece04ca8c00ec) (NativeFormatImporter) -> (artifact id: 'eee77797d09b68bf9ac8baa73631abad') in 0.0037743 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Jazzy.asset using Guid(0e07f2f7f3ef761478a61a78e6e1a1c1) (NativeFormatImporter) -> (artifact id: '45479722ad3decb6e44d921bbe440e1a') in 0.0125646 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Tchaikovsky.asset using Guid(fe57fc2de704f854798da015002f189b) (NativeFormatImporter) -> (artifact id: 'ba40ba9a6ca1f6e7b43103127a1470e9') in 0.0036488 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Pachelbel.asset using Guid(7f28473813b6f804a982a8198867c814) (NativeFormatImporter) -> (artifact id: 'b2fc95b09c66233cffb65c491f42ad99') in 0.0038871 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Mozart.asset using Guid(9fb7c92b40345484191043bb059090b4) (NativeFormatImporter) -> (artifact id: 'c6c246b93fdf4b9b0485ec4edee51967') in 0.003796 seconds
+Refreshing native plugins compatible for Editor in 11.37 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.23 ms.
+Asset Pipeline Refresh (id=2d1f6a19fe513194d88137a49c691261): Total: 0.416 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+	Summary:
+		Imports: total=40 (actual=40, local cache=0, cache server=0)
+		Asset DB Process Time: managed=4 ms, native=314 ms
+		Asset DB Callback time: managed=73 ms, native=24 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=6447, non-scripts=20476
+		Asset File Changes: new=0, changed=1, moved=0, deleted=0
+		Scan Filter Count: 53
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 0.001ms
+	ApplyChangesToAssetFolders: 0.196ms
+	Scan: 22.659ms
+	OnSourceAssetsModified: 0.072ms
+	CategorizeAssetsWithTransientArtifact: 0.050ms
+	ProcessAssetsWithTransientArtifactChanges: 0.064ms
+	CategorizeAssets: 42.635ms
+	ImportOutOfDateAssets: 236.956ms (1.857ms without children)
+		ImportManagerImport: 228.224ms (2.748ms without children)
+			ImportInProcess: 224.939ms
+			UpdateCategorizedAssets: 0.536ms
+		ReloadNativeAssets: 0.702ms
+		UnloadImportedAssets: 0.349ms
+		ReloadImportedAssets: 0.005ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 4.472ms
+		InitializingProgressBar: 0.008ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 1.340ms
+	PostProcessAllAssets: 85.317ms
+	Hotreload: 11.940ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.911ms
+	UnloadStreamsBegin: 1.113ms
+	PersistCurrentRevisions: 1.444ms
+	UnloadStreamsEnd: 0.002ms
+	Untracked: 11.163ms
+
+[SegmentedOutfitSetup]
+  found 135: Acoustic_boots, Acoustic_shirt, Acoustic_trousers_belt, Acoustic_waistcoat, Bach_hair, Bach_jacket, Bach_pants, Bach_shirt, Beethoven_hair, Beethoven_jacket, Beethoven_pants, Beethoven_shirt, Beethoven_shoes, Brahms_beard, Brahms_hair, Brahms_jacket, Brahms_pants, Brahms_shirt, Catchy_jacket, Catchy_shirt, Catchy_sneakers, Catchy_trousers, Chill_cardigan, Chill_sneakers, Chill_trousers, Chill_tshirt, Chopin_jacket, Chopin_pants, Chopin_shirt, Cinematic_boots, Cinematic_coat, Cinematic_shirt, Cinematic_trousers, Cinematic_waistcoat, classical_gloves, Classical_jacket, Classical_shirt, Classical_shoes, Classical_trousers, Classical_waistcoat, Dance_jacket, Dance_sneakers, Dance_trousers, Dance_tshirt, Dark_boots, Dark_coat, Dark_shirt, Dark_trousers, Dark_waistcoat, Dreamy_necklace, Dreamy_overshirt, Dreamy_shirt, Dreamy_shoes, Dreamy_trousers, Electronic_jacket, Electronic_sneakers, Electronic_top, Electronic_trousers, Energetic_jacket, Energetic_sneakers, Energetic_trousers, Energetic_tshirt, Experimental_jacket, Experimental_shoes, Experimental_top, Experimental_trousers, fight_gloves, Funky_belt, Funky_shirt, Funky_shoes, Funky_trousers, Funky_trousers_belt, Groove_necklace, Groove_sneakers, Groove_sweater, Groove_trousers, Groove_tshirt, Handel_hair_2, Handel_jacket_2, Handel_pants, Handel_shirt, Handel_shirt_2, Handel_shoes, Handel_shoes_2, Haydn_hair, Haydn_jacket, Haydn_pants, Haydn_shirt, Haydn_shoes, Heavy_boots, Heavy_trousers_belt_chain, Heavy_tshirt, Heavy_vest, Heavy_wrist_cuffs, Jazzy_jacket, Jazzy_shirt, Jazzy_shoes, Jazzy_trousers, Jazzy_waistcoat, Monteverdi_beard, Monteverdi_hair, Monteverdi_jacket, Monteverdi_pants, Monteverdi_shoes, Mozart_hair, Mozart_jacket, Mozart_pants, Mozart_shirt_2, Pachelbel_hair, Pachelbel_jacket, Pachelbel_pants, Pachelbel_shirt_2, Pachelbel_waistcoat, Rock_boots, Rock_jacket, Rock_jeans_belt, Rock_tshirt, Soulful_blazer, Soulful_loafers, Soulful_shirt, Soulful_trousers_belt, Tchaikovsky_jacket, Tchaikovsky_pants, Tchaikovsky_shirt, Tchaikovsky_shoes, Tchaikovsky_waistcoat, Vivaldi_Jacket, Vivaldi_Pants, Vivaldi_Shirt, Vivaldi_Shoes, Vivaldi_Wig, Wagner_hair, Wagner_jacket, Wagner_pants, Wagner_shirt
+  body  Body: 14517 vertices, 26756 triangles
+  PASS  Groove_sweater: 'jacket' layer 40, hides shirt/top/waistcoat/trousers under it
+        Low: 11451 verts (0 far from the body), on own mask 94 %, cover 51592 / skin 18175 texels, 65 KB
+        Mid: 21298 verts (0 far from the body), on own mask 94 %, cover 51793 / skin 18009 texels, 88 KB
+        HighMid: 37602 verts (0 far from the body), on own mask 94 %, cover 51856 / skin 17771 texels, 122 KB
+        High: 52271 verts (0 far from the body), on own mask 94 %, cover 51876 / skin 17723 texels, 149 KB
+        Ultra: 73129 verts (0 far from the body), on own mask 94 %, cover 51892 / skin 17645 texels, 187 KB
+  15 textures checked, 0 shrunk to their import size: 0 MB -> 0 MB
+  PASS  Avatar_Bach: bach_pants, bach_shirt, bach_jacket, classical_gloves + hair bach_hair on Identity_Bach
+  PASS  Avatar_Beethoven: beethoven_jacket, beethoven_pants, beethoven_shirt, beethoven_shoes, classical_gloves + hair beethoven_hair on Identity_Beethoven
+  PASS  Avatar_Brahms: brahms_beard, brahms_jacket, brahms_pants, brahms_shirt, classical_gloves + hair brahms_hair on Identity_Brahms
+  PASS  Avatar_Chopin: chopin_jacket, chopin_pants, chopin_shirt, classical_gloves
+  PASS  Avatar_Handel: handel_jacket_2, handel_pants, handel_shirt_2, handel_shoes_2, classical_gloves + hair handel_hair_2 on Identity_Handel
+  PASS  Avatar_Haydn: haydn_jacket, haydn_pants, haydn_shirt, haydn_shoes, classical_gloves + hair haydn_hair on Identity_Haydn
+  PASS  Avatar_Monteverdi: monteverdi_pants, monteverdi_shoes, monteverdi_jacket, monteverdi_beard, classical_gloves + hair monteverdi_hair on Identity_Monteverdi
+  PASS  Avatar_Mozart: mozart_jacket, mozart_pants, mozart_shirt_2, classical_gloves + hair mozart_hair on Identity_Mozart
+  PASS  Avatar_Pachelbel: pachelbel_jacket, pachelbel_pants, pachelbel_shirt_2, pachelbel_waistcoat, classical_gloves + hair pachelbel_hair on Identity_Pachelbel
+  PASS  Avatar_Tchaikovsky: tchaikovsky_jacket, tchaikovsky_pants, tchaikovsky_shirt, tchaikovsky_shoes, tchaikovsky_waistcoat, classical_gloves
+  PASS  Avatar_Vivaldi: vivaldi_jacket, vivaldi_pants, vivaldi_shirt, vivaldi_shoes, vivaldi_wig, classical_gloves
+  PASS  Avatar_Wagner: wagner_jacket, wagner_shirt, wagner_pants, classical_gloves + hair wagner_hair on Identity_Wagner
+  PASS  Avatar_Player_Acoustic (Acoustic): acoustic_boots, acoustic_shirt, acoustic_trousers_belt, acoustic_waistcoat
+  PASS  Avatar_Player_Catchy (Catchy): catchy_jacket, catchy_shirt, catchy_sneakers, catchy_trousers
+  PASS  Avatar_Player_Chill (Chill): chill_cardigan, chill_sneakers, chill_trousers, chill_tshirt
+  PASS  Avatar_Player_Cinematic (Cinematic): cinematic_boots, cinematic_coat, cinematic_shirt, cinematic_trousers, cinematic_waistcoat
+  PASS  Avatar_Player_Classical (Classical): classical_jacket, classical_shirt, classical_shoes, classical_trousers, classical_waistcoat
+  PASS  Avatar_Player_Dance (Dance): dance_jacket, dance_sneakers, dance_trousers, dance_tshirt
+  PASS  Avatar_Player_Dark (Dark): dark_boots, dark_coat, dark_shirt, dark_trousers, dark_waistcoat
+  PASS  Avatar_Player_Dreamy (Dreamy): dreamy_necklace, dreamy_overshirt, dreamy_shirt, dreamy_shoes, dreamy_trousers
+  PASS  Avatar_Player_Electronic (Electronic): electronic_jacket, electronic_sneakers, electronic_top, electronic_trousers
+  PASS  Avatar_Player_Energetic (Energetic): energetic_jacket, energetic_sneakers, energetic_trousers, energetic_tshirt
+  PASS  Avatar_Player_Experimental (Experimental): experimental_jacket, experimental_shoes, experimental_top, experimental_trousers
+  PASS  Avatar_Player_Funky (Funky): funky_belt, funky_shirt, funky_shoes, funky_trousers_belt
+  PASS  Avatar_Player_Groove (Groove): groove_necklace, groove_sneakers, groove_sweater, groove_trousers, groove_tshirt
+  PASS  Avatar_Player_Heavy (Heavy): heavy_boots, heavy_trousers_belt_chain, heavy_tshirt, heavy_vest, heavy_wrist_cuffs
+  PASS  Avatar_Player_Jazzy (Jazzy): jazzy_jacket, jazzy_shirt, jazzy_shoes, jazzy_trousers, jazzy_waistcoat
+  PASS  Avatar_Player_Rock (Rock): rock_boots, rock_jacket, rock_jeans_belt, rock_tshirt
+  PASS  Avatar_Player_Soulful (Soulful): soulful_blazer, soulful_loafers, soulful_shirt, soulful_trousers_belt
+  PASS  Avatar_Bach: classical gloves
+  PASS  Avatar_Beethoven: classical gloves
+  PASS  Avatar_Brahms: classical gloves
+  PASS  Avatar_Chopin: classical gloves
+  PASS  Avatar_Handel: classical gloves
+  PASS  Avatar_Haydn: classical gloves
+  PASS  Avatar_Monteverdi: classical gloves
+  PASS  Avatar_Mozart: classical gloves
+  PASS  Avatar_Pachelbel: classical gloves
+  PASS  Avatar_Tchaikovsky: classical gloves
+  PASS  Avatar_Vivaldi: classical gloves
+  PASS  Avatar_Wagner: classical gloves
+  PASS  player: fight gloves only in combat runtime recipe
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SegmentedOutfitSetup:RunFromCommandLine () (at Assets/_Project/Scripts/Editor/Avatar/Garments/SegmentedOutfitSetup.cs:77)
+
+(Filename: Assets/_Project/Scripts/Editor/Avatar/Garments/SegmentedOutfitSetup.cs Line: 77)
+
+[Project] Loading completed in 57.673 seconds
+	Project init time: 				31.604 seconds
+		Template init time: 		0.000 seconds
+		Package Manager init time: 		0.685 seconds
+		Asset Database init time: 		0.470 seconds
+		Global illumination init time: 	0.004 seconds
+		Assemblies load time: 			3.576 seconds
+		Unity extensions init time: 	0.019 seconds
+		Asset Database refresh time: 	22.669 seconds
+	Scene opening time: 			25.745 seconds
+##utp:{"type":"ProjectInfo","version":2,"phase":"Immediate","time":1794834314533,"processId":37400,"projectLoad":57.6727213,"projectInit":31.603816,"templateInit":0.0,"packageManagerInit":0.6849695,"assetDatabaseInit":0.4704497,"globalIlluminationInit":0.0038579,"assembliesLoad":3.5757104,"unityExtensionsInit":0.0187643,"assetDatabaseRefresh":22.6687073,"sceneOpening":25.7454236}
+##utp:{"type":"EditorInfo","version":2,"phase":"Immediate","time":1794834314533,"processId":37400,"editorVersion":"6000.3.2f1 (a9779f353c9b)","branch":"6000.3/staging","buildType":"Release","platform":"Windows"}
+Asset Pipeline Refresh (id=763070f37cf7ad345b01f3771d153ace): Total: 0.341 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=341 ms
+		Asset DB Callback time: managed=0 ms, native=0 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=6447, non-scripts=20476
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 0.001ms
+	ApplyChangesToAssetFolders: 0.203ms
+	Scan: 32.011ms
+	OnSourceAssetsModified: 0.001ms
+	CategorizeAssetsWithTransientArtifact: 0.003ms
+	ProcessAssetsWithTransientArtifactChanges: 0.090ms
+	CategorizeAssets: 254.403ms
+	ImportOutOfDateAssets: 10.000ms (2.220ms without children)
+		ReloadNativeAssets: 0.927ms
+		UnloadImportedAssets: 0.381ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 4.676ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 1.794ms
+	GatherAllCurrentPrimaryArtifactRevisions: 2.433ms
+	UnloadStreamsBegin: 0.146ms
+	PersistCurrentRevisions: 1.637ms
+	UnloadStreamsEnd: 0.002ms
+	Untracked: 40.334ms
+
+PASS: glow shader compiled; 8 authored bonus materials retain textures, source materials unchanged, fallback colour cannot tint authored textures, texture-derived HDR glow configured; direct shader reference retained for builds.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+BonusVisibilityCheck:Run () (at Assets/_Project/Scripts/Editor/DevTools/BonusVisibilityCheck.cs:42)
+BonusVisibilityCheck/<>c:<OnceAfterImport>b__0_0 () (at Assets/_Project/Scripts/Editor/DevTools/BonusVisibilityCheck.cs:14)
+UnityEditor.EditorApplication:Internal_CallDelayFunctions ()
+
+(Filename: Assets/_Project/Scripts/Editor/DevTools/BonusVisibilityCheck.cs Line: 42)
+
+PASS: deletes only the four known progress files, preserves unrelated cache, repeated reset is safe, unexpected paths rejected. Real player save untouched.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+ResetGameTool:Verify () (at Assets/_Project/Scripts/Editor/DevTools/ResetGameTool.cs:63)
+BonusVisibilityCheck/<>c:<OnceAfterImport>b__0_0 () (at Assets/_Project/Scripts/Editor/DevTools/BonusVisibilityCheck.cs:14)
+UnityEditor.EditorApplication:Internal_CallDelayFunctions ()
+
+(Filename: Assets/_Project/Scripts/Editor/DevTools/ResetGameTool.cs Line: 63)
+
+[Indexing] Starting Initial Indexing for Assets
+Opening scene 'Assets/_Project/Scenes/Debug/AvatarsClothesChecker.unity'
+Unloading 51 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Assets/_Project/Scenes/Debug/AvatarsClothesChecker.unity'
+	Deserialize:            1.737 ms
+	Integration:            266.081 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.053 ms
+	Total Operation Time:   267.874 ms
+Unloading 507 unused Assets / (43.5 MB). Loaded Objects now: 10514.
+Memory consumption went from 408.3 MB to 364.8 MB.
+Total: 20.096400 ms (FindLiveObjects: 0.612300 ms CreateObjectMapping: 0.749500 ms MarkObjects: 17.704300 ms  DeleteObjects: 1.028600 ms)
+
+Reloading assemblies for play mode.
+Reloading assemblies after forced synchronous recompile.
+Begin MonoManager ReloadAssembly
+14:05:17.267 |V| RiderPlugin                    | :1                             | AppDomain.CurrentDomain.DomainUnload lifetimeDefinition.Terminate
+- Loaded All Assemblies, in  2.185 seconds
+Refreshing native plugins compatible for Editor in 9.57 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  2.223 seconds
+Domain Reload Profiling: 4402ms
+	BeginReloadAssembly (1596ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (65ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (378ms)
+	RebuildCommonClasses (45ms)
+	RebuildNativeTypeToScriptingClass (16ms)
+	initialDomainReloadingComplete (55ms)
+	LoadAllAssembliesAndSetupDomain (466ms)
+		LoadAssemblies (263ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (349ms)
+			TypeCache.Refresh (9ms)
+				TypeCache.ScanAssembly (0ms)
+			BuildScriptInfoCaches (306ms)
+			ResolveRequiredComponents (25ms)
+	FinalizeReload (2224ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (1624ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (58ms)
+			SetLoadedEditorAssemblies (7ms)
+			BeforeProcessingInitializeOnLoad (403ms)
+			ProcessInitializeOnLoadAttributes (734ms)
+			ProcessInitializeOnLoadMethodAttributes (395ms)
+			AfterProcessingInitializeOnLoad (26ms)
+			EditorAssembliesLoaded (1ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (134ms)
+Asset Pipeline Refresh (id=5a516f6954eba3c4fb9af3931582c7dd): Total: 5.134 seconds - Initiated by StopAssetImportingV2(ForceSynchronousImport | ForceDomainReload)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=2832 ms
+		Asset DB Callback time: managed=70 ms, native=1 ms
+		Scripting: domain reloads=1, domain reload time=2228 ms, compile time=2 ms, other=0 ms
+		Project Asset Count: scripts=6447, non-scripts=20476
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.002ms
+	InvokePackagesCallback: 6.591ms
+	ApplyChangesToAssetFolders: 0.496ms
+	Scan: 0.001ms
+	OnSourceAssetsModified: 0.002ms
+	CategorizeAssetsWithTransientArtifact: 0.009ms
+	ProcessAssetsWithTransientArtifactChanges: 7.942ms
+	CategorizeAssets: 470.808ms
+	ImportOutOfDateAssets: 2271.176ms (2251.865ms without children)
+		CompileScripts: 2.367ms
+		CollectScriptTypesHashes: 2.138ms
+		ReloadNativeAssets: 2.844ms
+		UnloadImportedAssets: 0.134ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 9.347ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.002ms
+		OnDemandSchedulerStart: 2.478ms
+	PostProcessAllAssets: 70.394ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.419ms
+	UnloadStreamsBegin: 0.018ms
+	PersistCurrentRevisions: 2.007ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 14.013ms
+	Untracked: 2303.516ms
+
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            1.151 ms
+	Integration:            19701.604 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.035 ms
+	Total Operation Time:   19702.793 ms
+Created GICache directory at C:/Users/VISYON/AppData/LocalLow/Unity/Caches/GiCache. Took: 0.042s, timestamps: [57.682 - 57.723]
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Unloading 1017 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 406 unused Assets / (58.9 KB). Loaded Objects now: 14987.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 10.326900 ms (FindLiveObjects: 0.616800 ms CreateObjectMapping: 0.533000 ms MarkObjects: 8.851000 ms  DeleteObjects: 0.324800 ms)
+
+Unloading 10 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 361 unused Assets / (40.4 KB). Loaded Objects now: 14987.
+Memory consumption went from 1.08 GB to 1.08 GB.
+Total: 16.429600 ms (FindLiveObjects: 0.558300 ms CreateObjectMapping: 0.485700 ms MarkObjects: 15.079400 ms  DeleteObjects: 0.305100 ms)
+
+Unloading 18 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 599 unused Assets / (81.4 KB). Loaded Objects now: 14987.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 18.511300 ms (FindLiveObjects: 0.633500 ms CreateObjectMapping: 0.619400 ms MarkObjects: 16.817900 ms  DeleteObjects: 0.439300 ms)
+
+Unloading 18 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 599 unused Assets / (84.0 KB). Loaded Objects now: 14987.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 9.814500 ms (FindLiveObjects: 0.570000 ms CreateObjectMapping: 0.494700 ms MarkObjects: 8.357300 ms  DeleteObjects: 0.391300 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (54.2 KB). Loaded Objects now: 14987.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 17.927200 ms (FindLiveObjects: 0.609500 ms CreateObjectMapping: 0.492400 ms MarkObjects: 16.248400 ms  DeleteObjects: 0.575600 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (64.5 KB). Loaded Objects now: 14987.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 10.420600 ms (FindLiveObjects: 0.596900 ms CreateObjectMapping: 0.516900 ms MarkObjects: 8.949000 ms  DeleteObjects: 0.356500 ms)
+
+Unloading 17 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 597 unused Assets / (111.6 KB). Loaded Objects now: 14987.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 16.291700 ms (FindLiveObjects: 0.567500 ms CreateObjectMapping: 0.501700 ms MarkObjects: 14.815300 ms  DeleteObjects: 0.406300 ms)
+
+Unloading 11 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 361 unused Assets / (46.3 KB). Loaded Objects now: 14988.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 12.159300 ms (FindLiveObjects: 0.673000 ms CreateObjectMapping: 0.570300 ms MarkObjects: 10.597200 ms  DeleteObjects: 0.317400 ms)
+
+Unloading 10 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 361 unused Assets / (45.6 KB). Loaded Objects now: 14988.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 11.518300 ms (FindLiveObjects: 0.676100 ms CreateObjectMapping: 0.598100 ms MarkObjects: 9.889600 ms  DeleteObjects: 0.353200 ms)
+
+Unloading 18 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 599 unused Assets / (173.1 KB). Loaded Objects now: 14988.
+Memory consumption went from 1.10 GB to 1.10 GB.
+Total: 17.184000 ms (FindLiveObjects: 0.637000 ms CreateObjectMapping: 0.591500 ms MarkObjects: 15.480700 ms  DeleteObjects: 0.473700 ms)
+
+Unloading 18 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 599 unused Assets / (83.0 KB). Loaded Objects now: 14988.
+Memory consumption went from 1.10 GB to 1.10 GB.
+Total: 17.468200 ms (FindLiveObjects: 0.606100 ms CreateObjectMapping: 0.563200 ms MarkObjects: 15.863400 ms  DeleteObjects: 0.434200 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (90.5 KB). Loaded Objects now: 14988.
+Memory consumption went from 1.10 GB to 1.10 GB.
+Total: 16.711800 ms (FindLiveObjects: 0.622200 ms CreateObjectMapping: 0.758000 ms MarkObjects: 14.973200 ms  DeleteObjects: 0.357400 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (69.5 KB). Loaded Objects now: 14988.
+Memory consumption went from 1.10 GB to 1.10 GB.
+Total: 16.955600 ms (FindLiveObjects: 0.592000 ms CreateObjectMapping: 0.523900 ms MarkObjects: 15.485900 ms  DeleteObjects: 0.352800 ms)
+
+Unloading 17 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 597 unused Assets / (80.5 KB). Loaded Objects now: 14988.
+Memory consumption went from 1.10 GB to 1.10 GB.
+Total: 17.091100 ms (FindLiveObjects: 0.644900 ms CreateObjectMapping: 0.536500 ms MarkObjects: 15.514000 ms  DeleteObjects: 0.394600 ms)
+
+Unloading 11 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 361 unused Assets / (41.1 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.10 GB to 1.10 GB.
+Total: 16.941300 ms (FindLiveObjects: 0.597300 ms CreateObjectMapping: 0.532500 ms MarkObjects: 15.519600 ms  DeleteObjects: 0.290600 ms)
+
+Unloading 10 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 361 unused Assets / (43.8 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.10 GB to 1.10 GB.
+Total: 16.144600 ms (FindLiveObjects: 0.582500 ms CreateObjectMapping: 0.536700 ms MarkObjects: 14.733900 ms  DeleteObjects: 0.290600 ms)
+
+Unloading 18 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 599 unused Assets / (73.4 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.12 GB to 1.12 GB.
+Total: 17.431300 ms (FindLiveObjects: 0.633700 ms CreateObjectMapping: 0.581600 ms MarkObjects: 15.765100 ms  DeleteObjects: 0.449500 ms)
+
+Unloading 18 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 599 unused Assets / (82.0 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.12 GB to 1.12 GB.
+Total: 17.402500 ms (FindLiveObjects: 0.651500 ms CreateObjectMapping: 0.612400 ms MarkObjects: 15.716300 ms  DeleteObjects: 0.421100 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (69.2 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.11 GB to 1.11 GB.
+Total: 10.837400 ms (FindLiveObjects: 0.679900 ms CreateObjectMapping: 0.566600 ms MarkObjects: 9.225900 ms  DeleteObjects: 0.363800 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (69.1 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.11 GB to 1.11 GB.
+Total: 10.350400 ms (FindLiveObjects: 0.643600 ms CreateObjectMapping: 0.530600 ms MarkObjects: 8.800700 ms  DeleteObjects: 0.374400 ms)
+
+Unloading 17 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 597 unused Assets / (82.4 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.12 GB to 1.12 GB.
+Total: 10.511900 ms (FindLiveObjects: 0.687200 ms CreateObjectMapping: 0.619700 ms MarkObjects: 8.770700 ms  DeleteObjects: 0.433000 ms)
+
+Unloading 10 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 361 unused Assets / (58.7 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.11 GB to 1.11 GB.
+Total: 11.861200 ms (FindLiveObjects: 0.673500 ms CreateObjectMapping: 0.585500 ms MarkObjects: 10.192300 ms  DeleteObjects: 0.408300 ms)
+
+Unloading 10 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 361 unused Assets / (45.9 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.11 GB to 1.11 GB.
+Total: 12.537700 ms (FindLiveObjects: 0.661200 ms CreateObjectMapping: 0.604000 ms MarkObjects: 10.936100 ms  DeleteObjects: 0.334600 ms)
+
+Unloading 18 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 599 unused Assets / (78.7 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.14 GB to 1.14 GB.
+Total: 11.901500 ms (FindLiveObjects: 0.708900 ms CreateObjectMapping: 0.618000 ms MarkObjects: 10.080400 ms  DeleteObjects: 0.492600 ms)
+
+Unloading 18 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 599 unused Assets / (75.6 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.14 GB to 1.14 GB.
+Total: 16.889100 ms (FindLiveObjects: 0.645700 ms CreateObjectMapping: 0.544800 ms MarkObjects: 15.269700 ms  DeleteObjects: 0.427700 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (62.2 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.13 GB to 1.13 GB.
+Total: 10.881700 ms (FindLiveObjects: 0.625800 ms CreateObjectMapping: 0.611900 ms MarkObjects: 9.282000 ms  DeleteObjects: 0.360400 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (61.3 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.13 GB to 1.13 GB.
+Total: 15.206600 ms (FindLiveObjects: 0.829600 ms CreateObjectMapping: 0.810800 ms MarkObjects: 13.153100 ms  DeleteObjects: 0.411700 ms)
+
+Unloading 17 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 597 unused Assets / (80.3 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.14 GB to 1.14 GB.
+Total: 11.456800 ms (FindLiveObjects: 0.679100 ms CreateObjectMapping: 0.605200 ms MarkObjects: 9.726600 ms  DeleteObjects: 0.444100 ms)
+
+Unloading 26 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 368 unused Assets / (45.6 KB). Loaded Objects now: 15114.
+Memory consumption went from 1.34 GB to 1.34 GB.
+Total: 18.945100 ms (FindLiveObjects: 0.645600 ms CreateObjectMapping: 0.535900 ms MarkObjects: 17.397200 ms  DeleteObjects: 0.365000 ms)
+
+Unloading 20 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 368 unused Assets / (52.5 KB). Loaded Objects now: 15117.
+Memory consumption went from 1.39 GB to 1.39 GB.
+Total: 22.868100 ms (FindLiveObjects: 0.765800 ms CreateObjectMapping: 0.631500 ms MarkObjects: 21.084100 ms  DeleteObjects: 0.385000 ms)
+
+Unloading 34 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 612 unused Assets / (74.8 MB). Loaded Objects now: 15120.
+Memory consumption went from 1.60 GB to 1.52 GB.
+Total: 25.214400 ms (FindLiveObjects: 0.877500 ms CreateObjectMapping: 1.159400 ms MarkObjects: 15.380200 ms  DeleteObjects: 7.795900 ms)
+
+Unloading 31 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 612 unused Assets / (95.4 MB). Loaded Objects now: 15120.
+Memory consumption went from 1.60 GB to 1.50 GB.
+Total: 19.385800 ms (FindLiveObjects: 0.765900 ms CreateObjectMapping: 0.671800 ms MarkObjects: 10.691800 ms  DeleteObjects: 7.254900 ms)
+
+Unloading 27 Unused Serialized files (Serialized files now loaded: 0)
+TrimDiskCacheJob: Current cache size 3725mb
+Unloading 490 unused Assets / (78.3 KB). Loaded Objects now: 15123.
+Memory consumption went from 1.58 GB to 1.58 GB.
+Total: 13.822400 ms (FindLiveObjects: 0.804900 ms CreateObjectMapping: 0.711900 ms MarkObjects: 11.771300 ms  DeleteObjects: 0.532900 ms)
+
+Unloading 24 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 490 unused Assets / (76.9 KB). Loaded Objects now: 15123.
+Memory consumption went from 1.58 GB to 1.58 GB.
+Total: 22.619500 ms (FindLiveObjects: 0.736300 ms CreateObjectMapping: 0.610500 ms MarkObjects: 20.798900 ms  DeleteObjects: 0.472300 ms)
+
+Unloading 33 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 610 unused Assets / (24.2 MB). Loaded Objects now: 15126.
+Memory consumption went from 1.66 GB to 1.64 GB.
+Total: 15.689900 ms (FindLiveObjects: 0.760100 ms CreateObjectMapping: 0.691400 ms MarkObjects: 11.368800 ms  DeleteObjects: 2.868600 ms)
+
+PASS classical_gloves item and masks
+PASS classical_gloves five qualities
+PASS classical_gloves Low addressable
+PASS classical_gloves Low valid mask
+PASS classical_gloves Mid addressable
+PASS classical_gloves Mid valid mask
+PASS classical_gloves HighMid addressable
+PASS classical_gloves HighMid valid mask
+PASS classical_gloves High addressable
+PASS classical_gloves High valid mask
+PASS classical_gloves Ultra addressable
+PASS classical_gloves Ultra valid mask
+PASS Dance_jacket item and masks
+PASS Dance_jacket five qualities
+PASS Dance_jacket Low addressable
+PASS Dance_jacket Low valid mask
+PASS Dance_jacket Mid addressable
+PASS Dance_jacket Mid valid mask
+PASS Dance_jacket HighMid addressable
+PASS Dance_jacket HighMid valid mask
+PASS Dance_jacket High addressable
+PASS Dance_jacket High valid mask
+PASS Dance_jacket Ultra addressable
+PASS Dance_jacket Ultra valid mask
+PASS Dance_trousers item and masks
+PASS Dance_trousers five qualities
+PASS Dance_trousers Low addressable
+PASS Dance_trousers Low valid mask
+PASS Dance_trousers Mid addressable
+PASS Dance_trousers Mid valid mask
+PASS Dance_trousers HighMid addressable
+PASS Dance_trousers HighMid valid mask
+PASS Dance_trousers High addressable
+PASS Dance_trousers High valid mask
+PASS Dance_trousers Ultra addressable
+PASS Dance_trousers Ultra valid mask
+PASS fight_gloves item and masks
+PASS fight_gloves five qualities
+PASS fight_gloves Low addressable
+PASS fight_gloves Low valid mask
+PASS fight_gloves Mid addressable
+PASS fight_gloves Mid valid mask
+PASS fight_gloves HighMid addressable
+PASS fight_gloves HighMid valid mask
+PASS fight_gloves High addressable
+PASS fight_gloves High valid mask
+PASS fight_gloves Ultra addressable
+PASS fight_gloves Ultra valid mask
+PASS Groove_sweater item and masks
+PASS Groove_sweater five qualities
+PASS Groove_sweater Low addressable
+PASS Groove_sweater Low valid mask
+PASS Groove_sweater Mid addressable
+PASS Groove_sweater Mid valid mask
+PASS Groove_sweater HighMid addressable
+PASS Groove_sweater HighMid valid mask
+PASS Groove_sweater High addressable
+PASS Groove_sweater High valid mask
+PASS Groove_sweater Ultra addressable
+PASS Groove_sweater Ultra valid mask
+PASS Rock_jacket item and masks
+PASS Rock_jacket five qualities
+PASS Rock_jacket Low addressable
+PASS Rock_jacket Low valid mask
+PASS Rock_jacket Mid addressable
+PASS Rock_jacket Mid valid mask
+PASS Rock_jacket HighMid addressable
+PASS Rock_jacket HighMid valid mask
+PASS Rock_jacket High addressable
+PASS Rock_jacket High valid mask
+PASS Rock_jacket Ultra addressable
+PASS Rock_jacket Ultra valid mask
+PASS Avatar_Bach classical gloves exactly once
+PASS Avatar_Bach shared glove download label
+PASS Avatar_Beethoven classical gloves exactly once
+PASS Avatar_Beethoven shared glove download label
+PASS Avatar_Brahms classical gloves exactly once
+PASS Avatar_Brahms shared glove download label
+PASS Avatar_Chopin classical gloves exactly once
+PASS Avatar_Chopin shared glove download label
+PASS Avatar_Handel classical gloves exactly once
+PASS Avatar_Handel shared glove download label
+PASS Avatar_Haydn classical gloves exactly once
+PASS Avatar_Haydn shared glove download label
+PASS Avatar_Monteverdi classical gloves exactly once
+PASS Avatar_Monteverdi shared glove download label
+PASS Avatar_Mozart classical gloves exactly once
+PASS Avatar_Mozart shared glove download label
+PASS Avatar_Pachelbel classical gloves exactly once
+PASS Avatar_Pachelbel shared glove download label
+PASS Avatar_Tchaikovsky classical gloves exactly once
+PASS Avatar_Tchaikovsky shared glove download label
+PASS Avatar_Vivaldi classical gloves exactly once
+PASS Avatar_Vivaldi shared glove download label
+PASS Avatar_Wagner classical gloves exactly once
+PASS Avatar_Wagner shared glove download label
+PASS Avatar_Player_Acoustic Runner excludes fight gloves
+PASS Avatar_Player_Acoustic Fight includes gloves once
+PASS Avatar_Player_Acoustic source recipe preserved
+PASS Avatar_Player_Catchy Runner excludes fight gloves
+PASS Avatar_Player_Catchy Fight includes gloves once
+PASS Avatar_Player_Catchy source recipe preserved
+PASS Avatar_Player_Chill Runner excludes fight gloves
+PASS Avatar_Player_Chill Fight includes gloves once
+PASS Avatar_Player_Chill source recipe preserved
+PASS Avatar_Player_Cinematic Runner excludes fight gloves
+PASS Avatar_Player_Cinematic Fight includes gloves once
+PASS Avatar_Player_Cinematic source recipe preserved
+PASS Avatar_Player_Classical Runner excludes fight gloves
+PASS Avatar_Player_Classical Fight includes gloves once
+PASS Avatar_Player_Classical source recipe preserved
+PASS Avatar_Player_Dance Runner excludes fight gloves
+PASS Avatar_Player_Dance Fight includes gloves once
+PASS Avatar_Player_Dance source recipe preserved
+PASS Avatar_Player_Dark Runner excludes fight gloves
+PASS Avatar_Player_Dark Fight includes gloves once
+PASS Avatar_Player_Dark source recipe preserved
+PASS Avatar_Player_Dreamy Runner excludes fight gloves
+PASS Avatar_Player_Dreamy Fight includes gloves once
+PASS Avatar_Player_Dreamy source recipe preserved
+PASS Avatar_Player_Electronic Runner excludes fight gloves
+PASS Avatar_Player_Electronic Fight includes gloves once
+PASS Avatar_Player_Electronic source recipe preserved
+PASS Avatar_Player_Energetic Runner excludes fight gloves
+PASS Avatar_Player_Energetic Fight includes gloves once
+PASS Avatar_Player_Energetic source recipe preserved
+PASS Avatar_Player_Experimental Runner excludes fight gloves
+PASS Avatar_Player_Experimental Fight includes gloves once
+PASS Avatar_Player_Experimental source recipe preserved
+PASS Avatar_Player_Funky Runner excludes fight gloves
+PASS Avatar_Player_Funky Fight includes gloves once
+PASS Avatar_Player_Funky source recipe preserved
+PASS Avatar_Player_Groove Runner excludes fight gloves
+PASS Avatar_Player_Groove Fight includes gloves once
+PASS Avatar_Player_Groove source recipe preserved
+PASS Avatar_Player_Heavy Runner excludes fight gloves
+PASS Avatar_Player_Heavy Fight includes gloves once
+PASS Avatar_Player_Heavy source recipe preserved
+PASS Avatar_Player_Jazzy Runner excludes fight gloves
+PASS Avatar_Player_Jazzy Fight includes gloves once
+PASS Avatar_Player_Jazzy source recipe preserved
+PASS Avatar_Player_Rock Runner excludes fight gloves
+PASS Avatar_Player_Rock Fight includes gloves once
+PASS Avatar_Player_Rock source recipe preserved
+PASS Avatar_Player_Soulful Runner excludes fight gloves
+PASS Avatar_Player_Soulful Fight includes gloves once
+PASS Avatar_Player_Soulful source recipe preserved
+PASS three updated style recipes
+PASS Groove jacket replaced by sweater
+PASS Dance trousers equipped
+PASS Avatar_Player_Dance_Runner_Low built
+PASS Avatar_Player_Dance_Runner_Low all equipment
+PASS Avatar_Player_Dance_Runner_Low segmented equipment
+PASS Avatar_Player_Dance_Runner_Low valid masks
+PASS Avatar_Player_Dance_Runner_Low materials and bones
+PASS Avatar_Player_Dance_Fight_Low built
+PASS Avatar_Player_Dance_Fight_Low all equipment
+PASS Avatar_Player_Dance_Fight_Low segmented equipment
+PASS Avatar_Player_Dance_Fight_Low valid masks
+PASS Avatar_Player_Dance_Fight_Low materials and bones
+PASS Avatar_Player_Groove_Runner_Low built
+PASS Avatar_Player_Groove_Runner_Low all equipment
+PASS Avatar_Player_Groove_Runner_Low segmented equipment
+PASS Avatar_Player_Groove_Runner_Low valid masks
+PASS Avatar_Player_Groove_Runner_Low materials and bones
+PASS Avatar_Player_Groove_Fight_Low built
+PASS Avatar_Player_Groove_Fight_Low all equipment
+PASS Avatar_Player_Groove_Fight_Low segmented equipment
+PASS Avatar_Player_Groove_Fight_Low valid masks
+PASS Avatar_Player_Groove_Fight_Low materials and bones
+PASS Avatar_Player_Rock_Runner_Low built
+PASS Avatar_Player_Rock_Runner_Low all equipment
+PASS Avatar_Player_Rock_Runner_Low segmented equipment
+PASS Avatar_Player_Rock_Runner_Low valid masks
+PASS Avatar_Player_Rock_Runner_Low materials and bones
+PASS Avatar_Player_Rock_Fight_Low built
+PASS Avatar_Player_Rock_Fight_Low all equipment
+PASS Avatar_Player_Rock_Fight_Low segmented equipment
+PASS Avatar_Player_Rock_Fight_Low valid masks
+PASS Avatar_Player_Rock_Fight_Low materials and bones
+PASS Wagner_ClassicGloves_Low built
+PASS Wagner_ClassicGloves_Low all equipment
+PASS Wagner_ClassicGloves_Low segmented equipment
+PASS Wagner_ClassicGloves_Low valid masks
+PASS Wagner_ClassicGloves_Low materials and bones
+PASS Avatar_Player_Dance_Runner_Mid built
+PASS Avatar_Player_Dance_Runner_Mid all equipment
+PASS Avatar_Player_Dance_Runner_Mid segmented equipment
+PASS Avatar_Player_Dance_Runner_Mid valid masks
+PASS Avatar_Player_Dance_Runner_Mid materials and bones
+PASS Avatar_Player_Dance_Fight_Mid built
+PASS Avatar_Player_Dance_Fight_Mid all equipment
+PASS Avatar_Player_Dance_Fight_Mid segmented equipment
+PASS Avatar_Player_Dance_Fight_Mid valid masks
+PASS Avatar_Player_Dance_Fight_Mid materials and bones
+PASS Avatar_Player_Groove_Runner_Mid built
+PASS Avatar_Player_Groove_Runner_Mid all equipment
+PASS Avatar_Player_Groove_Runner_Mid segmented equipment
+PASS Avatar_Player_Groove_Runner_Mid valid masks
+PASS Avatar_Player_Groove_Runner_Mid materials and bones
+PASS Avatar_Player_Groove_Fight_Mid built
+PASS Avatar_Player_Groove_Fight_Mid all equipment
+PASS Avatar_Player_Groove_Fight_Mid segmented equipment
+PASS Avatar_Player_Groove_Fight_Mid valid masks
+PASS Avatar_Player_Groove_Fight_Mid materials and bones
+PASS Avatar_Player_Rock_Runner_Mid built
+PASS Avatar_Player_Rock_Runner_Mid all equipment
+PASS Avatar_Player_Rock_Runner_Mid segmented equipment
+PASS Avatar_Player_Rock_Runner_Mid valid masks
+PASS Avatar_Player_Rock_Runner_Mid materials and bones
+PASS Avatar_Player_Rock_Fight_Mid built
+PASS Avatar_Player_Rock_Fight_Mid all equipment
+PASS Avatar_Player_Rock_Fight_Mid segmented equipment
+PASS Avatar_Player_Rock_Fight_Mid valid masks
+PASS Avatar_Player_Rock_Fight_Mid materials and bones
+PASS Wagner_ClassicGloves_Mid built
+PASS Wagner_ClassicGloves_Mid all equipment
+PASS Wagner_ClassicGloves_Mid segmented equipment
+PASS Wagner_ClassicGloves_Mid valid masks
+PASS Wagner_ClassicGloves_Mid materials and bones
+PASS Avatar_Player_Dance_Runner_HighMid built
+PASS Avatar_Player_Dance_Runner_HighMid all equipment
+PASS Avatar_Player_Dance_Runner_HighMid segmented equipment
+PASS Avatar_Player_Dance_Runner_HighMid valid masks
+PASS Avatar_Player_Dance_Runner_HighMid materials and bones
+PASS Avatar_Player_Dance_Fight_HighMid built
+PASS Avatar_Player_Dance_Fight_HighMid all equipment
+PASS Avatar_Player_Dance_Fight_HighMid segmented equipment
+PASS Avatar_Player_Dance_Fight_HighMid valid masks
+PASS Avatar_Player_Dance_Fight_HighMid materials and bones
+PASS Avatar_Player_Groove_Runner_HighMid built
+PASS Avatar_Player_Groove_Runner_HighMid all equipment
+PASS Avatar_Player_Groove_Runner_HighMid segmented equipment
+PASS Avatar_Player_Groove_Runner_HighMid valid masks
+PASS Avatar_Player_Groove_Runner_HighMid materials and bones
+PASS Avatar_Player_Groove_Fight_HighMid built
+PASS Avatar_Player_Groove_Fight_HighMid all equipment
+PASS Avatar_Player_Groove_Fight_HighMid segmented equipment
+PASS Avatar_Player_Groove_Fight_HighMid valid masks
+PASS Avatar_Player_Groove_Fight_HighMid materials and bones
+PASS Avatar_Player_Rock_Runner_HighMid built
+PASS Avatar_Player_Rock_Runner_HighMid all equipment
+PASS Avatar_Player_Rock_Runner_HighMid segmented equipment
+PASS Avatar_Player_Rock_Runner_HighMid valid masks
+PASS Avatar_Player_Rock_Runner_HighMid materials and bones
+PASS Avatar_Player_Rock_Fight_HighMid built
+PASS Avatar_Player_Rock_Fight_HighMid all equipment
+PASS Avatar_Player_Rock_Fight_HighMid segmented equipment
+PASS Avatar_Player_Rock_Fight_HighMid valid masks
+PASS Avatar_Player_Rock_Fight_HighMid materials and bones
+PASS Wagner_ClassicGloves_HighMid built
+PASS Wagner_ClassicGloves_HighMid all equipment
+PASS Wagner_ClassicGloves_HighMid segmented equipment
+PASS Wagner_ClassicGloves_HighMid valid masks
+PASS Wagner_ClassicGloves_HighMid materials and bones
+PASS Avatar_Player_Dance_Runner_High built
+PASS Avatar_Player_Dance_Runner_High all equipment
+PASS Avatar_Player_Dance_Runner_High segmented equipment
+PASS Avatar_Player_Dance_Runner_High valid masks
+PASS Avatar_Player_Dance_Runner_High materials and bones
+PASS Avatar_Player_Dance_Fight_High built
+PASS Avatar_Player_Dance_Fight_High all equipment
+PASS Avatar_Player_Dance_Fight_High segmented equipment
+PASS Avatar_Player_Dance_Fight_High valid masks
+PASS Avatar_Player_Dance_Fight_High materials and bones
+PASS Avatar_Player_Groove_Runner_High built
+PASS Avatar_Player_Groove_Runner_High all equipment
+PASS Avatar_Player_Groove_Runner_High segmented equipment
+PASS Avatar_Player_Groove_Runner_High valid masks
+PASS Avatar_Player_Groove_Runner_High materials and bones
+PASS Avatar_Player_Groove_Fight_High built
+PASS Avatar_Player_Groove_Fight_High all equipment
+PASS Avatar_Player_Groove_Fight_High segmented equipment
+PASS Avatar_Player_Groove_Fight_High valid masks
+PASS Avatar_Player_Groove_Fight_High materials and bones
+PASS Avatar_Player_Rock_Runner_High built
+PASS Avatar_Player_Rock_Runner_High all equipment
+PASS Avatar_Player_Rock_Runner_High segmented equipment
+PASS Avatar_Player_Rock_Runner_High valid masks
+PASS Avatar_Player_Rock_Runner_High materials and bones
+PASS Avatar_Player_Rock_Fight_High built
+PASS Avatar_Player_Rock_Fight_High all equipment
+PASS Avatar_Player_Rock_Fight_High segmented equipment
+PASS Avatar_Player_Rock_Fight_High valid masks
+PASS Avatar_Player_Rock_Fight_High materials and bones
+PASS Wagner_ClassicGloves_High built
+PASS Wagner_ClassicGloves_High all equipment
+PASS Wagner_ClassicGloves_High segmented equipment
+PASS Wagner_ClassicGloves_High valid masks
+PASS Wagner_ClassicGloves_High materials and bones
+PASS Avatar_Player_Dance_Runner_Ultra built
+PASS Avatar_Player_Dance_Runner_Ultra all equipment
+PASS Avatar_Player_Dance_Runner_Ultra segmented equipment
+PASS Avatar_Player_Dance_Runner_Ultra valid masks
+PASS Avatar_Player_Dance_Runner_Ultra materials and bones
+PASS Avatar_Player_Dance_Fight_Ultra built
+PASS Avatar_Player_Dance_Fight_Ultra all equipment
+PASS Avatar_Player_Dance_Fight_Ultra segmented equipment
+PASS Avatar_Player_Dance_Fight_Ultra valid masks
+PASS Avatar_Player_Dance_Fight_Ultra materials and bones
+PASS Avatar_Player_Groove_Runner_Ultra built
+PASS Avatar_Player_Groove_Runner_Ultra all equipment
+PASS Avatar_Player_Groove_Runner_Ultra segmented equipment
+PASS Avatar_Player_Groove_Runner_Ultra valid masks
+PASS Avatar_Player_Groove_Runner_Ultra materials and bones
+PASS Avatar_Player_Groove_Fight_Ultra built
+PASS Avatar_Player_Groove_Fight_Ultra all equipment
+PASS Avatar_Player_Groove_Fight_Ultra segmented equipment
+PASS Avatar_Player_Groove_Fight_Ultra valid masks
+PASS Avatar_Player_Groove_Fight_Ultra materials and bones
+PASS Avatar_Player_Rock_Runner_Ultra built
+PASS Avatar_Player_Rock_Runner_Ultra all equipment
+PASS Avatar_Player_Rock_Runner_Ultra segmented equipment
+PASS Avatar_Player_Rock_Runner_Ultra valid masks
+PASS Avatar_Player_Rock_Runner_Ultra materials and bones
+PASS Avatar_Player_Rock_Fight_Ultra built
+PASS Avatar_Player_Rock_Fight_Ultra all equipment
+PASS Avatar_Player_Rock_Fight_Ultra segmented equipment
+PASS Avatar_Player_Rock_Fight_Ultra valid masks
+PASS Avatar_Player_Rock_Fight_Ultra materials and bones
+PASS Wagner_ClassicGloves_Ultra built
+PASS Wagner_ClassicGloves_Ultra all equipment
+PASS Wagner_ClassicGloves_Ultra segmented equipment
+PASS Wagner_ClassicGloves_Ultra valid masks
+PASS Wagner_ClassicGloves_Ultra materials and bones
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AvatarWearableDeliveryCheck/<Run>d__9:MoveNext () (at Assets/_Project/Scripts/Editor/Avatar/Garments/AvatarWearableDeliveryCheck.cs:110)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.AwaitTaskContinuation:InvokeAction (object)
+System.Threading.Tasks.AwaitTaskContinuation:RunCallback (System.Threading.ContextCallback,object,System.Threading.Tasks.Task&)
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation:Run (System.Threading.Tasks.Task,bool)
+System.Threading.Tasks.Task:FinishContinuations ()
+System.Threading.Tasks.Task:FinishStageThree ()
+System.Threading.Tasks.Task`1<System.Threading.Tasks.VoidTaskResult>:TrySetResult (System.Threading.Tasks.VoidTaskResult)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Threading.Tasks.VoidTaskResult>:SetResult (System.Threading.Tasks.VoidTaskResult)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Threading.Tasks.VoidTaskResult>:SetResult (System.Threading.Tasks.Task`1<System.Threading.Tasks.VoidTaskResult>)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder:SetResult ()
+AvatarWearableDeliveryCheck/<Build>d__10:MoveNext () (at Assets/_Project/Scripts/Editor/Avatar/Garments/AvatarWearableDeliveryCheck.cs:133)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Runtime.CompilerServices.YieldAwaitable/YieldAwaiter:RunAction (object)
+UnityEngine.UnitySynchronizationContext/WorkRequest:Invoke ()
+UnityEngine.UnitySynchronizationContext:Exec ()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+(Filename: Assets/_Project/Scripts/Editor/Avatar/Garments/AvatarWearableDeliveryCheck.cs Line: 110)
+
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            0.896 ms
+	Integration:            356.849 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.030 ms
+	Total Operation Time:   357.777 ms
+Unloading 4441 unused Assets / (188.9 MB). Loaded Objects now: 10534.
+Memory consumption went from 1.40 GB to 1.22 GB.
+Total: 55.283200 ms (FindLiveObjects: 0.872700 ms CreateObjectMapping: 1.283600 ms MarkObjects: 29.280600 ms  DeleteObjects: 23.843900 ms)
+
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[UnityConnectServicesConfig] config is NOT valid, switching to default
+Killing ADB server in 0,4547062 seconds.
+Start importing ProjectSettings/EditorBuildSettings.asset using Guid(0000000000000000b000000000000000) (LibraryAssetImporter) -> (artifact id: '11f8fdea987aecd2948effa50908fb0c') in 0.0134244 seconds
+Refreshing native plugins compatible for Editor in 10.85 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.19 ms.
+Asset Pipeline Refresh (id=bf7501c2a352c5f47a96e4b57a2a186b): Total: 0.234 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-VISYON-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-VISYON channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+14:06:17.016 |V| RiderPlugin                    | :1                             | AppDomain.CurrentDomain.DomainUnload lifetimeDefinition.Terminate
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1794834377295,"processId":37400,"allocatedMemory":45909751,"memoryLabels":[{"Default":29313},{"Permanent":15524},{"NewDelete":68957},{"Thread":4230464},{"Manager":824413},{"VertexData":536},{"Geometry":816},{"Texture":296},{"Shader":88574},{"Material":24},{"GfxDevice":55545},{"Animation":392},{"Audio":3040},{"FontEngine":256},{"Physics":2090},{"Physics2D":16},{"Input":14984},{"JobScheduler":33024},{"TextLib":192},{"Mono":32},{"MonoCode":2048},{"ScriptingNativeRuntime":155060},{"BaseObject":1620400},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":3953},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":18962},{"DynamicArray":128640},{"HashMap":84722},{"Utility":2660678},{"Curl":4238},{"PoolAlloc":2824},{"AI":40},{"TypeTree":5341},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":6480},{"WebRequest":11351},{"VR":47994},{"SceneManager":504},{"Video":208},{"LazyScriptCache":32},{"Camera":17},{"Secure":2113},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":384},{"Hierarchy":608},{"CoreStats":13000},{"Identifiers":12960},{"Gui":88},{"EditorUtility":141999},{"VersionControl":4},{"Undo":947},{"AssetDatabase":35185649},{"EditorGi":328},{"UnityConnect":29232},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":212},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2870},{"Licensing":664},{"AssetReference":32},{"IPCStream":32}]}

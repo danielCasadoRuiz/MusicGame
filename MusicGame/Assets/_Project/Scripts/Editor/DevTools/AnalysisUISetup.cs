@@ -63,10 +63,16 @@ public static class AnalysisUISetup
             p.motifAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/_Project/Art/UI/Analysis/AnalysisMotifs.png");
             p.styleFlashShader=AssetDatabase.LoadAssetAtPath<Shader>("Assets/_Project/Shaders/StyleRevealFlash.shader");
             p.styleRevealClip=AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Project/Audio/Sfx/StyleRevealMagic.wav");
+            p.danceFrame=null;
+            p.cornerAtlas=null;
+            p.danceBackdrop=null;
+            p.loadingWaveAtlas=null;
+            p.neutralStaffAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/_Project/Art/UI/Analysis/NeutralStaffAtlas.png");
+            p.staffTintShader=AssetDatabase.LoadAssetAtPath<Shader>("Assets/_Project/Shaders/AnalysisStaffTint.shader");
             var flashCheck=new Material(p.styleFlashShader);
             try{if(ShaderUtil.ShaderHasError(p.styleFlashShader)||!flashCheck.SetPass(0))throw new System.Exception("Style flash shader failed compilation");}
             finally{Object.DestroyImmediate(flashCheck);}
-            if(p.library==null||p.barAtlas==null||p.motifAtlas==null) throw new System.Exception("Missing analysis presentation assets");
+            if(p.library==null||p.barAtlas==null||(p.motifAtlas==null&&p.cornerAtlas==null)) throw new System.Exception("Missing analysis presentation assets");
             PrefabUtility.SaveAsPrefabAsset(root,prefab);
         }
         finally { PrefabUtility.UnloadPrefabContents(root); }
@@ -81,6 +87,12 @@ public static class AnalysisUISetup
         var p=root.GetComponent<AnalysisPresentation>() ?? root.AddComponent<AnalysisPresentation>();
         p.library=AssetDatabase.LoadAssetAtPath<StyleSkinLibrarySO>("Assets/_Project/Configs/UI/StyleSkinLibrary.asset");
         p.barAtlas=atlas;
+        p.danceFrame=null;
+        p.cornerAtlas=null;
+        p.danceBackdrop=null;
+        p.loadingWaveAtlas=null;
+            p.neutralStaffAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/_Project/Art/UI/Analysis/NeutralStaffAtlas.png");
+            p.staffTintShader=AssetDatabase.LoadAssetAtPath<Shader>("Assets/_Project/Shaders/AnalysisStaffTint.shader");
         p.motifAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/_Project/Art/UI/Analysis/AnalysisMotifs.png");
             p.styleFlashShader=AssetDatabase.LoadAssetAtPath<Shader>("Assets/_Project/Shaders/StyleRevealFlash.shader");
             p.styleRevealClip=AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Project/Audio/Sfx/StyleRevealMagic.wav");
@@ -105,8 +117,8 @@ public static class AnalysisUISetup
         UIFactory.Stretch((RectTransform)root.transform);
         var view=root.GetComponent<AnalyzingScreenView>(); var p=root.GetComponent<AnalysisPresentation>(); p.Build(view); p.Begin();
         view.titleText.text="ANALYSING SONG"; view.progressFill.fillAmount=.64f;
-        root.transform.Find("AnalysisContent/Song").GetComponent<TMPro.TMP_Text>().text="Midnight Motion";
-        root.transform.Find("AnalysisContent/Artist").GetComponent<TMPro.TMP_Text>().text="Alex Morgan";
+        root.transform.Find("AnalysisContent/Metadata/Song").GetComponent<TMPro.TMP_Text>().text="Midnight Motion";
+        root.transform.Find("AnalysisContent/Metadata/Artist").GetComponent<TMPro.TMP_Text>().text="Alex Morgan";
         view.tipText.text="Finding the beat…";
         var apply=typeof(AnalysisPresentation).GetMethod("ApplyImmediate",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance);
         var update=typeof(AnalysisPresentation).GetMethod("Update",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance);

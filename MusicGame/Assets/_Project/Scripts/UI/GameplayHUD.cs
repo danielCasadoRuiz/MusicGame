@@ -98,6 +98,10 @@ public class GameplayHUD : MonoBehaviour
     // GameSession.Run): the ints below only detect changes, they are never a second counter.
     private TextMeshProUGUI _lifeValueText, _specialValueText;
     private int _shownLives = -1, _shownSpecials = -1;
+    private TextMeshProUGUI _tripleComboValueText, _quadComboValueText, _comboToast;
+    private Action<PickupComboEvent> _onComboToast;
+    private float _comboToastElapsed = 2f;
+    private Vector2 _comboToastHome;
 
     // One restartable pulse per cell; always scale from the authored baseline.
     private sealed class PickupPulse
@@ -151,6 +155,9 @@ public class GameplayHUD : MonoBehaviour
 
     private void UpdateResourceHud()
     {
+        var resources = manager != null ? manager.ResourceCounts : default;
+        if (_tripleComboValueText != null) _tripleComboValueText.text = resources.TripleCombos.ToString();
+        if (_quadComboValueText != null) _quadComboValueText.text = resources.QuadCombos.ToString();
         if (_lifeValueText == null || _specialValueText == null) return;
         int lives = PlayerProgressService.Instance != null ? PlayerProgressService.Instance.ExtraLives : 0;
         int specials = GameSession.Instance != null ? GameSession.Instance.Run.Wallet.Specials : 0;
@@ -163,6 +170,13 @@ public class GameplayHUD : MonoBehaviour
 
     private void OnEnable()
     {
+        _onComboToast = e =>
+        {
+            if (_comboToast == null || !_built || _gameEnded) return;
+            _comboToast.text = e.Tier == PickupComboTier.Quad ? "COMBO ×4" : "COMBO ×3";
+            _comboToastElapsed = 0; _comboToast.alpha = 1;
+        };
+        EventBus.Subscribe(_onComboToast);
         _onHudPickup = e => PulsePickup(e.Type);
         EventBus.Subscribe(_onHudPickup);
         _onLevel = e => _totalRings = e.RingCount;
@@ -212,6 +226,8 @@ public class GameplayHUD : MonoBehaviour
 
     private void OnDisable()
     {
+        EventBus.Unsubscribe(_onComboToast);
+        if (_comboToast != null) _comboToast.alpha = 0;
         EventBus.Unsubscribe(_onHudPickup);
         ResetPickupPulses();
         EventBus.Unsubscribe(_onLevel);
@@ -239,12 +255,32 @@ public class GameplayHUD : MonoBehaviour
         UpdateLiveHud();
         UpdateResourceHud();
         UpdatePickupPulses();
+        UpdateComboToast();
+    }
+
+    private void UpdateComboToast()
+    {
+        if (_comboToast == null || _comboToastElapsed >= 1.25f) return;
+        _comboToastElapsed = Mathf.Min(1.25f, _comboToastElapsed + Time.deltaTime);
+        float t = _comboToastElapsed;
+        float a = t < .1f ? t / .1f : 1 - Mathf.InverseLerp(.85f, 1.25f, t);
+        var lib = _skin != null ? _skin.library : null;
+        if (lib != null)
+        {
+            float classic = StyleSkinLibrarySO.CurrentStyle() == GameMusicStyle.Classical ? 1 : 1 - lib.RunnerWeight(SongProgress);
+            _comboToast.color = Color.Lerp(lib.titleColor, lib.HudAccent(GameMusicStyle.Classical), classic);
+        }
+        _comboToast.alpha = a;
+        _comboToast.rectTransform.localScale = Vector3.one * (1 + .16f * (1 - Mathf.Clamp01(t / .18f)));
+        _comboToast.rectTransform.anchoredPosition = _comboToastHome + Vector2.up * (8 * Mathf.Clamp01(t / 1.25f));
     }
 
     private void SetGameEnded(bool ended)
     {
         ResetPickupPulses();
         _gameEnded = ended;
+        _comboToastElapsed = 2;
+        if (_comboToast != null) _comboToast.alpha = 0;
         if (!ended)
         {
             _runnerOutcome = null; // a restart / new run: never show the previous run's evaluation
@@ -274,6 +310,9 @@ public class GameplayHUD : MonoBehaviour
         _totalTimeText   = view.totalTimeText;
         _skin            = view.skin;
         _artistSongText = view.artistSongText;
+        _tripleComboValueText = view.tripleComboValue; _quadComboValueText = view.quadComboValue;
+        _comboToast = view.comboToast;
+        if (_comboToast != null) { _comboToastHome = _comboToast.rectTransform.anchoredPosition; _comboToast.alpha = 0; }
         UpdateSongLabel();
 
         // Static column-header labels are baked into the prefab at Editor-bake time (whatever

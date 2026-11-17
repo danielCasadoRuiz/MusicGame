@@ -28,8 +28,10 @@ using Newtonsoft.Json.Linq;
 /// &lt;trousers&gt;_belt → trousers; anything else (necklace, beard…) is an accessory that hides nothing.
 /// Idempotent. Menu: Tools > MusicGame > Avatars > Garments > Set Up All Segmented Outfits (or … New Segmented Outfits:
 /// pieces whose five prefabs already carry masks at least as new as the pipeline's are kept, only dressed).
-/// Batch: -executeMethod SegmentedOutfitSetup.RunFromCommandLine [-onlyNew [-reimport Piece1,Piece2]] [-validateOutfit]
+/// Batch: -executeMethod SegmentedOutfitSetup.RunFromCommandLine [-onlyNew [-reimport Piece1,Piece2]] [-onlyPieces Piece1,Piece2] [-validateOutfit|-validateWearableDelivery]
 /// (Logs/SegmentedOutfitSetup.txt); -reimport re-imports those pieces even with -onlyNew.
+/// Shared gloves live in Player/Shared: classical_gloves is shared by all composer recipes; fight_gloves
+/// is configured on PlayerAvatarConfig and added only to the combat runtime recipe (including preloading).
 /// </summary>
 public static class SegmentedOutfitSetup
 {
@@ -52,7 +54,7 @@ public static class SegmentedOutfitSetup
     private sealed class Piece
     {
         public string Name, Folder, Owner, Id, Kind;
-        public bool Composer;
+        public bool Composer, Shared;
         public GameMusicStyle Style;
         public string Art => (Composer ? "Assets/_Project/Art/Opponents/" : "Assets/_Project/Art/Player/") + Owner + "/" + Name;
         public string ContentGroup => Composer ? ContentKeys.Enemy(Owner.ToLowerInvariant()) : ContentKeys.PlayerClothing(Id);
@@ -71,15 +73,19 @@ public static class SegmentedOutfitSetup
         var args = Environment.GetCommandLineArgs();
         int r = Array.IndexOf(args, "-reimport");
         var reimport = r >= 0 && r + 1 < args.Length ? args[r + 1].Split(',', StringSplitOptions.RemoveEmptyEntries) : null;
-        string report = Run(args.Contains("-onlyNew"), reimport, args.Contains("-onlyMissing"));
+        int selection = Array.IndexOf(args, "-onlyPieces");
+        var selected = selection >= 0 && selection + 1 < args.Length ? args[selection + 1].Split(',', StringSplitOptions.RemoveEmptyEntries) : null;
+        string report = Run(args.Contains("-onlyNew"), reimport, args.Contains("-onlyMissing"), selected);
         Debug.Log(report);
         bool failed = report.Contains("FAIL");
-        if (!failed && Environment.GetCommandLineArgs().Contains("-validateOutfit"))
+        if (!failed && args.Contains("-validateWearableDelivery"))
+            EditorApplication.delayCall += AvatarWearableDeliveryCheck.RunFromCommandLine;
+        else if (!failed && Environment.GetCommandLineArgs().Contains("-validateOutfit"))
             EditorApplication.delayCall += SegmentedOutfitCheck.RunFromCommandLine;
         else if (Application.isBatchMode) EditorApplication.Exit(failed ? 1 : 0);
     }
 
-    public static string Run(bool onlyNew = false, IEnumerable<string> reimport = null, bool onlyMissing = false)
+    public static string Run(bool onlyNew = false, IEnumerable<string> reimport = null, bool onlyMissing = false, IEnumerable<string> onlyPieces = null)
     {
         var log = new StringBuilder("[SegmentedOutfitSetup]\n");
         try
@@ -96,6 +102,11 @@ public static class SegmentedOutfitSetup
             log.AppendLine($"  body  {bodyRenderer.sharedMesh.name}: {body.Positions.Length} vertices, {body.Triangles.Length / 3} triangles");
             foreach (var piece in pieces)
             {
+                if (onlyPieces != null && !onlyPieces.Contains(piece.Folder, StringComparer.OrdinalIgnoreCase))
+                {
+                    LoadExisting(piece, requireCurrentMasks: false);
+                    continue;
+                }
                 if (onlyMissing && Directory.Exists(piece.Art))
                 {
                     LoadExisting(piece, requireCurrentMasks: false); // Load existing items for complete recipes, without importing their assets.
@@ -122,9 +133,10 @@ public static class SegmentedOutfitSetup
             // Import cleanup can unload asset objects held by the managed Piece records.
             // Reload persisted items before assigning any recipe or identity references.
             foreach (var piece in pieces)
-                if (!LoadExisting(piece, requireCurrentMasks: !onlyMissing)) log.AppendLine($"  FAIL  {piece.Name}: incomplete imported outfit assets");
+                if (!LoadExisting(piece, requireCurrentMasks: !onlyMissing && (onlyPieces == null || onlyPieces.Contains(piece.Folder, StringComparer.OrdinalIgnoreCase)))) log.AppendLine($"  FAIL  {piece.Name}: incomplete imported outfit assets");
             DressComposers(pieces.Where(p => p.Composer).ToList(), log);
-            DressPlayer(pieces.Where(p => !p.Composer).ToList(), log);
+            DressPlayer(pieces.Where(p => !p.Composer && !p.Shared).ToList(), log);
+            DressGloves(pieces, log);
             EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssets();
         }
@@ -153,7 +165,12 @@ public static class SegmentedOutfitSetup
             if (cut <= 0) { log.AppendLine($"  skip  {folder}: no owner prefix"); continue; }
             string owner = name.Substring(0, cut);
             var piece = new Piece { Name = name, Folder = folder, Owner = owner, Id = name.ToLowerInvariant(), Kind = Kind(name) };
-            if (File.Exists(ComposerContent + "/Recipes/Avatar_" + owner + ".asset")) piece.Composer = true;
+            if (folder.Equals("classical_gloves", StringComparison.OrdinalIgnoreCase) || folder.Equals("fight_gloves", StringComparison.OrdinalIgnoreCase))
+            {
+                piece.Shared = true;
+                piece.Owner = "Shared";
+            }
+            else if (File.Exists(ComposerContent + "/Recipes/Avatar_" + owner + ".asset")) piece.Composer = true;
             else if (Enum.TryParse(owner, true, out GameMusicStyle style) && style != GameMusicStyle.Unknown) piece.Style = style;
             else { log.AppendLine($"  skip  {folder}: '{owner}' is neither a composer nor a music style"); continue; }
             pieces.Add(piece);
@@ -181,7 +198,7 @@ public static class SegmentedOutfitSetup
         return kind switch
         {
             "tshirt" or "top" => "shirt",
-            "cardigan" or "overshirt" or "blazer" => "jacket",
+            "cardigan" or "overshirt" or "blazer" or "sweater" => "jacket",
             "loafers" => "shoes",
             "vest" => "waistcoat",
             _ => kind,
@@ -264,6 +281,7 @@ public static class SegmentedOutfitSetup
                            ?? AuthoredMaterial(prefabPath, materialPath)
                            ?? RicherMaterial($"{folder}/Materials/M_{prefix}.mat", textures)
                            ?? BuildMaterial(textures, folder, prefix, q.maxSize, template);
+            AvatarMaterialFinish.Apply(material, piece.Name);
             // Trouser legs are never hidden by upper garments (the gmask's keep map, from step 08).
             var result = GarmentMaskImporter.ImportQuality(fbx[0], gmask, modelPath, prefabPath, material, body, plainPrefab: hair, log);
             prefabs.Add((q.quality, result.Prefab));
@@ -367,6 +385,7 @@ public static class SegmentedOutfitSetup
         "waistcoat" => ("waistcoat", 30, new List<string> { "shirt", "top" }),
         "pants" or "trousers" => ("trousers", 20, new List<string>()),
         "shoes" or "boots" or "sneakers" => ("shoes", 30, new List<string>()),
+        "gloves" => ("gloves", 50, new List<string> { "shirt", "top", "waistcoat", "jacket" }),
         _ => (kind, 50, new List<string>()),
     };
 
@@ -376,7 +395,17 @@ public static class SegmentedOutfitSetup
         string folder = piece.Composer ? ComposerContent + "/Items" : PlayerContent + "/Items";
         string path = $"{folder}/Wearable_{piece.Name}.asset";
         var item = AssetDatabase.LoadAssetAtPath<WearableItemSO>(path);
-        if (item != null) return item;
+        if (item != null)
+        {
+            // The renamed varsity jacket must use the jacket slot, including an earlier import.
+            if (piece.Id == "groove_sweater")
+            {
+                item.occupiedSlots = AvatarSlot.UpperBody;
+                item.layer = GarmentLayer.Outerwear;
+                EditorUtility.SetDirty(item);
+            }
+            return item;
+        }
         EnsureFolder(folder);
         item = ScriptableObject.CreateInstance<WearableItemSO>();
         item.stableId = piece.Id;
@@ -390,6 +419,7 @@ public static class SegmentedOutfitSetup
             "shirt" => (AvatarSlot.Accessory, GarmentLayer.Shirt),   // under an UpperBody jacket, like Wagner's shirt
             "pants" or "trousers" => (AvatarSlot.LowerBody, GarmentLayer.Pants),
             "shoes" or "boots" or "sneakers" => (AvatarSlot.Feet, GarmentLayer.Outerwear),
+            "gloves" => (AvatarSlot.Hands, GarmentLayer.Accessory),
             _ => (AvatarSlot.None, GarmentLayer.Accessory),          // beard
         };
         AssetDatabase.CreateAsset(item, path);
@@ -515,6 +545,46 @@ public static class SegmentedOutfitSetup
             .ThenByDescending(p => p.Name.IndexOf("_belt", StringComparison.OrdinalIgnoreCase) >= 0)
             .ThenBy(p => p.Name, StringComparer.OrdinalIgnoreCase).First());
 
+    private static void DressGloves(List<Piece> pieces, StringBuilder log)
+    {
+        var classic = pieces.FirstOrDefault(p => p.Folder.Equals("classical_gloves", StringComparison.OrdinalIgnoreCase))?.Item;
+        var fight = pieces.FirstOrDefault(p => p.Folder.Equals("fight_gloves", StringComparison.OrdinalIgnoreCase))?.Item;
+        if (classic != null)
+        {
+            foreach (var guid in AssetDatabase.FindAssets("t:AvatarRecipeSO", new[] { ComposerContent + "/Recipes" }))
+            {
+                var recipe = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>(AssetDatabase.GUIDToAssetPath(guid));
+                recipe.items = recipe.items.Where(i => i != null && (i.occupiedSlots & AvatarSlot.Hands) == 0)
+                    .Append(classic).Distinct().ToArray();
+                EditorUtility.SetDirty(recipe);
+                var settings = AddressableAssetSettingsDefaultObject.Settings;
+                string enemyLabel = ContentKeys.Enemy(recipe.name.Substring("Avatar_".Length).ToLowerInvariant());
+                settings.AddLabel(enemyLabel);
+                settings.AddLabel(ContentKeys.Category(ContentCategory.Enemies));
+                foreach (var variant in classic.sharedVariant.qualityPrefabs.variants)
+                {
+                    var entry = settings.FindAssetEntry(variant.prefab.AssetGUID);
+                    entry.SetLabel(enemyLabel, true);
+                    entry.SetLabel(ContentKeys.Category(ContentCategory.Enemies), true);
+                }
+                log.AppendLine($"  PASS  {recipe.name}: classical gloves");
+            }
+        }
+        if (fight != null)
+        {
+            var config = AssetDatabase.LoadAssetAtPath<PlayerAvatarConfigSO>(PlayerConfigPath);
+            config.combatGloves = fight;
+            EditorUtility.SetDirty(config);
+            foreach (var guid in AssetDatabase.FindAssets("t:AvatarRecipeSO", new[] { PlayerContent + "/Recipes" }))
+            {
+                var recipe = AssetDatabase.LoadAssetAtPath<AvatarRecipeSO>(AssetDatabase.GUIDToAssetPath(guid));
+                recipe.items = recipe.items.Where(i => i != fight).ToArray();
+                EditorUtility.SetDirty(recipe);
+            }
+            log.AppendLine("  PASS  player: fight gloves only in combat runtime recipe");
+        }
+    }
+
     private static void DressComposers(List<Piece> pieces, StringBuilder log)
     {
         foreach (var composer in pieces.GroupBy(p => p.Owner))
@@ -557,7 +627,8 @@ public static class SegmentedOutfitSetup
             recipe.name = Path.GetFileNameWithoutExtension(path);
             // Preserve imported items whose source is temporarily absent from Output.
             var knownItems = pieces.Where(p => p.Item != null).Select(p => p.Item).ToHashSet();
-            var retained = recipe.items.Where(item => item != null && !knownItems.Contains(item));
+            var replacedIds = style.Any(p => p.Id == "groove_sweater") ? new[] { "groove_jacket" } : Array.Empty<string>();
+            var retained = recipe.items.Where(item => item != null && !knownItems.Contains(item) && !replacedIds.Contains(item.stableId));
             recipe.items = PreferredPieces(style).Select(p => p.Item).Concat(retained).Distinct().ToArray();
             EditorUtility.SetDirty(recipe);
             styleRecipes.RemoveAll(r => r.style == style.Key);

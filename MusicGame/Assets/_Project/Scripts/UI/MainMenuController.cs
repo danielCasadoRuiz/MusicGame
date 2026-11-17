@@ -79,7 +79,7 @@ public class MainMenuController : MonoBehaviour
             {
                 // Back from a game: the menu opens in the style that was being played and fades to this launch's.
                 bool fromGame = e.Previous == GameFlowState.Gameplay || e.Previous == GameFlowState.Results || e.Previous == GameFlowState.Fight;
-                Show(fromGame ? StyleSkinLibrarySO.CurrentStyle() : GameMusicStyle.Unknown);
+                Show(fromGame ? StyleSkinLibrarySO.CurrentStyle() : GameMusicStyle.Unknown, waitForSceneCleanup: fromGame);
             }
             else if (e.Previous == GameFlowState.MainMenu) Hide();
         };
@@ -247,12 +247,12 @@ public class MainMenuController : MonoBehaviour
 
     private void Show() => Show(GameMusicStyle.Unknown);
 
-    private void Show(GameMusicStyle playedStyle)
+    private void Show(GameMusicStyle playedStyle, bool waitForSceneCleanup = false)
     {
         RefreshProgressUI();
         _root.SetAsLastSibling();
         if(_menuEntrance!=null){StopCoroutine(_menuEntrance);_menuEntrance=null;}
-        if(playedStyle!=GameMusicStyle.Unknown)
+        if(waitForSceneCleanup || playedStyle!=GameMusicStyle.Unknown)
         {
             // Keep the entire composition hidden during scene disposal, not just the lettering.
             _root.gameObject.SetActive(false);
@@ -262,12 +262,14 @@ public class MainMenuController : MonoBehaviour
         _settingsPanel.gameObject.SetActive(false);
     }
 
-    private void RevealMenu(GameMusicStyle playedStyle)
+    private void RevealMenu(GameMusicStyle playedStyle, bool deferLetters = false)
     {
         _root.gameObject.SetActive(true);
-        ApplyMenuStyle(playedStyle);
+        ApplyMenuStyle(playedStyle, deferLetters);
         ShowNextNotice(); // after the menu is up, so the popup sits on top
         if (CampaignService.LapPromptPending) ShowLapFinished(); // a just-finished lap: offered once
+        Canvas.ForceUpdateCanvases();
+        AppBootstrap.Context?.SceneFlow?.RevealMenuOverTransitionFrame();
     }
 
     // The logo and the buttons share one random style per launch (StyledTitleView.MenuStyle) — kept for all the UI
@@ -280,6 +282,7 @@ public class MainMenuController : MonoBehaviour
     private const float IntroVoiceLead = 0.35f;   // the shout's attack (and the T's landing) this long after the menu shows
     private Coroutine _styleFade;
     private Coroutine _menuEntrance;
+    private System.Action _pendingLettersIntro;
     private GameObject _fadingLogo;
     private static bool s_launchIntroDone;
 
@@ -302,12 +305,19 @@ public class MainMenuController : MonoBehaviour
         var flow=AppBootstrap.Context?.SceneFlow;
         while(flow!=null && (flow.IsModeTransitionInProgress || flow.CurrentMode!=GameMode.Frontend))yield return null;
         yield return null;
+        // Buttons, composers and static title layers render first, underneath the frozen frame.
+        // Letter animation starts only once the frozen frame is gone; it cannot hide the fixed menu.
+        RevealMenu(playedStyle, deferLetters: true);
+        while(flow!=null && flow.IsTransitionFrameVisible)yield return null;
+        var intro = _pendingLettersIntro;
+        _pendingLettersIntro = null;
+        intro?.Invoke();
         _menuEntrance=null;
-        RevealMenu(playedStyle);
     }
 
-    private void ApplyMenuStyle(GameMusicStyle playedStyle)
+    private void ApplyMenuStyle(GameMusicStyle playedStyle, bool deferLetters = false)
     {
+        _pendingLettersIntro = null;
         if (_logo == null) return;
         if (_styleFade != null) { StopCoroutine(_styleFade); _styleFade = null; }
         if (_fadingLogo != null) _fadingLogo.SetActive(false);
@@ -315,21 +325,32 @@ public class MainMenuController : MonoBehaviour
         _logo.StopIntro();
         var style = StyledTitleView.MenuStyle(_logo.library);
         _logo.Show(style);
-        bool fromGame = playedStyle != GameMusicStyle.Unknown;
-        bool fade = fromGame && playedStyle != style && isActiveAndEnabled;
+        bool fromGame = deferLetters || playedStyle != GameMusicStyle.Unknown;
+        bool fade = playedStyle != GameMusicStyle.Unknown && playedStyle != style && isActiveAndEnabled;
         if (!fade)
         {
             if (_buttonStyle != null) _buttonStyle.Apply(style, 1f);
             if (fromGame)
             {
                 s_launchIntroDone = true;
-                _logo.Intro(limitFrameStep: true);
+                if (deferLetters)
+                {
+                    _logo.PrepareLettersIntro();
+                    _pendingLettersIntro = () => _logo.Intro(limitFrameStep: true, lettersOnly: true);
+                }
+                else _logo.Intro(limitFrameStep: true, lettersOnly: true);
             }
             else if (!s_launchIntroDone) LaunchIntro();
             return;
         }
         s_launchIntroDone = true;
-        _styleFade = StartCoroutine(FadeFromPlayedStyle(playedStyle, style));
+        if (deferLetters)
+        {
+            PreparePlayedStyle(playedStyle, style);
+            _fadingLogo.GetComponent<StyledTitleView>().PrepareLettersIntro();
+            _pendingLettersIntro = () => _styleFade = StartCoroutine(FadeFromPlayedStyle(playedStyle, style, prepared: true));
+        }
+        else _styleFade = StartCoroutine(FadeFromPlayedStyle(playedStyle, style));
     }
 
     // First menu of the launch: the letters land on the announcer's two words (the shout's attack on the T, the F on
@@ -354,7 +375,7 @@ public class MainMenuController : MonoBehaviour
         group.blocksRaycasts = group.interactable = false;
     }
 
-    private System.Collections.IEnumerator FadeFromPlayedStyle(GameMusicStyle from, GameMusicStyle to)
+    private void PreparePlayedStyle(GameMusicStyle from, GameMusicStyle to)
     {
         // A cross-fade: the played style's logo (a copy, on top) fades out while the menu's fades in under it — background,
         // letters and foreground alike, so nothing of the new one is there before it appears. The composers stay. The
@@ -369,8 +390,15 @@ public class MainMenuController : MonoBehaviour
         var played = _fadingLogo.GetComponent<StyledTitleView>();
         played.Show(from);
         if (_buttonStyle != null) _buttonStyle.Apply(to, 0f, from);
+    }
+
+    private System.Collections.IEnumerator FadeFromPlayedStyle(GameMusicStyle from, GameMusicStyle to, bool prepared = false)
+    {
+        if (!prepared) PreparePlayedStyle(from, to);
+        var group = _fadingLogo.GetComponent<CanvasGroup>();
+        var played = _fadingLogo.GetComponent<StyledTitleView>();
         // The played style's title animates in first (silently), then the cross-fade starts.
-        played.Intro(limitFrameStep: true);
+        played.Intro(limitFrameStep: true, lettersOnly: true);
         while(played.IsIntroPlaying) yield return null;
 
         for (float t = -StyleFadeDelay; t < StyleFadeDuration; t += Mathf.Min(Time.unscaledDeltaTime,.05f))
@@ -389,6 +417,7 @@ public class MainMenuController : MonoBehaviour
 
     private void Hide()
     {
+        _pendingLettersIntro = null;
         if(_menuEntrance!=null){StopCoroutine(_menuEntrance);_menuEntrance=null;}
         if(_styleFade!=null){StopCoroutine(_styleFade);_styleFade=null;}
         if(_fadingLogo!=null)_fadingLogo.SetActive(false);

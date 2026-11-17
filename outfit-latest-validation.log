@@ -1,0 +1,2100 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.2f1 (a9779f353c9b) revision 11106207'; Using compiler version '194234433'; Build Type 'Release'
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON" at "2026-11-08T14:35:10.3574088Z"
+OS: 'Windows 11  (10.0.26200) 64bit Professional' Language: 'es' Physical Memory: 32388 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+Date: 2026-11-08T14:35:10Z
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Unity.exe
+-batchmode
+-projectPath
+C:\Users\VISYON\Documents\MusicGame\MusicGame
+-executeMethod
+SegmentedOutfitSetup.RunFromCommandLine
+-onlyMissing
+-validateOutfit
+-logFile
+C:\Users\VISYON\Documents\MusicGame\outfit-latest-validation.log
+Successfully changed project path to: C:\Users\VISYON\Documents\MusicGame\MusicGame
+C:/Users/VISYON/Documents/MusicGame/MusicGame
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [31400]  Target information:
+
+Player connection [31400]  * "[IP] 192.168.1.15 [Port] 55504 [Flags] 2 [Guid] 948967366 [EditorId] 948967366 [Version] 1048832 [Id] WindowsEditor(7,RemoteDani) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [31400] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [31400] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-37880" after 0.3 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              669664ee3ca046d3a08a04d08201ca91
+  Correlation Id:          f1303be8974c293abc5a41551d1e8745
+  External correlation Id: 4583115647656988239
+  Machine Id:              x99c5MRpHgESOtEUeZ1qua+TIa8=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-VISYON" (connect: 0.00s, validation: 0.00s, handshake: 1.28s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON-notifications" at "2026-11-08T14:35:11.6390891Z"
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.00
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Module] Licensing Background thread has ended after 1.30s
+[Licensing::Module] Licensing is initialized (took 0.76s).
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Artifact Garbage Collection - Removed 145 unused hashed content files
+Refreshing native plugins compatible for Editor in 0.98 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.2f1 (a9779f353c9b)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/VISYON/Documents/MusicGame/MusicGame/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3070 Laptop GPU (ID=0x249d)
+    Vendor:   NVIDIA
+    VRAM:     8020 MB
+    Driver:   32.0.15.8142
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56880
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/MetroSupport/UnityEditor.UWP.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+Registered in 0.016533 seconds.
+- Loaded All Assemblies, in  0.425 seconds
+Native extension for Android target not found
+Android Extension - Scanning For ADB Devices 2232 ms
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  2.637 seconds
+Domain Reload Profiling: 3058ms
+	BeginReloadAssembly (153ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (9ms)
+	RebuildCommonClasses (35ms)
+	RebuildNativeTypeToScriptingClass (11ms)
+	initialDomainReloadingComplete (61ms)
+	LoadAllAssembliesAndSetupDomain (160ms)
+		LoadAssemblies (141ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (156ms)
+			TypeCache.Refresh (154ms)
+				TypeCache.ScanAssembly (141ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (2637ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (2605ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (2359ms)
+			SetLoadedEditorAssemblies (5ms)
+			BeforeProcessingInitializeOnLoad (76ms)
+			ProcessInitializeOnLoadAttributes (116ms)
+			ProcessInitializeOnLoadMethodAttributes (49ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Application.AssetDatabase Initial Refresh Start
+Package Manager log level set to [2]
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 64 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.addressables@2.3.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.addressables@5d870284b3d9)
+    com.unity.ai.inference@2.6.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.ai.navigation@2.0.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.navigation@5218e4bf7edc)
+    com.unity.collab-proxy@2.10.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collab-proxy@3351acaba9c9)
+    com.unity.ide.rider@3.0.38 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.rider@1f60b3138684)
+    com.unity.ide.visualstudio@2.0.25 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.visualstudio@74aa435fc4bb)
+    com.unity.inputsystem@1.17.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.inputsystem@02433b2481ab)
+    com.unity.localization@1.5.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.localization@f2647f7408bd)
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.timeline@1.8.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.timeline@6b9e48457ddb)
+    com.unity.visualscripting@1.9.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.visualscripting@191c0d7e3b69)
+    com.unity.burst@1.8.26 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.burst@21aa83e7fd8f)
+    com.unity.dt.app-ui@2.1.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.dt.app-ui@8ac7e730dd5d)
+    com.unity.collections@2.6.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collections@aea9d3bd5e19)
+    com.unity.profiling.core@1.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.profiling.core@8a49f7027d06)
+    com.unity.scriptablebuildpipeline@2.4.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.scriptablebuildpipeline@ca3e2d96aa2f)
+    com.unity.searcher@4.9.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.mathematics@1.3.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.mathematics@19a9377c4ffa)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.test-framework.performance@3.2.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework.performance@0840f58e4562)
+  Built-in packages:
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.multiplayer.center@f01f4ba8d00a)
+    com.unity.render-pipelines.universal@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal@66e99ffa09c7)
+    com.unity.test-framework@1.6.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework@0b7a23ab2e1d)
+    com.unity.ugui@2.0.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ugui@52e65280e89e)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.0.5 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ext.nunit@d8c07649098d)
+    com.unity.render-pipelines.core@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.core@ce86d16dfe9d)
+    com.unity.shadergraph@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.shadergraph@3cfe1d1f3f8c)
+    com.unity.render-pipelines.universal-config@17.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal-config@8dc1aab4af1d)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.05 seconds
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+DisplayProgressbar: Compiling Scripts
+ExitCode: 0 Duration: 5s436ms
+[ 896/1159  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1155/1159  3s] Csc Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+[1156/1159  0s] ILPostProcess Library/Bee/artifacts/1900b0aEDbg.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll, with 137 defines and 359 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1157/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[1158/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (5.40 seconds), 5 items updated, 1159 evaluated
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+AssetDatabase: script compilation time: 6.037558s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  1.669 seconds
+Refreshing native plugins compatible for Editor in 4.90 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  7.014 seconds
+Domain Reload Profiling: 8674ms
+	BeginReloadAssembly (298ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (10ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (142ms)
+	RebuildCommonClasses (34ms)
+	RebuildNativeTypeToScriptingClass (12ms)
+	initialDomainReloadingComplete (40ms)
+	LoadAllAssembliesAndSetupDomain (1275ms)
+		LoadAssemblies (1083ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (300ms)
+			TypeCache.Refresh (224ms)
+				TypeCache.ScanAssembly (209ms)
+			BuildScriptInfoCaches (60ms)
+			ResolveRequiredComponents (11ms)
+	FinalizeReload (7015ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (6768ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (39ms)
+			SetLoadedEditorAssemblies (6ms)
+			BeforeProcessingInitializeOnLoad (298ms)
+			ProcessInitializeOnLoadAttributes (6202ms)
+			ProcessInitializeOnLoadMethodAttributes (212ms)
+			AfterProcessingInitializeOnLoad (11ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (10ms)
+Refreshing native plugins compatible for Editor in 6.71 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=3e5b2a8db548a5940be7c1c4f52d1fdf): Total: 16.410 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=8017 ms
+		Asset DB Callback time: managed=455 ms, native=70 ms
+		Scripting: domain reloads=1, domain reload time=1670 ms, compile time=6039 ms, other=157 ms
+		Project Asset Count: scripts=6105, non-scripts=19342
+		Asset File Changes: new=0, changed=1, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 61.694ms
+	ApplyChangesToAssetFolders: 0.565ms
+	Scan: 287.039ms
+	OnSourceAssetsModified: 0.736ms
+	CategorizeAssetsWithTransientArtifact: 62.457ms
+	ProcessAssetsWithTransientArtifactChanges: 88.118ms
+	CategorizeAssets: 246.155ms
+	ImportOutOfDateAssets: 7043.062ms (995.025ms without children)
+		CompileScripts: 6038.725ms
+		ReloadNativeAssets: 0.186ms
+		UnloadImportedAssets: 2.101ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 4.572ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 2.451ms
+	PostProcessAllAssets: 457.675ms
+	Hotreload: 9.100ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.002ms
+	UnloadStreamsBegin: 3.260ms
+	PersistCurrentRevisions: 1.198ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 4.483ms
+	Untracked: 8148.731ms
+
+Application.AssetDatabase Initial Refresh End
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+Scanning for USB devices : 2.080ms
+Initializing Unity extensions:
+Script 'Library/PackageCache/com.unity.test-framework@0b7a23ab2e1d/Tests/TestNewCustomAssembly/TestNewCustomAssembly.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/VerifyEditorInPlaymode/Unity.AI.Navigation.Tests.EditorInPlaymode.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.mathematics@19a9377c4ffa/Tests/Unity.Mathematics.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.xml' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/ResourceManager/Unity.ResourceManager.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/DocCodeSamples.Tests/DocCodeSamples.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.dt.app-ui@8ac7e730dd5d/Tests/Runtime/Unity.AppUI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/Unity.Addressables.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/TestAssets/Unity.ScriptableBuildPipelineTests.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.PerformanceTests/Unity.Collections.PerformanceTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/Unity.AI.Navigation.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.timeline@6b9e48457ddb/DocCodeExamples/DocCodeExamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.localization@f2647f7408bd/DocCodeSamples.Tests/DocCodeSamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.multiplayer.center@f01f4ba8d00a/Tests/Runtime/Unity.Multiplayer.Center.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.core@ce86d16dfe9d/Tests/Runtime/Threading/FunctionTestsGroup.compute' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/OffMeshLinkTests/Unity.AI.Navigation.LegacyOffMeshLink.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/UGUI/UnityEngine.UI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.inputsystem@02433b2481ab/Tests/IntegrationTests/Unity.InputSystem.IntegrationTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests.Playmode/FixedListPlayModeTests.tt' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/TMP/Unity.TextMeshPro.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Tests/Runtime/Unity.RenderPipelines.Universal.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/Unity.ScriptableBuildPipeline.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.BurstCompatibilityGen/Unity.Collections.BurstCompatibilityGen.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-MusicGame
+Unloading 62 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 9396 unused Assets / (20.9 MB). Loaded Objects now: 10410.
+Memory consumption went from 334.8 MB to 313.9 MB.
+Total: 17.379600 ms (FindLiveObjects: 0.673200 ms CreateObjectMapping: 0.803600 ms MarkObjects: 10.929700 ms  DeleteObjects: 4.971800 ms)
+
+Start importing ProjectSettings/EditorBuildSettings.asset using Guid(0000000000000000b000000000000000) (LibraryAssetImporter) -> (artifact id: '11f8fdea987aecd2948effa50908fb0c') in 0.0094487 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Dark.asset using Guid(10b73f72003f8fa4b907647164fbabaa) (NativeFormatImporter) -> (artifact id: '05b10007c43e0219a196e2869f40f7e7') in 0.0037262 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Haydn.asset using Guid(9027677e3fcbcdc48b06665831fdcc5a) (NativeFormatImporter) -> (artifact id: '1eb9599726400570eb8906d2e9877505') in 0.002885 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Haydn.asset using Guid(3184c966ae4871142a48da865dc8c06a) (NativeFormatImporter) -> (artifact id: '85fbc5f59980957cd2f628e8b2ae955d') in 0.0034016 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Wagner.asset using Guid(4171ab1929a1e714da86ef33553e069e) (NativeFormatImporter) -> (artifact id: '96b9fed3000f09ab43d6d0ef655231be') in 0.0028914 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Chopin.asset using Guid(416b036510376c64f9829a9865fec787) (NativeFormatImporter) -> (artifact id: 'bfd5e2108589942e751aa3a81c6e5ae1') in 0.0031099 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Heavy.asset using Guid(d112aa6ad931da443bc8cf9aea28092f) (NativeFormatImporter) -> (artifact id: 'ad4e88c08d7c4c17182cbc27c7c876d6') in 0.0028404 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Groove.asset using Guid(32c10662440706448a3d56e1bcbbe696) (NativeFormatImporter) -> (artifact id: 'b2b5a7f6bb76a584f39665eccbe0dbb4') in 0.0033635 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Wagner.asset using Guid(d25906c655f2c7544a45c69319b9f91d) (NativeFormatImporter) -> (artifact id: 'd199ee8cad6216a39726a831e3aa28e2') in 0.0029762 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Funky.asset using Guid(b3808915cb63ee44dad227ee77e6a9df) (NativeFormatImporter) -> (artifact id: 'cc6344a01a541adbb61f4bdb0bff33b2') in 0.0033328 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Cinematic.asset using Guid(c306cc4bc7d5e104f8475457c49b087f) (NativeFormatImporter) -> (artifact id: '24088dcd7eef14cea69740816bdf0f93') in 0.0032042 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Dance.asset using Guid(54c196c3f1efc8444808867b4359820b) (NativeFormatImporter) -> (artifact id: 'a6ad886673c3dbca7a27b3e539ae1e11') in 0.003101 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Classical.asset using Guid(9408b142886063e4e9e107f45db4c428) (NativeFormatImporter) -> (artifact id: '718fab6085821d555360115cc61f0982') in 0.0029846 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Monteverdi.asset using Guid(e4cc1d30ad8d38b45b49cd7b160ba0fd) (NativeFormatImporter) -> (artifact id: '7c234ee599a21b28c373e43bddcb373d') in 0.0030542 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Pachelbel.asset using Guid(656f0b01d64201042aad0608eb4b3175) (NativeFormatImporter) -> (artifact id: '599a939462f40f08e2d6c8528c271d17') in 0.0028605 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Mozart.asset using Guid(163d50509c11621428db2cca9c185f13) (NativeFormatImporter) -> (artifact id: '73944b61b5f7a3f69dfcd3c43d9a40ef') in 0.0031359 seconds
+Start importing Assets/_Project/Configs/Player/PlayerAvatarConfig.asset using Guid(277f13c89f6de3d4786000c86fcebfdd) (NativeFormatImporter) -> (artifact id: '45e98a758d507f0fabc442ff73970a77') in 0.0028035 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Catchy.asset using Guid(87f306f436394f747aa4554e1f8779b7) (NativeFormatImporter) -> (artifact id: 'e48b0cb468fafd4f951e91a96f84165a') in 0.0032319 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Acoustic.asset using Guid(e7cd988c9b302974691ca71ae2c0a1ee) (NativeFormatImporter) -> (artifact id: 'c48e11a758ebb83520aad7b1f0357287') in 0.0031061 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Dreamy.asset using Guid(2892a0de1ddf98442902e4ca5403a0dc) (NativeFormatImporter) -> (artifact id: '5b40a6caf686b054c5dca3c6e5347992') in 0.0031525 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Rock.asset using Guid(a81c9e93143b90c418af6855fc78bb94) (NativeFormatImporter) -> (artifact id: 'ad07decc6789f4093472229fe109b078') in 0.002827 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Handel.asset using Guid(e81679ed2fcf482459911c022773180b) (NativeFormatImporter) -> (artifact id: 'c702f422878d7f089b9b6e4ac6051798') in 0.0029956 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Experimental.asset using Guid(5929bb8e3d31a954cae561a948307598) (NativeFormatImporter) -> (artifact id: '379edc0a17d5f9ae5693619d325f8499') in 0.0029321 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Monteverdi.asset using Guid(79847c84a610e194dbf8b5a7258b8423) (NativeFormatImporter) -> (artifact id: '5a616ac75beba3138a3f6b99010a0fdb') in 0.0031357 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Bach.asset using Guid(a92b1e973e6dcdd448eee4cb3ce52319) (NativeFormatImporter) -> (artifact id: 'd16d3e13e455a348b5f3243386e1f7aa') in 0.0028243 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Soulful.asset using Guid(f9bd5149c0a3cf34aa927cbd929fed8d) (NativeFormatImporter) -> (artifact id: 'd00765686934aa73f8a33412c4901d17') in 0.0030427 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Energetic.asset using Guid(6ac957c8d6ab61d4a9543af210f0a7d3) (NativeFormatImporter) -> (artifact id: '68f2a3c109761da74686f3ca5fc4bdf0') in 0.0027732 seconds
+Start importing Assets/AddressableAssetsData/AddressableAssetSettings.asset using Guid(8a4cc0dfc618f344aaae658dde9bb725) (NativeFormatImporter) -> (artifact id: 'ce56935af46c8b4401f9e4fb8e9b2b83') in 0.0031877 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Brahms.asset using Guid(9aaf6bfc606f8e2449752e83e608d228) (NativeFormatImporter) -> (artifact id: '2313d6316ddd1d719b6b90b12233e8d1') in 0.0027478 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Handel.asset using Guid(fa69a30c9e30b4045be872eee794cb84) (NativeFormatImporter) -> (artifact id: '9afdae4c787a6da521a4975f9fb3a4ed') in 0.0031876 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Brahms.asset using Guid(9ba2de59bbb29a840854f32eb09053af) (NativeFormatImporter) -> (artifact id: '8e79c0fe699eef04634091460862d137') in 0.0027281 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Bach.asset using Guid(ab5f1453144b37b45b716ea4762a7cd7) (NativeFormatImporter) -> (artifact id: 'e01b10c6e1c298f66766ed1f5c4565ff') in 0.0029723 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Beethoven.asset using Guid(ac3f6fb8baa70994989e25c43ce97fa6) (NativeFormatImporter) -> (artifact id: '9f8de4c2b5c642e9cb3102646c20976a') in 0.0027589 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Chill.asset using Guid(ecd7cba07173ab34ba4ec3017717bfcd) (NativeFormatImporter) -> (artifact id: '1b491665993bb302e7604191e2684c57') in 0.0030015 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Electronic.asset using Guid(8d5cfbe7ed0fd5e49ac44e47e87210c9) (NativeFormatImporter) -> (artifact id: '4e8a062c69b101b3af0b00e798f3d9e9') in 0.0027473 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Beethoven.asset using Guid(ade4e4a265ea22d46b4ece04ca8c00ec) (NativeFormatImporter) -> (artifact id: 'df26f250e9fff73d812834255b602fe8') in 0.0028933 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Jazzy.asset using Guid(0e07f2f7f3ef761478a61a78e6e1a1c1) (NativeFormatImporter) -> (artifact id: 'c70463efafdefabea32921c9f268156b') in 0.0032611 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Pachelbel.asset using Guid(7f28473813b6f804a982a8198867c814) (NativeFormatImporter) -> (artifact id: '338398a6a79b4571c7a2c02cfc3fe574') in 0.0032615 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Mozart.asset using Guid(9fb7c92b40345484191043bb059090b4) (NativeFormatImporter) -> (artifact id: '375ba84e8552b49628315d311e1bd6ec') in 0.0034009 seconds
+Refreshing native plugins compatible for Editor in 4.37 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.10 ms.
+Asset Pipeline Refresh (id=1f56ce5dab1d13d4e94ccfefc09da503): Total: 0.438 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+	Summary:
+		Imports: total=39 (actual=39, local cache=0, cache server=0)
+		Asset DB Process Time: managed=5 ms, native=384 ms
+		Asset DB Callback time: managed=35 ms, native=13 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=6105, non-scripts=19342
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 52
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 0.001ms
+	ApplyChangesToAssetFolders: 0.114ms
+	Scan: 32.536ms
+	OnSourceAssetsModified: 0.000ms
+	CategorizeAssetsWithTransientArtifact: 0.068ms
+	ProcessAssetsWithTransientArtifactChanges: 0.097ms
+	CategorizeAssets: 184.905ms
+	ImportOutOfDateAssets: 152.344ms (1.575ms without children)
+		ImportManagerImport: 145.451ms (3.750ms without children)
+			ImportInProcess: 141.141ms
+			UpdateCategorizedAssets: 0.560ms
+		ReloadNativeAssets: 0.540ms
+		UnloadImportedAssets: 0.272ms
+		ReloadImportedAssets: 0.004ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 3.313ms
+		InitializingProgressBar: 0.006ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 1.183ms
+	PostProcessAllAssets: 44.009ms
+	Hotreload: 4.862ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.238ms
+	UnloadStreamsBegin: 1.935ms
+	PersistCurrentRevisions: 1.253ms
+	UnloadStreamsEnd: 0.002ms
+	Untracked: 15.105ms
+
+[SegmentedOutfitSetup]
+  found 117: Acoustic_boots, Acoustic_shirt, Acoustic_trousers_belt, Acoustic_waistcoat, Bach_hair, Bach_jacket, Bach_pants, Bach_shirt, Beethoven_hair, Beethoven_jacket, Beethoven_pants, Beethoven_shirt, Beethoven_shoes, Brahms_beard, Brahms_hair, Brahms_jacket, Brahms_pants, Brahms_shirt, Catchy_jacket, Catchy_shirt, Catchy_sneakers, Catchy_trousers, Chill_cardigan, Chill_sneakers, Chill_trousers, Chill_tshirt, Chopin_jacket, Chopin_pants, Chopin_shirt, Cinematic_boots, Cinematic_coat, Cinematic_shirt, Cinematic_trousers, Cinematic_waistcoat, Classical_jacket, Classical_shirt, Classical_shoes, Classical_trousers, Classical_waistcoat, Dance_jacket, Dance_sneakers, Dance_tshirt, Dark_boots, Dark_coat, Dark_shirt, Dark_trousers, Dark_waistcoat, Dreamy_necklace, Dreamy_overshirt, Dreamy_shirt, Dreamy_shoes, Dreamy_trousers, Electronic_jacket, Electronic_sneakers, Electronic_top, Electronic_trousers, Energetic_jacket, Energetic_sneakers, Energetic_trousers, Energetic_tshirt, Experimental_jacket, Experimental_shoes, Experimental_top, Experimental_trousers, Funky_belt, Funky_shirt, Funky_shoes, Funky_trousers, Funky_trousers_belt, Groove_jacket, Groove_necklace, Groove_sneakers, Groove_trousers, Groove_tshirt, Handel_hair_2, Handel_jacket_2, Handel_pants, Handel_shirt, Handel_shirt_2, Handel_shoes, Handel_shoes_2, Haydn_hair, Haydn_jacket, Haydn_pants, Haydn_shirt, Haydn_shoes, Heavy_boots, Heavy_trousers_belt_chain, Heavy_tshirt, Heavy_vest, Heavy_wrist_cuffs, Jazzy_jacket, Jazzy_shirt, Jazzy_shoes, Jazzy_trousers, Jazzy_waistcoat, Monteverdi_beard, Monteverdi_hair, Monteverdi_jacket, Monteverdi_pants, Monteverdi_shoes, Mozart_hair, Mozart_jacket, Mozart_pants, Mozart_shirt_2, Pachelbel_hair, Pachelbel_jacket, Rock_boots, Rock_jacket, Rock_tshirt, Soulful_blazer, Soulful_loafers, Soulful_shirt, Wagner_hair, Wagner_jacket, Wagner_pants, Wagner_shirt
+  body  Body: 14517 vertices, 26756 triangles
+  keep  Acoustic_boots: already in Unity (only missing requested)
+  keep  Acoustic_shirt: already in Unity (only missing requested)
+  keep  Acoustic_trousers_belt: already in Unity (only missing requested)
+  keep  Acoustic_waistcoat: already in Unity (only missing requested)
+  keep  Bach_hair: already in Unity (only missing requested)
+  keep  Bach_jacket: already in Unity (only missing requested)
+  keep  Bach_pants: already in Unity (only missing requested)
+  keep  Bach_shirt: already in Unity (only missing requested)
+  keep  Beethoven_hair: already in Unity (only missing requested)
+  keep  Beethoven_jacket: already in Unity (only missing requested)
+  keep  Beethoven_pants: already in Unity (only missing requested)
+  keep  Beethoven_shirt: already in Unity (only missing requested)
+  keep  Beethoven_shoes: already in Unity (only missing requested)
+  keep  Brahms_beard: already in Unity (only missing requested)
+  keep  Brahms_hair: already in Unity (only missing requested)
+  keep  Brahms_jacket: already in Unity (only missing requested)
+  keep  Brahms_pants: already in Unity (only missing requested)
+  keep  Brahms_shirt: already in Unity (only missing requested)
+  keep  Catchy_jacket: already in Unity (only missing requested)
+  keep  Catchy_shirt: already in Unity (only missing requested)
+  keep  Catchy_sneakers: already in Unity (only missing requested)
+  keep  Catchy_trousers: already in Unity (only missing requested)
+  keep  Chill_cardigan: already in Unity (only missing requested)
+  keep  Chill_sneakers: already in Unity (only missing requested)
+  keep  Chill_trousers: already in Unity (only missing requested)
+  keep  Chill_tshirt: already in Unity (only missing requested)
+  keep  Chopin_jacket: already in Unity (only missing requested)
+  keep  Chopin_pants: already in Unity (only missing requested)
+  keep  Chopin_shirt: already in Unity (only missing requested)
+  keep  Cinematic_boots: already in Unity (only missing requested)
+  keep  Cinematic_coat: already in Unity (only missing requested)
+  keep  Cinematic_shirt: already in Unity (only missing requested)
+  keep  Cinematic_trousers: already in Unity (only missing requested)
+  keep  Cinematic_waistcoat: already in Unity (only missing requested)
+  keep  Classical_jacket: already in Unity (only missing requested)
+  keep  Classical_shirt: already in Unity (only missing requested)
+  keep  Classical_shoes: already in Unity (only missing requested)
+  keep  Classical_trousers: already in Unity (only missing requested)
+  keep  Classical_waistcoat: already in Unity (only missing requested)
+  keep  Dance_jacket: already in Unity (only missing requested)
+  keep  Dance_sneakers: already in Unity (only missing requested)
+  keep  Dance_tshirt: already in Unity (only missing requested)
+  keep  Dark_boots: already in Unity (only missing requested)
+  keep  Dark_coat: already in Unity (only missing requested)
+  keep  Dark_shirt: already in Unity (only missing requested)
+  keep  Dark_trousers: already in Unity (only missing requested)
+  keep  Dark_waistcoat: already in Unity (only missing requested)
+  keep  Dreamy_necklace: already in Unity (only missing requested)
+  keep  Dreamy_overshirt: already in Unity (only missing requested)
+  keep  Dreamy_shirt: already in Unity (only missing requested)
+  keep  Dreamy_shoes: already in Unity (only missing requested)
+  keep  Dreamy_trousers: already in Unity (only missing requested)
+  keep  Electronic_jacket: already in Unity (only missing requested)
+  keep  Electronic_sneakers: already in Unity (only missing requested)
+  keep  Electronic_top: already in Unity (only missing requested)
+  keep  Electronic_trousers: already in Unity (only missing requested)
+  keep  Energetic_jacket: already in Unity (only missing requested)
+  keep  Energetic_sneakers: already in Unity (only missing requested)
+  keep  Energetic_trousers: already in Unity (only missing requested)
+  keep  Energetic_tshirt: already in Unity (only missing requested)
+  keep  Experimental_jacket: already in Unity (only missing requested)
+  keep  Experimental_shoes: already in Unity (only missing requested)
+  keep  Experimental_top: already in Unity (only missing requested)
+  keep  Experimental_trousers: already in Unity (only missing requested)
+  keep  Funky_belt: already in Unity (only missing requested)
+  keep  Funky_shirt: already in Unity (only missing requested)
+  keep  Funky_shoes: already in Unity (only missing requested)
+  keep  Funky_trousers: already in Unity (only missing requested)
+  keep  Funky_trousers_belt: already in Unity (only missing requested)
+  keep  Groove_jacket: already in Unity (only missing requested)
+  keep  Groove_necklace: already in Unity (only missing requested)
+  keep  Groove_sneakers: already in Unity (only missing requested)
+  keep  Groove_trousers: already in Unity (only missing requested)
+  keep  Groove_tshirt: already in Unity (only missing requested)
+  keep  Handel_hair_2: already in Unity (only missing requested)
+  keep  Handel_jacket_2: already in Unity (only missing requested)
+  keep  Handel_pants: already in Unity (only missing requested)
+  keep  Handel_shirt: already in Unity (only missing requested)
+  keep  Handel_shirt_2: already in Unity (only missing requested)
+  keep  Handel_shoes: already in Unity (only missing requested)
+  keep  Handel_shoes_2: already in Unity (only missing requested)
+  keep  Haydn_hair: already in Unity (only missing requested)
+  keep  Haydn_jacket: already in Unity (only missing requested)
+  keep  Haydn_pants: already in Unity (only missing requested)
+  keep  Haydn_shirt: already in Unity (only missing requested)
+  keep  Haydn_shoes: already in Unity (only missing requested)
+  keep  Heavy_boots: already in Unity (only missing requested)
+  keep  Heavy_trousers_belt_chain: already in Unity (only missing requested)
+  keep  Heavy_tshirt: already in Unity (only missing requested)
+  keep  Heavy_vest: already in Unity (only missing requested)
+  keep  Heavy_wrist_cuffs: already in Unity (only missing requested)
+  keep  Jazzy_jacket: already in Unity (only missing requested)
+  keep  Jazzy_shirt: already in Unity (only missing requested)
+  keep  Jazzy_shoes: already in Unity (only missing requested)
+  keep  Jazzy_trousers: already in Unity (only missing requested)
+  keep  Jazzy_waistcoat: already in Unity (only missing requested)
+  keep  Monteverdi_beard: already in Unity (only missing requested)
+  keep  Monteverdi_hair: already in Unity (only missing requested)
+  keep  Monteverdi_jacket: already in Unity (only missing requested)
+  keep  Monteverdi_pants: already in Unity (only missing requested)
+  keep  Monteverdi_shoes: already in Unity (only missing requested)
+  keep  Mozart_hair: already in Unity (only missing requested)
+  keep  Mozart_jacket: already in Unity (only missing requested)
+  keep  Mozart_pants: already in Unity (only missing requested)
+  keep  Mozart_shirt_2: already in Unity (only missing requested)
+  keep  Pachelbel_hair: already in Unity (only missing requested)
+  keep  Pachelbel_jacket: already in Unity (only missing requested)
+  keep  Rock_boots: already in Unity (only missing requested)
+  keep  Rock_jacket: already in Unity (only missing requested)
+  keep  Rock_tshirt: already in Unity (only missing requested)
+  keep  Soulful_blazer: already in Unity (only missing requested)
+  keep  Soulful_loafers: already in Unity (only missing requested)
+  keep  Soulful_shirt: already in Unity (only missing requested)
+  keep  Wagner_hair: already in Unity (only missing requested)
+  keep  Wagner_jacket: already in Unity (only missing requested)
+  keep  Wagner_pants: already in Unity (only missing requested)
+  keep  Wagner_shirt: already in Unity (only missing requested)
+  PASS  Avatar_Bach: bach_pants, bach_shirt, bach_jacket + hair bach_hair on Identity_Bach
+  PASS  Avatar_Beethoven: beethoven_jacket, beethoven_pants, beethoven_shirt, beethoven_shoes + hair beethoven_hair on Identity_Beethoven
+  PASS  Avatar_Brahms: brahms_beard, brahms_jacket, brahms_pants, brahms_shirt + hair brahms_hair on Identity_Brahms
+  PASS  Avatar_Chopin: chopin_jacket, chopin_pants, chopin_shirt
+  PASS  Avatar_Handel: handel_jacket_2, handel_pants, handel_shirt_2, handel_shoes_2 + hair handel_hair_2 on Identity_Handel
+  PASS  Avatar_Haydn: haydn_jacket, haydn_pants, haydn_shirt, haydn_shoes + hair haydn_hair on Identity_Haydn
+  PASS  Avatar_Monteverdi: monteverdi_pants, monteverdi_shoes, monteverdi_jacket, monteverdi_beard + hair monteverdi_hair on Identity_Monteverdi
+  PASS  Avatar_Mozart: mozart_jacket, mozart_pants, mozart_shirt_2 + hair mozart_hair on Identity_Mozart
+  PASS  Avatar_Pachelbel: pachelbel_jacket + hair pachelbel_hair on Identity_Pachelbel
+  PASS  Avatar_Wagner: wagner_jacket, wagner_shirt, wagner_pants + hair wagner_hair on Identity_Wagner
+  PASS  Avatar_Player_Acoustic (Acoustic): acoustic_boots, acoustic_shirt, acoustic_trousers_belt, acoustic_waistcoat
+  PASS  Avatar_Player_Catchy (Catchy): catchy_jacket, catchy_shirt, catchy_sneakers, catchy_trousers
+  PASS  Avatar_Player_Chill (Chill): chill_cardigan, chill_sneakers, chill_trousers, chill_tshirt
+  PASS  Avatar_Player_Cinematic (Cinematic): cinematic_boots, cinematic_coat, cinematic_shirt, cinematic_trousers, cinematic_waistcoat
+  PASS  Avatar_Player_Classical (Classical): classical_jacket, classical_shirt, classical_shoes, classical_trousers, classical_waistcoat
+  PASS  Avatar_Player_Dance (Dance): dance_jacket, dance_sneakers, dance_tshirt
+  PASS  Avatar_Player_Dark (Dark): dark_boots, dark_coat, dark_shirt, dark_trousers, dark_waistcoat
+  PASS  Avatar_Player_Dreamy (Dreamy): dreamy_necklace, dreamy_overshirt, dreamy_shirt, dreamy_shoes, dreamy_trousers
+  PASS  Avatar_Player_Electronic (Electronic): electronic_jacket, electronic_sneakers, electronic_top, electronic_trousers
+  PASS  Avatar_Player_Energetic (Energetic): energetic_jacket, energetic_sneakers, energetic_trousers, energetic_tshirt
+  PASS  Avatar_Player_Experimental (Experimental): experimental_jacket, experimental_shoes, experimental_top, experimental_trousers
+  PASS  Avatar_Player_Funky (Funky): funky_belt, funky_shirt, funky_shoes, funky_trousers_belt
+  PASS  Avatar_Player_Groove (Groove): groove_jacket, groove_necklace, groove_sneakers, groove_trousers, groove_tshirt
+  PASS  Avatar_Player_Heavy (Heavy): heavy_boots, heavy_trousers_belt_chain, heavy_tshirt, heavy_vest, heavy_wrist_cuffs
+  PASS  Avatar_Player_Jazzy (Jazzy): jazzy_jacket, jazzy_shirt, jazzy_shoes, jazzy_trousers, jazzy_waistcoat
+  PASS  Avatar_Player_Rock (Rock): rock_boots, rock_jacket, rock_tshirt
+  PASS  Avatar_Player_Soulful (Soulful): soulful_blazer, soulful_loafers, soulful_shirt
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SegmentedOutfitSetup:RunFromCommandLine () (at Assets/_Project/Scripts/Editor/Avatar/Garments/SegmentedOutfitSetup.cs:75)
+
+(Filename: Assets/_Project/Scripts/Editor/Avatar/Garments/SegmentedOutfitSetup.cs Line: 75)
+
+[Project] Loading completed in 27.335 seconds
+	Project init time: 				23.771 seconds
+		Template init time: 		0.000 seconds
+		Package Manager init time: 		1.028 seconds
+		Asset Database init time: 		0.642 seconds
+		Global illumination init time: 	0.003 seconds
+		Assemblies load time: 			3.083 seconds
+		Unity extensions init time: 	0.013 seconds
+		Asset Database refresh time: 	16.410 seconds
+	Scene opening time: 			3.285 seconds
+##utp:{"type":"ProjectInfo","version":2,"phase":"Immediate","time":1794148537677,"processId":37880,"projectLoad":27.335478400000004,"projectInit":23.7709542,"templateInit":0.0,"packageManagerInit":1.0279356,"assetDatabaseInit":0.6423139,"globalIlluminationInit":0.002556,"assembliesLoad":3.0826764,"unityExtensionsInit":0.0134262,"assetDatabaseRefresh":16.4099234,"sceneOpening":3.2847603}
+##utp:{"type":"EditorInfo","version":2,"phase":"Immediate","time":1794148537677,"processId":37880,"editorVersion":"6000.3.2f1 (a9779f353c9b)","branch":"6000.3/staging","buildType":"Release","platform":"Windows"}
+Asset Pipeline Refresh (id=14529add2ecf62d4d852c32e9971af44): Total: 0.168 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+[Indexing] Starting Initial Indexing for Assets
+Opening scene 'Assets/_Project/Scenes/Debug/AvatarsClothesChecker.unity'
+Unloading 1 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Assets/_Project/Scenes/Debug/AvatarsClothesChecker.unity'
+	Deserialize:            9.649 ms
+	Integration:            202.281 ms
+	Integration of assets:  0.007 ms
+	Thread Wait Time:       0.006 ms
+	Total Operation Time:   211.944 ms
+Unloading 473 unused Assets / (194.6 KB). Loaded Objects now: 10460.
+Memory consumption went from 280.3 MB to 280.1 MB.
+Total: 13.492100 ms (FindLiveObjects: 0.479400 ms CreateObjectMapping: 0.364300 ms MarkObjects: 12.076200 ms  DeleteObjects: 0.569400 ms)
+
+Reloading assemblies for play mode.
+Reloading assemblies after forced synchronous recompile.
+Begin MonoManager ReloadAssembly
+15:35:39.769 |V| RiderPlugin                    | :1                             | AppDomain.CurrentDomain.DomainUnload lifetimeDefinition.Terminate
+- Loaded All Assemblies, in  1.871 seconds
+Refreshing native plugins compatible for Editor in 5.05 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.366 seconds
+Domain Reload Profiling: 3233ms
+	BeginReloadAssembly (1489ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (39ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (278ms)
+	RebuildCommonClasses (32ms)
+	RebuildNativeTypeToScriptingClass (12ms)
+	initialDomainReloadingComplete (39ms)
+	LoadAllAssembliesAndSetupDomain (295ms)
+		LoadAssemblies (183ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (214ms)
+			TypeCache.Refresh (7ms)
+				TypeCache.ScanAssembly (0ms)
+			BuildScriptInfoCaches (190ms)
+			ResolveRequiredComponents (12ms)
+	FinalizeReload (1367ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (989ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (45ms)
+			SetLoadedEditorAssemblies (6ms)
+			BeforeProcessingInitializeOnLoad (305ms)
+			ProcessInitializeOnLoadAttributes (444ms)
+			ProcessInitializeOnLoadMethodAttributes (178ms)
+			AfterProcessingInitializeOnLoad (11ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (63ms)
+Asset Pipeline Refresh (id=a91892f7a312d024fad474ecfb1fe241): Total: 3.607 seconds - Initiated by StopAssetImportingV2(ForceSynchronousImport | ForceDomainReload)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=1680 ms
+		Asset DB Callback time: managed=26 ms, native=0 ms
+		Scripting: domain reloads=1, domain reload time=1898 ms, compile time=1 ms, other=0 ms
+		Project Asset Count: scripts=6105, non-scripts=19342
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 3.562ms
+	ApplyChangesToAssetFolders: 0.311ms
+	Scan: 0.001ms
+	OnSourceAssetsModified: 0.002ms
+	CategorizeAssetsWithTransientArtifact: 0.004ms
+	ProcessAssetsWithTransientArtifactChanges: 5.745ms
+	CategorizeAssets: 233.638ms
+	ImportOutOfDateAssets: 1390.029ms (1380.395ms without children)
+		CompileScripts: 1.083ms
+		CollectScriptTypesHashes: 1.522ms
+		ReloadNativeAssets: 1.200ms
+		UnloadImportedAssets: 0.154ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 4.634ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 1.040ms
+	PostProcessAllAssets: 26.100ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.985ms
+	UnloadStreamsBegin: 0.012ms
+	PersistCurrentRevisions: 1.283ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 6.610ms
+	Untracked: 1945.322ms
+
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            0.546 ms
+	Integration:            16338.615 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.011 ms
+	Total Operation Time:   16339.175 ms
+Created GICache directory at C:/Users/VISYON/AppData/LocalLow/Unity/Caches/GiCache. Took: 0.049s, timestamps: [27.339 - 27.389]
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+Unloading 936 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 2553 unused Assets / (315.0 MB). Loaded Objects now: 11438.
+Memory consumption went from 1.20 GB to 0.89 GB.
+Total: 31.323300 ms (FindLiveObjects: 0.564000 ms CreateObjectMapping: 0.512500 ms MarkObjects: 8.123900 ms  DeleteObjects: 22.121700 ms)
+
+Unloading 115 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3124 unused Assets / (394.1 MB). Loaded Objects now: 11438.
+Memory consumption went from 1.29 GB to 0.91 GB.
+Total: 37.483700 ms (FindLiveObjects: 0.588900 ms CreateObjectMapping: 0.475300 ms MarkObjects: 8.563900 ms  DeleteObjects: 27.854200 ms)
+
+Unloading 115 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3118 unused Assets / (328.9 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.25 GB to 0.92 GB.
+Total: 42.778200 ms (FindLiveObjects: 0.670200 ms CreateObjectMapping: 0.566100 ms MarkObjects: 11.556700 ms  DeleteObjects: 29.983600 ms)
+
+Unloading 78 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 1942 unused Assets / (178.1 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.16 GB to 0.98 GB.
+Total: 21.135700 ms (FindLiveObjects: 0.526100 ms CreateObjectMapping: 0.515900 ms MarkObjects: 8.094900 ms  DeleteObjects: 11.997700 ms)
+
+Unloading 115 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3130 unused Assets / (452.2 MB). Loaded Objects now: 11438.
+Memory consumption went from 1.38 GB to 0.94 GB.
+Total: 44.852200 ms (FindLiveObjects: 0.710700 ms CreateObjectMapping: 0.502400 ms MarkObjects: 8.638900 ms  DeleteObjects: 34.999100 ms)
+
+Unloading 115 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3124 unused Assets / (391.3 MB). Loaded Objects now: 11438.
+Memory consumption went from 1.29 GB to 0.90 GB.
+Total: 43.358600 ms (FindLiveObjects: 0.584900 ms CreateObjectMapping: 0.451900 ms MarkObjects: 14.197800 ms  DeleteObjects: 28.122600 ms)
+
+TrimDiskCacheJob: Current cache size 3725mb
+Unloading 113 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3122 unused Assets / (303.9 MB). Loaded Objects now: 11438.
+Memory consumption went from 1.13 GB to 0.83 GB.
+Total: 35.085400 ms (FindLiveObjects: 0.607600 ms CreateObjectMapping: 0.440700 ms MarkObjects: 13.721000 ms  DeleteObjects: 20.315200 ms)
+
+Unloading 92 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 2520 unused Assets / (247.2 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.21 GB to 0.97 GB.
+Total: 32.389500 ms (FindLiveObjects: 0.574700 ms CreateObjectMapping: 0.438800 ms MarkObjects: 14.051800 ms  DeleteObjects: 17.323200 ms)
+
+Unloading 46 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 1336 unused Assets / (191.1 MB). Loaded Objects now: 11438.
+Memory consumption went from 1.00 GB to 0.82 GB.
+Total: 28.018600 ms (FindLiveObjects: 0.546600 ms CreateObjectMapping: 0.408200 ms MarkObjects: 15.042400 ms  DeleteObjects: 12.020400 ms)
+
+Unloading 101 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 2540 unused Assets / (275.8 MB). Loaded Objects now: 11438.
+Memory consumption went from 1.17 GB to 0.90 GB.
+Total: 36.872500 ms (FindLiveObjects: 0.559100 ms CreateObjectMapping: 0.446200 ms MarkObjects: 15.758300 ms  DeleteObjects: 20.107400 ms)
+
+Unloading 101 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 2534 unused Assets / (244.9 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.15 GB to 0.91 GB.
+Total: 31.882900 ms (FindLiveObjects: 0.576600 ms CreateObjectMapping: 0.447100 ms MarkObjects: 14.113700 ms  DeleteObjects: 16.744400 ms)
+
+Unloading 101 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 2540 unused Assets / (301.4 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.24 GB to 0.95 GB.
+Total: 32.174000 ms (FindLiveObjects: 0.584600 ms CreateObjectMapping: 0.507100 ms MarkObjects: 9.090200 ms  DeleteObjects: 21.990500 ms)
+
+Unloading 124 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3138 unused Assets / (287.5 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.36 GB to 1.08 GB.
+Total: 33.786500 ms (FindLiveObjects: 0.596000 ms CreateObjectMapping: 0.450600 ms MarkObjects: 14.054600 ms  DeleteObjects: 18.684300 ms)
+
+Unloading 124 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3138 unused Assets / (361.6 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.32 GB to 0.97 GB.
+Total: 35.692400 ms (FindLiveObjects: 0.775400 ms CreateObjectMapping: 0.497500 ms MarkObjects: 8.793000 ms  DeleteObjects: 25.624800 ms)
+
+Unloading 78 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 1942 unused Assets / (155.5 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.13 GB to 0.97 GB.
+Total: 20.625800 ms (FindLiveObjects: 0.666600 ms CreateObjectMapping: 0.601200 ms MarkObjects: 9.913100 ms  DeleteObjects: 9.443400 ms)
+
+Unloading 124 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3138 unused Assets / (351.1 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.35 GB to 1.01 GB.
+Total: 33.687800 ms (FindLiveObjects: 0.596200 ms CreateObjectMapping: 0.442700 ms MarkObjects: 8.470800 ms  DeleteObjects: 24.176800 ms)
+
+Unloading 124 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3138 unused Assets / (324.4 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.39 GB to 1.08 GB.
+Total: 37.429700 ms (FindLiveObjects: 0.527400 ms CreateObjectMapping: 0.449900 ms MarkObjects: 14.608500 ms  DeleteObjects: 21.843000 ms)
+
+Unloading 101 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 2540 unused Assets / (302.7 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.28 GB to 0.99 GB.
+Total: 33.102700 ms (FindLiveObjects: 0.582400 ms CreateObjectMapping: 0.459200 ms MarkObjects: 9.627800 ms  DeleteObjects: 22.431700 ms)
+
+Unloading 101 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 2540 unused Assets / (314.2 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.27 GB to 0.96 GB.
+Total: 34.486500 ms (FindLiveObjects: 0.566800 ms CreateObjectMapping: 0.486200 ms MarkObjects: 9.866700 ms  DeleteObjects: 23.565500 ms)
+
+Unloading 101 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 2540 unused Assets / (291.2 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.27 GB to 0.98 GB.
+Total: 29.670500 ms (FindLiveObjects: 0.588500 ms CreateObjectMapping: 0.536900 ms MarkObjects: 8.224300 ms  DeleteObjects: 20.319800 ms)
+
+Unloading 101 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 2546 unused Assets / (362.4 MB). Loaded Objects now: 11438.
+Memory consumption went from 1.24 GB to 0.89 GB.
+Total: 40.051400 ms (FindLiveObjects: 0.519200 ms CreateObjectMapping: 0.438300 ms MarkObjects: 14.869600 ms  DeleteObjects: 24.223100 ms)
+
+Unloading 124 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3132 unused Assets / (296.0 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.29 GB to 1.00 GB.
+Total: 36.326600 ms (FindLiveObjects: 0.573100 ms CreateObjectMapping: 0.457200 ms MarkObjects: 14.789600 ms  DeleteObjects: 20.505700 ms)
+
+Unloading 124 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3144 unused Assets / (418.1 MB). Loaded Objects now: 11438.
+Memory consumption went from 1.39 GB to 0.98 GB.
+Total: 39.250600 ms (FindLiveObjects: 0.615400 ms CreateObjectMapping: 0.548000 ms MarkObjects: 8.805600 ms  DeleteObjects: 29.280400 ms)
+
+Unloading 124 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3132 unused Assets / (290.8 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.25 GB to 0.96 GB.
+Total: 37.494300 ms (FindLiveObjects: 0.705800 ms CreateObjectMapping: 0.436900 ms MarkObjects: 14.980400 ms  DeleteObjects: 21.369900 ms)
+
+Unloading 78 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 1942 unused Assets / (192.3 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.14 GB to 0.95 GB.
+Total: 22.105500 ms (FindLiveObjects: 0.543400 ms CreateObjectMapping: 0.435700 ms MarkObjects: 8.386600 ms  DeleteObjects: 12.738600 ms)
+
+Unloading 78 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 1942 unused Assets / (176.8 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.14 GB to 0.97 GB.
+Total: 21.318700 ms (FindLiveObjects: 0.576400 ms CreateObjectMapping: 0.415900 ms MarkObjects: 8.389400 ms  DeleteObjects: 11.936100 ms)
+
+Unloading 92 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 2526 unused Assets / (246.2 MB). Loaded Objects now: 11444.
+Memory consumption went from 1.21 GB to 0.96 GB.
+Total: 24.493500 ms (FindLiveObjects: 0.570100 ms CreateObjectMapping: 0.453300 ms MarkObjects: 8.377500 ms  DeleteObjects: 15.091500 ms)
+
+PASS Avatar_Bach Low built
+PASS Avatar_Bach Low items equipped: 3/3
+PASS Avatar_Bach Low assembled (masks): 3/3
+PASS Avatar_Bach Low hair
+PASS Avatar_Bach Low masks
+PASS Avatar_Bach Low bach_pants one draw: 9407/10754 triangles visible
+PASS Avatar_Bach Low bach_shirt one draw: 1702/10046 triangles visible
+PASS Avatar_Bach Low bach_jacket one draw: 12049/12049 triangles visible
+PASS Avatar_Bach Mid built
+PASS Avatar_Bach Mid items equipped: 3/3
+PASS Avatar_Bach Mid assembled (masks): 3/3
+PASS Avatar_Bach Mid hair
+PASS Avatar_Bach Mid masks
+PASS Avatar_Bach Mid bach_pants one draw: 17162/20107 triangles visible
+PASS Avatar_Bach Mid bach_shirt one draw: 2819/18770 triangles visible
+PASS Avatar_Bach Mid bach_jacket one draw: 22740/22740 triangles visible
+PASS Avatar_Bach HighMid built
+PASS Avatar_Bach HighMid items equipped: 3/3
+PASS Avatar_Bach HighMid assembled (masks): 3/3
+PASS Avatar_Bach HighMid hair
+PASS Avatar_Bach HighMid masks
+PASS Avatar_Bach HighMid bach_pants one draw: 31995/37456 triangles visible
+PASS Avatar_Bach HighMid bach_shirt one draw: 6073/38919 triangles visible
+PASS Avatar_Bach HighMid bach_jacket one draw: 43460/43460 triangles visible
+PASS Avatar_Bach High built
+PASS Avatar_Bach High items equipped: 3/3
+PASS Avatar_Bach High assembled (masks): 3/3
+PASS Avatar_Bach High hair
+PASS Avatar_Bach High masks
+PASS Avatar_Bach High bach_pants one draw: 47380/55586 triangles visible
+PASS Avatar_Bach High bach_shirt one draw: 8185/55161 triangles visible
+PASS Avatar_Bach High bach_jacket one draw: 65331/65331 triangles visible
+PASS Avatar_Bach Ultra built
+PASS Avatar_Bach Ultra items equipped: 3/3
+PASS Avatar_Bach Ultra assembled (masks): 3/3
+PASS Avatar_Bach Ultra hair
+PASS Avatar_Bach Ultra masks
+PASS Avatar_Bach Ultra bach_pants one draw: 76454/90875 triangles visible
+PASS Avatar_Bach Ultra bach_shirt one draw: 10799/86476 triangles visible
+PASS Avatar_Bach Ultra bach_jacket one draw: 103556/103556 triangles visible
+PASS Avatar_Beethoven Low built
+PASS Avatar_Beethoven Low items equipped: 4/4
+PASS Avatar_Beethoven Low assembled (masks): 4/4
+PASS Avatar_Beethoven Low hair
+PASS Avatar_Beethoven Low masks
+PASS Avatar_Beethoven Low beethoven_jacket one draw: 8185/8185 triangles visible
+PASS Avatar_Beethoven Low beethoven_pants one draw: 9009/10650 triangles visible
+PASS Avatar_Beethoven Low beethoven_shirt one draw: 4405/13397 triangles visible
+PASS Avatar_Beethoven Low beethoven_shoes one draw: 20202/20202 triangles visible
+PASS Avatar_Beethoven Mid built
+PASS Avatar_Beethoven Mid items equipped: 4/4
+PASS Avatar_Beethoven Mid assembled (masks): 4/4
+PASS Avatar_Beethoven Mid hair
+PASS Avatar_Beethoven Mid masks
+PASS Avatar_Beethoven Mid beethoven_jacket one draw: 17170/17170 triangles visible
+PASS Avatar_Beethoven Mid beethoven_pants one draw: 17296/20525 triangles visible
+PASS Avatar_Beethoven Mid beethoven_shirt one draw: 7982/25657 triangles visible
+PASS Avatar_Beethoven Mid beethoven_shoes one draw: 36566/36566 triangles visible
+PASS Avatar_Beethoven HighMid built
+PASS Avatar_Beethoven HighMid items equipped: 4/4
+PASS Avatar_Beethoven HighMid assembled (masks): 4/4
+PASS Avatar_Beethoven HighMid hair
+PASS Avatar_Beethoven HighMid masks
+PASS Avatar_Beethoven HighMid beethoven_jacket one draw: 32268/32268 triangles visible
+PASS Avatar_Beethoven HighMid beethoven_pants one draw: 33312/39301 triangles visible
+PASS Avatar_Beethoven HighMid beethoven_shirt one draw: 15302/48639 triangles visible
+PASS Avatar_Beethoven HighMid beethoven_shoes one draw: 66574/66574 triangles visible
+PASS Avatar_Beethoven High built
+PASS Avatar_Beethoven High items equipped: 4/4
+PASS Avatar_Beethoven High assembled (masks): 4/4
+PASS Avatar_Beethoven High hair
+PASS Avatar_Beethoven High masks
+PASS Avatar_Beethoven High beethoven_jacket one draw: 48513/48513 triangles visible
+PASS Avatar_Beethoven High beethoven_pants one draw: 50115/59665 triangles visible
+PASS Avatar_Beethoven High beethoven_shirt one draw: 22430/71915 triangles visible
+PASS Avatar_Beethoven High beethoven_shoes one draw: 101820/101820 triangles visible
+PASS Avatar_Beethoven Ultra built
+PASS Avatar_Beethoven Ultra items equipped: 4/4
+PASS Avatar_Beethoven Ultra assembled (masks): 4/4
+PASS Avatar_Beethoven Ultra hair
+PASS Avatar_Beethoven Ultra masks
+PASS Avatar_Beethoven Ultra beethoven_jacket one draw: 77878/77878 triangles visible
+PASS Avatar_Beethoven Ultra beethoven_pants one draw: 78256/94161 triangles visible
+PASS Avatar_Beethoven Ultra beethoven_shirt one draw: 41278/118236 triangles visible
+PASS Avatar_Beethoven Ultra beethoven_shoes one draw: 168988/168988 triangles visible
+PASS Avatar_Brahms Low built
+PASS Avatar_Brahms Low items equipped: 4/4
+PASS Avatar_Brahms Low assembled (masks): 4/4
+PASS Avatar_Brahms Low hair
+PASS Avatar_Brahms Low masks
+PASS Avatar_Brahms Low brahms_beard one draw: 11102/11102 triangles visible
+PASS Avatar_Brahms Low brahms_jacket one draw: 10678/10678 triangles visible
+PASS Avatar_Brahms Low brahms_pants one draw: 7040/8846 triangles visible
+PASS Avatar_Brahms Low brahms_shirt one draw: 5601/12138 triangles visible
+PASS Avatar_Brahms Mid built
+PASS Avatar_Brahms Mid items equipped: 4/4
+PASS Avatar_Brahms Mid assembled (masks): 4/4
+PASS Avatar_Brahms Mid hair
+PASS Avatar_Brahms Mid masks
+PASS Avatar_Brahms Mid brahms_beard one draw: 21972/21972 triangles visible
+PASS Avatar_Brahms Mid brahms_jacket one draw: 19731/19731 triangles visible
+PASS Avatar_Brahms Mid brahms_pants one draw: 13782/17433 triangles visible
+PASS Avatar_Brahms Mid brahms_shirt one draw: 10713/23277 triangles visible
+PASS Avatar_Brahms HighMid built
+PASS Avatar_Brahms HighMid items equipped: 4/4
+PASS Avatar_Brahms HighMid assembled (masks): 4/4
+PASS Avatar_Brahms HighMid hair
+PASS Avatar_Brahms HighMid masks
+PASS Avatar_Brahms HighMid brahms_beard one draw: 42405/42405 triangles visible
+PASS Avatar_Brahms HighMid brahms_jacket one draw: 38147/38147 triangles visible
+PASS Avatar_Brahms HighMid brahms_pants one draw: 25393/32357 triangles visible
+PASS Avatar_Brahms HighMid brahms_shirt one draw: 20362/43660 triangles visible
+PASS Avatar_Brahms High built
+PASS Avatar_Brahms High items equipped: 4/4
+PASS Avatar_Brahms High assembled (masks): 4/4
+PASS Avatar_Brahms High hair
+PASS Avatar_Brahms High masks
+PASS Avatar_Brahms High brahms_beard one draw: 61839/61839 triangles visible
+PASS Avatar_Brahms High brahms_jacket one draw: 55864/55864 triangles visible
+PASS Avatar_Brahms High brahms_pants one draw: 37172/49230 triangles visible
+PASS Avatar_Brahms High brahms_shirt one draw: 30727/66277 triangles visible
+PASS Avatar_Brahms Ultra built
+PASS Avatar_Brahms Ultra items equipped: 4/4
+PASS Avatar_Brahms Ultra assembled (masks): 4/4
+PASS Avatar_Brahms Ultra hair
+PASS Avatar_Brahms Ultra masks
+PASS Avatar_Brahms Ultra brahms_beard one draw: 99264/99264 triangles visible
+PASS Avatar_Brahms Ultra brahms_jacket one draw: 91618/91618 triangles visible
+PASS Avatar_Brahms Ultra brahms_pants one draw: 58740/77742 triangles visible
+PASS Avatar_Brahms Ultra brahms_shirt one draw: 46661/101634 triangles visible
+PASS Avatar_Chopin Low built
+PASS Avatar_Chopin Low items equipped: 3/3
+PASS Avatar_Chopin Low assembled (masks): 3/3
+PASS Avatar_Chopin Low masks
+PASS Avatar_Chopin Low chopin_jacket one draw: 9428/9428 triangles visible
+PASS Avatar_Chopin Low chopin_pants one draw: 7068/8581 triangles visible
+PASS Avatar_Chopin Low chopin_shirt one draw: 2660/9840 triangles visible
+PASS Avatar_Chopin Mid built
+PASS Avatar_Chopin Mid items equipped: 3/3
+PASS Avatar_Chopin Mid assembled (masks): 3/3
+PASS Avatar_Chopin Mid masks
+PASS Avatar_Chopin Mid chopin_jacket one draw: 18709/18709 triangles visible
+PASS Avatar_Chopin Mid chopin_pants one draw: 13951/16752 triangles visible
+PASS Avatar_Chopin Mid chopin_shirt one draw: 5043/19451 triangles visible
+PASS Avatar_Chopin HighMid built
+PASS Avatar_Chopin HighMid items equipped: 3/3
+PASS Avatar_Chopin HighMid assembled (masks): 3/3
+PASS Avatar_Chopin HighMid masks
+PASS Avatar_Chopin HighMid chopin_jacket one draw: 38175/38175 triangles visible
+PASS Avatar_Chopin HighMid chopin_pants one draw: 27808/33567 triangles visible
+PASS Avatar_Chopin HighMid chopin_shirt one draw: 9517/35166 triangles visible
+PASS Avatar_Chopin High built
+PASS Avatar_Chopin High items equipped: 3/3
+PASS Avatar_Chopin High assembled (masks): 3/3
+PASS Avatar_Chopin High masks
+PASS Avatar_Chopin High chopin_jacket one draw: 54291/54291 triangles visible
+PASS Avatar_Chopin High chopin_pants one draw: 42160/51509 triangles visible
+PASS Avatar_Chopin High chopin_shirt one draw: 14393/50402 triangles visible
+PASS Avatar_Chopin Ultra built
+PASS Avatar_Chopin Ultra items equipped: 3/3
+PASS Avatar_Chopin Ultra assembled (masks): 3/3
+PASS Avatar_Chopin Ultra masks
+PASS Avatar_Chopin Ultra chopin_jacket one draw: 82753/82753 triangles visible
+PASS Avatar_Chopin Ultra chopin_pants one draw: 60254/77106 triangles visible
+PASS Avatar_Chopin Ultra chopin_shirt one draw: 22734/79434 triangles visible
+PASS Avatar_Handel Low built
+PASS Avatar_Handel Low items equipped: 4/4
+PASS Avatar_Handel Low assembled (masks): 4/4
+PASS Avatar_Handel Low hair
+PASS Avatar_Handel Low masks
+PASS Avatar_Handel Low handel_jacket_2 one draw: 8139/8139 triangles visible
+PASS Avatar_Handel Low handel_pants one draw: 10290/10999 triangles visible
+PASS Avatar_Handel Low handel_shirt_2 one draw: 1641/11509 triangles visible
+PASS Avatar_Handel Low handel_shoes_2 one draw: 20712/20712 triangles visible
+PASS Avatar_Handel Mid built
+PASS Avatar_Handel Mid items equipped: 4/4
+PASS Avatar_Handel Mid assembled (masks): 4/4
+PASS Avatar_Handel Mid hair
+PASS Avatar_Handel Mid masks
+PASS Avatar_Handel Mid handel_jacket_2 one draw: 16354/16354 triangles visible
+PASS Avatar_Handel Mid handel_pants one draw: 19163/20482 triangles visible
+PASS Avatar_Handel Mid handel_shirt_2 one draw: 7891/26534 triangles visible
+PASS Avatar_Handel Mid handel_shoes_2 one draw: 40256/40256 triangles visible
+PASS Avatar_Handel HighMid built
+PASS Avatar_Handel HighMid items equipped: 4/4
+PASS Avatar_Handel HighMid assembled (masks): 4/4
+PASS Avatar_Handel HighMid hair
+PASS Avatar_Handel HighMid masks
+PASS Avatar_Handel HighMid handel_jacket_2 one draw: 31882/31882 triangles visible
+PASS Avatar_Handel HighMid handel_pants one draw: 38007/40186 triangles visible
+PASS Avatar_Handel HighMid handel_shirt_2 one draw: 14386/49317 triangles visible
+PASS Avatar_Handel HighMid handel_shoes_2 one draw: 74108/74108 triangles visible
+PASS Avatar_Handel High built
+PASS Avatar_Handel High items equipped: 4/4
+PASS Avatar_Handel High assembled (masks): 4/4
+PASS Avatar_Handel High hair
+PASS Avatar_Handel High masks
+PASS Avatar_Handel High handel_jacket_2 one draw: 47141/47141 triangles visible
+PASS Avatar_Handel High handel_pants one draw: 55904/59327 triangles visible
+PASS Avatar_Handel High handel_shirt_2 one draw: 21028/71622 triangles visible
+PASS Avatar_Handel High handel_shoes_2 one draw: 110204/110204 triangles visible
+PASS Avatar_Handel Ultra built
+PASS Avatar_Handel Ultra items equipped: 4/4
+PASS Avatar_Handel Ultra assembled (masks): 4/4
+PASS Avatar_Handel Ultra hair
+PASS Avatar_Handel Ultra masks
+PASS Avatar_Handel Ultra handel_jacket_2 one draw: 79805/79805 triangles visible
+PASS Avatar_Handel Ultra handel_pants one draw: 88279/94970 triangles visible
+PASS Avatar_Handel Ultra handel_shirt_2 one draw: 34375/114605 triangles visible
+PASS Avatar_Handel Ultra handel_shoes_2 one draw: 178164/178164 triangles visible
+PASS Avatar_Haydn Low built
+PASS Avatar_Haydn Low items equipped: 4/4
+PASS Avatar_Haydn Low assembled (masks): 4/4
+PASS Avatar_Haydn Low hair
+PASS Avatar_Haydn Low masks
+PASS Avatar_Haydn Low haydn_jacket one draw: 9452/9452 triangles visible
+PASS Avatar_Haydn Low haydn_pants one draw: 10779/12297 triangles visible
+PASS Avatar_Haydn Low haydn_shirt one draw: 4369/10316 triangles visible
+PASS Avatar_Haydn Low haydn_shoes one draw: 18340/18340 triangles visible
+PASS Avatar_Haydn Mid built
+PASS Avatar_Haydn Mid items equipped: 4/4
+PASS Avatar_Haydn Mid assembled (masks): 4/4
+PASS Avatar_Haydn Mid hair
+PASS Avatar_Haydn Mid masks
+PASS Avatar_Haydn Mid haydn_jacket one draw: 19632/19632 triangles visible
+PASS Avatar_Haydn Mid haydn_pants one draw: 20600/23039 triangles visible
+PASS Avatar_Haydn Mid haydn_shirt one draw: 8185/20555 triangles visible
+PASS Avatar_Haydn Mid haydn_shoes one draw: 36356/36356 triangles visible
+PASS Avatar_Haydn HighMid built
+PASS Avatar_Haydn HighMid items equipped: 4/4
+PASS Avatar_Haydn HighMid assembled (masks): 4/4
+PASS Avatar_Haydn HighMid hair
+PASS Avatar_Haydn HighMid masks
+PASS Avatar_Haydn HighMid haydn_jacket one draw: 38650/38650 triangles visible
+PASS Avatar_Haydn HighMid haydn_pants one draw: 37656/42381 triangles visible
+PASS Avatar_Haydn HighMid haydn_shirt one draw: 15399/40127 triangles visible
+PASS Avatar_Haydn HighMid haydn_shoes one draw: 67724/67724 triangles visible
+PASS Avatar_Haydn High built
+PASS Avatar_Haydn High items equipped: 4/4
+PASS Avatar_Haydn High assembled (masks): 4/4
+PASS Avatar_Haydn High hair
+PASS Avatar_Haydn High masks
+PASS Avatar_Haydn High haydn_jacket one draw: 59358/59358 triangles visible
+PASS Avatar_Haydn High haydn_pants one draw: 57079/64545 triangles visible
+PASS Avatar_Haydn High haydn_shirt one draw: 22773/60263 triangles visible
+PASS Avatar_Haydn High haydn_shoes one draw: 101302/101302 triangles visible
+PASS Avatar_Haydn Ultra built
+PASS Avatar_Haydn Ultra items equipped: 4/4
+PASS Avatar_Haydn Ultra assembled (masks): 4/4
+PASS Avatar_Haydn Ultra hair
+PASS Avatar_Haydn Ultra masks
+PASS Avatar_Haydn Ultra haydn_jacket one draw: 98378/98378 triangles visible
+PASS Avatar_Haydn Ultra haydn_pants one draw: 88989/101778 triangles visible
+PASS Avatar_Haydn Ultra haydn_shirt one draw: 36993/90381 triangles visible
+PASS Avatar_Haydn Ultra haydn_shoes one draw: 165326/165326 triangles visible
+PASS Avatar_Monteverdi Low built
+PASS Avatar_Monteverdi Low items equipped: 4/4
+PASS Avatar_Monteverdi Low assembled (masks): 4/4
+PASS Avatar_Monteverdi Low hair
+PASS Avatar_Monteverdi Low masks
+PASS Avatar_Monteverdi Low monteverdi_pants one draw: 5418/7928 triangles visible
+PASS Avatar_Monteverdi Low monteverdi_shoes one draw: 19050/19050 triangles visible
+PASS Avatar_Monteverdi Low monteverdi_jacket one draw: 9226/9226 triangles visible
+PASS Avatar_Monteverdi Low monteverdi_beard one draw: 9975/9975 triangles visible
+PASS Avatar_Monteverdi Mid built
+PASS Avatar_Monteverdi Mid items equipped: 4/4
+PASS Avatar_Monteverdi Mid assembled (masks): 4/4
+PASS Avatar_Monteverdi Mid hair
+PASS Avatar_Monteverdi Mid masks
+PASS Avatar_Monteverdi Mid monteverdi_pants one draw: 10899/16053 triangles visible
+PASS Avatar_Monteverdi Mid monteverdi_shoes one draw: 37080/37080 triangles visible
+PASS Avatar_Monteverdi Mid monteverdi_jacket one draw: 19031/19031 triangles visible
+PASS Avatar_Monteverdi Mid monteverdi_beard one draw: 19962/19962 triangles visible
+PASS Avatar_Monteverdi HighMid built
+PASS Avatar_Monteverdi HighMid items equipped: 4/4
+PASS Avatar_Monteverdi HighMid assembled (masks): 4/4
+PASS Avatar_Monteverdi HighMid hair
+PASS Avatar_Monteverdi HighMid masks
+PASS Avatar_Monteverdi HighMid monteverdi_pants one draw: 21871/32484 triangles visible
+PASS Avatar_Monteverdi HighMid monteverdi_shoes one draw: 74348/74348 triangles visible
+PASS Avatar_Monteverdi HighMid monteverdi_jacket one draw: 37896/37896 triangles visible
+PASS Avatar_Monteverdi HighMid monteverdi_beard one draw: 39934/39934 triangles visible
+PASS Avatar_Monteverdi High built
+PASS Avatar_Monteverdi High items equipped: 4/4
+PASS Avatar_Monteverdi High assembled (masks): 4/4
+PASS Avatar_Monteverdi High hair
+PASS Avatar_Monteverdi High masks
+PASS Avatar_Monteverdi High monteverdi_pants one draw: 32450/48081 triangles visible
+PASS Avatar_Monteverdi High monteverdi_shoes one draw: 112310/112310 triangles visible
+PASS Avatar_Monteverdi High monteverdi_jacket one draw: 56392/56392 triangles visible
+PASS Avatar_Monteverdi High monteverdi_beard one draw: 59905/59905 triangles visible
+PASS Avatar_Monteverdi Ultra built
+PASS Avatar_Monteverdi Ultra items equipped: 4/4
+PASS Avatar_Monteverdi Ultra assembled (masks): 4/4
+PASS Avatar_Monteverdi Ultra hair
+PASS Avatar_Monteverdi Ultra masks
+PASS Avatar_Monteverdi Ultra monteverdi_pants one draw: 54462/81244 triangles visible
+PASS Avatar_Monteverdi Ultra monteverdi_shoes one draw: 188272/188272 triangles visible
+PASS Avatar_Monteverdi Ultra monteverdi_jacket one draw: 93759/93759 triangles visible
+PASS Avatar_Monteverdi Ultra monteverdi_beard one draw: 96910/96910 triangles visible
+PASS Avatar_Mozart Low built
+PASS Avatar_Mozart Low items equipped: 3/3
+PASS Avatar_Mozart Low assembled (masks): 3/3
+PASS Avatar_Mozart Low hair
+PASS Avatar_Mozart Low masks
+PASS Avatar_Mozart Low mozart_jacket one draw: 9997/9997 triangles visible
+PASS Avatar_Mozart Low mozart_pants one draw: 7793/9956 triangles visible
+PASS Avatar_Mozart Low mozart_shirt_2 one draw: 6734/14971 triangles visible
+PASS Avatar_Mozart Mid built
+PASS Avatar_Mozart Mid items equipped: 3/3
+PASS Avatar_Mozart Mid assembled (masks): 3/3
+PASS Avatar_Mozart Mid hair
+PASS Avatar_Mozart Mid masks
+PASS Avatar_Mozart Mid mozart_jacket one draw: 19485/19485 triangles visible
+PASS Avatar_Mozart Mid mozart_pants one draw: 15154/19020 triangles visible
+PASS Avatar_Mozart Mid mozart_shirt_2 one draw: 12068/29128 triangles visible
+PASS Avatar_Mozart HighMid built
+PASS Avatar_Mozart HighMid items equipped: 3/3
+PASS Avatar_Mozart HighMid assembled (masks): 3/3
+PASS Avatar_Mozart HighMid hair
+PASS Avatar_Mozart HighMid masks
+PASS Avatar_Mozart HighMid mozart_jacket one draw: 40170/40170 triangles visible
+PASS Avatar_Mozart HighMid mozart_pants one draw: 28333/36708 triangles visible
+PASS Avatar_Mozart HighMid mozart_shirt_2 one draw: 21478/53934 triangles visible
+PASS Avatar_Mozart High built
+PASS Avatar_Mozart High items equipped: 3/3
+PASS Avatar_Mozart High assembled (masks): 3/3
+PASS Avatar_Mozart High hair
+PASS Avatar_Mozart High masks
+PASS Avatar_Mozart High mozart_jacket one draw: 59392/59392 triangles visible
+PASS Avatar_Mozart High mozart_pants one draw: 38196/49976 triangles visible
+PASS Avatar_Mozart High mozart_shirt_2 one draw: 28151/78511 triangles visible
+PASS Avatar_Mozart Ultra built
+PASS Avatar_Mozart Ultra items equipped: 3/3
+PASS Avatar_Mozart Ultra assembled (masks): 3/3
+PASS Avatar_Mozart Ultra hair
+PASS Avatar_Mozart Ultra masks
+PASS Avatar_Mozart Ultra mozart_jacket one draw: 91524/91524 triangles visible
+PASS Avatar_Mozart Ultra mozart_pants one draw: 57090/77420 triangles visible
+PASS Avatar_Mozart Ultra mozart_shirt_2 one draw: 48947/124992 triangles visible
+PASS Avatar_Pachelbel Low built
+PASS Avatar_Pachelbel Low items equipped: 1/1
+PASS Avatar_Pachelbel Low assembled (masks): 1/1
+PASS Avatar_Pachelbel Low hair
+PASS Avatar_Pachelbel Low masks
+PASS Avatar_Pachelbel Low pachelbel_jacket one draw: 7677/7677 triangles visible
+PASS Avatar_Pachelbel Mid built
+PASS Avatar_Pachelbel Mid items equipped: 1/1
+PASS Avatar_Pachelbel Mid assembled (masks): 1/1
+PASS Avatar_Pachelbel Mid hair
+PASS Avatar_Pachelbel Mid masks
+PASS Avatar_Pachelbel Mid pachelbel_jacket one draw: 16355/16355 triangles visible
+PASS Avatar_Pachelbel HighMid built
+PASS Avatar_Pachelbel HighMid items equipped: 1/1
+PASS Avatar_Pachelbel HighMid assembled (masks): 1/1
+PASS Avatar_Pachelbel HighMid hair
+PASS Avatar_Pachelbel HighMid masks
+PASS Avatar_Pachelbel HighMid pachelbel_jacket one draw: 31689/31689 triangles visible
+PASS Avatar_Pachelbel High built
+PASS Avatar_Pachelbel High items equipped: 1/1
+PASS Avatar_Pachelbel High assembled (masks): 1/1
+PASS Avatar_Pachelbel High hair
+PASS Avatar_Pachelbel High masks
+PASS Avatar_Pachelbel High pachelbel_jacket one draw: 47726/47726 triangles visible
+PASS Avatar_Pachelbel Ultra built
+PASS Avatar_Pachelbel Ultra items equipped: 1/1
+PASS Avatar_Pachelbel Ultra assembled (masks): 1/1
+PASS Avatar_Pachelbel Ultra hair
+PASS Avatar_Pachelbel Ultra masks
+PASS Avatar_Pachelbel Ultra pachelbel_jacket one draw: 79510/79510 triangles visible
+PASS Avatar_Player_Acoustic Low built
+PASS Avatar_Player_Acoustic Low items equipped: 4/4
+PASS Avatar_Player_Acoustic Low assembled (masks): 4/4
+PASS Avatar_Player_Acoustic Low masks
+PASS Avatar_Player_Acoustic Low acoustic_boots one draw: 22062/22062 triangles visible
+PASS Avatar_Player_Acoustic Low acoustic_shirt one draw: 6226/9469 triangles visible
+PASS Avatar_Player_Acoustic Low acoustic_trousers_belt one draw: 8311/8311 triangles visible
+PASS Avatar_Player_Acoustic Low acoustic_waistcoat one draw: 10186/10186 triangles visible
+PASS Avatar_Player_Acoustic Mid built
+PASS Avatar_Player_Acoustic Mid items equipped: 4/4
+PASS Avatar_Player_Acoustic Mid assembled (masks): 4/4
+PASS Avatar_Player_Acoustic Mid masks
+PASS Avatar_Player_Acoustic Mid acoustic_boots one draw: 44448/44448 triangles visible
+PASS Avatar_Player_Acoustic Mid acoustic_shirt one draw: 12485/18447 triangles visible
+PASS Avatar_Player_Acoustic Mid acoustic_trousers_belt one draw: 16546/16546 triangles visible
+PASS Avatar_Player_Acoustic Mid acoustic_waistcoat one draw: 18617/18617 triangles visible
+PASS Avatar_Player_Acoustic HighMid built
+PASS Avatar_Player_Acoustic HighMid items equipped: 4/4
+PASS Avatar_Player_Acoustic HighMid assembled (masks): 4/4
+PASS Avatar_Player_Acoustic HighMid masks
+PASS Avatar_Player_Acoustic HighMid acoustic_boots one draw: 82318/82318 triangles visible
+PASS Avatar_Player_Acoustic HighMid acoustic_shirt one draw: 25962/38491 triangles visible
+PASS Avatar_Player_Acoustic HighMid acoustic_trousers_belt one draw: 32569/32569 triangles visible
+PASS Avatar_Player_Acoustic HighMid acoustic_waistcoat one draw: 34378/34378 triangles visible
+PASS Avatar_Player_Acoustic High built
+PASS Avatar_Player_Acoustic High items equipped: 4/4
+PASS Avatar_Player_Acoustic High assembled (masks): 4/4
+PASS Avatar_Player_Acoustic High masks
+PASS Avatar_Player_Acoustic High acoustic_boots one draw: 126290/126290 triangles visible
+PASS Avatar_Player_Acoustic High acoustic_shirt one draw: 34771/51819 triangles visible
+PASS Avatar_Player_Acoustic High acoustic_trousers_belt one draw: 47956/47956 triangles visible
+PASS Avatar_Player_Acoustic High acoustic_waistcoat one draw: 52840/52840 triangles visible
+PASS Avatar_Player_Acoustic Ultra built
+PASS Avatar_Player_Acoustic Ultra items equipped: 4/4
+PASS Avatar_Player_Acoustic Ultra assembled (masks): 4/4
+PASS Avatar_Player_Acoustic Ultra masks
+PASS Avatar_Player_Acoustic Ultra acoustic_boots one draw: 196358/196358 triangles visible
+PASS Avatar_Player_Acoustic Ultra acoustic_shirt one draw: 51935/81194 triangles visible
+PASS Avatar_Player_Acoustic Ultra acoustic_trousers_belt one draw: 77259/77259 triangles visible
+PASS Avatar_Player_Acoustic Ultra acoustic_waistcoat one draw: 90433/90433 triangles visible
+PASS Avatar_Player_Catchy Low built
+PASS Avatar_Player_Catchy Low items equipped: 4/4
+PASS Avatar_Player_Catchy Low assembled (masks): 4/4
+PASS Avatar_Player_Catchy Low masks
+PASS Avatar_Player_Catchy Low catchy_jacket one draw: 11020/11020 triangles visible
+PASS Avatar_Player_Catchy Low catchy_shirt one draw: 2219/9576 triangles visible
+PASS Avatar_Player_Catchy Low catchy_sneakers one draw: 21552/21552 triangles visible
+PASS Avatar_Player_Catchy Low catchy_trousers one draw: 7500/7500 triangles visible
+PASS Avatar_Player_Catchy Mid built
+PASS Avatar_Player_Catchy Mid items equipped: 4/4
+PASS Avatar_Player_Catchy Mid assembled (masks): 4/4
+PASS Avatar_Player_Catchy Mid masks
+PASS Avatar_Player_Catchy Mid catchy_jacket one draw: 21139/21139 triangles visible
+PASS Avatar_Player_Catchy Mid catchy_shirt one draw: 4218/19194 triangles visible
+PASS Avatar_Player_Catchy Mid catchy_sneakers one draw: 40158/40158 triangles visible
+PASS Avatar_Player_Catchy Mid catchy_trousers one draw: 15215/15215 triangles visible
+PASS Avatar_Player_Catchy HighMid built
+PASS Avatar_Player_Catchy HighMid items equipped: 4/4
+PASS Avatar_Player_Catchy HighMid assembled (masks): 4/4
+PASS Avatar_Player_Catchy HighMid masks
+PASS Avatar_Player_Catchy HighMid catchy_jacket one draw: 41305/41305 triangles visible
+PASS Avatar_Player_Catchy HighMid catchy_shirt one draw: 8075/38014 triangles visible
+PASS Avatar_Player_Catchy HighMid catchy_sneakers one draw: 80404/80404 triangles visible
+PASS Avatar_Player_Catchy HighMid catchy_trousers one draw: 27570/27570 triangles visible
+PASS Avatar_Player_Catchy High built
+PASS Avatar_Player_Catchy High items equipped: 4/4
+PASS Avatar_Player_Catchy High assembled (masks): 4/4
+PASS Avatar_Player_Catchy High masks
+PASS Avatar_Player_Catchy High catchy_jacket one draw: 61279/61279 triangles visible
+PASS Avatar_Player_Catchy High catchy_shirt one draw: 12124/51966 triangles visible
+PASS Avatar_Player_Catchy High catchy_sneakers one draw: 110282/110282 triangles visible
+PASS Avatar_Player_Catchy High catchy_trousers one draw: 40678/40678 triangles visible
+PASS Avatar_Player_Catchy Ultra built
+PASS Avatar_Player_Catchy Ultra items equipped: 4/4
+PASS Avatar_Player_Catchy Ultra assembled (masks): 4/4
+PASS Avatar_Player_Catchy Ultra masks
+PASS Avatar_Player_Catchy Ultra catchy_jacket one draw: 91707/91707 triangles visible
+PASS Avatar_Player_Catchy Ultra catchy_shirt one draw: 21103/82029 triangles visible
+PASS Avatar_Player_Catchy Ultra catchy_sneakers one draw: 170682/170682 triangles visible
+PASS Avatar_Player_Catchy Ultra catchy_trousers one draw: 70500/70500 triangles visible
+PASS Avatar_Player_Chill Low built
+PASS Avatar_Player_Chill Low items equipped: 4/4
+PASS Avatar_Player_Chill Low assembled (masks): 4/4
+PASS Avatar_Player_Chill Low masks
+PASS Avatar_Player_Chill Low chill_cardigan one draw: 9656/9656 triangles visible
+PASS Avatar_Player_Chill Low chill_sneakers one draw: 21440/21440 triangles visible
+PASS Avatar_Player_Chill Low chill_trousers one draw: 7538/8602 triangles visible
+PASS Avatar_Player_Chill Low chill_tshirt one draw: 1622/8408 triangles visible
+PASS Avatar_Player_Chill Mid built
+PASS Avatar_Player_Chill Mid items equipped: 4/4
+PASS Avatar_Player_Chill Mid assembled (masks): 4/4
+PASS Avatar_Player_Chill Mid masks
+PASS Avatar_Player_Chill Mid chill_cardigan one draw: 19319/19319 triangles visible
+PASS Avatar_Player_Chill Mid chill_sneakers one draw: 40260/40260 triangles visible
+PASS Avatar_Player_Chill Mid chill_trousers one draw: 14908/17330 triangles visible
+PASS Avatar_Player_Chill Mid chill_tshirt one draw: 3090/16364 triangles visible
+PASS Avatar_Player_Chill HighMid built
+PASS Avatar_Player_Chill HighMid items equipped: 4/4
+PASS Avatar_Player_Chill HighMid assembled (masks): 4/4
+PASS Avatar_Player_Chill HighMid masks
+PASS Avatar_Player_Chill HighMid chill_cardigan one draw: 39892/39892 triangles visible
+PASS Avatar_Player_Chill HighMid chill_sneakers one draw: 80328/80328 triangles visible
+PASS Avatar_Player_Chill HighMid chill_trousers one draw: 29491/34244 triangles visible
+PASS Avatar_Player_Chill HighMid chill_tshirt one draw: 7493/31880 triangles visible
+PASS Avatar_Player_Chill High built
+PASS Avatar_Player_Chill High items equipped: 4/4
+PASS Avatar_Player_Chill High assembled (masks): 4/4
+PASS Avatar_Player_Chill High masks
+PASS Avatar_Player_Chill High chill_cardigan one draw: 59829/59829 triangles visible
+PASS Avatar_Player_Chill High chill_sneakers one draw: 109532/109532 triangles visible
+PASS Avatar_Player_Chill High chill_trousers one draw: 40036/47236 triangles visible
+PASS Avatar_Player_Chill High chill_tshirt one draw: 12170/47288 triangles visible
+PASS Avatar_Player_Chill Ultra built
+PASS Avatar_Player_Chill Ultra items equipped: 4/4
+PASS Avatar_Player_Chill Ultra assembled (masks): 4/4
+PASS Avatar_Player_Chill Ultra masks
+PASS Avatar_Player_Chill Ultra chill_cardigan one draw: 91724/91724 triangles visible
+PASS Avatar_Player_Chill Ultra chill_sneakers one draw: 176548/176548 triangles visible
+PASS Avatar_Player_Chill Ultra chill_trousers one draw: 65552/77453 triangles visible
+PASS Avatar_Player_Chill Ultra chill_tshirt one draw: 20718/81608 triangles visible
+PASS Avatar_Player_Cinematic Low built
+PASS Avatar_Player_Cinematic Low items equipped: 5/5
+PASS Avatar_Player_Cinematic Low assembled (masks): 5/5
+PASS Avatar_Player_Cinematic Low masks
+PASS Avatar_Player_Cinematic Low cinematic_boots one draw: 22226/22226 triangles visible
+PASS Avatar_Player_Cinematic Low cinematic_coat one draw: 7210/7210 triangles visible
+PASS Avatar_Player_Cinematic Low cinematic_shirt one draw: 1178/9819 triangles visible
+PASS Avatar_Player_Cinematic Low cinematic_trousers one draw: 6933/8562 triangles visible
+PASS Avatar_Player_Cinematic Low cinematic_waistcoat one draw: 2809/10648 triangles visible
+PASS Avatar_Player_Cinematic Mid built
+PASS Avatar_Player_Cinematic Mid items equipped: 5/5
+PASS Avatar_Player_Cinematic Mid assembled (masks): 5/5
+PASS Avatar_Player_Cinematic Mid masks
+PASS Avatar_Player_Cinematic Mid cinematic_boots one draw: 43610/43610 triangles visible
+PASS Avatar_Player_Cinematic Mid cinematic_coat one draw: 15022/15022 triangles visible
+PASS Avatar_Player_Cinematic Mid cinematic_shirt one draw: 2117/19774 triangles visible
+PASS Avatar_Player_Cinematic Mid cinematic_trousers one draw: 13007/16714 triangles visible
+PASS Avatar_Player_Cinematic Mid cinematic_waistcoat one draw: 4948/19764 triangles visible
+PASS Avatar_Player_Cinematic HighMid built
+PASS Avatar_Player_Cinematic HighMid items equipped: 5/5
+PASS Avatar_Player_Cinematic HighMid assembled (masks): 5/5
+PASS Avatar_Player_Cinematic HighMid masks
+PASS Avatar_Player_Cinematic HighMid cinematic_boots one draw: 83348/83348 triangles visible
+PASS Avatar_Player_Cinematic HighMid cinematic_coat one draw: 29703/29703 triangles visible
+PASS Avatar_Player_Cinematic HighMid cinematic_shirt one draw: 3837/36087 triangles visible
+PASS Avatar_Player_Cinematic HighMid cinematic_trousers one draw: 26270/33705 triangles visible
+PASS Avatar_Player_Cinematic HighMid cinematic_waistcoat one draw: 9475/37705 triangles visible
+PASS Avatar_Player_Cinematic High built
+PASS Avatar_Player_Cinematic High items equipped: 5/5
+PASS Avatar_Player_Cinematic High assembled (masks): 5/5
+PASS Avatar_Player_Cinematic High masks
+PASS Avatar_Player_Cinematic High cinematic_boots one draw: 119654/119654 triangles visible
+PASS Avatar_Player_Cinematic High cinematic_coat one draw: 45201/45201 triangles visible
+PASS Avatar_Player_Cinematic High cinematic_shirt one draw: 5803/55537 triangles visible
+PASS Avatar_Player_Cinematic High cinematic_trousers one draw: 35431/46362 triangles visible
+PASS Avatar_Player_Cinematic High cinematic_waistcoat one draw: 14142/56565 triangles visible
+PASS Avatar_Player_Cinematic Ultra built
+PASS Avatar_Player_Cinematic Ultra items equipped: 5/5
+PASS Avatar_Player_Cinematic Ultra assembled (masks): 5/5
+PASS Avatar_Player_Cinematic Ultra masks
+PASS Avatar_Player_Cinematic Ultra cinematic_boots one draw: 195478/195478 triangles visible
+PASS Avatar_Player_Cinematic Ultra cinematic_coat one draw: 70348/70348 triangles visible
+PASS Avatar_Player_Cinematic Ultra cinematic_shirt one draw: 7128/82988 triangles visible
+PASS Avatar_Player_Cinematic Ultra cinematic_trousers one draw: 56118/75359 triangles visible
+PASS Avatar_Player_Cinematic Ultra cinematic_waistcoat one draw: 22499/89082 triangles visible
+PASS Avatar_Player_Classical Low built
+PASS Avatar_Player_Classical Low items equipped: 5/5
+PASS Avatar_Player_Classical Low assembled (masks): 5/5
+PASS Avatar_Player_Classical Low masks
+PASS Avatar_Player_Classical Low classical_jacket one draw: 9045/9045 triangles visible
+PASS Avatar_Player_Classical Low classical_shirt one draw: 2422/8924 triangles visible
+PASS Avatar_Player_Classical Low classical_shoes one draw: 19912/19912 triangles visible
+PASS Avatar_Player_Classical Low classical_trousers one draw: 7216/8465 triangles visible
+PASS Avatar_Player_Classical Low classical_waistcoat one draw: 2391/9786 triangles visible
+PASS Avatar_Player_Classical Mid built
+PASS Avatar_Player_Classical Mid items equipped: 5/5
+PASS Avatar_Player_Classical Mid assembled (masks): 5/5
+PASS Avatar_Player_Classical Mid masks
+PASS Avatar_Player_Classical Mid classical_jacket one draw: 18116/18116 triangles visible
+PASS Avatar_Player_Classical Mid classical_shirt one draw: 4378/17172 triangles visible
+PASS Avatar_Player_Classical Mid classical_shoes one draw: 35262/35262 triangles visible
+PASS Avatar_Player_Classical Mid classical_trousers one draw: 13577/16482 triangles visible
+PASS Avatar_Player_Classical Mid classical_waistcoat one draw: 4783/17922 triangles visible
+PASS Avatar_Player_Classical HighMid built
+PASS Avatar_Player_Classical HighMid items equipped: 5/5
+PASS Avatar_Player_Classical HighMid assembled (masks): 5/5
+PASS Avatar_Player_Classical HighMid masks
+PASS Avatar_Player_Classical HighMid classical_jacket one draw: 36774/36774 triangles visible
+PASS Avatar_Player_Classical HighMid classical_shirt one draw: 8419/32629 triangles visible
+PASS Avatar_Player_Classical HighMid classical_shoes one draw: 67284/67284 triangles visible
+PASS Avatar_Player_Classical HighMid classical_trousers one draw: 24691/30376 triangles visible
+PASS Avatar_Player_Classical HighMid classical_waistcoat one draw: 8846/34062 triangles visible
+PASS Avatar_Player_Classical High built
+PASS Avatar_Player_Classical High items equipped: 5/5
+PASS Avatar_Player_Classical High assembled (masks): 5/5
+PASS Avatar_Player_Classical High masks
+PASS Avatar_Player_Classical High classical_jacket one draw: 49729/49729 triangles visible
+PASS Avatar_Player_Classical High classical_shirt one draw: 12127/48428 triangles visible
+PASS Avatar_Player_Classical High classical_shoes one draw: 96668/96668 triangles visible
+PASS Avatar_Player_Classical High classical_trousers one draw: 35525/45162 triangles visible
+PASS Avatar_Player_Classical High classical_waistcoat one draw: 13083/50868 triangles visible
+PASS Avatar_Player_Classical Ultra built
+PASS Avatar_Player_Classical Ultra items equipped: 5/5
+PASS Avatar_Player_Classical Ultra assembled (masks): 5/5
+PASS Avatar_Player_Classical Ultra masks
+PASS Avatar_Player_Classical Ultra classical_jacket one draw: 78688/78688 triangles visible
+PASS Avatar_Player_Classical Ultra classical_shirt one draw: 18971/77728 triangles visible
+PASS Avatar_Player_Classical Ultra classical_shoes one draw: 155002/155002 triangles visible
+PASS Avatar_Player_Classical Ultra classical_trousers one draw: 57479/74532 triangles visible
+PASS Avatar_Player_Classical Ultra classical_waistcoat one draw: 21674/85874 triangles visible
+PASS Avatar_Player_Dance Low built
+PASS Avatar_Player_Dance Low items equipped: 3/3
+PASS Avatar_Player_Dance Low assembled (masks): 3/3
+PASS Avatar_Player_Dance Low masks
+PASS Avatar_Player_Dance Low dance_jacket one draw: 8375/8375 triangles visible
+PASS Avatar_Player_Dance Low dance_sneakers one draw: 19274/19274 triangles visible
+PASS Avatar_Player_Dance Low dance_tshirt one draw: 2444/9326 triangles visible
+PASS Avatar_Player_Dance Mid built
+PASS Avatar_Player_Dance Mid items equipped: 3/3
+PASS Avatar_Player_Dance Mid assembled (masks): 3/3
+PASS Avatar_Player_Dance Mid masks
+PASS Avatar_Player_Dance Mid dance_jacket one draw: 18430/18430 triangles visible
+PASS Avatar_Player_Dance Mid dance_sneakers one draw: 36344/36344 triangles visible
+PASS Avatar_Player_Dance Mid dance_tshirt one draw: 3992/16512 triangles visible
+PASS Avatar_Player_Dance HighMid built
+PASS Avatar_Player_Dance HighMid items equipped: 3/3
+PASS Avatar_Player_Dance HighMid assembled (masks): 3/3
+PASS Avatar_Player_Dance HighMid masks
+PASS Avatar_Player_Dance HighMid dance_jacket one draw: 35894/35894 triangles visible
+PASS Avatar_Player_Dance HighMid dance_sneakers one draw: 72386/72386 triangles visible
+PASS Avatar_Player_Dance HighMid dance_tshirt one draw: 7704/31510 triangles visible
+PASS Avatar_Player_Dance High built
+PASS Avatar_Player_Dance High items equipped: 3/3
+PASS Avatar_Player_Dance High assembled (masks): 3/3
+PASS Avatar_Player_Dance High masks
+PASS Avatar_Player_Dance High dance_jacket one draw: 52792/52792 triangles visible
+PASS Avatar_Player_Dance High dance_sneakers one draw: 96630/96630 triangles visible
+PASS Avatar_Player_Dance High dance_tshirt one draw: 11656/46916 triangles visible
+PASS Avatar_Player_Dance Ultra built
+PASS Avatar_Player_Dance Ultra items equipped: 3/3
+PASS Avatar_Player_Dance Ultra assembled (masks): 3/3
+PASS Avatar_Player_Dance Ultra masks
+PASS Avatar_Player_Dance Ultra dance_jacket one draw: 88358/88358 triangles visible
+PASS Avatar_Player_Dance Ultra dance_sneakers one draw: 158374/158374 triangles visible
+PASS Avatar_Player_Dance Ultra dance_tshirt one draw: 19270/79000 triangles visible
+PASS Avatar_Player_Dark Low built
+PASS Avatar_Player_Dark Low items equipped: 5/5
+PASS Avatar_Player_Dark Low assembled (masks): 5/5
+PASS Avatar_Player_Dark Low masks
+PASS Avatar_Player_Dark Low dark_boots one draw: 23458/23458 triangles visible
+PASS Avatar_Player_Dark Low dark_coat one draw: 8572/8572 triangles visible
+PASS Avatar_Player_Dark Low dark_shirt one draw: 929/9896 triangles visible
+PASS Avatar_Player_Dark Low dark_trousers one draw: 7535/8820 triangles visible
+PASS Avatar_Player_Dark Low dark_waistcoat one draw: 2686/9298 triangles visible
+PASS Avatar_Player_Dark Mid built
+PASS Avatar_Player_Dark Mid items equipped: 5/5
+PASS Avatar_Player_Dark Mid assembled (masks): 5/5
+PASS Avatar_Player_Dark Mid masks
+PASS Avatar_Player_Dark Mid dark_boots one draw: 46834/46834 triangles visible
+PASS Avatar_Player_Dark Mid dark_coat one draw: 17191/17191 triangles visible
+PASS Avatar_Player_Dark Mid dark_shirt one draw: 1195/16842 triangles visible
+PASS Avatar_Player_Dark Mid dark_trousers one draw: 13527/15927 triangles visible
+PASS Avatar_Player_Dark Mid dark_waistcoat one draw: 5324/17417 triangles visible
+PASS Avatar_Player_Dark HighMid built
+PASS Avatar_Player_Dark HighMid items equipped: 5/5
+PASS Avatar_Player_Dark HighMid assembled (masks): 5/5
+PASS Avatar_Player_Dark HighMid masks
+PASS Avatar_Player_Dark HighMid dark_boots one draw: 85972/85972 triangles visible
+PASS Avatar_Player_Dark HighMid dark_coat one draw: 33782/33782 triangles visible
+PASS Avatar_Player_Dark HighMid dark_shirt one draw: 2376/29506 triangles visible
+PASS Avatar_Player_Dark HighMid dark_trousers one draw: 27000/32341 triangles visible
+PASS Avatar_Player_Dark HighMid dark_waistcoat one draw: 9797/34899 triangles visible
+PASS Avatar_Player_Dark High built
+PASS Avatar_Player_Dark High items equipped: 5/5
+PASS Avatar_Player_Dark High assembled (masks): 5/5
+PASS Avatar_Player_Dark High masks
+PASS Avatar_Player_Dark High dark_boots one draw: 123994/123994 triangles visible
+PASS Avatar_Player_Dark High dark_coat one draw: 49660/49660 triangles visible
+PASS Avatar_Player_Dark High dark_shirt one draw: 3642/43508 triangles visible
+PASS Avatar_Player_Dark High dark_trousers one draw: 36542/44345 triangles visible
+PASS Avatar_Player_Dark High dark_waistcoat one draw: 13696/49038 triangles visible
+PASS Avatar_Player_Dark Ultra built
+PASS Avatar_Player_Dark Ultra items equipped: 5/5
+PASS Avatar_Player_Dark Ultra assembled (masks): 5/5
+PASS Avatar_Player_Dark Ultra masks
+PASS Avatar_Player_Dark Ultra dark_boots one draw: 204290/204290 triangles visible
+PASS Avatar_Player_Dark Ultra dark_coat one draw: 83465/83465 triangles visible
+PASS Avatar_Player_Dark Ultra dark_shirt one draw: 6187/75502 triangles visible
+PASS Avatar_Player_Dark Ultra dark_trousers one draw: 57243/72210 triangles visible
+PASS Avatar_Player_Dark Ultra dark_waistcoat one draw: 22456/82394 triangles visible
+PASS Avatar_Player_Dreamy Low built
+PASS Avatar_Player_Dreamy Low items equipped: 5/5
+PASS Avatar_Player_Dreamy Low assembled (masks): 5/5
+PASS Avatar_Player_Dreamy Low masks
+PASS Avatar_Player_Dreamy Low dreamy_necklace one draw: 12119/12119 triangles visible
+PASS Avatar_Player_Dreamy Low dreamy_overshirt one draw: 9858/9858 triangles visible
+PASS Avatar_Player_Dreamy Low dreamy_shirt one draw: 1097/10510 triangles visible
+PASS Avatar_Player_Dreamy Low dreamy_shoes one draw: 18232/18232 triangles visible
+PASS Avatar_Player_Dreamy Low dreamy_trousers one draw: 8279/9500 triangles visible
+PASS Avatar_Player_Dreamy Mid built
+PASS Avatar_Player_Dreamy Mid items equipped: 5/5
+PASS Avatar_Player_Dreamy Mid assembled (masks): 5/5
+PASS Avatar_Player_Dreamy Mid masks
+PASS Avatar_Player_Dreamy Mid dreamy_necklace one draw: 23769/23769 triangles visible
+PASS Avatar_Player_Dreamy Mid dreamy_overshirt one draw: 19195/19195 triangles visible
+PASS Avatar_Player_Dreamy Mid dreamy_shirt one draw: 1763/18450 triangles visible
+PASS Avatar_Player_Dreamy Mid dreamy_shoes one draw: 34284/34284 triangles visible
+PASS Avatar_Player_Dreamy Mid dreamy_trousers one draw: 15275/17950 triangles visible
+PASS Avatar_Player_Dreamy HighMid built
+PASS Avatar_Player_Dreamy HighMid items equipped: 5/5
+PASS Avatar_Player_Dreamy HighMid assembled (masks): 5/5
+PASS Avatar_Player_Dreamy HighMid masks
+PASS Avatar_Player_Dreamy HighMid dreamy_necklace one draw: 42675/42675 triangles visible
+PASS Avatar_Player_Dreamy HighMid dreamy_overshirt one draw: 38404/38404 triangles visible
+PASS Avatar_Player_Dreamy HighMid dreamy_shirt one draw: 3790/35744 triangles visible
+PASS Avatar_Player_Dreamy HighMid dreamy_shoes one draw: 60132/60132 triangles visible
+PASS Avatar_Player_Dreamy HighMid dreamy_trousers one draw: 26524/31584 triangles visible
+PASS Avatar_Player_Dreamy High built
+PASS Avatar_Player_Dreamy High items equipped: 5/5
+PASS Avatar_Player_Dreamy High assembled (masks): 5/5
+PASS Avatar_Player_Dreamy High masks
+PASS Avatar_Player_Dreamy High dreamy_necklace one draw: 60291/60291 triangles visible
+PASS Avatar_Player_Dreamy High dreamy_overshirt one draw: 57101/57101 triangles visible
+PASS Avatar_Player_Dreamy High dreamy_shirt one draw: 5683/53270 triangles visible
+PASS Avatar_Player_Dreamy High dreamy_shoes one draw: 88156/88156 triangles visible
+PASS Avatar_Player_Dreamy High dreamy_trousers one draw: 39279/46476 triangles visible
+PASS Avatar_Player_Dreamy Ultra built
+PASS Avatar_Player_Dreamy Ultra items equipped: 5/5
+PASS Avatar_Player_Dreamy Ultra assembled (masks): 5/5
+PASS Avatar_Player_Dreamy Ultra masks
+PASS Avatar_Player_Dreamy Ultra dreamy_necklace one draw: 97333/97333 triangles visible
+PASS Avatar_Player_Dreamy Ultra dreamy_overshirt one draw: 90492/90492 triangles visible
+PASS Avatar_Player_Dreamy Ultra dreamy_shirt one draw: 8416/81618 triangles visible
+PASS Avatar_Player_Dreamy Ultra dreamy_shoes one draw: 150012/150012 triangles visible
+PASS Avatar_Player_Dreamy Ultra dreamy_trousers one draw: 63384/76290 triangles visible
+PASS Avatar_Player_Electronic Low built
+PASS Avatar_Player_Electronic Low items equipped: 4/4
+PASS Avatar_Player_Electronic Low assembled (masks): 4/4
+PASS Avatar_Player_Electronic Low masks
+PASS Avatar_Player_Electronic Low electronic_jacket one draw: 10142/10142 triangles visible
+PASS Avatar_Player_Electronic Low electronic_sneakers one draw: 22470/22470 triangles visible
+PASS Avatar_Player_Electronic Low electronic_top one draw: 2599/10546 triangles visible
+PASS Avatar_Player_Electronic Low electronic_trousers one draw: 7822/8439 triangles visible
+PASS Avatar_Player_Electronic Mid built
+PASS Avatar_Player_Electronic Mid items equipped: 4/4
+PASS Avatar_Player_Electronic Mid assembled (masks): 4/4
+PASS Avatar_Player_Electronic Mid masks
+PASS Avatar_Player_Electronic Mid electronic_jacket one draw: 19570/19570 triangles visible
+PASS Avatar_Player_Electronic Mid electronic_sneakers one draw: 44032/44032 triangles visible
+PASS Avatar_Player_Electronic Mid electronic_top one draw: 3919/18412 triangles visible
+PASS Avatar_Player_Electronic Mid electronic_trousers one draw: 16271/17813 triangles visible
+PASS Avatar_Player_Electronic HighMid built
+PASS Avatar_Player_Electronic HighMid items equipped: 4/4
+PASS Avatar_Player_Electronic HighMid assembled (masks): 4/4
+PASS Avatar_Player_Electronic HighMid masks
+PASS Avatar_Player_Electronic HighMid electronic_jacket one draw: 38932/38932 triangles visible
+PASS Avatar_Player_Electronic HighMid electronic_sneakers one draw: 82072/82072 triangles visible
+PASS Avatar_Player_Electronic HighMid electronic_top one draw: 7876/33911 triangles visible
+PASS Avatar_Player_Electronic HighMid electronic_trousers one draw: 31885/34988 triangles visible
+PASS Avatar_Player_Electronic High built
+PASS Avatar_Player_Electronic High items equipped: 4/4
+PASS Avatar_Player_Electronic High assembled (masks): 4/4
+PASS Avatar_Player_Electronic High masks
+PASS Avatar_Player_Electronic High electronic_jacket one draw: 58512/58512 triangles visible
+PASS Avatar_Player_Electronic High electronic_sneakers one draw: 115270/115270 triangles visible
+PASS Avatar_Player_Electronic High electronic_top one draw: 11974/49472 triangles visible
+PASS Avatar_Player_Electronic High electronic_trousers one draw: 48857/53399 triangles visible
+PASS Avatar_Player_Electronic Ultra built
+PASS Avatar_Player_Electronic Ultra items equipped: 4/4
+PASS Avatar_Player_Electronic Ultra assembled (masks): 4/4
+PASS Avatar_Player_Electronic Ultra masks
+PASS Avatar_Player_Electronic Ultra electronic_jacket one draw: 95406/95406 triangles visible
+PASS Avatar_Player_Electronic Ultra electronic_sneakers one draw: 185512/185512 triangles visible
+PASS Avatar_Player_Electronic Ultra electronic_top one draw: 20738/82718 triangles visible
+PASS Avatar_Player_Electronic Ultra electronic_trousers one draw: 80465/88245 triangles visible
+PASS Avatar_Player_Energetic Low built
+PASS Avatar_Player_Energetic Low items equipped: 4/4
+PASS Avatar_Player_Energetic Low assembled (masks): 4/4
+PASS Avatar_Player_Energetic Low masks
+PASS Avatar_Player_Energetic Low energetic_jacket one draw: 9151/9151 triangles visible
+PASS Avatar_Player_Energetic Low energetic_sneakers one draw: 24910/24910 triangles visible
+PASS Avatar_Player_Energetic Low energetic_trousers one draw: 9160/9922 triangles visible
+PASS Avatar_Player_Energetic Low energetic_tshirt one draw: 2107/8350 triangles visible
+PASS Avatar_Player_Energetic Mid built
+PASS Avatar_Player_Energetic Mid items equipped: 4/4
+PASS Avatar_Player_Energetic Mid assembled (masks): 4/4
+PASS Avatar_Player_Energetic Mid masks
+PASS Avatar_Player_Energetic Mid energetic_jacket one draw: 18396/18396 triangles visible
+PASS Avatar_Player_Energetic Mid energetic_sneakers one draw: 45556/45556 triangles visible
+PASS Avatar_Player_Energetic Mid energetic_trousers one draw: 19372/20681 triangles visible
+PASS Avatar_Player_Energetic Mid energetic_tshirt one draw: 3198/14796 triangles visible
+PASS Avatar_Player_Energetic HighMid built
+PASS Avatar_Player_Energetic HighMid items equipped: 4/4
+PASS Avatar_Player_Energetic HighMid assembled (masks): 4/4
+PASS Avatar_Player_Energetic HighMid masks
+PASS Avatar_Player_Energetic HighMid energetic_jacket one draw: 36554/36554 triangles visible
+PASS Avatar_Player_Energetic HighMid energetic_sneakers one draw: 84366/84366 triangles visible
+PASS Avatar_Player_Energetic HighMid energetic_trousers one draw: 37475/39916 triangles visible
+PASS Avatar_Player_Energetic HighMid energetic_tshirt one draw: 6173/29516 triangles visible
+PASS Avatar_Player_Energetic High built
+PASS Avatar_Player_Energetic High items equipped: 4/4
+PASS Avatar_Player_Energetic High assembled (masks): 4/4
+PASS Avatar_Player_Energetic High masks
+PASS Avatar_Player_Energetic High energetic_jacket one draw: 54320/54320 triangles visible
+PASS Avatar_Player_Energetic High energetic_sneakers one draw: 127534/127534 triangles visible
+PASS Avatar_Player_Energetic High energetic_trousers one draw: 55635/59211 triangles visible
+PASS Avatar_Player_Energetic High energetic_tshirt one draw: 8683/42524 triangles visible
+PASS Avatar_Player_Energetic Ultra built
+PASS Avatar_Player_Energetic Ultra items equipped: 4/4
+PASS Avatar_Player_Energetic Ultra assembled (masks): 4/4
+PASS Avatar_Player_Energetic Ultra masks
+PASS Avatar_Player_Energetic Ultra energetic_jacket one draw: 84575/84575 triangles visible
+PASS Avatar_Player_Energetic Ultra energetic_sneakers one draw: 200890/200890 triangles visible
+PASS Avatar_Player_Energetic Ultra energetic_trousers one draw: 93271/99264 triangles visible
+PASS Avatar_Player_Energetic Ultra energetic_tshirt one draw: 14489/72622 triangles visible
+PASS Avatar_Player_Experimental Low built
+PASS Avatar_Player_Experimental Low items equipped: 4/4
+PASS Avatar_Player_Experimental Low assembled (masks): 4/4
+PASS Avatar_Player_Experimental Low masks
+PASS Avatar_Player_Experimental Low experimental_jacket one draw: 9288/9288 triangles visible
+PASS Avatar_Player_Experimental Low experimental_shoes one draw: 24012/24012 triangles visible
+PASS Avatar_Player_Experimental Low experimental_top one draw: 1370/11053 triangles visible
+PASS Avatar_Player_Experimental Low experimental_trousers one draw: 6851/9680 triangles visible
+PASS Avatar_Player_Experimental Mid built
+PASS Avatar_Player_Experimental Mid items equipped: 4/4
+PASS Avatar_Player_Experimental Mid assembled (masks): 4/4
+PASS Avatar_Player_Experimental Mid masks
+PASS Avatar_Player_Experimental Mid experimental_jacket one draw: 18623/18623 triangles visible
+PASS Avatar_Player_Experimental Mid experimental_shoes one draw: 47110/47110 triangles visible
+PASS Avatar_Player_Experimental Mid experimental_top one draw: 2525/20449 triangles visible
+PASS Avatar_Player_Experimental Mid experimental_trousers one draw: 12909/18413 triangles visible
+PASS Avatar_Player_Experimental HighMid built
+PASS Avatar_Player_Experimental HighMid items equipped: 4/4
+PASS Avatar_Player_Experimental HighMid assembled (masks): 4/4
+PASS Avatar_Player_Experimental HighMid masks
+PASS Avatar_Player_Experimental HighMid experimental_jacket one draw: 37256/37256 triangles visible
+PASS Avatar_Player_Experimental HighMid experimental_shoes one draw: 87920/87920 triangles visible
+PASS Avatar_Player_Experimental HighMid experimental_top one draw: 4597/39654 triangles visible
+PASS Avatar_Player_Experimental HighMid experimental_trousers one draw: 23453/33666 triangles visible
+PASS Avatar_Player_Experimental High built
+PASS Avatar_Player_Experimental High items equipped: 4/4
+PASS Avatar_Player_Experimental High assembled (masks): 4/4
+PASS Avatar_Player_Experimental High masks
+PASS Avatar_Player_Experimental High experimental_jacket one draw: 52303/52303 triangles visible
+PASS Avatar_Player_Experimental High experimental_shoes one draw: 126036/126036 triangles visible
+PASS Avatar_Player_Experimental High experimental_top one draw: 6861/60037 triangles visible
+PASS Avatar_Player_Experimental High experimental_trousers one draw: 34286/49664 triangles visible
+PASS Avatar_Player_Experimental Ultra built
+PASS Avatar_Player_Experimental Ultra items equipped: 4/4
+PASS Avatar_Player_Experimental Ultra assembled (masks): 4/4
+PASS Avatar_Player_Experimental Ultra masks
+PASS Avatar_Player_Experimental Ultra experimental_jacket one draw: 86711/86711 triangles visible
+PASS Avatar_Player_Experimental Ultra experimental_shoes one draw: 215046/215046 triangles visible
+PASS Avatar_Player_Experimental Ultra experimental_top one draw: 11708/97571 triangles visible
+PASS Avatar_Player_Experimental Ultra experimental_trousers one draw: 55610/81673 triangles visible
+PASS Avatar_Player_Funky Low built
+PASS Avatar_Player_Funky Low items equipped: 4/4
+PASS Avatar_Player_Funky Low assembled (masks): 4/4
+PASS Avatar_Player_Funky Low masks
+PASS Avatar_Player_Funky Low funky_belt one draw: 11069/11069 triangles visible
+PASS Avatar_Player_Funky Low funky_shirt one draw: 10742/10742 triangles visible
+PASS Avatar_Player_Funky Low funky_shoes one draw: 19024/19024 triangles visible
+PASS Avatar_Player_Funky Low funky_trousers_belt one draw: 9708/9708 triangles visible
+PASS Avatar_Player_Funky Mid built
+PASS Avatar_Player_Funky Mid items equipped: 4/4
+PASS Avatar_Player_Funky Mid assembled (masks): 4/4
+PASS Avatar_Player_Funky Mid masks
+PASS Avatar_Player_Funky Mid funky_belt one draw: 20033/20033 triangles visible
+PASS Avatar_Player_Funky Mid funky_shirt one draw: 19892/19892 triangles visible
+PASS Avatar_Player_Funky Mid funky_shoes one draw: 36638/36638 triangles visible
+PASS Avatar_Player_Funky Mid funky_trousers_belt one draw: 19472/19472 triangles visible
+PASS Avatar_Player_Funky HighMid built
+PASS Avatar_Player_Funky HighMid items equipped: 4/4
+PASS Avatar_Player_Funky HighMid assembled (masks): 4/4
+PASS Avatar_Player_Funky HighMid masks
+PASS Avatar_Player_Funky HighMid funky_belt one draw: 39211/39211 triangles visible
+PASS Avatar_Player_Funky HighMid funky_shirt one draw: 35154/35154 triangles visible
+PASS Avatar_Player_Funky HighMid funky_shoes one draw: 67458/67458 triangles visible
+PASS Avatar_Player_Funky HighMid funky_trousers_belt one draw: 38885/38885 triangles visible
+PASS Avatar_Player_Funky High built
+PASS Avatar_Player_Funky High items equipped: 4/4
+PASS Avatar_Player_Funky High assembled (masks): 4/4
+PASS Avatar_Player_Funky High masks
+PASS Avatar_Player_Funky High funky_belt one draw: 58885/58885 triangles visible
+PASS Avatar_Player_Funky High funky_shirt one draw: 50876/50876 triangles visible
+PASS Avatar_Player_Funky High funky_shoes one draw: 100940/100940 triangles visible
+PASS Avatar_Player_Funky High funky_trousers_belt one draw: 52903/52903 triangles visible
+PASS Avatar_Player_Funky Ultra built
+PASS Avatar_Player_Funky Ultra items equipped: 4/4
+PASS Avatar_Player_Funky Ultra assembled (masks): 4/4
+PASS Avatar_Player_Funky Ultra masks
+PASS Avatar_Player_Funky Ultra funky_belt one draw: 90153/90153 triangles visible
+PASS Avatar_Player_Funky Ultra funky_shirt one draw: 83174/83174 triangles visible
+PASS Avatar_Player_Funky Ultra funky_shoes one draw: 167742/167742 triangles visible
+PASS Avatar_Player_Funky Ultra funky_trousers_belt one draw: 83705/83705 triangles visible
+PASS Avatar_Player_Groove Low built
+PASS Avatar_Player_Groove Low items equipped: 5/5
+PASS Avatar_Player_Groove Low assembled (masks): 5/5
+PASS Avatar_Player_Groove Low masks
+PASS Avatar_Player_Groove Low groove_jacket one draw: 8982/8982 triangles visible
+PASS Avatar_Player_Groove Low groove_necklace one draw: 11076/11076 triangles visible
+PASS Avatar_Player_Groove Low groove_sneakers one draw: 25048/25048 triangles visible
+PASS Avatar_Player_Groove Low groove_trousers one draw: 9382/9685 triangles visible
+PASS Avatar_Player_Groove Low groove_tshirt one draw: 1895/9138 triangles visible
+PASS Avatar_Player_Groove Mid built
+PASS Avatar_Player_Groove Mid items equipped: 5/5
+PASS Avatar_Player_Groove Mid assembled (masks): 5/5
+PASS Avatar_Player_Groove Mid masks
+PASS Avatar_Player_Groove Mid groove_jacket one draw: 18335/18335 triangles visible
+PASS Avatar_Player_Groove Mid groove_necklace one draw: 23337/23337 triangles visible
+PASS Avatar_Player_Groove Mid groove_sneakers one draw: 49210/49210 triangles visible
+PASS Avatar_Player_Groove Mid groove_trousers one draw: 18192/19002 triangles visible
+PASS Avatar_Player_Groove Mid groove_tshirt one draw: 3155/18472 triangles visible
+PASS Avatar_Player_Groove HighMid built
+PASS Avatar_Player_Groove HighMid items equipped: 5/5
+PASS Avatar_Player_Groove HighMid assembled (masks): 5/5
+PASS Avatar_Player_Groove HighMid masks
+PASS Avatar_Player_Groove HighMid groove_jacket one draw: 36247/36247 triangles visible
+PASS Avatar_Player_Groove HighMid groove_necklace one draw: 48788/48788 triangles visible
+PASS Avatar_Player_Groove HighMid groove_sneakers one draw: 89584/89584 triangles visible
+PASS Avatar_Player_Groove HighMid groove_trousers one draw: 36454/38073 triangles visible
+PASS Avatar_Player_Groove HighMid groove_tshirt one draw: 5600/34048 triangles visible
+PASS Avatar_Player_Groove High built
+PASS Avatar_Player_Groove High items equipped: 5/5
+PASS Avatar_Player_Groove High assembled (masks): 5/5
+PASS Avatar_Player_Groove High masks
+PASS Avatar_Player_Groove High groove_jacket one draw: 54762/54762 triangles visible
+PASS Avatar_Player_Groove High groove_necklace one draw: 69537/69537 triangles visible
+PASS Avatar_Player_Groove High groove_sneakers one draw: 128776/128776 triangles visible
+PASS Avatar_Player_Groove High groove_trousers one draw: 53832/56077 triangles visible
+PASS Avatar_Player_Groove High groove_tshirt one draw: 8606/49260 triangles visible
+PASS Avatar_Player_Groove Ultra built
+PASS Avatar_Player_Groove Ultra items equipped: 5/5
+PASS Avatar_Player_Groove Ultra assembled (masks): 5/5
+PASS Avatar_Player_Groove Ultra masks
+PASS Avatar_Player_Groove Ultra groove_jacket one draw: 96107/96107 triangles visible
+PASS Avatar_Player_Groove Ultra groove_necklace one draw: 105963/105963 triangles visible
+PASS Avatar_Player_Groove Ultra groove_sneakers one draw: 216558/216558 triangles visible
+PASS Avatar_Player_Groove Ultra groove_trousers one draw: 90176/94261 triangles visible
+PASS Avatar_Player_Groove Ultra groove_tshirt one draw: 14332/80108 triangles visible
+PASS Avatar_Player_Heavy Low built
+PASS Avatar_Player_Heavy Low items equipped: 5/5
+PASS Avatar_Player_Heavy Low assembled (masks): 5/5
+PASS Avatar_Player_Heavy Low masks
+PASS Avatar_Player_Heavy Low heavy_boots one draw: 22822/22822 triangles visible
+PASS Avatar_Player_Heavy Low heavy_trousers_belt_chain one draw: 9230/9230 triangles visible
+PASS Avatar_Player_Heavy Low heavy_tshirt one draw: 2038/10434 triangles visible
+PASS Avatar_Player_Heavy Low heavy_vest one draw: 8871/8871 triangles visible
+PASS Avatar_Player_Heavy Low heavy_wrist_cuffs one draw: 23326/23326 triangles visible
+PASS Avatar_Player_Heavy Mid built
+PASS Avatar_Player_Heavy Mid items equipped: 5/5
+PASS Avatar_Player_Heavy Mid assembled (masks): 5/5
+PASS Avatar_Player_Heavy Mid masks
+PASS Avatar_Player_Heavy Mid heavy_boots one draw: 46976/46976 triangles visible
+PASS Avatar_Player_Heavy Mid heavy_trousers_belt_chain one draw: 18959/18959 triangles visible
+PASS Avatar_Player_Heavy Mid heavy_tshirt one draw: 3720/20176 triangles visible
+PASS Avatar_Player_Heavy Mid heavy_vest one draw: 18268/18268 triangles visible
+PASS Avatar_Player_Heavy Mid heavy_wrist_cuffs one draw: 46728/46728 triangles visible
+PASS Avatar_Player_Heavy HighMid built
+PASS Avatar_Player_Heavy HighMid items equipped: 5/5
+PASS Avatar_Player_Heavy HighMid assembled (masks): 5/5
+PASS Avatar_Player_Heavy HighMid masks
+PASS Avatar_Player_Heavy HighMid heavy_boots one draw: 89054/89054 triangles visible
+PASS Avatar_Player_Heavy HighMid heavy_trousers_belt_chain one draw: 38344/38344 triangles visible
+PASS Avatar_Player_Heavy HighMid heavy_tshirt one draw: 7961/36256 triangles visible
+PASS Avatar_Player_Heavy HighMid heavy_vest one draw: 33570/33570 triangles visible
+PASS Avatar_Player_Heavy HighMid heavy_wrist_cuffs one draw: 89342/89342 triangles visible
+PASS Avatar_Player_Heavy High built
+PASS Avatar_Player_Heavy High items equipped: 5/5
+PASS Avatar_Player_Heavy High assembled (masks): 5/5
+PASS Avatar_Player_Heavy High masks
+PASS Avatar_Player_Heavy High heavy_boots one draw: 130136/130136 triangles visible
+PASS Avatar_Player_Heavy High heavy_trousers_belt_chain one draw: 56514/56514 triangles visible
+PASS Avatar_Player_Heavy High heavy_tshirt one draw: 12547/53790 triangles visible
+PASS Avatar_Player_Heavy High heavy_vest one draw: 51529/51529 triangles visible
+PASS Avatar_Player_Heavy High heavy_wrist_cuffs one draw: 129046/129046 triangles visible
+PASS Avatar_Player_Heavy Ultra built
+PASS Avatar_Player_Heavy Ultra items equipped: 5/5
+PASS Avatar_Player_Heavy Ultra assembled (masks): 5/5
+PASS Avatar_Player_Heavy Ultra masks
+PASS Avatar_Player_Heavy Ultra heavy_boots one draw: 208694/208694 triangles visible
+PASS Avatar_Player_Heavy Ultra heavy_trousers_belt_chain one draw: 90097/90097 triangles visible
+PASS Avatar_Player_Heavy Ultra heavy_tshirt one draw: 20734/86904 triangles visible
+PASS Avatar_Player_Heavy Ultra heavy_vest one draw: 80561/80561 triangles visible
+PASS Avatar_Player_Heavy Ultra heavy_wrist_cuffs one draw: 211184/211184 triangles visible
+PASS Avatar_Player_Jazzy Low built
+PASS Avatar_Player_Jazzy Low items equipped: 5/5
+PASS Avatar_Player_Jazzy Low assembled (masks): 5/5
+PASS Avatar_Player_Jazzy Low masks
+PASS Avatar_Player_Jazzy Low jazzy_jacket one draw: 9743/9743 triangles visible
+PASS Avatar_Player_Jazzy Low jazzy_shirt one draw: 1611/9183 triangles visible
+PASS Avatar_Player_Jazzy Low jazzy_shoes one draw: 19616/19616 triangles visible
+PASS Avatar_Player_Jazzy Low jazzy_trousers one draw: 5043/8096 triangles visible
+PASS Avatar_Player_Jazzy Low jazzy_waistcoat one draw: 883/9693 triangles visible
+PASS Avatar_Player_Jazzy Mid built
+PASS Avatar_Player_Jazzy Mid items equipped: 5/5
+PASS Avatar_Player_Jazzy Mid assembled (masks): 5/5
+PASS Avatar_Player_Jazzy Mid masks
+PASS Avatar_Player_Jazzy Mid jazzy_jacket one draw: 18231/18231 triangles visible
+PASS Avatar_Player_Jazzy Mid jazzy_shirt one draw: 3080/18925 triangles visible
+PASS Avatar_Player_Jazzy Mid jazzy_shoes one draw: 36152/36152 triangles visible
+PASS Avatar_Player_Jazzy Mid jazzy_trousers one draw: 9400/15570 triangles visible
+PASS Avatar_Player_Jazzy Mid jazzy_waistcoat one draw: 1876/16245 triangles visible
+PASS Avatar_Player_Jazzy HighMid built
+PASS Avatar_Player_Jazzy HighMid items equipped: 5/5
+PASS Avatar_Player_Jazzy HighMid assembled (masks): 5/5
+PASS Avatar_Player_Jazzy HighMid masks
+PASS Avatar_Player_Jazzy HighMid jazzy_jacket one draw: 36426/36426 triangles visible
+PASS Avatar_Player_Jazzy HighMid jazzy_shirt one draw: 5263/34437 triangles visible
+PASS Avatar_Player_Jazzy HighMid jazzy_shoes one draw: 66924/66924 triangles visible
+PASS Avatar_Player_Jazzy HighMid jazzy_trousers one draw: 16325/28704 triangles visible
+PASS Avatar_Player_Jazzy HighMid jazzy_waistcoat one draw: 3315/30290 triangles visible
+PASS Avatar_Player_Jazzy High built
+PASS Avatar_Player_Jazzy High items equipped: 5/5
+PASS Avatar_Player_Jazzy High assembled (masks): 5/5
+PASS Avatar_Player_Jazzy High masks
+PASS Avatar_Player_Jazzy High jazzy_jacket one draw: 54855/54855 triangles visible
+PASS Avatar_Player_Jazzy High jazzy_shirt one draw: 8601/49983 triangles visible
+PASS Avatar_Player_Jazzy High jazzy_shoes one draw: 105888/105888 triangles visible
+PASS Avatar_Player_Jazzy High jazzy_trousers one draw: 23848/43204 triangles visible
+PASS Avatar_Player_Jazzy High jazzy_waistcoat one draw: 4936/46577 triangles visible
+PASS Avatar_Player_Jazzy Ultra built
+PASS Avatar_Player_Jazzy Ultra items equipped: 5/5
+PASS Avatar_Player_Jazzy Ultra assembled (masks): 5/5
+PASS Avatar_Player_Jazzy Ultra masks
+PASS Avatar_Player_Jazzy Ultra jazzy_jacket one draw: 80957/80957 triangles visible
+PASS Avatar_Player_Jazzy Ultra jazzy_shirt one draw: 14198/81486 triangles visible
+PASS Avatar_Player_Jazzy Ultra jazzy_shoes one draw: 180164/180164 triangles visible
+PASS Avatar_Player_Jazzy Ultra jazzy_trousers one draw: 40648/74898 triangles visible
+PASS Avatar_Player_Jazzy Ultra jazzy_waistcoat one draw: 8114/78792 triangles visible
+PASS Avatar_Player_Rock Low built
+PASS Avatar_Player_Rock Low items equipped: 3/3
+PASS Avatar_Player_Rock Low assembled (masks): 3/3
+PASS Avatar_Player_Rock Low masks
+PASS Avatar_Player_Rock Low rock_boots one draw: 23584/23584 triangles visible
+PASS Avatar_Player_Rock Low rock_jacket one draw: 10326/10326 triangles visible
+PASS Avatar_Player_Rock Low rock_tshirt one draw: 2527/8794 triangles visible
+PASS Avatar_Player_Rock Mid built
+PASS Avatar_Player_Rock Mid items equipped: 3/3
+PASS Avatar_Player_Rock Mid assembled (masks): 3/3
+PASS Avatar_Player_Rock Mid masks
+PASS Avatar_Player_Rock Mid rock_boots one draw: 38952/38952 triangles visible
+PASS Avatar_Player_Rock Mid rock_jacket one draw: 20712/20712 triangles visible
+PASS Avatar_Player_Rock Mid rock_tshirt one draw: 5101/17572 triangles visible
+PASS Avatar_Player_Rock HighMid built
+PASS Avatar_Player_Rock HighMid items equipped: 3/3
+PASS Avatar_Player_Rock HighMid assembled (masks): 3/3
+PASS Avatar_Player_Rock HighMid masks
+PASS Avatar_Player_Rock HighMid rock_boots one draw: 87808/87808 triangles visible
+PASS Avatar_Player_Rock HighMid rock_jacket one draw: 36518/36518 triangles visible
+PASS Avatar_Player_Rock HighMid rock_tshirt one draw: 8389/30768 triangles visible
+PASS Avatar_Player_Rock High built
+PASS Avatar_Player_Rock High items equipped: 3/3
+PASS Avatar_Player_Rock High assembled (masks): 3/3
+PASS Avatar_Player_Rock High masks
+PASS Avatar_Player_Rock High rock_boots one draw: 125788/125788 triangles visible
+PASS Avatar_Player_Rock High rock_jacket one draw: 53582/53582 triangles visible
+PASS Avatar_Player_Rock High rock_tshirt one draw: 12360/44688 triangles visible
+PASS Avatar_Player_Rock Ultra built
+PASS Avatar_Player_Rock Ultra items equipped: 3/3
+PASS Avatar_Player_Rock Ultra assembled (masks): 3/3
+PASS Avatar_Player_Rock Ultra masks
+PASS Avatar_Player_Rock Ultra rock_boots one draw: 199664/199664 triangles visible
+PASS Avatar_Player_Rock Ultra rock_jacket one draw: 82126/82126 triangles visible
+PASS Avatar_Player_Rock Ultra rock_tshirt one draw: 20573/73938 triangles visible
+PASS Avatar_Player_Soulful Low built
+PASS Avatar_Player_Soulful Low items equipped: 3/3
+PASS Avatar_Player_Soulful Low assembled (masks): 3/3
+PASS Avatar_Player_Soulful Low masks
+PASS Avatar_Player_Soulful Low soulful_blazer one draw: 12925/12925 triangles visible
+PASS Avatar_Player_Soulful Low soulful_loafers one draw: 18338/18338 triangles visible
+PASS Avatar_Player_Soulful Low soulful_shirt one draw: 2556/9601 triangles visible
+PASS Avatar_Player_Soulful Mid built
+PASS Avatar_Player_Soulful Mid items equipped: 3/3
+PASS Avatar_Player_Soulful Mid assembled (masks): 3/3
+PASS Avatar_Player_Soulful Mid masks
+PASS Avatar_Player_Soulful Mid soulful_blazer one draw: 24309/24309 triangles visible
+PASS Avatar_Player_Soulful Mid soulful_loafers one draw: 33632/33632 triangles visible
+PASS Avatar_Player_Soulful Mid soulful_shirt one draw: 4587/17632 triangles visible
+PASS Avatar_Player_Soulful HighMid built
+PASS Avatar_Player_Soulful HighMid items equipped: 3/3
+PASS Avatar_Player_Soulful HighMid assembled (masks): 3/3
+PASS Avatar_Player_Soulful HighMid masks
+PASS Avatar_Player_Soulful HighMid soulful_blazer one draw: 45183/45183 triangles visible
+PASS Avatar_Player_Soulful HighMid soulful_loafers one draw: 63226/63226 triangles visible
+PASS Avatar_Player_Soulful HighMid soulful_shirt one draw: 8991/36447 triangles visible
+PASS Avatar_Player_Soulful High built
+PASS Avatar_Player_Soulful High items equipped: 3/3
+PASS Avatar_Player_Soulful High assembled (masks): 3/3
+PASS Avatar_Player_Soulful High masks
+PASS Avatar_Player_Soulful High soulful_blazer one draw: 66423/66423 triangles visible
+PASS Avatar_Player_Soulful High soulful_loafers one draw: 94200/94200 triangles visible
+PASS Avatar_Player_Soulful High soulful_shirt one draw: 12940/50424 triangles visible
+PASS Avatar_Player_Soulful Ultra built
+PASS Avatar_Player_Soulful Ultra items equipped: 3/3
+PASS Avatar_Player_Soulful Ultra assembled (masks): 3/3
+PASS Avatar_Player_Soulful Ultra masks
+PASS Avatar_Player_Soulful Ultra soulful_blazer one draw: 106937/106937 triangles visible
+PASS Avatar_Player_Soulful Ultra soulful_loafers one draw: 153554/153554 triangles visible
+PASS Avatar_Player_Soulful Ultra soulful_shirt one draw: 22145/83542 triangles visible
+PASS Avatar_Wagner Low built
+PASS Avatar_Wagner Low items equipped: 3/3
+PASS Avatar_Wagner Low assembled (masks): 3/3
+PASS Avatar_Wagner Low hair
+PASS Avatar_Wagner Low masks
+PASS Avatar_Wagner Low wagner_jacket one draw: 9126/9126 triangles visible
+PASS Avatar_Wagner Low wagner_shirt one draw: 1694/10162 triangles visible
+PASS Avatar_Wagner Low wagner_pants one draw: 7210/8505 triangles visible
+PASS Avatar_Wagner Mid built
+PASS Avatar_Wagner Mid items equipped: 3/3
+PASS Avatar_Wagner Mid assembled (masks): 3/3
+PASS Avatar_Wagner Mid hair
+PASS Avatar_Wagner Mid masks
+PASS Avatar_Wagner Mid wagner_jacket one draw: 18912/18912 triangles visible
+PASS Avatar_Wagner Mid wagner_shirt one draw: 3811/21208 triangles visible
+PASS Avatar_Wagner Mid wagner_pants one draw: 14179/16580 triangles visible
+PASS Avatar_Wagner HighMid built
+PASS Avatar_Wagner HighMid items equipped: 3/3
+PASS Avatar_Wagner HighMid assembled (masks): 3/3
+PASS Avatar_Wagner HighMid hair
+PASS Avatar_Wagner HighMid masks
+PASS Avatar_Wagner HighMid wagner_jacket one draw: 36983/36983 triangles visible
+PASS Avatar_Wagner HighMid wagner_shirt one draw: 7625/38572 triangles visible
+PASS Avatar_Wagner HighMid wagner_pants one draw: 27369/32395 triangles visible
+PASS Avatar_Wagner High built
+PASS Avatar_Wagner High items equipped: 3/3
+PASS Avatar_Wagner High assembled (masks): 3/3
+PASS Avatar_Wagner High hair
+PASS Avatar_Wagner High masks
+PASS Avatar_Wagner High wagner_jacket one draw: 55748/55748 triangles visible
+PASS Avatar_Wagner High wagner_shirt one draw: 11553/55396 triangles visible
+PASS Avatar_Wagner High wagner_pants one draw: 39080/46803 triangles visible
+PASS Avatar_Wagner Ultra built
+PASS Avatar_Wagner Ultra items equipped: 3/3
+PASS Avatar_Wagner Ultra assembled (masks): 3/3
+PASS Avatar_Wagner Ultra hair
+PASS Avatar_Wagner Ultra masks
+PASS Avatar_Wagner Ultra wagner_jacket one draw: 93020/93020 triangles visible
+PASS Avatar_Wagner Ultra wagner_shirt one draw: 17993/86247 triangles visible
+PASS Avatar_Wagner Ultra wagner_pants one draw: 60123/74658 triangles visible
+PASS Body masks released
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SegmentedOutfitCheck/<Run>d__7:MoveNext () (at Assets/_Project/Scripts/Editor/Avatar/Garments/SegmentedOutfitCheck.cs:97)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Runtime.CompilerServices.YieldAwaitable/YieldAwaiter:RunAction (object)
+UnityEngine.UnitySynchronizationContext/WorkRequest:Invoke ()
+UnityEngine.UnitySynchronizationContext:Exec ()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+(Filename: Assets/_Project/Scripts/Editor/Avatar/Garments/SegmentedOutfitCheck.cs Line: 97)
+
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            0.446 ms
+	Integration:            198.231 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.010 ms
+	Total Operation Time:   198.689 ms
+Unloading 818 unused Assets / (1.5 MB). Loaded Objects now: 10475.
+Memory consumption went from 0.75 GB to 0.75 GB.
+Total: 19.147100 ms (FindLiveObjects: 0.552700 ms CreateObjectMapping: 0.466200 ms MarkObjects: 14.342500 ms  DeleteObjects: 3.784300 ms)
+
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[UnityConnectServicesConfig] config is NOT valid, switching to default
+Killing ADB server in 0,0670815 seconds.
+Start importing ProjectSettings/EditorBuildSettings.asset using Guid(0000000000000000b000000000000000) (LibraryAssetImporter) -> (artifact id: '11f8fdea987aecd2948effa50908fb0c') in 0.0095765 seconds
+Refreshing native plugins compatible for Editor in 4.46 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.11 ms.
+Asset Pipeline Refresh (id=650dbafb6a5f0314995da45665059867): Total: 0.149 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-VISYON-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-VISYON channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+15:38:10.199 |V| RiderPlugin                    | :1                             | AppDomain.CurrentDomain.DomainUnload lifetimeDefinition.Terminate
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1794148690422,"processId":37880,"allocatedMemory":45902786,"memoryLabels":[{"Default":29313},{"Permanent":15524},{"NewDelete":68957},{"Thread":4230464},{"Manager":824413},{"VertexData":776},{"Geometry":816},{"Texture":296},{"Shader":83966},{"Material":24},{"GfxDevice":55617},{"Animation":392},{"Audio":3040},{"FontEngine":256},{"Physics":2090},{"Physics2D":16},{"Input":14984},{"JobScheduler":33024},{"TextLib":192},{"Mono":32},{"MonoCode":2048},{"ScriptingNativeRuntime":155060},{"BaseObject":1620400},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":3953},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":18957},{"DynamicArray":128841},{"HashMap":84338},{"Utility":2660678},{"Curl":4238},{"PoolAlloc":2824},{"AI":40},{"TypeTree":5341},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":6480},{"WebRequest":8870},{"VR":47994},{"SceneManager":504},{"Video":208},{"LazyScriptCache":32},{"Camera":17},{"Secure":2113},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":384},{"Hierarchy":608},{"CoreStats":13000},{"Identifiers":12960},{"Gui":88},{"EditorUtility":141999},{"VersionControl":4},{"Undo":947},{"AssetDatabase":35185649},{"EditorGi":328},{"UnityConnect":29232},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":212},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2870},{"Licensing":664},{"AssetReference":32},{"IPCStream":32}]}

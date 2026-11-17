@@ -87,12 +87,41 @@ MonoBehaviour:
     - PlayerClothing_experimental_trousers
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1bd16b146c64c56458a06feb721cd84f
+    m_Address: PlayerClothing_groove_sweater/Wearable_groove_sweater/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_groove_sweater
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1e816f548d6646b4f93253b73b153447
     m_Address: PlayerClothing_chill_cardigan/Wearable_chill_cardigan/sharedVariant/qualityPrefabs@Low
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_chill_cardigan
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1eb1cd93398e91545b151f322703b204
+    m_Address: PlayerClothing_classical_gloves/Wearable_classical_gloves/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Category_PlayerClothing
+    - Enemy_bach
+    - Enemy_beethoven
+    - Enemy_brahms
+    - Enemy_chopin
+    - Enemy_handel
+    - Enemy_haydn
+    - Enemy_monteverdi
+    - Enemy_mozart
+    - Enemy_pachelbel
+    - Enemy_tchaikovsky
+    - Enemy_vivaldi
+    - Enemy_wagner
+    - PlayerClothing_classical_gloves
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 23c6e875662ade844a309a1f3e19a9c2
@@ -343,6 +372,14 @@ MonoBehaviour:
     - PlayerClothing_energetic_tshirt
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 805aebc38b717a94cbd1964a929423b1
+    m_Address: PlayerClothing_dance_trousers/Wearable_dance_trousers/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_dance_trousers
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 832099a484a8f1a48b078e27d67661b3
     m_Address: PlayerClothing_groove_necklace/Wearable_groove_necklace/sharedVariant/qualityPrefabs@Low
     m_ReadOnly: 0
@@ -397,6 +434,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_heavy_vest
+    - Q_Low
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a4b001a20206c044aba903aef1738dc1
+    m_Address: PlayerClothing_fight_gloves/Wearable_fight_gloves/sharedVariant/qualityPrefabs@Low
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_fight_gloves
     - Q_Low
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: abe23fcb3b3d3f241b7753f55fd6885f

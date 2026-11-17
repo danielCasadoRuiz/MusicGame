@@ -13,7 +13,8 @@ public static class RunnerHudLayoutSetup
     public const string Folder = "Assets/_Project/Prefabs/UI/";
     public const string Library = "Assets/_Project/Configs/UI/StyleSkinLibrary.asset";
     private static readonly BonusKind[] Kinds = { BonusKind.Kick, BonusKind.Snare, BonusKind.HiHat,
-        BonusKind.Beat, BonusKind.Onset, BonusKind.Impact, BonusKind.Life, BonusKind.Special };
+        BonusKind.Beat, BonusKind.Onset, BonusKind.Impact, BonusKind.Life, BonusKind.Special,
+        BonusKind.TripleCombo, BonusKind.QuadCombo };
 
     public static void RunFromCommandLine()
     {
@@ -79,6 +80,14 @@ public static class RunnerHudLayoutSetup
         foreach (string n in new[] { "HudBar", "TopBar", "SongProgressBg" })
         { var t = root.transform.Find(n); if (t != null) UnityEngine.Object.DestroyImmediate(t.gameObject); }
         skin.library = lib; skin.icons.Clear(); skin.separators.Clear();
+        foreach (var kind in new[] { BonusKind.TripleCombo, BonusKind.QuadCombo })
+        {
+            if (lib.Bonus(kind) != null) continue;
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/_Project/Art/UI/RunnerHud/Bonus/{kind}/normal_front.png");
+            if (sprite == null) throw new InvalidOperationException("Missing combo icon " + kind);
+            lib.bonuses.Add(new StyleSkinLibrarySO.BonusSkin { kind = kind, normal = sprite, classic = sprite });
+        }
+        EditorUtility.SetDirty(lib);
         view.scoreLabel = view.scoreValue = view.totalLabel = view.totalValue = null;
         view.elapsedTimeText = view.totalTimeText = null;
         view.kickLabel = view.snareLabel = view.hiHatLabel = view.beatLabel = view.onsetLabel = view.impactLabel = null;
@@ -113,6 +122,8 @@ public static class RunnerHudLayoutSetup
                 case BonusKind.Impact: view.impactValue = value; view.impactIcon = normal; break;
                 case BonusKind.Life: view.lifeValue = value; view.lifeIcon = normal; break;
                 case BonusKind.Special: view.specialValue = value; view.specialIcon = normal; break;
+                case BonusKind.TripleCombo: view.tripleComboValue = value; view.tripleComboIcon = normal; break;
+                case BonusKind.QuadCombo: view.quadComboValue = value; view.quadComboIcon = normal; break;
             }
         }
         foreach (float x in new[] { 1420f, 1778f })
@@ -144,6 +155,15 @@ public static class RunnerHudLayoutSetup
         if (view.tagsStrip != null)
         { var rt = view.tagsStrip.GetComponent<RectTransform>(); rt.anchoredPosition = new Vector2(24f, -206f); view.tagsStrip.SetActive(false); }
         view.skin = skin;
+        if (view.comboToast == null)
+        {
+            view.comboToast = UIFactory.CreateText("ComboToast", (RectTransform)root.transform, "", 54, lib.titleColor, TextAlignmentOptions.Center);
+            UIFactory.SetBox(view.comboToast.rectTransform, new Vector2(.5f, 1), new Vector2(.5f, 1), new Vector2(.5f, 1), new Vector2(0, -174), new Vector2(760, 76));
+            view.comboToast.font = lib.titleFont; view.comboToast.fontSharedMaterial = lib.titleFont.material;
+            view.comboToast.raycastTarget = false; view.comboToast.alpha = 0;
+            view.comboToast.wordSpacing = AnalysisPresentation.BrushWordSpacing;
+        }
+        skin.ConfigureLayout();
         skin.Apply(GameMusicStyle.Funky, 1f);
     }
 

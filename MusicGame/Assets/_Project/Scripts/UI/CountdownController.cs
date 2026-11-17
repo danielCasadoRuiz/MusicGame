@@ -55,6 +55,7 @@ public class CountdownController : MonoBehaviour
     private void OnDisable()
     {
         EventBus.Unsubscribe(_onGameStarted);
+        CancelSequence();
     }
 
     // ── Prefab wiring — see CountdownScreenView's own doc ────────────────────────
@@ -73,10 +74,20 @@ public class CountdownController : MonoBehaviour
 
     private void Show(float warmupTime)
     {
-        if (_sequence != null) StopCoroutine(_sequence);
+        CancelSequence();
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
         _sequence = StartCoroutine(PlaySequence(warmupTime));
+    }
+
+    private void CancelSequence()
+    {
+        // AnnounceAt is a separate coroutine: stopping only PlaySequence leaves an
+        // old TEMPO scheduled to fire during the replacement countdown.
+        StopAllCoroutines();
+        _sequence = null;
+        GameAudio.Instance?.StopAnnouncer(GameAudioScope.Runner);
+        if (_root != null) _root.gameObject.SetActive(false);
     }
 
     // "Tempo!" right after "One" has finished, scheduled so its attack lands `attackIn` seconds after the "1" appeared.

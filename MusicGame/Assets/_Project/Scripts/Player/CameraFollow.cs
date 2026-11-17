@@ -348,7 +348,7 @@ public class CameraFollow : MonoBehaviour
     {
         if (!enableDebugToggleKey) return;
         var kb = Keyboard.current;
-        if (kb != null && kb.vKey.wasPressedThisFrame) ToggleView();
+        if (kb != null && kb.kKey.wasPressedThisFrame) ToggleView();
     }
 
     private Camera _camera;
@@ -385,13 +385,18 @@ public class CameraFollow : MonoBehaviour
         // not ActualDistance: the camera must keep ignoring surge exactly as before (that's what
         // lets the player visibly pull ahead of the camera on a surge — see class doc).
         float playerBaseDistance = playerController != null ? playerController.CanonicalDistance : clock.MusicDistance;
-        float camDist   = Mathf.Max(0f, playerBaseDistance - behindDistance);
+        float requestedCamDist = playerBaseDistance - behindDistance;
+        float camDist   = Mathf.Max(0f, requestedCamDist);
         var   camSample = path.GetSample(camDist);
+        // At the countdown's first frame the player is at distance zero. Clamping BOTH the
+        // player and camera to that sample placed the camera straight above the avatar.
+        // Extend the initial tangent behind the start until the normal trailing sample exists.
+        Vector3 cameraOrigin = camSample.position + camSample.tangent * Mathf.Min(0f, requestedCamDist);
 
         float targetLateral = playerController != null ? playerController.LateralOffset : 0f;
         _smoothedLateral = Mathf.SmoothDamp(_smoothedLateral, targetLateral, ref _velX, xSmoothTime);
 
-        Vector3 thirdPersonPos = camSample.position
+        Vector3 thirdPersonPos = cameraOrigin
                                + camSample.right * _smoothedLateral
                                + Vector3.up      * (heightAbovePath + extraHeight);
 

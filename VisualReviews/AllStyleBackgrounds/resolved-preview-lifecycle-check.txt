@@ -1,0 +1,4 @@
+System.Exception: Background retained after presentation hide: Classical
+  at DancePreparationSetup.Preview (System.Int32 width, System.Int32 height, GameMusicStyle style, System.String directory) [0x0043d] in C:\Users\VISYON\Documents\MusicGame\MusicGame\Assets\_Project\Scripts\Editor\DevTools\DancePreparationSetup.cs:165 
+  at StyleCornerSetup.Install () [0x002af] in C:\Users\VISYON\Documents\MusicGame\MusicGame\Assets\_Project\Scripts\Editor\DevTools\StyleCornerSetup.cs:66 
+  at StyleCornerSetup.Poll () [0x00068] in C:\Users\VISYON\Documents\MusicGame\MusicGame\Assets\_Project\Scripts\Editor\DevTools\StyleCornerSetup.cs:23 

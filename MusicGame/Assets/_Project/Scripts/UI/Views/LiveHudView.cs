@@ -63,4 +63,10 @@ public class LiveHudView : MonoBehaviour
     public Image impactIcon;
     public Image lifeIcon;
     public Image specialIcon;
+    [Header("Pickup combo charges")]
+    public TextMeshProUGUI tripleComboValue;
+    public TextMeshProUGUI quadComboValue;
+    public Image tripleComboIcon;
+    public Image quadComboIcon;
+    public TextMeshProUGUI comboToast;
 }

@@ -80,9 +80,10 @@ public class DebugGameplayFeedback : MonoBehaviour
         _onFlyingKick = e => Add($"{WhoActor(e.Fighter)} FLYING KICK ({e.Speed:0.0} m/s)", FightColor);
         _onSignature = e => Add($"{WhoActor(e.Fighter)} SIGNATURE {(e.Enhanced ? "ENHANCED (1 SPECIAL used)" : "basic")} — specials left {e.SpecialsLeft}", ResourceColor);
         _onPower = e => { if (e.Active) Add($"{WhoActor(e.Fighter)} x4 POWER ON ({e.Duration:0.#}s)", ResourceColor); };
-        _onPickupCombo = e => Add($"PICKUP COMBO: {e.Tier.ToString().ToUpperInvariant()}  (x3 {e.Counts.TripleCombos} / x4 {e.Counts.QuadCombos})", RunnerColor);
+        _onPickupCombo = e => { if (GameplayDebugHUD.IsVisible) Add($"PICKUP COMBO: {e.Tier.ToString().ToUpperInvariant()}  (x3 {e.Counts.TripleCombos} / x4 {e.Counts.QuadCombos})", RunnerColor); };
         _onPickupProgress = e =>
         {
+            if (!GameplayDebugHUD.IsVisible) { _runnerSequence = e.Count; return; }
             if (e.Broken) Add($"pickup combo broken (had {_runnerSequence})", RunnerColor);
             else if (e.Count == 1) Add("pickup combo started (1)", RunnerColor);
             else if (e.Count > 1) Add($"pickup combo {e.Count}", RunnerColor);
@@ -90,6 +91,7 @@ public class DebugGameplayFeedback : MonoBehaviour
         };
         _onResources = e =>
         {
+            if (!GameplayDebugHUD.IsVisible) { _lastCounts = e.Counts; return; }
             if (e.Counts.Lives > _lastCounts.Lives) Add($"LIFE collected +{e.Counts.Lives - _lastCounts.Lives}  (this run {e.Counts.Lives})", ResourceColor);
             if (e.Counts.Specials > _lastCounts.Specials) Add($"SPECIAL collected +{e.Counts.Specials - _lastCounts.Specials}  (this run {e.Counts.Specials})", ResourceColor);
             _lastCounts = e.Counts;

@@ -1,0 +1,1797 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.2f1 (a9779f353c9b) revision 11106207'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) 64bit Professional' Language: 'es' Physical Memory: 32388 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+Date: 2026-11-16T13:01:38Z
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON" at "2026-11-16T13:01:38.7048682Z"
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Unity.exe
+-batchmode
+-projectPath
+C:\Users\VISYON\Documents\MusicGame\MusicGame
+-executeMethod
+SegmentedOutfitSetup.RunFromCommandLine
+-onlyPieces
+Groove_sweater
+-validateWearableDelivery
+-logFile
+C:\Users\VISYON\Documents\MusicGame\outfit-six-validation-20261116.log
+Successfully changed project path to: C:\Users\VISYON\Documents\MusicGame\MusicGame
+C:/Users/VISYON/Documents/MusicGame/MusicGame
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [42228]  Target information:
+
+Player connection [42228]  * "[IP] 192.168.1.15 [Port] 55504 [Flags] 2 [Guid] 3510338574 [EditorId] 3510338574 [Version] 1048832 [Id] WindowsEditor(7,RemoteDani) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [42228] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [42228] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-44880" after 0.3 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              b18c9945e6144e2a894bbae0042746b3
+  Correlation Id:          7f7ecca5a2e297700e2028d0c0579c52
+  External correlation Id: 2464579311680619563
+  Machine Id:              x99c5MRpHgESOtEUeZ1qua+TIa8=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-VISYON" (connect: 0.00s, validation: 0.00s, handshake: 1.30s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON-notifications" at "2026-11-16T13:01:40.0113823Z"
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.00
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Module] Licensing Background thread has ended after 1.33s
+[Licensing::Module] Licensing is initialized (took 0.41s).
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Artifact Garbage Collection - Removed 205 unused hashed content files
+Refreshing native plugins compatible for Editor in 1.10 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.2f1 (a9779f353c9b)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/VISYON/Documents/MusicGame/MusicGame/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3070 Laptop GPU (ID=0x249d)
+    Vendor:   NVIDIA
+    VRAM:     8020 MB
+    Driver:   32.0.15.8142
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56880
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/MetroSupport/UnityEditor.UWP.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+Registered in 0.024938 seconds.
+- Loaded All Assemblies, in  0.528 seconds
+Native extension for Android target not found
+Android Extension - Scanning For ADB Devices 2346 ms
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  2.873 seconds
+Domain Reload Profiling: 3396ms
+	BeginReloadAssembly (195ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (10ms)
+	RebuildCommonClasses (38ms)
+	RebuildNativeTypeToScriptingClass (14ms)
+	initialDomainReloadingComplete (83ms)
+	LoadAllAssembliesAndSetupDomain (192ms)
+		LoadAssemblies (182ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (185ms)
+			TypeCache.Refresh (183ms)
+				TypeCache.ScanAssembly (169ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (2874ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (2836ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (2498ms)
+			SetLoadedEditorAssemblies (5ms)
+			BeforeProcessingInitializeOnLoad (98ms)
+			ProcessInitializeOnLoadAttributes (157ms)
+			ProcessInitializeOnLoadMethodAttributes (78ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Application.AssetDatabase Initial Refresh Start
+Package Manager log level set to [2]
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 64 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.addressables@2.3.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.addressables@5d870284b3d9)
+    com.unity.ai.inference@2.6.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.ai.navigation@2.0.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.navigation@5218e4bf7edc)
+    com.unity.collab-proxy@2.10.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collab-proxy@3351acaba9c9)
+    com.unity.ide.rider@3.0.38 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.rider@1f60b3138684)
+    com.unity.ide.visualstudio@2.0.25 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.visualstudio@74aa435fc4bb)
+    com.unity.inputsystem@1.17.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.inputsystem@02433b2481ab)
+    com.unity.localization@1.5.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.localization@f2647f7408bd)
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.timeline@1.8.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.timeline@6b9e48457ddb)
+    com.unity.visualscripting@1.9.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.visualscripting@191c0d7e3b69)
+    com.unity.burst@1.8.26 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.burst@21aa83e7fd8f)
+    com.unity.dt.app-ui@2.1.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.dt.app-ui@8ac7e730dd5d)
+    com.unity.collections@2.6.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collections@aea9d3bd5e19)
+    com.unity.profiling.core@1.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.profiling.core@8a49f7027d06)
+    com.unity.scriptablebuildpipeline@2.4.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.scriptablebuildpipeline@ca3e2d96aa2f)
+    com.unity.searcher@4.9.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.mathematics@1.3.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.mathematics@19a9377c4ffa)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.test-framework.performance@3.2.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework.performance@0840f58e4562)
+  Built-in packages:
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.multiplayer.center@f01f4ba8d00a)
+    com.unity.render-pipelines.universal@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal@66e99ffa09c7)
+    com.unity.test-framework@1.6.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework@0b7a23ab2e1d)
+    com.unity.ugui@2.0.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ugui@52e65280e89e)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.0.5 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ext.nunit@d8c07649098d)
+    com.unity.render-pipelines.core@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.core@ce86d16dfe9d)
+    com.unity.shadergraph@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.shadergraph@3cfe1d1f3f8c)
+    com.unity.render-pipelines.universal-config@17.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal-config@8dc1aab4af1d)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.07 seconds
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+DisplayProgressbar: Compiling Scripts
+ExitCode: 4 Duration: 4s460ms
+Rebuilding DAG because FileSignature timestamp changed: Library/Bee/1900b0aEDbg-inputdata.json
+[ 896/1159  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+*** Tundra requires additional run (4.39 seconds), 2 items updated, 895 evaluated
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\netcorerun\netcorerun.exe "C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\ScriptCompilationBuildProgram.exe" "Library/Bee/1900b0aEDbg.dag.json" "Library/Bee/1900b0aEDbg-inputdata.json" "Library\Bee\buildprogram0.traceevents"
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+ExitCode: 0 Duration: 1s456ms
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --dagfilejson="Library\Bee\1900b0aEDbg.dag.json" --profile="Library/Bee/backend2.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+ExitCode: 0 Duration: 6s651ms
+Finished compiling graph: 1163 nodes, 22718 flattened edges (18670 ToBuild, 186 ToUse), maximum node priority 1210
+[ 612/1159  0s] WriteText Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.rsp
+[ 896/1159  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1155/1159  1s] Csc Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+[1156/1159  0s] ILPostProcess Library/Bee/artifacts/1900b0aEDbg.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll, with 137 defines and 359 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1157/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[1158/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (6.58 seconds), 6 items updated, 1159 evaluated
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+AssetDatabase: script compilation time: 13.462745s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  2.705 seconds
+Refreshing native plugins compatible for Editor in 8.74 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in 10.237 seconds
+Domain Reload Profiling: 12929ms
+	BeginReloadAssembly (449ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (17ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (149ms)
+	RebuildCommonClasses (65ms)
+	RebuildNativeTypeToScriptingClass (21ms)
+	initialDomainReloadingComplete (60ms)
+	LoadAllAssembliesAndSetupDomain (2097ms)
+		LoadAssemblies (1827ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (489ms)
+			TypeCache.Refresh (340ms)
+				TypeCache.ScanAssembly (318ms)
+			BuildScriptInfoCaches (118ms)
+			ResolveRequiredComponents (22ms)
+	FinalizeReload (10238ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (9768ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (57ms)
+			SetLoadedEditorAssemblies (8ms)
+			BeforeProcessingInitializeOnLoad (414ms)
+			ProcessInitializeOnLoadAttributes (8992ms)
+			ProcessInitializeOnLoadMethodAttributes (278ms)
+			AfterProcessingInitializeOnLoad (19ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (9ms)
+Script 'Library/PackageCache/com.unity.test-framework@0b7a23ab2e1d/Tests/TestNewCustomAssembly/TestNewCustomAssembly.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/VerifyEditorInPlaymode/Unity.AI.Navigation.Tests.EditorInPlaymode.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.mathematics@19a9377c4ffa/Tests/Unity.Mathematics.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.xml' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/ResourceManager/Unity.ResourceManager.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/DocCodeSamples.Tests/DocCodeSamples.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.dt.app-ui@8ac7e730dd5d/Tests/Runtime/Unity.AppUI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/Unity.Addressables.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/TestAssets/Unity.ScriptableBuildPipelineTests.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.PerformanceTests/Unity.Collections.PerformanceTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/Unity.AI.Navigation.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.timeline@6b9e48457ddb/DocCodeExamples/DocCodeExamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.localization@f2647f7408bd/DocCodeSamples.Tests/DocCodeSamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.multiplayer.center@f01f4ba8d00a/Tests/Runtime/Unity.Multiplayer.Center.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.core@ce86d16dfe9d/Tests/Runtime/Threading/FunctionTestsGroup.compute' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/OffMeshLinkTests/Unity.AI.Navigation.LegacyOffMeshLink.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/UGUI/UnityEngine.UI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.inputsystem@02433b2481ab/Tests/IntegrationTests/Unity.InputSystem.IntegrationTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests.Playmode/FixedListPlayModeTests.tt' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/TMP/Unity.TextMeshPro.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Tests/Runtime/Unity.RenderPipelines.Universal.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/Unity.ScriptableBuildPipeline.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.BurstCompatibilityGen/Unity.Collections.BurstCompatibilityGen.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Refreshing native plugins compatible for Editor in 11.63 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.18 ms.
+Asset Pipeline Refresh (id=d5f714d1af0c94c4a9616ecea6977d56): Total: 30.760 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=11816 ms
+		Asset DB Callback time: managed=2330 ms, native=97 ms
+		Scripting: domain reloads=1, domain reload time=2706 ms, compile time=13464 ms, other=344 ms
+		Project Asset Count: scripts=6447, non-scripts=20476
+		Asset File Changes: new=1, changed=2, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 83.232ms
+	ApplyChangesToAssetFolders: 0.970ms
+	Scan: 450.888ms
+	OnSourceAssetsModified: 0.850ms
+	CategorizeAssetsWithTransientArtifact: 92.251ms
+	ProcessAssetsWithTransientArtifactChanges: 166.085ms
+	CategorizeAssets: 316.039ms
+	ImportOutOfDateAssets: 10277.801ms (-3197.240ms without children)
+		CompileScripts: 13464.293ms
+		ReloadNativeAssets: 0.211ms
+		UnloadImportedAssets: 2.582ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 5.331ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 2.623ms
+	PostProcessAllAssets: 2329.860ms
+	Hotreload: 18.686ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.003ms
+	UnloadStreamsBegin: 3.969ms
+	PersistCurrentRevisions: 1.338ms
+	UnloadStreamsEnd: 0.004ms
+	GenerateScriptTypeHashes: 5.212ms
+	Untracked: 17017.675ms
+
+Application.AssetDatabase Initial Refresh End
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.03 seconds
+Scanning for USB devices : 2.747ms
+Initializing Unity extensions:
+Script 'Library/PackageCache/com.unity.test-framework@0b7a23ab2e1d/Tests/TestNewCustomAssembly/TestNewCustomAssembly.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/VerifyEditorInPlaymode/Unity.AI.Navigation.Tests.EditorInPlaymode.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.mathematics@19a9377c4ffa/Tests/Unity.Mathematics.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.xml' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/ResourceManager/Unity.ResourceManager.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/DocCodeSamples.Tests/DocCodeSamples.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.dt.app-ui@8ac7e730dd5d/Tests/Runtime/Unity.AppUI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/Unity.Addressables.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/TestAssets/Unity.ScriptableBuildPipelineTests.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.PerformanceTests/Unity.Collections.PerformanceTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/Unity.AI.Navigation.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.timeline@6b9e48457ddb/DocCodeExamples/DocCodeExamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.localization@f2647f7408bd/DocCodeSamples.Tests/DocCodeSamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.multiplayer.center@f01f4ba8d00a/Tests/Runtime/Unity.Multiplayer.Center.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.core@ce86d16dfe9d/Tests/Runtime/Threading/FunctionTestsGroup.compute' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/OffMeshLinkTests/Unity.AI.Navigation.LegacyOffMeshLink.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/UGUI/UnityEngine.UI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.inputsystem@02433b2481ab/Tests/IntegrationTests/Unity.InputSystem.IntegrationTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests.Playmode/FixedListPlayModeTests.tt' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/TMP/Unity.TextMeshPro.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Tests/Runtime/Unity.RenderPipelines.Universal.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/Unity.ScriptableBuildPipeline.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.BurstCompatibilityGen/Unity.Collections.BurstCompatibilityGen.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-MusicGame
+Unloading 61 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 9435 unused Assets / (20.8 MB). Loaded Objects now: 10465.
+Memory consumption went from 334.1 MB to 313.4 MB.
+Total: 17.911100 ms (FindLiveObjects: 0.730300 ms CreateObjectMapping: 0.732500 ms MarkObjects: 11.681600 ms  DeleteObjects: 4.764700 ms)
+
+Start importing Assets/_Project/Art/Player/Groove/Groove_sweater/Low/Groove_sweater_Low_occlusion.bytes using Guid(a01039cb07f4c7f468affeeb3cde2cc6) (TextScriptImporter) -> (artifact id: '0d6b3d4db8625b5e3cc85bbcf61375bf') in 0.0091931 seconds
+Refreshing native plugins compatible for Editor in 5.50 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=d00c015979148fe44a1813a521d235d6): Total: 0.294 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Loaded scene 'Library/Unused/6885748359a06834f8b2409ec20f0ad3'
+	Deserialize:            1.603 ms
+	Integration:            0.259 ms
+	Integration of assets:  0.004 ms
+	Thread Wait Time:       0.008 ms
+	Total Operation Time:   1.874 ms
+Asset Pipeline Refresh (id=f550993de9db5844a856bfb750571a26): Total: 0.025 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/Player/Groove/Groove_sweater/Mid/Groove_sweater_Mid_occlusion.bytes using Guid(3fb0da8e807170e4a882abe535de8d35) (TextScriptImporter) -> (artifact id: '3991c6bcc961dc74d394e3f4fb51d680') in 0.0043444 seconds
+Refreshing native plugins compatible for Editor in 11.70 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.25 ms.
+Asset Pipeline Refresh (id=587199c5a5c8a2141b113ec57c06e4b9): Total: 0.595 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+	Summary:
+		Imports: total=1 (actual=1, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=577 ms
+		Asset DB Callback time: managed=2 ms, native=14 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=6447, non-scripts=20476
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 8
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 0.001ms
+	ApplyChangesToAssetFolders: 0.198ms
+	Scan: 539.548ms
+	OnSourceAssetsModified: 0.001ms
+	CategorizeAssetsWithTransientArtifact: 0.011ms
+	ProcessAssetsWithTransientArtifactChanges: 0.144ms
+	CategorizeAssets: 9.188ms
+	ImportOutOfDateAssets: 15.289ms (1.940ms without children)
+		ImportManagerImport: 6.700ms (1.748ms without children)
+			ImportInProcess: 4.914ms
+			UpdateCategorizedAssets: 0.038ms
+		ReloadNativeAssets: 0.415ms
+		UnloadImportedAssets: 0.268ms
+		ReloadImportedAssets: 0.000ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 4.274ms
+		InitializingProgressBar: 0.007ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 1.685ms
+	PostProcessAllAssets: 5.223ms
+	Hotreload: 12.309ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.790ms
+	UnloadStreamsBegin: 0.153ms
+	PersistCurrentRevisions: 1.845ms
+	UnloadStreamsEnd: 0.002ms
+	Untracked: 8.955ms
+
+Loaded scene 'Library/Unused/90b440d10a125a242a06bf47b0d79325'
+	Deserialize:            2.056 ms
+	Integration:            0.627 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.045 ms
+	Total Operation Time:   2.730 ms
+Asset Pipeline Refresh (id=582119df37676bb4e8e5a0608eff69c0): Total: 0.033 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/Player/Groove/Groove_sweater/HighMid/Groove_sweater_HighMid_occlusion.bytes using Guid(db7d9bc608ffc894c983f31c76d71dc0) (TextScriptImporter) -> (artifact id: '28394268580b0cf001861020892c67b8') in 0.0040415 seconds
+Refreshing native plugins compatible for Editor in 7.12 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=228c66c00d5493e42a636482cf447ece): Total: 0.077 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Loaded scene 'Library/Unused/6c336deb77c3d2647ad6552025492f75'
+	Deserialize:            1.751 ms
+	Integration:            0.254 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.017 ms
+	Total Operation Time:   2.024 ms
+Asset Pipeline Refresh (id=9729af727d6cf2d4fa28d4825127b168): Total: 0.028 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/Player/Groove/Groove_sweater/High/Groove_sweater_High_occlusion.bytes using Guid(ec09352ad687df2479c3e125b164409f) (TextScriptImporter) -> (artifact id: 'c100115ccb607596a9c96712be9fc29a') in 0.0039752 seconds
+Refreshing native plugins compatible for Editor in 7.53 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.18 ms.
+Asset Pipeline Refresh (id=1b69aafd80ecedd4a8d9a972cbb07e3f): Total: 0.204 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Loaded scene 'Library/Unused/9ca7d86a5014c764e8e4b7ef6af464f7'
+	Deserialize:            1.472 ms
+	Integration:            0.245 ms
+	Integration of assets:  0.007 ms
+	Thread Wait Time:       0.017 ms
+	Total Operation Time:   1.742 ms
+Asset Pipeline Refresh (id=112cd9829ce6cad4899f20f109131ef1): Total: 0.027 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/Player/Groove/Groove_sweater/Ultra/Groove_sweater_Ultra_occlusion.bytes using Guid(1ec4e665e2904744e9448e54f2182d1b) (TextScriptImporter) -> (artifact id: '037170a993b299d1d14c15574b856956') in 0.0043768 seconds
+Refreshing native plugins compatible for Editor in 6.14 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=3e19d4efb02d1794ba8e6f53b0fb5dd9): Total: 0.073 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Loaded scene 'Library/Unused/a35066c72e675f8458b395b1437145e6'
+	Deserialize:            1.106 ms
+	Integration:            0.215 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.017 ms
+	Total Operation Time:   1.339 ms
+Asset Pipeline Refresh (id=5360883ea8c1c96438b3e89fff99c9b5): Total: 0.025 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=95969aa1d57b0e0438f7d7f5ff5f5033): Total: 0.002 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=51cee840ecfa0e844b9f050854359006): Total: 0.002 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing ProjectSettings/EditorBuildSettings.asset using Guid(0000000000000000b000000000000000) (LibraryAssetImporter) -> (artifact id: '11f8fdea987aecd2948effa50908fb0c') in 0.0055845 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Garments/Garment_groove_sweater.asset using Guid(f5681898a1a359841bd5455fd684cd4d) (NativeFormatImporter) -> (artifact id: '84b3e55c6c2f2efe621b0366fe0788ea') in 0.0041237 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Items/Wearable_Groove_sweater.asset using Guid(9747f02af5f122e458d0f76d81fb15a0) (NativeFormatImporter) -> (artifact id: '4d5f09912dc5800d413ab469f3fdd031') in 0.0038845 seconds
+Refreshing native plugins compatible for Editor in 6.68 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=aa055f266581d07458c5100930dc2e6a): Total: 0.103 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 1489 unused Assets / (369.1 KB). Loaded Objects now: 10477.
+Memory consumption went from 351.4 MB to 351.0 MB.
+Total: 14.207400 ms (FindLiveObjects: 0.488200 ms CreateObjectMapping: 0.467300 ms MarkObjects: 12.326000 ms  DeleteObjects: 0.924300 ms)
+
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Dark.asset using Guid(10b73f72003f8fa4b907647164fbabaa) (NativeFormatImporter) -> (artifact id: '5be1ef50510de70102fe0f30dea2f74a') in 0.005646 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Haydn.asset using Guid(9027677e3fcbcdc48b06665831fdcc5a) (NativeFormatImporter) -> (artifact id: '816f0c97123a533cab1a35359d2afcb7') in 0.0041533 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Haydn.asset using Guid(3184c966ae4871142a48da865dc8c06a) (NativeFormatImporter) -> (artifact id: '8e28753b671521a68430021c73316350') in 0.004146 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Wagner.asset using Guid(4171ab1929a1e714da86ef33553e069e) (NativeFormatImporter) -> (artifact id: 'afb37d81cfa90e73f87bd4821a1cc315') in 0.0043891 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Chopin.asset using Guid(416b036510376c64f9829a9865fec787) (NativeFormatImporter) -> (artifact id: '6078f2eb536480690459d9b1c3486387') in 0.0037498 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Remote_PlayerClothing_Mid.asset using Guid(419e1227270420c44a384ef15c0749d7) (NativeFormatImporter) -> (artifact id: 'd29aafb8409dd4150c93410cfe5844fc') in 0.0044707 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Heavy.asset using Guid(d112aa6ad931da443bc8cf9aea28092f) (NativeFormatImporter) -> (artifact id: '2d458b320672e9a8f446f68e75ec6602') in 0.0040901 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Groove.asset using Guid(32c10662440706448a3d56e1bcbbe696) (NativeFormatImporter) -> (artifact id: 'd1c2579e9cb282a400debe6f9199b3e2') in 0.003964 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Wagner.asset using Guid(d25906c655f2c7544a45c69319b9f91d) (NativeFormatImporter) -> (artifact id: '35235b43120979bc6895f1f103b4ce7f') in 0.0040676 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Funky.asset using Guid(b3808915cb63ee44dad227ee77e6a9df) (NativeFormatImporter) -> (artifact id: 'aea3ef4f092129fad8219e35f2a86464') in 0.004011 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Cinematic.asset using Guid(c306cc4bc7d5e104f8475457c49b087f) (NativeFormatImporter) -> (artifact id: 'bc3bdc048b1fdd1403cfdd277e77b63b') in 0.0038479 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Dance.asset using Guid(54c196c3f1efc8444808867b4359820b) (NativeFormatImporter) -> (artifact id: 'fa75787f3a18d8cd4e1980f7bfee5323') in 0.0037812 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Classical.asset using Guid(9408b142886063e4e9e107f45db4c428) (NativeFormatImporter) -> (artifact id: 'f2e3f90b9bafc8fcd2baee22d1959780') in 0.0039645 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Monteverdi.asset using Guid(e4cc1d30ad8d38b45b49cd7b160ba0fd) (NativeFormatImporter) -> (artifact id: 'fcd242500c1dcf5568c761299fa9c306') in 0.007019 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Remote_PlayerClothing_Ultra.asset using Guid(153417f860f647544b6356aa88aa6138) (NativeFormatImporter) -> (artifact id: '1ede8dcef089292d78e3abcc8ba596b0') in 0.0072435 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Pachelbel.asset using Guid(656f0b01d64201042aad0608eb4b3175) (NativeFormatImporter) -> (artifact id: 'b6cfb96a39e5a3b0be6551ef6f68b068') in 0.005078 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Mozart.asset using Guid(163d50509c11621428db2cca9c185f13) (NativeFormatImporter) -> (artifact id: '6f19facfa0cd3a4a761dd6ad13552dc1') in 0.0047297 seconds
+Start importing Assets/_Project/Configs/Player/PlayerAvatarConfig.asset using Guid(277f13c89f6de3d4786000c86fcebfdd) (NativeFormatImporter) -> (artifact id: 'e2fc321848a30bd230c98b8d77ca3f8c') in 0.0049809 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Catchy.asset using Guid(87f306f436394f747aa4554e1f8779b7) (NativeFormatImporter) -> (artifact id: '878f1babae8a5dfec9f8b0d6c595cce2') in 0.004772 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Acoustic.asset using Guid(e7cd988c9b302974691ca71ae2c0a1ee) (NativeFormatImporter) -> (artifact id: '469a4283e33e420e9570304d91951d7b') in 0.0036706 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Dreamy.asset using Guid(2892a0de1ddf98442902e4ca5403a0dc) (NativeFormatImporter) -> (artifact id: '97400264e14809ab10822c2f27cfb00c') in 0.004036 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Rock.asset using Guid(a81c9e93143b90c418af6855fc78bb94) (NativeFormatImporter) -> (artifact id: 'a823e82e00968ef36108a0840e74b2ef') in 0.0041874 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Remote_PlayerClothing_Low.asset using Guid(c86b48eea0d18584d925636e59a884ae) (NativeFormatImporter) -> (artifact id: 'd8fe906a48ff7fcc79c88363343b91c8') in 0.0039814 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Handel.asset using Guid(e81679ed2fcf482459911c022773180b) (NativeFormatImporter) -> (artifact id: 'ee3ca020da2c8532198eaf5ea189c760') in 0.0041733 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Experimental.asset using Guid(5929bb8e3d31a954cae561a948307598) (NativeFormatImporter) -> (artifact id: '7ad921769bdf77e78fc22220b43d95e2') in 0.004912 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Monteverdi.asset using Guid(79847c84a610e194dbf8b5a7258b8423) (NativeFormatImporter) -> (artifact id: '94767632166f171393418a4366768a76') in 0.0050312 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Bach.asset using Guid(a92b1e973e6dcdd448eee4cb3ce52319) (NativeFormatImporter) -> (artifact id: '16298941680e8d3bdf5695af0ef23f00') in 0.0041753 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Soulful.asset using Guid(f9bd5149c0a3cf34aa927cbd929fed8d) (NativeFormatImporter) -> (artifact id: '07bbef7e71c48d0976fd3c1b78e39ed6') in 0.0041598 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Energetic.asset using Guid(6ac957c8d6ab61d4a9543af210f0a7d3) (NativeFormatImporter) -> (artifact id: 'a493f5323d1296f7b56674c309662a92') in 0.0041795 seconds
+Start importing Assets/AddressableAssetsData/AddressableAssetSettings.asset using Guid(8a4cc0dfc618f344aaae658dde9bb725) (NativeFormatImporter) -> (artifact id: '8ebae2998d2e45ab3aae60617d5678b1') in 0.0042678 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Brahms.asset using Guid(9aaf6bfc606f8e2449752e83e608d228) (NativeFormatImporter) -> (artifact id: '2006f68499196b8477a689fb742df7fa') in 0.0041748 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Handel.asset using Guid(fa69a30c9e30b4045be872eee794cb84) (NativeFormatImporter) -> (artifact id: '5705b79c8b0ede92c4f55d944d4a15b8') in 0.0040058 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Brahms.asset using Guid(9ba2de59bbb29a840854f32eb09053af) (NativeFormatImporter) -> (artifact id: '5cff05e395fa20f5936aed7b9cf3462f') in 0.0041492 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Bach.asset using Guid(ab5f1453144b37b45b716ea4762a7cd7) (NativeFormatImporter) -> (artifact id: '9a1276e78355db6a065c4cf09bc448de') in 0.0041893 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Vivaldi.asset using Guid(9c4626d866b695e40839ccb31ecbc925) (NativeFormatImporter) -> (artifact id: '9dc166d6e059697d8d8c1c23e1f3b900') in 0.0039903 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Remote_PlayerClothing_High.asset using Guid(9cb8f5d188ba0784a899f28c39dcf5ab) (NativeFormatImporter) -> (artifact id: '7f94e24cb70b443588cb28f687098718') in 0.0045214 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Beethoven.asset using Guid(ac3f6fb8baa70994989e25c43ce97fa6) (NativeFormatImporter) -> (artifact id: '4916745b06257ed4862c9a07a4e860a6') in 0.0040286 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Chill.asset using Guid(ecd7cba07173ab34ba4ec3017717bfcd) (NativeFormatImporter) -> (artifact id: '692e9eb81670570a42603c99da439026') in 0.0042561 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Electronic.asset using Guid(8d5cfbe7ed0fd5e49ac44e47e87210c9) (NativeFormatImporter) -> (artifact id: 'a99e02fe143c30094ee42a7e28ed00d0') in 0.0039144 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Beethoven.asset using Guid(ade4e4a265ea22d46b4ece04ca8c00ec) (NativeFormatImporter) -> (artifact id: 'eee77797d09b68bf9ac8baa73631abad') in 0.0040853 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Player/Recipes/Avatar_Player_Jazzy.asset using Guid(0e07f2f7f3ef761478a61a78e6e1a1c1) (NativeFormatImporter) -> (artifact id: '45479722ad3decb6e44d921bbe440e1a') in 0.0039369 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Remote_PlayerClothing_HighMid.asset using Guid(ce39d50f52f54e1499e19d85cff9071a) (NativeFormatImporter) -> (artifact id: '13a625e5c27c587d9a384a56be696054') in 0.003843 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Tchaikovsky.asset using Guid(fe57fc2de704f854798da015002f189b) (NativeFormatImporter) -> (artifact id: 'ba40ba9a6ca1f6e7b43103127a1470e9') in 0.004078 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Identities/Identity_Pachelbel.asset using Guid(7f28473813b6f804a982a8198867c814) (NativeFormatImporter) -> (artifact id: 'b2fc95b09c66233cffb65c491f42ad99') in 0.0038758 seconds
+Start importing Assets/_Project/Avatar/MakeHuman/Content/Composers/Recipes/Avatar_Mozart.asset using Guid(9fb7c92b40345484191043bb059090b4) (NativeFormatImporter) -> (artifact id: 'c6c246b93fdf4b9b0485ec4edee51967') in 0.0038276 seconds
+Refreshing native plugins compatible for Editor in 8.93 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=205f4d792026a8c439770f8331607412): Total: 0.389 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+	Summary:
+		Imports: total=45 (actual=45, local cache=0, cache server=0)
+		Asset DB Process Time: managed=4 ms, native=303 ms
+		Asset DB Callback time: managed=57 ms, native=22 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=6447, non-scripts=20476
+		Asset File Changes: new=0, changed=7, moved=0, deleted=0
+		Scan Filter Count: 59
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 0.001ms
+	ApplyChangesToAssetFolders: 0.130ms
+	Scan: 20.103ms
+	OnSourceAssetsModified: 0.103ms
+	CategorizeAssetsWithTransientArtifact: 0.055ms
+	ProcessAssetsWithTransientArtifactChanges: 0.062ms
+	CategorizeAssets: 38.938ms
+	ImportOutOfDateAssets: 234.270ms (1.988ms without children)
+		ImportManagerImport: 225.644ms (3.107ms without children)
+			ImportInProcess: 221.865ms
+			UpdateCategorizedAssets: 0.671ms
+		ReloadNativeAssets: 0.745ms
+		UnloadImportedAssets: 0.404ms
+		ReloadImportedAssets: 0.005ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 3.960ms
+		InitializingProgressBar: 0.008ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 1.516ms
+	PostProcessAllAssets: 70.873ms
+	Hotreload: 9.302ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.376ms
+	UnloadStreamsBegin: 0.888ms
+	PersistCurrentRevisions: 1.537ms
+	UnloadStreamsEnd: 0.002ms
+	Untracked: 10.995ms
+
+[SegmentedOutfitSetup]
+  found 135: Acoustic_boots, Acoustic_shirt, Acoustic_trousers_belt, Acoustic_waistcoat, Bach_hair, Bach_jacket, Bach_pants, Bach_shirt, Beethoven_hair, Beethoven_jacket, Beethoven_pants, Beethoven_shirt, Beethoven_shoes, Brahms_beard, Brahms_hair, Brahms_jacket, Brahms_pants, Brahms_shirt, Catchy_jacket, Catchy_shirt, Catchy_sneakers, Catchy_trousers, Chill_cardigan, Chill_sneakers, Chill_trousers, Chill_tshirt, Chopin_jacket, Chopin_pants, Chopin_shirt, Cinematic_boots, Cinematic_coat, Cinematic_shirt, Cinematic_trousers, Cinematic_waistcoat, classical_gloves, Classical_jacket, Classical_shirt, Classical_shoes, Classical_trousers, Classical_waistcoat, Dance_jacket, Dance_sneakers, Dance_trousers, Dance_tshirt, Dark_boots, Dark_coat, Dark_shirt, Dark_trousers, Dark_waistcoat, Dreamy_necklace, Dreamy_overshirt, Dreamy_shirt, Dreamy_shoes, Dreamy_trousers, Electronic_jacket, Electronic_sneakers, Electronic_top, Electronic_trousers, Energetic_jacket, Energetic_sneakers, Energetic_trousers, Energetic_tshirt, Experimental_jacket, Experimental_shoes, Experimental_top, Experimental_trousers, fight_gloves, Funky_belt, Funky_shirt, Funky_shoes, Funky_trousers, Funky_trousers_belt, Groove_necklace, Groove_sneakers, Groove_sweater, Groove_trousers, Groove_tshirt, Handel_hair_2, Handel_jacket_2, Handel_pants, Handel_shirt, Handel_shirt_2, Handel_shoes, Handel_shoes_2, Haydn_hair, Haydn_jacket, Haydn_pants, Haydn_shirt, Haydn_shoes, Heavy_boots, Heavy_trousers_belt_chain, Heavy_tshirt, Heavy_vest, Heavy_wrist_cuffs, Jazzy_jacket, Jazzy_shirt, Jazzy_shoes, Jazzy_trousers, Jazzy_waistcoat, Monteverdi_beard, Monteverdi_hair, Monteverdi_jacket, Monteverdi_pants, Monteverdi_shoes, Mozart_hair, Mozart_jacket, Mozart_pants, Mozart_shirt_2, Pachelbel_hair, Pachelbel_jacket, Pachelbel_pants, Pachelbel_shirt_2, Pachelbel_waistcoat, Rock_boots, Rock_jacket, Rock_jeans_belt, Rock_tshirt, Soulful_blazer, Soulful_loafers, Soulful_shirt, Soulful_trousers_belt, Tchaikovsky_jacket, Tchaikovsky_pants, Tchaikovsky_shirt, Tchaikovsky_shoes, Tchaikovsky_waistcoat, Vivaldi_Jacket, Vivaldi_Pants, Vivaldi_Shirt, Vivaldi_Shoes, Vivaldi_Wig, Wagner_hair, Wagner_jacket, Wagner_pants, Wagner_shirt
+  body  Body: 14517 vertices, 26756 triangles
+  PASS  Groove_sweater: 'jacket' layer 40, hides shirt/top/waistcoat/trousers under it
+        Low: 11451 verts (0 far from the body), on own mask 94 %, cover 51592 / skin 18175 texels, 65 KB
+        Mid: 21298 verts (0 far from the body), on own mask 94 %, cover 51793 / skin 18009 texels, 88 KB
+        HighMid: 37602 verts (0 far from the body), on own mask 94 %, cover 51856 / skin 17771 texels, 122 KB
+        High: 52271 verts (0 far from the body), on own mask 94 %, cover 51876 / skin 17723 texels, 149 KB
+        Ultra: 73129 verts (0 far from the body), on own mask 94 %, cover 51892 / skin 17645 texels, 187 KB
+  15 textures checked, 0 shrunk to their import size: 0 MB -> 0 MB
+  PASS  Avatar_Bach: bach_pants, bach_shirt, bach_jacket, classical_gloves + hair bach_hair on Identity_Bach
+  PASS  Avatar_Beethoven: beethoven_jacket, beethoven_pants, beethoven_shirt, beethoven_shoes, classical_gloves + hair beethoven_hair on Identity_Beethoven
+  PASS  Avatar_Brahms: brahms_beard, brahms_jacket, brahms_pants, brahms_shirt, classical_gloves + hair brahms_hair on Identity_Brahms
+  PASS  Avatar_Chopin: chopin_jacket, chopin_pants, chopin_shirt, classical_gloves
+  PASS  Avatar_Handel: handel_jacket_2, handel_pants, handel_shirt_2, handel_shoes_2, classical_gloves + hair handel_hair_2 on Identity_Handel
+  PASS  Avatar_Haydn: haydn_jacket, haydn_pants, haydn_shirt, haydn_shoes, classical_gloves + hair haydn_hair on Identity_Haydn
+  PASS  Avatar_Monteverdi: monteverdi_pants, monteverdi_shoes, monteverdi_jacket, monteverdi_beard, classical_gloves + hair monteverdi_hair on Identity_Monteverdi
+  PASS  Avatar_Mozart: mozart_jacket, mozart_pants, mozart_shirt_2, classical_gloves + hair mozart_hair on Identity_Mozart
+  PASS  Avatar_Pachelbel: pachelbel_jacket, pachelbel_pants, pachelbel_shirt_2, pachelbel_waistcoat, classical_gloves + hair pachelbel_hair on Identity_Pachelbel
+  PASS  Avatar_Tchaikovsky: tchaikovsky_jacket, tchaikovsky_pants, tchaikovsky_shirt, tchaikovsky_shoes, tchaikovsky_waistcoat, classical_gloves
+  PASS  Avatar_Vivaldi: vivaldi_jacket, vivaldi_pants, vivaldi_shirt, vivaldi_shoes, vivaldi_wig, classical_gloves
+  PASS  Avatar_Wagner: wagner_jacket, wagner_shirt, wagner_pants, classical_gloves + hair wagner_hair on Identity_Wagner
+  PASS  Avatar_Player_Acoustic (Acoustic): acoustic_boots, acoustic_shirt, acoustic_trousers_belt, acoustic_waistcoat
+  PASS  Avatar_Player_Catchy (Catchy): catchy_jacket, catchy_shirt, catchy_sneakers, catchy_trousers
+  PASS  Avatar_Player_Chill (Chill): chill_cardigan, chill_sneakers, chill_trousers, chill_tshirt
+  PASS  Avatar_Player_Cinematic (Cinematic): cinematic_boots, cinematic_coat, cinematic_shirt, cinematic_trousers, cinematic_waistcoat
+  PASS  Avatar_Player_Classical (Classical): classical_jacket, classical_shirt, classical_shoes, classical_trousers, classical_waistcoat
+  PASS  Avatar_Player_Dance (Dance): dance_jacket, dance_sneakers, dance_trousers, dance_tshirt
+  PASS  Avatar_Player_Dark (Dark): dark_boots, dark_coat, dark_shirt, dark_trousers, dark_waistcoat
+  PASS  Avatar_Player_Dreamy (Dreamy): dreamy_necklace, dreamy_overshirt, dreamy_shirt, dreamy_shoes, dreamy_trousers
+  PASS  Avatar_Player_Electronic (Electronic): electronic_jacket, electronic_sneakers, electronic_top, electronic_trousers
+  PASS  Avatar_Player_Energetic (Energetic): energetic_jacket, energetic_sneakers, energetic_trousers, energetic_tshirt
+  PASS  Avatar_Player_Experimental (Experimental): experimental_jacket, experimental_shoes, experimental_top, experimental_trousers
+  PASS  Avatar_Player_Funky (Funky): funky_belt, funky_shirt, funky_shoes, funky_trousers_belt
+  PASS  Avatar_Player_Groove (Groove): groove_necklace, groove_sneakers, groove_sweater, groove_trousers, groove_tshirt
+  PASS  Avatar_Player_Heavy (Heavy): heavy_boots, heavy_trousers_belt_chain, heavy_tshirt, heavy_vest, heavy_wrist_cuffs
+  PASS  Avatar_Player_Jazzy (Jazzy): jazzy_jacket, jazzy_shirt, jazzy_shoes, jazzy_trousers, jazzy_waistcoat
+  PASS  Avatar_Player_Rock (Rock): rock_boots, rock_jacket, rock_jeans_belt, rock_tshirt
+  PASS  Avatar_Player_Soulful (Soulful): soulful_blazer, soulful_loafers, soulful_shirt, soulful_trousers_belt
+  PASS  Avatar_Bach: classical gloves
+  PASS  Avatar_Beethoven: classical gloves
+  PASS  Avatar_Brahms: classical gloves
+  PASS  Avatar_Chopin: classical gloves
+  PASS  Avatar_Handel: classical gloves
+  PASS  Avatar_Haydn: classical gloves
+  PASS  Avatar_Monteverdi: classical gloves
+  PASS  Avatar_Mozart: classical gloves
+  PASS  Avatar_Pachelbel: classical gloves
+  PASS  Avatar_Tchaikovsky: classical gloves
+  PASS  Avatar_Vivaldi: classical gloves
+  PASS  Avatar_Wagner: classical gloves
+  PASS  player: fight gloves only in combat runtime recipe
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+SegmentedOutfitSetup:RunFromCommandLine () (at Assets/_Project/Scripts/Editor/Avatar/Garments/SegmentedOutfitSetup.cs:77)
+
+(Filename: Assets/_Project/Scripts/Editor/Avatar/Garments/SegmentedOutfitSetup.cs Line: 77)
+
+[Project] Loading completed in 64.068 seconds
+	Project init time: 				38.986 seconds
+		Template init time: 		0.000 seconds
+		Package Manager init time: 		0.709 seconds
+		Asset Database init time: 		0.775 seconds
+		Global illumination init time: 	0.004 seconds
+		Assemblies load time: 			3.428 seconds
+		Unity extensions init time: 	0.026 seconds
+		Asset Database refresh time: 	30.760 seconds
+	Scene opening time: 			24.752 seconds
+##utp:{"type":"ProjectInfo","version":2,"phase":"Immediate","time":1794834162757,"processId":44880,"projectLoad":64.0676362,"projectInit":38.9862373,"templateInit":0.0,"packageManagerInit":0.7088316,"assetDatabaseInit":0.7745135,"globalIlluminationInit":0.0038908,"assembliesLoad":3.4281251,"unityExtensionsInit":0.0263703,"assetDatabaseRefresh":30.7598554,"sceneOpening":24.752012}
+##utp:{"type":"EditorInfo","version":2,"phase":"Immediate","time":1794834162757,"processId":44880,"editorVersion":"6000.3.2f1 (a9779f353c9b)","branch":"6000.3/staging","buildType":"Release","platform":"Windows"}
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Asset Pipeline Refresh (id=a374f951b4ba74c4893b3c0e16e248c8): Total: 0.233 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+PASS: glow shader compiled; 8 authored bonus materials retain textures, source materials unchanged, fallback colour cannot tint authored textures, texture-derived HDR glow configured; direct shader reference retained for builds.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+BonusVisibilityCheck:Run () (at Assets/_Project/Scripts/Editor/DevTools/BonusVisibilityCheck.cs:42)
+BonusVisibilityCheck/<>c:<OnceAfterImport>b__0_0 () (at Assets/_Project/Scripts/Editor/DevTools/BonusVisibilityCheck.cs:14)
+UnityEditor.EditorApplication:Internal_CallDelayFunctions ()
+
+(Filename: Assets/_Project/Scripts/Editor/DevTools/BonusVisibilityCheck.cs Line: 42)
+
+PASS: deletes only the four known progress files, preserves unrelated cache, repeated reset is safe, unexpected paths rejected. Real player save untouched.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+ResetGameTool:Verify () (at Assets/_Project/Scripts/Editor/DevTools/ResetGameTool.cs:63)
+BonusVisibilityCheck/<>c:<OnceAfterImport>b__0_0 () (at Assets/_Project/Scripts/Editor/DevTools/BonusVisibilityCheck.cs:14)
+UnityEditor.EditorApplication:Internal_CallDelayFunctions ()
+
+(Filename: Assets/_Project/Scripts/Editor/DevTools/ResetGameTool.cs Line: 63)
+
+[Indexing] Starting Initial Indexing for Assets
+Opening scene 'Assets/_Project/Scenes/Debug/AvatarsClothesChecker.unity'
+Unloading 51 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Assets/_Project/Scenes/Debug/AvatarsClothesChecker.unity'
+	Deserialize:            14.492 ms
+	Integration:            247.011 ms
+	Integration of assets:  0.006 ms
+	Thread Wait Time:       0.015 ms
+	Total Operation Time:   261.524 ms
+Unloading 509 unused Assets / (16.0 MB). Loaded Objects now: 10515.
+Memory consumption went from 398.8 MB to 382.8 MB.
+Total: 28.207200 ms (FindLiveObjects: 0.673600 ms CreateObjectMapping: 0.457000 ms MarkObjects: 26.220300 ms  DeleteObjects: 0.854900 ms)
+
+Reloading assemblies for play mode.
+Reloading assemblies after forced synchronous recompile.
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Begin MonoManager ReloadAssembly
+14:02:45.947 |V| RiderPlugin                    | :1                             | AppDomain.CurrentDomain.DomainUnload lifetimeDefinition.Terminate
+- Loaded All Assemblies, in  2.180 seconds
+Refreshing native plugins compatible for Editor in 12.34 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  2.387 seconds
+Domain Reload Profiling: 4563ms
+	BeginReloadAssembly (1487ms)
+		ExecutionOrderSort (1ms)
+		DisableScriptedObjects (48ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (352ms)
+	RebuildCommonClasses (44ms)
+	RebuildNativeTypeToScriptingClass (16ms)
+	initialDomainReloadingComplete (53ms)
+	LoadAllAssembliesAndSetupDomain (576ms)
+		LoadAssemblies (294ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (440ms)
+			TypeCache.Refresh (11ms)
+				TypeCache.ScanAssembly (0ms)
+			BuildScriptInfoCaches (382ms)
+			ResolveRequiredComponents (36ms)
+	FinalizeReload (2387ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (1612ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (57ms)
+			SetLoadedEditorAssemblies (6ms)
+			BeforeProcessingInitializeOnLoad (464ms)
+			ProcessInitializeOnLoadAttributes (694ms)
+			ProcessInitializeOnLoadMethodAttributes (375ms)
+			AfterProcessingInitializeOnLoad (14ms)
+			EditorAssembliesLoaded (1ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (320ms)
+Asset Pipeline Refresh (id=87c1987048439e04b81cf6494b4e27fa): Total: 5.272 seconds - Initiated by StopAssetImportingV2(ForceSynchronousImport | ForceDomainReload)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=2914 ms
+		Asset DB Callback time: managed=38 ms, native=1 ms
+		Scripting: domain reloads=1, domain reload time=2316 ms, compile time=1 ms, other=0 ms
+		Project Asset Count: scripts=6447, non-scripts=20476
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.002ms
+	InvokePackagesCallback: 6.399ms
+	ApplyChangesToAssetFolders: 0.443ms
+	Scan: 0.001ms
+	OnSourceAssetsModified: 0.002ms
+	CategorizeAssetsWithTransientArtifact: 0.007ms
+	ProcessAssetsWithTransientArtifactChanges: 11.230ms
+	CategorizeAssets: 372.798ms
+	ImportOutOfDateAssets: 2442.255ms (2425.048ms without children)
+		CompileScripts: 1.384ms
+		CollectScriptTypesHashes: 3.096ms
+		ReloadNativeAssets: 2.330ms
+		UnloadImportedAssets: 0.169ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 8.584ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 1.642ms
+	PostProcessAllAssets: 38.742ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.618ms
+	UnloadStreamsBegin: 0.017ms
+	PersistCurrentRevisions: 1.426ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 10.751ms
+	Untracked: 2397.059ms
+
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            0.666 ms
+	Integration:            27968.258 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.012 ms
+	Total Operation Time:   27968.938 ms
+Created GICache directory at C:/Users/VISYON/AppData/LocalLow/Unity/Caches/GiCache. Took: 0.033s, timestamps: [64.092 - 64.126]
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[Licensing::Client] Successfully resolved entitlement details
+Unloading 1017 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 406 unused Assets / (58.0 KB). Loaded Objects now: 14988.
+Memory consumption went from 1.08 GB to 1.08 GB.
+Total: 13.028600 ms (FindLiveObjects: 0.670400 ms CreateObjectMapping: 0.566000 ms MarkObjects: 11.427700 ms  DeleteObjects: 0.362900 ms)
+
+Unloading 10 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 361 unused Assets / (42.7 KB). Loaded Objects now: 14988.
+Memory consumption went from 1.08 GB to 1.08 GB.
+Total: 9.363400 ms (FindLiveObjects: 0.574800 ms CreateObjectMapping: 0.490300 ms MarkObjects: 8.022100 ms  DeleteObjects: 0.275000 ms)
+
+[AvatarFactory] 'Groove tshirt' conflicts with an already-equipped item over slot(s) Accessory — skipped.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+AvatarFactory:ResolveSlotConflicts (System.Collections.Generic.List`1<WearableItemSO>) (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:327)
+AvatarFactory/<CreateAsync>d__2:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:115)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.AwaitTaskContinuation:InvokeAction (object)
+System.Threading.Tasks.AwaitTaskContinuation:RunCallback (System.Threading.ContextCallback,object,System.Threading.Tasks.Task&)
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation:Run (System.Threading.Tasks.Task,bool)
+System.Threading.Tasks.Task:FinishContinuations ()
+System.Threading.Tasks.Task:FinishStageThree ()
+System.Threading.Tasks.Task`1<UnityEngine.GameObject>:TrySetResult (UnityEngine.GameObject)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<UnityEngine.GameObject>:SetResult (UnityEngine.GameObject)
+AvatarFactory/<InstantiateAsync>d__25:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:708)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation/<>c:<.cctor>b__7_0 (object)
+UnityEngine.UnitySynchronizationContext/WorkRequest:Invoke ()
+UnityEngine.UnitySynchronizationContext:Exec ()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+(Filename: Assets/_Project/Scripts/Avatar/AvatarFactory.cs Line: 327)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (77.1 KB). Loaded Objects now: 14988.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 16.584100 ms (FindLiveObjects: 0.566700 ms CreateObjectMapping: 0.501400 ms MarkObjects: 15.145700 ms  DeleteObjects: 0.369200 ms)
+
+[AvatarFactory] 'Groove tshirt' conflicts with an already-equipped item over slot(s) Accessory — skipped.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+AvatarFactory:ResolveSlotConflicts (System.Collections.Generic.List`1<WearableItemSO>) (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:327)
+AvatarFactory/<CreateAsync>d__2:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:115)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.AwaitTaskContinuation:InvokeAction (object)
+System.Threading.Tasks.AwaitTaskContinuation:RunCallback (System.Threading.ContextCallback,object,System.Threading.Tasks.Task&)
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation:Run (System.Threading.Tasks.Task,bool)
+System.Threading.Tasks.Task:FinishContinuations ()
+System.Threading.Tasks.Task:FinishStageThree ()
+System.Threading.Tasks.Task`1<UnityEngine.GameObject>:TrySetResult (UnityEngine.GameObject)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<UnityEngine.GameObject>:SetResult (UnityEngine.GameObject)
+AvatarFactory/<InstantiateAsync>d__25:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:708)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation/<>c:<.cctor>b__7_0 (object)
+UnityEngine.UnitySynchronizationContext/WorkRequest:Invoke ()
+UnityEngine.UnitySynchronizationContext:Exec ()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+(Filename: Assets/_Project/Scripts/Avatar/AvatarFactory.cs Line: 327)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (66.4 KB). Loaded Objects now: 14988.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 9.827700 ms (FindLiveObjects: 0.581400 ms CreateObjectMapping: 0.498700 ms MarkObjects: 8.396000 ms  DeleteObjects: 0.350400 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (246.5 KB). Loaded Objects now: 14988.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 16.810500 ms (FindLiveObjects: 0.735900 ms CreateObjectMapping: 0.454900 ms MarkObjects: 15.212900 ms  DeleteObjects: 0.405600 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (59.4 KB). Loaded Objects now: 14988.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 9.392400 ms (FindLiveObjects: 0.576500 ms CreateObjectMapping: 0.481800 ms MarkObjects: 8.004900 ms  DeleteObjects: 0.328300 ms)
+
+Unloading 17 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 597 unused Assets / (84.2 KB). Loaded Objects now: 14988.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 16.389800 ms (FindLiveObjects: 0.591100 ms CreateObjectMapping: 0.500200 ms MarkObjects: 14.816800 ms  DeleteObjects: 0.480500 ms)
+
+Unloading 11 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 361 unused Assets / (50.9 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 16.888200 ms (FindLiveObjects: 0.602800 ms CreateObjectMapping: 0.491000 ms MarkObjects: 15.499100 ms  DeleteObjects: 0.294200 ms)
+
+Unloading 10 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 361 unused Assets / (43.5 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.09 GB to 1.09 GB.
+Total: 11.047700 ms (FindLiveObjects: 0.628500 ms CreateObjectMapping: 0.540900 ms MarkObjects: 9.570700 ms  DeleteObjects: 0.306400 ms)
+
+[AvatarFactory] 'Groove tshirt' conflicts with an already-equipped item over slot(s) Accessory — skipped.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+AvatarFactory:ResolveSlotConflicts (System.Collections.Generic.List`1<WearableItemSO>) (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:327)
+AvatarFactory/<CreateAsync>d__2:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:115)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.AwaitTaskContinuation:InvokeAction (object)
+System.Threading.Tasks.AwaitTaskContinuation:RunCallback (System.Threading.ContextCallback,object,System.Threading.Tasks.Task&)
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation:Run (System.Threading.Tasks.Task,bool)
+System.Threading.Tasks.Task:FinishContinuations ()
+System.Threading.Tasks.Task:FinishStageThree ()
+System.Threading.Tasks.Task`1<UnityEngine.GameObject>:TrySetResult (UnityEngine.GameObject)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<UnityEngine.GameObject>:SetResult (UnityEngine.GameObject)
+AvatarFactory/<InstantiateAsync>d__25:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:708)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation/<>c:<.cctor>b__7_0 (object)
+UnityEngine.UnitySynchronizationContext/WorkRequest:Invoke ()
+UnityEngine.UnitySynchronizationContext:Exec ()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+(Filename: Assets/_Project/Scripts/Avatar/AvatarFactory.cs Line: 327)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (61.1 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.10 GB to 1.10 GB.
+Total: 16.830300 ms (FindLiveObjects: 0.648400 ms CreateObjectMapping: 0.549700 ms MarkObjects: 15.293300 ms  DeleteObjects: 0.337800 ms)
+
+[AvatarFactory] 'Groove tshirt' conflicts with an already-equipped item over slot(s) Accessory — skipped.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+AvatarFactory:ResolveSlotConflicts (System.Collections.Generic.List`1<WearableItemSO>) (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:327)
+AvatarFactory/<CreateAsync>d__2:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:115)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.AwaitTaskContinuation:InvokeAction (object)
+System.Threading.Tasks.AwaitTaskContinuation:RunCallback (System.Threading.ContextCallback,object,System.Threading.Tasks.Task&)
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation:Run (System.Threading.Tasks.Task,bool)
+System.Threading.Tasks.Task:FinishContinuations ()
+System.Threading.Tasks.Task:FinishStageThree ()
+System.Threading.Tasks.Task`1<UnityEngine.GameObject>:TrySetResult (UnityEngine.GameObject)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<UnityEngine.GameObject>:SetResult (UnityEngine.GameObject)
+AvatarFactory/<InstantiateAsync>d__25:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:708)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation/<>c:<.cctor>b__7_0 (object)
+UnityEngine.UnitySynchronizationContext/WorkRequest:Invoke ()
+UnityEngine.UnitySynchronizationContext:Exec ()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+(Filename: Assets/_Project/Scripts/Avatar/AvatarFactory.cs Line: 327)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (61.2 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.10 GB to 1.10 GB.
+Total: 9.338100 ms (FindLiveObjects: 0.627000 ms CreateObjectMapping: 0.508400 ms MarkObjects: 7.882000 ms  DeleteObjects: 0.319700 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 479 unused Assets / (54.3 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.10 GB to 1.10 GB.
+Total: 16.920500 ms (FindLiveObjects: 0.628700 ms CreateObjectMapping: 0.815100 ms MarkObjects: 15.120600 ms  DeleteObjects: 0.354900 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (119.0 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.10 GB to 1.10 GB.
+Total: 16.160600 ms (FindLiveObjects: 0.599800 ms CreateObjectMapping: 0.502500 ms MarkObjects: 14.671300 ms  DeleteObjects: 0.385900 ms)
+
+Unloading 17 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 597 unused Assets / (119.4 KB). Loaded Objects now: 14989.
+Memory consumption went from 1.10 GB to 1.10 GB.
+Total: 9.950000 ms (FindLiveObjects: 0.585300 ms CreateObjectMapping: 0.606400 ms MarkObjects: 8.344900 ms  DeleteObjects: 0.412200 ms)
+
+Unloading 11 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 361 unused Assets / (43.9 KB). Loaded Objects now: 14990.
+Memory consumption went from 1.10 GB to 1.10 GB.
+Total: 16.914600 ms (FindLiveObjects: 0.590400 ms CreateObjectMapping: 0.518700 ms MarkObjects: 15.513400 ms  DeleteObjects: 0.291100 ms)
+
+Unloading 10 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 361 unused Assets / (40.9 KB). Loaded Objects now: 14990.
+Memory consumption went from 1.10 GB to 1.10 GB.
+Total: 10.164600 ms (FindLiveObjects: 0.606800 ms CreateObjectMapping: 0.531500 ms MarkObjects: 8.745800 ms  DeleteObjects: 0.279200 ms)
+
+[AvatarFactory] 'Groove tshirt' conflicts with an already-equipped item over slot(s) Accessory — skipped.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+AvatarFactory:ResolveSlotConflicts (System.Collections.Generic.List`1<WearableItemSO>) (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:327)
+AvatarFactory/<CreateAsync>d__2:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:115)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.AwaitTaskContinuation:InvokeAction (object)
+System.Threading.Tasks.AwaitTaskContinuation:RunCallback (System.Threading.ContextCallback,object,System.Threading.Tasks.Task&)
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation:Run (System.Threading.Tasks.Task,bool)
+System.Threading.Tasks.Task:FinishContinuations ()
+System.Threading.Tasks.Task:FinishStageThree ()
+System.Threading.Tasks.Task`1<UnityEngine.GameObject>:TrySetResult (UnityEngine.GameObject)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<UnityEngine.GameObject>:SetResult (UnityEngine.GameObject)
+AvatarFactory/<InstantiateAsync>d__25:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:708)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation/<>c:<.cctor>b__7_0 (object)
+UnityEngine.UnitySynchronizationContext/WorkRequest:Invoke ()
+UnityEngine.UnitySynchronizationContext:Exec ()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+(Filename: Assets/_Project/Scripts/Avatar/AvatarFactory.cs Line: 327)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (64.3 KB). Loaded Objects now: 14990.
+Memory consumption went from 1.11 GB to 1.11 GB.
+Total: 18.081400 ms (FindLiveObjects: 0.729800 ms CreateObjectMapping: 0.533700 ms MarkObjects: 16.438600 ms  DeleteObjects: 0.378000 ms)
+
+[AvatarFactory] 'Groove tshirt' conflicts with an already-equipped item over slot(s) Accessory — skipped.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+AvatarFactory:ResolveSlotConflicts (System.Collections.Generic.List`1<WearableItemSO>) (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:327)
+AvatarFactory/<CreateAsync>d__2:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:115)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.AwaitTaskContinuation:InvokeAction (object)
+System.Threading.Tasks.AwaitTaskContinuation:RunCallback (System.Threading.ContextCallback,object,System.Threading.Tasks.Task&)
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation:Run (System.Threading.Tasks.Task,bool)
+System.Threading.Tasks.Task:FinishContinuations ()
+System.Threading.Tasks.Task:FinishStageThree ()
+System.Threading.Tasks.Task`1<UnityEngine.GameObject>:TrySetResult (UnityEngine.GameObject)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<UnityEngine.GameObject>:SetResult (UnityEngine.GameObject)
+AvatarFactory/<InstantiateAsync>d__25:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:708)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation/<>c:<.cctor>b__7_0 (object)
+UnityEngine.UnitySynchronizationContext/WorkRequest:Invoke ()
+UnityEngine.UnitySynchronizationContext:Exec ()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+(Filename: Assets/_Project/Scripts/Avatar/AvatarFactory.cs Line: 327)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (56.0 KB). Loaded Objects now: 14990.
+Memory consumption went from 1.11 GB to 1.11 GB.
+Total: 16.848300 ms (FindLiveObjects: 0.610800 ms CreateObjectMapping: 0.541900 ms MarkObjects: 15.342000 ms  DeleteObjects: 0.352400 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (68.0 KB). Loaded Objects now: 14990.
+Memory consumption went from 1.11 GB to 1.11 GB.
+Total: 10.013000 ms (FindLiveObjects: 0.682200 ms CreateObjectMapping: 0.526300 ms MarkObjects: 8.452000 ms  DeleteObjects: 0.351400 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (53.3 KB). Loaded Objects now: 14990.
+Memory consumption went from 1.11 GB to 1.11 GB.
+Total: 16.344800 ms (FindLiveObjects: 0.652800 ms CreateObjectMapping: 0.523600 ms MarkObjects: 14.811300 ms  DeleteObjects: 0.356000 ms)
+
+Unloading 17 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 597 unused Assets / (72.4 KB). Loaded Objects now: 14990.
+Memory consumption went from 1.12 GB to 1.12 GB.
+Total: 12.286500 ms (FindLiveObjects: 0.650600 ms CreateObjectMapping: 0.570200 ms MarkObjects: 10.620200 ms  DeleteObjects: 0.444300 ms)
+
+Unloading 10 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 361 unused Assets / (36.8 KB). Loaded Objects now: 14990.
+Memory consumption went from 1.11 GB to 1.11 GB.
+Total: 13.868100 ms (FindLiveObjects: 0.644400 ms CreateObjectMapping: 0.572600 ms MarkObjects: 12.311300 ms  DeleteObjects: 0.338200 ms)
+
+Unloading 10 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 361 unused Assets / (42.2 KB). Loaded Objects now: 14990.
+Memory consumption went from 1.11 GB to 1.11 GB.
+Total: 12.083000 ms (FindLiveObjects: 0.681100 ms CreateObjectMapping: 0.637900 ms MarkObjects: 10.441100 ms  DeleteObjects: 0.321300 ms)
+
+[AvatarFactory] 'Groove tshirt' conflicts with an already-equipped item over slot(s) Accessory — skipped.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+AvatarFactory:ResolveSlotConflicts (System.Collections.Generic.List`1<WearableItemSO>) (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:327)
+AvatarFactory/<CreateAsync>d__2:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:115)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.AwaitTaskContinuation:InvokeAction (object)
+System.Threading.Tasks.AwaitTaskContinuation:RunCallback (System.Threading.ContextCallback,object,System.Threading.Tasks.Task&)
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation:Run (System.Threading.Tasks.Task,bool)
+System.Threading.Tasks.Task:FinishContinuations ()
+System.Threading.Tasks.Task:FinishStageThree ()
+System.Threading.Tasks.Task`1<UnityEngine.GameObject>:TrySetResult (UnityEngine.GameObject)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<UnityEngine.GameObject>:SetResult (UnityEngine.GameObject)
+AvatarFactory/<InstantiateAsync>d__25:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:708)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation/<>c:<.cctor>b__7_0 (object)
+UnityEngine.UnitySynchronizationContext/WorkRequest:Invoke ()
+UnityEngine.UnitySynchronizationContext:Exec ()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+(Filename: Assets/_Project/Scripts/Avatar/AvatarFactory.cs Line: 327)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (63.2 KB). Loaded Objects now: 14990.
+Memory consumption went from 1.12 GB to 1.12 GB.
+Total: 10.977500 ms (FindLiveObjects: 0.647800 ms CreateObjectMapping: 0.540600 ms MarkObjects: 9.391800 ms  DeleteObjects: 0.395900 ms)
+
+[AvatarFactory] 'Groove tshirt' conflicts with an already-equipped item over slot(s) Accessory — skipped.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+AvatarFactory:ResolveSlotConflicts (System.Collections.Generic.List`1<WearableItemSO>) (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:327)
+AvatarFactory/<CreateAsync>d__2:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:115)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.AwaitTaskContinuation:InvokeAction (object)
+System.Threading.Tasks.AwaitTaskContinuation:RunCallback (System.Threading.ContextCallback,object,System.Threading.Tasks.Task&)
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation:Run (System.Threading.Tasks.Task,bool)
+System.Threading.Tasks.Task:FinishContinuations ()
+System.Threading.Tasks.Task:FinishStageThree ()
+System.Threading.Tasks.Task`1<UnityEngine.GameObject>:TrySetResult (UnityEngine.GameObject)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<UnityEngine.GameObject>:SetResult (UnityEngine.GameObject)
+AvatarFactory/<InstantiateAsync>d__25:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:708)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation/<>c:<.cctor>b__7_0 (object)
+UnityEngine.UnitySynchronizationContext/WorkRequest:Invoke ()
+UnityEngine.UnitySynchronizationContext:Exec ()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+(Filename: Assets/_Project/Scripts/Avatar/AvatarFactory.cs Line: 327)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (55.3 KB). Loaded Objects now: 14990.
+Memory consumption went from 1.12 GB to 1.12 GB.
+Total: 10.424000 ms (FindLiveObjects: 0.715100 ms CreateObjectMapping: 0.533500 ms MarkObjects: 8.760400 ms  DeleteObjects: 0.413900 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (64.1 KB). Loaded Objects now: 14990.
+Memory consumption went from 1.13 GB to 1.13 GB.
+Total: 11.293400 ms (FindLiveObjects: 0.736200 ms CreateObjectMapping: 0.588000 ms MarkObjects: 9.406000 ms  DeleteObjects: 0.561300 ms)
+
+Unloading 14 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 480 unused Assets / (68.1 KB). Loaded Objects now: 14990.
+Memory consumption went from 1.13 GB to 1.13 GB.
+Total: 12.116400 ms (FindLiveObjects: 0.657600 ms CreateObjectMapping: 0.703100 ms MarkObjects: 10.404900 ms  DeleteObjects: 0.349600 ms)
+
+Unloading 17 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 597 unused Assets / (82.6 KB). Loaded Objects now: 14990.
+Memory consumption went from 1.14 GB to 1.14 GB.
+Total: 10.834000 ms (FindLiveObjects: 0.663500 ms CreateObjectMapping: 0.576800 ms MarkObjects: 9.179500 ms  DeleteObjects: 0.412700 ms)
+
+Unloading 26 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 368 unused Assets / (50.0 KB). Loaded Objects now: 15115.
+Memory consumption went from 1.34 GB to 1.34 GB.
+Total: 11.974300 ms (FindLiveObjects: 0.743400 ms CreateObjectMapping: 0.544300 ms MarkObjects: 10.319200 ms  DeleteObjects: 0.365900 ms)
+
+Unloading 20 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 368 unused Assets / (42.7 MB). Loaded Objects now: 15118.
+Memory consumption went from 1.39 GB to 1.35 GB.
+Total: 16.959700 ms (FindLiveObjects: 0.951700 ms CreateObjectMapping: 0.992100 ms MarkObjects: 11.065200 ms  DeleteObjects: 3.949200 ms)
+
+[AvatarFactory] 'Groove tshirt' conflicts with an already-equipped item over slot(s) Accessory — skipped.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+AvatarFactory:ResolveSlotConflicts (System.Collections.Generic.List`1<WearableItemSO>) (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:327)
+AvatarFactory/<CreateAsync>d__2:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:115)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.AwaitTaskContinuation:InvokeAction (object)
+System.Threading.Tasks.AwaitTaskContinuation:RunCallback (System.Threading.ContextCallback,object,System.Threading.Tasks.Task&)
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation:Run (System.Threading.Tasks.Task,bool)
+System.Threading.Tasks.Task:FinishContinuations ()
+System.Threading.Tasks.Task:FinishStageThree ()
+System.Threading.Tasks.Task`1<UnityEngine.GameObject>:TrySetResult (UnityEngine.GameObject)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<UnityEngine.GameObject>:SetResult (UnityEngine.GameObject)
+AvatarFactory/<InstantiateAsync>d__25:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:708)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation/<>c:<.cctor>b__7_0 (object)
+UnityEngine.UnitySynchronizationContext/WorkRequest:Invoke ()
+UnityEngine.UnitySynchronizationContext:Exec ()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+(Filename: Assets/_Project/Scripts/Avatar/AvatarFactory.cs Line: 327)
+
+Unloading 27 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 490 unused Assets / (81.0 KB). Loaded Objects now: 15121.
+Memory consumption went from 1.52 GB to 1.52 GB.
+Total: 12.740500 ms (FindLiveObjects: 0.862500 ms CreateObjectMapping: 0.877800 ms MarkObjects: 10.481900 ms  DeleteObjects: 0.516900 ms)
+
+[AvatarFactory] 'Groove tshirt' conflicts with an already-equipped item over slot(s) Accessory — skipped.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogWarning (object)
+AvatarFactory:ResolveSlotConflicts (System.Collections.Generic.List`1<WearableItemSO>) (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:327)
+AvatarFactory/<CreateAsync>d__2:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:115)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.AwaitTaskContinuation:InvokeAction (object)
+System.Threading.Tasks.AwaitTaskContinuation:RunCallback (System.Threading.ContextCallback,object,System.Threading.Tasks.Task&)
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation:Run (System.Threading.Tasks.Task,bool)
+System.Threading.Tasks.Task:FinishContinuations ()
+System.Threading.Tasks.Task:FinishStageThree ()
+System.Threading.Tasks.Task`1<UnityEngine.GameObject>:TrySetResult (UnityEngine.GameObject)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<UnityEngine.GameObject>:SetResult (UnityEngine.GameObject)
+AvatarFactory/<InstantiateAsync>d__25:MoveNext () (at Assets/_Project/Scripts/Avatar/AvatarFactory.cs:708)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation/<>c:<.cctor>b__7_0 (object)
+UnityEngine.UnitySynchronizationContext/WorkRequest:Invoke ()
+UnityEngine.UnitySynchronizationContext:Exec ()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+(Filename: Assets/_Project/Scripts/Avatar/AvatarFactory.cs Line: 327)
+
+Unloading 24 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 490 unused Assets / (80.0 KB). Loaded Objects now: 15121.
+Memory consumption went from 1.52 GB to 1.52 GB.
+Total: 15.336500 ms (FindLiveObjects: 0.763000 ms CreateObjectMapping: 0.672000 ms MarkObjects: 13.396300 ms  DeleteObjects: 0.503500 ms)
+
+Unloading 27 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 490 unused Assets / (63.5 MB). Loaded Objects now: 15124.
+Memory consumption went from 1.58 GB to 1.52 GB.
+Total: 25.129500 ms (FindLiveObjects: 1.049500 ms CreateObjectMapping: 1.119000 ms MarkObjects: 16.335000 ms  DeleteObjects: 6.624100 ms)
+
+TrimDiskCacheJob: Current cache size 3725mb
+Unloading 24 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 490 unused Assets / (63.5 MB). Loaded Objects now: 15124.
+Memory consumption went from 1.58 GB to 1.52 GB.
+Total: 17.608600 ms (FindLiveObjects: 0.697600 ms CreateObjectMapping: 0.588000 ms MarkObjects: 11.163900 ms  DeleteObjects: 5.157600 ms)
+
+Unloading 33 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 610 unused Assets / (109.5 MB). Loaded Objects now: 15127.
+Memory consumption went from 1.66 GB to 1.55 GB.
+Total: 30.734200 ms (FindLiveObjects: 1.110100 ms CreateObjectMapping: 1.108300 ms MarkObjects: 16.395500 ms  DeleteObjects: 12.118100 ms)
+
+PASS classical_gloves item and masks
+PASS classical_gloves five qualities
+PASS classical_gloves Low addressable
+PASS classical_gloves Low valid mask
+PASS classical_gloves Mid addressable
+PASS classical_gloves Mid valid mask
+PASS classical_gloves HighMid addressable
+PASS classical_gloves HighMid valid mask
+PASS classical_gloves High addressable
+PASS classical_gloves High valid mask
+PASS classical_gloves Ultra addressable
+PASS classical_gloves Ultra valid mask
+PASS Dance_jacket item and masks
+PASS Dance_jacket five qualities
+PASS Dance_jacket Low addressable
+PASS Dance_jacket Low valid mask
+PASS Dance_jacket Mid addressable
+PASS Dance_jacket Mid valid mask
+PASS Dance_jacket HighMid addressable
+PASS Dance_jacket HighMid valid mask
+PASS Dance_jacket High addressable
+PASS Dance_jacket High valid mask
+PASS Dance_jacket Ultra addressable
+PASS Dance_jacket Ultra valid mask
+PASS Dance_trousers item and masks
+PASS Dance_trousers five qualities
+PASS Dance_trousers Low addressable
+PASS Dance_trousers Low valid mask
+PASS Dance_trousers Mid addressable
+PASS Dance_trousers Mid valid mask
+PASS Dance_trousers HighMid addressable
+PASS Dance_trousers HighMid valid mask
+PASS Dance_trousers High addressable
+PASS Dance_trousers High valid mask
+PASS Dance_trousers Ultra addressable
+PASS Dance_trousers Ultra valid mask
+PASS fight_gloves item and masks
+PASS fight_gloves five qualities
+PASS fight_gloves Low addressable
+PASS fight_gloves Low valid mask
+PASS fight_gloves Mid addressable
+PASS fight_gloves Mid valid mask
+PASS fight_gloves HighMid addressable
+PASS fight_gloves HighMid valid mask
+PASS fight_gloves High addressable
+PASS fight_gloves High valid mask
+PASS fight_gloves Ultra addressable
+PASS fight_gloves Ultra valid mask
+PASS Groove_sweater item and masks
+PASS Groove_sweater five qualities
+PASS Groove_sweater Low addressable
+PASS Groove_sweater Low valid mask
+PASS Groove_sweater Mid addressable
+PASS Groove_sweater Mid valid mask
+PASS Groove_sweater HighMid addressable
+PASS Groove_sweater HighMid valid mask
+PASS Groove_sweater High addressable
+PASS Groove_sweater High valid mask
+PASS Groove_sweater Ultra addressable
+PASS Groove_sweater Ultra valid mask
+PASS Rock_jacket item and masks
+PASS Rock_jacket five qualities
+PASS Rock_jacket Low addressable
+PASS Rock_jacket Low valid mask
+PASS Rock_jacket Mid addressable
+PASS Rock_jacket Mid valid mask
+PASS Rock_jacket HighMid addressable
+PASS Rock_jacket HighMid valid mask
+PASS Rock_jacket High addressable
+PASS Rock_jacket High valid mask
+PASS Rock_jacket Ultra addressable
+PASS Rock_jacket Ultra valid mask
+PASS Avatar_Bach classical gloves exactly once
+PASS Avatar_Bach shared glove download label
+PASS Avatar_Beethoven classical gloves exactly once
+PASS Avatar_Beethoven shared glove download label
+PASS Avatar_Brahms classical gloves exactly once
+PASS Avatar_Brahms shared glove download label
+PASS Avatar_Chopin classical gloves exactly once
+PASS Avatar_Chopin shared glove download label
+PASS Avatar_Handel classical gloves exactly once
+PASS Avatar_Handel shared glove download label
+PASS Avatar_Haydn classical gloves exactly once
+PASS Avatar_Haydn shared glove download label
+PASS Avatar_Monteverdi classical gloves exactly once
+PASS Avatar_Monteverdi shared glove download label
+PASS Avatar_Mozart classical gloves exactly once
+PASS Avatar_Mozart shared glove download label
+PASS Avatar_Pachelbel classical gloves exactly once
+PASS Avatar_Pachelbel shared glove download label
+PASS Avatar_Tchaikovsky classical gloves exactly once
+PASS Avatar_Tchaikovsky shared glove download label
+PASS Avatar_Vivaldi classical gloves exactly once
+PASS Avatar_Vivaldi shared glove download label
+PASS Avatar_Wagner classical gloves exactly once
+PASS Avatar_Wagner shared glove download label
+PASS Avatar_Player_Acoustic Runner excludes fight gloves
+PASS Avatar_Player_Acoustic Fight includes gloves once
+PASS Avatar_Player_Acoustic source recipe preserved
+PASS Avatar_Player_Catchy Runner excludes fight gloves
+PASS Avatar_Player_Catchy Fight includes gloves once
+PASS Avatar_Player_Catchy source recipe preserved
+PASS Avatar_Player_Chill Runner excludes fight gloves
+PASS Avatar_Player_Chill Fight includes gloves once
+PASS Avatar_Player_Chill source recipe preserved
+PASS Avatar_Player_Cinematic Runner excludes fight gloves
+PASS Avatar_Player_Cinematic Fight includes gloves once
+PASS Avatar_Player_Cinematic source recipe preserved
+PASS Avatar_Player_Classical Runner excludes fight gloves
+PASS Avatar_Player_Classical Fight includes gloves once
+PASS Avatar_Player_Classical source recipe preserved
+PASS Avatar_Player_Dance Runner excludes fight gloves
+PASS Avatar_Player_Dance Fight includes gloves once
+PASS Avatar_Player_Dance source recipe preserved
+PASS Avatar_Player_Dark Runner excludes fight gloves
+PASS Avatar_Player_Dark Fight includes gloves once
+PASS Avatar_Player_Dark source recipe preserved
+PASS Avatar_Player_Dreamy Runner excludes fight gloves
+PASS Avatar_Player_Dreamy Fight includes gloves once
+PASS Avatar_Player_Dreamy source recipe preserved
+PASS Avatar_Player_Electronic Runner excludes fight gloves
+PASS Avatar_Player_Electronic Fight includes gloves once
+PASS Avatar_Player_Electronic source recipe preserved
+PASS Avatar_Player_Energetic Runner excludes fight gloves
+PASS Avatar_Player_Energetic Fight includes gloves once
+PASS Avatar_Player_Energetic source recipe preserved
+PASS Avatar_Player_Experimental Runner excludes fight gloves
+PASS Avatar_Player_Experimental Fight includes gloves once
+PASS Avatar_Player_Experimental source recipe preserved
+PASS Avatar_Player_Funky Runner excludes fight gloves
+PASS Avatar_Player_Funky Fight includes gloves once
+PASS Avatar_Player_Funky source recipe preserved
+PASS Avatar_Player_Groove Runner excludes fight gloves
+PASS Avatar_Player_Groove Fight includes gloves once
+PASS Avatar_Player_Groove source recipe preserved
+PASS Avatar_Player_Heavy Runner excludes fight gloves
+PASS Avatar_Player_Heavy Fight includes gloves once
+PASS Avatar_Player_Heavy source recipe preserved
+PASS Avatar_Player_Jazzy Runner excludes fight gloves
+PASS Avatar_Player_Jazzy Fight includes gloves once
+PASS Avatar_Player_Jazzy source recipe preserved
+PASS Avatar_Player_Rock Runner excludes fight gloves
+PASS Avatar_Player_Rock Fight includes gloves once
+PASS Avatar_Player_Rock source recipe preserved
+PASS Avatar_Player_Soulful Runner excludes fight gloves
+PASS Avatar_Player_Soulful Fight includes gloves once
+PASS Avatar_Player_Soulful source recipe preserved
+PASS three updated style recipes
+PASS Groove jacket replaced by sweater
+PASS Dance trousers equipped
+PASS Avatar_Player_Dance_Runner_Low built
+PASS Avatar_Player_Dance_Runner_Low all equipment
+PASS Avatar_Player_Dance_Runner_Low segmented equipment
+PASS Avatar_Player_Dance_Runner_Low valid masks
+PASS Avatar_Player_Dance_Runner_Low materials and bones
+PASS Avatar_Player_Dance_Fight_Low built
+PASS Avatar_Player_Dance_Fight_Low all equipment
+PASS Avatar_Player_Dance_Fight_Low segmented equipment
+PASS Avatar_Player_Dance_Fight_Low valid masks
+PASS Avatar_Player_Dance_Fight_Low materials and bones
+PASS Avatar_Player_Groove_Runner_Low built
+FAIL Avatar_Player_Groove_Runner_Low all equipment
+FAIL Avatar_Player_Groove_Runner_Low segmented equipment
+PASS Avatar_Player_Groove_Runner_Low valid masks
+PASS Avatar_Player_Groove_Runner_Low materials and bones
+PASS Avatar_Player_Groove_Fight_Low built
+FAIL Avatar_Player_Groove_Fight_Low all equipment
+FAIL Avatar_Player_Groove_Fight_Low segmented equipment
+PASS Avatar_Player_Groove_Fight_Low valid masks
+PASS Avatar_Player_Groove_Fight_Low materials and bones
+PASS Avatar_Player_Rock_Runner_Low built
+PASS Avatar_Player_Rock_Runner_Low all equipment
+PASS Avatar_Player_Rock_Runner_Low segmented equipment
+PASS Avatar_Player_Rock_Runner_Low valid masks
+PASS Avatar_Player_Rock_Runner_Low materials and bones
+PASS Avatar_Player_Rock_Fight_Low built
+PASS Avatar_Player_Rock_Fight_Low all equipment
+PASS Avatar_Player_Rock_Fight_Low segmented equipment
+PASS Avatar_Player_Rock_Fight_Low valid masks
+PASS Avatar_Player_Rock_Fight_Low materials and bones
+PASS Wagner_ClassicGloves_Low built
+PASS Wagner_ClassicGloves_Low all equipment
+PASS Wagner_ClassicGloves_Low segmented equipment
+PASS Wagner_ClassicGloves_Low valid masks
+PASS Wagner_ClassicGloves_Low materials and bones
+PASS Avatar_Player_Dance_Runner_Mid built
+PASS Avatar_Player_Dance_Runner_Mid all equipment
+PASS Avatar_Player_Dance_Runner_Mid segmented equipment
+PASS Avatar_Player_Dance_Runner_Mid valid masks
+PASS Avatar_Player_Dance_Runner_Mid materials and bones
+PASS Avatar_Player_Dance_Fight_Mid built
+PASS Avatar_Player_Dance_Fight_Mid all equipment
+PASS Avatar_Player_Dance_Fight_Mid segmented equipment
+PASS Avatar_Player_Dance_Fight_Mid valid masks
+PASS Avatar_Player_Dance_Fight_Mid materials and bones
+PASS Avatar_Player_Groove_Runner_Mid built
+FAIL Avatar_Player_Groove_Runner_Mid all equipment
+FAIL Avatar_Player_Groove_Runner_Mid segmented equipment
+PASS Avatar_Player_Groove_Runner_Mid valid masks
+PASS Avatar_Player_Groove_Runner_Mid materials and bones
+PASS Avatar_Player_Groove_Fight_Mid built
+FAIL Avatar_Player_Groove_Fight_Mid all equipment
+FAIL Avatar_Player_Groove_Fight_Mid segmented equipment
+PASS Avatar_Player_Groove_Fight_Mid valid masks
+PASS Avatar_Player_Groove_Fight_Mid materials and bones
+PASS Avatar_Player_Rock_Runner_Mid built
+PASS Avatar_Player_Rock_Runner_Mid all equipment
+PASS Avatar_Player_Rock_Runner_Mid segmented equipment
+PASS Avatar_Player_Rock_Runner_Mid valid masks
+PASS Avatar_Player_Rock_Runner_Mid materials and bones
+PASS Avatar_Player_Rock_Fight_Mid built
+PASS Avatar_Player_Rock_Fight_Mid all equipment
+PASS Avatar_Player_Rock_Fight_Mid segmented equipment
+PASS Avatar_Player_Rock_Fight_Mid valid masks
+PASS Avatar_Player_Rock_Fight_Mid materials and bones
+PASS Wagner_ClassicGloves_Mid built
+PASS Wagner_ClassicGloves_Mid all equipment
+PASS Wagner_ClassicGloves_Mid segmented equipment
+PASS Wagner_ClassicGloves_Mid valid masks
+PASS Wagner_ClassicGloves_Mid materials and bones
+PASS Avatar_Player_Dance_Runner_HighMid built
+PASS Avatar_Player_Dance_Runner_HighMid all equipment
+PASS Avatar_Player_Dance_Runner_HighMid segmented equipment
+PASS Avatar_Player_Dance_Runner_HighMid valid masks
+PASS Avatar_Player_Dance_Runner_HighMid materials and bones
+PASS Avatar_Player_Dance_Fight_HighMid built
+PASS Avatar_Player_Dance_Fight_HighMid all equipment
+PASS Avatar_Player_Dance_Fight_HighMid segmented equipment
+PASS Avatar_Player_Dance_Fight_HighMid valid masks
+PASS Avatar_Player_Dance_Fight_HighMid materials and bones
+PASS Avatar_Player_Groove_Runner_HighMid built
+FAIL Avatar_Player_Groove_Runner_HighMid all equipment
+FAIL Avatar_Player_Groove_Runner_HighMid segmented equipment
+PASS Avatar_Player_Groove_Runner_HighMid valid masks
+PASS Avatar_Player_Groove_Runner_HighMid materials and bones
+PASS Avatar_Player_Groove_Fight_HighMid built
+FAIL Avatar_Player_Groove_Fight_HighMid all equipment
+FAIL Avatar_Player_Groove_Fight_HighMid segmented equipment
+PASS Avatar_Player_Groove_Fight_HighMid valid masks
+PASS Avatar_Player_Groove_Fight_HighMid materials and bones
+PASS Avatar_Player_Rock_Runner_HighMid built
+PASS Avatar_Player_Rock_Runner_HighMid all equipment
+PASS Avatar_Player_Rock_Runner_HighMid segmented equipment
+PASS Avatar_Player_Rock_Runner_HighMid valid masks
+PASS Avatar_Player_Rock_Runner_HighMid materials and bones
+PASS Avatar_Player_Rock_Fight_HighMid built
+PASS Avatar_Player_Rock_Fight_HighMid all equipment
+PASS Avatar_Player_Rock_Fight_HighMid segmented equipment
+PASS Avatar_Player_Rock_Fight_HighMid valid masks
+PASS Avatar_Player_Rock_Fight_HighMid materials and bones
+PASS Wagner_ClassicGloves_HighMid built
+PASS Wagner_ClassicGloves_HighMid all equipment
+PASS Wagner_ClassicGloves_HighMid segmented equipment
+PASS Wagner_ClassicGloves_HighMid valid masks
+PASS Wagner_ClassicGloves_HighMid materials and bones
+PASS Avatar_Player_Dance_Runner_High built
+PASS Avatar_Player_Dance_Runner_High all equipment
+PASS Avatar_Player_Dance_Runner_High segmented equipment
+PASS Avatar_Player_Dance_Runner_High valid masks
+PASS Avatar_Player_Dance_Runner_High materials and bones
+PASS Avatar_Player_Dance_Fight_High built
+PASS Avatar_Player_Dance_Fight_High all equipment
+PASS Avatar_Player_Dance_Fight_High segmented equipment
+PASS Avatar_Player_Dance_Fight_High valid masks
+PASS Avatar_Player_Dance_Fight_High materials and bones
+PASS Avatar_Player_Groove_Runner_High built
+FAIL Avatar_Player_Groove_Runner_High all equipment
+FAIL Avatar_Player_Groove_Runner_High segmented equipment
+PASS Avatar_Player_Groove_Runner_High valid masks
+PASS Avatar_Player_Groove_Runner_High materials and bones
+PASS Avatar_Player_Groove_Fight_High built
+FAIL Avatar_Player_Groove_Fight_High all equipment
+FAIL Avatar_Player_Groove_Fight_High segmented equipment
+PASS Avatar_Player_Groove_Fight_High valid masks
+PASS Avatar_Player_Groove_Fight_High materials and bones
+PASS Avatar_Player_Rock_Runner_High built
+PASS Avatar_Player_Rock_Runner_High all equipment
+PASS Avatar_Player_Rock_Runner_High segmented equipment
+PASS Avatar_Player_Rock_Runner_High valid masks
+PASS Avatar_Player_Rock_Runner_High materials and bones
+PASS Avatar_Player_Rock_Fight_High built
+PASS Avatar_Player_Rock_Fight_High all equipment
+PASS Avatar_Player_Rock_Fight_High segmented equipment
+PASS Avatar_Player_Rock_Fight_High valid masks
+PASS Avatar_Player_Rock_Fight_High materials and bones
+PASS Wagner_ClassicGloves_High built
+PASS Wagner_ClassicGloves_High all equipment
+PASS Wagner_ClassicGloves_High segmented equipment
+PASS Wagner_ClassicGloves_High valid masks
+PASS Wagner_ClassicGloves_High materials and bones
+PASS Avatar_Player_Dance_Runner_Ultra built
+PASS Avatar_Player_Dance_Runner_Ultra all equipment
+PASS Avatar_Player_Dance_Runner_Ultra segmented equipment
+PASS Avatar_Player_Dance_Runner_Ultra valid masks
+PASS Avatar_Player_Dance_Runner_Ultra materials and bones
+PASS Avatar_Player_Dance_Fight_Ultra built
+PASS Avatar_Player_Dance_Fight_Ultra all equipment
+PASS Avatar_Player_Dance_Fight_Ultra segmented equipment
+PASS Avatar_Player_Dance_Fight_Ultra valid masks
+PASS Avatar_Player_Dance_Fight_Ultra materials and bones
+PASS Avatar_Player_Groove_Runner_Ultra built
+FAIL Avatar_Player_Groove_Runner_Ultra all equipment
+FAIL Avatar_Player_Groove_Runner_Ultra segmented equipment
+PASS Avatar_Player_Groove_Runner_Ultra valid masks
+PASS Avatar_Player_Groove_Runner_Ultra materials and bones
+PASS Avatar_Player_Groove_Fight_Ultra built
+FAIL Avatar_Player_Groove_Fight_Ultra all equipment
+FAIL Avatar_Player_Groove_Fight_Ultra segmented equipment
+PASS Avatar_Player_Groove_Fight_Ultra valid masks
+PASS Avatar_Player_Groove_Fight_Ultra materials and bones
+PASS Avatar_Player_Rock_Runner_Ultra built
+PASS Avatar_Player_Rock_Runner_Ultra all equipment
+PASS Avatar_Player_Rock_Runner_Ultra segmented equipment
+PASS Avatar_Player_Rock_Runner_Ultra valid masks
+PASS Avatar_Player_Rock_Runner_Ultra materials and bones
+PASS Avatar_Player_Rock_Fight_Ultra built
+PASS Avatar_Player_Rock_Fight_Ultra all equipment
+PASS Avatar_Player_Rock_Fight_Ultra segmented equipment
+PASS Avatar_Player_Rock_Fight_Ultra valid masks
+PASS Avatar_Player_Rock_Fight_Ultra materials and bones
+PASS Wagner_ClassicGloves_Ultra built
+PASS Wagner_ClassicGloves_Ultra all equipment
+PASS Wagner_ClassicGloves_Ultra segmented equipment
+PASS Wagner_ClassicGloves_Ultra valid masks
+PASS Wagner_ClassicGloves_Ultra materials and bones
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+AvatarWearableDeliveryCheck/<Run>d__9:MoveNext () (at Assets/_Project/Scripts/Editor/Avatar/Garments/AvatarWearableDeliveryCheck.cs:110)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Threading.Tasks.AwaitTaskContinuation:InvokeAction (object)
+System.Threading.Tasks.AwaitTaskContinuation:RunCallback (System.Threading.ContextCallback,object,System.Threading.Tasks.Task&)
+System.Threading.Tasks.SynchronizationContextAwaitTaskContinuation:Run (System.Threading.Tasks.Task,bool)
+System.Threading.Tasks.Task:FinishContinuations ()
+System.Threading.Tasks.Task:FinishStageThree ()
+System.Threading.Tasks.Task`1<System.Threading.Tasks.VoidTaskResult>:TrySetResult (System.Threading.Tasks.VoidTaskResult)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Threading.Tasks.VoidTaskResult>:SetResult (System.Threading.Tasks.VoidTaskResult)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<System.Threading.Tasks.VoidTaskResult>:SetResult (System.Threading.Tasks.Task`1<System.Threading.Tasks.VoidTaskResult>)
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder:SetResult ()
+AvatarWearableDeliveryCheck/<Build>d__10:MoveNext () (at Assets/_Project/Scripts/Editor/Avatar/Garments/AvatarWearableDeliveryCheck.cs:133)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:InvokeMoveNext (object)
+System.Threading.ExecutionContext:RunInternal (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Threading.ExecutionContext:Run (System.Threading.ExecutionContext,System.Threading.ContextCallback,object,bool)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore/MoveNextRunner:Run ()
+System.Runtime.CompilerServices.YieldAwaitable/YieldAwaiter:RunAction (object)
+UnityEngine.UnitySynchronizationContext/WorkRequest:Invoke ()
+UnityEngine.UnitySynchronizationContext:Exec ()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+
+(Filename: Assets/_Project/Scripts/Editor/Avatar/Garments/AvatarWearableDeliveryCheck.cs Line: 110)
+
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            0.547 ms
+	Integration:            244.191 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.022 ms
+	Total Operation Time:   244.762 ms
+Unloading 4441 unused Assets / (163.6 MB). Loaded Objects now: 10535.
+Memory consumption went from 1.40 GB to 1.24 GB.
+Total: 35.922500 ms (FindLiveObjects: 0.629400 ms CreateObjectMapping: 0.572900 ms MarkObjects: 17.454500 ms  DeleteObjects: 17.264200 ms)
+
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[UnityConnectServicesConfig] config is NOT valid, switching to default
+Killing ADB server in 0,1208051 seconds.
+Start importing ProjectSettings/EditorBuildSettings.asset using Guid(0000000000000000b000000000000000) (LibraryAssetImporter) -> (artifact id: '11f8fdea987aecd2948effa50908fb0c') in 0.0176959 seconds
+Refreshing native plugins compatible for Editor in 10.07 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.29 ms.
+Asset Pipeline Refresh (id=9c62ca669708b334a9d83d4cc0bc5a48): Total: 0.243 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-VISYON-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-VISYON channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+14:03:54.477 |V| RiderPlugin                    | :1                             | AppDomain.CurrentDomain.DomainUnload lifetimeDefinition.Terminate
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1794834234891,"processId":44880,"allocatedMemory":45909748,"memoryLabels":[{"Default":29313},{"Permanent":15524},{"NewDelete":68957},{"Thread":4230464},{"Manager":824413},{"VertexData":536},{"Geometry":816},{"Texture":296},{"Shader":88574},{"Material":24},{"GfxDevice":55545},{"Animation":392},{"Audio":3040},{"FontEngine":256},{"Physics":2090},{"Physics2D":16},{"Input":14984},{"JobScheduler":33024},{"TextLib":192},{"Mono":32},{"MonoCode":2048},{"ScriptingNativeRuntime":155060},{"BaseObject":1620400},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":3953},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":18962},{"DynamicArray":128640},{"HashMap":84722},{"Utility":2660678},{"Curl":4238},{"PoolAlloc":2824},{"AI":40},{"TypeTree":5341},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":6480},{"WebRequest":11348},{"VR":47994},{"SceneManager":504},{"Video":208},{"LazyScriptCache":32},{"Camera":17},{"Secure":2113},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":384},{"Hierarchy":608},{"CoreStats":13000},{"Identifiers":12960},{"Gui":88},{"EditorUtility":141999},{"VersionControl":4},{"Undo":947},{"AssetDatabase":35185649},{"EditorGi":328},{"UnityConnect":29232},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":212},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2870},{"Licensing":664},{"AssetReference":32},{"IPCStream":32}]}

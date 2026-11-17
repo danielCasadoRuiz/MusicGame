@@ -60,6 +60,8 @@ public class MusicRunnerCoreConfig : ScriptableObject
     public float strafeLerp  = 10f;
     public float jumpForce   = 9f;
     public float gravity     = -22f;
+    [Tooltip("Seconds after losing ground contact when an unused jump is still allowed. Never grants a second jump.")]
+    [Range(0f, .3f)] public float jumpGraceSeconds = .15f;
 
     [Header("Player Surge (W / ↑)")]
     [Tooltip("Max distance AHEAD of the song's canonical position (positive song-relative offset).")]
@@ -166,9 +168,11 @@ public class MusicRunnerCoreConfig : ScriptableObject
              "to 0 height) and the music (fading to silence) ramp down — finishing together " +
              "exactly at that end point.")]
     public float fadeOutSeconds  = 3f;
-    [Tooltip("How many extra seconds the player keeps running afterward — flat ground, silent " +
-             "(the song has already finished) — before the end screen actually appears.")]
-    public float farewellSeconds = 5f;
+    [Tooltip("Seconds from FINISH to the results screen (maximum 2). The song has already finished.")]
+    [Range(0f, 2f)] public float farewellSeconds = 2f;
+
+    // Apply the limit to existing serialized configurations as well as Inspector edits.
+    public float FarewellDuration => Mathf.Clamp(farewellSeconds, 0f, 2f);
 
     [Header("Ending — the closing stretch (waves, arch, camera)")]
     [Tooltip("ON: after the song ends and the flat hold, the ground returns to the countdown's waves (one hill per " +

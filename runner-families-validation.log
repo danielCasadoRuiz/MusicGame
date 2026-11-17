@@ -1,0 +1,994 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.2f1 (a9779f353c9b) revision 11106207'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) 64bit Professional' Language: 'es' Physical Memory: 32388 MB
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON" at "2026-11-13T23:10:56.0521458Z"
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+Date: 2026-11-13T23:10:56Z
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Unity.exe
+-batchmode
+-projectPath
+C:/Users/VISYON/Documents/MusicGame/MusicGame
+-executeMethod
+RunnerSurfaceFamilies.Build
+-quit
+-logFile
+C:/Users/VISYON/Documents/MusicGame/runner-families-validation.log
+Successfully changed project path to: C:/Users/VISYON/Documents/MusicGame/MusicGame
+C:/Users/VISYON/Documents/MusicGame/MusicGame
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [45240]  Target information:
+
+Player connection [45240]  * "[IP] 192.168.1.15 [Port] 55505 [Flags] 2 [Guid] 2542776043 [EditorId] 2542776043 [Version] 1048832 [Id] WindowsEditor(7,RemoteDani) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [45240] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [45240] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-4248" after 0.3 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              d9189fc31c08487a91501d22879d4e2e
+  Correlation Id:          7f7ecca5a2e297700e2028d0c0579c52
+  External correlation Id: 8573699493201232559
+  Machine Id:              x99c5MRpHgESOtEUeZ1qua+TIa8=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-VISYON" (connect: 0.00s, validation: 0.00s, handshake: 1.15s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON-notifications" at "2026-11-13T23:10:57.2077937Z"
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.00
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Module] Licensing Background thread has ended after 1.18s
+[Licensing::Module] Licensing is initialized (took 0.39s).
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Artifact Garbage Collection - Removed 5 unused hashed content files
+Refreshing native plugins compatible for Editor in 0.89 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.2f1 (a9779f353c9b)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/VISYON/Documents/MusicGame/MusicGame/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3070 Laptop GPU (ID=0x249d)
+    Vendor:   NVIDIA
+    VRAM:     8020 MB
+    Driver:   32.0.15.8142
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56248
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/MetroSupport/UnityEditor.UWP.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+Registered in 0.016878 seconds.
+- Loaded All Assemblies, in  0.472 seconds
+Native extension for Android target not found
+Android Extension - Scanning For ADB Devices 2584 ms
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  3.114 seconds
+Domain Reload Profiling: 3581ms
+	BeginReloadAssembly (153ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (35ms)
+	RebuildNativeTypeToScriptingClass (12ms)
+	initialDomainReloadingComplete (73ms)
+	LoadAllAssembliesAndSetupDomain (192ms)
+		LoadAssemblies (148ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (187ms)
+			TypeCache.Refresh (185ms)
+				TypeCache.ScanAssembly (172ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (3115ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (3078ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (2732ms)
+			SetLoadedEditorAssemblies (5ms)
+			BeforeProcessingInitializeOnLoad (109ms)
+			ProcessInitializeOnLoadAttributes (162ms)
+			ProcessInitializeOnLoadMethodAttributes (69ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Application.AssetDatabase Initial Refresh Start
+Package Manager log level set to [2]
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 64 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.addressables@2.3.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.addressables@5d870284b3d9)
+    com.unity.ai.inference@2.6.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.ai.navigation@2.0.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.navigation@5218e4bf7edc)
+    com.unity.collab-proxy@2.10.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collab-proxy@3351acaba9c9)
+    com.unity.ide.rider@3.0.38 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.rider@1f60b3138684)
+    com.unity.ide.visualstudio@2.0.25 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.visualstudio@74aa435fc4bb)
+    com.unity.inputsystem@1.17.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.inputsystem@02433b2481ab)
+    com.unity.localization@1.5.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.localization@f2647f7408bd)
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.timeline@1.8.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.timeline@6b9e48457ddb)
+    com.unity.visualscripting@1.9.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.visualscripting@191c0d7e3b69)
+    com.unity.burst@1.8.26 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.burst@21aa83e7fd8f)
+    com.unity.dt.app-ui@2.1.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.dt.app-ui@8ac7e730dd5d)
+    com.unity.collections@2.6.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collections@aea9d3bd5e19)
+    com.unity.profiling.core@1.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.profiling.core@8a49f7027d06)
+    com.unity.scriptablebuildpipeline@2.4.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.scriptablebuildpipeline@ca3e2d96aa2f)
+    com.unity.searcher@4.9.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.mathematics@1.3.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.mathematics@19a9377c4ffa)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.test-framework.performance@3.2.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework.performance@0840f58e4562)
+  Built-in packages:
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.multiplayer.center@f01f4ba8d00a)
+    com.unity.render-pipelines.universal@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal@66e99ffa09c7)
+    com.unity.test-framework@1.6.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework@0b7a23ab2e1d)
+    com.unity.ugui@2.0.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ugui@52e65280e89e)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.0.5 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ext.nunit@d8c07649098d)
+    com.unity.render-pipelines.core@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.core@ce86d16dfe9d)
+    com.unity.shadergraph@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.shadergraph@3cfe1d1f3f8c)
+    com.unity.render-pipelines.universal-config@17.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal-config@8dc1aab4af1d)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.10 seconds
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+DisplayProgressbar: Compiling Scripts
+ExitCode: 4 Duration: 0s592ms
+Rebuilding DAG because FileSignature timestamp changed: Library/Bee/1900b0aEDbg-inputdata.json
+[ 897/1159  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+*** Tundra requires additional run (0.54 seconds), 1 items updated, 896 evaluated
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\netcorerun\netcorerun.exe "C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\ScriptCompilationBuildProgram.exe" "Library/Bee/1900b0aEDbg.dag.json" "Library/Bee/1900b0aEDbg-inputdata.json" "Library\Bee\buildprogram0.traceevents"
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+ExitCode: 0 Duration: 0s982ms
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --dagfilejson="Library\Bee\1900b0aEDbg.dag.json" --profile="Library/Bee/backend2.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+ExitCode: 0 Duration: 9s773ms
+Finished compiling graph: 1163 nodes, 22718 flattened edges (18670 ToBuild, 186 ToUse), maximum node priority 1210
+[ 619/1159  0s] WriteText Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.rsp
+[ 896/1159  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1155/1159  4s] Csc Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+[1156/1159  0s] ILPostProcess Library/Bee/artifacts/1900b0aEDbg.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll, with 137 defines and 359 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1157/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[1158/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (9.73 seconds), 6 items updated, 1159 evaluated
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+AssetDatabase: script compilation time: 12.392564s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  3.218 seconds
+Refreshing native plugins compatible for Editor in 7.19 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in 11.902 seconds
+Domain Reload Profiling: 15099ms
+	BeginReloadAssembly (510ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (11ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (175ms)
+	RebuildCommonClasses (69ms)
+	RebuildNativeTypeToScriptingClass (24ms)
+	initialDomainReloadingComplete (84ms)
+	LoadAllAssembliesAndSetupDomain (2508ms)
+		LoadAssemblies (2095ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (655ms)
+			TypeCache.Refresh (476ms)
+				TypeCache.ScanAssembly (449ms)
+			BuildScriptInfoCaches (139ms)
+			ResolveRequiredComponents (29ms)
+	FinalizeReload (11903ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (11510ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (70ms)
+			SetLoadedEditorAssemblies (9ms)
+			BeforeProcessingInitializeOnLoad (427ms)
+			ProcessInitializeOnLoadAttributes (10675ms)
+			ProcessInitializeOnLoadMethodAttributes (310ms)
+			AfterProcessingInitializeOnLoad (18ms)
+			EditorAssembliesLoaded (1ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (12ms)
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+AssetDatabase: script compilation time: 0.001871s
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+ExitCode: 0 Duration: 5s219ms
+[ 896/1159  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1155/1159  1s] Csc Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+[1156/1159  0s] ILPostProcess Library/Bee/artifacts/1900b0aEDbg.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll, with 137 defines and 359 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1157/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[1158/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (5.17 seconds), 5 items updated, 1159 evaluated
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+Reloading assemblies after forced synchronous recompile.
+Begin MonoManager ReloadAssembly
+00:11:37.181 |V| RiderPlugin                    | :1                             | AppDomain.CurrentDomain.DomainUnload lifetimeDefinition.Terminate
+- Loaded All Assemblies, in  2.492 seconds
+Refreshing native plugins compatible for Editor in 11.24 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  2.692 seconds
+Domain Reload Profiling: 5179ms
+	BeginReloadAssembly (1034ms)
+		ExecutionOrderSort (1ms)
+		DisableScriptedObjects (42ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (593ms)
+	RebuildCommonClasses (55ms)
+	RebuildNativeTypeToScriptingClass (17ms)
+	initialDomainReloadingComplete (90ms)
+	LoadAllAssembliesAndSetupDomain (1290ms)
+		LoadAssemblies (1139ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (383ms)
+			TypeCache.Refresh (29ms)
+				TypeCache.ScanAssembly (13ms)
+			BuildScriptInfoCaches (330ms)
+			ResolveRequiredComponents (17ms)
+	FinalizeReload (2693ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (2084ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (109ms)
+			SetLoadedEditorAssemblies (13ms)
+			BeforeProcessingInitializeOnLoad (707ms)
+			ProcessInitializeOnLoadAttributes (780ms)
+			ProcessInitializeOnLoadMethodAttributes (461ms)
+			AfterProcessingInitializeOnLoad (14ms)
+			EditorAssembliesLoaded (1ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (31ms)
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/11_OverlappingPieces.png using Guid(81e37deb886a76d49b29c0d69bd37f79) (TextureImporter) -> (artifact id: '9f2077a3494e3681108b5bf4fbb137ee') in 0.059066 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/18_TwilightSlate.png using Guid(e2222e0a057fb0c4cb04dbd7b1fc5be6) (TextureImporter) -> (artifact id: '1c6a0381b3612c64dea7ab3d66d62380') in 0.0259762 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/24_WhiteStation.png using Guid(74b331485cbfdf54da4129335091b639) (TextureImporter) -> (artifact id: '31d98c36d0180366e43a5c5ff5840d72') in 0.0743582 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/16_DesertRemains.png using Guid(c5efee00e9da7554789dfc9e0d83c986) (TextureImporter) -> (artifact id: '16b57f7cef57b0b4220ff0d9b5ddce14') in 0.0348364 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/13_OldWarmMosaic.png using Guid(d5fdb9f01c442fe42a70e1810d59b908) (TextureImporter) -> (artifact id: '79e0bcaa85c11579784f783c2c8b7cb5') in 0.0347595 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/10_PieceVariants.png using Guid(366b23fc333135942bbb6fdf4432a404) (TextureImporter) -> (artifact id: '3a53404ade6dfee8c1893aa769704a0d') in 0.0503863 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/25_ReactorGrid.png using Guid(4697dd4755caf1746afa3c31f880e47e) (TextureImporter) -> (artifact id: 'a340d7ab98d49527f40b7ff813b9dee4') in 0.0550729 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/02_Sand.png using Guid(961c8fa170f2ca245b233d9bed5b5ab7) (TextureImporter) -> (artifact id: '3baff098046c5d2219e48966d4de6f32') in 0.0582986 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/09_BuriedPaving.png using Guid(072fab9452fef0441957d640dcd3d152) (TextureImporter) -> (artifact id: '421232714530794459b9d7ef5688ce89') in 0.054567 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/06_TintedPaving.png using Guid(48fc5cc94f035ce4a8adb75f6438f301) (TextureImporter) -> (artifact id: 'cafcd6e346d0163185f954632a69df5d') in 0.0485961 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/14_StormPaving.png using Guid(591b264e0842b1946b4e2e41d88a4fed) (TextureImporter) -> (artifact id: 'ae92f60c018fc6ed85af627e50baf540') in 0.0263684 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/17_MossOchreChalk.png using Guid(89a6a91860c9a7040874dfd5548878bb) (TextureImporter) -> (artifact id: 'ee3fdba35fdaa6e61518fbbb3197f6d1') in 0.025366 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/23_AlienTemple.png using Guid(a932369b0e53b7643a4a1f6f0684e684) (TextureImporter) -> (artifact id: '22c0d6c4a6a0e18c3c6a86ad90ae8fed') in 0.0469066 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/12_RuinedCourtyard.png using Guid(ea221cace70e6304b9f20a8b06ee213f) (TextureImporter) -> (artifact id: 'd5d6bb620cb52ecf591d2e8e01cba75b') in 0.0247108 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/15_OvergrownRuins.png using Guid(ab4aa43171863514f83e045cd2dc881f) (TextureImporter) -> (artifact id: '782848f9ea0b9cbe74a030c35512904b') in 0.0292972 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/21_IndustrialDeck.png using Guid(bb879fb2247f46f40b221213de037488) (TextureImporter) -> (artifact id: '524064be946b8880d5f1e87114080158') in 0.0437365 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/04_Grass.png using Guid(fbfcebaa88db86a4ba630556c0a531b8) (TextureImporter) -> (artifact id: 'eea77698ecf080b7f9f56c4a9e49f5c4') in 0.0389834 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/05_Earth.png using Guid(ac9c201888db6d14fb9fce90eda25beb) (TextureImporter) -> (artifact id: 'e7adc4de7887464a59d8e9c3e3384f8b') in 0.0405334 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/07_GrassEarthSand.png using Guid(dcda86c2be3f590429a87bc85f2930ab) (TextureImporter) -> (artifact id: '0d4a16a8cfab9a623feee3d0a6d90b42') in 0.0461051 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/03_Paving.png using Guid(fc50d5df4a067c64bbce8ff1aa1f44d1) (TextureImporter) -> (artifact id: '0404c4ae11f2c67a8c8be605d1834e6d') in 0.0419588 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/01_VertexColor.png using Guid(0d914996ddd458c408080b8939fef74f) (TextureImporter) -> (artifact id: '8267e44f7b54b96dd3e04a82bf6deddc') in 0.0386913 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/26_HyperspaceRails.png using Guid(5e28d92b5a040cf43994565694f6185c) (TextureImporter) -> (artifact id: '5fe3c7da38f0b03c1d5d9736732426e3') in 0.0392591 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/08_TintedHeightMix.png using Guid(1f7c8770871910a4a8105e7dc4c486f5) (TextureImporter) -> (artifact id: '889c4e8a5bdc8c2078c68239c9310228') in 0.0371789 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/19_AutumnTrail.png using Guid(2ffd7739f30e52347922e79bba90c685) (TextureImporter) -> (artifact id: '9f6f94816b9f7be75941781d944a93d3') in 0.0259536 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/20_ThreeColourBands.png using Guid(7f4ca1f366b6d394894aaa7e4d4fcba1) (TextureImporter) -> (artifact id: 'e15868ec5355ead5cdf219362570f431') in 0.0240148 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Previews/22_CyanCircuitDeck.png using Guid(ff18c0a944bcf104896a3190c278053d) (TextureImporter) -> (artifact id: '00f902c328ee11da7bb50445a7b65d6f') in 0.0432813 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Validation.txt using Guid(345b3fc7f1c29aa4790b8e0ba6d0c2ed) (TextScriptImporter) -> (artifact id: 'b7d81c6510d85aaae62f8d4a04e0ed26') in 0.0047312 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Galeria.html using Guid(85b4399e17e8fd04190dd195547d88a3) (TextScriptImporter) -> (artifact id: 'd6c92c148b42fe09305e4998db66a3d1') in 0.0047237 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/README.md using Guid(0e315af3783e81c4b9b5fed6a61a062a) (TextScriptImporter) -> (artifact id: '0572f6981ebeef8552100990416d5146') in 0.0043272 seconds
+Script 'Library/PackageCache/com.unity.test-framework@0b7a23ab2e1d/Tests/TestNewCustomAssembly/TestNewCustomAssembly.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/VerifyEditorInPlaymode/Unity.AI.Navigation.Tests.EditorInPlaymode.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.mathematics@19a9377c4ffa/Tests/Unity.Mathematics.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.xml' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/ResourceManager/Unity.ResourceManager.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/DocCodeSamples.Tests/DocCodeSamples.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.dt.app-ui@8ac7e730dd5d/Tests/Runtime/Unity.AppUI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/Unity.Addressables.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/TestAssets/Unity.ScriptableBuildPipelineTests.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.PerformanceTests/Unity.Collections.PerformanceTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/Unity.AI.Navigation.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.timeline@6b9e48457ddb/DocCodeExamples/DocCodeExamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.localization@f2647f7408bd/DocCodeSamples.Tests/DocCodeSamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.multiplayer.center@f01f4ba8d00a/Tests/Runtime/Unity.Multiplayer.Center.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.core@ce86d16dfe9d/Tests/Runtime/Threading/FunctionTestsGroup.compute' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/OffMeshLinkTests/Unity.AI.Navigation.LegacyOffMeshLink.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/UGUI/UnityEngine.UI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.inputsystem@02433b2481ab/Tests/IntegrationTests/Unity.InputSystem.IntegrationTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests.Playmode/FixedListPlayModeTests.tt' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/TMP/Unity.TextMeshPro.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Tests/Runtime/Unity.RenderPipelines.Universal.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/Unity.ScriptableBuildPipeline.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.BurstCompatibilityGen/Unity.Collections.BurstCompatibilityGen.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Refreshing native plugins compatible for Editor in 11.93 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.22 ms.
+Asset Pipeline Refresh (id=35d3564840ff1194e9b065fbf6bffa2c): Total: 44.010 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=29 (actual=29, local cache=0, cache server=0)
+		Asset DB Process Time: managed=11 ms, native=17711 ms
+		Asset DB Callback time: managed=2161 ms, native=121 ms
+		Scripting: domain reloads=2, domain reload time=5769 ms, compile time=18028 ms, other=207 ms
+		Project Asset Count: scripts=6356, non-scripts=20000
+		Asset File Changes: new=7, changed=32, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.002ms
+	InvokePackagesCallback: 110.464ms
+	ApplyChangesToAssetFolders: 1.060ms
+	Scan: 636.756ms
+	OnSourceAssetsModified: 2.296ms
+	CategorizeAssetsWithTransientArtifact: 103.214ms
+	ProcessAssetsWithTransientArtifactChanges: 343.340ms
+	CategorizeAssets: 318.562ms
+	ImportOutOfDateAssets: 15768.824ms (-3390.542ms without children)
+		ImportManagerImport: 1110.704ms (4.320ms without children)
+			ImportInProcess: 1105.965ms
+			UpdateCategorizedAssets: 0.420ms
+		CompileScripts: 18027.799ms
+		CollectScriptTypesHashes: 5.395ms
+		ReloadNativeAssets: 1.760ms
+		UnloadImportedAssets: 3.396ms
+		ReloadImportedAssets: 0.004ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 6.656ms
+		InitializingProgressBar: 0.009ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 3.643ms
+	PostProcessAllAssets: 2159.361ms
+	Hotreload: 17.940ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.002ms
+	UnloadStreamsBegin: 4.165ms
+	PersistCurrentRevisions: 1.653ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 10.014ms
+	Untracked: 24542.698ms
+
+Application.AssetDatabase Initial Refresh End
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.04 seconds
+Scanning for USB devices : 2.244ms
+Initializing Unity extensions:
+Script 'Library/PackageCache/com.unity.test-framework@0b7a23ab2e1d/Tests/TestNewCustomAssembly/TestNewCustomAssembly.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/VerifyEditorInPlaymode/Unity.AI.Navigation.Tests.EditorInPlaymode.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.mathematics@19a9377c4ffa/Tests/Unity.Mathematics.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.xml' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/ResourceManager/Unity.ResourceManager.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/DocCodeSamples.Tests/DocCodeSamples.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.dt.app-ui@8ac7e730dd5d/Tests/Runtime/Unity.AppUI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/Unity.Addressables.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/TestAssets/Unity.ScriptableBuildPipelineTests.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.PerformanceTests/Unity.Collections.PerformanceTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/Unity.AI.Navigation.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.timeline@6b9e48457ddb/DocCodeExamples/DocCodeExamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.localization@f2647f7408bd/DocCodeSamples.Tests/DocCodeSamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.multiplayer.center@f01f4ba8d00a/Tests/Runtime/Unity.Multiplayer.Center.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.core@ce86d16dfe9d/Tests/Runtime/Threading/FunctionTestsGroup.compute' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/OffMeshLinkTests/Unity.AI.Navigation.LegacyOffMeshLink.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/UGUI/UnityEngine.UI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.inputsystem@02433b2481ab/Tests/IntegrationTests/Unity.InputSystem.IntegrationTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests.Playmode/FixedListPlayModeTests.tt' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/TMP/Unity.TextMeshPro.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Tests/Runtime/Unity.RenderPipelines.Universal.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/Unity.ScriptableBuildPipeline.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.BurstCompatibilityGen/Unity.Collections.BurstCompatibilityGen.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-MusicGame
+Unloading 62 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 9407 unused Assets / (21.0 MB). Loaded Objects now: 10430.
+Memory consumption went from 338.0 MB to 317.0 MB.
+Total: 19.496500 ms (FindLiveObjects: 0.761500 ms CreateObjectMapping: 0.740500 ms MarkObjects: 11.915200 ms  DeleteObjects: 6.077500 ms)
+
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 1 unused Assets / (48.8 KB). Loaded Objects now: 10438.
+Memory consumption went from 304.4 MB to 304.3 MB.
+Total: 16.336200 ms (FindLiveObjects: 0.398000 ms CreateObjectMapping: 0.323500 ms MarkObjects: 15.574600 ms  DeleteObjects: 0.038700 ms)
+
+Start importing Assets/_Project/Art/RunnerSurfaces/Families using Guid(2d1a58e97556e4a4e9c9679d626ac458) (DefaultImporter) -> (artifact id: 'a39c724179df36da7ccf5e4ab9a18916') in 0.018029 seconds
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/Previews using Guid(00cb53b30e966494082a7061d85c178b) (DefaultImporter) -> (artifact id: '8337c6c9f5208e961c20c5bf903c6adc') in 0.0183359 seconds
+Refreshing native plugins compatible for Editor in 6.21 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.12 ms.
+Asset Pipeline Refresh (id=83e8d23604c76ca408cc90fd36ef17b3): Total: 0.394 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+	Summary:
+		Imports: total=2 (actual=2, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=370 ms
+		Asset DB Callback time: managed=4 ms, native=19 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=6358, non-scripts=20000
+		Asset File Changes: new=2, changed=2, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 0.001ms
+	ApplyChangesToAssetFolders: 0.242ms
+	Scan: 60.393ms
+	OnSourceAssetsModified: 0.787ms
+	CategorizeAssetsWithTransientArtifact: 0.019ms
+	ProcessAssetsWithTransientArtifactChanges: 0.226ms
+	CategorizeAssets: 180.468ms
+	ImportOutOfDateAssets: 51.433ms (1.751ms without children)
+		ImportManagerImport: 43.949ms (0.768ms without children)
+			ImportInProcess: 43.132ms
+			UpdateCategorizedAssets: 0.048ms
+		ReloadNativeAssets: 0.186ms
+		UnloadImportedAssets: 0.254ms
+		ReloadImportedAssets: 0.000ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 3.859ms
+		InitializingProgressBar: 0.000ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 1.433ms
+	PostProcessAllAssets: 16.246ms
+	Hotreload: 6.857ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.590ms
+	UnloadStreamsBegin: 0.004ms
+	PersistCurrentRevisions: 1.655ms
+	UnloadStreamsEnd: 0.002ms
+	Untracked: 74.227ms
+
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/01_VertexColor_A_Continu.mat using Guid(9fe553d296e527b468816ab9584fbc7e) (NativeFormatImporter) -> (artifact id: '1ac2fc599ce16b8ee57ac3a29e157d2c') in 0.0051423 seconds
+Refreshing native plugins compatible for Editor in 6.61 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.11 ms.
+Asset Pipeline Refresh (id=9beebf5004fda544b9ec7e76adb02946): Total: 0.101 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/CurvedPath.asset using Guid(eafc6cbc5c1c480449c89192012366bb) (NativeFormatImporter) -> (artifact id: '7e4d8c7ca4246f45d391230e585bbb78') in 0.0125594 seconds
+Refreshing native plugins compatible for Editor in 6.82 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=6fb65d00d71de264685e80ece7887af7): Total: 0.117 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/01_VertexColor_B_Recuperat.mat using Guid(4fa305890bfe0994aae9197b960c2d51) (NativeFormatImporter) -> (artifact id: '3401d88271b8754dca0512302c536caf') in 0.0094804 seconds
+Refreshing native plugins compatible for Editor in 11.52 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.29 ms.
+Asset Pipeline Refresh (id=be883147a2ed0fa4caa064c3648d6785): Total: 0.162 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/01_VertexColor_C_Expressiu.mat using Guid(da432dff525b2544da0cd6d0855e458d) (NativeFormatImporter) -> (artifact id: '59675580946138173e27538b33c2c561') in 0.0056331 seconds
+Refreshing native plugins compatible for Editor in 8.77 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.24 ms.
+Asset Pipeline Refresh (id=d218b4f926b200a4996fa1df0c8337a6): Total: 0.154 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/02_Sand_A_Continu.mat using Guid(2b3ffe407efcc664f9d7963fb9e581af) (NativeFormatImporter) -> (artifact id: '871ffd2f71be8010e6304940c839b363') in 0.0106278 seconds
+Refreshing native plugins compatible for Editor in 9.28 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.23 ms.
+Asset Pipeline Refresh (id=6939103b509862c4f829f1b6b6dcf690): Total: 0.123 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/02_Sand_B_Recuperat.mat using Guid(d263adef0edea29438887ddbf21f22a5) (NativeFormatImporter) -> (artifact id: 'e7e32eb92dfbeca48daf3b80a034c2db') in 0.0111366 seconds
+Refreshing native plugins compatible for Editor in 6.55 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=95ecf620b05a0ce4890dbb09f971cd69): Total: 0.108 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/02_Sand_C_Expressiu.mat using Guid(faab9d9f72a8d06419956decaaa116c6) (NativeFormatImporter) -> (artifact id: 'f74dce2d2d121eae759c76f5d7c28459') in 0.0066088 seconds
+Refreshing native plugins compatible for Editor in 7.49 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=3d1616bbc13e6c64298e9d14c83a49e5): Total: 0.116 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/03_Paving_A_Continu.mat using Guid(01ea07428fdfeca49a6cf689e23b5712) (NativeFormatImporter) -> (artifact id: '7f8f963cbcd81e576bbc9f8f901ad0fc') in 0.0058456 seconds
+Refreshing native plugins compatible for Editor in 9.55 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.23 ms.
+Asset Pipeline Refresh (id=059efebd863bbc34796d8de40519df7e): Total: 0.134 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/03_Paving_B_Recuperat.mat using Guid(2474bbe8c3a5a5b479dd39ddf615f14a) (NativeFormatImporter) -> (artifact id: 'b4fafb21d42e7fe75753e0c7f0e80140') in 0.0088683 seconds
+Refreshing native plugins compatible for Editor in 12.01 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.20 ms.
+Asset Pipeline Refresh (id=8d8433351ccfe054f8ace90123851cda): Total: 0.139 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/03_Paving_C_Expressiu.mat using Guid(28524e47d303d3d4fbf68ed842dd72ff) (NativeFormatImporter) -> (artifact id: '5040da1a9df8829dac874d9f913202ac') in 0.007682 seconds
+Refreshing native plugins compatible for Editor in 10.59 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.20 ms.
+Asset Pipeline Refresh (id=d1e7e86191670db48b30829f9c493510): Total: 0.133 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/04_Grass_A_Continu.mat using Guid(44c1c6cb8ac060c4d83ee1db8074da3d) (NativeFormatImporter) -> (artifact id: 'd882aa128c76b88725766ad8afc5b1c0') in 0.0047807 seconds
+Refreshing native plugins compatible for Editor in 8.72 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.19 ms.
+Asset Pipeline Refresh (id=f8fb04d39444cac478b8659db5ca93ab): Total: 0.123 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/04_Grass_B_Recuperat.mat using Guid(7d7d2a8bfd187aa4cb567955b0879f9b) (NativeFormatImporter) -> (artifact id: '01dc7352a8c0f95cffe67df15757c49f') in 0.0045664 seconds
+Refreshing native plugins compatible for Editor in 7.07 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=7b38854737bc91440be066a75a479925): Total: 0.105 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/04_Grass_C_Expressiu.mat using Guid(2ffee39a990f92049b266cff13cc262c) (NativeFormatImporter) -> (artifact id: '840d58d4f8191c74e86715efc218cd89') in 0.0043755 seconds
+Refreshing native plugins compatible for Editor in 6.59 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=6cd8c2d18f980fe438c562b44e006079): Total: 0.097 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/05_Earth_A_Continu.mat using Guid(b1d8bfe2812aab04a9310e60281e9fad) (NativeFormatImporter) -> (artifact id: '79d87954634ac437a141a9982426f1b3') in 0.0066005 seconds
+Refreshing native plugins compatible for Editor in 7.75 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=48be5dc66935f5544bdc7ff4f1873418): Total: 0.101 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/05_Earth_B_Recuperat.mat using Guid(45ee31f892a863a49a7b4a317e8cf831) (NativeFormatImporter) -> (artifact id: 'db8b324b668c6b18e733c7a16096e34b') in 0.0051061 seconds
+Refreshing native plugins compatible for Editor in 9.68 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.22 ms.
+Asset Pipeline Refresh (id=36bfd7ae3e26acb458718c3789366c2c): Total: 0.129 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/05_Earth_C_Expressiu.mat using Guid(b99a161a6ce1b88448bb120e4f048497) (NativeFormatImporter) -> (artifact id: 'f67c1b280cc3b5c0d5df6283d07755e9') in 0.0043758 seconds
+Refreshing native plugins compatible for Editor in 11.71 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=738926af307b9124991c3f7bfe4bfa81): Total: 0.119 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/06_TintedPaving_A_Continu.mat using Guid(200bbf6df5aa94043ab03d09f936021e) (NativeFormatImporter) -> (artifact id: '824ad9b890571d035db021d4d1dcc74b') in 0.0042795 seconds
+Refreshing native plugins compatible for Editor in 6.46 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=ef93607b3cf06ae4d97ef31c8c810273): Total: 0.106 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/06_TintedPaving_B_Recuperat.mat using Guid(15e754932475110498a329f6281f466b) (NativeFormatImporter) -> (artifact id: '93353038c26a715f67c6a0bfc5134d44') in 0.0098962 seconds
+Refreshing native plugins compatible for Editor in 9.02 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=67cb9b3d2d96405448a7057f39a73d43): Total: 0.121 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/06_TintedPaving_C_Expressiu.mat using Guid(62c1caf2ad4bd084a83e2e10cbecdba2) (NativeFormatImporter) -> (artifact id: '66d59eb5946882932d239bd064783a36') in 0.0129402 seconds
+Refreshing native plugins compatible for Editor in 8.03 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=484aebfdb9cdeb24bb1c566472fd2ea7): Total: 0.119 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/07_GrassEarthSand_A_Continu.mat using Guid(e458bc6fe81a9bb49b0f3eb8561b9893) (NativeFormatImporter) -> (artifact id: 'a6b1e87aa76351a4c52d87213eb5e4f0') in 0.0042134 seconds
+Refreshing native plugins compatible for Editor in 8.47 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.21 ms.
+Asset Pipeline Refresh (id=29a6f35e6fffc5b47b194ce40af98198): Total: 0.102 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/07_GrassEarthSand_B_Recuperat.mat using Guid(369766ebdb10a80499c3a315a4c24b87) (NativeFormatImporter) -> (artifact id: '41f7bd4bb43955cb10bd513e50c4d15a') in 0.0069407 seconds
+Refreshing native plugins compatible for Editor in 10.10 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.20 ms.
+Asset Pipeline Refresh (id=1da11420d6934de4588e50f5cdac0027): Total: 0.157 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/07_GrassEarthSand_C_Expressiu.mat using Guid(40aeca8c63de7a047abb6915ac6a4839) (NativeFormatImporter) -> (artifact id: '477c3b1abd61b4c0c8e5453203607c13') in 0.0066157 seconds
+Refreshing native plugins compatible for Editor in 11.20 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.23 ms.
+Asset Pipeline Refresh (id=603db3a464183084ba802e2197dfa791): Total: 0.122 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/08_TintedHeightMix_A_Continu.mat using Guid(4331d3425a8a0a549916a798bd3ef05a) (NativeFormatImporter) -> (artifact id: 'a432b7dd55be9f18f5155a972131d702') in 0.0155834 seconds
+Refreshing native plugins compatible for Editor in 9.49 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.24 ms.
+Asset Pipeline Refresh (id=7e6c9d5d12758094da5f26e5e25fdff2): Total: 0.154 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/08_TintedHeightMix_B_Recuperat.mat using Guid(48afe2d96574d254bb1ef78a5fc36d9f) (NativeFormatImporter) -> (artifact id: '981db49dece0bd8f3dc19c88016f7fa4') in 0.0061556 seconds
+Refreshing native plugins compatible for Editor in 11.66 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.22 ms.
+Asset Pipeline Refresh (id=2ec79cefadae82d4ca95406b54818dac): Total: 0.150 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/08_TintedHeightMix_C_Expressiu.mat using Guid(3bda266ce8859f34bb761c2b42092272) (NativeFormatImporter) -> (artifact id: '43d35f9b698d2bd2a660a2a48ec32d51') in 0.008594 seconds
+Refreshing native plugins compatible for Editor in 6.26 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=d7a73a5408304b046b1bbaa70805cee6): Total: 0.106 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/09_BuriedPaving_A_Continu.mat using Guid(6e8979a3aede7d44c8b689dfbdbef61f) (NativeFormatImporter) -> (artifact id: '2f318fcb820e6a69b2876880f8c08f05') in 0.009926 seconds
+Refreshing native plugins compatible for Editor in 6.55 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=bb355a5231faba542ad476304712cdd7): Total: 0.106 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/09_BuriedPaving_B_Recuperat.mat using Guid(ea1df2cfbf941ec4b8d55b306bc7afa3) (NativeFormatImporter) -> (artifact id: '352d465c9b9b247818ec117c307210b8') in 0.0088113 seconds
+Refreshing native plugins compatible for Editor in 6.95 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=8f5e07e2a61cf6642b0d294d2eb90e1d): Total: 0.129 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/09_BuriedPaving_C_Expressiu.mat using Guid(ad077ec8d387a624cb09370c62d1af60) (NativeFormatImporter) -> (artifact id: '084e311fe4b6c34e20b63a740e8c3604') in 0.0118945 seconds
+Refreshing native plugins compatible for Editor in 7.49 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.18 ms.
+Asset Pipeline Refresh (id=53dca88cbdbbde24aa77a43e22c85a34): Total: 0.148 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/10_PieceVariants_A_Continu.mat using Guid(a236ba24585fc894d86e66a3c0e2b22d) (NativeFormatImporter) -> (artifact id: '18911abbbb448079d9ea9e9040912ac9') in 0.0126829 seconds
+Refreshing native plugins compatible for Editor in 8.14 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=251c468b149c6a542bff63f5ab508504): Total: 0.145 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/10_PieceVariants_B_Recuperat.mat using Guid(1918eeef8de29574098fc58d2b51b6b7) (NativeFormatImporter) -> (artifact id: 'b8cba7e3109014e16a2cfa821e71a6dc') in 0.0109642 seconds
+Refreshing native plugins compatible for Editor in 7.41 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=78033b724ee284d4698c1a1dc1b1e086): Total: 0.114 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/10_PieceVariants_C_Expressiu.mat using Guid(931be9bb443e02943b4274a8ae95aa8a) (NativeFormatImporter) -> (artifact id: '17f4c6b2d2acf4d8b3bdab8fede2b80c') in 0.0135883 seconds
+Refreshing native plugins compatible for Editor in 9.26 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=7de8b2d8d9ae310468182ba0f9853c55): Total: 0.116 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/11_OverlappingPieces_A_Continu.mat using Guid(2bebb3aabe89b084a8be5d63d70ed086) (NativeFormatImporter) -> (artifact id: 'c78c448f3c31b47c97995d6a83367ea4') in 0.0043739 seconds
+Refreshing native plugins compatible for Editor in 6.99 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=f6beb65086f46f6488e3871922eb2d8e): Total: 0.106 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/11_OverlappingPieces_B_Recuperat.mat using Guid(fac9ca52d6a09bd4c974a660ca468c56) (NativeFormatImporter) -> (artifact id: 'd0f966ed94403c51c59957ba824dcab1') in 0.0215788 seconds
+Refreshing native plugins compatible for Editor in 7.54 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=86890f9e567723a42b9dc4d05ffbb191): Total: 0.123 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/11_OverlappingPieces_C_Expressiu.mat using Guid(08c61211fc0fe844d9d4b8bb111c1cbd) (NativeFormatImporter) -> (artifact id: 'f10c24a65a4cdb8e3560ba2d897d55e1') in 0.0125208 seconds
+Refreshing native plugins compatible for Editor in 7.12 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=5b23997bc1f9e4649ac7b60827ce8ebe): Total: 0.112 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/12_RuinedCourtyard_A_Continu.mat using Guid(accc6c8f5b1f73d449d04acfddd50bed) (NativeFormatImporter) -> (artifact id: '514a5d7c56a5c2f638c4f14c252f743e') in 0.0047389 seconds
+Refreshing native plugins compatible for Editor in 9.97 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=59993c580cd14794db177abcdbd8a254): Total: 0.115 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/12_RuinedCourtyard_B_Recuperat.mat using Guid(0a9d46c2cd6bdcc49a7edc46aca7b1f2) (NativeFormatImporter) -> (artifact id: '2a5cd7862f93737bfeb21bda2c8f575a') in 0.0070668 seconds
+Refreshing native plugins compatible for Editor in 10.39 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.20 ms.
+Asset Pipeline Refresh (id=6c7e43c9a2950b84f92862d3d9dc7599): Total: 0.133 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/12_RuinedCourtyard_C_Expressiu.mat using Guid(6263c889917ea3a40838cfb4fad2270d) (NativeFormatImporter) -> (artifact id: 'f35318a3ee0c7b561e08ff7c1d695ac8') in 0.0049211 seconds
+Refreshing native plugins compatible for Editor in 7.94 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.23 ms.
+Asset Pipeline Refresh (id=6793125e985fb7545ac4923e8178cabc): Total: 0.142 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/13_OldWarmMosaic_A_Continu.mat using Guid(e089ec89225d4f549bcd1ae777d943e2) (NativeFormatImporter) -> (artifact id: 'a4db42f26d95891efe49255b7fd965ea') in 0.0044532 seconds
+Refreshing native plugins compatible for Editor in 7.86 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=5cb82e9b7183c8e4a8d303e3a9233a35): Total: 0.116 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/13_OldWarmMosaic_B_Recuperat.mat using Guid(1076e72b8841ada4a91466a1c66ec2f7) (NativeFormatImporter) -> (artifact id: 'e9406ba5a33f574afcb3911905a460c5') in 0.0114768 seconds
+Refreshing native plugins compatible for Editor in 6.70 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=ad6f673d7e352c14eb4cebed6feab60a): Total: 0.111 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/13_OldWarmMosaic_C_Expressiu.mat using Guid(2c86884c0f7548145a8726a85ce77b14) (NativeFormatImporter) -> (artifact id: 'e73e9ac60072cceb24b8bb717b2c1a79') in 0.0076509 seconds
+Refreshing native plugins compatible for Editor in 8.29 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=a4ce7a66bd2e52b469ee4e3d6195b2ad): Total: 0.115 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/14_StormPaving_A_Continu.mat using Guid(1246193b81924bc408765de8af9d8b2d) (NativeFormatImporter) -> (artifact id: '1a9af18e4e08e5b2ffe55beaeaf4633f') in 0.0126806 seconds
+Refreshing native plugins compatible for Editor in 9.61 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=3d309f941c10c1548bfcb23b13afdbae): Total: 0.136 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/14_StormPaving_B_Recuperat.mat using Guid(ec4b069ce1ecea64a9634f89a415cd06) (NativeFormatImporter) -> (artifact id: 'cfa02ce6b3bef919cf27f296aaef3d96') in 0.0050693 seconds
+Refreshing native plugins compatible for Editor in 18.20 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.20 ms.
+Asset Pipeline Refresh (id=5188eb9f5e568d04788c61e26e6f8f1a): Total: 0.131 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/14_StormPaving_C_Expressiu.mat using Guid(0e19deb85fd280549bdb4cd04e775620) (NativeFormatImporter) -> (artifact id: '36be1f96b31d6f1e297b92dea511abcd') in 0.004572 seconds
+Refreshing native plugins compatible for Editor in 8.89 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.22 ms.
+Asset Pipeline Refresh (id=31fadff9e4d3af542805cd37a282fda3): Total: 0.123 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/15_OvergrownRuins_A_Continu.mat using Guid(5a1d544de41c2c543ab144cbb1c33f79) (NativeFormatImporter) -> (artifact id: '19613eb87dde12d9ec7ffacffb999de2') in 0.0044138 seconds
+Refreshing native plugins compatible for Editor in 6.12 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.12 ms.
+Asset Pipeline Refresh (id=a56e8b567e409ce418d62dd882b7258e): Total: 0.110 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/15_OvergrownRuins_B_Recuperat.mat using Guid(c39a544acd5aaa4458679e9efaf78b06) (NativeFormatImporter) -> (artifact id: '33ed3d24052bb8c8d73873f9613109f1') in 0.0052766 seconds
+Refreshing native plugins compatible for Editor in 6.99 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=352093483ef3b95479563d369930df49): Total: 0.126 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/15_OvergrownRuins_C_Expressiu.mat using Guid(f82390c6f597102498ba432fac40a1db) (NativeFormatImporter) -> (artifact id: 'd7b4eed0de737215ec21e38151b0376f') in 0.0170633 seconds
+Refreshing native plugins compatible for Editor in 7.04 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=b0c2ac64256c03146927254a5dede000): Total: 0.112 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/16_DesertRemains_A_Continu.mat using Guid(00d86037679f2e543b3d7fd1e756bc1e) (NativeFormatImporter) -> (artifact id: '6b7746b2d336f7c43a27d9b468a9b1d7') in 0.004517 seconds
+Refreshing native plugins compatible for Editor in 6.27 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=e1c72b4cb8ffc2743952d87e71646fcf): Total: 0.106 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/16_DesertRemains_B_Recuperat.mat using Guid(0c60bc39719d68942820f7dbae489edb) (NativeFormatImporter) -> (artifact id: 'b01142b65913f073513c3acba586f859') in 0.0117585 seconds
+Refreshing native plugins compatible for Editor in 7.89 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.18 ms.
+Asset Pipeline Refresh (id=f022a610dda69c64cbbb6041be43efb7): Total: 0.110 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/16_DesertRemains_C_Expressiu.mat using Guid(94974ab6b661fc445b16bfa43b6d3b7c) (NativeFormatImporter) -> (artifact id: '6a0ddf3b5af0581df9d5a7e9cf223e85') in 0.0042607 seconds
+Refreshing native plugins compatible for Editor in 8.56 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=0360ed5c2d9a03f4baee90e323ea0bac): Total: 0.113 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/17_MossOchreChalk_A_Continu.mat using Guid(add316189442f7b4ab60af6d484d7871) (NativeFormatImporter) -> (artifact id: '14410d389771091ddc42a67a4d9b6322') in 0.0051788 seconds
+Refreshing native plugins compatible for Editor in 8.45 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=9ca05a763c3b5e9428cc39c580cca7ad): Total: 0.120 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/17_MossOchreChalk_B_Recuperat.mat using Guid(e1f37c72b0e1c5b4a8b76d850a3be2dd) (NativeFormatImporter) -> (artifact id: 'b919c85b836dfa62fa4ad91aa2318702') in 0.0048324 seconds
+Refreshing native plugins compatible for Editor in 7.96 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=238c11f26e90cc84d87765de34b85612): Total: 0.127 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/17_MossOchreChalk_C_Expressiu.mat using Guid(cf7dd04ca0676294c91337892f91472e) (NativeFormatImporter) -> (artifact id: '194eeed735fbe1b31b742a7034471233') in 0.0146312 seconds
+Refreshing native plugins compatible for Editor in 7.02 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=a25400fd1c8377b448a9bd524d4a1d57): Total: 0.136 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/18_TwilightSlate_A_Continu.mat using Guid(2b3b994de858b3945ba1f28188a0d360) (NativeFormatImporter) -> (artifact id: '9ce497f97b0141467f3c0a92b7e21c16') in 0.0144305 seconds
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Refreshing native plugins compatible for Editor in 7.79 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=e46fa6d33fe56f84fbc9da425c640dc9): Total: 0.118 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/18_TwilightSlate_B_Recuperat.mat using Guid(52b0b5a18ff704c47bad329aeb681513) (NativeFormatImporter) -> (artifact id: 'cf97b9eedb10038317504de53d5c66e7') in 0.005708 seconds
+Refreshing native plugins compatible for Editor in 8.75 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.18 ms.
+Asset Pipeline Refresh (id=bdb2407e2c1028e4b8fbfecc34fd8ba5): Total: 0.141 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/18_TwilightSlate_C_Expressiu.mat using Guid(7def10de889e5544e9eb54a0e04e420a) (NativeFormatImporter) -> (artifact id: '380eeacc4d417469af873a210a7209f1') in 0.006744 seconds
+Refreshing native plugins compatible for Editor in 6.73 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=999a053929a237f41a4a15d71b2e8325): Total: 0.105 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/19_AutumnTrail_A_Continu.mat using Guid(6664a840503eb994c9cef9319f15bbc0) (NativeFormatImporter) -> (artifact id: '90c06d418512cead5f999f1cd92b7ece') in 0.0048169 seconds
+Refreshing native plugins compatible for Editor in 6.97 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=460b683d2a73ed44c8f0db713d7fe764): Total: 0.112 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/19_AutumnTrail_B_Recuperat.mat using Guid(a5fd1d1aeb178a64790ad060d0661ac0) (NativeFormatImporter) -> (artifact id: 'bfc7e2a7c9e62812a63d098ab3131401') in 0.0046124 seconds
+Refreshing native plugins compatible for Editor in 6.82 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=06c776b1b97646f4f9fa2da0f37105ed): Total: 0.105 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/19_AutumnTrail_C_Expressiu.mat using Guid(7f9b15231b539b140b27b8067e74db7b) (NativeFormatImporter) -> (artifact id: '19b36c520f32c343432b2bfd3833bd7a') in 0.0040252 seconds
+Refreshing native plugins compatible for Editor in 6.16 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=425d62c8c784f8f4ca50fdd0f262304a): Total: 0.092 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/20_ThreeColourBands_A_Continu.mat using Guid(cb1ee16e801973b4bbac3deead0a3f29) (NativeFormatImporter) -> (artifact id: '75a1a6eedbc2bf9aacdb20447b796c8f') in 0.0044194 seconds
+Refreshing native plugins compatible for Editor in 6.97 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=7aed99ec7f091d44fbe51157b7ffa579): Total: 0.106 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/20_ThreeColourBands_B_Recuperat.mat using Guid(5d5422b5511bbc648b35be331c8ed284) (NativeFormatImporter) -> (artifact id: '2a347ca004c2156331eabfc70367ae31') in 0.0133424 seconds
+Refreshing native plugins compatible for Editor in 7.68 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=7c0e8f2dd2bb7694684708767e0cce64): Total: 0.126 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/20_ThreeColourBands_C_Expressiu.mat using Guid(79ea1199447b1614b8cb783f7826efca) (NativeFormatImporter) -> (artifact id: 'bfb10a0feef5fa3e8293f99d34547bf8') in 0.004477 seconds
+Refreshing native plugins compatible for Editor in 7.63 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=6f42f17284c42f54d806c7bae4abd82a): Total: 0.128 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/21_IndustrialDeck_A_Continu.mat using Guid(b0d5497d65577d94abf15a1249004b3c) (NativeFormatImporter) -> (artifact id: '5c0f5eeb59d83d0a984193bc397a1341') in 0.0047138 seconds
+Refreshing native plugins compatible for Editor in 8.03 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=d3822b7882df47e409bfe3de886f73cd): Total: 0.123 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/21_IndustrialDeck_B_Recuperat.mat using Guid(f7c3c3041d7d9df49a282f4e6596f89a) (NativeFormatImporter) -> (artifact id: 'b9b66f8decee31a05e809226b0eaeeb8') in 0.0096233 seconds
+Refreshing native plugins compatible for Editor in 6.42 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.12 ms.
+Asset Pipeline Refresh (id=81582c816a1707b41b1a18a36ff1afbd): Total: 0.113 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/21_IndustrialDeck_C_Expressiu.mat using Guid(e4b6d6fd900e8d44caf797431c8850e4) (NativeFormatImporter) -> (artifact id: '06f269df8db8cdee41e7859761cc6ec5') in 0.0071439 seconds
+Refreshing native plugins compatible for Editor in 5.87 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=30787e75b6e0a0a4f91b3324d873ffac): Total: 0.098 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/22_CyanCircuitDeck_A_Continu.mat using Guid(cf50c45fd19b11943a4e5f0c61c42f27) (NativeFormatImporter) -> (artifact id: '0461e92b1df87d452bf54886275b25b4') in 0.0052193 seconds
+Refreshing native plugins compatible for Editor in 8.09 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=4f37639c500f29346a704b364fba3b7a): Total: 0.104 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/22_CyanCircuitDeck_B_Recuperat.mat using Guid(519aeb3068756f84eb0d4841917fef0a) (NativeFormatImporter) -> (artifact id: '8e629a6ea7b9c9cb5fec33044f17e5fc') in 0.0042519 seconds
+Refreshing native plugins compatible for Editor in 7.51 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=611e80c3e2d18914fb724fc3f6e08f9c): Total: 0.109 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/22_CyanCircuitDeck_C_Expressiu.mat using Guid(d80dab76b55140c4ba31b4d63ef465e3) (NativeFormatImporter) -> (artifact id: 'f5d039d8d7348069514b2d9dc8b211f8') in 0.0040455 seconds
+Refreshing native plugins compatible for Editor in 7.15 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=a96d447006d75594398042469cae4eb1): Total: 0.098 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/23_AlienTemple_A_Continu.mat using Guid(dafd7ac994493774cbabe2d75df75ced) (NativeFormatImporter) -> (artifact id: '7c9bcd1a452bd7bd712f8130db7c934c') in 0.0077692 seconds
+Refreshing native plugins compatible for Editor in 6.51 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.12 ms.
+Asset Pipeline Refresh (id=facd196d630c1584ea29e7380a83b33d): Total: 0.108 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/23_AlienTemple_B_Recuperat.mat using Guid(b0046fc21052a5649b4a2cfc2ca6dfc8) (NativeFormatImporter) -> (artifact id: 'e363e64e55782bc9a2d1c4d953d349a5') in 0.004153 seconds
+Refreshing native plugins compatible for Editor in 9.16 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.21 ms.
+Asset Pipeline Refresh (id=b9b0d46b8fd788749b962d474e2c77c3): Total: 0.120 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/23_AlienTemple_C_Expressiu.mat using Guid(ca8dcc609a8b155439d81946b833a538) (NativeFormatImporter) -> (artifact id: 'd9a27d898f170a72a3ea51ad1c71f436') in 0.0088961 seconds
+Refreshing native plugins compatible for Editor in 7.64 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=20b615ddfbda58941880dbbe77aa82e5): Total: 0.117 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/24_WhiteStation_A_Continu.mat using Guid(70ad3048b1ffaac47bd5e3adc994f94a) (NativeFormatImporter) -> (artifact id: 'd5c6eeec8747a47a3b12b353c5429ca0') in 0.0044435 seconds
+Refreshing native plugins compatible for Editor in 10.01 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=7a4f957a92293e146b684545b4ee7680): Total: 0.133 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/24_WhiteStation_B_Recuperat.mat using Guid(644941788972fec4e88a1594a1060921) (NativeFormatImporter) -> (artifact id: 'a6fb656a1dd1892dc8c186c1b8ec171c') in 0.0132183 seconds
+Refreshing native plugins compatible for Editor in 13.19 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.24 ms.
+Asset Pipeline Refresh (id=05c8a119b190d4745996e485e6f7b739): Total: 0.150 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/24_WhiteStation_C_Expressiu.mat using Guid(0d8b2b9fd2e982847917b8f3c3d7d315) (NativeFormatImporter) -> (artifact id: 'dc566f11acdf4eba7dd9e140999685e5') in 0.0086945 seconds
+Refreshing native plugins compatible for Editor in 10.06 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=5fb37193d061bf84084fdba6ae0fc777): Total: 0.141 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/25_ReactorGrid_A_Continu.mat using Guid(6978a0116c392814d8b3f0a0f4724341) (NativeFormatImporter) -> (artifact id: '09446266b9eb19f306a340ee0e0c308c') in 0.0116453 seconds
+Refreshing native plugins compatible for Editor in 9.94 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.23 ms.
+Asset Pipeline Refresh (id=972e948fb7160a442bef7a7fc2b2700a): Total: 0.144 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/25_ReactorGrid_B_Recuperat.mat using Guid(8c15de2f348e04141b365ba3f1010ed9) (NativeFormatImporter) -> (artifact id: '456edc1e1c002c3b704b5014b4314ae9') in 0.0043992 seconds
+Refreshing native plugins compatible for Editor in 7.24 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=e76e6a828522e474ea84e4e54a7f8323): Total: 0.113 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/25_ReactorGrid_C_Expressiu.mat using Guid(f0d19e56fe563454fb2516d101e4b6ec) (NativeFormatImporter) -> (artifact id: 'be82bb803011e2c66518d5938e42064b') in 0.0038736 seconds
+Refreshing native plugins compatible for Editor in 6.33 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.12 ms.
+Asset Pipeline Refresh (id=1c8443d461d5fb643b45116388d9b6cf): Total: 0.096 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/26_HyperspaceRails_A_Continu.mat using Guid(c864635fd5b846449959d2f7d50818e4) (NativeFormatImporter) -> (artifact id: 'd3862706d1934924bc1750d62a816101') in 0.0041661 seconds
+Refreshing native plugins compatible for Editor in 7.77 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=1cdb5e48e2f43d14080a6f0cc1882a68): Total: 0.104 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/26_HyperspaceRails_B_Recuperat.mat using Guid(52932dd9663e4cd4b9f3efb030cea2f7) (NativeFormatImporter) -> (artifact id: 'eb0af5e508086c18def8e9a4969fd88f') in 0.0086636 seconds
+Refreshing native plugins compatible for Editor in 7.58 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.24 ms.
+Asset Pipeline Refresh (id=1fbd43c7e00b47e4e9a7ad84958f3ed7): Total: 0.109 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/26_HyperspaceRails_C_Expressiu.mat using Guid(8092b134a13de6e429cbeb8ae4139c1d) (NativeFormatImporter) -> (artifact id: '65f4c324243e8941bac16dce5ca302d6') in 0.0057353 seconds
+Refreshing native plugins compatible for Editor in 14.15 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.21 ms.
+Asset Pipeline Refresh (id=080b01342c0b89846bb56f4fa946a442): Total: 0.121 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing ProjectSettings/EditorBuildSettings.asset using Guid(0000000000000000b000000000000000) (LibraryAssetImporter) -> (artifact id: '11f8fdea987aecd2948effa50908fb0c') in 0.0056382 seconds
+Refreshing native plugins compatible for Editor in 8.69 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=af9e4900e9a3ed2478a072b7855409cc): Total: 0.073 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/RunnerSurfaces/Families/RunnerPathFamilies.unity using Guid(4e95b3e841453e44987a24d81eb65a2f) (DefaultImporter) -> (artifact id: '84a2553b6e5babb790d259f2797a8b51') in 0.0016429 seconds
+Refreshing native plugins compatible for Editor in 7.62 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.21 ms.
+Asset Pipeline Refresh (id=b18d524eff579254995acbf5e16a717e): Total: 0.109 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Batchmode quit successfully invoked - shutting down!
+Killing ADB server in 0,1000627 seconds.
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-VISYON-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-VISYON channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+00:12:08.580 |V| RiderPlugin                    | :1                             | AppDomain.CurrentDomain.DomainUnload lifetimeDefinition.Terminate
+Exiting batchmode successfully now!
+Exiting without the bug reporter. Application will terminate with return code 0

@@ -1,0 +1,51 @@
+PASS
+PASS: Editor is configured for mobile controls
+PASS: Keyboard remains available alongside touch controls in the editor
+PASS: A real published Dance song is available
+PASS: Published song selected
+PASS: Actual mobile controls and controller exist
+flow=Gameplay; activeSelf=True; activeHierarchy=True; controllerEnabled=True; finished=False
+JoystickBackground: enabled=True, sprite=, alpha=0,85, culled=False
+ClassicalTouchArt: enabled=True, sprite=, alpha=0,00, culled=False
+JoystickHandle: enabled=True, sprite=, alpha=0,85, culled=False
+ClassicalTouchArt: enabled=True, sprite=, alpha=0,00, culled=False
+JumpButton: enabled=True, sprite=, alpha=0,85, culled=False
+ClassicalTouchArt: enabled=True, sprite=, alpha=0,00, culled=False
+CrouchButton: enabled=True, sprite=, alpha=0,85, culled=False
+ClassicalTouchArt: enabled=True, sprite=, alpha=0,00, culled=False
+PASS: Controls are shown in the real runner
+PASS: Touch artwork initialized by its real lifecycle
+PASS: JumpButton is visible to the actual UI pointer raycast (top hit Label)
+PASS: CrouchButton is visible to the actual UI pointer raycast (top hit Label)
+PASS: JoystickBackground is visible to the actual UI pointer raycast (top hit JoystickHandle)
+PASS: Jump press reaches touch input
+PASS: Crouch hold reaches touch input
+PASS: Crouch releases
+PASS: Joystick drag reaches lateral input
+PASS: Joystick releases
+PASS: Regression scenario has a multi-tick countdown
+PASS: Countdown still pending before pause/restart 1
+PASS: Restart unpauses attempt 1
+PASS: Restart resets the countdown on attempt 1
+PASS: Cancelled playback deadline cannot start music on attempt 1
+PASS: No old TEMPO overlaps replacement countdown 1
+PASS: Early repeated restart is accepted
+PASS: Countdown still pending before pause/restart 2
+PASS: Restart unpauses attempt 2
+PASS: Restart resets the countdown on attempt 2
+PASS: Cancelled playback deadline cannot start music on attempt 2
+PASS: No old TEMPO overlaps replacement countdown 2
+PASS: Early repeated restart is accepted
+PASS: Countdown still pending before pause/restart 3
+PASS: Restart unpauses attempt 3
+PASS: Restart resets the countdown on attempt 3
+PASS: Cancelled playback deadline cannot start music on attempt 3
+PASS: No old TEMPO overlaps replacement countdown 3
+PASS: Latest countdown completes and releases restart state
+PASS: Only the final countdown announces TEMPO
+PASS: Finish notifications open the real runner summary
+PASS: Mobile controls hide at song finish
+PASS: Summary restart restores mobile controls
+PASS: Summary restart closes results and unpauses
+PASS: Pause restart also works during the post-summary countdown
+PASS: Post-summary restart completes normally

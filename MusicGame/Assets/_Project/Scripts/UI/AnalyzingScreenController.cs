@@ -81,6 +81,52 @@ public class AnalyzingScreenController : MonoBehaviour
 
     private AnalyzingScreenView _view;
     private AnalysisPresentation _presentation;
+    private bool _pendingNextSelection;
+    private bool _handoffDone;
+    private Transform _raisedHud;
+    private int _hudSibling;
+    private CanvasGroup _hudGroup;
+    private float _hudOriginalAlpha;
+
+    /// <summary>Reveal the actual HUD over the cover before starting the music clock/countdown.</summary>
+    public IEnumerator PrepareGameplayHandoff()
+    {
+        if (_root == null || !_root.gameObject.activeInHierarchy || _presentation == null || _handoffDone) yield break;
+        var hud = FindFirstObjectByType<LiveHudView>();
+        if (hud == null || !DetectedStyleLabel.HasDestination) yield break;
+        _raisedHud = hud.transform; _hudSibling = _raisedHud.GetSiblingIndex();
+        _raisedHud.SetAsLastSibling();
+        _hudGroup = hud.GetComponent<CanvasGroup>();
+        if (_hudGroup == null) _hudGroup = hud.gameObject.AddComponent<CanvasGroup>();
+        _hudOriginalAlpha = _hudGroup.alpha; _hudGroup.alpha = 0;
+        Canvas.ForceUpdateCanvases(); DetectedStyleLabel.Dock();
+        float started = Time.unscaledTime;
+        while (_root.gameObject.activeInHierarchy && (Time.unscaledTime - started < 1f || !DetectedStyleLabel.IsDocked))
+        {
+            float elapsed = Time.unscaledTime - started;
+            if (elapsed > 1.8f) break; // Missing/destroyed HUD cannot block a ready run.
+            _hudGroup.alpha = _hudOriginalAlpha * Mathf.SmoothStep(0, 1, Mathf.Clamp01(elapsed / .25f));
+            _presentation.SetHandoffProgress(elapsed);
+            yield return null;
+        }
+        if (_hudGroup != null) _hudGroup.alpha = _hudOriginalAlpha;
+        _handoffDone = true;
+    }
+    private void RestoreHudOrder()
+    {
+        if (_raisedHud != null) _raisedHud.SetSiblingIndex(_hudSibling);
+        if (_hudGroup != null) _hudGroup.alpha = _hudOriginalAlpha;
+        _raisedHud = null; _hudGroup = null;
+    }
+
+    /// <summary>Same preparation screen while the next catalog identity is being selected.</summary>
+    public void ShowPendingNextSong()
+    {
+        Show(); _pendingNextSelection = true;
+        if (_presentation != null) _presentation.BeginPendingSelection();
+        _stageTipKey = "Preparing.Preparing";
+        if (_tipText != null) Loc.Set(_tipText, _stageTipKey);
+    }
 
     private void Awake()
     {
@@ -100,6 +146,7 @@ public class AnalyzingScreenController : MonoBehaviour
         _onFlowStateChanged = e =>
         {
             if (e.Current == GameFlowState.SongAnalysis) Show();
+            else if (_pendingNextSelection && e.Current != GameFlowState.Fight) Hide();
             // Only the FAILURE path (bounced back to Song Selection — see
             // SongSelectionController.OnPlayClicked / SongAnalysisController.OnAnalysisFailed) hides
             // here. The success path (→ Gameplay) deliberately does NOT hide on this transition —
@@ -110,7 +157,7 @@ public class AnalyzingScreenController : MonoBehaviour
             else if (e.Previous == GameFlowState.SongAnalysis && e.Current != GameFlowState.Gameplay) Hide();
         };
         _onProgress = e => SetFill(e.Progress);
-        _onStyleDetected = e => ShowStyleDetected(e.GameStyle);
+        _onStyleDetected = e => { if (!_pendingNextSelection && _root != null && _root.gameObject.activeSelf) ShowStyleDetected(e.GameStyle); };
         _onGameStarted = _ => Hide(true);
         _onPreparation = e =>
         {
@@ -133,6 +180,7 @@ public class AnalyzingScreenController : MonoBehaviour
 
     private void OnDisable()
     {
+        RestoreHudOrder();
         EventBus.Unsubscribe(_onFlowStateChanged);
         EventBus.Unsubscribe(_onProgress);
         EventBus.Unsubscribe(_onStyleDetected);
@@ -194,6 +242,8 @@ public class AnalyzingScreenController : MonoBehaviour
 
     private void Show()
     {
+        RestoreHudOrder(); _handoffDone = false;
+        _pendingNextSelection = false;
         _stageTipKey = null;
         _shownAt = Time.unscaledTime;
         _root.gameObject.SetActive(true);
@@ -213,7 +263,10 @@ public class AnalyzingScreenController : MonoBehaviour
 
     private void Hide(bool dockStyle = false)
     {
-        if (dockStyle) DetectedStyleLabel.Dock(); else DetectedStyleLabel.Cancel();
+        _pendingNextSelection = false;
+        if (dockStyle) { if (!_handoffDone) DetectedStyleLabel.Dock(); }
+        else DetectedStyleLabel.Cancel();
+        RestoreHudOrder();
         if (_root != null) _root.gameObject.SetActive(false);
         StopRoutines();
     }
@@ -238,7 +291,7 @@ public class AnalyzingScreenController : MonoBehaviour
         float revealAt = _shownAt + QuickLoadSweepSeconds * .5f;
         while (Time.unscaledTime < revealAt) yield return null;
         if (_presentation != null) _presentation.Reveal(style);
-        if (_tipText != null) _tipText.text = "";
+        if (_tipText != null) Loc.Set(_tipText, "Preparing.Preparing");
         yield return AfterStyleFlash();
     }
 
@@ -267,7 +320,7 @@ public class AnalyzingScreenController : MonoBehaviour
         while (true)
         {
             if(_stageTipKey!=null)Loc.Set(_tipText,_stageTipKey,_downloadSize);
-            else Loc.Set(_tipText, NextTipKey());
+            else Loc.Set(_tipText, "Preparing.Preparing");
             yield return new WaitForSeconds(Random.Range(minTipInterval, maxTipInterval));
         }
     }

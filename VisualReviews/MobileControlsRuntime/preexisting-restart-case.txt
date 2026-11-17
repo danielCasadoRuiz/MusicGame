@@ -1,0 +1,31 @@
+FAIL
+PASS: Editor is configured for mobile controls
+PASS: A real published Dance song is available
+PASS: Published song selected
+PASS: Actual mobile controls and controller exist
+flow=Gameplay; activeSelf=True; activeHierarchy=True; controllerEnabled=True; finished=False
+JoystickBackground: enabled=True, sprite=, alpha=0,85, culled=False
+ClassicalTouchArt: enabled=True, sprite=, alpha=0,00, culled=False
+JoystickHandle: enabled=True, sprite=, alpha=0,85, culled=False
+ClassicalTouchArt: enabled=True, sprite=, alpha=0,00, culled=False
+JumpButton: enabled=True, sprite=, alpha=0,85, culled=False
+ClassicalTouchArt: enabled=True, sprite=, alpha=0,00, culled=False
+CrouchButton: enabled=True, sprite=, alpha=0,85, culled=False
+ClassicalTouchArt: enabled=True, sprite=, alpha=0,00, culled=False
+PASS: Controls are shown in the real runner
+PASS: Touch artwork initialized by its real lifecycle
+PASS: JumpButton is visible to the actual UI pointer raycast (top hit Label)
+PASS: CrouchButton is visible to the actual UI pointer raycast (top hit Label)
+PASS: JoystickBackground is visible to the actual UI pointer raycast (top hit JoystickHandle)
+PASS: Jump press reaches touch input
+PASS: Crouch hold reaches touch input
+PASS: Crouch releases
+PASS: Joystick drag reaches lateral input
+PASS: Joystick releases
+PASS: Controls hide after the song finishes
+FAIL: Controls return on a same-scene restart notification
+
+System.Exception: Controls return on a same-scene restart notification
+  at MobileControlsPlayCheckRunner.Check (System.Boolean value, System.String message) [0x0002a] in C:\Users\VISYON\Documents\MusicGame\MusicGame\Assets\_Project\Scripts\Editor\DevTools\MobileControlsPlayCheck.cs:69 
+  at MobileControlsPlayCheckRunner+<Run>d__5.MoveNext () [0x007a1] in C:\Users\VISYON\Documents\MusicGame\MusicGame\Assets\_Project\Scripts\Editor\DevTools\MobileControlsPlayCheck.cs:120 
+  at MobileControlsPlayCheckRunner+<Start>d__2.MoveNext () [0x00052] in C:\Users\VISYON\Documents\MusicGame\MusicGame\Assets\_Project\Scripts\Editor\DevTools\MobileControlsPlayCheck.cs:62 

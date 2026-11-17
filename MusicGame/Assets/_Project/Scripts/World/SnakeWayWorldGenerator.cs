@@ -149,10 +149,10 @@ public class SnakeWayWorldGenerator : IMusicWorldGenerator
         // Flat (no turn, constant height, full width) matches the ground mesh's own end-of-song
         // visual flattening (MusicWorldManager.EndingFadeMultiplier) — nothing musical should still
         // be steering/bumping the path once the song has actually finished.
-        float farewellDistance = Mathf.Max(0f, config.core.farewellSeconds) * _speed;
+        float farewellDistance = config.core.FarewellDuration * _speed;
         if (farewellDistance > 0f)
         {
-            int   tailCPs    = Mathf.Max(1, Mathf.CeilToInt((config.core.farewellSeconds + _cpInterval) / _cpInterval));
+            int   tailCPs    = Mathf.Max(1, Mathf.CeilToInt((config.core.FarewellDuration + _cpInterval) / _cpInterval));
             float stepTail   = (farewellDistance + _cpInterval * _speed) / tailCPs; // +1 extra interval of margin
             float tailHeight = cps.Count > 0 ? cps[cps.Count - 1].y : _baseY;
 

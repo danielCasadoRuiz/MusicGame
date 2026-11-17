@@ -1,0 +1,8 @@
+Restart regression — 2026-11-17
+
+PASS in Unity Play Mode with a real catalog Dance song and the real Runner UI.
+The probe clicks the pause Restart button repeatedly during the initial and replacement countdowns, crosses each cancelled playback deadline, and verifies music has not started early. Only the final countdown announces TEMPO. It then delivers SongFinishedEvent/GameEndedEvent to the real summary subscribers and clicks the summary Restart button: mobile controls return, results close, pause clears. Another pause/restart during that countdown completes successfully.
+
+The summary portion exercises actual finish-event handlers and UI buttons; it does not play an entire song to its natural end. Player-progress writes are suspended during the probe.
+
+Fixes: cancel GameplayManager's initial warmup handoff; allow manual restart to supersede FallRespawnSystem's pending routines; cancel countdown child announcements and already scheduled announcer audio; reset mobile finished state on full restart. Control positions, sizes and pointer/input implementations remain unchanged.

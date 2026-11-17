@@ -45,6 +45,7 @@ public class FighterAuraFx : MonoBehaviour
         public Transform Orb;
         public Renderer OrbCore, OrbGlow;
         public float Elapsed, Duration;
+        public FightScorePages Pages;
     }
 
     private readonly Dictionary<FighterActor, Aura> _power = new();
@@ -69,7 +70,7 @@ public class FighterAuraFx : MonoBehaviour
             bool special = e.Move != null && (e.Move.resourceCost == CombatResourceType.Special || e.Move.role == CombatRole.Special ||
                                               e.Move.role == CombatRole.SpecialCharge);
             if (e.Current == FighterMoveState.Startup && special) StartCharge(e.Source, e.Move);
-            else StopCharge(e.Source);
+            else StopCharge(e.Source,e.Current==FighterMoveState.Active && e.Move!=null && e.Move.attackDelivery==AttackDelivery.Projectile);
         };
         EventBus.Subscribe(_onPower);
         EventBus.Subscribe(_onPhase);
@@ -81,7 +82,7 @@ public class FighterAuraFx : MonoBehaviour
         EventBus.Unsubscribe(_onPhase);
         foreach (var a in _power.Values) Release(a, immediate: true);
         _power.Clear();
-        foreach (var c in _charges.Values) { Release(c.Aura, immediate: true); if (c.Orb != null) Destroy(c.Orb.gameObject); }
+        foreach (var c in _charges.Values) { Release(c.Aura, immediate: true); if (c.Orb != null) Destroy(c.Orb.gameObject); if(c.Pages!=null && !c.Pages.IsFlying)Destroy(c.Pages.gameObject); }
         _charges.Clear();
         foreach (var b in _bulk.Values) if (b.Actor != null && b.Actor.BodyMorph != null) b.Actor.BodyMorph.Apply(b.Base);
         _bulk.Clear();
@@ -123,6 +124,8 @@ public class FighterAuraFx : MonoBehaviour
         var orb = new GameObject("SpecialChargeOrb").transform;
         orb.position = OrbPosition(actor);
         c.Orb = orb;
+        c.Pages=FightScorePages.Begin(actor);
+        if(c.Pages!=null)c.Pages.PoseCharge(actor.transform.position+Vector3.up*.95f,orb.position,0,0);
         c.OrbGlow = FightVfx.Glow(orb, "Glow", new Color(1f, 0.5f, 0.1f, 0.8f), 0.3f);
         c.OrbCore = FightVfx.Glow(orb, "Core", new Color(1f, 0.95f, 0.7f, 1f), 0.12f);
         var fire = FightVfx.Emitter(orb, "Flames", new FightVfx.EmitterSpec
@@ -134,10 +137,11 @@ public class FighterAuraFx : MonoBehaviour
         _charges[source] = c;
     }
 
-    private void StopCharge(FighterMoveController source)
+    private void StopCharge(FighterMoveController source,bool releasing = false)
     {
         if (!_charges.TryGetValue(source, out var c)) return;
         Release(c.Aura, immediate: false);
+        if(c.Pages!=null)c.Pages.EndCharge(releasing);
         if (c.Orb != null) Destroy(c.Orb.gameObject, 0.05f);
         _charges.Remove(source);
     }
@@ -187,6 +191,7 @@ public class FighterAuraFx : MonoBehaviour
             if (c.Orb != null && c.Actor != null)
             {
                 c.Orb.position = OrbPosition(c.Actor);
+                if(c.Pages!=null)c.Pages.PoseCharge(c.Actor.transform.position+Vector3.up*.95f,c.Orb.position,k,c.Elapsed);
                 float pulse = 1f + 0.15f * Mathf.Sin(t * 35f);
                 if (c.OrbCore != null) c.OrbCore.transform.localScale = Vector3.one * Mathf.Lerp(0.06f, 0.32f, k) * pulse;
                 if (c.OrbGlow != null) c.OrbGlow.transform.localScale = Vector3.one * Mathf.Lerp(0.15f, 0.8f, k) * (2f - pulse);
@@ -295,4 +300,4 @@ public class FightFollow : MonoBehaviour
         transform.position = _target.position + _offset;
     }
 }
-         
+

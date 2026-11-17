@@ -44,8 +44,10 @@ public class RunnerHudSkin : MonoBehaviour
     private readonly Dictionary<Image,Material> _transitions = new();
 
     private TMPro.TextMeshProUGUI _styleLabel;
+    private TMPro.TextMeshProUGUI _songLabel;
 
-    private void Awake()
+    private void Awake() => ConfigureLayout();
+    public void ConfigureLayout()
     {
         var bar = transform.Find("HudBar");
         if (bar == null) return;
@@ -62,26 +64,44 @@ public class RunnerHudSkin : MonoBehaviour
             rt.anchoredPosition = new Vector2(x, -y);
             rt.sizeDelta = new Vector2(w, h);
         }
-        Place("Logo", 16, 8, 1920, 1080);
+        Place("Logo", -28, 8, 1920, 1080);
         if (logo != null) logo.transform.localScale = Vector3.one * .21f;
-        string[] cells = { "Kick", "Snare", "HiHat", "Beat", "Onset", "Impact", "Life", "Special" };
+        string[] cells = { "Kick", "Snare", "HiHat", "Beat", "Onset", "Impact", "Life", "Special", "TripleCombo", "QuadCombo" };
         for (int i = 0; i < cells.Length; i++)
-            Place("Cell_" + cells[i], i < 6 ? 440 + i * 148 : 1384 + (i - 6) * 148, 66, 148, 112);
+        {
+            Place("Cell_" + cells[i], i < 6 ? 390 + i * 130 : 1220 + (i - 6) * 132, 66, 132, 112);
+            var cell = bar.Find("Cell_" + cells[i]);
+            if (cell == null) continue;
+            foreach (string name in new[] { "Icon", "IconClassic" })
+            {
+                var icon = cell.Find(name) as RectTransform;
+                if (icon != null) { icon.anchoredPosition = new Vector2(0, -12); icon.sizeDelta = Vector2.one * 76; }
+            }
+            var value = cell.Find("Value")?.GetComponent<TMPro.TextMeshProUGUI>();
+            if (value != null) { value.rectTransform.anchoredPosition = new Vector2(76, -17); value.rectTransform.sizeDelta = new Vector2(54, 72); value.enableAutoSizing = true; value.fontSizeMin = 20; value.fontSizeMax = 42; }
+        }
         int separator = 0;
         foreach (Transform child in bar)
             if (child.name == "Separator")
             {
                 var rt = (RectTransform)child;
-                rt.anchoredPosition = new Vector2(separator++ == 0 ? 1350 : 1708, -66);
+                rt.anchoredPosition = new Vector2(separator++ == 0 ? 1198 : 1780, -94);
+                rt.sizeDelta = new Vector2(2, 52);
             }
-        Place("ArtistSong", 1742, 40, 810, 58);
-        Place("ProgressBorder", 1742, 104, 1080, 28);
-        Place("ProgressTrack", 1745, 107, 1074, 22);
-        Place("ProgressFill", 1745, 107, 1074, 22);
+        Place("ArtistSong", 1810, 40, 704, 58);
+        Place("ProgressBorder", 1810, 104, 1035, 22);
+        Place("ProgressTrack", 1813, 107, 1029, 16);
+        Place("ProgressFill", 1813, 107, 1029, 16);
         var title = bar.Find("ArtistSong")?.GetComponent<TMPro.TextMeshProUGUI>();
         if (title != null)
         {
-            _styleLabel = Instantiate(title, bar);
+            _songLabel = title;
+            title.enableAutoSizing = true;
+            title.fontSizeMin = 8; title.fontSizeMax = 30;
+            title.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
+            title.overflowMode = TMPro.TextOverflowModes.Overflow;
+            _styleLabel = bar.Find("PlayingStyle")?.GetComponent<TMPro.TextMeshProUGUI>();
+            if (_styleLabel == null) _styleLabel = Instantiate(title, bar);
             _styleLabel.name = "PlayingStyle";
             if(library!=null && library.titleFont!=null)
             {
@@ -89,9 +109,13 @@ public class RunnerHudSkin : MonoBehaviour
                 _styleLabel.color=library.titleColor;
             }
             DetectedStyleLabel.RegisterHud(_styleLabel);
-            _styleLabel.fontSizeMin = _styleLabel.fontSizeMax = _styleLabel.fontSize = 30;
+            _styleLabel.enableAutoSizing = true;
+            _styleLabel.fontSizeMin = 8; _styleLabel.fontSizeMax = _styleLabel.fontSize = 30;
+            _styleLabel.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
+            _styleLabel.overflowMode = TMPro.TextOverflowModes.Overflow;
+            _styleLabel.wordSpacing = AnalysisPresentation.BrushWordSpacing;
             _styleLabel.alignment = TMPro.TextAlignmentOptions.MidlineRight;
-            Place("PlayingStyle", 2568, 40, 254, 58);
+            Place("PlayingStyle", 2530, 40, 315, 58);
         }
         _iconX = null;
     }
@@ -103,7 +127,12 @@ public class RunnerHudSkin : MonoBehaviour
         if (style != _style)
         {
             _style = style;
-            if (_styleLabel != null) _styleLabel.text = DetectedStyleLabel.Caption(style);
+            if (_styleLabel != null)
+            {
+                _styleLabel.text = DetectedStyleLabel.Caption(style);
+                _styleLabel.enableVertexGradient = false;
+                _styleLabel.color = library.titleColor;
+            }
             var skin = style == GameMusicStyle.Classical ? null : library.Hud(style);
             if (styleBar != null)
             {
@@ -117,7 +146,7 @@ public class RunnerHudSkin : MonoBehaviour
         _weight = styleWeight;
 
         // No style bar (Classical / unknown song): the classic bar alone, uncovered.
-        float classicShare = styleBar != null && styleBar.enabled ? 1f - styleWeight : 1f;
+        float classicShare = style == GameMusicStyle.Classical || style == GameMusicStyle.Unknown ? 1f : 1f - styleWeight;
         SetCurtain(classicShare);
         Color accent = library.HudAccent(style);
         Color gold = library.HudAccent(GameMusicStyle.Classical);
@@ -125,23 +154,26 @@ public class RunnerHudSkin : MonoBehaviour
         Tint(progressFill, accent, gold, classicShare);
         Tint(progressBorder, accent, gold, classicShare);
         var reference = classicBar != null ? classicBar.rectTransform : (RectTransform)transform;
+        TintText(_styleLabel, reference, library.titleColor, gold, classicShare);
+        TintText(_songLabel, reference, library.titleColor, gold, classicShare);
         if(logo!=null)logo.ApplyClassicCurtain(classicShare,reference);
         for (int i = 0; i < icons.Count; i++)
         {
             var classic = icons[i].classic;
             if (classic == null || icons[i].normal == null) continue;
             var normal=icons[i].normal;
-            if(Transition(normal,reference,classicShare,classic.sprite,Color.white,Color.white))classic.enabled=false;
+            bool combo = icons[i].kind == BonusKind.TripleCombo || icons[i].kind == BonusKind.QuadCombo;
+            if(Transition(normal,reference,classicShare,classic.sprite,Color.white,Color.white,combo))classic.enabled=false;
         }
     }
 
     private void Tint(Image image, Color style, Color classic, float classicShare)
     {
         if (image == null || classicBar == null) return;
-        Transition(image,classicBar.rectTransform,classicShare,null,style,classic);
+        if (!Transition(image,classicBar.rectTransform,classicShare,null,style,classic)) image.color = Color.Lerp(style, classic, classicShare);
     }
 
-    private bool Transition(Image image,RectTransform reference,float share,Sprite classic,Color styleColor,Color classicColor)
+    private bool Transition(Image image,RectTransform reference,float share,Sprite classic,Color styleColor,Color classicColor,bool gold=false)
     {
         if(!_transitions.TryGetValue(image,out var material))
         {
@@ -149,8 +181,28 @@ public class RunnerHudSkin : MonoBehaviour
             if(material==null)return false;
             _transitions.Add(image,material);
         }
-        UIStyleTransition.Apply(material,image,reference,library,share,classic,styleColor,classicColor);
+        UIStyleTransition.Apply(material,image,reference,library,share,classic,styleColor,classicColor,gold);
         return true;
+    }
+
+    private void TintText(TMPro.TMP_Text text, RectTransform reference, Color style, Color gold, float share)
+    {
+        if (text == null || reference == null || reference.rect.width <= 0) return;
+        text.color = Color.white; text.ForceMeshUpdate();
+        var info = text.textInfo;
+        for (int i = 0; i < info.characterCount; i++)
+        {
+            var ch = info.characterInfo[i]; if (!ch.isVisible) continue;
+            var mesh = info.meshInfo[ch.materialReferenceIndex];
+            for (int v = 0; v < 4; v++)
+            {
+                int index = ch.vertexIndex + v;
+                var local = reference.InverseTransformPoint(text.transform.TransformPoint(mesh.vertices[index]));
+                float x = (local.x - reference.rect.xMin) / reference.rect.width;
+                mesh.colors32[index] = Color.Lerp(style, gold, library.CurtainClassic(share, x));
+            }
+        }
+        text.UpdateVertexData(TMPro.TMP_VertexDataUpdateFlags.Colors32);
     }
 
     private void SetCurtain(float classicShare)

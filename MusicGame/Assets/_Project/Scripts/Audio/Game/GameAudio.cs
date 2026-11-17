@@ -348,11 +348,18 @@ public class GameAudio : MonoBehaviour
         return null; // all busy: skip rather than cut something
     }
 
+    public void StopAnnouncer(GameAudioScope scope)
+    {
+        if (_announcerScope != scope) return;
+        _announcer[0].Stop(); _announcer[1].Stop();
+        _announcerHeld[0] = _announcerHeld[1] = -1;
+    }
+
     public void StopScope(GameAudioScope scope, bool keepVoice = false)
     {
         foreach (var s in _pool)
             if (_playing.TryGetValue(s, out var p) && p.scope == scope) { s.Stop(); _playing.Remove(s); }   // also cancels a scheduled one
-        if (_announcerScope == scope) { _announcer[0].Stop(); _announcer[1].Stop(); _announcerHeld[0] = _announcerHeld[1] = -1; }
+        StopAnnouncer(scope);
         if (!keepVoice) StopVoice(0f);
     }
 

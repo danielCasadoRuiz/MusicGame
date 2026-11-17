@@ -18,6 +18,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 49276e788fad3d6419ada0eefe51c64f, type: 2}
   - {fileID: 11400000, guid: 603c0f66732bf6c4cb86b6de3eddaedc, type: 2}
   - {fileID: 11400000, guid: be8ba170924d93a4993bc5293e2723f1, type: 2}
+  - {fileID: 11400000, guid: 5d66549a22d578a4a96bdda94b6a9d70, type: 2}
   bodyOverride:
     overrideWeight: 0
     weight: 0.5
@@ -27,6 +28,40 @@ MonoBehaviour:
     gender: 0
   hairOverride: {fileID: 0}
   faceOverride: {fileID: 0}
+  skinTone: 0.33333334
+  skinUndertone: 0
+  nails:
+    mode: 0
+    groups:
+    - painted: 0
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - painted: 0
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - painted: 0
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - painted: 0
+      color: {r: 1, g: 1, b: 1, a: 1}
+    colors:
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
   iris:
     baseTextures: []
     textureIndex: 0

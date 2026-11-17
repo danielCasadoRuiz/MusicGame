@@ -72,7 +72,11 @@ public class FallRespawnSystem : MonoBehaviour
     /// </summary>
     public void RestartSongManually()
     {
-        if (_processing) return;
+        // Explicit Restart supersedes even an unfinished restart countdown or fall.
+        // Cancel both the parent and its child routines before replacing their state.
+        StopAllCoroutines();
+        _processing = false;
+        ResetTapeStop();
         StartCoroutine(RestartSongManuallyRoutine());
     }
 

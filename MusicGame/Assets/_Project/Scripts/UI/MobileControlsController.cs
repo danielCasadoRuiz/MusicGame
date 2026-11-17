@@ -35,6 +35,7 @@ public class MobileControlsController : MonoBehaviour
     private bool _songFinished;
     private System.Action<GameFlowStateChangedEvent> _onFlowStateChanged;
     private System.Action<SongFinishedEvent> _onSongFinished;
+    private System.Action<PlayerRespawnedEvent> _onRespawned;
 
     private void Awake()
     {
@@ -66,8 +67,15 @@ public class MobileControlsController : MonoBehaviour
             Refresh();
         };
         _onSongFinished = _ => { _songFinished = true; Refresh(); };
+        _onRespawned = e =>
+        {
+            if (e.CheckpointIndex != 0) return;
+            _songFinished = false;
+            Refresh();
+        };
         EventBus.Subscribe(_onFlowStateChanged);
         EventBus.Subscribe(_onSongFinished);
+        EventBus.Subscribe(_onRespawned);
 
         if (AppBootstrap.Context != null)
         {
@@ -80,6 +88,7 @@ public class MobileControlsController : MonoBehaviour
     {
         EventBus.Unsubscribe(_onFlowStateChanged);
         EventBus.Unsubscribe(_onSongFinished);
+        EventBus.Unsubscribe(_onRespawned);
     }
 
     private void Refresh()

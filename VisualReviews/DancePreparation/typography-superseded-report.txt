@@ -1,0 +1,21 @@
+FAIL
+Published Electronic song available
+Real catalog selection succeeded
+HUD settles before the run/countdown begins
+Electronic revealed during actual preparation
+All 18 style captions and four title lengths fit on one line, including a 100-character unbroken title
+Neutral analysis appeared before Dance identification
+Direct central reveal to HUD handoff rendered before gameplay
+All 32 grayscale atlas frames played during preparation
+First countdown frame has a trailing camera, not an overhead jump
+Electronic also fits completely in its final HUD slot
+Docked style is high-contrast ivory, not a purple gradient
+GameStarted hides preparation only when Runner is ready
+No separate Next Song screen instantiated
+Campaign has a next-song route
+Next Song immediately opens the same preparation view
+Pending selection does not show the previous song title
+System.Exception: Next Song selected a new catalog identity
+  at DancePreparationPlayCheckRunner.Check (System.Boolean condition, System.String message) [0x00009] in C:\Users\VISYON\Documents\MusicGame\MusicGame\Assets\_Project\Scripts\Editor\DevTools\DancePreparationPlayCheck.cs:92 
+  at DancePreparationPlayCheckRunner+<Run>d__3.MoveNext () [0x00bc4] in C:\Users\VISYON\Documents\MusicGame\MusicGame\Assets\_Project\Scripts\Editor\DevTools\DancePreparationPlayCheck.cs:196 
+  at DancePreparationPlayCheckRunner+<Start>d__1.MoveNext () [0x0003b] in C:\Users\VISYON\Documents\MusicGame\MusicGame\Assets\_Project\Scripts\Editor\DevTools\DancePreparationPlayCheck.cs:84 

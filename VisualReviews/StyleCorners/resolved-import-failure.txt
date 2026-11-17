@@ -1,0 +1,9 @@
+System.IO.IOException: Win32 IO returned 1224. Path: C:\Users\VISYON\Documents\MusicGame\MusicGame\Assets\_Project\Art\UI\Analysis\AnalysisCornersAtlas.png
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x0019e] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)
+  at System.IO.File.InternalWriteAllBytes (System.String path, System.Byte[] bytes) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.WriteAllBytes (System.String path, System.Byte[] bytes) [0x00039] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at StyleCornerSetup.PackAtlas () [0x0020f] in C:\Users\VISYON\Documents\MusicGame\MusicGame\Assets\_Project\Scripts\Editor\DevTools\StyleCornerSetup.cs:87 
+  at StyleCornerSetup.Install () [0x0000c] in C:\Users\VISYON\Documents\MusicGame\MusicGame\Assets\_Project\Scripts\Editor\DevTools\StyleCornerSetup.cs:30 
+  at StyleCornerSetup.Poll () [0x00068] in C:\Users\VISYON\Documents\MusicGame\MusicGame\Assets\_Project\Scripts\Editor\DevTools\StyleCornerSetup.cs:23 

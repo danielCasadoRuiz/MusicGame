@@ -55,6 +55,27 @@ MonoBehaviour:
     - PlayerClothing_classical_waistcoat
     - Q_HighMid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 12f59d2644736f74ebc89236eb638ad6
+    m_Address: PlayerClothing_classical_gloves/Wearable_classical_gloves/sharedVariant/qualityPrefabs@HighMid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_Enemies
+    - Category_PlayerClothing
+    - Enemy_bach
+    - Enemy_beethoven
+    - Enemy_brahms
+    - Enemy_chopin
+    - Enemy_handel
+    - Enemy_haydn
+    - Enemy_monteverdi
+    - Enemy_mozart
+    - Enemy_pachelbel
+    - Enemy_tchaikovsky
+    - Enemy_vivaldi
+    - Enemy_wagner
+    - PlayerClothing_classical_gloves
+    - Q_HighMid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1458ec4f601e6fc4693245e273364095
     m_Address: PlayerClothing_catchy_trousers/Wearable_catchy_trousers/sharedVariant/qualityPrefabs@HighMid
     m_ReadOnly: 0
@@ -471,6 +492,14 @@ MonoBehaviour:
     - PlayerClothing_electronic_jacket
     - Q_HighMid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c3a2b613888bd214fbf22f36b41fdcee
+    m_Address: PlayerClothing_fight_gloves/Wearable_fight_gloves/sharedVariant/qualityPrefabs@HighMid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_fight_gloves
+    - Q_HighMid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c7ccc9b8557ba014b98550960750babf
     m_Address: PlayerClothing_rock_boots/Wearable_rock_boots/sharedVariant/qualityPrefabs@HighMid
     m_ReadOnly: 0
@@ -599,12 +628,28 @@ MonoBehaviour:
     - PlayerClothing_energetic_sneakers
     - Q_HighMid
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f25177b3072c4f841a74581da912918c
+    m_Address: PlayerClothing_groove_sweater/Wearable_groove_sweater/sharedVariant/qualityPrefabs@HighMid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_groove_sweater
+    - Q_HighMid
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f42cec0698cb65e468b02f23b1d4dcaf
     m_Address: PlayerClothing_energetic_trousers/Wearable_energetic_trousers/sharedVariant/qualityPrefabs@HighMid
     m_ReadOnly: 0
     m_SerializedLabels:
     - Category_PlayerClothing
     - PlayerClothing_energetic_trousers
+    - Q_HighMid
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fa4d014babdd0864984d35f06e928879
+    m_Address: PlayerClothing_dance_trousers/Wearable_dance_trousers/sharedVariant/qualityPrefabs@HighMid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Category_PlayerClothing
+    - PlayerClothing_dance_trousers
     - Q_HighMid
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fd0f013bc161bcd4194c0b2ed1e8c010

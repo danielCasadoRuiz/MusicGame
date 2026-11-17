@@ -2,223 +2,276 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>Presentation only: real progress and preparation lifetime remain owned by the controller.</summary>
+/// <summary>Shared neutral analysis, followed by the detected style and one direct HUD handoff.</summary>
 public sealed class AnalysisPresentation : MonoBehaviour
 {
     public StyleSkinLibrarySO library;
-    public Texture2D barAtlas;
+    public Texture2D barAtlas; // Legacy prefab field; progress now uses a plain, tintable fill.
     public Texture2D motifAtlas;
+    public Texture2D cornerAtlas;
+    public Texture2D danceBackdrop;
     public Shader styleFlashShader;
     public AudioClip styleRevealClip;
-    [Range(0,1)] public float motifOpacity = .72f;
-    private Image backdrop;
-    private Image[] motifs, incomingMotifs;
-    private Sprite[] motifSprites;
-    private Color fromBackground, toBackground;
+    public Texture2D danceFrame;
+    public Texture2D loadingWaveAtlas; // Legacy Dance atlas; no longer used by the neutral animation.
+    public Texture2D neutralStaffAtlas;
+    public Shader staffTintShader;
+    public const int WaveColumns = 4, WaveRows = 8, WaveFrames = 32;
+    public const float WaveFramesPerSecond = 20f;
+    public const float BrushWordSpacing = 22f;
+    [Range(0, 1)] public float motifOpacity = .72f;
+    public Color provisionalBackground = new(.018f, .024f, .035f, 1);
+
+    private static readonly string[] Hex = { "53BFFF", "E8BC65", "C99650", "DCA45C", "ED3944", "AD293D", "208FFF", "AC59FF", "42B9B0", "F166AD", "BE7B86", "D6AE63", "FF7EAB", "FFAA30", "78C9CE", "B4A4FF", "8776B8", "A9E883" };
     private static readonly GameMusicStyle[] MotifOrder = {
         GameMusicStyle.Electronic, GameMusicStyle.Dance, GameMusicStyle.Rock, GameMusicStyle.Heavy,
         GameMusicStyle.Acoustic, GameMusicStyle.Cinematic, GameMusicStyle.Groove, GameMusicStyle.Funky,
         GameMusicStyle.Soulful, GameMusicStyle.Jazzy, GameMusicStyle.Catchy, GameMusicStyle.Energetic,
-        GameMusicStyle.Chill, GameMusicStyle.Dreamy, GameMusicStyle.Dark, GameMusicStyle.Experimental
-    };
-    public Color provisionalBackground = new Color(.018f, .024f, .035f, 1);
+        GameMusicStyle.Chill, GameMusicStyle.Dreamy, GameMusicStyle.Dark, GameMusicStyle.Experimental };
+    public static Color Accent(GameMusicStyle style)
+    {
+        if (style == GameMusicStyle.Unknown) return new Color(.65f, .64f, .60f);
+        ColorUtility.TryParseHtmlString("#" + Hex[Mathf.Clamp((int)style, 0, 17)], out var color); return color;
+    }
     private AnalyzingScreenView view;
-    private TextMeshProUGUI song, artist;
-    private Image frame, nextFrame, nextFill, sheen;
+    private Image backdrop, wave, progressTrack;
     private RectTransform block;
-    private Sprite[] frames, fills;
+    private CanvasGroup metadata;
+    private TextMeshProUGUI song, artist, genre;
+    private Sprite[] waveSprites, motifSprites;
+    private Image[] motifs;
+    private RawImage styleBackground;
+    private Texture2D resourceBackground;
+    private GameMusicStyle loadedBackgroundStyle = (GameMusicStyle)(-1);
+    private Material staffMaterial;
     private GameMusicStyle current;
-    private float blend = 1;
-    private Color fromColor, toColor, displayedAccent;
-    private Material titleMaterial;
-    private Color Ivory => library != null ? library.titleColor : new Color(.953f,.918f,.827f,1);
-    private static readonly string[] Hex = { "53BFFF", "E8BC65", "C99650", "DCA45C", "ED3944", "AD293D", "208FFF", "AC59FF", "42B9B0", "F166AD", "BE7B86", "D6AE63", "FF7EAB", "FFAA30", "78C9CE", "B4A4FF", "8776B8", "A9E883" };
-    public static Color Accent(GameMusicStyle style) { if(style==GameMusicStyle.Unknown) return new Color(.65f,.64f,.60f); ColorUtility.TryParseHtmlString("#" + Hex[Mathf.Clamp((int)style, 0, 17)], out var c); return c; }
+    private Color inheritedTint, displayedTint;
+    private float revealBlend = 1, handoffProgress;
+    private bool carryTint;
+    private int waveIndex = -1;
+    private Color Ivory => library != null ? library.titleColor : new Color(.953f, .918f, .827f, 1);
+    public GameMusicStyle CurrentStyle => current;
+    public float HandoffProgress => handoffProgress;
 
     public void Build(AnalyzingScreenView target)
     {
+        if (view != null) return;
         view = target;
         foreach (var receiver in GetComponentsInChildren<ThemeElementReceiver>(true)) receiver.enabled = false;
         backdrop = transform.Find("Dim")?.GetComponent<Image>();
-        if (backdrop != null) backdrop.color = provisionalBackground;
-        if (motifAtlas != null)
-        {
-            motifSprites = new Sprite[18];
-            float w=motifAtlas.width/4f, h=motifAtlas.height/4f;
-            for(int n=0;n<MotifOrder.Length;n++)
-                motifSprites[(int)MotifOrder[n]]=Sprite.Create(motifAtlas,
-                    new Rect(n%4*w+.5f,(3-n/4)*h+.5f,w-1,h-1),new Vector2(.5f,.5f),100,0,SpriteMeshType.FullRect);
-            motifs = CreateMotifs("StyleMotif");
-            incomingMotifs = CreateMotifs("IncomingMotif");
-            int sibling = backdrop != null ? backdrop.transform.GetSiblingIndex()+1 : 0;
-            foreach(var image in motifs) image.transform.SetSiblingIndex(sibling++);
-            foreach(var image in incomingMotifs) image.transform.SetSiblingIndex(sibling++);
-        }
         if (view.titleText.TryGetComponent<TitleText>(out var title)) title.enabled = false;
+        view.titleText.gameObject.SetActive(false);
         block = UIFactory.CreateRect("AnalysisContent", (RectTransform)transform);
-        Box(block, 0, 0, 1100, 420);
-        view.titleText.transform.SetParent(block, false);
-        Box(view.titleText.rectTransform, 0, 125, 1060, 115);
-        if (library != null && library.titleFont != null) { view.titleText.font = library.titleFont; view.titleText.fontSharedMaterial = library.titleFont.material; }
-        // Own a material instance: never change the font asset used by other screens.
-        titleMaterial = new Material(view.titleText.fontSharedMaterial);
-        titleMaterial.name = "Analysis Title · Ivory / Ink";
-        titleMaterial.SetColor("_FaceColor", Color.white);
-        titleMaterial.SetColor("_OutlineColor", new Color(.012f,.014f,.022f,1));
-        titleMaterial.SetFloat("_OutlineWidth", .18f);
-        titleMaterial.SetFloat("_OutlineSoftness", .015f);
-        titleMaterial.EnableKeyword("UNDERLAY_ON");
-        titleMaterial.SetColor("_UnderlayColor", Ivory);
-        titleMaterial.SetFloat("_UnderlayOffsetX", 0);
-        titleMaterial.SetFloat("_UnderlayOffsetY", 0);
-        titleMaterial.SetFloat("_UnderlayDilate", .42f);
-        titleMaterial.SetFloat("_UnderlaySoftness", .025f);
-        view.titleText.fontSharedMaterial = titleMaterial;
-        view.titleText.UpdateMeshPadding();
-        view.titleText.colorGradientPreset = null;
-        view.titleText.enableVertexGradient = true;
-        view.titleText.fontStyle = FontStyles.Normal;
-        view.titleText.enableAutoSizing = true;
-        view.titleText.fontSizeMin = 36; view.titleText.fontSizeMax = 78;
-        view.titleText.textWrappingMode = TextWrappingModes.NoWrap;
-        song = Text("Song", 0, 38, 34, Ivory);
-        artist = Text("Artist", 0, -3, 23, new Color(.7f,.74f,.8f));
-        view.tipText.transform.SetParent(block, false);
-        Box(view.tipText.rectTransform, 0, -140, 1000, 35);
-        view.tipText.fontSize = 21; view.tipText.color = new Color(.68f,.72f,.79f);
+        Box(block, 0, 0, 1450, 850);
+        var details = UIFactory.CreateRect("Metadata", block);
+        Box(details, 0, 0, 1100, 700);
+        metadata = details.gameObject.AddComponent<CanvasGroup>();
+        song = Text("Song", details, 0, -150, 1100, 105, 78, Ivory);
+        song.fontSizeMin = 8;
+        song.wordSpacing = BrushWordSpacing;
+        if (library != null && library.titleFont != null)
+        { song.font = library.titleFont; song.fontSharedMaterial = library.titleFont.material; }
+        artist = Text("Artist", details, 0, -220, 1100, 48, 30, Ivory);
+        artist.font = view.tipText.font; artist.fontSharedMaterial = view.tipText.fontSharedMaterial;
+        view.tipText.transform.SetParent(details, false);
+        Box(view.tipText.rectTransform, 0, -315, 1100, 38);
+        view.tipText.alignment = TextAlignmentOptions.MidlineLeft;
+        view.tipText.fontStyle = FontStyles.Normal;
+        view.tipText.enableAutoSizing = true; view.tipText.fontSizeMin = 17; view.tipText.fontSizeMax = 24;
+        view.tipText.textWrappingMode = TextWrappingModes.NoWrap;
+        view.tipText.color = new Color(.72f, .74f, .79f);
         var oldBar = view.progressFill.transform.parent.gameObject;
-        view.progressFill.transform.SetParent(block, false);
-        oldBar.SetActive(false);
-        frames = new Sprite[18]; fills = new Sprite[18];
-        for (int i = 0; i < 18; i++)
-        {
-            // Atlas rows have an empty gutter; upper half is frame, lower half is fill.
-            frames[i] = Sprite.Create(barAtlas, new Rect(0, (i * 128 + 64) * barAtlas.height / 2304f, barAtlas.width, 64 * barAtlas.height / 2304f), new Vector2(.5f,.5f), 100);
-            fills[i] = Sprite.Create(barAtlas, new Rect(0, i * 128 * barAtlas.height / 2304f, barAtlas.width, 64 * barAtlas.height / 2304f), new Vector2(.5f,.5f), 100);
-        }
-        frame = Image("BarFrame"); nextFrame = Image("IncomingFrame");
+        view.progressFill.transform.SetParent(details, false); oldBar.SetActive(false);
+        progressTrack = Panel("ProgressTrack", details, new Color(.2f, .19f, .23f));
+        Box(progressTrack.rectTransform, 0, -270, 1100, 7);
+        UIFactory.EnsureFillSprite(progressTrack);
         view.progressFill.transform.SetAsLastSibling();
-        Box(view.progressFill.rectTransform, 0, -80, 980, 24);
-        view.progressFill.color = Color.white;
-        nextFill = Image("IncomingFill"); nextFill.type = UnityEngine.UI.Image.Type.Filled; nextFill.fillMethod = UnityEngine.UI.Image.FillMethod.Horizontal;
-        sheen = Image("LoadingLight"); Box(sheen.rectTransform, 0, -80, 2, 12);
-        current = GameMusicStyle.Unknown;
-        ApplyImmediate(current);
-    }
-    private Image[] CreateMotifs(string name)
-    {
-        var images=new Image[2];
-        for(int n=0;n<2;n++)
+        view.progressFill.sprite = progressTrack.sprite;
+        Box(view.progressFill.rectTransform, 0, -270, 1100, 7);
+        genre = Text("StyleSlot", block, 0, 150, 1000, 190, 180, Ivory);
+        genre.alignment = TextAlignmentOptions.Center;
+        genre.wordSpacing = BrushWordSpacing;
+        if (library != null && library.titleFont != null)
+        { genre.font = library.titleFont; genre.fontSharedMaterial = library.titleFont.material; }
+        genre.gameObject.SetActive(false); // A single moving label appears here, never beside the song.
+        BuildOtherStyleMotifs();
         {
-            images[n]=UIFactory.CreatePanel(name+n,(RectTransform)transform,Color.clear);
-            images[n].raycastTarget=false;
-            images[n].preserveAspect=true;
-            var rt=images[n].rectTransform;
-            rt.anchorMin=rt.anchorMax=rt.pivot=n==0 ? new Vector2(0,1) : new Vector2(1,0);
-            if(n==1) rt.localRotation=Quaternion.Euler(0,0,180);
-            // Rotation is about the centre; both corners keep the same crop on all aspect ratios.
-            rt.pivot=new Vector2(.5f,.5f);
+            var backgroundRect = UIFactory.CreateRect("StyleBackdrop", (RectTransform)transform);
+            UIFactory.Stretch(backgroundRect);
+            styleBackground = backgroundRect.gameObject.AddComponent<RawImage>();
+            styleBackground.raycastTarget = false;
+            styleBackground.color = Color.clear;
+            backgroundRect.SetSiblingIndex(backdrop != null ? backdrop.transform.GetSiblingIndex() + 1 : 0);
         }
-        return images;
-    }
-    private Color BackgroundColor(GameMusicStyle style) =>
-        Color.Lerp(provisionalBackground, style==GameMusicStyle.Classical || style==GameMusicStyle.Unknown ? provisionalBackground : Accent(style), .035f);
-    private void SetMotifs(Image[] images, GameMusicStyle style, float alpha)
-    {
-        if(images==null) return;
-        Sprite sprite=motifSprites[Mathf.Clamp((int)style,0,17)];
-        foreach(var image in images) { image.sprite=sprite; image.enabled=sprite!=null; image.color=new Color(1,1,1,alpha*motifOpacity); }
-    }
-    private void LayoutMotifs(Image[] images)
-    {
-        if(images==null) return;
-        var rect=((RectTransform)transform).rect;
-        float size=Mathf.Min(620,Mathf.Min(rect.width*.32f,rect.height*.58f));
-        for(int n=0;n<2;n++)
+        if (neutralStaffAtlas != null)
         {
-            images[n].rectTransform.sizeDelta=new Vector2(size,size);
-            images[n].rectTransform.anchoredPosition=n==0 ? new Vector2(size*.26f,-size*.26f) : new Vector2(-size*.26f,size*.26f);
+            waveSprites = new Sprite[WaveFrames];
+            float width = neutralStaffAtlas.width / (float)WaveColumns, height = neutralStaffAtlas.height / (float)WaveRows;
+            for (int n = 0; n < WaveFrames; n++)
+                waveSprites[n] = Sprite.Create(neutralStaffAtlas,
+                    new Rect(n % WaveColumns * width, (WaveRows - 1 - n / WaveColumns) * height, width, height),
+                    new Vector2(.5f, .5f), 100, 0, SpriteMeshType.FullRect);
+            wave = Panel("LoadingWave", block, Color.white);
+            Box(wave.rectTransform, 0, 140, 1450, 455);
+            wave.preserveAspect = true; wave.sprite = waveSprites[0];
+            if (staffTintShader != null)
+            {
+                staffMaterial = new Material(staffTintShader) { name = "Analysis staff - dynamic tint" };
+                staffMaterial.SetColor("_Highlight", Ivory); wave.material = staffMaterial;
+            }
+        }
+        inheritedTint = Ivory; ApplyImmediate(GameMusicStyle.Unknown);
+    }
+    private void BuildOtherStyleMotifs()
+    {
+        var texture = motifAtlas;
+        if (texture == null) return;
+        motifSprites = new Sprite[18]; motifs = new Image[2];
+        float width = texture.width / 4f, height = texture.height / 4f;
+        float padding = .5f;
+        for (int n = 0; n < MotifOrder.Length; n++)
+            motifSprites[(int)MotifOrder[n]] = Sprite.Create(texture,
+                new Rect(n % 4 * width + padding, (3 - n / 4) * height + padding, width - padding * 2, height - padding * 2),
+                new Vector2(.5f, .5f), 100, 0, SpriteMeshType.FullRect);
+        for (int n = 0; n < motifs.Length; n++)
+        {
+            motifs[n] = Panel("StyleMotif" + n, (RectTransform)transform, Color.clear);
+            motifs[n].preserveAspect = true;
+            motifs[n].transform.SetSiblingIndex(backdrop != null ? backdrop.transform.GetSiblingIndex() + 1 : 0);
         }
     }
-    private Image Image(string name) { var image = UIFactory.CreatePanel(name, block, Color.white); Box(image.rectTransform, 0,-80,980,24); image.raycastTarget = false; return image; }
-    private TextMeshProUGUI Text(string name, float x, float y, int size, Color color)
+    private static Image Panel(string name, RectTransform parent, Color color)
+    { var image = UIFactory.CreatePanel(name, parent, color); image.raycastTarget = false; return image; }
+    private static TextMeshProUGUI Text(string name, RectTransform parent, float x, float y, float width, float height, int size, Color color)
     {
-        var t = UIFactory.CreateText(name, block, "", size, color, TextAlignmentOptions.Center);
-        Box(t.rectTransform, x,y,1000,45); t.raycastTarget = false; t.richText = false; t.textWrappingMode = TextWrappingModes.NoWrap;
-        t.enableAutoSizing = true; t.fontSizeMax = size; t.fontSizeMin = size*.65f; t.overflowMode = TextOverflowModes.Ellipsis;
-        return t;
+        var text = UIFactory.CreateText(name, parent, "", size, color, TextAlignmentOptions.MidlineLeft);
+        Box(text.rectTransform, x, y, width, height); text.raycastTarget = false; text.richText = false;
+        text.textWrappingMode = TextWrappingModes.NoWrap; text.enableAutoSizing = true;
+        text.fontSizeMax = size; text.fontSizeMin = 8; text.overflowMode = TextOverflowModes.Overflow;
+        return text;
     }
-    private static void Box(RectTransform rt,float x,float y,float w,float h) => UIFactory.SetBox(rt,new Vector2(.5f,.5f),new Vector2(.5f,.5f),new Vector2(.5f,.5f),new Vector2(x,y),new Vector2(w,h));
+    private static void Box(RectTransform rect, float x, float y, float width, float height) =>
+        UIFactory.SetBox(rect, new Vector2(.5f, .5f), new Vector2(.5f, .5f), new Vector2(.5f, .5f), new Vector2(x, y), new Vector2(width, height));
     private void ApplyImmediate(GameMusicStyle style)
+    { current = style; revealBlend = 1; ApplyTheme(style == GameMusicStyle.Unknown ? inheritedTint : Accent(style), style == GameMusicStyle.Unknown ? 0 : 1); }
+    private void ApplyTheme(Color tint, float reveal)
     {
-        int i = Mathf.Clamp((int)style,0,17); frame.sprite=frames[i]; view.progressFill.sprite=fills[i];
-        nextFrame.color=nextFill.color=Color.clear;
-        fromColor=toColor=Accent(style); ApplyTitleGradient(toColor); blend=1;
-        SetMotifs(motifs,style,1); SetMotifs(incomingMotifs,style,0);
-        fromBackground=toBackground=BackgroundColor(style);
-        if(backdrop!=null) backdrop.color=toBackground;
+        displayedTint = tint;
+        if (backdrop != null) backdrop.color = Color.Lerp(provisionalBackground, tint, .075f);
+        if (staffMaterial != null) staffMaterial.SetColor("_Tint", Color.Lerp(Ivory, tint, .68f));
+        if (wave != null) wave.color = new Color(1, 1, 1, Mathf.Lerp(1, .26f, reveal) * (1 - handoffProgress));
+        if (progressTrack != null) view.progressFill.color = Color.Lerp(Ivory, tint, .55f);
+        SetStyleBackground(current);
+        bool hasStyleBackground = styleBackground != null && styleBackground.texture != null;
+        if (styleBackground != null)
+        {
+            styleBackground.enabled = hasStyleBackground;
+            styleBackground.color = new Color(1, 1, 1, reveal);
+        }
+        if (motifs != null)
+            for (int n = 0; n < motifs.Length; n++)
+            {
+                var image = motifs[n];
+                image.sprite = motifSprites[(int)current];
+                image.enabled = image.sprite != null && !hasStyleBackground;
+                image.color = new Color(1, 1, 1, reveal * motifOpacity);
+            }
     }
-    private void ApplyTitleGradient(Color accent)
+    private void SetStyleBackground(GameMusicStyle style)
     {
-        displayedAccent = accent;
-        view.titleText.color = Color.white; // neutral multiplier; actual face colours are the gradient
-        view.titleText.colorGradient = new VertexGradient(Ivory, Ivory, Ivory, Ivory);
+        if (styleBackground == null || loadedBackgroundStyle == style) return;
+        ReleaseStyleBackground();
+        loadedBackgroundStyle = style;
+        if (style != GameMusicStyle.Unknown)
+            resourceBackground = Resources.Load<Texture2D>("UI/AnalysisBackdrops/" + style);
+        styleBackground.texture = resourceBackground != null ? resourceBackground : style == GameMusicStyle.Dance ? danceBackdrop : null;
+    }
+    private void ReleaseStyleBackground()
+    {
+        if (styleBackground != null) styleBackground.texture = null;
+        if (resourceBackground != null) Resources.UnloadAsset(resourceBackground);
+        resourceBackground = null; loadedBackgroundStyle = (GameMusicStyle)(-1);
     }
     public void Begin()
     {
         if (view == null) return;
         DetectedStyleLabel.Cancel();
-        current = GameMusicStyle.Unknown; ApplyImmediate(current);
+        if (!carryTint) inheritedTint = Accent(StyledTitleView.MenuStyle(library));
+        carryTint = false; handoffProgress = 0; metadata.alpha = 1;
+        ApplyImmediate(GameMusicStyle.Unknown);
         var selected = GameSession.Instance != null ? GameSession.Instance.SelectedSong : null;
         string name = selected?.DisplayName ?? "";
-        if (string.IsNullOrWhiteSpace(name) && selected.HasValue && !string.IsNullOrWhiteSpace(selected.Value.LocalFilePath)) name=System.IO.Path.GetFileNameWithoutExtension(selected.Value.LocalFilePath);
-        var match = System.Text.RegularExpressions.Regex.Match(name,@"\s+[—–-]\s+");
-        song.text=match.Success ? name.Substring(match.Index+match.Length).Trim() : name;
-        artist.text=match.Success ? name.Substring(0,match.Index).Trim() : "";
+        if (string.IsNullOrWhiteSpace(name) && selected.HasValue && !string.IsNullOrWhiteSpace(selected.Value.LocalFilePath))
+            name = System.IO.Path.GetFileNameWithoutExtension(selected.Value.LocalFilePath);
+        var match = System.Text.RegularExpressions.Regex.Match(name, @"\s+[—–-]\s+");
+        song.text = match.Success ? name.Substring(match.Index + match.Length).Trim() : name;
+        artist.text = match.Success ? name.Substring(0, match.Index).Trim() : "";
+    }
+    public void BeginPendingSelection()
+    {
+        var prior = GameSession.Instance != null ? GameSession.Instance.DetectedGameStyle : GameMusicStyle.Unknown;
+        Begin(); inheritedTint = prior == GameMusicStyle.Unknown ? inheritedTint : Accent(prior);
+        carryTint = true; ApplyImmediate(GameMusicStyle.Unknown); song.text = artist.text = "";
     }
     public void Reveal(GameMusicStyle style)
     {
-        if(view==null) return;
-        if(styleRevealClip!=null && GameAudio.Instance!=null) GameAudio.Instance.PlayClip(styleRevealClip,.65f,GameAudioScope.UI);
-        DetectedStyleLabel.Show(view.titleText,style,(RectTransform)transform.parent,styleFlashShader);
-        int i=Mathf.Clamp((int)style,0,17);
-        nextFrame.sprite=frames[i]; nextFill.sprite=fills[i];
-        fromColor=displayedAccent; toColor=Accent(style); current=style; blend=0;
-        SetMotifs(incomingMotifs,style,0);
-        // Never show the previous song's motifs. Only the detected background fades in.
-        SetMotifs(motifs,GameMusicStyle.Unknown,0);
-        fromBackground=provisionalBackground;
-        if(backdrop!=null) backdrop.color=provisionalBackground;
-        toBackground=BackgroundColor(style);
+        if (view == null) return;
+        if (styleRevealClip != null && GameAudio.Instance != null) GameAudio.Instance.PlayClip(styleRevealClip, .65f, GameAudioScope.UI);
+        Canvas.ForceUpdateCanvases();
+        DetectedStyleLabel.Show(genre, style, (RectTransform)transform.parent, styleFlashShader, true, true);
+        current = style; inheritedTint = displayedTint; revealBlend = 0;
+        ApplyTheme(inheritedTint, 0);
+    }
+    public void SetHandoffProgress(float progress)
+    {
+        handoffProgress = Mathf.Clamp01(progress);
+        metadata.alpha = 1 - Mathf.SmoothStep(0, 1, Mathf.Clamp01(handoffProgress / .6f));
+        ApplyTheme(displayedTint, current == GameMusicStyle.Unknown ? 0 : Mathf.SmoothStep(0, 1, revealBlend));
     }
     private void Update()
     {
-        if(view==null) return;
-        if(blend<1)
+        if (view == null) return;
+        if (revealBlend < 1)
         {
-            blend=Mathf.Min(1,blend+Time.unscaledDeltaTime/1.1f);
-            float t=Mathf.SmoothStep(0,1,blend);
-            nextFrame.color=nextFill.color=new Color(1,1,1,t);
-            SetMotifs(incomingMotifs,current,t);
-            if(motifs!=null) foreach(var image in motifs) image.color=new Color(1,1,1,(1-t)*motifOpacity);
-            if(backdrop!=null) backdrop.color=Color.Lerp(fromBackground,toBackground,t);
-            ApplyTitleGradient(Color.Lerp(fromColor,toColor,t));
-            if(blend>=1) ApplyImmediate(current);
+            revealBlend = Mathf.Min(1, revealBlend + Time.unscaledDeltaTime / .85f);
+            float blend = Mathf.SmoothStep(0, 1, revealBlend);
+            ApplyTheme(Color.Lerp(inheritedTint, Accent(current), blend), blend);
         }
-        LayoutMotifs(motifs); LayoutMotifs(incomingMotifs);
-        float p=view.progressFill.fillAmount; nextFill.fillAmount=p;
-        // A light travels only inside the completed portion; it never invents progress.
-        sheen.enabled=p>.02f && p<1;
-        sheen.rectTransform.anchoredPosition=new Vector2(-474+Mathf.Repeat(Time.unscaledTime*.55f,1)*948*p,-80);
-        sheen.color=new Color(1,1,1,.35f+.3f*Mathf.Sin(Time.unscaledTime*3));
-        float scale=Mathf.Min(1,( ((RectTransform)transform).rect.width-80)/1100f);
-        block.localScale=Vector3.one*Mathf.Max(.2f,scale);
+        int frame = Mathf.FloorToInt(Time.unscaledTime * WaveFramesPerSecond) % WaveFrames;
+        if (wave != null && frame != waveIndex) { wave.sprite = waveSprites[frame]; waveIndex = frame; }
+        var rect = ((RectTransform)transform).rect;
+        if (styleBackground != null && styleBackground.texture != null && rect.height > 0)
+        {
+            // Cover the viewport by cropping UVs, preserving the authored image proportions.
+            float targetAspect = rect.width / rect.height;
+            float imageAspect = (float)styleBackground.texture.width / styleBackground.texture.height;
+            float uvWidth = Mathf.Min(1, targetAspect / imageAspect);
+            float uvHeight = Mathf.Min(1, imageAspect / targetAspect);
+            styleBackground.uvRect = new Rect((1 - uvWidth) * .5f, (1 - uvHeight) * .5f, uvWidth, uvHeight);
+        }
+        block.localScale = Vector3.one * Mathf.Max(.2f, Mathf.Min(1f, Mathf.Min((rect.width - 90) / 1600f, (rect.height - 90) / 900f)));
+        if (motifs != null)
+        {
+            float size = Mathf.Min(620, Mathf.Min(rect.width * .32f, rect.height * .58f));
+            for (int n = 0; n < motifs.Length; n++)
+            {
+                var rt = motifs[n].rectTransform;
+                rt.anchorMin = rt.anchorMax = n == 0 ? new Vector2(0, 1) : new Vector2(1, 0);
+                rt.pivot = new Vector2(.5f, .5f);
+                rt.sizeDelta = new Vector2(size, size);
+                rt.anchoredPosition = n == 0 ? new Vector2(size * .26f, -size * .26f) : new Vector2(-size * .26f, size * .26f);
+                rt.localRotation = Quaternion.Euler(0, 0, n == 0 ? 0 : 180);
+            }
+        }
     }
+    private void OnDisable() { carryTint = false; ReleaseStyleBackground(); }
     private void OnDestroy()
     {
-        if(motifSprites!=null) foreach(var sprite in motifSprites) if(sprite!=null) { if(Application.isPlaying) Destroy(sprite); else DestroyImmediate(sprite); }
-        if(titleMaterial!=null) { if(Application.isPlaying) Destroy(titleMaterial); else DestroyImmediate(titleMaterial); }
-        if(frames!=null) foreach(var s in frames) if(s!=null) { if(Application.isPlaying) Destroy(s); else DestroyImmediate(s); }
-        if(fills!=null) foreach(var s in fills) if(s!=null) { if(Application.isPlaying) Destroy(s); else DestroyImmediate(s); }
+        ReleaseStyleBackground();
+        if (waveSprites != null) foreach (var sprite in waveSprites) Dispose(sprite);
+        if (motifSprites != null) foreach (var sprite in motifSprites) Dispose(sprite);
+        Dispose(staffMaterial);
     }
+    private static void Dispose(Object value)
+    { if (value == null) return; if (Application.isPlaying) Destroy(value); else DestroyImmediate(value); }
 }

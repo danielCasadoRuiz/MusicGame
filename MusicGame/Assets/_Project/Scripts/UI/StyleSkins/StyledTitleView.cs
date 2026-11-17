@@ -76,11 +76,18 @@ public class StyledTitleView : MonoBehaviour
 
     /// <summary>Animates the title in (unscaled time). The letters land on their beats: the k-th letter of a word
     /// lands k×stagger after the word's moment. Safe to call again (restarts); StopIntro jumps to the end.</summary>
-    public void Intro(float tempoAt = DefaultTempoAt, float furyAt = DefaultFuryAt, bool limitFrameStep = false)
+    public void Intro(float tempoAt = DefaultTempoAt, float furyAt = DefaultFuryAt, bool limitFrameStep = false, bool lettersOnly = false)
     {
         StopIntro();
         if (!isActiveAndEnabled) return;
-        _intro = StartCoroutine(IntroRoutine(tempoAt, furyAt, limitFrameStep));
+        _intro = StartCoroutine(IntroRoutine(tempoAt, furyAt, limitFrameStep, lettersOnly));
+    }
+
+    /// <summary>Prepare a returning menu: static title art stays visible; only the letters wait for their intro.</summary>
+    public void PrepareLettersIntro()
+    {
+        StopIntro();
+        for (int i = 0; i < letters.Length; i++) PoseLetter(i, 1f, 0f, 0f, 1f);
     }
 
     public float IntroDuration(float furyAt = DefaultFuryAt) => furyAt + 3 * FuryStagger + ThumpTime;
@@ -95,7 +102,7 @@ public class StyledTitleView : MonoBehaviour
         transform.localScale = _baseScale;
     }
 
-    private IEnumerator IntroRoutine(float tempoAt, float furyAt, bool limitFrameStep)
+    private IEnumerator IntroRoutine(float tempoAt, float furyAt, bool limitFrameStep, bool lettersOnly)
     {
         PrepareLetters();
         float end = IntroDuration(furyAt);
@@ -103,7 +110,8 @@ public class StyledTitleView : MonoBehaviour
         {
             // Background: a quick burst just before TEMPO. Letters: each with its own landing moment.
             float b = Mathf.Clamp01((t - (tempoAt - BurstTime * 0.5f)) / BurstTime);
-            Pose(background, Back(b, 2.2f), Mathf.Clamp01(b * 2f));
+            if (lettersOnly) Pose(background, 1f, 1f);
+            else Pose(background, Back(b, 2.2f), Mathf.Clamp01(b * 2f));
             for (int i = 0; i < letters.Length; i++)
             {
                 bool fury = i >= 5;
@@ -117,8 +125,8 @@ public class StyledTitleView : MonoBehaviour
             }
             // After the last letter: the foreground appears and the whole title thumps once.
             float last = furyAt + 3 * FuryStagger;
-            Pose(foreground, 1f, Mathf.Clamp01((t - last) / ForegroundTime));
-            transform.localScale = _baseScale * (1f + 0.05f * Settle(t - last));
+            Pose(foreground, 1f, lettersOnly ? 1f : Mathf.Clamp01((t - last) / ForegroundTime));
+            transform.localScale = lettersOnly ? _baseScale : _baseScale * (1f + 0.05f * Settle(t - last));
             if (t >= end) break;
             yield return null;
         }

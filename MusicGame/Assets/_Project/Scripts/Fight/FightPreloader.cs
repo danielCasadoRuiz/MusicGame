@@ -66,9 +66,10 @@ public static class FightPreloader
         }
         if (level.avatarRecipe != null)
             foreach (var r in AvatarFactory.CollectPrefabReferences(level.avatarRecipe.ToRuntime())) Load(r.RuntimeKey);
-        var playerRecipe = PlayerAvatarConfigSO.ResolveRecipe(Resources.Load<AppConfigSO>("AppConfig"));
+        var appConfig = Resources.Load<AppConfigSO>("AppConfig");
+        var playerRecipe = PlayerAvatarConfigSO.ResolveRecipe(appConfig);
         if (playerRecipe != null)
-            foreach (var r in AvatarFactory.CollectPrefabReferences(playerRecipe.ToRuntime())) Load(r.RuntimeKey);
+            foreach (var r in AvatarFactory.CollectPrefabReferences(appConfig.playerAvatar.CreateRuntimeRecipe(playerRecipe, combat: true))) Load(r.RuntimeKey);
         Debug.Log($"[FightPreloader] Preloading the fight vs {opponent.displayName} v{level.level}: {s_handles.Count} asset(s), arena {(s_arena != null ? s_arenaKey : "default")}.");
     }
 

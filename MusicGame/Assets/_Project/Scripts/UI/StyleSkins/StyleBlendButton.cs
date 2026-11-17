@@ -86,7 +86,7 @@ public class StyleBlendButton : MonoBehaviour, IPointerEnterHandler, IPointerExi
             classicLayer.enabled = true;
             classicLayer.material = art == Art.HudPause ? library.classicPauseMaterial : null;
             var classicColor=classicLayer.color;
-            classicColor.a=art==Art.HudPause ? 1-_weight : 1;
+            classicColor.a=art==Art.HudPause && styled!=null ? 1-_weight : 1;
             classicLayer.color=classicColor;
         }
         if (styleLayer != null)

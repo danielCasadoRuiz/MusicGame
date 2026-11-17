@@ -37,7 +37,7 @@ public static class RunnerUICurtainSetup
         lib.classicTitleMaterial.SetFloat("_GoldClassic",1);lib.classicTitleMaterial.SetFloat("_FixedBlend",1);
         lib.classicPauseMaterial=Make("ClassicalPauseLaurel");
         lib.classicPauseMaterial.SetFloat("_GoldClassic",1);lib.classicPauseMaterial.SetFloat("_FixedBlend",1);
-        lib.classicPauseMaterial.SetFloat("_Laurel",1);
+        lib.classicPauseMaterial.SetFloat("_Laurel",0);
         var source=lib.titles.Find(t=>t.style==GameMusicStyle.Rock);
         if(source==null||source.letters.Length!=9)throw new Exception("Missing nine-letter title source");
         var classic=lib.titles.Find(t=>t.style==GameMusicStyle.Classical);
@@ -55,7 +55,7 @@ public static class RunnerUICurtainSetup
         ConfigureLibrary(lib);AssetDatabase.SaveAssets();
         CheckCurtain(lib);
         foreach(float progress in new[]{0f,.25f,.5f,.75f,1f})Render(lib,progress);
-        File.WriteAllText("Logs/RunnerUICurtainCheck.txt","PASS: shader compiled; GPU endpoints and left/right frontier verified; full and filled progress graphics share one reference; five runner/pause previews saved; classical logo has nine separate letters and a gold finish; classical pause has gold laurel motifs.");
+        File.WriteAllText("Logs/RunnerUICurtainCheck.txt","PASS: shader compiled; GPU endpoints and left/right frontier verified; full and filled progress graphics share one reference; five runner/pause previews saved; classical logo has nine separate letters and a gold finish; classical pause is a plain gold glyph without side ornaments.");
         Debug.Log(File.ReadAllText("Logs/RunnerUICurtainCheck.txt"));
     }
 

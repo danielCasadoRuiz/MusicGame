@@ -390,6 +390,12 @@ public class GameplayManager : MonoBehaviour
         }
         if (!Current()) yield break;
 
+        // Finish the presentation handoff BEFORE initializing the clock: the HUD and its style
+        // settle over the cover first; none of this time may consume the playable countdown.
+        var preparation = FindFirstObjectByType<AnalyzingScreenController>();
+        if (preparation != null) yield return preparation.PrepareGameplayHandoff();
+        if (!Current()) yield break;
+
         // The clock starts AT the play range's start: the warmup countdown runs SongTime from
         // SongPlayStart up to warmupTime + SongPlayStart, exactly where StartPlayback below takes
         // over — so a mid-song start never jumps (see MusicClock.Initialize).
@@ -644,7 +650,7 @@ public class GameplayManager : MonoBehaviour
         {
             _farewellElapsed += Time.deltaTime;
 
-            if (_farewellElapsed >= config.core.farewellSeconds)
+            if (_farewellElapsed >= config.core.FarewellDuration)
             {
                 _audioPlaying = false;
                 _running      = false;
@@ -933,7 +939,13 @@ public class GameplayManager : MonoBehaviour
         PublishStatsChanged();
     }
 
-    public void RequestRestartSong() => _fallRespawn.RestartSongManually();
+    public void RequestRestartSong()
+    {
+        // A restart owns the next playback handoff. The first run may still be waiting
+        // in GenerateAndStart's warmup; it must never start audio over the new countdown.
+        if (_startRoutine != null) { StopCoroutine(_startRoutine); _startRoutine = null; }
+        _fallRespawn.RestartSongManually();
+    }
 
     /// <summary>
     /// Re-arms the pieces a natural song-end stopped (main Update() loop, PlayerController,

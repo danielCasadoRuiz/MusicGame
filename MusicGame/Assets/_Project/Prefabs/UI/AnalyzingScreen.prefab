@@ -450,10 +450,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnalysisPresentation
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
-  barAtlas: {fileID: 2800000, guid: 6c320a699b3237b419fdd27e144bca63, type: 3}
+  barAtlas: {fileID: 0}
   motifAtlas: {fileID: 2800000, guid: ebdecf0344072f14db2a4138355fb1c1, type: 3}
+  cornerAtlas: {fileID: 0}
+  danceBackdrop: {fileID: 0}
   styleFlashShader: {fileID: 4800000, guid: 3c45fd6a65ce25646957381fed559c59, type: 3}
   styleRevealClip: {fileID: 8300000, guid: 2253ccd971f8f6944b68e84887e59cf3, type: 3}
+  danceFrame: {fileID: 0}
+  loadingWaveAtlas: {fileID: 0}
+  neutralStaffAtlas: {fileID: 2800000, guid: 3794dc01684c72e45a922e2d114e1bcf, type: 3}
+  staffTintShader: {fileID: 4800000, guid: 8c5edd72ed9fd3f4ca5de2db44654a87, type: 3}
   motifOpacity: 0.72
   provisionalBackground: {r: 0.018, g: 0.024, b: 0.035, a: 1}
 --- !u!1 &5733025875124515606

@@ -1,0 +1,13 @@
+Built-in ImageGen. Source asset: Assets/_Project/Art/UI/TouchControls/Source.png. The editor strips low-alpha export residue when packing Atlas.png.
+
+Use case: game UI asset sprites. Produce one transparent RGBA 3-column 2-row sprite atlas, 1536x1024, with SIX isolated equal-size cells. No text, letters, numbers, arrows or labels. Actual transparent background with alpha zero outside artwork, no gray backing.
+The references are this game's Dance and Classical buttons. Match their refined fine print texture and crisp layered edges at SMALL detail scale; this is a restrained touch HUD, not a large illustration.
+Top row = NEUTRAL TINTABLE set, strictly achromatic silver/white/charcoal (NO purple/blue accents), so the game can multiply by any style color:
+1 top-left: circular virtual joystick base, open dark transparent center, precise broken outer rim and a few angular diagonal cuts with fine etched grain, subtle and readable;
+2 top-middle: matching compact circular joystick thumb cap, crisp slim metallic-print perimeter, quiet semi-transparent charcoal inner face and one restrained pale highlight, no icon;
+3 top-right: matching rounded-diamond / subtly angular circular action button pad, generous empty dark translucent interior for existing JUMP/CROUCH text, fine pale broken rim and very small layered cut accents.
+Bottom row = EXCLUSIVE CLASSICAL set, warm antique gold/ivory/charcoal:
+4 bottom-left: circular classical joystick base, refined fine engraved gold rim with four small tailored geometric accents, restrained foil-print detail, empty transparent center, NO laurel branches, no decorative side arcs;
+5 bottom-middle: compact classical thumb cap with understated engraved gold perimeter and quiet dark face;
+6 bottom-right: classical action-button pad with elegant very thin gold double-cut edge and tiny stepped corner details, generous dark empty face for existing text, no laurel, no large ornaments.
+All elements centered in their cells with comfortable transparent safety gutters, same centered proportions per column for swapping skins. Joystick bases around 400px diameter per 512px cell, caps around 300px, action pads around 370px. Fine 1-3px detail, no broad glow, no glossy 3D bevel, no exaggerated sci-fi decoration, no shadow panels. Distinct elegant classical gold treatment rather than simply recoloring the top row. Preserve transparency.
