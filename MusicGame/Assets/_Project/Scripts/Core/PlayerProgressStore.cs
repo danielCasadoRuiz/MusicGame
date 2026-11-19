@@ -136,6 +136,11 @@ public static class PlayerProgressStore
         // playable catalog (deterministic). An id already stable or unknown is kept as-is (ignored by
         // readers if it no longer exists). The route is re-keyed and its signature cleared (rebuilt).
         if (data.version < 4) MigrateSongIdsToStable(data);
+        data.jukeboxUnlockedIds ??= new System.Collections.Generic.List<string>();
+        if (data.version < 10) data.jukeboxUnlockedIds = new System.Collections.Generic.List<string>(data.completedSongIds);
+        var jukeboxSeen = new System.Collections.Generic.HashSet<string>();
+        data.jukeboxUnlockedIds.RemoveAll(id => string.IsNullOrEmpty(id) || !jukeboxSeen.Add(id));
+
         // v4 → v5: campaign + song cycles. The song cycle starts as "every song won so far is consumed
         // in cycle 1" (exactly the old exclusion rule; it renews itself once all are consumed). The
         // campaign POSITION placement needs the CampaignConfigSO, so it happens in PlayerProgressService

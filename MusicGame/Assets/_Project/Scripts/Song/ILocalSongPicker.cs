@@ -10,3 +10,8 @@ public interface ILocalSongPicker
     /// <summary>Returns an absolute file path, or null if the user cancelled.</summary>
     string PickFile();
 }
+
+public interface IAsyncLocalSongPicker : ILocalSongPicker
+{
+    System.Collections.IEnumerator Pick(System.Action<string> onPicked);
+}

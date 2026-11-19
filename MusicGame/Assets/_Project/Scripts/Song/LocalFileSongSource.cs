@@ -19,6 +19,7 @@ public class LocalFileSongSource : ISongSource
 {
     private readonly ILocalSongPicker _picker;
     private string _pickedPath;
+    public bool AccessDenied { get; private set; }
 
     public LocalFileSongSource(ILocalSongPicker picker) => _picker = picker;
 
@@ -26,11 +27,21 @@ public class LocalFileSongSource : ISongSource
 
     public IEnumerator Load(Action<SelectedSongInfo?> onComplete)
     {
-        _pickedPath = _picker?.PickFile();
+        if (_picker is IAsyncLocalSongPicker asyncPicker) yield return asyncPicker.Pick(path => _pickedPath = path);
+        else _pickedPath = _picker?.PickFile();
         if (string.IsNullOrEmpty(_pickedPath))
         {
             onComplete?.Invoke(null); // cancelled — not an error
             yield break;
+        }
+
+        AccessDenied = false;
+        if (!ImportedAudioLibrary.CanImport)
+        {
+            bool existing = false;
+            try { existing = ImportedAudioLibrary.CanSelectIdentity(ImportedAudioLibrary.Identity(_pickedPath)); }
+            catch (Exception e) { Debug.LogWarning(e.Message); }
+            if (!existing) { AccessDenied = true; onComplete?.Invoke(null); yield break; }
         }
 
         AudioClip loadedClip = null;
@@ -42,9 +53,14 @@ public class LocalFileSongSource : ISongSource
             yield break;
         }
 
+        ImportedAudioRecord imported = null;
+        try { imported = ImportedAudioLibrary.Import(_pickedPath, Path.GetFileNameWithoutExtension(_pickedPath)); }
+        catch (Exception e) { Debug.LogWarning("[CustomAudio] Import failed: " + e.Message); }
+        if (imported == null) { UnityEngine.Object.Destroy(loadedClip); onComplete?.Invoke(null); yield break; }
+        _pickedPath = ImportedAudioLibrary.PathFor(imported);
         onComplete?.Invoke(new SelectedSongInfo
         {
-            DisplayName   = Path.GetFileNameWithoutExtension(_pickedPath),
+            DisplayName   = imported.title,
             Clip          = loadedClip,
             LocalFilePath = _pickedPath,
         });

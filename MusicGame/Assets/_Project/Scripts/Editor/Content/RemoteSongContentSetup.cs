@@ -91,6 +91,7 @@ public static class RemoteSongContentSetup
         }
         else sb.AppendLine($"  WARN  no index yet ({SongContentKeys.IndexAssetPath}) — run the bake");
 
+        RegisterLyrics(settings);
         settings.SetDirty(AddressableAssetSettings.ModificationEvent.BatchModification, null, true, true);
         AssetDatabase.SaveAssets();
         sb.AppendLine($"  PASS  {audio} audio + {profiles} profile entries in {SongContentKeys.GroupName}; playback import policy applied to {reimported} clip(s)");
@@ -98,6 +99,90 @@ public static class RemoteSongContentSetup
         int added = LocalizationSetup.AddMissingEntries(UiKeys);
         sb.AppendLine($"  PASS  UIText: {added} missing entr(y/ies) added");
         return sb.ToString();
+    }
+
+    [MenuItem("Tools/MusicGame/Content/Songs/Import Jukebox Lyrics JSON")]
+    private static void ImportLyrics()
+    {
+        string source = EditorUtility.OpenFilePanel("Import Jukebox lyrics", "../AssetsMaterial/Lyrics", "json");
+        if (string.IsNullOrEmpty(source)) return;
+        try
+        {
+            string destination = SaveLyrics(source, false);
+            if (destination == null) return;
+            Selection.activeObject = AssetDatabase.LoadAssetAtPath<TextAsset>(destination);
+        }
+        catch (System.Exception e)
+        {
+            EditorUtility.DisplayDialog("Jukebox lyrics import failed", e.Message, "OK");
+        }
+    }
+
+    public static void ImportLyricsFromCommandLine()
+    {
+        var args = System.Environment.GetCommandLineArgs();
+        int index = System.Array.IndexOf(args, "-lyricsJson");
+        try
+        {
+            if (index < 0 || index + 1 >= args.Length)
+                throw new System.ArgumentException("Missing -lyricsJson.");
+            string path = SaveLyrics(args[index + 1], true);
+            Debug.Log("[Jukebox] Imported lyrics to " + path);
+            EditorApplication.Exit(0);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogException(e);
+            EditorApplication.Exit(1);
+        }
+    }
+
+    private static string SaveLyrics(string source, bool batch)
+    {
+        string json = File.ReadAllText(source);
+        string id = JsonUtility.FromJson<SongLyrics>(json)?.songId;
+        var catalog = Resources.Load<AppConfigSO>("AppConfig")?.songCatalog;
+        if (catalog == null || string.IsNullOrEmpty(id) ||
+            !catalog.songs.Any(song => song != null && song.songId == id))
+            throw new System.FormatException("The JSON must identify an original song in the playable catalog.");
+
+        var lyrics = SongLyrics.Parse(json, id);
+        if (lyrics.textSource == "whisper_draft" || lyrics.lines.Length == 0)
+            throw new System.FormatException("Import a finalized lyrics JSON with at least one line.");
+
+        Directory.CreateDirectory(SongContentKeys.LyricsFolder);
+        string destination = $"{SongContentKeys.LyricsFolder}/{id}.json";
+        if (File.Exists(destination) && !batch && !EditorUtility.DisplayDialog("Replace Jukebox lyrics?",
+                $"Replace the lyrics for {id}?", "Replace", "Cancel")) return null;
+
+        File.WriteAllText(destination, json, new UTF8Encoding(false));
+        AssetDatabase.ImportAsset(destination, ImportAssetOptions.ForceSynchronousImport);
+        TpsContentProtection.Setup();
+        return destination;
+    }
+
+    internal static void RegisterLyrics(AddressableAssetSettings settings)
+    {
+        if (!AssetDatabase.IsValidFolder(SongContentKeys.LyricsFolder)) return;
+        var catalog = Resources.Load<AppConfigSO>("AppConfig")?.songCatalog;
+        if (catalog == null) return;
+
+        var group = settings.FindGroup(SongContentKeys.GroupName);
+        foreach (var song in catalog.songs)
+        {
+            if (song == null || string.IsNullOrEmpty(song.songId)) continue;
+            string path = $"{SongContentKeys.LyricsFolder}/{song.songId}.json";
+            var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
+            if (asset == null) continue;
+            SongLyrics.Parse(asset.text, song.songId);
+            string guid = AssetDatabase.AssetPathToGUID(path);
+            group ??= EnsureGroup(settings, null);
+            var entry = settings.FindAssetEntry(guid) ?? settings.CreateOrMoveEntry(guid, group);
+            entry.address = SongContentKeys.LyricsAddress(song.songId);
+            string label = SongContentKeys.ContentLabel(song.songId);
+            settings.AddLabel(label);
+            entry.SetLabel(label, true);
+        }
     }
 
     public const AudioCompressionFormat PlaybackFormat = AudioCompressionFormat.Vorbis;

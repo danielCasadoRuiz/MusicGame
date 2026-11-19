@@ -7,6 +7,8 @@ public partial class UIPrefabLibrarySO
     [Header("Frontend screens")]
     public IntroScreenView introScreen;
     public MainMenuView mainMenu;
+    public JukeboxView jukebox;
+    public JukeboxRowView jukeboxRow;
     public SongSelectionView songSelection;
     [Tooltip("Player profile (Main Menu → profile icon) — ProfileScreenPrefabs.")]
     public ProfileScreenView profileScreen;

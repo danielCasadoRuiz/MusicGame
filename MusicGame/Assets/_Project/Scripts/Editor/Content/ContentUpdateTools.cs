@@ -68,6 +68,7 @@ public static class ContentUpdateTools
         var settings = AddressableAssetSettingsDefaultObject.Settings;
         version ??= PlayerSettings.bundleVersion;
         sb.AppendLine($"  profile {settings.profileSettings.GetProfileName(settings.activeProfileId)}, player version {PlayerSettings.bundleVersion}, target {PlatformFolder()}");
+        TpsContentProtection.Setup();
         if (!SongContentGate(sb)) { ok = false; return sb.ToString(); }
 
         AddressableAssetSettings.CleanPlayerContent(settings.ActivePlayerDataBuilder);
@@ -98,6 +99,7 @@ public static class ContentUpdateTools
         ok = File.Exists(state);
         if (!ok) return sb.AppendLine($"  FAIL  no content state for {version} ({state}) — the release was not built with Build Release Content").ToString();
         sb.AppendLine($"  state {state}");
+        TpsContentProtection.Setup();
         if (!SongContentGate(sb)) { ok = false; return sb.ToString(); }
 
         // Shipped ("Cannot Change Post Release") entries that changed since the release + dependants.
@@ -121,6 +123,7 @@ public static class ContentUpdateTools
         }
         else sb.AppendLine("  info  no shipped entry changed (remote groups may still have changes)");
 
+        TpsContentProtection.Setup(); // new update groups must use the protected provider too
         var result = ContentUpdateScript.BuildContentUpdate(settings, state);
         ok = result != null && string.IsNullOrEmpty(result.Error);
         if (!ok) return sb.AppendLine("  FAIL  " + (result?.Error ?? "no result")).ToString();

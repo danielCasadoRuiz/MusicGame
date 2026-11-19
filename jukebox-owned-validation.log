@@ -1,0 +1,54 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.2f1 (a9779f353c9b) revision 11106207'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) 64bit Professional' Language: 'es' Physical Memory: 32388 MB
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON" at "2026-11-18T22:58:16.4460943Z"
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+Date: 2026-11-18T22:58:16Z
+[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 30024, path: "C:/Program Files/WindowsApps/UnityTechnologies.UnityHub_4.0.1.65535_x64__2vrhnee42bhxm/app/UnityLicensingClient_V1/Unity.Licensing.Client.exe")
+[Licensing::Module] LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.19.0+4cc3dda
+  Session Id:              f3bb0dbe1d9d432bbbb61e1272b87f18
+  Correlation Id:          d18fe1ea1b2857e889cc25de96bceb6b
+  External correlation Id: 2533285692821754072
+  Machine Id:              x99c5MRpHgESOtEUeZ1qua+TIa8=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-VISYON" (connect: 0.00s, validation: 0.00s, handshake: 0.06s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON-notifications" at "2026-11-18T22:58:16.5049695Z"
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.00
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Module] Licensing Background thread has ended after 0.08s
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Unity.exe
+-batchmode
+-projectPath
+C:/Users/VISYON/Documents/MusicGame/MusicGame
+-executeMethod
+JukeboxValidation.InstallAndVerify
+-logFile
+C:/Users/VISYON/Documents/MusicGame/jukebox-owned-validation.log
+Successfully changed project path to: C:/Users/VISYON/Documents/MusicGame/MusicGame
+C:/Users/VISYON/Documents/MusicGame/MusicGame
+Exiting without the bug reporter. Application will terminate with return code 1

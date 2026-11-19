@@ -244,6 +244,8 @@ public static class SongCatalogBake
                 gameStyle = style.Style, themeStyle = style.ThemeStyle, styleRunnerUp = style.RunnerUp,
                 styleScore = style.Score, styleMargin = style.Margin,
                 similarity = vector,
+                nativeAudioAddress = Resources.Load<JukeboxNativeCatalogSO>("JukeboxNativeCatalog")?.Find(e.songId)?.address,
+                nativeAudioRevision = Resources.Load<JukeboxNativeCatalogSO>("JukeboxNativeCatalog")?.Find(e.songId)?.revision,
             });
             sb.AppendLine($"  style  {e.songId} {e.address}: {style.Style} (score {style.Score:0.00}, margin {style.Margin:0.00} over {style.RunnerUp})");
         }

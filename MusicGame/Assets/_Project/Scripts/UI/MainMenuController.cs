@@ -126,12 +126,13 @@ public class MainMenuController : MonoBehaviour
         view.playButton.onClick.AddListener(OnPlayClicked);
         view.rivalsButton.onClick.AddListener(OnRivalsClicked);
         view.progressionButton.onClick.AddListener(OnProgressionClicked);
+        if (view.jukeboxButton != null) view.jukeboxButton.onClick.AddListener(() => JukeboxController.Instance?.Open());
         if (view.profileButton != null) view.profileButton.onClick.AddListener(() => ProfileScreenController.Instance?.Open());
         view.settingsButton.onClick.AddListener(OnSettingsClicked);
         view.quitButton.onClick.AddListener(OnQuitClicked);
         view.closeButton.onClick.AddListener(() => _settingsPanel.gameObject.SetActive(false));
         _buttonStack.AddRange(new[] { view.playButton.GetComponent<RectTransform>(), view.rivalsButton.GetComponent<RectTransform>(),
-                                      view.progressionButton.GetComponent<RectTransform>(), view.settingsButton.GetComponent<RectTransform>(),
+                                      view.progressionButton.GetComponent<RectTransform>(), view.jukeboxButton != null ? view.jukeboxButton.GetComponent<RectTransform>() : null, view.settingsButton.GetComponent<RectTransform>(),
                                       view.quitButton.GetComponent<RectTransform>() });
 
         float startVolume = PlayerPrefs.GetFloat(VolumePrefKey, 1f);

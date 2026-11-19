@@ -39,6 +39,8 @@ public class SongCatalogIndexEntry
     public string audioAddress;
     public string profileAddress;
     public string contentLabel;
+    public string nativeAudioAddress;
+    public string nativeAudioRevision;
     [Tooltip("Catalog order (progression, listing): stable, from the songId allocation.")]
     public int    order;
 

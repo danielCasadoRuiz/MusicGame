@@ -206,7 +206,7 @@ public class ContentDownloadManager : MonoBehaviour, IAppModule
         if (locations.Count == 0) return 0;
         var size = Addressables.GetDownloadSizeAsync(locations);
         await size.Task;
-        long bytes = size.Status == AsyncOperationStatus.Succeeded ? size.Result : 0;
+        long bytes = size.Status == AsyncOperationStatus.Succeeded ? TpsBundleProvider.AdjustDownloadSize(size.Result, locations) : 0;
         Addressables.Release(size);
         return bytes;
     }
@@ -242,6 +242,7 @@ public class ContentDownloadManager : MonoBehaviour, IAppModule
     {
         var locations = await ResolveLocationsAsync(contentKey);
         if (locations.Count == 0) return;
+        TpsBundleProvider.ClearEncryptedCache(locations);
         var clear = Addressables.ClearDependencyCacheAsync(locations, false);
         await clear.Task;
         Addressables.Release(clear);
@@ -263,7 +264,7 @@ public class ContentDownloadManager : MonoBehaviour, IAppModule
                 if (cancellation.IsCancellationRequested) return false;
                 var sizeOp = Addressables.GetDownloadSizeAsync(locations);
                 await sizeOp.Task;
-                long bytes = sizeOp.Status == AsyncOperationStatus.Succeeded ? sizeOp.Result : -1;
+                long bytes = sizeOp.Status == AsyncOperationStatus.Succeeded ? TpsBundleProvider.AdjustDownloadSize(sizeOp.Result, locations) : -1;
                 Addressables.Release(sizeOp);
                 if (bytes == 0) { progress?.Report(1f); return true; } // already cached / local
 

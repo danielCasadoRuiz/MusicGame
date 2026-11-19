@@ -59,7 +59,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3248318111753
-    m_Localized: "Explorant les freq\u00fc\u00e8ncies\u2026"
+    m_Localized: "Explorant les freq\xFC\xE8ncies\u2026"
     m_Metadata:
       m_Items: []
   - m_Id: 3248318111754
@@ -67,7 +67,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3248318111755
-    m_Localized: "Unint m\u00fasica i moviment\u2026"
+    m_Localized: "Unint m\xFAsica i moviment\u2026"
     m_Metadata:
       m_Items: []
   - m_Id: 3248318111756
@@ -1835,6 +1835,284 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 29320017096597502
     m_Localized: 3a
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281348440064
+    m_Localized: JUKEBOX
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160320
+    m_Localized: JUKEBOX
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160321
+    m_Localized: El teu recorregut musical, en ordre de descoberta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160322
+    m_Localized: '{0} / {1} desbloquejades'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160323
+    m_Localized: "Guanya un combat per desbloquejar la can\xE7\xF3. Repetir-la no
+      en canvia l\u2019ordre."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160324
+    m_Localized: PREVIEW
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160325
+    m_Localized: "CAN\xC7\xD3 COMPLETA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160326
+    m_Localized: ANTERIOR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160327
+    m_Localized: "SEG\xDCENT"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160328
+    m_Localized: PAUSA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160329
+    m_Localized: "REPR\xC8N"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160330
+    m_Localized: LLETRA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160331
+    m_Localized: "ELIMINA L\u2019\xC0UDIO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160332
+    m_Localized: "Vols eliminar \xAB{0}\xBB del joc i el seu desbloqueig? Es conserva
+      el fitxer original. Eliminar el tast no concedeix una altra importaci\xF3 gratu\xEFta."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160333
+    m_Localized: "\xC0udio eliminat. El fitxer original es conserva."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160334
+    m_Localized: "No s\u2019ha pogut eliminar l\u2019\xE0udio. Torna-ho a provar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160335
+    m_Localized: "JUGA AQUEST \xC0UDIO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160336
+    m_Localized: "IMPORTA \xC0UDIO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160337
+    m_Localized: "Tria un fitxer WAV, MP3, OGG o AIFF local. El joc en conserva una
+      c\xF2pia local. No es puja res a cap servidor."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160338
+    m_Localized: "Prova una importaci\xF3 gratu\xEFta. Pots tornar-la a jugar tants
+      cops com vulguis. Guanya el combat per afegir-la al Jukebox amb preview gratu\xEFt.
+      Per importar-ne m\xE9s cal Custom Audio."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160339
+    m_Localized: "Important l\u2019\xE0udio\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160340
+    m_Localized: "\xC0udio preparat. Juga\u2019l i guanya el combat per desbloquejar-ne
+      l\u2019escolta."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160341
+    m_Localized: "No s\u2019ha importat cap \xE0udio. Tria un fitxer compatible i
+      accessible i torna-ho a provar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160342
+    m_Localized: DESBLOQUEJADA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160343
+    m_Localized: "BLOQUEJADA \xB7 GUANYA PER DESCOBRIR-LA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160344
+    m_Localized: JUGA I GUANYA PER DESBLOQUEJAR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160345
+    m_Localized: "\xC0udio propi"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160346
+    m_Localized: Original
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160347
+    m_Localized: Sense classificar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160348
+    m_Localized: "La teva col\xB7lecci\xF3 apareixer\xE0 aqu\xED."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160349
+    m_Localized: "Carregant la biblioteca\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160350
+    m_Localized: "\xC0udio no disponible. Comprova les desc\xE0rregues o el fitxer
+      local i torna-ho a provar."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160351
+    m_Localized: "Reproducci\xF3 completa \xB7 la seg\xFCent segueix l\u2019ordre
+      de descoberta"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160352
+    m_Localized: "Preview gratu\xEFt \xB7 l\u2019escolta completa requereix Jukebox
+      Premium"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160353
+    m_Localized: AMPLIACIONS MUSICALS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160354
+    m_Localized: SEGON PLA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160355
+    m_Localized: "SEGON PLA \xB7 ACTIVAT"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160356
+    m_Localized: RESTAURA COMPRES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160357
+    m_Localized: AMPLIACIONS MUSICALS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160358
+    m_Localized: "Les compres encara no estan disponibles. Aquests s\xF3n els preus
+      \xFAnics previstos; no es far\xE0 cap c\xE0rrec ni desbloqueig."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160359
+    m_Localized: "El Jukebox no desbloqueja can\xE7ons: guanya-les jugant. Segon
+      pla requereix Jukebox. Nom\xE9s les nostres can\xE7ons poden tenir lletra."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160360
+    m_Localized: ADQUIRIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160361
+    m_Localized: TANCA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160362
+    m_Localized: TORNA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160363
+    m_Localized: "Jukebox \xB7 can\xE7ons completes, reproducci\xF3 consecutiva i
+      lletres"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160364
+    m_Localized: "Segon pla \xB7 pantalla bloquejada i controls d\u2019auriculars"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160365
+    m_Localized: "Music Pass \xB7 Jukebox + Segon pla"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160366
+    m_Localized: "Custom Audio \xB7 importacions locals il\xB7limitades"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160367
+    m_Localized: "Complete Music Pack \xB7 les tres funcionalitats"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160368
+    m_Localized: "Preparant m\xFAsica local per escoltar en segon pla\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160369
+    m_Localized: "Reproducci\xF3 en segon pla preparada. Pots bloquejar la pantalla."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160370
+    m_Localized: "No s\u2019ha pogut preparar l\u2019\xE0udio en segon pla. Torna-ho
+      a provar quan el contingut estigui disponible."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24294281407160371
+    m_Localized: "La reproducci\xF3 en segon pla est\xE0 disponible a Android i iOS."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24295215675793408
+    m_Localized: 'Sona: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24536734747750400
+    m_Localized: "CAN\xC7\xD3 COMPLETA \xB7 PREMIUM"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24536734793887744
+    m_Localized: COMPRA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24536734793887745
+    m_Localized: SIMULA LA COMPRA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24536734793887746
+    m_Localized: "Les compres estaran disponibles aviat. No es far\xE0 cap c\xE0rrec."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24536734793887747
+    m_Localized: "Mode de prova: confirmar activa aquesta compra nom\xE9s a l\u2019editor.
+      No s\u2019utilitzen diners reals."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24548651247759360
+    m_Localized: "Jukebox Premium \xB7 can\xE7ons completes, reproducci\xF3 consecutiva,
+      segon pla i lletres"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24548651319062528
+    m_Localized: "Jukebox Premium inclou segon pla. Les can\xE7ons es desbloquegen
+      guanyant, no comprant. Custom Audio permet importacions locals il\xB7limitades.
+      Nom\xE9s les nostres can\xE7ons poden tenir lletra."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24548651319062529
+    m_Localized: Preu pendent de definir
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24601328233115648
+    m_Localized: "{0} can\xE7ons a la teva col\xB7lecci\xF3"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24601328270864384
+    m_Localized: "LLETRES \xB7 PREMIUM"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24601328270864385
+    m_Localized: AMAGA LES LLETRES
     m_Metadata:
       m_Items: []
   references:

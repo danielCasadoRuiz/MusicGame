@@ -25,7 +25,7 @@ public static class LocalAudioClipLoader
         AudioType audioType = GuessAudioType(filePath);
         if (audioType == AudioType.UNKNOWN)
         {
-            Debug.LogWarning($"[LocalAudioClipLoader] Unsupported extension for '{filePath}' — only WAV/MP3 are supported.");
+            Debug.LogWarning($"[LocalAudioClipLoader] Unsupported extension for '{filePath}' — WAV, MP3, OGG and AIFF are supported.");
             onComplete?.Invoke(null);
             yield break;
         }
@@ -54,6 +54,9 @@ public static class LocalAudioClipLoader
         {
             ".wav" => AudioType.WAV,
             ".mp3" => AudioType.MPEG,
+            ".ogg" => AudioType.OGGVORBIS,
+            ".aif" => AudioType.AIFF,
+            ".aiff" => AudioType.AIFF,
             _      => AudioType.UNKNOWN,
         };
     }

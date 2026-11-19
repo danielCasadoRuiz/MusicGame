@@ -230,6 +230,19 @@ public class PlayerProgressService : MonoBehaviour
     // ── Song history (ids only — vectors/analysis live in SongSimilarityCache) ───────────────
 
     public IReadOnlyList<string> CompletedSongIds => _data.completedSongIds;
+    public IReadOnlyList<string> JukeboxUnlockedIds => _data.jukeboxUnlockedIds;
+    public bool IsJukeboxUnlocked(string id) => !string.IsNullOrEmpty(id) && _data.jukeboxUnlockedIds.Contains(id);
+    public void UnlockJukebox(string id, bool save = true)
+    {
+        if (string.IsNullOrEmpty(id) || _data.jukeboxUnlockedIds.Contains(id)) return;
+        _data.jukeboxUnlockedIds.Add(id);
+        if (save) Changed("Jukebox unlocked");
+    }
+    public void RemoveJukeboxImport(string id)
+    {
+        if (id == null || !id.StartsWith("import_", System.StringComparison.Ordinal)) return;
+        if (_data.jukeboxUnlockedIds.Remove(id)) Changed("Imported audio removed");
+    }
     public bool IsSongCompleted(string songId) => !string.IsNullOrEmpty(songId) && _data.completedSongIds.Contains(songId);
     public string SeedSongId => _data.seedSongId;
     public SongRouteData SongRoute => _data.songRoute;

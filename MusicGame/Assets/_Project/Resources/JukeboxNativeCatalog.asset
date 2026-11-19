@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94bf0361c3010d64590f3659a37e67d7, type: 3}
+  m_Name: JukeboxNativeCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::JukeboxNativeCatalogSO
+  songs:
+  - songId: song_001
+    revision: 040bb65540b27598c496_aac160_tps1
+    address: JukeboxAudio/song_001
+  - songId: song_002
+    revision: bc354628d6dcdefdb3c0_aac160_tps1
+    address: JukeboxAudio/song_002
+  - songId: song_003
+    revision: 56d837f98933ce82694f_aac160_tps1
+    address: JukeboxAudio/song_003
+  - songId: song_004
+    revision: 4d73e953643f9a971f23_aac160_tps1
+    address: JukeboxAudio/song_004
+  - songId: song_005
+    revision: 844aa9ddb10261f6d25e_aac160_tps1
+    address: JukeboxAudio/song_005
+  - songId: song_006
+    revision: 6058ec39b0d25fa1fd3f_aac160_tps1
+    address: JukeboxAudio/song_006
+  - songId: song_007
+    revision: 6d505bf266e437567e11_aac160_tps1
+    address: JukeboxAudio/song_007
+  - songId: song_008
+    revision: 7bcef09a43d95103c702_aac160_tps1
+    address: JukeboxAudio/song_008
+  - songId: song_009
+    revision: 86b1f0ed868168bcf30a_aac160_tps1
+    address: JukeboxAudio/song_009
+  - songId: song_010
+    revision: 189c41c5516fff1c0101_aac160_tps1
+    address: JukeboxAudio/song_010
+  - songId: song_011
+    revision: 69e443891703fa308cc3_aac160_tps1
+    address: JukeboxAudio/song_011
+  - songId: song_012
+    revision: 7924c01e5b4288713c02_aac160_tps1
+    address: JukeboxAudio/song_012
+  - songId: song_013
+    revision: d33e39766c5392d66101_aac160_tps1
+    address: JukeboxAudio/song_013
+  - songId: song_014
+    revision: 3df42368cf4a6a69dc4c_aac160_tps1
+    address: JukeboxAudio/song_014
+  - songId: song_015
+    revision: fdaff78290b169ea5d30_aac160_tps1
+    address: JukeboxAudio/song_015
+  - songId: song_016
+    revision: 31c152f70e798ce779c5_aac160_tps1
+    address: JukeboxAudio/song_016
+  - songId: song_017
+    revision: 8d90c965dca30ffed88b_aac160_tps1
+    address: JukeboxAudio/song_017
+  - songId: song_018
+    revision: b7889c85a8a8b510659f_aac160_tps1
+    address: JukeboxAudio/song_018
+  - songId: song_019
+    revision: 85fb15edaad7a5420ec9_aac160_tps1
+    address: JukeboxAudio/song_019
+  - songId: song_020
+    revision: d00ea355af84320052fe_aac160_tps1
+    address: JukeboxAudio/song_020
+  - songId: song_021
+    revision: 0a21d4a2d6aada391152_aac160_tps1
+    address: JukeboxAudio/song_021
+  - songId: song_022
+    revision: a9e7b2b87a9a1c879473_aac160_tps1
+    address: JukeboxAudio/song_022

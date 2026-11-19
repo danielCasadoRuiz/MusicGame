@@ -337,8 +337,20 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
             // (songId resolved below — always the stable catalog id, never the address)
             string songId = !string.IsNullOrEmpty(song.Value.SongId) ? song.Value.SongId : SongCatalog.IdForAddress(song.Value.DisplayName);
             progress.MarkSongCompleted(songId, save: false);
+            progress.UnlockJukebox(songId, save: false);
             // Only the assignment of THIS song is cleared (a local-file side run never touches it).
             if (progress.PendingRun.IsSet && progress.PendingRun.songId == songId) progress.ClearPendingRun(save: false);
+        }
+        if (progress != null && song.HasValue && !string.IsNullOrEmpty(song.Value.LocalFilePath))
+        {
+            var imported = ImportedAudioLibrary.FindByPath(song.Value.LocalFilePath);
+            if (imported != null)
+            {
+                // Metadata write failures must never interrupt a won fight or its unlock.
+                try { ImportedAudioLibrary.RecordStyle(song.Value.LocalFilePath, DetectedGameStyle); }
+                catch (System.Exception e) { Debug.LogWarning("[Jukebox] Could not save imported style: " + e.Message); }
+                progress.UnlockJukebox(imported.id, save: false);
+            }
         }
         SetAssignedOpponent(null, null, 0);
         if (save) progress?.NotifyTierProgressChanged(); // persisted immediately (tier + song history + pending)
@@ -381,8 +393,25 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
     void IAppModule.Initialize(AppContext context) { /* no cross-module wiring needed yet */ }
     void IAppModule.Shutdown() { }
 
+    private System.Action<GameFlowStateChangedEvent> _onImportFlow;
     private void OnEnable()
     {
+        _onImportFlow = e =>
+        {
+            if (e.Current != GameFlowState.MainMenu) return;
+            try
+            {
+                ImportedAudioLibrary.DiscardUnwon();
+                var song = SelectedSong;
+                if (song.HasValue && !string.IsNullOrEmpty(song.Value.LocalFilePath) && ImportedAudioLibrary.FindByPath(song.Value.LocalFilePath) == null)
+                {
+                    SelectedSong = null;
+                    if (song.Value.Clip != null) Destroy(song.Value.Clip);
+                }
+            }
+            catch (System.Exception ex) { Debug.LogWarning("[CustomAudio] Could not discard pending import: " + ex.Message); }
+        };
+        EventBus.Subscribe(_onImportFlow);
         _onProfileReady = e =>
         {
             if (e.SelectionGeneration != SelectionGeneration)
@@ -462,6 +491,7 @@ public class GameSession : MonoBehaviour, IAppModule, IConfigurableModule<FightS
 
     private void OnDisable()
     {
+        EventBus.Unsubscribe(_onImportFlow);
         EventBus.Unsubscribe(_onProfileReady);
         EventBus.Unsubscribe(_onGameEnded);
         EventBus.Unsubscribe(_onGameStarted);

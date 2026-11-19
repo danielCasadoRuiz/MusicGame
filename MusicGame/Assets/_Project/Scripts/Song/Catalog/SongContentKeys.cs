@@ -26,6 +26,9 @@ public static class SongContentKeys
     /// <summary>Download key of one song: audio + profile (same label set on both entries).</summary>
     public static string ContentLabel(string songId) => "Song_" + songId;
     public static string ProfileAddress(string songId) => ProfilePrefix + songId;
+    public const string LyricsPrefix = "SongLyrics/";
+    public const string LyricsFolder = "Assets/_Project/Content/JukeboxLyrics";
+    public static string LyricsAddress(string songId) => LyricsPrefix + songId;
     public static string AudioAddress(string songId) => AudioPrefix + songId;
 
     /// <summary>Addresses must survive the binary catalog unchanged (see the class doc).</summary>

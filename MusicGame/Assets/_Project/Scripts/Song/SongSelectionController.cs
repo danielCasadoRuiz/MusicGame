@@ -327,6 +327,13 @@ public class SongSelectionController : MonoBehaviour
 
     private void Show()
     {
+        if (_selectedLocalInfo.HasValue && ImportedAudioLibrary.FindByPath(_selectedLocalInfo.Value.LocalFilePath) == null)
+        {
+            var clip = _selectedLocalInfo.Value.Clip;
+            _selectedLocalInfo = null;
+            if (clip != null && GameSession.Instance?.SelectedSong?.Clip != clip) Destroy(clip);
+            RefreshRowHighlight(CurrentAccentColor());
+        }
         _root.gameObject.SetActive(true);
         _root.SetAsLastSibling();
         RefreshCompletedRows();
@@ -361,11 +368,17 @@ public class SongSelectionController : MonoBehaviour
 
     private void OnPlayYourSongClicked()
     {
+        if (_isLoading) return;
+        _isLoading = true;
+        RefreshPlayButtonInteractable();
         var source = new LocalFileSongSource(LocalSongPickerFactory.Create());
         StartCoroutine(source.Load(info =>
         {
+            _isLoading = false;
+            RefreshPlayButtonInteractable();
             if (info == null)
             {
+                if (source.AccessDenied) { MusicAccess.Request(MusicProduct.CustomAudio); return; }
                 SetStatus(Loc.Get("SongSelection.LocalFileCancelled"), _errorStatusColor);
                 return;
             }
@@ -417,6 +430,14 @@ public class SongSelectionController : MonoBehaviour
     private void OnPlayClicked()
     {
         if (!HasSelection || _isLoading) return;
+        if (_selectedLocalInfo.HasValue &&
+            (!System.IO.File.Exists(_selectedLocalInfo.Value.LocalFilePath) || ImportedAudioLibrary.FindByPath(_selectedLocalInfo.Value.LocalFilePath) == null))
+        {
+            _selectedLocalInfo = null;
+            RefreshPlayButtonInteractable(); RefreshRowHighlight(CurrentAccentColor());
+            SetStatus(Loc.Get("SongSelection.LoadFailed"), _errorStatusColor);
+            return;
+        }
         StopPreview(); // the real run starts — never alongside a preview
         MatchResultReturn.Disarm(); // a new song is played: the result screen is left for good
         if (!_selectedLocalInfo.HasValue) CampaignService.MarkFirstSongChosen(); // the new lap's first song is chosen

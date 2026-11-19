@@ -1,0 +1,945 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.2f1 (a9779f353c9b) revision 11106207'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) 64bit Professional' Language: 'es' Physical Memory: 32388 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+Date: 2026-11-19T11:30:51Z
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON" at "2026-11-19T11:30:51.9197709Z"
+[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 30024, path: "C:/Program Files/WindowsApps/UnityTechnologies.UnityHub_4.0.1.65535_x64__2vrhnee42bhxm/app/UnityLicensingClient_V1/Unity.Licensing.Client.exe")
+[Licensing::Module] LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.19.0+4cc3dda
+  Session Id:              cfbd8437e63a4744a26b60ae5572c5e2
+  Correlation Id:          d18fe1ea1b2857e889cc25de96bceb6b
+  External correlation Id: 2038634209507067339
+  Machine Id:              x99c5MRpHgESOtEUeZ1qua+TIa8=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-VISYON" (connect: 0.00s, validation: 0.01s, handshake: 0.11s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-VISYON-notifications" at "2026-11-19T11:30:52.035215Z"
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.00
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Module] Licensing Background thread has ended after 0.20s
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Unity.exe
+-batchmode
+-projectPath
+C:/Users/VISYON/Documents/MusicGame/MusicGame
+-executeMethod
+TpsValidation.Run
+-logFile
+C:/Users/VISYON/Documents/MusicGame/tps-unity-validation.log
+Successfully changed project path to: C:/Users/VISYON/Documents/MusicGame/MusicGame
+C:/Users/VISYON/Documents/MusicGame/MusicGame
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [20180]  Target information:
+
+Player connection [20180]  * "[IP] 10.222.250.15 [Port] 55504 [Flags] 2 [Guid] 4277698268 [EditorId] 4277698268 [Version] 1048832 [Id] WindowsEditor(7,RemoteDani) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [20180] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [20180] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-31380" after 0.4 seconds.
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Artifact Garbage Collection - Removed 4 unused hashed content files
+Refreshing native plugins compatible for Editor in 1.87 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.2f1 (a9779f353c9b)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/VISYON/Documents/MusicGame/MusicGame/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3070 Laptop GPU (ID=0x249d)
+    Vendor:   NVIDIA
+    VRAM:     8020 MB
+    Driver:   32.0.15.8142
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56380
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/MetroSupport/UnityEditor.UWP.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.2f1/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+Registered in 0.020250 seconds.
+- Loaded All Assemblies, in  0.554 seconds
+Native extension for Android target not found
+Android Extension - Scanning For ADB Devices 2358 ms
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  2.885 seconds
+Domain Reload Profiling: 3434ms
+	BeginReloadAssembly (181ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (42ms)
+	RebuildNativeTypeToScriptingClass (13ms)
+	initialDomainReloadingComplete (77ms)
+	LoadAllAssembliesAndSetupDomain (234ms)
+		LoadAssemblies (175ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (228ms)
+			TypeCache.Refresh (225ms)
+				TypeCache.ScanAssembly (208ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (2886ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (2845ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (2519ms)
+			SetLoadedEditorAssemblies (5ms)
+			BeforeProcessingInitializeOnLoad (97ms)
+			ProcessInitializeOnLoadAttributes (159ms)
+			ProcessInitializeOnLoadMethodAttributes (64ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Application.AssetDatabase Initial Refresh Start
+Package Manager log level set to [2]
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 64 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.addressables@2.3.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.addressables@5d870284b3d9)
+    com.unity.ai.inference@2.6.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.ai.navigation@2.0.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ai.navigation@5218e4bf7edc)
+    com.unity.collab-proxy@2.10.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collab-proxy@3351acaba9c9)
+    com.unity.ide.rider@3.0.38 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.rider@1f60b3138684)
+    com.unity.ide.visualstudio@2.0.25 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ide.visualstudio@74aa435fc4bb)
+    com.unity.inputsystem@1.17.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.inputsystem@02433b2481ab)
+    com.unity.localization@1.5.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.localization@f2647f7408bd)
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.timeline@1.8.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.timeline@6b9e48457ddb)
+    com.unity.visualscripting@1.9.9 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.visualscripting@191c0d7e3b69)
+    com.unity.burst@1.8.26 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.burst@21aa83e7fd8f)
+    com.unity.dt.app-ui@2.1.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.dt.app-ui@8ac7e730dd5d)
+    com.unity.collections@2.6.2 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.collections@aea9d3bd5e19)
+    com.unity.profiling.core@1.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.profiling.core@8a49f7027d06)
+    com.unity.scriptablebuildpipeline@2.4.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.scriptablebuildpipeline@ca3e2d96aa2f)
+    com.unity.searcher@4.9.4 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.mathematics@1.3.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.mathematics@19a9377c4ffa)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.test-framework.performance@3.2.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework.performance@0840f58e4562)
+  Built-in packages:
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.multiplayer.center@f01f4ba8d00a)
+    com.unity.render-pipelines.universal@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal@66e99ffa09c7)
+    com.unity.test-framework@1.6.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.test-framework@0b7a23ab2e1d)
+    com.unity.ugui@2.0.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ugui@52e65280e89e)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Resources\PackageManager\BuiltInPackages\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.0.5 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.ext.nunit@d8c07649098d)
+    com.unity.render-pipelines.core@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.core@ce86d16dfe9d)
+    com.unity.shadergraph@17.3.0 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.shadergraph@3cfe1d1f3f8c)
+    com.unity.render-pipelines.universal-config@17.0.3 (location: C:\Users\VISYON\Documents\MusicGame\MusicGame\Library\PackageCache\com.unity.render-pipelines.universal-config@8dc1aab4af1d)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.08 seconds
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+DisplayProgressbar: Compiling Scripts
+ExitCode: 0 Duration: 10s
+[ 400/1159  0s] WriteResponseFile Library/Bee/artifacts/rsp/4747638433968585886.rsp
+[ 895/1159  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1151/1159  4s] Csc Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp.dll (+2 others)
+Assets\_Project\Scripts\UI\UIFactory.cs(138,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\World\MusicWorldManager.cs(150,34): warning CS0618: 'Physics.BakeMesh(int, bool, MeshColliderCookingOptions)' is obsolete: 'BakeMesh(int, bool, MeshColliderCookingOptions) is obsolete. Use BakeMesh(EntityId, bool, MeshColliderCookingOptions) instead.'
+[1152/1159  3s] Csc Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+[1153/1159  2s] ILPostProcess Library/Bee/artifacts/1900b0aEDbg.dag/post-processed/Assembly-CSharp.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp.dll, with 139 defines and 338 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1154/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.pdb
+[1155/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.dll
+[1156/1159  0s] ILPostProcess Library/Bee/artifacts/1900b0aEDbg.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aEDbg.dag/Assembly-CSharp-Editor.dll, with 137 defines and 359 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[1157/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[1158/1159  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (10.92 seconds), 10 items updated, 1159 evaluated
+Assets\_Project\Scripts\UI\UIFactory.cs(138,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\World\MusicWorldManager.cs(150,34): warning CS0618: 'Physics.BakeMesh(int, bool, MeshColliderCookingOptions)' is obsolete: 'BakeMesh(int, bool, MeshColliderCookingOptions) is obsolete. Use BakeMesh(EntityId, bool, MeshColliderCookingOptions) instead.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualRefine.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\ArenaBakeAll.cs(30,49): warning CS0618: 'Lightmapping.giWorkflowMode' is obsolete: 'Lightmapping.giWorkflowMode is obsolete.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(155,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(195,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIComponentPrefabBuilder.cs(152,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\ProfileScreenPrefabs.cs(28,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\UIScreens\HelpScreenPrefabs.cs(717,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\Editor\DevTools\MonteverdiShadowSetup.cs(6,349): warning CS0414: The field 'MonteverdiShadowSetup.moving' is assigned but its value is never used
+Assets\_Project\Scripts\Editor\DevTools\ArenaVisualPreview.cs(11,221): warning CS0414: The field 'ArenaVisualPreview.bakeEnded' is assigned but its value is never used
+AssetDatabase: script compilation time: 11.995919s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  3.901 seconds
+Refreshing native plugins compatible for Editor in 10.35 ms, found 4 plugins.
+Native extension for Android target not found
+Native extension for UWP target not found
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 7.88 ms, found 4 plugins.
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in 11.014 seconds
+Domain Reload Profiling: 14904ms
+	BeginReloadAssembly (347ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (14ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (145ms)
+	RebuildCommonClasses (40ms)
+	RebuildNativeTypeToScriptingClass (13ms)
+	initialDomainReloadingComplete (46ms)
+	LoadAllAssembliesAndSetupDomain (3443ms)
+		LoadAssemblies (3190ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (393ms)
+			TypeCache.Refresh (270ms)
+				TypeCache.ScanAssembly (251ms)
+			BuildScriptInfoCaches (96ms)
+			ResolveRequiredComponents (19ms)
+	FinalizeReload (11014ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (10527ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (58ms)
+			SetLoadedEditorAssemblies (9ms)
+			BeforeProcessingInitializeOnLoad (391ms)
+			ProcessInitializeOnLoadAttributes (9824ms)
+			ProcessInitializeOnLoadMethodAttributes (233ms)
+			AfterProcessingInitializeOnLoad (11ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (9ms)
+Refreshing native plugins compatible for Editor in 7.51 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=a36290c3a37825f468411eaaa02cdee1): Total: 29.518 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=12705 ms
+		Asset DB Callback time: managed=488 ms, native=101 ms
+		Scripting: domain reloads=1, domain reload time=3901 ms, compile time=11997 ms, other=323 ms
+		Project Asset Count: scripts=6453, non-scripts=20545
+		Asset File Changes: new=0, changed=2, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 91.453ms
+	ApplyChangesToAssetFolders: 0.733ms
+	Scan: 419.896ms
+	OnSourceAssetsModified: 0.962ms
+	CategorizeAssetsWithTransientArtifact: 126.961ms
+	ProcessAssetsWithTransientArtifactChanges: 185.874ms
+	CategorizeAssets: 295.366ms
+	ImportOutOfDateAssets: 11054.082ms (-952.716ms without children)
+		CompileScripts: 11997.217ms
+		ReloadNativeAssets: 0.201ms
+		UnloadImportedAssets: 2.219ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 4.960ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.002ms
+		OnDemandSchedulerStart: 2.199ms
+	PostProcessAllAssets: 491.828ms
+	Hotreload: 9.774ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.003ms
+	UnloadStreamsBegin: 4.450ms
+	PersistCurrentRevisions: 1.106ms
+	UnloadStreamsEnd: 0.002ms
+	GenerateScriptTypeHashes: 5.054ms
+	Untracked: 16835.739ms
+
+Application.AssetDatabase Initial Refresh End
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+Scanning for USB devices : 2.467ms
+Initializing Unity extensions:
+Script 'Library/PackageCache/com.unity.test-framework@0b7a23ab2e1d/Tests/TestNewCustomAssembly/TestNewCustomAssembly.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/VerifyEditorInPlaymode/Unity.AI.Navigation.Tests.EditorInPlaymode.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.mathematics@19a9377c4ffa/Tests/Unity.Mathematics.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests/System.Runtime.CompilerServices.Unsafe/System.Runtime.CompilerServices.Unsafe.xml' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/ResourceManager/Unity.ResourceManager.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/DocCodeSamples.Tests/DocCodeSamples.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.dt.app-ui@8ac7e730dd5d/Tests/Runtime/Unity.AppUI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.addressables@5d870284b3d9/Tests/Runtime/Unity.Addressables.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/TestAssets/Unity.ScriptableBuildPipelineTests.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.PerformanceTests/Unity.Collections.PerformanceTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/Unity.AI.Navigation.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.timeline@6b9e48457ddb/DocCodeExamples/DocCodeExamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.localization@f2647f7408bd/DocCodeSamples.Tests/DocCodeSamples.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.multiplayer.center@f01f4ba8d00a/Tests/Runtime/Unity.Multiplayer.Center.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.core@ce86d16dfe9d/Tests/Runtime/Threading/FunctionTestsGroup.compute' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ai.navigation@5218e4bf7edc/Tests/Runtime/OffMeshLinkTests/Unity.AI.Navigation.LegacyOffMeshLink.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/UGUI/UnityEngine.UI.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.inputsystem@02433b2481ab/Tests/IntegrationTests/Unity.InputSystem.IntegrationTests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.Tests.Playmode/FixedListPlayModeTests.tt' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.ugui@52e65280e89e/Tests/Runtime/TMP/Unity.TextMeshPro.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Tests/Runtime/Unity.RenderPipelines.Universal.Runtime.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.scriptablebuildpipeline@ca3e2d96aa2f/Tests/Runtime/Unity.ScriptableBuildPipeline.Tests.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+Script 'Library/PackageCache/com.unity.collections@aea9d3bd5e19/Unity.Collections.BurstCompatibilityGen/Unity.Collections.BurstCompatibilityGen.asmdef' will not be compiled because it exists outside the Assets folder and does not to belong to any assembly definition file.
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-MusicGame
+Unloading 61 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 9470 unused Assets / (20.4 MB). Loaded Objects now: 10501.
+Memory consumption went from 332.7 MB to 312.2 MB.
+Total: 18.475400 ms (FindLiveObjects: 0.747200 ms CreateObjectMapping: 0.760200 ms MarkObjects: 11.979500 ms  DeleteObjects: 4.987100 ms)
+
+Start importing ProjectSettings/EditorBuildSettings.asset using Guid(0000000000000000b000000000000000) (LibraryAssetImporter) -> (artifact id: '11f8fdea987aecd2948effa50908fb0c') in 0.0109204 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Schemas/Remote_Songs_BundledAssetGroupSchema.asset using Guid(e270aa9c9a8c6974d908ea62da14fb05) (NativeFormatImporter) -> (artifact id: '4e918233978a6c45a4e57014a4cfc840') in 0.0036857 seconds
+Start importing Assets/AddressableAssetsData/AssetGroups/Schemas/Remote_JukeboxAudio_BundledAssetGroupSchema.asset using Guid(2ab7076d30daafd48ab5b5d81bc32e38) (NativeFormatImporter) -> (artifact id: '9a3b7ecf6d6423930782081d6d8ff34e') in 0.0034194 seconds
+Start importing Assets/AddressableAssetsData/AddressableAssetSettings.asset using Guid(8a4cc0dfc618f344aaae658dde9bb725) (NativeFormatImporter) -> (artifact id: 'e868b7c9874ad9238d6c4df35b0f8210') in 0.0031598 seconds
+Refreshing native plugins compatible for Editor in 5.85 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.12 ms.
+Asset Pipeline Refresh (id=a0f62fcdb2438514f88cfe750b244e5b): Total: 0.266 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/TpsValidation_3785f48a04b34db28adf91733828689f using Guid(705a93c8f441002489ae565382f32808) (DefaultImporter) -> (artifact id: '82a881a6e909671dc03e29864c868c88') in 0.0193847 seconds
+Start importing Assets/_Project/TpsValidation_3785f48a04b34db28adf91733828689f/fixture.wav using Guid(92bf0313c934c4f44a6974d3a1cf57a7) (AudioImporter) -> (artifact id: '232cf19996581bd65d4c603b83b7ea73') in 0.0786025 seconds
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Refreshing native plugins compatible for Editor in 7.25 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.13 ms.
+Asset Pipeline Refresh (id=2b8debe691f7d444487c5a754c4c7e60): Total: 0.218 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/TpsValidation_3785f48a04b34db28adf91733828689f/fixture.wav using Guid(92bf0313c934c4f44a6974d3a1cf57a7) (AudioImporter) -> (artifact id: '24000a36a6442da58d688cd07704da42') in 0.0860032 seconds
+Refreshing native plugins compatible for Editor in 6.18 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.17 ms.
+Asset Pipeline Refresh (id=bc256102487591d4f8041cdd7a9bb6be): Total: 0.208 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Start importing Assets/Settings/Quality/URP_Low.asset using Guid(79a0f21299d51e140a000a7faf2714ee) (NativeFormatImporter) -> (artifact id: '8160518354abab683051972e2c074d9e') in 0.0038111 seconds
+Refreshing native plugins compatible for Editor in 6.24 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.11 ms.
+Asset Pipeline Refresh (id=60f78cf332165744ea327074e53cbbf7): Total: 0.057 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/Settings/Quality/URP_Mid.asset using Guid(0f43c25ce54961049a01bcfa30a9f993) (NativeFormatImporter) -> (artifact id: 'af8b4d9159e0431baff1852815a9ad9b') in 0.0041286 seconds
+Refreshing native plugins compatible for Editor in 6.42 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=ab14325907db23645b4488d38a088c63): Total: 0.057 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/Settings/Quality/URP_HighMid.asset using Guid(d1549d46cc93e7d4ab65c4ae33629e1d) (NativeFormatImporter) -> (artifact id: '11dbd09e734092a2c2b7f7fd9752a1d1') in 0.0043899 seconds
+Refreshing native plugins compatible for Editor in 5.98 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.12 ms.
+Asset Pipeline Refresh (id=3bf7800b53afc1e49b99669dca47ca9f): Total: 0.057 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/_Project/Art/Arenas/Monteverdi/LightingPilot/Profiles/Mid_Recommended.asset using Guid(fa32aa36d8af9fd40bd6cc90e8fb4ac0) (NativeFormatImporter)Main Object Name 'URP_Mid' does not match filename 'Mid_Recommended'
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEditor.AssetDatabase:SaveAssetIfDirty (UnityEditor.GUID)
+UnityEditor.AssetDatabase:SaveAssetIfDirty (UnityEngine.Object)
+UnityEditor.Rendering.Universal.ShaderBuildPreprocessor:GetSupportedShaderFeaturesFromAssets (System.Collections.Generic.List`1<UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset>&,System.Collections.Generic.List`1<UnityEditor.Rendering.Universal.ShaderFeatures>&,bool) (at ./Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Editor/ShaderBuildPreprocessor.cs:500)
+UnityEditor.Rendering.Universal.ShaderBuildPreprocessor:HandleEnabledShaderStripping () (at ./Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Editor/ShaderBuildPreprocessor.cs:443)
+UnityEditor.Rendering.Universal.ShaderBuildPreprocessor:GatherShaderFeatures (bool) (at ./Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Editor/ShaderBuildPreprocessor.cs:272)
+UnityEditor.Rendering.Universal.UpdateShaderPrefilteringDataBeforeBuild:.ctor () (at ./Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Editor/ShaderBuildPreprocessor.cs:113)
+System.Reflection.RuntimeConstructorInfo:InternalInvoke (object,object[],bool)
+System.RuntimeType:CreateInstanceMono (bool,bool)
+System.RuntimeType:CreateInstanceSlow (bool,bool,bool,bool)
+System.RuntimeType:CreateInstanceDefaultCtor (bool,bool,bool,bool,System.Threading.StackCrawlMark&)
+System.Activator:CreateInstance (System.Type,bool,bool)
+System.Activator:CreateInstance (System.Type,bool)
+System.Activator:CreateInstance (System.Type)
+UnityEditor.Build.BuildPipelineInterfaces:AddToListIfTypeImplementsInterface<UnityEditor.Build.IPreprocessShaders> (System.Type,object&,System.Collections.Generic.List`1<UnityEditor.Build.IPreprocessShaders>&)
+UnityEditor.Build.BuildPipelineInterfaces:InitializeBuildCallbacks (UnityEditor.Build.BuildPipelineInterfaces/BuildCallbacks)
+UnityEditor.BuildPipeline:BuildAssetBundlesInternal (UnityEditor.BuildAssetBundlesParameters)
+UnityEditor.BuildPipeline:BuildAssetBundles (UnityEditor.BuildAssetBundlesParameters)
+UnityEditor.BuildPipeline:BuildAssetBundles (string,UnityEditor.AssetBundleBuild[],UnityEditor.BuildAssetBundleOptions,UnityEditor.BuildTarget)
+TpsValidation:Run () (at Assets/_Project/Scripts/Editor/Content/TpsValidation.cs:81)
+
+[./Library/PackageCache/com.unity.render-pipelines.universal@66e99ffa09c7/Editor/ShaderBuildPreprocessor.cs line 443]
+
+ -> (artifact id: 'd50115aea89aa6c74c7378662daa2b87') in 0.0055007 seconds
+Refreshing native plugins compatible for Editor in 6.14 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=3383ae17c58f9a143a03ba2e8e47d8cb): Total: 0.060 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/Settings/Quality/URP_Ultra.asset using Guid(40a7850d4de35b44d9822a17a19f1019) (NativeFormatImporter) -> (artifact id: '8567e591c0d086c6aad79de8acf13e08') in 0.0042305 seconds
+Refreshing native plugins compatible for Editor in 8.10 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.19 ms.
+Asset Pipeline Refresh (id=7155be1100c4c114889d8445e6afe798): Total: 0.065 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbgSkipCompile.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssembliesAndTypeDB
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+ExitCode: 0 Duration: 2s22ms
+[3/4        1s] BuildPlayerDataGenerator Library/BuildPlayerData/Editor/TypeDb-All.json
+*** Tundra build success (1.96 seconds), 1 items updated, 4 evaluated
+Asset Pipeline Refresh (id=5e347e0441631f744a4266b8af46f4ed): Total: 0.041 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+[ScriptCompilation] Requested script compilation because: Recompiling scripts for player build.
+BuildPlayer: start building target 19
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.2f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aP.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssembliesAndTypeDB
+WorkingDir: C:/Users/VISYON/Documents/MusicGame/MusicGame
+Total cache size 268004818
+Total cache size after purge 268004818, took 00:00:01.1807306
+ExitCode: 0 Duration: 6s961ms
+[450/684    0s] WriteResponseFile Library/Bee/artifacts/rsp/4747638433968585886.rsp
+[575/684    0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[610/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.DocCodeExamples.dll
+[611/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipeline.Universal.ShaderLibrary.dll
+[612/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Localization.dll
+[613/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.Config.Runtime.dll
+[614/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Core.Runtime.dll
+[615/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Mathematics.dll
+[616/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.AI.Navigation.dll
+[617/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Collections.dll
+[618/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Multiplayer.Center.Common.dll
+[619/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InternalAPIEngineBridge.013.dll
+[620/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Core.ShaderLibrary.dll
+[621/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Timeline.dll
+[622/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InternalAPIEngineBridge.004.dll
+[623/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.UnifiedRayTracing.Runtime.dll
+[624/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.GPUDriven.Runtime.dll
+[625/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll
+[626/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.ScriptableBuildPipeline.dll
+[627/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.State.dll
+[628/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.Core.dll
+[629/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Core.Runtime.Shared.dll
+[630/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InferenceEngine.dll
+[631/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.ResourceManager.dll
+[632/684    0s] CopyFiles Library/PlayerScriptAssemblies/UnityEngine.UI.dll
+[633/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Profiling.Core.dll
+[634/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.Shaders.dll
+[635/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.Flow.dll
+[636/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InputSystem.dll
+[637/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.2D.Runtime.dll
+[638/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Addressables.dll
+[639/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InferenceEngine.Tokenization.dll
+[640/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InputSystem.ForUI.dll
+[641/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.UnifiedRayTracing.Runtime.pdb
+[642/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.GPUDriven.Runtime.pdb
+[643/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.Core.pdb
+[644/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.AI.Navigation.pdb
+[645/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Burst.dll
+[646/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Collections.pdb
+[647/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.ResourceManager.pdb
+[648/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Core.Runtime.pdb
+[649/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InternalAPIEngineBridge.004.pdb
+[650/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.DocCodeExamples.pdb
+[651/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.Runtime.dll
+[652/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.State.pdb
+[653/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.TextMeshPro.dll
+[654/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InputSystem.pdb
+[655/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Mathematics.pdb
+[656/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.Config.Runtime.pdb
+[657/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.pdb
+[658/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Core.Runtime.Shared.pdb
+[659/684    0s] CopyFiles Library/PlayerScriptAssemblies/UnityEngine.UI.pdb
+[660/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.Shaders.pdb
+[661/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.2D.Runtime.pdb
+[662/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Timeline.pdb
+[663/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.TextMeshPro.pdb
+[664/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Profiling.Core.pdb
+[665/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Universal.Runtime.pdb
+[666/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InferenceEngine.pdb
+[667/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Localization.pdb
+[668/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Multiplayer.Center.Common.pdb
+[669/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Burst.pdb
+[670/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InternalAPIEngineBridge.013.pdb
+[671/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InputSystem.ForUI.pdb
+[672/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.VisualScripting.Flow.pdb
+[673/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipelines.Core.ShaderLibrary.pdb
+[674/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.Addressables.pdb
+[675/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.ScriptableBuildPipeline.pdb
+[676/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.RenderPipeline.Universal.ShaderLibrary.pdb
+[677/684    0s] CopyFiles Library/PlayerScriptAssemblies/Unity.InferenceEngine.Tokenization.pdb
+[678/684    2s] Csc Library/Bee/artifacts/1900b0aP.dag/Assembly-CSharp.dll (+2 others)
+Assets\_Project\Scripts\UI\UIFactory.cs(138,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+
+Assets\_Project\Scripts\World\MusicWorldManager.cs(150,34): warning CS0618: 'Physics.BakeMesh(int, bool, MeshColliderCookingOptions)' is obsolete: 'BakeMesh(int, bool, MeshColliderCookingOptions) is obsolete. Use BakeMesh(EntityId, bool, MeshColliderCookingOptions) instead.'
+[679/684    1s] ILPostProcess Library/Bee/artifacts/1900b0aP.dag/post-processed/Assembly-CSharp.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aP.dag/Assembly-CSharp.dll, with 128 defines and 239 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[680/684    0s] CopyFiles Library/PlayerScriptAssemblies/Assembly-CSharp.pdb
+[681/684    0s] CopyFiles Library/PlayerScriptAssemblies/Assembly-CSharp.dll
+[683/684    1s] BuildPlayerDataGenerator Library/BuildPlayerData/Player/RuntimeInitializeOnLoads.json (+1 other)
+*** Tundra build success (6.90 seconds), 75 items updated, 684 evaluated
+Assets\_Project\Scripts\UI\UIFactory.cs(138,9): warning CS0618: 'TMP_Text.enableWordWrapping' is obsolete: 'The enabledWordWrapping property is now obsolete. Please use the textWrappingMode property instead.'
+Assets\_Project\Scripts\World\MusicWorldManager.cs(150,34): warning CS0618: 'Physics.BakeMesh(int, bool, MeshColliderCookingOptions)' is obsolete: 'BakeMesh(int, bool, MeshColliderCookingOptions) is obsolete. Use BakeMesh(EntityId, bool, MeshColliderCookingOptions) instead.'
+
+***Player size statistics***
+Total compressed size 12.5 KB. Total uncompressed size 12.3 KB.
+Asset Pipeline Refresh (id=1320e81730fd3d74aaa70fcaebcd05a4): Total: 0.322 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=322 ms
+		Asset DB Callback time: managed=0 ms, native=0 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=6454, non-scripts=20546
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 0.001ms
+	ApplyChangesToAssetFolders: 0.121ms
+	Scan: 0.000ms
+	OnSourceAssetsModified: 0.001ms
+	CategorizeAssetsWithTransientArtifact: 0.003ms
+	ProcessAssetsWithTransientArtifactChanges: 0.090ms
+	CategorizeAssets: 274.239ms
+	ImportOutOfDateAssets: 16.049ms (3.151ms without children)
+		ReloadNativeAssets: 1.603ms
+		UnloadImportedAssets: 0.006ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 9.082ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.002ms
+		OnDemandSchedulerStart: 2.205ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.397ms
+	UnloadStreamsBegin: 0.018ms
+	PersistCurrentRevisions: 2.279ms
+	UnloadStreamsEnd: 0.003ms
+	Untracked: 28.247ms
+
+Total cache size 268004818
+Total cache size after purge 268004818, took 00:00:00.8782867
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-TQJM-X8MX-ZSPH-U5VU-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: Unlimited
+[Licensing::Module] License group:
+  Id: 20067502394072-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+Unloading 3982 unused Assets / (4.2 MB). Loaded Objects now: 10594.
+Memory consumption went from 402.0 MB to 397.8 MB.
+Total: 34.116900 ms (FindLiveObjects: 1.519400 ms CreateObjectMapping: 1.775100 ms MarkObjects: 23.792900 ms  DeleteObjects: 7.027200 ms)
+
+
+***Player size statistics***
+Total compressed size 4.3 KB. Total uncompressed size 4.1 KB.
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 0 unused Assets / (0 B). Loaded Objects now: 10596.
+Memory consumption went from 370.8 MB to 370.8 MB.
+Total: 27.437100 ms (FindLiveObjects: 0.518500 ms CreateObjectMapping: 0.407100 ms MarkObjects: 26.480700 ms  DeleteObjects: 0.029000 ms)
+
+
+-------------------------------------------------------------------------------
+Bundle Name: fixture.bundle
+Compressed Size:12.5 kb
+Uncompressed usage by category (Percentages based on user generated assets only):
+Textures               0.0 kb	 0.0% 
+Meshes                 0.0 kb	 0.0% 
+Animations             0.0 kb	 0.0% 
+Sounds                 8.9 kb	 72.2% 
+Shaders                0.0 kb	 0.0% 
+Other Assets           0.2 kb	 1.6% 
+Levels                 0.0 kb	 0.0% 
+File headers           3.2 kb	 26.2% 
+Total User Assets      12.3 kb	 100.0% 
+Complete build size    12.3 kb
+Used Assets and files from the Resources folder, sorted by uncompressed size:
+ 8.9 kb	 72.2% Assets/_Project/TpsValidation_3785f48a04b34db28adf91733828689f/fixture.wav
+ 0.2 kb	 1.6% AssetBundle Object
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+Bundle Name: TpsValidation_3785f48a04b34db28adf91733828689f
+Compressed Size:4.3 kb
+Uncompressed usage by category (Percentages based on user generated assets only):
+Textures               0.0 kb	 0.0% 
+Meshes                 0.0 kb	 0.0% 
+Animations             0.0 kb	 0.0% 
+Sounds                 0.0 kb	 0.0% 
+Shaders                0.0 kb	 0.0% 
+Other Assets           0.2 kb	 4.4% 
+Levels                 0.0 kb	 0.0% 
+File headers           3.9 kb	 95.6% 
+Total User Assets      4.1 kb	 100.0% 
+Complete build size    4.1 kb
+Used Assets and files from the Resources folder, sorted by uncompressed size:
+ 0.1 kb	 2.5% AssetBundle Object
+ 0.1 kb	 2.0% Built-in AssetBundleManifest: AssetBundleManifest
+-------------------------------------------------------------------------------
+[TPS] Protected music build complete. Upload .tps files and the matching catalog, never old .bundle outputs.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+TpsContentProtection:ProtectBuild (UnityEditor.AddressableAssets.Settings.AddressableAssetSettings,UnityEditor.AddressableAssets.Build.IDataBuilder,UnityEditor.AddressableAssets.Build.IDataBuilderResult) (at Assets/_Project/Scripts/Editor/Content/TpsContentProtection.cs:123)
+System.Reflection.RuntimeMethodInfo:Invoke (object,System.Reflection.BindingFlags,System.Reflection.Binder,object[],System.Globalization.CultureInfo)
+System.Reflection.MethodBase:Invoke (object,object[])
+TpsValidation:Run () (at Assets/_Project/Scripts/Editor/Content/TpsValidation.cs:93)
+
+(Filename: Assets/_Project/Scripts/Editor/Content/TpsContentProtection.cs Line: 123)
+
+[Project] Loading completed in 78.025 seconds
+	Project init time: 				37.655 seconds
+		Template init time: 		0.000 seconds
+		Package Manager init time: 		0.356 seconds
+		Asset Database init time: 		0.418 seconds
+		Global illumination init time: 	0.003 seconds
+		Assemblies load time: 			3.465 seconds
+		Unity extensions init time: 	0.021 seconds
+		Asset Database refresh time: 	29.518 seconds
+	Scene opening time: 			39.927 seconds
+##utp:{"type":"ProjectInfo","version":2,"phase":"Immediate","time":1795087929921,"processId":31380,"projectLoad":78.0245051,"projectInit":37.6546719,"templateInit":0.0,"packageManagerInit":0.3560862,"assetDatabaseInit":0.4182679,"globalIlluminationInit":0.0028011,"assembliesLoad":3.4651076,"unityExtensionsInit":0.0211388,"assetDatabaseRefresh":29.5183624,"sceneOpening":39.9269794}
+##utp:{"type":"EditorInfo","version":2,"phase":"Immediate","time":1795087929921,"processId":31380,"editorVersion":"6000.3.2f1 (a9779f353c9b)","branch":"6000.3/staging","buildType":"Release","platform":"Windows"}
+Asset Pipeline Refresh (id=741b383678cded1469fbf73379fb9bdf): Total: 0.398 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=397 ms
+		Asset DB Callback time: managed=0 ms, native=0 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=6454, non-scripts=20546
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 0.001ms
+	ApplyChangesToAssetFolders: 0.177ms
+	Scan: 0.000ms
+	OnSourceAssetsModified: 0.001ms
+	CategorizeAssetsWithTransientArtifact: 0.003ms
+	ProcessAssetsWithTransientArtifactChanges: 0.098ms
+	CategorizeAssets: 355.345ms
+	ImportOutOfDateAssets: 10.259ms (2.580ms without children)
+		ReloadNativeAssets: 0.313ms
+		UnloadImportedAssets: 0.005ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 5.550ms
+		InitializingProgressBar: 0.001ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 1.809ms
+	GatherAllCurrentPrimaryArtifactRevisions: 1.888ms
+	UnloadStreamsBegin: 0.138ms
+	PersistCurrentRevisions: 1.954ms
+	UnloadStreamsEnd: 0.002ms
+	Untracked: 27.635ms
+
+[Licensing::Client] Successfully resolved entitlement details
+Start importing Assets/_Project/Localization/UIText_ca.asset using Guid(e0c4968cde22152438fb26c2cbafa7b8) (NativeFormatImporter) -> (artifact id: '1199f1469dddd4669bb6fc8545b02fc5') in 0.0213077 seconds
+Start importing Assets/_Project/Localization/UIText_en.asset using Guid(6588ff0cdc5d43e40a785b5533503c0b) (NativeFormatImporter) -> (artifact id: '5c70c76f9b44d37317076aa77f992db4') in 0.0047101 seconds
+Start importing Assets/_Project/Localization/UIText Shared Data.asset using Guid(8bd28840241ae794fb97ea8830652eaf) (NativeFormatImporter) -> (artifact id: '60499deb871c03c85d2958d2d2583fb5') in 0.0047717 seconds
+Refreshing native plugins compatible for Editor in 8.97 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.19 ms.
+Asset Pipeline Refresh (id=8d11ea44cf8975b40a417a9fa2420ac4): Total: 0.191 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+PASS: glow shader compiled; 8 authored bonus materials retain textures, source materials unchanged, fallback colour cannot tint authored textures, texture-derived HDR glow configured; direct shader reference retained for builds.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+BonusVisibilityCheck:Run () (at Assets/_Project/Scripts/Editor/DevTools/BonusVisibilityCheck.cs:42)
+BonusVisibilityCheck/<>c:<OnceAfterImport>b__0_0 () (at Assets/_Project/Scripts/Editor/DevTools/BonusVisibilityCheck.cs:14)
+UnityEditor.EditorApplication:Internal_CallDelayFunctions ()
+
+(Filename: Assets/_Project/Scripts/Editor/DevTools/BonusVisibilityCheck.cs Line: 42)
+
+PASS: deletes only the four known progress files, preserves unrelated cache, repeated reset is safe, unexpected paths rejected. Real player save untouched.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+ResetGameTool:Verify () (at Assets/_Project/Scripts/Editor/DevTools/ResetGameTool.cs:63)
+BonusVisibilityCheck/<>c:<OnceAfterImport>b__0_0 () (at Assets/_Project/Scripts/Editor/DevTools/BonusVisibilityCheck.cs:14)
+UnityEditor.EditorApplication:Internal_CallDelayFunctions ()
+
+(Filename: Assets/_Project/Scripts/Editor/DevTools/ResetGameTool.cs Line: 63)
+
+[Indexing] Starting Initial Indexing for Assets
+[UnityConnectServicesConfig] config is NOT valid, switching to default
+Created GICache directory at C:/Users/VISYON/AppData/LocalLow/Unity/Caches/GiCache. Took: 0.093s, timestamps: [78.036 - 78.129]
+Refreshing native plugins compatible for Editor in 10.94 ms, found 4 plugins.
+Preloading 1 native plugins for Editor in 0.29 ms.
+Asset Pipeline Refresh (id=a67ef780e8e77bd4e8c33fa0c99200af): Total: 0.129 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+PASS Playable originals do not leak through Resources or build scenes
+PASS Protected native AAC authenticates: song_001
+PASS Native queue authenticates its encrypted source on a worker: song_001
+PASS No generated clear M4A remains: song_001
+PASS Protected native AAC authenticates: song_002
+PASS Native queue authenticates its encrypted source on a worker: song_002
+PASS No generated clear M4A remains: song_002
+PASS Protected native AAC authenticates: song_003
+PASS Native queue authenticates its encrypted source on a worker: song_003
+PASS No generated clear M4A remains: song_003
+PASS Protected native AAC authenticates: song_004
+PASS Native queue authenticates its encrypted source on a worker: song_004
+PASS No generated clear M4A remains: song_004
+PASS Protected native AAC authenticates: song_005
+PASS Native queue authenticates its encrypted source on a worker: song_005
+PASS No generated clear M4A remains: song_005
+PASS Protected native AAC authenticates: song_006
+PASS Native queue authenticates its encrypted source on a worker: song_006
+PASS No generated clear M4A remains: song_006
+PASS Protected native AAC authenticates: song_007
+PASS Native queue authenticates its encrypted source on a worker: song_007
+PASS No generated clear M4A remains: song_007
+PASS Protected native AAC authenticates: song_008
+PASS Native queue authenticates its encrypted source on a worker: song_008
+PASS No generated clear M4A remains: song_008
+PASS Protected native AAC authenticates: song_009
+PASS Native queue authenticates its encrypted source on a worker: song_009
+PASS No generated clear M4A remains: song_009
+PASS Protected native AAC authenticates: song_010
+PASS Native queue authenticates its encrypted source on a worker: song_010
+PASS No generated clear M4A remains: song_010
+PASS Protected native AAC authenticates: song_011
+PASS Native queue authenticates its encrypted source on a worker: song_011
+PASS No generated clear M4A remains: song_011
+PASS Protected native AAC authenticates: song_012
+PASS Native queue authenticates its encrypted source on a worker: song_012
+PASS No generated clear M4A remains: song_012
+PASS Protected native AAC authenticates: song_013
+PASS Native queue authenticates its encrypted source on a worker: song_013
+PASS No generated clear M4A remains: song_013
+PASS Protected native AAC authenticates: song_014
+PASS Native queue authenticates its encrypted source on a worker: song_014
+PASS No generated clear M4A remains: song_014
+PASS Protected native AAC authenticates: song_015
+PASS Native queue authenticates its encrypted source on a worker: song_015
+PASS No generated clear M4A remains: song_015
+PASS Protected native AAC authenticates: song_016
+PASS Native queue authenticates its encrypted source on a worker: song_016
+PASS No generated clear M4A remains: song_016
+PASS Protected native AAC authenticates: song_017
+PASS Native queue authenticates its encrypted source on a worker: song_017
+PASS No generated clear M4A remains: song_017
+PASS Protected native AAC authenticates: song_018
+PASS Native queue authenticates its encrypted source on a worker: song_018
+PASS No generated clear M4A remains: song_018
+PASS Protected native AAC authenticates: song_019
+PASS Native queue authenticates its encrypted source on a worker: song_019
+PASS No generated clear M4A remains: song_019
+PASS Protected native AAC authenticates: song_020
+PASS Native queue authenticates its encrypted source on a worker: song_020
+PASS No generated clear M4A remains: song_020
+PASS Protected native AAC authenticates: song_021
+PASS Native queue authenticates its encrypted source on a worker: song_021
+PASS No generated clear M4A remains: song_021
+PASS Protected native AAC authenticates: song_022
+PASS Native queue authenticates its encrypted source on a worker: song_022
+PASS No generated clear M4A remains: song_022
+PASS Unity runtime crypto backend round trip
+PASS Unity runtime rejects tampered ciphertext
+PASS Reference audio fixture decoded
+PASS Actual Unity audio bundle built
+PASS Production build hook replaces plaintext bundle output with TPS
+PASS Missing protected cache reports a real download requirement
+PASS Encrypted local cache reports zero download size
+PASS Addressables TPS provider loads protected bundle from memory
+PASS Decrypted bundle preserves exact PCM samples and timing
+PASS Protected bundle plays offline from encrypted cache with an unreachable remote URL
+PASS Addressables TPS provider rejects tampering without opening audio
+PASS Invalid encrypted cache is removed so the next retry can recover
+PASS No decrypted bundle was written back to disk
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+TpsValidation:Finish (bool,string) (at Assets/_Project/Scripts/Editor/Content/TpsValidation.cs:167)
+TpsValidation:Tick () (at Assets/_Project/Scripts/Editor/Content/TpsValidation.cs:147)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: Assets/_Project/Scripts/Editor/Content/TpsValidation.cs Line: 167)
+
+Killing ADB server in 0,1619707 seconds.
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-VISYON-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-VISYON channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+12:32:15.667 |V| RiderPlugin                    | :1                             | AppDomain.CurrentDomain.DomainUnload lifetimeDefinition.Terminate
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1795087936582,"processId":31380,"allocatedMemory":45147611,"memoryLabels":[{"Default":29313},{"Permanent":15524},{"NewDelete":68667},{"Thread":4230344},{"Manager":36957},{"VertexData":8},{"Geometry":816},{"Texture":296},{"Shader":88574},{"Material":24},{"GfxDevice":55257},{"Animation":392},{"Audio":2664},{"FontEngine":256},{"Physics":2090},{"Physics2D":16},{"Input":14984},{"JobScheduler":33024},{"TextLib":192},{"Mono":32},{"MonoCode":1984},{"ScriptingNativeRuntime":155060},{"BaseObject":1620400},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":15613},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":23125},{"DynamicArray":127613},{"HashMap":105717},{"Utility":2660678},{"Curl":2559},{"PoolAlloc":2728},{"AI":40},{"TypeTree":5341},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":9360},{"WebRequest":808},{"VR":47994},{"SceneManager":504},{"Video":208},{"LazyScriptCache":32},{"Camera":17},{"Secure":2113},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":560},{"Hierarchy":608},{"CoreStats":13000},{"Identifiers":12960},{"Gui":88},{"EditorUtility":142109},{"VersionControl":4},{"Undo":947},{"AssetDatabase":35185725},{"EditorGi":328},{"UnityConnect":29232},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":262},{"ProfilerEditor":9746},{"CoreBusinessMetrics":2911},{"Licensing":776},{"AssetReference":32},{"IPCStream":32}]}
