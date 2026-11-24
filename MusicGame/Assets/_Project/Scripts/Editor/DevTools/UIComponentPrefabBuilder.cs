@@ -430,6 +430,7 @@ public static class UIComponentPrefabBuilder
         view.backButton = Button(root.transform, "BackButton", out var backLabel);
         Localized(backLabel, "Rivals.Back");
         UIFactory.SetBox(view.backButton.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(170f, 36f), new Vector2(240f, 54f));
+        FrontendBackdropSetup.Configure(root);
         return root;
     }
 
@@ -529,6 +530,7 @@ public static class UIComponentPrefabBuilder
         UIFactory.SetBox(view.nameText.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 26f), new Vector2(-8f, 24f));
         view.footer = Text(root.transform, "Footer", "0 / 4", 13, new Color(1f, 1f, 1f, 0.75f), TextAlignmentOptions.Center);
         UIFactory.SetBox(view.footer.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 4f), new Vector2(-8f, 22f));
+        CollectionCardSetup.ConfigureCard(root);
         return root;
     }
 
@@ -578,6 +580,8 @@ public static class UIComponentPrefabBuilder
         Localized(closeLabel, "Rivals.Back");
         UIFactory.SetBox(view.detailClose.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 20f), new Vector2(220f, 48f));
         view.detailRoot.gameObject.SetActive(false);
+        FrontendBackdropSetup.Configure(root);
+        CollectionCardSetup.ConfigureScreen(root);
         return root;
     }
 

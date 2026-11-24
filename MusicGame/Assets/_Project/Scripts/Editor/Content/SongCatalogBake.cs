@@ -69,6 +69,7 @@ public static class SongCatalogBake
 
     public static string Bake(bool force, HashSet<string> only, out bool ok)
     {
+        SongMetadataSetup.Sync();
         var sb = new StringBuilder($"[SongCatalogBake] {(force ? "FORCE " : "")}bake — {DateTime.Now:yyyy-MM-dd HH:mm:ss}, target {EditorUserBuildSettings.activeBuildTarget}\n");
         var app = Resources.Load<AppConfigSO>("AppConfig");
         var config = app != null ? app.audioAnalysis : null;
@@ -234,7 +235,7 @@ public static class SongCatalogBake
             }
             list.Add(new SongCatalogIndexEntry
             {
-                songId = e.songId, displayName = e.address, audioAddress = SongContentKeys.AudioAddress(e.songId),
+                songId = e.songId, displayName = e.address, title = e.title, artist = e.artist, releaseYear = e.releaseYear, audioAddress = SongContentKeys.AudioAddress(e.songId),
                 profileAddress = SongContentKeys.ProfileAddress(e.songId), contentLabel = SongContentKeys.ContentLabel(e.songId), order = order,
                 masterIdentity = header.audioIdentity, playbackRevision = header.playbackRevision, profileCrc = header.bodyCrc32, profileBytes = bytes.Length,
                 profileFormatVersion = header.formatVersion, pipelineVersion = header.pipelineVersion, paramsHash = header.paramsHash, tagModelVersion = header.tagModelVersion,
@@ -269,6 +270,7 @@ public static class SongCatalogBake
         foreach (var e in list.OrderBy(x => x.songId, StringComparer.Ordinal))
         {
             h.Add(e.songId); h.Add(e.audioAddress); h.Add(e.masterIdentity); h.Add(e.playbackRevision); h.Add((long)e.profileCrc); h.Add(e.order); h.Add((int)e.gameStyle);
+            h.Add(e.releaseYear);h.Add(e.title);h.Add(e.artist);
         }
         return h.Value.ToString("x16");
     }

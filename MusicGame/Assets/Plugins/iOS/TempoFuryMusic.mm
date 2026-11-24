@@ -56,6 +56,7 @@ static NSMutableData *TFOpenTps(NSString *path, NSString *encodedKey, NSError **
 -(void)stop;
 -(void)publish;
 -(void)command:(NSString*)command;
+-(void)load:(NSInteger)index at:(float)seconds paused:(BOOL)paused;
 @end
 
 @implementation TFMusic
@@ -86,7 +87,8 @@ static NSMutableData *TFOpenTps(NSString *path, NSString *encodedKey, NSError **
     r.playCommand.enabled=enabled; r.pauseCommand.enabled=enabled; r.togglePlayPauseCommand.enabled=enabled;
     r.nextTrackCommand.enabled=enabled; r.previousTrackCommand.enabled=enabled; r.stopCommand.enabled=enabled; r.changePlaybackPositionCommand.enabled=enabled;
 }
--(void)load:(NSInteger)index {
+-(void)load:(NSInteger)index { [self load:index at:0 paused:NO]; }
+-(void)load:(NSInteger)index at:(float)seconds paused:(BOOL)paused {
     [self.player stop]; self.player = nil;
     if (self.decryptedAudio) [self.decryptedAudio resetBytesInRange:NSMakeRange(0,self.decryptedAudio.length)];
     self.decryptedAudio=nil;
@@ -108,7 +110,8 @@ static NSMutableData *TFOpenTps(NSString *path, NSString *encodedKey, NSError **
     }
     if (!self.player) { self.error = error.localizedDescription ?: @"Audio unavailable"; [self stop]; return; }
     self.player.delegate = self; self.player.volume=self.volume; [self.player prepareToPlay];
-    if (![self.player play]) { self.error=@"Playback failed"; [self stop]; return; }
+    self.player.currentTime = MIN(seconds, MAX(0., self.player.duration - .001));
+    if (!paused && ![self.player play]) { self.error=@"Playback failed"; [self stop]; return; }
     [self commandsEnabled:YES]; [self publish];
 }
 -(void)publish {
@@ -189,16 +192,23 @@ static NSMutableData *TFOpenTps(NSString *path, NSString *encodedKey, NSError **
 
 static TFMusic *TFShared() { static TFMusic *shared; static dispatch_once_t once; dispatch_once(&once, ^{ shared=[TFMusic new]; }); return shared; }
 extern "C" {
-    void TFMusicStart(const char *json, int index) {
+    void TFMusicStart(const char *json, int index, float seconds, bool paused) {
         TFMusic *music=TFShared(); [music stop]; music.error=@"";
         NSData *data=[[NSString stringWithUTF8String:json] dataUsingEncoding:NSUTF8StringEncoding];
         NSError *error=nil; id parsed=[NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
         if (![parsed isKindOfClass:NSArray.class]) { music.error=@"Invalid audio queue"; return; }
-        music.tracks=parsed; [music load:index];
+        music.tracks=parsed; [music load:index at:seconds paused:paused];
     }
     void TFMusicCommand(const char *command) { [TFShared() command:[NSString stringWithUTF8String:command]]; }
     int TFMusicIndex() { return (int)TFShared().index; }
     bool TFMusicPlaying() { return TFShared().player.playing; }
+    void TFMusicSeek(float seconds) {
+        TFMusic *music = TFShared();
+        if (!music.player) return;
+        music.player.currentTime = MIN(MAX(0., seconds), MAX(0., music.player.duration - .001));
+        [music publish];
+    }
+    float TFMusicDuration() { return (float)TFShared().player.duration; }
     float TFMusicPosition() { return (float)TFShared().player.currentTime; }
     void TFMusicVolume(float value) { TFShared().volume=value; TFShared().player.volume=value; }
     const char *TFMusicError() { return TFShared().error.UTF8String; }

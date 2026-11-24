@@ -107,6 +107,53 @@ public class StyleSkinLibrarySO : ScriptableObject
     [Tooltip("The composers (alpha), the same for every style; the TEMPO FURY title is drawn over them.")]
     public Sprite composers;
 
+    [System.Serializable]
+    public class MenuBackgroundSkin
+    {
+        public GameMusicStyle style;
+        public Texture2D texture;
+        public Texture2D dayTexture;
+        public bool dayKeepsLightInk;
+    }
+
+    [Tooltip("Standalone menu backdrops, without foreground objects or their shadows. Classical keeps the base background.")]
+    public List<MenuBackgroundSkin> menuBackgrounds = new();
+
+    public Material menuAppearanceMaterial;
+    public Material songRowMaterial;
+    public Material songCardAppearanceMaterial;
+    public Sprite songCardSprite;
+    public Color songNormalInk=new Color(.025f,.035f,.055f);
+    public Color songSelectedInk=Color.white;
+    [System.Serializable]
+    public class SongCardSkin
+    {
+        [Tooltip("Authored borderless selected-song band for this skin.")]
+        public Sprite stageArtwork;
+        public Vector2 stageUVRange=new Vector2(0,1);
+        public GameMusicStyle style;
+        public Sprite normal;
+        public Sprite sprite;
+        public bool darkInk;
+        public Color selectedTint=Color.white;
+    }
+    public List<SongCardSkin> songCards = new();
+    public SongCardSkin SongCard(GameMusicStyle style) => songCards.Find(s=>s.style==style)??songCards.Find(s=>s.style==GameMusicStyle.Cinematic);
+    public Color SongCardInk(GameMusicStyle style,bool selected)=>!selected||SongCard(style)?.darkInk==true?songNormalInk:songSelectedInk;
+    public Texture2D DayBackground(GameMusicStyle style)
+    {
+        var entry=menuBackgrounds.Find(b=>b.style==style);
+        return entry!=null && entry.dayTexture!=null ? entry.dayTexture : MenuBackground(style);
+    }
+    public bool DayUsesDarkInk(GameMusicStyle style)
+    {
+        var entry=menuBackgrounds.Find(b=>b.style==style);
+        return entry!=null&&entry.dayTexture!=null&&!entry.dayKeepsLightInk;
+    }
+
+    public Texture2D MenuBackground(GameMusicStyle style) =>
+        menuBackgrounds.Find(b => b.style == style)?.texture;
+
     [Header("Title")]
     public List<TitleSkin> titles = new();
     [Tooltip("Title shown for a style without its own title art (Classical / Unknown).")]

@@ -9,17 +9,95 @@ using UnityEngine.UI;
 /// and wires interaction — it never creates or lays out this UI itself. The visible buttons are re-stacked
 /// at runtime from PLAY's slot downward (into buttonSlots when set — the fanned layout — else
 /// step = button height + buttonStackGap) in this order:
-/// PLAY, RIVALS, PROGRESSION, SETTINGS, QUIT (QUIT is hidden on mobile).
+/// PLAY, COLLECTION, PROGRESSION, JUKEBOX, QUIT (QUIT is hidden on mobile).
+/// Profile and Settings are independent utility icons at the top right.
 /// </summary>
 public class MainMenuView : MonoBehaviour
 {
     [Header("Root")]
     public GameObject root;
+    [Header("Central menu sizing")]
+    public RectTransform presentationRoot;
+    public float presentationScale=1.2f;
+    private void LateUpdate()=>FitPresentation();
+    public void FitPresentation()
+    {
+        if(presentationRoot==null)return;
+        var size=((RectTransform)transform).rect.size;
+        float fit=Mathf.Min(presentationScale,(size.x-64)/1280f,(size.y-180)/720f);
+        presentationRoot.localScale=Vector3.one*Mathf.Max(.1f,fit);
+    }
     public TextMeshProUGUI titleText;
     [Tooltip("Left of the buttons: the composers + the TEMPO FURY title of this launch's style (replaces titleText).")]
     public StyledTitleView logo;
     [Tooltip("The Tempo Fury menu buttons (StyleBlendButton), shown fully in the same style as the logo.")]
     public StyleBlendGroup buttonStyle;
+    public RawImage menuBackground;
+    public RawImage previousMenuBackground;
+    public Material utilityIconMaterial;
+    private Material _utilityIconRuntime;
+
+    private Material _backgroundMaterial, _previousBackgroundMaterial;
+    private GameMusicStyle _shownBackground, _priorBackground;
+    private float _backgroundBlend=1;
+    public float InkLightWeight => logo == null || logo.library == null ? 0 : AppearancePreference.LightWeight * Mathf.Lerp(logo.library.DayUsesDarkInk(_priorBackground)?1:0,logo.library.DayUsesDarkInk(_shownBackground)?1:0,_backgroundBlend);
+    private void OnEnable() { AppearancePreference.Updated += RenderAppearance; RenderAppearance(); }
+    private void OnDisable() => AppearancePreference.Updated -= RenderAppearance;
+    public void ShowBackground(GameMusicStyle style, GameMusicStyle previous = GameMusicStyle.Unknown, float blend = 1f)
+    {
+        _shownBackground=style;_priorBackground=previous;_backgroundBlend=Mathf.Clamp01(blend);
+        RenderAppearance();
+    }
+    private void RenderAppearance()
+    {
+        var library=logo!=null?logo.library:null;
+        if(library==null)return;
+        MenuBackgroundRenderer.Apply(menuBackground,library.MenuBackground(_shownBackground),library.DayBackground(_shownBackground),1,library.menuAppearanceMaterial,ref _backgroundMaterial);
+        MenuBackgroundRenderer.Apply(previousMenuBackground,library.MenuBackground(_priorBackground),library.DayBackground(_priorBackground),1-_backgroundBlend,library.menuAppearanceMaterial,ref _previousBackgroundMaterial);
+        ApplyUtilityStyle(_shownBackground,_priorBackground,_backgroundBlend);
+    }
+
+    public void ApplyUtilityStyle(GameMusicStyle style, GameMusicStyle previous = GameMusicStyle.Unknown, float blend = 1f)
+    {
+        var library = logo != null ? logo.library : null;
+        if (library == null || utilityIconMaterial == null) return;
+        if (_utilityIconRuntime == null)
+        {
+            _utilityIconRuntime = new Material(utilityIconMaterial) { name = "Menu utility style tint" };
+            if (profileButton != null && profileButton.image != null) profileButton.image.material = _utilityIconRuntime;
+            if (settingsButton != null && settingsButton.image != null) settingsButton.image.material = _utilityIconRuntime;
+        }
+        var from = library.HudAccent(previous == GameMusicStyle.Unknown ? style : previous);
+        var tint=Color.Lerp(from, library.HudAccent(style), Mathf.Clamp01(blend));
+        var ink=Color.Lerp(tint,new Color(tint.r*.52f,tint.g*.52f,tint.b*.52f,1),InkLightWeight);
+        _utilityIconRuntime.SetColor("_Tint", ink);
+    }
+
+    private void OnDestroy()
+    {
+        MenuBackgroundRenderer.Release(_backgroundMaterial);
+        MenuBackgroundRenderer.Release(_previousBackgroundMaterial);
+        if (_utilityIconRuntime == null) return;
+        if (Application.isPlaying) Destroy(_utilityIconRuntime);
+        else DestroyImmediate(_utilityIconRuntime);
+    }
+
+    private static void CropBackground(RawImage image)
+    {
+        if (image == null || image.texture == null) return;
+        var size = image.rectTransform.rect.size;
+        if (size.x <= 0f || size.y <= 0f) return;
+        float ratio = (size.x / size.y) / ((float)image.texture.width / image.texture.height);
+        image.uvRect = ratio < 1f
+            ? new Rect((1f - ratio) * .5f, 0f, ratio, 1f)
+            : new Rect(0f, (1f - 1f / ratio) * .5f, 1f, 1f / ratio);
+    }
+
+    private void OnRectTransformDimensionsChange()
+    {
+        CropBackground(menuBackground);
+        CropBackground(previousMenuBackground);
+    }
     [Tooltip("Campaign status under the title — next match position (big) + lap · mastered matches · extra lives (hidden until a progression save exists).")]
     public TextMeshProUGUI profileText;
     [Tooltip("\"Catalog complete\" / load failure line (hidden while empty).")]

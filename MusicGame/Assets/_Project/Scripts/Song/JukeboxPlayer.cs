@@ -13,8 +13,8 @@ public class JukeboxPlayer : MonoBehaviour
     private AsyncOperationHandle<AudioClip> _handle;
     private AudioClip _local;
     private Coroutine _load;
-    private float _end;
-    private bool _started, _paused;
+    private float _start, _end;
+    private bool _started, _paused, _pausedByFocus;
     private bool _full;
     private bool _nativePlayback, _desktopBackground;
     private bool _previousRunInBackground;
@@ -33,7 +33,11 @@ public class JukeboxPlayer : MonoBehaviour
     }
     private void EnforceFocus()
     {
-        if ((!_focused || _applicationPaused) && !CanPlayOutsideWindow && _started && !_paused) TogglePause();
+        if ((!_focused || _applicationPaused) && !CanPlayOutsideWindow && _started && !_paused)
+        {
+            TogglePause();
+            _pausedByFocus = true;
+        }
     }
     private void SetDesktopBackground(bool enabled)
     {
@@ -46,13 +50,15 @@ public class JukeboxPlayer : MonoBehaviour
     private float _nextNativePoll, _nativeVolume = -1;
     private int _nativeIndex = -1;
     private Coroutine _backgroundPreparation;
-    public event Action<string> Status;
     private List<JukeboxTrack> _queue = new();
     public JukeboxTrack Current { get; private set; }
     public bool Loading => _load != null;
     public bool Paused => _paused;
     public bool Playing => Current != null;
     public bool FullPlayback => _full;
+    public bool CanSeek => _full && MusicAccess.Jukebox;
+    public float ElapsedSeconds => Current == null || Loading ? 0 : Mathf.Max(0, PositionSeconds - (_nativePlayback ? 0 : _start));
+    public float DurationSeconds => Current == null || Loading ? 0 : _nativePlayback ? NativeMusicPlayer.DurationSeconds : _end - _start;
     public float PositionSeconds => _nativePlayback ? NativeMusicPlayer.PositionSeconds :
         _started && _source != null ? _source.time : 0f;
     public void RemoveTrack(string id)
@@ -61,6 +67,7 @@ public class JukeboxPlayer : MonoBehaviour
         _queue.RemoveAll(t => t.id == id);
     }
     public event Action Changed;
+    public event Action<JukeboxTrack> PreviewFinished;
     public event Action<string> Failed;
     public bool BackgroundEnabled { get; private set; }
     private void Awake()
@@ -72,13 +79,15 @@ public class JukeboxPlayer : MonoBehaviour
     public void Play(JukeboxTrack track, bool full, List<JukeboxTrack> library)
     {
         if (track == null || !track.Unlocked || (full && !MusicAccess.Jukebox)) return;
-        bool keepDesktopBackground = _desktopBackground && full && MusicAccess.Background;
+        bool allowBackground = full && MusicAccess.Background;
         Stop();
-        if (keepDesktopBackground) SetDesktopBackground(true);
+        if (allowBackground && !Application.isMobilePlatform) SetDesktopBackground(true);
         SongPreviewPlayer.Instance?.Stop();
         _queue = library.FindAll(t => t.Unlocked);
         Current = track; _full = full;
         _load = StartCoroutine(Load(track, full));
+        if (allowBackground && NativeMusicPlayer.Supported)
+            _backgroundPreparation = StartCoroutine(PrepareBackground());
         Changed?.Invoke();
     }
     private IEnumerator Load(JukeboxTrack track, bool full)
@@ -102,7 +111,9 @@ public class JukeboxPlayer : MonoBehaviour
         var app = Resources.Load<AppConfigSO>("AppConfig");
         var config = app != null ? app.songPreview : null;
         var range = config != null ? config.Resolve(track.id, clip.length) : (Mathf.Max(0, clip.length / 2 - 15), Mathf.Min(30, clip.length));
+        track.durationSeconds = clip.length;
         float start = full ? 0 : range.Item1;
+        _start = start;
         _end = full ? clip.length : start + range.Item2;
         _source.clip = clip; _source.volume = 1f; _source.Play(); _source.time = start;
         _started = true; _load = null; EnforceFocus(); Changed?.Invoke();
@@ -131,14 +142,37 @@ public class JukeboxPlayer : MonoBehaviour
         if (_source.time >= _end - 0.025f || !_source.isPlaying)
         {
             _started = false;
-            if (_full && MusicAccess.Jukebox) Skip(1, wrap: false); else Stop();
+            if (_full && MusicAccess.Jukebox) Skip(1, wrap: false);
+            else
+            {
+                var finishedPreview = _full ? null : Current;
+                Stop();
+                if (finishedPreview != null) PreviewFinished?.Invoke(finishedPreview);
+            }
         }
         else if (!_full) _source.volume = Mathf.Clamp01((_end - _source.time) / 0.6f);
     }
+    public bool Seek(float fraction)
+    {
+        if (!CanSeek) return false;
+        float duration = DurationSeconds;
+        if (duration <= 0 || (!_nativePlayback && (!_started || _source.clip == null))) return false;
+        // Stay inside the playable range, including for users scrubbing while paused.
+        float elapsed = Mathf.Min(Mathf.Clamp01(fraction) * duration, Mathf.Max(0, duration - .001f));
+        if (_nativePlayback) NativeMusicPlayer.Seek(elapsed);
+        else
+        {
+            _source.timeSamples = Mathf.Clamp(Mathf.RoundToInt((_start + elapsed) * _source.clip.frequency),
+                0, _source.clip.samples - 1);
+        }
+        return true;
+    }
+
     public void TogglePause()
     {
         if (_nativePlayback) { NativeMusicPlayer.Command("toggle"); return; }
         if (!_started) return;
+        _pausedByFocus = false;
         _paused = !_paused;
         if (_paused) _source.Pause(); else _source.UnPause();
         Changed?.Invoke();
@@ -169,52 +203,31 @@ public class JukeboxPlayer : MonoBehaviour
         if (_handle.IsValid()) Addressables.Release(_handle);
         _handle = default;
         if (_local != null) Destroy(_local);
-        _local = null; Current = null; _started = false; _paused = false;
+        _local = null; Current = null; _started = false; _paused = false; _pausedByFocus = false;
         Changed?.Invoke();
     }
-    public IEnumerator EnableBackground(List<JukeboxTrack> tracks)
+    private IEnumerator PrepareBackground()
     {
-        if (!MusicAccess.Background) yield break;
-        if (BackgroundEnabled)
-        {
-            if (_nativePlayback) Stop();
-            else { SetDesktopBackground(false); EnforceFocus(); Changed?.Invoke(); }
-            yield break;
-        }
-        if (!NativeMusicPlayer.Supported)
-        {
-            // Desktop/Editor uses the existing player while allowing Unity to run out of focus.
-            if (Application.isMobilePlatform) { Failed?.Invoke("Jukebox.BackgroundUnsupported"); yield break; }
-            var queue = tracks.FindAll(t => t.Unlocked);
-            if (queue.Count == 0) yield break;
-            if (Current == null || !_full) Play(Current ?? queue[0], true, tracks);
-            SetDesktopBackground(true);
-            if (_paused) TogglePause();
-            Status?.Invoke("Jukebox.BackgroundReady"); Changed?.Invoke();
-            yield break;
-        }
-        if (_backgroundPreparation != null) yield break;
-        Status?.Invoke("Jukebox.PreparingBackground");
-        _backgroundPreparation = StartCoroutine(PrepareBackground(tracks));
-        yield return _backgroundPreparation;
-    }
-    private IEnumerator PrepareBackground(List<JukeboxTrack> tracks)
-    {
-        var queue = tracks.FindAll(t => t.Unlocked);
-        if (queue.Count == 0) { _backgroundPreparation = null; yield break; }
-        int index = Mathf.Max(0, queue.FindIndex(t => t.id == Current?.id));
+        // Keep Unity playback responsive while the native queue prepares its cached audio.
+        var queue = new List<JukeboxTrack>(_queue);
         List<NativeMusicPlayer.Item> items = null;
         yield return NativeMusicPlayer.Prepare(queue, result => items = result);
+        while (Loading) yield return null;
         _backgroundPreparation = null;
-        if (items == null) { Failed?.Invoke("Jukebox.BackgroundFailed"); yield break; }
+        if (items == null || Current == null || !MusicAccess.Background) yield break;
+        int index = queue.FindIndex(track => track.id == Current.id);
+        if (index < 0) yield break;
+        float position = PositionSeconds;
+        bool paused = _paused && !_pausedByFocus;
         Stop();
         _queue = queue; Current = queue[index]; _full = true;
         try
         {
-            NativeMusicPlayer.Start(items, index);
+            NativeMusicPlayer.Start(items, index, position, paused);
+            _paused = paused;
             _nativeVolume = -1; _nextNativePoll = 0; UpdateNativeVolume();
             _nativePlayback = true; BackgroundEnabled = true; _nativeStarted = Time.realtimeSinceStartup; _nativeIndex = -1;
-            Status?.Invoke("Jukebox.BackgroundReady"); Changed?.Invoke();
+            Changed?.Invoke();
         }
         catch (Exception e) { Debug.LogWarning(e.Message); Stop(); Failed?.Invoke("Jukebox.BackgroundFailed"); }
     }

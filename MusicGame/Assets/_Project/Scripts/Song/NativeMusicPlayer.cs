@@ -160,7 +160,7 @@ public static class NativeMusicPlayer
         }
         completed(good);
     }
-    public static void Start(List<Item> items, int index)
+    public static void Start(List<Item> items, int index, float seconds, bool paused)
     {
         string wrapped = JsonUtility.ToJson(new Queue { items = items });
         string json = wrapped.Substring(wrapped.IndexOf('['));
@@ -169,9 +169,9 @@ public static class NativeMusicPlayer
         using var bridge = new AndroidJavaClass("com.tempofury.music.MusicService");
         using var unity = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
         using var activity = unity.GetStatic<AndroidJavaObject>("currentActivity");
-        bridge.CallStatic("start", activity, json, index);
+        bridge.CallStatic("start", activity, json, index, seconds, paused);
 #elif UNITY_IOS && !UNITY_EDITOR
-        TFMusicStart(json, index);
+        TFMusicStart(json, index, seconds, paused);
 #endif
     }
     public static void Command(string command)
@@ -180,6 +180,15 @@ public static class NativeMusicPlayer
         using var bridge = new AndroidJavaClass("com.tempofury.music.MusicService"); bridge.CallStatic("command", command);
 #elif UNITY_IOS && !UNITY_EDITOR
         TFMusicCommand(command);
+#endif
+    }
+    public static void Seek(float seconds)
+    {
+#if UNITY_ANDROID && !UNITY_EDITOR
+        using var bridge = new AndroidJavaClass("com.tempofury.music.MusicService");
+        bridge.CallStatic("seek", seconds);
+#elif UNITY_IOS && !UNITY_EDITOR
+        TFMusicSeek(seconds);
 #endif
     }
     public static void SetVolume(float volume)
@@ -216,6 +225,19 @@ public static class NativeMusicPlayer
 #endif
         }
     }
+    public static float DurationSeconds
+    {
+        get
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            using var bridge = new AndroidJavaClass("com.tempofury.music.MusicService"); return bridge.CallStatic<float>("durationSeconds");
+#elif UNITY_IOS && !UNITY_EDITOR
+            return TFMusicDuration();
+#else
+            return 0;
+#endif
+        }
+    }
     public static float PositionSeconds
     {
         get
@@ -243,12 +265,14 @@ public static class NativeMusicPlayer
         }
     }
 #if UNITY_IOS && !UNITY_EDITOR
-    [DllImport("__Internal")] private static extern void TFMusicStart(string json, int index);
+    [DllImport("__Internal")] private static extern void TFMusicStart(string json, int index, float seconds, [MarshalAs(UnmanagedType.I1)] bool paused);
     [DllImport("__Internal")] private static extern void TFMusicCommand(string command);
     [DllImport("__Internal")] private static extern int TFMusicIndex();
     [DllImport("__Internal")] [return: MarshalAs(UnmanagedType.I1)] private static extern bool TFMusicPlaying();
     [DllImport("__Internal")] private static extern IntPtr TFMusicError();
+    [DllImport("__Internal")] private static extern void TFMusicSeek(float seconds);
     [DllImport("__Internal")] private static extern void TFMusicVolume(float volume);
     [DllImport("__Internal")] private static extern float TFMusicPosition();
+    [DllImport("__Internal")] private static extern float TFMusicDuration();
 #endif
 }

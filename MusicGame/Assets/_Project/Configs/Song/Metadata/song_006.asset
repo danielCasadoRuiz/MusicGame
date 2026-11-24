@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e53d1b4f86740848ac5f59af123a5bc, type: 3}
+  m_Name: song_006
+  m_EditorClassIdentifier: Assembly-CSharp::SongMetadataSO
+  songId: song_006
+  title: Questioning What Love Means
+  artist: Heidegger
+  releaseYear: 1993
+  artwork: {fileID: 0}
+  audio: {fileID: 8300000, guid: e8c89b45f08842340a6b68bd2f0b2795, type: 3}
+  style: 7
+  referenceTitle: What Is Love
+  referenceArtist: Haddaway
+  metadataSource: https://chatgpt.com/c/6ace1328-3030-83eb-98b9-7c7231bc6ca3

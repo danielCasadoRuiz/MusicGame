@@ -434,7 +434,7 @@ public static class TempoFuryUISetup
     }
 
     /// <returns>true when the skin was added now (false = already skinned, only its library refreshed).</returns>
-    private static bool SkinButton(Button button, TextMeshProUGUI label, StyleSkinLibrarySO lib)
+    public static bool SkinButton(Button button, TextMeshProUGUI label, StyleSkinLibrarySO lib)
     {
         var existing = button.GetComponent<StyleBlendButton>();
         if (existing != null) { existing.library = lib; return false; }
@@ -594,7 +594,7 @@ public static class TempoFuryUISetup
 
         EnsureGroup(view.root, lib);
         view.buttonStyle = C<StyleBlendGroup>(view.root);
-        var buttons = new[] { view.playButton, view.rivalsButton, view.progressionButton, view.settingsButton, view.quitButton }.Where(b => b != null).ToArray();
+        var buttons = new[] { view.playButton, view.rivalsButton, view.progressionButton, view.jukeboxButton, view.quitButton }.Where(b => b != null).ToArray();
         foreach (var b in buttons) SkinButton(b, b.GetComponentInChildren<TextMeshProUGUI>(true), lib);
         var slots = MenuButtonFan.Select(f => { var p = MenuPos(f.right - MenuButtonW / 2f, f.centreY); return new Vector3(p.x, p.y, f.tilt); }).ToArray();
         for (int i = 0; i < buttons.Length; i++)
@@ -615,12 +615,14 @@ public static class TempoFuryUISetup
         }
         view.buttonStackGap = MenuButtonGap;
         view.buttonSlots = slots;
+        MainMenuUtilitySetup.Configure(view.root);
         // Status line ("catalog complete" / load failure) under the logo group, above the campaign status.
         if (view.menuStatusText != null)
             UIFactory.SetBox(view.menuStatusText.rectTransform, c, c, c, ScreenPos(960f, 925f), new Vector2(900f, 32f));
         if (view.profileText != null)   // campaign status: centred under the whole group
             UIFactory.SetBox(view.profileText.rectTransform, c, c, c, ScreenPos(960f, 978f), new Vector2(1200f, 110f));
-        log.AppendLine("  PASS  MainMenu: PrimeraPantalla layout");
+        MainMenuScaleSetup.Configure(view);
+        log.AppendLine("  PASS  MainMenu: PrimeraPantalla layout, enlarged central presentation");
     }
 
     // ── Runner HUD (HudExample) ──────────────────────────────────────────────────

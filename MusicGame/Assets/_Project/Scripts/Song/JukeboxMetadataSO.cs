@@ -12,6 +12,7 @@ public class JukeboxMetadataSO : ScriptableObject
         public string title;
         public string artist;
         public Sprite cover;
+        [Min(0f)] public float durationSeconds;
         [TextArea(6, 30)] public string lyrics;
     }
     public List<Entry> songs = new();

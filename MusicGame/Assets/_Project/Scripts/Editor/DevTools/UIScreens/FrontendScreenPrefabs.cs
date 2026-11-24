@@ -32,7 +32,9 @@ public static class FrontendScreenPrefabs
 
         ctx.Library.introScreen = ctx.Prefab<IntroScreenView>($"{UIScreenPrefabContext.ScreensFolder}/IntroScreen.prefab", BuildIntroScreen);
         ctx.Library.mainMenu = ctx.Prefab<MainMenuView>($"{UIScreenPrefabContext.ScreensFolder}/MainMenu.prefab", () => BuildMainMenu(ctx));
+        ctx.Patch($"{UIScreenPrefabContext.ScreensFolder}/MainMenu.prefab", MainMenuUtilitySetup.Configure);
         ctx.Library.songSelection = ctx.Prefab<SongSelectionView>($"{UIScreenPrefabContext.ScreensFolder}/SongSelection.prefab", BuildSongSelection);
+        ctx.Patch($"{UIScreenPrefabContext.ScreensFolder}/SongSelection.prefab", FrontendBackdropSetup.Configure);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
@@ -141,6 +143,7 @@ public static class FrontendScreenPrefabs
         view.menuStatusText.gameObject.SetActive(false);
 
         BuildSettingsPanel(ctx, root, view);
+        AppearanceSetup.ConfigureMainMenu(go);
         go.SetActive(false);
         return go;
     }
@@ -263,6 +266,7 @@ public static class FrontendScreenPrefabs
         view.statusText = UIFactory.CreateText("Status", root, "", 12, view.neutralStatusColor);
         UIFactory.SetBox(view.statusText.rectTransform, Bottom, Bottom, Bottom, new Vector2(0f, 90f), new Vector2(500f, 24f));
 
+        SongSelectionSkinSetup.ConfigureScreen(go);
         go.SetActive(false);
         return go;
     }
@@ -300,6 +304,7 @@ public static class FrontendScreenPrefabs
         view.playPauseButton = play;
         view.playPauseLabel = playLabel;
         PatchSongRow(go);
+        SongSelectionSkinSetup.ConfigureRow(go);
         return go;
     }
 

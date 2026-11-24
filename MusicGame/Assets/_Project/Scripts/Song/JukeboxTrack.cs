@@ -7,6 +7,7 @@ public class JukeboxTrack
     public GameMusicStyle style;
     public Sprite cover;
     public SongLyrics lyricData;
+    public float durationSeconds;
     public bool Imported => !string.IsNullOrEmpty(path);
     public bool Unlocked => PlayerProgressService.Instance?.IsJukeboxUnlocked(id) == true;
 
@@ -14,22 +15,22 @@ public class JukeboxTrack
     {
         var all = new Dictionary<string, JukeboxTrack>();
         var metadata = Resources.Load<JukeboxMetadataSO>("JukeboxMetadata");
-        void Add(string id, string name, string address, GameMusicStyle style)
+        void Add(string id, string name, string address, GameMusicStyle style, float duration = 0)
         {
             if (string.IsNullOrEmpty(id)) return;
             SplitName(name ?? id, out string artist, out string title);
             var m = metadata != null ? metadata.Find(id) : null;
             all[id] = new JukeboxTrack { id = id, title = string.IsNullOrEmpty(m?.title) ? title : m.title,
                 artist = string.IsNullOrEmpty(m?.artist) ? artist : m.artist, address = address, style = style,
-                lyrics = m?.lyrics, cover = m?.cover };
+                lyrics = m?.lyrics, cover = m?.cover, durationSeconds = duration > 0 ? duration : m?.durationSeconds ?? 0 };
         }
         var app = Resources.Load<AppConfigSO>("AppConfig");
         if (app != null && app.songCatalog != null)
             foreach (var e in app.songCatalog.songs)
                 if (e != null) Add(e.songId, e.address, SongContentKeys.AudioAddress(e.songId), GameMusicStyle.Unknown);
-        foreach (var e in SongCatalogService.Entries) Add(e.songId, e.displayName, e.audioAddress, e.gameStyle);
+        foreach (var e in SongCatalogService.Entries) Add(e.songId, e.displayName, e.audioAddress, e.gameStyle, e.durationSeconds);
         foreach (var e in ImportedAudioLibrary.Tracks)
-            if (PlayerProgressService.Instance?.IsJukeboxUnlocked(e.id) == true) all[e.id] = new JukeboxTrack { id = e.id, title = e.title, path = ImportedAudioLibrary.PathFor(e), style = e.style };
+            if (PlayerProgressService.Instance?.IsJukeboxUnlocked(e.id) == true) all[e.id] = new JukeboxTrack { id = e.id, title = e.title, path = ImportedAudioLibrary.PathFor(e), style = e.style, durationSeconds = e.durationSeconds };
         var result = new List<JukeboxTrack>();
         var progress = PlayerProgressService.Instance;
         if (progress != null)

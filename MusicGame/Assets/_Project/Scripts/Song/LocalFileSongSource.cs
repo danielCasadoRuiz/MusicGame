@@ -54,7 +54,7 @@ public class LocalFileSongSource : ISongSource
         }
 
         ImportedAudioRecord imported = null;
-        try { imported = ImportedAudioLibrary.Import(_pickedPath, Path.GetFileNameWithoutExtension(_pickedPath)); }
+        try { imported = ImportedAudioLibrary.Import(_pickedPath, Path.GetFileNameWithoutExtension(_pickedPath), loadedClip.length); }
         catch (Exception e) { Debug.LogWarning("[CustomAudio] Import failed: " + e.Message); }
         if (imported == null) { UnityEngine.Object.Destroy(loadedClip); onComplete?.Invoke(null); yield break; }
         _pickedPath = ImportedAudioLibrary.PathFor(imported);

@@ -10,6 +10,30 @@ using UnityEngine.UI;
 public static class JukeboxSetup
 {
     private static readonly Vector2 TL = new(0, 1), C = new(.5f, .5f);
+    // Migrate an existing prefab once, including when the project is already open in the editor.
+    [InitializeOnLoadMethod]
+    private static void UpgradeCabinet()
+    {
+        EditorApplication.delayCall += () =>
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+            var view = AssetDatabase.LoadAssetAtPath<JukeboxView>(UIScreenPrefabContext.ScreensFolder + "/Jukebox.prefab");
+            if (view == null) return;
+            if (view.cabinetContent != null && view.carousel != null && view.tempoFury != null && view.transform.Find("Content/JukeboxNameplate") == null && !view.libraryPanel.GetComponent<ScrollRect>().enabled &&
+                view.libraryPanel.GetComponent<ScrollRect>().viewport.GetComponent<Mask>() != null && view.archedTitle != null && view.playPause.image.type == Image.Type.Simple) return;
+            if (AssetImporter.GetAtPath(JukeboxArt + "TransportForward.png") == null) return;
+            var library = AssetDatabase.LoadAssetAtPath<UIPrefabLibrarySO>(UIScreenPrefabContext.LibraryPath);
+            if (library == null) return;
+            var context = new UIScreenPrefabContext(library, false, new StringBuilder());
+            context.Patch(UIScreenPrefabContext.ItemsFolder + "/JukeboxRow.prefab", PatchClassicRow);
+            context.Patch(UIScreenPrefabContext.ScreensFolder + "/Jukebox.prefab", root =>
+            {
+                PatchLyrics(root);
+                PatchCabinet(root);
+            });
+        };
+    }
+
     [MenuItem("Tools/MusicGame/UI/Setup Jukebox")]
     public static void Setup()
     {
@@ -21,9 +45,16 @@ public static class JukeboxSetup
     }
     public static void Build(UIScreenPrefabContext ctx)
     {
-        ctx.Library.jukeboxRow = ctx.Prefab<JukeboxRowView>(UIScreenPrefabContext.ItemsFolder + "/JukeboxRow.prefab", Row);
-        ctx.Library.jukebox = ctx.Prefab<JukeboxView>(UIScreenPrefabContext.ScreensFolder + "/Jukebox.prefab", Screen);
-        ctx.Patch(UIScreenPrefabContext.ScreensFolder + "/Jukebox.prefab", PatchLyrics);
+        ctx.Prefab<JukeboxRowView>(UIScreenPrefabContext.ItemsFolder + "/JukeboxRow.prefab", Row);
+        ctx.Prefab<JukeboxView>(UIScreenPrefabContext.ScreensFolder + "/Jukebox.prefab", Screen);
+        ctx.Patch(UIScreenPrefabContext.ItemsFolder + "/JukeboxRow.prefab", PatchClassicRow);
+        ctx.Patch(UIScreenPrefabContext.ScreensFolder + "/Jukebox.prefab", root =>
+        {
+            PatchLyrics(root);
+            PatchCabinet(root);
+        });
+        ctx.Library.jukeboxRow = AssetDatabase.LoadAssetAtPath<JukeboxRowView>(UIScreenPrefabContext.ItemsFolder + "/JukeboxRow.prefab");
+        ctx.Library.jukebox = AssetDatabase.LoadAssetAtPath<JukeboxView>(UIScreenPrefabContext.ScreensFolder + "/Jukebox.prefab");
         ctx.Patch(UIScreenPrefabContext.ScreensFolder + "/MainMenu.prefab", PatchMenu);
         LocalizationSetup.AddMissingEntries(LocalizationSetup.Entries.Where(e => e.key.StartsWith("Jukebox.") || e.key == "MainMenu.Jukebox").Select(e => e.key));
         const string path = "Assets/_Project/Resources/JukeboxMetadata.asset";
@@ -39,6 +70,277 @@ public static class JukeboxSetup
                 }
             AssetDatabase.CreateAsset(metadata, path);
         }
+    }
+    private const string JukeboxArt = "Assets/_Project/Art/UI/Jukebox/";
+    private static readonly Color Brass = new(.98f, .82f, .5f);
+
+    private static Sprite Art(string name)
+    {
+        string path = JukeboxArt + name + ".png";
+        var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+        if (importer.textureType != TextureImporterType.Sprite)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.mipmapEnabled = false;
+            importer.alphaIsTransparency = true;
+            importer.SaveAndReimport();
+        }
+        return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+    }
+
+    private static Sprite Classic(bool selected)
+    {
+        string name = selected ? "StraightCrimson" : "StraightIvory";
+        var sprite = Art(name);
+        var importer = (TextureImporter)AssetImporter.GetAtPath(JukeboxArt + name + ".png");
+        var border = new Vector4(170, 26, 200, 26);
+        if (importer.spriteBorder != border)
+        {
+            importer.spriteBorder = border;
+            importer.SaveAndReimport();
+            sprite = AssetDatabase.LoadAssetAtPath<Sprite>(JukeboxArt + name + ".png");
+        }
+        return sprite;
+    }
+
+    private static void PatchClassicRow(GameObject root)
+    {
+        var row = root.GetComponent<JukeboxRowView>();
+        var rect = (RectTransform)root.transform;
+        rect.sizeDelta = new Vector2(710, 107);
+        row.background.sprite = null;
+        row.background.color = Color.clear;
+        row.normalArt = Classic(false);
+        row.selectedArt = Classic(true);
+        row.plate = ImagePart("ClassicPlate", rect, 0, 0, 710, 107, row.normalArt, Color.white);
+        UIFactory.Stretch(row.plate.rectTransform);
+        row.plate.transform.SetAsFirstSibling();
+        row.button.targetGraphic = row.plate;
+        row.SetSelected(false);
+        JukeboxRowView.ApplyButtonFeedback(row.button);
+        row.title.gameObject.SetActive(true);
+        row.cover.gameObject.SetActive(false);
+        row.detail.gameObject.SetActive(false);
+        row.state.gameObject.SetActive(false);
+        Box(row.title.rectTransform, 50, 14, 583, 79);
+        row.title.fontSize = 35;
+        row.title.enableAutoSizing = true;
+        row.title.fontSizeMin = 21;
+        row.title.fontSizeMax = 35;
+        row.title.textWrappingMode = TextWrappingModes.NoWrap;
+        row.title.fontStyle = FontStyles.Bold | FontStyles.Italic;
+        var receiver = row.title.GetComponent<ThemeTextReceiver>();
+        if (receiver != null) UnityEngine.Object.DestroyImmediate(receiver);
+        row.rowLight = Neon(rect, "RowLight", 32, 111, 626, 4, 0, 2, true);
+    }
+
+    private static void PatchCabinet(GameObject root)
+    {
+        var view = root.GetComponent<JukeboxView>();
+        var panel = (RectTransform)root.transform.Find("Content");
+        view.cabinetContent = panel;
+        var background = root.transform.Find("Background").GetComponent<Image>();
+        background.sprite = null;
+        background.color = Color.clear;
+        FrontendBackdropSetup.Configure(root);
+        var cabinet = ImagePart("Cabinet", panel, 0, 0, 1740, 980, Art("SecretCabinetFloorTransparent"), Color.white);
+        cabinet.transform.SetAsFirstSibling();
+        foreach (string obsolete in new[] { "CabinetNeon", "SleeveNeon", "ControlsNeon", "NowPlayingRule", "ForegroundScoreLeft", "ForegroundScoreRight" })
+        {
+            var element = panel.Find(obsolete);
+            if (element != null) UnityEngine.Object.DestroyImmediate(element.gameObject);
+        }
+        Neon(panel, "UpperRailLight", 185, 193, 1370, 4, 0, 5, true);
+        Neon(panel, "LibraryNeon", 122, 244, 740, 568, 70, 1);
+        Neon(panel, "PlayerNeon", 882, 244, 729, 568, 70, 3);
+        Neon(panel, "BaseRailLight", 167, 837, 1400, 4, 0, 7, true);
+        AddTempoFury(view, panel);
+        view.styleSleeves = Enumerable.Range(0, 9).Select(index => Art("StyleSleeve" + index)).ToArray();
+        view.medallions = new Image[4];
+        float[] centers = { 1169, 1292, 1411, 1530 };
+        for (int i = 0; i < centers.Length; i++)
+        {
+            var circle = ImagePart("Medallion" + i, panel, centers[i] - 51, 64, 102, 102, Art("MedallionAperture"), Color.white);
+            var mount = circle.GetComponent<Mask>() ?? circle.gameObject.AddComponent<Mask>();
+            mount.showMaskGraphic = false;
+            view.medallions[i] = ImagePart("Artwork", circle.rectTransform, 0, 0, 102, 102, view.styleSleeves[i], Color.white);
+        }
+
+        var oldPlaque = panel.Find("JukeboxNameplate");
+        if (oldPlaque != null) UnityEngine.Object.DestroyImmediate(oldPlaque.gameObject);
+        var title = panel.Find("Title").GetComponent<TextMeshProUGUI>();
+        if (view.archedTitle == null)
+        {
+            Box(title.rectTransform, 551, 85, 638, 110);
+            title.text = "JUKEBOX";
+            title.overflowMode = TextOverflowModes.Overflow;
+            title.textWrappingMode = TextWrappingModes.NoWrap;
+            title.alignment = TextAlignmentOptions.Center;
+            title.fontSize = 82;
+            title.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/_Project/UI/Fonts/TempoFuryBrush/TempoFuryBrush SDF.asset");
+            var titleTheme = title.GetComponent<ThemeTextReceiver>();
+            if (titleTheme != null) UnityEngine.Object.DestroyImmediate(titleTheme);
+            title.color = new Color(1f, .964f, .89f);
+        }
+        view.archedTitle = title;
+        panel.Find("Subtitle").gameObject.SetActive(false);
+        Box(view.summary.rectTransform, 1405, 851, 175, 62);
+        view.summary.alignment = TextAlignmentOptions.Right;
+        view.summary.fontSize = 33;
+        Box((RectTransform)view.libraryPanel.transform, 123, 245, 737, 566);
+        var lyricsRect = (RectTransform)view.lyricsPanel.transform;
+        Box(lyricsRect, 914, 578, 654, 50);
+        view.lyricsScroll.enabled = false;
+        view.lyricsLine.rectTransform.SetParent(lyricsRect, false);
+        Box(view.lyricsLine.rectTransform, 0, 0, 654, 50);
+        view.lyricsLine.gameObject.SetActive(true);
+        view.lyricsLine.alignment = TextAlignmentOptions.Center;
+        view.lyricsLine.color = new Color(1f, .92f, .76f);
+        view.lyricsLine.fontStyle = FontStyles.Italic;
+        view.lyricsLine.fontSize = 27;
+        view.lyricsLine.enableAutoSizing = true;
+        view.lyricsLine.fontSizeMin = 18;
+        view.lyricsLine.fontSizeMax = 27;
+        view.lyricsLine.text = "";
+        var viewport = view.libraryPanel.GetComponent<ScrollRect>().viewport;
+        var aperture = viewport.GetComponent<Image>();
+        aperture.sprite = Art("ReelAperture");
+        aperture.color = Color.white;
+        var mask = viewport.GetComponent<Mask>() ?? viewport.gameObject.AddComponent<Mask>();
+        mask.showMaskGraphic = false;
+        var list = view.list.GetComponent<VerticalLayoutGroup>();
+        list.enabled = false;
+        view.list.GetComponent<ContentSizeFitter>().enabled = false;
+        UIFactory.Stretch(view.list);
+        var scroll = view.libraryPanel.GetComponent<ScrollRect>();
+        scroll.enabled = false;
+        view.carousel = view.libraryPanel.GetComponent<JukeboxCarousel>() ?? view.libraryPanel.AddComponent<JukeboxCarousel>();
+        list.childControlHeight = false;
+        list.childForceExpandHeight = false;
+
+        Box(view.nowPlaying.rectTransform, 915, 286, 361, 39);
+        view.nowPlaying.fontSize = 25;
+        var nowTheme = view.nowPlaying.GetComponent<ThemeTextReceiver>();
+        if (nowTheme != null) UnityEngine.Object.DestroyImmediate(nowTheme);
+        view.nowPlaying.color = Brass;
+        Box(view.selected.rectTransform, 915, 329, 360, 109);
+        view.selected.fontSize = 46;
+        view.selected.fontStyle = FontStyles.Bold;
+        view.selected.enableAutoSizing = true;
+        view.selected.fontSizeMin = 26;
+        view.selected.fontSizeMax = 46;
+        view.detail = ExtraText(panel, "ArtistStyle", 915, 446, 350, 53, 26);
+        var sleeve = ImagePart("CoverAperture", panel, 1288, 281, 280, 280, Art("CoverAperture"), Color.white);
+        var coverMask = sleeve.GetComponent<Mask>() ?? sleeve.gameObject.AddComponent<Mask>();
+        coverMask.showMaskGraphic = false;
+        view.cover.rectTransform.SetParent(sleeve.rectTransform, false);
+        UIFactory.Stretch(view.cover.rectTransform);
+        view.defaultCover = Art("CoverFallback");
+        view.cover.preserveAspect = false;
+        view.cover.sprite = view.defaultCover;
+        ImagePart("SleeveBezel", panel, 1284, 277, 288, 288, Art("SleeveBezel"), Color.white);
+
+        Skin(view.previous, 917, 638, 198, 73, false, Art("Previous"), Art("TransportRewind"));
+        view.transportIcon = Skin(view.playPause, 1130, 638, 224, 73, true, Art("Play"), Art("TransportCenter"));
+        view.playIcon = Art("Play");
+        view.pauseIcon = Art("Pause");
+        Skin(view.next, 1369, 638, 198, 73, false, Art("Next"), Art("TransportForward"));
+        Skin(view.back, 710, 848, 320, 62, true, null, Art("TransportCenter"));
+        view.back.image.type = Image.Type.Sliced;
+        JukeboxRowView.ApplyButtonFeedback(view.back);
+        view.back.image.color = Color.white;
+        view.lyrics.gameObject.SetActive(false);
+        view.background.gameObject.SetActive(false);
+        Skin(view.delete, 1365, 546, 184, 58, true);
+        Skin(view.full, 913, 325, 351, 108, true);
+        var offerLabel = view.full.GetComponentInChildren<TextMeshProUGUI>(true);
+        offerLabel.fontSizeMax = 25;
+        offerLabel.margin = new Vector4(44, 19, 42, 19);
+        view.preview.gameObject.SetActive(false);
+        view.full.gameObject.SetActive(false);
+        Box(view.status.rectTransform, 916, 771, 650, 30);
+        view.status.fontSize = 19;
+        view.elapsed = ExtraText(panel, "Elapsed", 917, 726, 88, 40, 27);
+        view.duration = ExtraText(panel, "Duration", 1493, 726, 73, 40, 27);
+        view.duration.alignment = TextAlignmentOptions.Right;
+        ImagePart("ProgressTrack", panel, 1007, 744, 465, 7, null, new Color(.5f,.38f,.27f));
+        view.progress = ImagePart("ProgressGlow", panel, 1007, 743, 0, 9, null, Color.cyan);
+        view.progressKnob = ImagePart("ProgressKnob", panel, 993, 732, 28, 28, Art("Dial"), Color.white);
+    }
+
+    private static void AddTempoFury(JukeboxView view, RectTransform panel)
+    {
+        if (view.tempoFury == null)
+        {
+            var menu = AssetDatabase.LoadAssetAtPath<MainMenuView>(UIScreenPrefabContext.ScreensFolder + "/MainMenu.prefab");
+            if (menu == null || menu.logo == null) return;
+            view.tempoFury = UnityEngine.Object.Instantiate(menu.logo, panel);
+            view.tempoFury.name = "TempoFuryBrand";
+            Box((RectTransform)view.tempoFury.transform, 617.5f, 1, 505, 75);
+        }
+        var logo = view.tempoFury;
+        if (logo.background != null) logo.background.gameObject.SetActive(false);
+        if (logo.foreground != null) logo.foreground.gameObject.SetActive(false);
+        foreach (var image in logo.GetComponentsInChildren<Image>(true)) image.raycastTarget = false;
+        view.rockFuryLetter = Art("RockFuryF");
+        view.ApplyBrand(StyledTitleView.MenuStyle(logo.library));
+    }
+
+    private static TextMeshProUGUI ExtraText(RectTransform panel, string name, float x, float y, float w, float h, int size) =>
+        ResizeText(panel.Find(name)?.GetComponent<TextMeshProUGUI>() ?? Text(name, panel, x, y, w, h, size), x, y, w, h, size);
+
+    private static TextMeshProUGUI ResizeText(TextMeshProUGUI label, float x, float y, float w, float h, int size)
+    {
+        Box(label.rectTransform, x, y, w, h);
+        label.fontSize = size;
+        return label;
+    }
+
+    private static Image ImagePart(string name, RectTransform panel, float x, float y, float w, float h, Sprite sprite, Color color)
+    {
+        var image = panel.Find(name)?.GetComponent<Image>() ?? UIFactory.CreatePanel(name, panel, color);
+        Box(image.rectTransform, x, y, w, h);
+        image.raycastTarget = false;
+        image.sprite = sprite;
+        image.color = color;
+        return image;
+    }
+
+    private static void SkinLabel(Button button, Color color)
+    {
+        var label = button.GetComponentInChildren<TextMeshProUGUI>(true);
+        var receiver = label.GetComponent<ThemeTextReceiver>();
+        if (receiver != null) UnityEngine.Object.DestroyImmediate(receiver);
+        label.color = color;
+        label.fontStyle = FontStyles.Bold;
+    }
+
+    private static Image Skin(Button button, float x, float y, float w, float h, bool selected, Sprite icon = null, Sprite plate = null)
+    {
+        var rect = (RectTransform)button.transform;
+        Box(rect, x, y, w, h);
+        var image = button.GetComponent<Image>();
+        image.sprite = plate ?? Classic(selected);
+        image.type = plate == null ? Image.Type.Sliced : Image.Type.Simple;
+        image.pixelsPerUnitMultiplier = 2.7f;
+        image.color = Color.white;
+        SkinLabel(button, selected ? new Color(1,.94f,.81f) : new Color(.11f,.06f,.03f));
+        if (icon == null) return null;
+        button.GetComponentInChildren<TextMeshProUGUI>(true).gameObject.SetActive(false);
+        return ImagePart("TransportIcon", rect, w / 2 - 34, h / 2 - 22, 68, 44, icon,
+            selected ? new Color(1,.94f,.81f) : new Color(.11f,.06f,.03f));
+    }
+
+    private static JukeboxNeon Neon(RectTransform parent, string name, float x, float y, float w, float h,
+        float radius, float phase, bool underline = false, float leftShear = 0, float rightShear = 0)
+    {
+        var rect = parent.Find(name) as RectTransform ?? UIFactory.CreateRect(name, parent);
+        Box(rect, x, y, w, h);
+        if (rect.GetComponent<CanvasRenderer>() == null) rect.gameObject.AddComponent<CanvasRenderer>();
+        var light = rect.GetComponent<JukeboxNeon>() ?? rect.gameObject.AddComponent<JukeboxNeon>();
+        light.Configure(radius, underline, phase, leftShear, rightShear);
+        return light;
     }
     public static void PatchMenu(GameObject root)
     {
@@ -56,6 +358,11 @@ public static class JukeboxSetup
             else UIScreenPrefabContext.Localized(label, "MainMenu.Jukebox");
             label.text = "JUKEBOX";
         }
+        var jukebox = view.jukeboxButton.transform;
+        var settings = view.settingsButton.transform;
+        if (jukebox.parent == settings.parent && jukebox.GetSiblingIndex() > settings.GetSiblingIndex())
+            jukebox.SetSiblingIndex(settings.GetSiblingIndex());
+
         // Keep the existing fanned art, but fit six actions instead of five. The mobile menu omits Quit.
         var buttons = new[] { view.playButton, view.rivalsButton, view.progressionButton, view.jukeboxButton, view.settingsButton, view.quitButton };
         var old = view.buttonSlots;
@@ -109,7 +416,7 @@ public static class JukeboxSetup
         view.lyricsLine = UIFactory.CreateText("LineTemplate", view.lyricsContent, "", 32, Color.white, TextAlignmentOptions.TopLeft);
         view.lyricsLine.textWrappingMode = TextWrappingModes.Normal;
         view.lyricsLine.richText = false; view.lyricsLine.raycastTarget = false;
-        view.lyricsLine.margin = new Vector4(20, 10, 20, 10);
+        view.lyricsLine.margin = new Vector4(12, 2, 12, 2);
         view.lyricsLine.gameObject.SetActive(false); view.lyricsPanel.SetActive(false);
     }
     private static void Box(RectTransform rt, float x, float y, float w, float h) => UIFactory.SetBox(rt, TL, TL, TL, new Vector2(x, -y), new Vector2(w, h));
@@ -145,7 +452,7 @@ public static class JukeboxSetup
         view.background = go.AddComponent<Image>(); view.background.color = new Color(.12f, .15f, .2f, .9f);
         view.button = go.AddComponent<Button>(); view.button.targetGraphic = view.background;
         view.cover = UIFactory.CreatePanel("Cover", rt, Color.white); Box(view.cover.rectTransform, 12, 12, 80, 80);
-        view.cover.preserveAspect = true; view.cover.raycastTarget = false;
+        view.cover.preserveAspect = false; view.cover.raycastTarget = false;
         view.title = Text("Title", rt, 110, 8, 810, 32, 26); view.title.richText = false;
         view.detail = Text("ArtistStyleOrigin", rt, 110, 43, 810, 25, 19); view.detail.richText = false;
         view.state = Text("UnlockState", rt, 110, 73, 810, 22, 16); view.state.color = new Color(.6f, .82f, .87f);
@@ -169,7 +476,7 @@ public static class JukeboxSetup
         view.selected = Text("SelectedSong", panel, 1050, 158, 690, 120, 32);
         view.selected.richText = false;
         view.cover = UIFactory.CreatePanel("SelectedCover", panel, Color.white); Box(view.cover.rectTransform, 1050, 294, 140, 140);
-        view.cover.preserveAspect = true; view.cover.raycastTarget = false;
+        view.cover.preserveAspect = false; view.cover.raycastTarget = false;
         view.nowPlaying = Text("NowPlaying", panel, 1220, 294, 520, 140, 24);
         view.nowPlaying.richText = false;
         view.preview = Button("Preview", panel, 1050, 455, 330, 62, "Jukebox.Preview", out _);

@@ -20,6 +20,9 @@ public class PlayableSongCatalogSO : ScriptableObject
     {
         public string songId;
         public string address;
+        public string title;
+        public string artist;
+        public int releaseYear;
         [Tooltip("Editor-only: the AudioClip GUID used to reconnect a moved/renamed asset to its songId.")]
         public string editorGuid;
     }

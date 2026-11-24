@@ -27,10 +27,20 @@ public class SongPreviewPlayer : MonoBehaviour
 
     /// <summary>Address of the song being previewed (null when idle).</summary>
     public string PlayingId { get; private set; }
+    public string CompletedId { get; private set; }
     public bool IsPlaying => PlayingId != null;
     /// <summary>Start/duration (s) of the preview now playing (valid once loaded; duration 0 before).</summary>
     public (float start, float duration) PlayingRange { get; private set; }
+    public float ElapsedSeconds { get; private set; }
+    public float RemainingSeconds => Mathf.Max(0,PlayingRange.duration-ElapsedSeconds);
+    public float Progress => PlayingRange.duration>0?Mathf.Clamp01(ElapsedSeconds/PlayingRange.duration):0;
     public event System.Action StateChanged;
+    /// <summary>Caller-owned FFT buffer: no extra source, clip load or allocation for the UI.</summary>
+    public bool ReadSpectrum(float[] buffer)
+    {
+        if(_source==null||!_source.isPlaying||buffer==null)return false;
+        _source.GetSpectrumData(buffer,0,FFTWindow.BlackmanHarris);return true;
+    }
 
     private void Awake()
     {
@@ -64,8 +74,11 @@ public class SongPreviewPlayer : MonoBehaviour
         _routine = StartCoroutine(LoadAndPlay(location));
     }
 
-    public void Stop()
+    public void Stop() => StopInternal(false);
+
+    private void StopInternal(bool completed)
     {
+        CompletedId = completed ? PlayingId : null;
         if (_routine != null) { StopCoroutine(_routine); _routine = null; }
         if (_source != null) { _source.Stop(); _source.clip = null; _source.volume = 1f; }
         if (_handle.IsValid()) Addressables.Release(_handle);
@@ -73,6 +86,7 @@ public class SongPreviewPlayer : MonoBehaviour
         bool wasPlaying = PlayingId != null;
         PlayingId = null;
         PlayingRange = default;
+        ElapsedSeconds = 0;
         if (wasPlaying) StateChanged?.Invoke();
     }
 
@@ -89,19 +103,23 @@ public class SongPreviewPlayer : MonoBehaviour
                                                 : (Mathf.Max(0f, clip.length * 0.5f - 15f), Mathf.Min(30f, clip.length));
         PlayingRange = (start, duration);
         _source.clip = clip;
-        _source.volume = 1f;
+        _source.volume = 0f;
         _source.Play();
         _source.time = start; // seek after Play: reliable once the data is loaded
         Debug.Log($"[SongPreview] '{location.PrimaryKey}' from {start:0.0}s for {duration:0.0}s");
         StateChanged?.Invoke(); // the range is known now
 
-        for (float t = 0f; t < duration; t += Time.unscaledDeltaTime)
+        double audioStarted=AudioSettings.dspTime;
+        while (true)
         {
+            float t=(float)(AudioSettings.dspTime-audioStarted);
+            if(t>=duration)break;
+            ElapsedSeconds = Mathf.Clamp(t,0,duration);
             float left = duration - t;
-            _source.volume = left < FadeSeconds ? left / FadeSeconds : 1f;
+            _source.volume = Mathf.Min(Mathf.Clamp01(t/.3f),left < FadeSeconds ? left / FadeSeconds : 1f);
             yield return null;
         }
         _routine = null;
-        Stop();
+        StopInternal(true);
     }
 }

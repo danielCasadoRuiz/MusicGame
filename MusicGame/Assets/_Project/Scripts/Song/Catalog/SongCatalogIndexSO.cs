@@ -36,6 +36,9 @@ public class SongCatalogIndexEntry
     // ── Identity / addressing ──
     public string songId;
     public string displayName;
+    public string title;
+    public string artist;
+    public int releaseYear;
     public string audioAddress;
     public string profileAddress;
     public string contentLabel;

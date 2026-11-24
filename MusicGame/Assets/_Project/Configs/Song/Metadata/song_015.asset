@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e53d1b4f86740848ac5f59af123a5bc, type: 3}
+  m_Name: song_015
+  m_EditorClassIdentifier: Assembly-CSharp::SongMetadataSO
+  songId: song_015
+  title: SuperBeliefs
+  artist: Stevie Whatever
+  releaseYear: 1972
+  artwork: {fileID: 0}
+  audio: {fileID: 8300000, guid: e0cf713220f5a614ab47cc747c57b598, type: 3}
+  style: 6
+  referenceTitle: Superstition
+  referenceArtist: Stevie Wonder
+  metadataSource: https://chatgpt.com/c/6ace1328-3030-83eb-98b9-7c7231bc6ca3

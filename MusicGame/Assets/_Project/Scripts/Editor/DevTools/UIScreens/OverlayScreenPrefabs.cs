@@ -18,6 +18,7 @@ public static class OverlayScreenPrefabs
     {
         string dir = UIScreenPrefabContext.ScreensFolder;
         ctx.Library.analyzingScreen    = ctx.Prefab<AnalyzingScreenView>($"{dir}/AnalyzingScreen.prefab", BuildAnalyzing);
+        ctx.Patch($"{dir}/AnalyzingScreen.prefab", FrontendBackdropSetup.Configure);
         ctx.Library.countdownScreen    = ctx.Prefab<CountdownScreenView>($"{dir}/CountdownScreen.prefab", BuildCountdown);
         ctx.Library.finishBanner       = ctx.Prefab<FinishBannerView>($"{dir}/FinishBanner.prefab", BuildFinishBanner);
         ctx.Library.mobileControls     = ctx.Prefab<MobileControlsView>($"{dir}/MobileControls.prefab", BuildMobileControls);

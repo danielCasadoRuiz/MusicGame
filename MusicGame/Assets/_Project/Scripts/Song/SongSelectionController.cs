@@ -49,6 +49,7 @@ public class SongSelectionController : MonoBehaviour
     private Color _fallbackAccentColor = new(0.18f, 0.75f, 0.95f);
 
     private SongSelectionView _view;
+    private SongCatalogCarousel _carousel;
     private RectTransform _root;
     private RectTransform _songListRoot;
     private TextMeshProUGUI _playButtonLabel;
@@ -89,6 +90,8 @@ public class SongSelectionController : MonoBehaviour
 
     private void OnEnable()
     {
+        AppearancePreference.Updated+=UpdateStatusContrast;
+        MusicAccess.Changed+=RefreshAccess;
         _onFlowStateChanged = e =>
         {
             if (e.Current == GameFlowState.SongSelection)
@@ -126,6 +129,9 @@ public class SongSelectionController : MonoBehaviour
 
     private void OnDisable()
     {
+        AppearancePreference.Updated-=UpdateStatusContrast;
+        MusicAccess.Changed-=RefreshAccess;
+        if(SongPreviewPlayer.Instance!=null)SongPreviewPlayer.Instance.StateChanged-=RefreshPreviewButton;
         EventBus.Unsubscribe(_onFlowStateChanged);
         EventBus.Unsubscribe(_onThemeChanged);
         EventBus.Unsubscribe(_onPreparation);
@@ -163,6 +169,12 @@ public class SongSelectionController : MonoBehaviour
         view.backButton.onClick.AddListener(() => { StopPreview(); MatchResultReturn.Back(); }); // result it came from, else Main Menu
         view.playButton.onClick.AddListener(OnPlayClicked);
         view.playYourSongButton.onClick.AddListener(OnPlayYourSongClicked);
+        if(view.customPurchaseClose!=null)view.customPurchaseClose.onClick.AddListener(()=>view.customPurchaseDialog.SetActive(false));
+        if(view.customPurchaseConfirm!=null)view.customPurchaseConfirm.onClick.AddListener(()=>
+        {
+            MusicAccess.ConfirmPurchase(MusicProduct.CustomAudio);
+            RefreshAccess();
+        });
 
         // Static captions are LocalizedText in the prefab; the streaming ones are composite (service +
         // "Coming Soon"), so they stay bound here.
@@ -213,6 +225,7 @@ public class SongSelectionController : MonoBehaviour
     private void PopulateSongRows()
     {
         var lib = UIPrefabLibrarySO.Instance;
+        var shipped=Resources.Load<AppConfigSO>("AppConfig")?.songCatalog;
         for (int i = 0; i < _entries.Count; i++)
         {
             int index = i; // capture
@@ -222,23 +235,58 @@ public class SongSelectionController : MonoBehaviour
             if (row == null) break; // missing prefab: logged by Spawn
             row.name = "SongRow_" + i;
             row.label.text = SongCatalog.DisplayNameForAddress(location.PrimaryKey); // published display name (the address is the ASCII songId key)
+            if(row.artistLabel!=null)
+            {
+                string display=row.label.text;int split=display.IndexOf(" — ",System.StringComparison.Ordinal);int length=3;
+                if(split<0)split=display.IndexOf(" - ",System.StringComparison.Ordinal);
+                if(split>=0){row.artistLabel.text=display.Substring(0,split).Trim();row.label.text=display.Substring(split+length).Trim();}
+                else row.artistLabel.text="";
+            }
+            if(row.genreLabel!=null)
+            {
+                row.genreLabel.text=SongCatalogService.TryGetEntry(SongProgression.IdOf(location),out var metadata)?metadata.gameStyle.ToString():"";
+                if(metadata!=null)row.musicStyle=metadata.gameStyle;
+            }
+            if(SongCatalogService.TryGetEntry(SongProgression.IdOf(location),out var presentation))
+            {
+                if(!string.IsNullOrEmpty(presentation.title))row.label.text=presentation.title;
+                if(row.artistLabel!=null&&!string.IsNullOrEmpty(presentation.artist))row.artistLabel.text=presentation.artist;
+            }
+            var fallback=shipped?.songs.Find(s=>s.songId==SongProgression.IdOf(location));
+            if(fallback!=null)
+            {
+                if((presentation==null||string.IsNullOrEmpty(presentation.title))&&!string.IsNullOrEmpty(fallback.title))row.label.text=fallback.title;
+                if(row.artistLabel!=null&&(presentation==null||string.IsNullOrEmpty(presentation.artist))&&!string.IsNullOrEmpty(fallback.artist))row.artistLabel.text=fallback.artist;
+            }
+            _catalogTitles.Add(row.label.text);
 
             // Row BACKGROUND is deliberately NOT a ThemeColorReceiver — its color depends on
             // selection state (see RefreshRowHighlight), not just the theme.
             _rowBackgrounds.Add(row.background);
-            row.button.onClick.AddListener(() => SelectCatalogSong(index));
+            row.button.onClick.AddListener(() => _carousel.MoveTo(index));
             _rowButtons.Add(row.button);
             _rowLabels.Add(row.label);
 
-            // Play/Pause on the card itself — selects the song too (see OnCardPlayPause).
-            Loc.Set(row.playPauseLabel, "SongSelection.CardPlay");
-            row.playPauseButton.onClick.AddListener(() => OnCardPlayPause(index));
+            // A tap anywhere on the card selects and auditions the song.
             _cardPlayButtons.Add(row.playPauseButton);
 
             // Played check (history) — its own column between the name and PREVIEW (see RefreshCompletedRows).
             _rows.Add(row);
             _cardPlayLabels.Add(row.playPauseLabel);
         }
+        var scroll = _songListRoot.GetComponentInParent<ScrollRect>(true);
+        _carousel = scroll.GetComponent<SongCatalogCarousel>();
+        if (_carousel == null) _carousel = scroll.gameObject.AddComponent<SongCatalogCarousel>();
+        var decades=new List<int>();
+        foreach(var entry in _entries)
+        {
+            string id=SongProgression.IdOf(entry);int value=0;
+            if(SongCatalogService.TryGetEntry(id,out var metadata))value=metadata.releaseYear;
+            if(value==0&&shipped!=null){var authored=shipped.songs.Find(s=>s.songId==id);if(authored!=null)value=authored.releaseYear;}
+            value=value>=1970&&value<2030?value/10*10:0;
+            decades.Add(value);
+        }
+        _carousel.Setup(_rows, OnCarouselSelection,decades);
         RefreshCompletedRows();
         RefreshPreviewButton();
     }
@@ -249,6 +297,7 @@ public class SongSelectionController : MonoBehaviour
     private readonly List<Button> _cardPlayButtons = new();
     private readonly List<TextMeshProUGUI> _rowLabels = new();
     private readonly List<SongRowView> _rows = new();
+    private readonly List<string> _catalogTitles = new();
 
     // Unavailable = already used (won) in THIS lap — the only thing that blocks selection. The check is the
     // all-time played history (any lap, won or not): shown, never consulted for availability.
@@ -270,7 +319,13 @@ public class SongSelectionController : MonoBehaviour
             // PREVIEW keeps its place (no layout jump); as before, a song used in this lap is not previewed.
             _cardPlayButtons[i].interactable = !done;
             string name = SongCatalog.DisplayNameForAddress(_entries[i].PrimaryKey);
-            _rowLabels[i].text = done ? $"<alpha=#66>{name}" : name;
+            if(_rows[i].artistLabel!=null)
+            {
+                int split=name.IndexOf(" — ",System.StringComparison.Ordinal);if(split<0)split=name.IndexOf(" - ",System.StringComparison.Ordinal);
+                if(split>=0)name=name.Substring(split+3).Trim();
+            }
+            name=_catalogTitles[i];
+            _rowLabels[i].text = name;
         }
         if (IsCompletedRow(_selectedCatalogIndex)) { StopPreview(); _selectedCatalogIndex = -1; }
         RefreshRowHighlight(CurrentAccentColor());
@@ -283,40 +338,85 @@ public class SongSelectionController : MonoBehaviour
     // playing preview. Cards only reflect it.
     private readonly List<TMPro.TextMeshProUGUI> _cardPlayLabels = new();
 
-    /// <summary>Card Play/Pause: PLAY selects that song (stopping any other preview) and starts its
-    /// preview; PAUSE on the playing card stops it. Only one song selected, one preview playing.</summary>
-    private void OnCardPlayPause(int index)
-    {
-        var player = SongPreviewPlayer.Instance;
-        if (player == null || index < 0 || index >= _entries.Count || IsCompletedRow(index)) return;
-        var location = _entries[index];
-        if (player.IsPlaying && player.PlayingId == location.PrimaryKey) { player.Stop(); return; }
-        SelectCatalogSong(index); // stops the previous preview when the selection changes
-        player.Play(location);
-    }
-
     private void StopPreview() => SongPreviewPlayer.Instance?.Stop();
 
     private void RefreshPreviewButton()
     {
-        var player = SongPreviewPlayer.Instance;
-        string playingId = player != null && player.IsPlaying ? player.PlayingId : null;
-        for (int i = 0; i < _cardPlayLabels.Count && i < _entries.Count; i++)
-            if (_cardPlayLabels[i] != null)
-                Loc.Set(_cardPlayLabels[i], playingId == _entries[i].PrimaryKey ? "SongSelection.CardPause" : "SongSelection.CardPlay");
-
-        // Lightweight range readout in the existing status line while a preview plays.
-        bool showing = playingId != null && player.PlayingRange.duration > 0f;
-        if (showing)
+        var player=SongPreviewPlayer.Instance;
+        string playingId=player!=null&&player.IsPlaying?player.PlayingId:null;
+        for(int i=0;i<_rows.Count;i++)
         {
-            var (start, duration) = player.PlayingRange;
-            SetStatus(Loc.Get("SongSelection.PreviewRange", Clock(start), Clock(start + duration)), _neutralStatusColor);
+            _rows[i].SetPreview(playingId==_entries[i].PrimaryKey);
         }
-        else if (_statusText != null && _previewRangeShown) SetStatus(null);
-        _previewRangeShown = showing;
+        RefreshSelectionSummary();
+        UpdatePreviewProgress();
+    }
+    private void RefreshSelectionSummary()
+    {
+        if(_view.selectedSongText==null)return;
+        var showcase=_view.GetComponent<SongSelectionShowcase>();
+        if(showcase!=null)
+        {
+            Loc.Forget(_view.selectedSongText);Loc.Forget(showcase.artist);
+            int selected=_selectedCatalogIndex;
+            _view.selectedSongText.text=_selectedLocalInfo.HasValue?_selectedLocalInfo.Value.DisplayName:selected>=0&&selected<_rows.Count?_catalogTitles[selected]:"";
+            showcase.artist.text=!_selectedLocalInfo.HasValue&&selected>=0&&selected<_rows.Count&&_rows[selected].artistLabel!=null?_rows[selected].artistLabel.text:"";
+            return;
+        }
+        if(_selectedLocalInfo.HasValue){Loc.Set(_view.selectedSongText,"SongSelection.SelectedLocal",_selectedLocalInfo.Value.DisplayName);return;}
+        int index=_selectedCatalogIndex;
+        if(index>=0&&index<_rows.Count)Loc.Set(_view.selectedSongText,"SongSelection.SelectedSong",_catalogTitles[index],_rows[index].artistLabel!=null?_rows[index].artistLabel.text:"");
+        else {Loc.Forget(_view.selectedSongText);_view.selectedSongText.text="";}
+    }
+    private void Update()
+    {
+        if(_view!=null&&_root!=null&&_root.gameObject.activeInHierarchy)UpdatePreviewProgress();
+    }
+    private void UpdatePreviewProgress()
+    {
+        if(_view==null)return;
+        var showcase=_view.GetComponent<SongSelectionShowcase>();
+        if(showcase!=null&&showcase.titleProgress!=null)
+        {
+            if(_view.previewProgressRoot!=null)_view.previewProgressRoot.SetActive(false);
+            if(_view.previewTimeText!=null)_view.previewTimeText.text="";
+            return;
+        }
+        var player=SongPreviewPlayer.Instance;
+        bool playing=player!=null&&player.IsPlaying;
+        bool ready=playing&&player.PlayingRange.duration>0;
+        if(_view.previewProgressRoot!=null)_view.previewProgressRoot.SetActive(ready||player!=null&&player.CompletedId!=null);
+        if(_view.previewProgressFill!=null)_view.previewProgressFill.anchorMax=new Vector2(ready?player.Progress:player!=null&&player.CompletedId!=null?1:0,1);
+        if(_view.previewTimeText!=null){Loc.Forget(_view.previewTimeText);_view.previewTimeText.text="";}
+    }
+    private void RefreshAccess()
+    {
+        if(_view==null)return;
+        if(!MusicAccess.CustomAudio&&_selectedLocalInfo.HasValue)_selectedLocalInfo=null;
+        Loc.Set(_view.playYourSongLabel,MusicAccess.CustomAudio?"SongSelection.ImportOwn":"SongSelection.UnlockOwn");
+        RefreshPlayButtonInteractable();RefreshSelectionSummary();
+        if(_view.customPurchaseDialog!=null&&_view.customPurchaseDialog.activeSelf)
+        {
+            if(MusicAccess.CustomAudio)_view.customPurchaseDialog.SetActive(false);
+            else UpdateCustomPurchase();
+        }
+    }
+    private void ShowCustomPurchase()
+    {
+        StopPreview();
+        if(_view.customPurchaseDialog==null)return;
+        UpdateCustomPurchase();_view.customPurchaseDialog.SetActive(true);_view.customPurchaseDialog.transform.SetAsLastSibling();
+    }
+    private void UpdateCustomPurchase()
+    {
+        Loc.Set(_view.customPurchaseTitle,"SongSelection.CustomPackTitle");
+        Loc.Bind(_view.customPurchaseBody,()=>Loc.Get("SongSelection.CustomPackBody")+"\n\n"+
+            Loc.Get(MusicAccess.Store!=null?"Jukebox.PurchaseSimulation":"Jukebox.PurchaseUnavailable"));
+        Loc.Set(_view.customPurchaseConfirmLabel,MusicAccess.Store!=null?"Jukebox.BuySimulation":"Jukebox.Buy");
+        Loc.Set(_view.customPurchaseCloseLabel,"SongSelection.CustomPackBack");
+        _view.customPurchaseConfirm.interactable=MusicAccess.Store!=null;
     }
 
-    private bool _previewRangeShown;
     private static string Clock(float seconds)
     {
         int s = Mathf.Max(0, Mathf.RoundToInt(seconds));
@@ -344,15 +444,32 @@ public class SongSelectionController : MonoBehaviour
             SongPreviewPlayer.Instance.StateChanged += RefreshPreviewButton;
         }
         RefreshPreviewButton();
+        RefreshAccess();
     }
 
     private void Hide()
     {
         StopPreview(); // leaving the selector never leaves a preview playing
+        if(_view.customPurchaseDialog!=null)_view.customPurchaseDialog.SetActive(false);
         if (_root != null) _root.gameObject.SetActive(false);
     }
 
     // ── Selection ───────────────────────────────────────────────────────────────
+
+    private void OnCarouselSelection(int index)
+    {
+        if(index<0){StopPreview();_selectedCatalogIndex=-1;_selectedLocalInfo=null;RefreshRowHighlight(CurrentAccentColor());RefreshPlayButtonInteractable();return;}
+        if(IsCompletedRow(index))
+        {
+            StopPreview();_selectedCatalogIndex=-1;_selectedLocalInfo=null;
+            RefreshRowHighlight(CurrentAccentColor());RefreshPlayButtonInteractable();
+            return;
+        }
+        SelectCatalogSong(index);
+        var player=SongPreviewPlayer.Instance;
+        if(player!=null&&_root!=null&&_root.gameObject.activeInHierarchy&&player.PlayingId!=_entries[index].PrimaryKey)
+            player.Play(_entries[index]);
+    }
 
     private void SelectCatalogSong(int index)
     {
@@ -369,6 +486,7 @@ public class SongSelectionController : MonoBehaviour
     private void OnPlayYourSongClicked()
     {
         if (_isLoading) return;
+        if(!MusicAccess.CustomAudio){ShowCustomPurchase();return;}
         _isLoading = true;
         RefreshPlayButtonInteractable();
         var source = new LocalFileSongSource(LocalSongPickerFactory.Create());
@@ -378,7 +496,7 @@ public class SongSelectionController : MonoBehaviour
             RefreshPlayButtonInteractable();
             if (info == null)
             {
-                if (source.AccessDenied) { MusicAccess.Request(MusicProduct.CustomAudio); return; }
+                if (source.AccessDenied) { ShowCustomPurchase(); return; }
                 SetStatus(Loc.Get("SongSelection.LocalFileCancelled"), _errorStatusColor);
                 return;
             }
@@ -398,10 +516,12 @@ public class SongSelectionController : MonoBehaviour
         var unselectedColor = _rowUnselectedColor;
 
         for (int i = 0; i < _rowBackgrounds.Count; i++)
-            _rowBackgrounds[i].color = i == _selectedCatalogIndex ? selectedColor : unselectedColor;
+        {
+            if(i<_rows.Count&&_rows[i].skin!=null)_rows[i].SetSelection(i==_selectedCatalogIndex,_rows[i].musicStyle);
+            else _rowBackgrounds[i].color = i == _selectedCatalogIndex ? selectedColor : unselectedColor;
+        }
 
-        if (_localFileRowBackground != null)
-            _localFileRowBackground.color = _selectedLocalInfo.HasValue ? selectedColor : unselectedColor;
+        RefreshSelectionSummary();
     }
 
     private Color CurrentAccentColor() =>
@@ -409,7 +529,7 @@ public class SongSelectionController : MonoBehaviour
             ? ThemeManager.Instance.CurrentTheme.UI.accentColor
             : _fallbackAccentColor;
 
-    private bool HasSelection => _selectedCatalogIndex >= 0 || _selectedLocalInfo.HasValue;
+    private bool HasSelection => _selectedCatalogIndex >= 0 || (_selectedLocalInfo.HasValue&&MusicAccess.CustomAudio);
 
     private void RefreshPlayButtonInteractable()
     {
@@ -418,11 +538,19 @@ public class SongSelectionController : MonoBehaviour
 
     private static string ComingSoonLabel(string serviceKey) => Loc.Get(serviceKey) + " (" + Loc.Get("SongSelection.ComingSoon") + ")";
 
+    private bool _statusIsError;
+    private void UpdateStatusContrast()
+    {
+        if(_view==null||_statusText==null)return;
+        float light=_view.GetComponent<FrontendStyleBackground>().InkLightWeight;
+        _statusText.color=_statusIsError?Color.Lerp(_errorStatusColor,new Color(.64f,.08f,.1f),light):Color.Lerp(_neutralStatusColor,new Color(.14f,.17f,.22f),light);
+    }
     private void SetStatus(string text, Color? color = null)
     {
         if (_statusText == null) return;
         _statusText.text  = text ?? "";
-        _statusText.color = color ?? _neutralStatusColor;
+        _statusIsError=color.HasValue&&color.Value==_errorStatusColor;
+        UpdateStatusContrast();
     }
 
     // ── PLAY (the only thing that actually advances the flow) ───────────────────

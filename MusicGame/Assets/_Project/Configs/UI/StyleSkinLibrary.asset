@@ -181,6 +181,190 @@ MonoBehaviour:
     normal: {fileID: 21300000, guid: a785d27332dc490987907059396ad512, type: 3}
     classic: {fileID: 21300000, guid: a785d27332dc490987907059396ad512, type: 3}
   composers: {fileID: 21300000, guid: b454fb4640f9c99458eb4524fa8bf85b, type: 3}
+  menuBackgrounds:
+  - style: 2
+    texture: {fileID: 2800000, guid: e88157be72ef4e9a8fccd7b56f8a7432, type: 3}
+    dayTexture: {fileID: 2800000, guid: c261bdb26de78a14bbf39be1a9fa4bed, type: 3}
+    dayKeepsLightInk: 0
+  - style: 3
+    texture: {fileID: 2800000, guid: dd7f64ca894a4bcca934de422ffc9d76, type: 3}
+    dayTexture: {fileID: 2800000, guid: 1fba1625150e4e146b20120be130f6bc, type: 3}
+    dayKeepsLightInk: 0
+  - style: 4
+    texture: {fileID: 2800000, guid: caa5049cdef14beca060028e964711e7, type: 3}
+    dayTexture: {fileID: 2800000, guid: f4dea36893f7f984684f8c08bfb967ff, type: 3}
+    dayKeepsLightInk: 0
+  - style: 5
+    texture: {fileID: 2800000, guid: aeb3e9ef40ac4f4c889f9c6bb48a6d5c, type: 3}
+    dayTexture: {fileID: 2800000, guid: 0ce417bfef6569c4385a357d8fb150d8, type: 3}
+    dayKeepsLightInk: 0
+  - style: 6
+    texture: {fileID: 2800000, guid: 40339bcb6d62415c971303cd11691645, type: 3}
+    dayTexture: {fileID: 2800000, guid: d3c873085f4b8f244ba3383732da5dd7, type: 3}
+    dayKeepsLightInk: 0
+  - style: 7
+    texture: {fileID: 2800000, guid: f6d4cde54ce745a6b0ad81fdebe6610c, type: 3}
+    dayTexture: {fileID: 2800000, guid: 925805bf4cbbaf74aa6d75faf443ddc6, type: 3}
+    dayKeepsLightInk: 0
+  - style: 8
+    texture: {fileID: 2800000, guid: 32298dd6d7c142b496c540a05227fb05, type: 3}
+    dayTexture: {fileID: 2800000, guid: 36da67f2fc53cdb4db4d763c3331395f, type: 3}
+    dayKeepsLightInk: 0
+  - style: 9
+    texture: {fileID: 2800000, guid: 9945c6a07bea40feb9258f9d847c31fc, type: 3}
+    dayTexture: {fileID: 2800000, guid: 9dab83e30f4e3744cbbd65f447b54b2d, type: 3}
+    dayKeepsLightInk: 0
+  - style: 10
+    texture: {fileID: 2800000, guid: 1e774ea2a573471fb44215c55c2f46c5, type: 3}
+    dayTexture: {fileID: 2800000, guid: f7f85bc68e9cef941b29baef4c1e985b, type: 3}
+    dayKeepsLightInk: 0
+  - style: 11
+    texture: {fileID: 2800000, guid: cd5d4c9ef8c94b07a3b48fb9d029c4dd, type: 3}
+    dayTexture: {fileID: 2800000, guid: 20a717a2a7cf5c4478cf0bcc638217ef, type: 3}
+    dayKeepsLightInk: 0
+  - style: 12
+    texture: {fileID: 2800000, guid: 3a68e7cf03ad46568b8143f7c12116e8, type: 3}
+    dayTexture: {fileID: 2800000, guid: a19f9be66594f164db43998d53a0549f, type: 3}
+    dayKeepsLightInk: 0
+  - style: 13
+    texture: {fileID: 2800000, guid: abc1f28ebdf04111a366c84e8ce20b54, type: 3}
+    dayTexture: {fileID: 2800000, guid: 89b4f52fb4a2b184dbdb3e2a5e6f41a7, type: 3}
+    dayKeepsLightInk: 0
+  - style: 14
+    texture: {fileID: 2800000, guid: 665038cbf04144179a1cb9218bef4172, type: 3}
+    dayTexture: {fileID: 2800000, guid: 866014ad715082040ad940d83159f565, type: 3}
+    dayKeepsLightInk: 0
+  - style: 17
+    texture: {fileID: 2800000, guid: 9b349873af65486d9615e2c4df0d577a, type: 3}
+    dayTexture: {fileID: 2800000, guid: 144c7612cbe88ad4d865217471827380, type: 3}
+    dayKeepsLightInk: 0
+  - style: 15
+    texture: {fileID: 2800000, guid: 29fdc77f9bac488b96011ef6cbcd5a74, type: 3}
+    dayTexture: {fileID: 2800000, guid: 5db843e7f7b54de45a844c04b5c6f14a, type: 3}
+    dayKeepsLightInk: 0
+  - style: 16
+    texture: {fileID: 2800000, guid: 8e008f5f49264c0e861eaff8105ee87e, type: 3}
+    dayTexture: {fileID: 2800000, guid: 90663787113e9b54b90528582ebd7005, type: 3}
+    dayKeepsLightInk: 1
+  menuAppearanceMaterial: {fileID: 2100000, guid: aa6d25c80a6a64946b61883036e1c468, type: 2}
+  songRowMaterial: {fileID: 2100000, guid: 934c056a3aa986548b1ef51c0e09d3b1, type: 2}
+  songCardAppearanceMaterial: {fileID: 2100000, guid: 8541174ab7242614497c1cb18440572a, type: 2}
+  songCardSprite: {fileID: 0}
+  songNormalInk: {r: 0.025, g: 0.035, b: 0.055, a: 1}
+  songSelectedInk: {r: 1, g: 1, b: 1, a: 1}
+  songCards:
+  - stageArtwork: {fileID: 21300000, guid: d702b1388d017fb4ab81dba8375f272a, type: 3}
+    stageUVRange: {x: 0.088674024, y: 0.918232}
+    style: 3
+    normal: {fileID: 21300000, guid: 6572a37c343d84948b43f50589ca5075, type: 3}
+    sprite: {fileID: 21300000, guid: efd25db26916514499f27790d3ef61b4, type: 3}
+    darkInk: 0
+    selectedTint: {r: 0.46, g: 0.58, b: 0.42, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: 0cedda51b5f8b064092308caea1bb422, type: 3}
+    stageUVRange: {x: 0.09723757, y: 0.90552485}
+    style: 12
+    normal: {fileID: 21300000, guid: e0edf7b5c4c9b004a9c93dc3b9b2e139, type: 3}
+    sprite: {fileID: 21300000, guid: 58daa7f1f0e99b648aeb917e28929669, type: 3}
+    darkInk: 0
+    selectedTint: {r: 1, g: 1, b: 1, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: 0943303a75b85b34f871d50276de533c, type: 3}
+    stageUVRange: {x: 0.11436464, y: 0.88977903}
+    style: 14
+    normal: {fileID: 21300000, guid: 31bdf5391fe3d47439a92327b9476c27, type: 3}
+    sprite: {fileID: 21300000, guid: a024a160e66d34745bbdcbe070598f65, type: 3}
+    darkInk: 0
+    selectedTint: {r: 0.36, g: 0.58, b: 0.63, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: 3ceae720a4b68e5468e4f2cd4ce69c50, type: 3}
+    stageUVRange: {x: 0.10690607, y: 0.8958564}
+    style: 2
+    normal: {fileID: 21300000, guid: 70e511b8f0004414195c3a00e5bc24d6, type: 3}
+    sprite: {fileID: 21300000, guid: 797c7e673d5afa54cba00052faeb11df, type: 3}
+    darkInk: 0
+    selectedTint: {r: 0.56, g: 0.43, b: 0.27, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: 1438540bdf2f77c418ab19bb79e7a198, type: 3}
+    stageUVRange: {x: 0.24668509, y: 0.76298344}
+    style: 7
+    normal: {fileID: 21300000, guid: d24f07de44ef9974e865646b9135527e, type: 3}
+    sprite: {fileID: 21300000, guid: 67a09d48d1ad22f4d8532e304ea2e2ca, type: 3}
+    darkInk: 0
+    selectedTint: {r: 1, g: 1, b: 1, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: a0779214e1212e74686e3657e5a23f5e, type: 3}
+    stageUVRange: {x: 0.2417127, y: 0.7638122}
+    style: 16
+    normal: {fileID: 21300000, guid: 087a47a4fa7ff56408f65ef1b9f4f6b0, type: 3}
+    sprite: {fileID: 21300000, guid: 6216517ba7893ca4b9b788c6e8000b22, type: 3}
+    darkInk: 0
+    selectedTint: {r: 1, g: 1, b: 1, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: 4fa2b1da0e908124c8f5dc8b7f44562d, type: 3}
+    stageUVRange: {x: 0.19972375, y: 0.80303866}
+    style: 15
+    normal: {fileID: 21300000, guid: a3f77142a6ac50645b11511481cd1bc8, type: 3}
+    sprite: {fileID: 21300000, guid: 471270e685429c740bea9e8e4bcae094, type: 3}
+    darkInk: 0
+    selectedTint: {r: 1, g: 1, b: 1, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: 8539a8f276c69644f8684939899ac111, type: 3}
+    stageUVRange: {x: 0.2256906, y: 0.7825967}
+    style: 6
+    normal: {fileID: 21300000, guid: fcedd4bbaf665ba468978ed5c7281edf, type: 3}
+    sprite: {fileID: 21300000, guid: 79db3cefda59a7346a89f09f0baf5d81, type: 3}
+    darkInk: 0
+    selectedTint: {r: 1, g: 1, b: 1, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: ca3e4952164582048ad5f09a35dbec3c, type: 3}
+    stageUVRange: {x: 0.21629834, y: 0.79060775}
+    style: 13
+    normal: {fileID: 21300000, guid: 85eb5226e536caa449bb9a6fe0f7b986, type: 3}
+    sprite: {fileID: 21300000, guid: 7cd391373dc0c71439a042c67d35996c, type: 3}
+    darkInk: 1
+    selectedTint: {r: 1, g: 1, b: 1, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: 96559d66dfe87b947b525a964fe15d16, type: 3}
+    stageUVRange: {x: 0.24143647, y: 0.77513814}
+    style: 17
+    normal: {fileID: 21300000, guid: b2b60b1cd623e6745bc59f88ffe43806, type: 3}
+    sprite: {fileID: 21300000, guid: 65379e585b83d59498edca30a092b6f2, type: 3}
+    darkInk: 1
+    selectedTint: {r: 1, g: 1, b: 1, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: 5c17be5cea9f9e5429539499e4e994df, type: 3}
+    stageUVRange: {x: 0.1917127, y: 0.8124309}
+    style: 9
+    normal: {fileID: 21300000, guid: e6c5c4537ddb65a4ea9b5cfc01f07766, type: 3}
+    sprite: {fileID: 21300000, guid: d2732ecfbb0031341a038c4d2fcde24d, type: 3}
+    darkInk: 0
+    selectedTint: {r: 0.5, g: 0.27, b: 0.42, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: b66cc874b538c1548a850f7b6df08043, type: 3}
+    stageUVRange: {x: 0.20469613, y: 0.80221}
+    style: 8
+    normal: {fileID: 21300000, guid: 685d2fc668a174045a98794f52a26f7d, type: 3}
+    sprite: {fileID: 21300000, guid: 2376a5c7b1e7deb4794f43a857f3c554, type: 3}
+    darkInk: 1
+    selectedTint: {r: 1, g: 1, b: 1, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: 0eac4a072acf1ac44aaa223d35b6647f, type: 3}
+    stageUVRange: {x: 0.20856354, y: 0.80801105}
+    style: 5
+    normal: {fileID: 21300000, guid: 771f974b5ca906e468ab5961ba502c95, type: 3}
+    sprite: {fileID: 21300000, guid: 5b50dc1df9b79114f8a9b046ef4d2b3a, type: 3}
+    darkInk: 0
+    selectedTint: {r: 1, g: 1, b: 1, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: 5865828f61330c6458a0b87d9ba8c29d, type: 3}
+    stageUVRange: {x: 0.20607735, y: 0.79392266}
+    style: 11
+    normal: {fileID: 21300000, guid: 877c6c5e5a5c22546985a712cd33a2e4, type: 3}
+    sprite: {fileID: 21300000, guid: a92b1cefbdca9cf4da1e8b8717e3bd11, type: 3}
+    darkInk: 0
+    selectedTint: {r: 1, g: 1, b: 1, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: f24772d075e72bb4bbf087e103e210c5, type: 3}
+    stageUVRange: {x: 0.17265193, y: 0.80110496}
+    style: 4
+    normal: {fileID: 21300000, guid: c58f58d498364fb448045c9f5be424f3, type: 3}
+    sprite: {fileID: 21300000, guid: 501600fa59eb18c418af8e07e7fc619d, type: 3}
+    darkInk: 0
+    selectedTint: {r: 1, g: 1, b: 1, a: 1}
+  - stageArtwork: {fileID: 21300000, guid: 411983bcbf54eda4e84aa8a981d65794, type: 3}
+    stageUVRange: {x: 0.16519336, y: 0.84585637}
+    style: 10
+    normal: {fileID: 21300000, guid: 9b3b39e86c4badb489e89a6e6d877ce2, type: 3}
+    sprite: {fileID: 21300000, guid: 0c9db95041e5f5e49a24dff2bffc32c3, type: 3}
+    darkInk: 0
+    selectedTint: {r: 1, g: 1, b: 1, a: 1}
   titles:
   - style: 3
     background: {fileID: 21300000, guid: 9297b4d30eff0a245bfbbc4e5a831635, type: 3}

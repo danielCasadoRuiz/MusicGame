@@ -14,7 +14,7 @@ public class MusicService extends Service {
     private static volatile boolean playing;
     private static volatile String error = "";
     private static volatile float volume = 1f;
-    private static volatile float positionSeconds;
+    private static volatile float positionSeconds, durationSeconds;
     private static final String CHANNEL = "tf_music";
     private static final int NOTIFICATION = 741;
     private MediaPlayer player;
@@ -28,8 +28,10 @@ public class MusicService extends Service {
     private final Handler main = new Handler(Looper.getMainLooper());
     private final Runnable positionPoll = new Runnable() {
         @Override public void run() {
-            try { positionSeconds = prepared && player != null ? player.getCurrentPosition() / 1000f : 0f; }
-            catch (IllegalStateException ignored) { positionSeconds = 0f; }
+            try {
+                positionSeconds = prepared && player != null ? player.getCurrentPosition() / 1000f : 0f;
+                durationSeconds = prepared && player != null ? player.getDuration() / 1000f : 0f;
+            } catch (IllegalStateException ignored) { positionSeconds = durationSeconds = 0f; }
             main.postDelayed(this, 100);
         }
     };
@@ -47,9 +49,9 @@ public class MusicService extends Service {
             resumeOnFocus = wasPlaying && value == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
         }
     };
-    public static void start(Activity activity, String json, int index) {
+    public static void start(Activity activity, String json, int index, float seconds, boolean paused) {
         error = ""; currentIndex = -1; playing = false;
-        Intent intent = new Intent(activity, MusicService.class).setAction("queue").putExtra("tracks", json).putExtra("index", index);
+        Intent intent = new Intent(activity, MusicService.class).setAction("queue").putExtra("tracks", json).putExtra("index", index).putExtra("seconds", seconds).putExtra("paused", paused);
         if (Build.VERSION.SDK_INT >= 26) activity.startForegroundService(intent); else activity.startService(intent);
     }
     public static void command(String command) {
@@ -58,6 +60,11 @@ public class MusicService extends Service {
     }
     public static int index() { return currentIndex; }
     public static boolean isPlaying() { return playing; }
+    public static void seek(float seconds) {
+        MusicService service = instance;
+        if (service != null) service.main.post(() -> service.seekTo((long)(seconds * 1000)));
+    }
+    public static float durationSeconds() { return durationSeconds; }
     public static float positionSeconds() { return positionSeconds; }
     public static String error() { return error; }
     public static void volume(float value) {
@@ -81,7 +88,7 @@ public class MusicService extends Service {
             @Override public void onSkipToNext() { skip(1); }
             @Override public void onSkipToPrevious() { skip(-1); }
             @Override public void onStop() { stopSelf(); }
-            @Override public void onSeekTo(long position) { if (prepared && player != null) { player.seekTo((int)position); publish(); } }
+            @Override public void onSeekTo(long position) { MusicService.this.seekTo(position); }
         });
         session.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS | MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
         session.setSessionActivity(openApp()); session.setActive(true);
@@ -92,11 +99,20 @@ public class MusicService extends Service {
         if (intent == null) { stopSelf(); return START_NOT_STICKY; }
         if ("queue".equals(intent.getAction())) {
             startForeground(NOTIFICATION, notification("Tempo Fury", "Jukebox"));
-            try { tracks = new JSONArray(intent.getStringExtra("tracks")); load(intent.getIntExtra("index", 0)); }
+            try { tracks = new JSONArray(intent.getStringExtra("tracks")); load(intent.getIntExtra("index", 0), intent.getFloatExtra("seconds", 0), intent.getBooleanExtra("paused", false)); }
             catch (Exception e) { fail(e); }
         } else handle(intent.getAction());
         return START_NOT_STICKY;
     }
+    private void seekTo(long position) {
+        if (!prepared || player == null) return;
+        int target = (int)Math.max(0L, Math.min(position, player.getDuration() - 1L));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) player.seekTo(target, MediaPlayer.SEEK_CLOSEST);
+        else player.seekTo(target);
+        positionSeconds = target / 1000f;
+        publish();
+    }
+
     private void handle(String command) {
         if ("pause".equals(command)) pause();
         else if ("play".equals(command)) resume();
@@ -105,7 +121,8 @@ public class MusicService extends Service {
         else if ("previous".equals(command)) skip(-1);
         else if ("stop".equals(command)) stopSelf();
     }
-    private void load(int index) {
+    private void load(int index) { load(index, 0, false); }
+    private void load(int index, float seconds, boolean paused) {
         releasePlayer();
         if (tracks == null || index < 0 || index >= tracks.length()) { stopSelf(); return; }
         int token = ++generation;
@@ -122,7 +139,12 @@ public class MusicService extends Service {
                 player.setDataSource(protectedAudio);
             } else player.setDataSource(path); // Imported user audio only; game originals are TPS.
 
-            player.setOnPreparedListener(p -> { if (generation == token) { prepared = true; resume(); } });
+            player.setOnPreparedListener(p -> {
+                if (generation != token) return;
+                prepared = true;
+                if (seconds > 0) p.seekTo(Math.min((int)(seconds * 1000), Math.max(0, p.getDuration() - 1)));
+                if (paused) publish(); else resume();
+            });
             player.setOnCompletionListener(p -> load(currentIndex + 1)); // finish at the end; never an implicit loop
             player.setOnErrorListener((p, what, extra) -> { fail(new Exception("MediaPlayer " + what + "/" + extra)); return true; });
             player.prepareAsync(); publish();
@@ -166,7 +188,7 @@ public class MusicService extends Service {
             .setStyle(new Notification.MediaStyle().setMediaSession(session.getSessionToken()).setShowActionsInCompactView(0, 1, 2)).build();
     }
     private void fail(Exception e) { error = e.toString(); stopSelf(); }
-    private void releasePlayer() { generation++; prepared = false; if (player != null) { player.release(); player = null; } if (protectedAudio != null) { protectedAudio.close(); protectedAudio = null; } playing = false; }
+    private void releasePlayer() { generation++; prepared = false; positionSeconds = durationSeconds = 0f; if (player != null) { player.release(); player = null; } if (protectedAudio != null) { protectedAudio.close(); protectedAudio = null; } playing = false; }
     @Override public void onDestroy() {
         main.removeCallbacks(positionPoll); releasePlayer(); positionSeconds = 0f; currentIndex = -1; instance = null;
         if (session != null) { session.setActive(false); session.release(); session = null; }

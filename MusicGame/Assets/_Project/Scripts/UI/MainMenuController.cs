@@ -132,7 +132,7 @@ public class MainMenuController : MonoBehaviour
         view.quitButton.onClick.AddListener(OnQuitClicked);
         view.closeButton.onClick.AddListener(() => _settingsPanel.gameObject.SetActive(false));
         _buttonStack.AddRange(new[] { view.playButton.GetComponent<RectTransform>(), view.rivalsButton.GetComponent<RectTransform>(),
-                                      view.progressionButton.GetComponent<RectTransform>(), view.jukeboxButton != null ? view.jukeboxButton.GetComponent<RectTransform>() : null, view.settingsButton.GetComponent<RectTransform>(),
+                                      view.progressionButton.GetComponent<RectTransform>(), view.jukeboxButton != null ? view.jukeboxButton.GetComponent<RectTransform>() : null,
                                       view.quitButton.GetComponent<RectTransform>() });
 
         float startVolume = PlayerPrefs.GetFloat(VolumePrefKey, 1f);
@@ -326,6 +326,7 @@ public class MainMenuController : MonoBehaviour
         _logo.StopIntro();
         var style = StyledTitleView.MenuStyle(_logo.library);
         _logo.Show(style);
+        _view.ShowBackground(style);
         bool fromGame = deferLetters || playedStyle != GameMusicStyle.Unknown;
         bool fade = playedStyle != GameMusicStyle.Unknown && playedStyle != style && isActiveAndEnabled;
         if (!fade)
@@ -390,6 +391,7 @@ public class MainMenuController : MonoBehaviour
         group.blocksRaycasts = group.interactable = false;
         var played = _fadingLogo.GetComponent<StyledTitleView>();
         played.Show(from);
+        _view.ShowBackground(to, from, 0f);
         if (_buttonStyle != null) _buttonStyle.Apply(to, 0f, from);
     }
 
@@ -407,12 +409,14 @@ public class MainMenuController : MonoBehaviour
             float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / StyleFadeDuration));
             group.alpha = 1f - k;
             SetLogoAlpha(k);
+            _view.ShowBackground(to, from, k);
             if (_buttonStyle != null) _buttonStyle.Apply(to, k, from);
             yield return null;
         }
         if (_buttonStyle != null) _buttonStyle.Apply(to, 1f);
         SetLogoAlpha(1f);
         _fadingLogo.SetActive(false);
+        _view.ShowBackground(to);
         _styleFade = null;
     }
 

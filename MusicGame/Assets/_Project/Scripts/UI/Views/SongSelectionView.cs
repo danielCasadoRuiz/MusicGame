@@ -12,6 +12,58 @@ using UnityEngine.UI;
 /// </summary>
 public class SongSelectionView : MonoBehaviour
 {
+    public RectTransform contentRoot;
+    public CanvasGroup playAvailability;
+    public Image catalogSupport;
+    public SongStyleSurface customSurface;
+    public Image selectedCard;
+    public SongStyleSurface selectedSurface;
+    public SongSelectionFrame selectedRivet;
+    public Image selectedTexture;
+    public SongCardAppearance selectedAppearance;
+    public TextMeshProUGUI selectedSongText;
+    public TextMeshProUGUI previewTimeText;
+    public GameObject previewProgressRoot;
+    public RectTransform previewProgressFill;
+    public GameObject customPurchaseDialog;
+    public TextMeshProUGUI customPurchaseTitle, customPurchaseBody, customPurchaseConfirmLabel, customPurchaseCloseLabel;
+    public Button customPurchaseConfirm, customPurchaseClose;
+    public GameMusicStyle SkinStyle => GetComponent<FrontendStyleBackground>().HomeStyle;
+    private void LateUpdate()=>RefreshAppearance();
+    public void RefreshAppearance()
+    {
+        FitContent();
+        if(playAvailability!=null)playAvailability.alpha=Mathf.MoveTowards(playAvailability.alpha,playButton.interactable?1f:.42f,Time.unscaledDeltaTime*3);
+        var bg=GetComponent<FrontendStyleBackground>();float day=bg!=null?bg.InkLightWeight:0;
+        if(customSurface!=null&&bg!=null)
+        {
+            SongStyleSurface.Palette(bg.library,bg.HomeStyle,out var from,out var to);
+            float transition=Mathf.Min(1,Time.unscaledDeltaTime*8);
+            // One dark style colour; white ink stays legible even for yellow skins.
+            Color dark=Color.Lerp(from,Color.black,.48f),light=Color.Lerp(from,Color.white,.78f);
+            float night=1-AppearancePreference.LightWeight;
+            Color surface=Color.Lerp(dark,light,night);
+            customSurface.Apply(Color.Lerp(customSurface.color,surface,transition),Color.Lerp(customSurface.EndColor,surface,transition),Color.Lerp(from,Color.black,.25f));
+            playYourSongLabel.color=Color.Lerp(Color.white,bg.library.songNormalInk,night);
+        }
+        if(selectedSongText!=null)selectedSongText.color=Color.Lerp(new Color(.98f,.96f,.88f),new Color(.08f,.1f,.15f),day);
+        if(selectedCard!=null)selectedCard.gameObject.SetActive(!string.IsNullOrWhiteSpace(selectedSongText.text)||GetComponent<SongSelectionShowcase>()!=null);
+        if(selectedAppearance!=null&&bg!=null)
+        {
+            selectedAppearance.library=bg.library;selectedAppearance.image=selectedTexture;selectedAppearance.label=selectedSongText;
+            selectedAppearance.SetState(bg.HomeStyle,true);
+        }
+        if(previewTimeText!=null)previewTimeText.color=Color.Lerp(new Color(.88f,.89f,.94f),new Color(.18f,.21f,.27f),day);
+        if(previewProgressFill!=null)previewProgressFill.GetComponent<Image>().color=Color.Lerp(new Color(1,.94f,.76f),new Color(.12f,.16f,.24f),day);
+        if(catalogSupport!=null)catalogSupport.color=Color.clear;
+        GetComponent<SongSelectionShowcase>()?.Render();
+    }
+    public void FitContent()
+    {
+        if(contentRoot==null)return;
+        var size=((RectTransform)transform).rect.size;
+        contentRoot.localScale=Vector3.one*Mathf.Max(.1f,Mathf.Min(1f,size.x/1920f,size.y/1080f));
+    }
     [Header("Root")]
     public GameObject   root;
     public TextMeshProUGUI titleText;

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e53d1b4f86740848ac5f59af123a5bc, type: 3}
+  m_Name: song_022
+  m_EditorClassIdentifier: Assembly-CSharp::SongMetadataSO
+  songId: song_022
+  title: Buzzing Tonight
+  artist: Wingfly
+  releaseYear: 1992
+  artwork: {fileID: 0}
+  audio: {fileID: 8300000, guid: 37f82b3ff0ee42eb8182bef556fa1865, type: 3}
+  style: 7
+  referenceTitle: Saturday Night
+  referenceArtist: Whigfield
+  metadataSource: 'https://chatgpt.com/c/6abcd2be-c71c-83ed-9851-418d9394986a ; first
+    release year: https://www.guinnessworldrecords.com/world-records/first-artist-to-debut-at-no1-on-uk-singles-chart'

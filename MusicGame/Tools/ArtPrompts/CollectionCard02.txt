@@ -1,0 +1,14 @@
+Collection card 02 — selected production assets
+Generated with the built-in image generation tool; transparent_background=true.
+Reference: exec-84da2b0a-eff7-44ce-80f0-4a4ec97fabe5.png, second large card, 02 Ornament puntual.
+
+Card prompt:
+From the attached comparison board, isolate the EXACT SECOND LARGE CARD, caption 02 ORNAMENT PUNTUAL. Treat this as precision asset extraction/editing, not a new design. Keep its exact thin double gold border, almost-square subtly rounded corners, SMALL upper-left and lower-right scroll flourishes, original black charcoal material and faint fine musical manuscript. Remove ONLY Chopin (reconstruct the same dark manuscript behind him), the paper label and the stars. Preserve the card's exact proportions (width:height approximately 333:512). The entire exterior beyond the card edge MUST be 100% alpha transparent; no brown/gold rectangle behind it, no ambient background, no drop shadow, no vignette outside. NO increased border thickness, NO enlarged flourishes, NO inflated rounding, NO brighter gold, NO redesigned music notation. Keep the fine worn brass/gold feel of reference02 at the same relative scale. Border should sit close to canvas edges with just 2% even transparent padding. Deliver ONE upright empty card background, no text, no people, no label, no stars. It must be recognizably exactly the selected02 card with content removed.
+
+Label prompt:
+From the attached comparison board isolate ONLY the ivory paper nameplate under Chopin in the SECOND LARGE CARD 02 ORNAMENT PUNTUAL. Precision extraction/editing of the approved label, NOT a new paper design. Preserve its silhouette: a LOW almost-rectangular horizontal strip, straight long edges, small stepped/nicked corners, thin second paper layer peeking along upper edge, light pale warm ivory with restrained fine paper grain. Remove the word Chopin completely, reconstruct blank ivory surface. Exact original label proportions about 280:64 (4.4:1), not an extra-long banner. NO large diagonal cracks, NO heavily wrinkled or crumpled parchment, NO ragged torn top edge, NO pointed or rounded ends, NO scroll or gold ornament, NO bevelled metal, NO heavy aging, NO strong yellow ochre. Original approved strip is simple pale ivory and flat, with small clean edge irregularities only. Single isolated blank label with 3% even transparent outer padding and true alpha outside. No card, no text, no symbols, no people, no stars, no background. Preserve exact appearance of the approved second label, just remove letters.
+
+Outputs: Assets/_Project/Art/UI/Collection/ComposerCard02.png and ComposerNameplate02.png.
+Unity sprite rectangles trim transparent padding without changing the generated PNGs.
+Existing composer portraits are reused unchanged; locked versions tint those sprites black in Unity.
+Composer names are separate TMP text. Font: Libre Baskerville Bold, SIL OFL, source and license in Assets/_Project/UI/Fonts/CollectionNames/.

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e53d1b4f86740848ac5f59af123a5bc, type: 3}
+  m_Name: song_009
+  m_EditorClassIdentifier: Assembly-CSharp::SongMetadataSO
+  songId: song_009
+  title: Tasmanian
+  artist: Michele Beautiless
+  releaseYear: 1983
+  artwork: {fileID: 0}
+  audio: {fileID: 8300000, guid: 1b7fc4e84c73b1f48b356a13717dc0d8, type: 3}
+  style: 6
+  referenceTitle: Maniac
+  referenceArtist: Michael Sembello
+  metadataSource: https://chatgpt.com/c/6ace1328-3030-83eb-98b9-7c7231bc6ca3

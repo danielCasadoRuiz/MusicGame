@@ -6,8 +6,8 @@ using UnityEngine;
 /// COL·LECCIÓ — the rival collection, opened from the Main Menu. One card per roster rival; a tap opens that
 /// rival's versions. NON-LINEAR collection: every rival VERSION (OpponentLevelConfig.level) is discovered only
 /// by actually defeating it (PlayerProgressService.DefeatedLevels) — beating Lv4 says nothing about Lv1–3.
-///   Card:   never defeated → black silhouette + "???"; otherwise the portrait of the HIGHEST version
-///           actually defeated, the name and "defeated / defined" versions.
+///   Card: never defeated → the same portrait as a black silhouette, no name; otherwise the HIGHEST
+///   actually defeated version's portrait, name and four stars marking individually defeated versions.
 ///   Detail: every defined version, each lit (defeated) or a silhouette (undefeated), independently.
 ///   Final rival: its card appears only once revealed (first campaign completed); never part of the NORMAL
 ///           collection required to unlock it.
@@ -34,7 +34,7 @@ public class RivalCollectionController : MonoBehaviour
         if (_view == null) return;
         UIFactory.Stretch((RectTransform)_view.transform);
         if (_view.backButton != null) _view.backButton.onClick.AddListener(Close);
-        if (_view.detailClose != null) _view.detailClose.onClick.AddListener(() => _view.detailRoot.gameObject.SetActive(false));
+        if (_view.detailClose != null) _view.detailClose.onClick.AddListener(() => _view.SetDetailVisible(false));
         if (_view.grid == null || _view.detailRoot == null || _view.detailRow == null)
             Debug.LogError("[RivalCollectionController] RivalCollectionScreen.prefab references missing (grid / detailRoot / detailRow).");
         _view.gameObject.SetActive(false);
@@ -54,12 +54,12 @@ public class RivalCollectionController : MonoBehaviour
     {
         if (_view == null) return;
         Refresh();
-        if (_view.detailRoot != null) _view.detailRoot.gameObject.SetActive(false);
+        _view.SetDetailVisible(false);
         _view.gameObject.SetActive(true);
         _view.transform.SetAsLastSibling();
     }
 
-    public void Close() { if (_view != null) _view.gameObject.SetActive(false); }
+    public void Close() { if (_view != null) { _view.SetDetailVisible(false); _view.gameObject.SetActive(false); } }
 
     // ── Content ──────────────────────────────────────────────────────────────
 
@@ -96,10 +96,9 @@ public class RivalCollectionController : MonoBehaviour
             int shownLevel = discovered ? defeated.Max() : (defined.Length > 0 ? defined.Max() : 0);
             var card = SpawnCard(_view.grid, _spawned);
             if (card == null) break;
-            card.Set(PortraitFor(rival, shownLevel), discovered, discovered ? rival.displayName : "???",
-                     discovered ? $"{Loc.Get("Rivals.Level", shownLevel.ToString())}  ·  {defeated.Length} / {defined.Length}" : $"{defeated.Length} / {defined.Length}", true);
+            card.SetCollection(PortraitFor(rival, shownLevel), rival.displayName, defeated);
             var r = rival;
-            card.button?.onClick.AddListener(() => OpenDetail(r));
+            if (discovered) card.button?.onClick.AddListener(() => OpenDetail(r));
         }
 
         var boss = CampaignService.Boss;
@@ -114,9 +113,8 @@ public class RivalCollectionController : MonoBehaviour
             var card = SpawnCard(_view.grid, _spawned);
             if (card != null)
             {
-                card.Set(boss.silhouette != null && !discovered ? boss.silhouette : PortraitFor(o, shownLevel), discovered,
-                         discovered ? Loc.Get(boss.nameKey) : "???", $"{defeated.Length} / {defined.Length}", true);
-                card.button?.onClick.AddListener(() => OpenDetail(o));
+                card.SetCollection(PortraitFor(o, shownLevel), Loc.Get(boss.nameKey), defeated);
+                if (discovered) card.button?.onClick.AddListener(() => OpenDetail(o));
             }
             if (_view.summary != null) Loc.Set(_view.summary, "Rivals.SummaryBoss", found.ToString(), total.ToString(), defeated.Length.ToString(), defined.Length.ToString());
         }
@@ -125,12 +123,17 @@ public class RivalCollectionController : MonoBehaviour
 
     private void OpenDetail(OpponentDefinition rival)
     {
+        if (rival == null || _view.detailRoot.gameObject.activeSelf || DefeatedDefinedLevels(rival).Length == 0) return;
         Clear(_detailSpawned);
         var defined = DefinedLevels(rival);
         var defeated = DefeatedDefinedLevels(rival);
         bool isBoss = CampaignService.Boss != null && CampaignService.Boss.opponent == rival;
         if (_view.detailTitle != null) _view.detailTitle.text = defeated.Length > 0 ? (isBoss ? Loc.Get(CampaignService.Boss.nameKey) : rival.displayName) : "???";
         string bio = Loc.Get(rival.BiographyKey);
+        string datesKey = $"Composer.{rival.id}.Dates";
+        string dates = Loc.Get(datesKey);
+        if (dates != datesKey && !string.IsNullOrEmpty(dates) && bio != rival.BiographyKey)
+            bio = "<color=#795B30>" + dates + "</color>\n" + bio;
         // Revealed once ANY version was defeated (same text whatever the version); undiscovered keeps the mystery.
         if (_view.detailBio != null)
             _view.detailBio.text = defeated.Length == 0 ? Loc.Get("Rivals.BioLocked") : bio == rival.BiographyKey ? "" : bio; // missing entry → no text
@@ -139,10 +142,9 @@ public class RivalCollectionController : MonoBehaviour
             bool won = defeated.Contains(level);
             var card = SpawnCard(_view.detailRow, _detailSpawned);
             if (card == null) break;
-            card.Set(PortraitFor(rival, level), won, Loc.Get("Rivals.Level", level.ToString()), Loc.Get(won ? "Rivals.Defeated" : "Rivals.Undefeated"), false);
+            card.SetVersion(PortraitFor(rival, level), won, level, level == defeated.Max());
         }
-        _view.detailRoot.gameObject.SetActive(true);
-        _view.detailRoot.SetAsLastSibling();
+        _view.SetDetailVisible(true);
     }
 
     private static RivalCardView SpawnCard(RectTransform parent, List<GameObject> track)

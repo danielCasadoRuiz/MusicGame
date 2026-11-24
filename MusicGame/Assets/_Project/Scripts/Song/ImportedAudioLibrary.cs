@@ -9,6 +9,7 @@ public class ImportedAudioRecord
 {
     public string id, title, fileName;
     public GameMusicStyle style;
+    public float durationSeconds;
 }
 
 /// <summary>App-owned copies and the one-time trial live separately from progression and purchases.
@@ -61,19 +62,27 @@ public static class ImportedAudioLibrary
         return "import_" + BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
     }
     // Called only AFTER the selected file was successfully decoded. No trial is consumed on cancel/error.
-    public static ImportedAudioRecord Import(string source, string title)
+    public static ImportedAudioRecord Import(string source, string title, float durationSeconds = 0)
     {
         Load();
         var existing = FindByPath(source);
-        if (existing != null) return existing;
+        if (existing != null)
+        {
+            RecordDuration(existing, durationSeconds);
+            return existing;
+        }
         string id = Identity(source);
         existing = Find(id);
-        if (existing != null && File.Exists(PathFor(existing))) return existing;
+        if (existing != null && File.Exists(PathFor(existing)))
+        {
+            RecordDuration(existing, durationSeconds);
+            return existing;
+        }
         if (!CanSelectIdentity(id)) return null;
         string ext = Path.GetExtension(source).ToLowerInvariant();
         if (ext != ".wav" && ext != ".mp3" && ext != ".ogg" && ext != ".aif" && ext != ".aiff") return null;
         Directory.CreateDirectory(Folder);
-        var record = new ImportedAudioRecord { id = id, title = title, fileName = id + ext };
+        var record = new ImportedAudioRecord { id = id, title = title, fileName = id + ext, durationSeconds = durationSeconds };
         string target = PathFor(record), temp = target + ".tmp";
         try
         {
@@ -109,6 +118,16 @@ public static class ImportedAudioLibrary
         if (File.Exists(native + ".tmp")) File.Delete(native + ".tmp");
         return true;
     }
+    public static void RecordDuration(ImportedAudioRecord track, float seconds)
+    {
+        if (track == null || seconds <= 0 || float.IsNaN(seconds) || float.IsInfinity(seconds) ||
+            Mathf.Approximately(track.durationSeconds, seconds)) return;
+        track.durationSeconds = seconds;
+        try { Save(); }
+        catch (IOException e) { Debug.LogWarning("[ImportedAudio] Could not save duration: " + e.Message); }
+        catch (UnauthorizedAccessException e) { Debug.LogWarning("[ImportedAudio] Could not save duration: " + e.Message); }
+    }
+
     public static void RecordStyle(string path, GameMusicStyle style)
     {
         var track = FindByPath(path);

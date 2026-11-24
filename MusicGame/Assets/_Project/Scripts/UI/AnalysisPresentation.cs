@@ -40,9 +40,7 @@ public sealed class AnalysisPresentation : MonoBehaviour
     private TextMeshProUGUI song, artist, genre;
     private Sprite[] waveSprites, motifSprites;
     private Image[] motifs;
-    private RawImage styleBackground;
-    private Texture2D resourceBackground;
-    private GameMusicStyle loadedBackgroundStyle = (GameMusicStyle)(-1);
+    private FrontendStyleBackground screenBackground;
     private Material staffMaterial;
     private GameMusicStyle current;
     private Color inheritedTint, displayedTint;
@@ -57,6 +55,7 @@ public sealed class AnalysisPresentation : MonoBehaviour
     {
         if (view != null) return;
         view = target;
+        screenBackground = GetComponent<FrontendStyleBackground>();
         foreach (var receiver in GetComponentsInChildren<ThemeElementReceiver>(true)) receiver.enabled = false;
         backdrop = transform.Find("Dim")?.GetComponent<Image>();
         if (view.titleText.TryGetComponent<TitleText>(out var title)) title.enabled = false;
@@ -95,14 +94,6 @@ public sealed class AnalysisPresentation : MonoBehaviour
         { genre.font = library.titleFont; genre.fontSharedMaterial = library.titleFont.material; }
         genre.gameObject.SetActive(false); // A single moving label appears here, never beside the song.
         BuildOtherStyleMotifs();
-        {
-            var backgroundRect = UIFactory.CreateRect("StyleBackdrop", (RectTransform)transform);
-            UIFactory.Stretch(backgroundRect);
-            styleBackground = backgroundRect.gameObject.AddComponent<RawImage>();
-            styleBackground.raycastTarget = false;
-            styleBackground.color = Color.clear;
-            backgroundRect.SetSiblingIndex(backdrop != null ? backdrop.transform.GetSiblingIndex() + 1 : 0);
-        }
         if (neutralStaffAtlas != null)
         {
             waveSprites = new Sprite[WaveFrames];
@@ -119,6 +110,13 @@ public sealed class AnalysisPresentation : MonoBehaviour
                 staffMaterial = new Material(staffTintShader) { name = "Analysis staff - dynamic tint" };
                 staffMaterial.SetColor("_Highlight", Ivory); wave.material = staffMaterial;
             }
+        }
+        foreach(var label in new[]{song,artist,genre,view.tipText})
+        {
+            var originalColor=label.color;
+            var contrast=label.GetComponent<AppearanceText>();
+            if(contrast==null)contrast=label.gameObject.AddComponent<AppearanceText>();
+            contrast.night=originalColor;contrast.background=screenBackground;
         }
         inheritedTint = Ivory; ApplyImmediate(GameMusicStyle.Unknown);
     }
@@ -161,13 +159,9 @@ public sealed class AnalysisPresentation : MonoBehaviour
         if (staffMaterial != null) staffMaterial.SetColor("_Tint", Color.Lerp(Ivory, tint, .68f));
         if (wave != null) wave.color = new Color(1, 1, 1, Mathf.Lerp(1, .26f, reveal) * (1 - handoffProgress));
         if (progressTrack != null) view.progressFill.color = Color.Lerp(Ivory, tint, .55f);
-        SetStyleBackground(current);
-        bool hasStyleBackground = styleBackground != null && styleBackground.texture != null;
-        if (styleBackground != null)
-        {
-            styleBackground.enabled = hasStyleBackground;
-            styleBackground.color = new Color(1, 1, 1, reveal);
-        }
+        bool hasStyleBackground = screenBackground != null && screenBackground.HomeTexture != null;
+        if (screenBackground != null)
+            screenBackground.Show(current, screenBackground.HomeStyle, reveal);
         if (motifs != null)
             for (int n = 0; n < motifs.Length; n++)
             {
@@ -176,21 +170,6 @@ public sealed class AnalysisPresentation : MonoBehaviour
                 image.enabled = image.sprite != null && !hasStyleBackground;
                 image.color = new Color(1, 1, 1, reveal * motifOpacity);
             }
-    }
-    private void SetStyleBackground(GameMusicStyle style)
-    {
-        if (styleBackground == null || loadedBackgroundStyle == style) return;
-        ReleaseStyleBackground();
-        loadedBackgroundStyle = style;
-        if (style != GameMusicStyle.Unknown)
-            resourceBackground = Resources.Load<Texture2D>("UI/AnalysisBackdrops/" + style);
-        styleBackground.texture = resourceBackground != null ? resourceBackground : style == GameMusicStyle.Dance ? danceBackdrop : null;
-    }
-    private void ReleaseStyleBackground()
-    {
-        if (styleBackground != null) styleBackground.texture = null;
-        if (resourceBackground != null) Resources.UnloadAsset(resourceBackground);
-        resourceBackground = null; loadedBackgroundStyle = (GameMusicStyle)(-1);
     }
     public void Begin()
     {
@@ -240,15 +219,6 @@ public sealed class AnalysisPresentation : MonoBehaviour
         int frame = Mathf.FloorToInt(Time.unscaledTime * WaveFramesPerSecond) % WaveFrames;
         if (wave != null && frame != waveIndex) { wave.sprite = waveSprites[frame]; waveIndex = frame; }
         var rect = ((RectTransform)transform).rect;
-        if (styleBackground != null && styleBackground.texture != null && rect.height > 0)
-        {
-            // Cover the viewport by cropping UVs, preserving the authored image proportions.
-            float targetAspect = rect.width / rect.height;
-            float imageAspect = (float)styleBackground.texture.width / styleBackground.texture.height;
-            float uvWidth = Mathf.Min(1, targetAspect / imageAspect);
-            float uvHeight = Mathf.Min(1, imageAspect / targetAspect);
-            styleBackground.uvRect = new Rect((1 - uvWidth) * .5f, (1 - uvHeight) * .5f, uvWidth, uvHeight);
-        }
         block.localScale = Vector3.one * Mathf.Max(.2f, Mathf.Min(1f, Mathf.Min((rect.width - 90) / 1600f, (rect.height - 90) / 900f)));
         if (motifs != null)
         {
@@ -264,10 +234,9 @@ public sealed class AnalysisPresentation : MonoBehaviour
             }
         }
     }
-    private void OnDisable() { carryTint = false; ReleaseStyleBackground(); }
+    private void OnDisable() { carryTint = false; }
     private void OnDestroy()
     {
-        ReleaseStyleBackground();
         if (waveSprites != null) foreach (var sprite in waveSprites) Dispose(sprite);
         if (motifSprites != null) foreach (var sprite in motifSprites) Dispose(sprite);
         Dispose(staffMaterial);
