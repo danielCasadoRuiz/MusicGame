@@ -1,0 +1,19 @@
+{
+  "mode": "Built-in image_gen",
+  "reference": "C:/Users/VISYON/Documents/MusicGame/VisualReviews/SongSelection/ShowcaseD-v2/concept-D-no-logo-plate.png",
+  "stage": {
+    "file": "C:/Users/VISYON/Documents/MusicGame/MusicGame/Assets/_Project/Art/UI/SongCards/Shared/StageArtwork-v3.png",
+    "prompt": "Extract and faithfully recreate the selected-song STAGE BACKGROUND ART from the reference, as a standalone production videogame UI texture. ONLY the wide painted purple/fuchsia/cyan banner occupying the middle of the reference. Remove ALL text, waveform, controls, song cards, logo, gold borders and champagne screen background. Wide landscape about 4.2:1. A substantial continuous straight horizontal near-black deep violet central body, saturated hot-fuchsia dry-brushed diagonal scratch slashes at LEFT edge and upper-left, electric cyan razor-sharp diagonal scratch slashes at RIGHT bottom edge. Fine dense diagonal scraped paint grain across the entire central body, premium polished crisp illustration, exactly the reference's vivid gritty speed-brush aesthetic. The top and bottom of the central 80% are crisp, nearly straight horizontal edges, not blurred or soft. The far left and right ends break into SHARP oblique brush tails and skinny scraped paint strands, never rounded. Keep the centre mostly very dark purple for a future white title. The band fills about 90% of canvas height; small genuinely transparent margin for tails. Transparent outside, opaque painted interior. No shadow, no glow, no Gaussian blur, no fog, no vignette, no gold outlines. This must resemble the actual polished stage in the supplied image rather than a white generic brush mask. No lettering or waveform whatsoever."
+  },
+  "frame": {
+    "file": "C:/Users/VISYON/Documents/MusicGame/MusicGame/Assets/_Project/Art/UI/SongCards/Shared/SelectedFrame-v3.png",
+    "prompt": "Create ONLY the standalone transparent SELECTED CARD FRAME from this videogame reference (the bright golden frame around the selected Zero Nine song tile). Do not include the purple card, any background, words, symbols or music. Aspect ratio 2:1 wide. ONE clean angular parallelogram double metallic gold rim, perfectly straight parallel horizontal top and bottom, sides lean diagonally RIGHT as they rise: top-left at about 17% width and 6% height, top-right at 97% width and 6% height, bottom-right at 83% width and 94% height, bottom-left at 3% width and 94% height. Slant at BOTH ends, NOT a trapezoid. Thin polished warm golden outside edge with bright ivory specular highlight at top-left and top-right, dark fine inset channel, a fine inner pale gold parallel line, subtle warm gold soft light just outside the rim. Premium sharp finished game UI exactly like reference selected-song tile. Restrained glow, frame takes only about 3% of short-edge thickness. Crucially the entire interior and outside are genuinely transparent, only rim and delicate outer glow exist. No corner ornaments, no diagonal internal corner stripes, no extra plaques, no texture filling the centre, no noise, no rounded corners. Fill canvas with small transparent margin for glow. ONE frame, no contact sheet."
+  },
+  "integration": {
+    "styles": 16,
+    "appearance_variants_rendered": 32,
+    "palette": "Existing skin primary/secondary colours remap the shared finished stage; original reference colours remain for Dance.",
+    "card_ratios": "Unselected about 2.4:1; selection enlarges only the artwork, never text.",
+    "logo": "Only the current skin's nine letters; decorative background and foreground disabled in this screen's clone."
+  }
+}

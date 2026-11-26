@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4552752128488948182}
   - component: {fileID: 1474652698206884167}
+  - component: {fileID: 9149418901166707045}
   m_Layer: 0
   m_Name: RoundIntro
   m_TagString: Untagged
@@ -53,6 +54,19 @@ MonoBehaviour:
   root: {fileID: 1769506961902182015}
   overlay: {fileID: 2694869954339757287}
   text: {fileID: 4974942923187101517}
+--- !u!114 &9149418901166707045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769506961902182015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32c8b07da76b9f342a85fa59ab23c395, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIStyleScope
+  domain: 2
 --- !u!1 &2894552175932282236
 GameObject:
   m_ObjectHideFlags: 0
@@ -121,15 +135,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
-  m_sharedMaterial: {fileID: -7326861909581889668, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
+  m_sharedMaterial: {fileID: -1737045903294810586, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.953, g: 0.918, b: 0.827, a: 1}
+  m_fontColor: {r: 0.9843137, g: 0.7254902, b: 0.08627451, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -205,6 +219,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TitleText
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
   tier: 0
+  songTextureInk: 0
+  gameplayStyle: 0
+  sizeMultiplier: 1
 --- !u!1 &8461446613032918163
 GameObject:
   m_ObjectHideFlags: 0

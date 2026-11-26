@@ -38,7 +38,7 @@ public static class TempoFuryUISetup
     private const string ArtHud = "Assets/_Project/Art/UI/RunnerHud";
 
     private const string LibraryPath = "Assets/_Project/Configs/UI/StyleSkinLibrary.asset";
-    private const string FontPath = "Assets/_Project/UI/Fonts/TempoFuryBrush/TempoFuryBrush SDF.asset";
+    private const string FontPath = "Assets/_Project/UI/Fonts/TempoFuryFusion/TempoFuryFusion SDF.asset";
     private const string ClassicFolder = "Classic_fixed";
     private static readonly string Screens = UIScreenPrefabContext.ScreensFolder;
 

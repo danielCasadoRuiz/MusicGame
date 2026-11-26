@@ -7,6 +7,8 @@ public sealed class SongTitlePreviewProgress : MonoBehaviour
     public TextMeshProUGUI title;
     public Shader progressShader;
     public bool reviewPlaying;
+    [Tooltip("Native lean of the chosen font, before TMP italic shearing.")]
+    [Range(0,30)] public float nativeItalicAngle=7f;
     [Range(0,1)] public float reviewProgress=.43f;
     public float Progress { get; private set; }
     public float GlowAmount { get; private set; }
@@ -56,8 +58,8 @@ public sealed class SongTitlePreviewProgress : MonoBehaviour
 
     void UpdateSweepCoordinates()
     {
-        // Barlow Black Italic has a native seven-degree lean; TMP may additionally shear its quads.
-        float nativeShear=Mathf.Tan(7*Mathf.Deg2Rad),meshShear=0;
+        // Match the authored font lean as well as any additional TMP italic shear.
+        float nativeShear=Mathf.Tan(nativeItalicAngle*Mathf.Deg2Rad),meshShear=0;
         var info=title.textInfo;
         for(int i=0;i<info.characterCount;i++)
         {

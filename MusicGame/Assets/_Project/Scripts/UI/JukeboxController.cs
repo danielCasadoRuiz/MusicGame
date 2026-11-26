@@ -84,6 +84,7 @@ public class JukeboxController : MonoBehaviour
         if (_view == null || _opened) return;
         _opened = true;
         _view.gameObject.SetActive(true); _view.transform.SetAsLastSibling();
+        _view.ownerPlaque?.ChooseOwner(Resources.Load<AppConfigSO>("AppConfig")?.opponentRoster);
         // No menu input/animation continues underneath the music library.
         var menu = FindFirstObjectByType<MainMenuView>();
         _view.ApplyBrand(menu?.logo != null ? menu.logo.Shown : GameMusicStyle.Unknown);
@@ -192,6 +193,7 @@ public class JukeboxController : MonoBehaviour
             if (medallion == null || art.Count == 0) continue;
             int index = UnityEngine.Random.Range(0, art.Count);
             medallion.sprite = art[index];
+            medallion.GetComponent<JukeboxMedallionArtwork>()?.Refresh();
             art.RemoveAt(index);
         }
     }

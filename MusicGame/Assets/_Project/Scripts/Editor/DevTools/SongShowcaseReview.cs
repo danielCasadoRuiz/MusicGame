@@ -10,6 +10,45 @@ using UnityEngine.UI;
 
 public static class SongShowcaseReview
 {
+    static bool exampleOnly,headingComparison,unifiedTypography;
+    static bool titleTintTrials;
+    public static void CaptureTitleTintTrials()
+    {
+        titleTintTrials=true;exampleOnly=true;unifiedTypography=true;
+        try{Run();}
+        finally{TitleText.ReviewTint=-1;titleTintTrials=false;exampleOnly=false;unifiedTypography=false;}
+    }
+    public static void CaptureFusionTypography()
+    {
+        unifiedTypography=true;exampleOnly=true;
+        try
+        {
+            Run();
+            Directory.CreateDirectory("../VisualReviews/Typography/Fusion-InGame");
+            foreach(string mode in new[]{"light","dark"})
+                File.Copy("../VisualReviews/SongSelection/UnifiedBrush/Dance-"+mode+".png","../VisualReviews/Typography/Fusion-InGame/Dance-"+mode+".png",true);
+        }
+        finally{unifiedTypography=false;exampleOnly=false;}
+    }
+    static string OutputDirectory=>titleTintTrials?"../VisualReviews/Typography/TintTrials":unifiedTypography?"../VisualReviews/SongSelection/UnifiedBrush":headingComparison?"../VisualReviews/SongSelection/HeadingIvory":exampleOnly?"../VisualReviews/SongSelection/PreviewTint35":"../VisualReviews/SongSelection/ShowcaseD-v14";
+    public static void CaptureTintExample()
+    {
+        exampleOnly=true;
+        try{Run();File.WriteAllText("../preview-tint-batch-validation.txt","PASS: captured the actual Dance selection prefab at 43% preview progress with a 35% face tint.\n");}
+        finally{exampleOnly=false;}
+    }
+    public static void CaptureHeadingComparison()
+    {
+        headingComparison=true;exampleOnly=true;
+        try{Run();File.WriteAllText("../heading-ivory-validation.txt","PASS: ivory heading uses the shared title colour, local 1.15 size multiplier, unchanged global tier, day/night contrast, brush and clean type comparisons captured.\n");}
+        finally{headingComparison=false;exampleOnly=false;}
+    }
+    public static void CaptureUnifiedTypography()
+    {
+        unifiedTypography=true;exampleOnly=true;
+        try{Run();File.WriteAllText("../unified-typography-validation.txt","PASS: song title uses the shared brush title font, large compact single-line autosizing, diagonal preview tint at 35%, heading shadow removed.\n");}
+        finally{unifiedTypography=false;exampleOnly=false;}
+    }
     static void Check(bool value,string message){if(!value)throw new Exception(message);}
     public static void Run()
     {
@@ -84,9 +123,13 @@ public static class SongShowcaseReview
             foreach(var styleSkin in library.songCards)
             {
                 var style=styleSkin.style;
+                if(titleTintTrials)
+                {if(style!=GameMusicStyle.Dance&&style!=GameMusicStyle.Catchy&&style!=GameMusicStyle.Acoustic&&style!=GameMusicStyle.Electronic)continue;}
+                else if(exampleOnly&&style!=GameMusicStyle.Dance)continue;
                 field.SetValue(null,(GameMusicStyle?)style);
                 foreach(var appearance in new[]{AppearancePreference.Light,AppearancePreference.Dark})
                 {
+                    if(exampleOnly&&!headingComparison&&!unifiedTypography&&appearance!=AppearancePreference.Light)continue;
                     AppearancePreference.SetMode(appearance);AppearancePreference.Tick(10);
                     view.GetComponent<FrontendStyleBackground>().ShowHome();view.selectedAppearance.SetState(style,true);showcase.Render();
                     foreach(var row in rows){row.SetSelection(row==rows[1],row.musicStyle);row.GetComponent<SongCardAppearance>().SetState(row.musicStyle,row==rows[1]);row.RefreshAppearance();}
@@ -114,9 +157,35 @@ public static class SongShowcaseReview
                     view.customSurface.Apply(customColor,customColor,Color.Lerp(from,Color.black,.25f));
                     Canvas.ForceUpdateCanvases();camera.Render();RenderTexture.active=target;
                     var capture=new Texture2D(1920,1080,TextureFormat.RGB24,false);capture.ReadPixels(new Rect(0,0,1920,1080),0,0);capture.Apply();
-                    Directory.CreateDirectory("../VisualReviews/SongSelection/ShowcaseD-v14");File.WriteAllBytes("../VisualReviews/SongSelection/ShowcaseD-v14/"+style+"-"+appearance+".png",capture.EncodeToPNG());UnityEngine.Object.DestroyImmediate(capture);
+                    Directory.CreateDirectory(OutputDirectory);File.WriteAllBytes(OutputDirectory+"/"+style+"-"+appearance+".png",capture.EncodeToPNG());UnityEngine.Object.DestroyImmediate(capture);
+                    if(titleTintTrials)
+                    {
+                        foreach(float strength in new[]{.30f,.50f,.70f})
+                        {
+                            TitleText.ReviewTint=strength;
+                            foreach(var text in view.GetComponentsInChildren<TitleText>(true))text.ApplyColor();
+                            SavePreview(camera,target,style+"-"+appearance+"-"+Mathf.RoundToInt(strength*100)+".png",1920,1080);
+                        }
+                        TitleText.ReviewTint=-1;
+                        foreach(var text in view.GetComponentsInChildren<TitleText>(true))text.ApplyColor();
+                    }
+                    if(headingComparison)
+                    {
+                        var heading=view.titleText;var tag=heading.GetComponent<TitleText>();tag.enabled=false;
+                        var originalFont=heading.font;var originalMaterial=heading.fontSharedMaterial;
+                        var clean=AssetDatabase.LoadAssetAtPath<TMPro.TMP_FontAsset>("Assets/_Project/UI/Fonts/SongShowcase/ShowcaseHeadlineWide SDF.asset");
+                        heading.font=clean;heading.fontStyle=TMPro.FontStyles.Bold|TMPro.FontStyles.Italic|TMPro.FontStyles.UpperCase;
+                        var cleanMaterial=new Material(clean.material);
+                        cleanMaterial.EnableKeyword("UNDERLAY_ON");cleanMaterial.SetColor("_UnderlayColor",new Color(.025f,.02f,.045f,.42f));
+                        cleanMaterial.SetFloat("_UnderlayOffsetY",-.4f);cleanMaterial.SetFloat("_UnderlaySoftness",.5f);cleanMaterial.SetFloat("_UnderlayDilate",.12f);
+                        heading.fontSharedMaterial=cleanMaterial;heading.UpdateMeshPadding();Canvas.ForceUpdateCanvases();
+                        SavePreview(camera,target,"Clean-"+appearance+".png",1920,1080);
+                        heading.font=originalFont;heading.fontSharedMaterial=originalMaterial;tag.enabled=true;tag.Apply();
+                        heading.fontSharedMaterial=originalMaterial;UnityEngine.Object.DestroyImmediate(cleanMaterial);
+                    }
                 }
             }
+            if(exampleOnly)return;
             field.SetValue(null,(GameMusicStyle?)GameMusicStyle.Dance);AppearancePreference.SetMode(AppearancePreference.Light);AppearancePreference.Tick(10);
             view.GetComponent<FrontendStyleBackground>().ShowHome();view.selectedSongText.text="";showcase.artist.text="";view.RefreshAppearance();showcase.Render();
             foreach(var row in rows){row.SetSelection(false,row.musicStyle);row.SetPreview(false);row.RefreshAppearance();Loc.Forget(row.completedLabel);row.completedLabel.text="COMPLETED";}
@@ -149,7 +218,7 @@ public static class SongShowcaseReview
     {
         camera.Render();RenderTexture.active=target;
         var capture=new Texture2D(width,height,TextureFormat.RGB24,false);capture.ReadPixels(new Rect(0,0,width,height),0,0);capture.Apply();
-        File.WriteAllBytes("../VisualReviews/SongSelection/ShowcaseD-v14/"+name,capture.EncodeToPNG());UnityEngine.Object.DestroyImmediate(capture);
+        File.WriteAllBytes(OutputDirectory+"/"+name,capture.EncodeToPNG());UnityEngine.Object.DestroyImmediate(capture);
     }
 }
 #endif

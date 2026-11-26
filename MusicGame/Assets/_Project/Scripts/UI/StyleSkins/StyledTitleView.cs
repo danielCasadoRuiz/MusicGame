@@ -190,6 +190,13 @@ public class StyledTitleView : MonoBehaviour
 
     private const string LastStyleKey = "TempoFury.LastTitleStyle";
     private static GameMusicStyle? _launchStyle;
+    public const string SkinPreferenceKey="TempoFury.MenuSkin";
+    public static bool SetMenuSkin(StyleSkinLibrarySO library,GameMusicStyle style)
+    {
+        if(library==null||style==GameMusicStyle.Classical||library.Title(style)==null||library.Button(style)==null)return false;
+        _launchStyle=style;PlayerPrefs.SetInt(SkinPreferenceKey,(int)style);PlayerPrefs.Save();return true;
+    }
+
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetLaunchStyle() => _launchStyle = null;   // each Play session is a new launch
@@ -200,6 +207,11 @@ public class StyledTitleView : MonoBehaviour
     {
         if (_launchStyle.HasValue) return _launchStyle.Value;
         if (library == null || library.titles.Count == 0) return GameMusicStyle.Unknown;
+        if(PlayerPrefs.HasKey(SkinPreferenceKey))
+        {
+            var saved=(GameMusicStyle)PlayerPrefs.GetInt(SkinPreferenceKey);
+            if(saved!=GameMusicStyle.Classical&&library.Title(saved)!=null&&library.Button(saved)!=null){_launchStyle=saved;return saved;}
+        }
         int last = PlayerPrefs.GetInt(LastStyleKey, -1);
         var choices = library.titles.FindAll(t => t.style != GameMusicStyle.Classical && (int)t.style != last);
         if (choices.Count == 0) choices = library.titles.FindAll(t => t.style != GameMusicStyle.Classical);

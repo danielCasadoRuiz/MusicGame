@@ -2124,6 +2124,7 @@ GameObject:
   - component: {fileID: 1609309853356869847}
   - component: {fileID: 511749882797157141}
   - component: {fileID: 1903769214890220045}
+  - component: {fileID: 7597284595677202260}
   m_Layer: 0
   m_Name: LiveHud
   m_TagString: Untagged
@@ -2259,6 +2260,19 @@ MonoBehaviour:
   - {fileID: 7403973116453946237}
   progressFill: {fileID: 6732557383501986283}
   progressBorder: {fileID: 8410300071144168473}
+--- !u!114 &7597284595677202260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3938946190456471222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32c8b07da76b9f342a85fa59ab23c395, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIStyleScope
+  domain: 2
 --- !u!1 &3949288257807103320
 GameObject:
   m_ObjectHideFlags: 0
@@ -3010,8 +3024,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
-  m_sharedMaterial: {fileID: -7326861909581889668, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
+  m_sharedMaterial: {fileID: -1737045903294810586, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4726,8 +4740,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: FUNKY
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
-  m_sharedMaterial: {fileID: -7326861909581889668, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
+  m_sharedMaterial: {fileID: -1737045903294810586, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

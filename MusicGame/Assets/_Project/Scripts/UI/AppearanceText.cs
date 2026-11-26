@@ -14,6 +14,9 @@ public sealed class AppearanceText : MonoBehaviour
     private void LateUpdate() => Apply();
     public void Apply()
     {
+        var colourOnly=GetComponent<StyleTitleInk>();if(colourOnly!=null&&colourOnly.enabled){colourOnly.Apply();return;}
+        var title=GetComponent<TitleText>();
+        if(title!=null&&title.enabled){title.ApplyColor();return;}
         if (text==null) text=GetComponent<TMP_Text>();
         float weight = background != null ? background.InkLightWeight : mainMenu != null ? mainMenu.InkLightWeight : 0;
         text.color = Color.Lerp(night,day,weight);

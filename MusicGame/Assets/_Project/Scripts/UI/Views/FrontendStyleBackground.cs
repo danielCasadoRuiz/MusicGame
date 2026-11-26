@@ -11,7 +11,10 @@ public sealed class FrontendStyleBackground : MonoBehaviour
     private Material nightMaterial, previousMaterial;
     private GameMusicStyle shown, prior;
     private float styleBlend=1;
-    public GameMusicStyle HomeStyle => StyledTitleView.MenuStyle(library);
+    public GameMusicStyle HomeStyle => UIStylePalette.ScreenStyle(this,library);
+    public GameMusicStyle DisplayedStyle=>Effective(shown);
+    public GameMusicStyle PreviousStyle=>Effective(prior);
+    public float StyleBlend=>styleBlend;
     public Texture2D HomeTexture => library != null ? library.MenuBackground(HomeStyle) : null;
     private GameMusicStyle Effective(GameMusicStyle style) => library != null && library.MenuBackground(style) != null ? style : HomeStyle;
     public float InkLightWeight => library == null ? 0 : AppearancePreference.LightWeight * Mathf.Lerp(library.DayUsesDarkInk(Effective(prior))?1:0,library.DayUsesDarkInk(Effective(shown))?1:0,styleBlend);

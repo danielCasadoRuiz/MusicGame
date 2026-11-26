@@ -8,7 +8,7 @@ public sealed class AppearanceSelectorView : MonoBehaviour
     public Button automatic, lightButton, dark;
     private void Awake()
     {
-        automatic.onClick.AddListener(()=>AppearancePreference.SetMode(AppearancePreference.Auto));
+        if(automatic!=null)automatic.onClick.AddListener(()=>AppearancePreference.SetMode(AppearancePreference.Auto));
         lightButton.onClick.AddListener(()=>AppearancePreference.SetMode(AppearancePreference.Light));
         dark.onClick.AddListener(()=>AppearancePreference.SetMode(AppearancePreference.Dark));
     }
@@ -20,6 +20,7 @@ public sealed class AppearanceSelectorView : MonoBehaviour
         var modes=new[]{AppearancePreference.Auto,AppearancePreference.Light,AppearancePreference.Dark};
         for(int i=0;i<buttons.Length;i++)
         {
+            if(buttons[i]==null)continue;
             bool selected=AppearancePreference.Mode==modes[i];
             buttons[i].image.color=selected?new Color(.70f,.52f,.26f):new Color(.16f,.17f,.20f);
             var label=buttons[i].GetComponentInChildren<TMP_Text>();

@@ -64,8 +64,10 @@ public static class FrontendBackdropValidation
                     var viewport = ((RectTransform)live.transform).rect.size;
                     var design = view.cabinetContent.rect.size;
                     var fitted = Vector2.Scale(design, view.cabinetContent.localScale);
-                    Check(Mathf.Abs(fitted.x - viewport.x) < 2f && Mathf.Abs(fitted.y - viewport.y) < 2f,
-                        "Jukebox art and controls do not fill the 16:9 viewport together");
+                    Check(fitted.x < viewport.x*.95f && fitted.y < viewport.y*.95f,
+                        "Jukebox lost the accepted breathing room around the cabinet");
+                    Check(Mathf.Abs(fitted.x/design.x-fitted.y/design.y)<.01f,
+                        "Jukebox art and controls are stretched differently");
                     var cabinet = live.transform.Find("Content/Cabinet").GetComponent<Image>();
                     Check(cabinet.sprite.name == "SecretCabinetFloorTransparent", "Jukebox is using the opaque art");
                     Check(live.transform.Find("Background").GetComponent<Image>().color.a == 0, "Jukebox backdrop is opaque");

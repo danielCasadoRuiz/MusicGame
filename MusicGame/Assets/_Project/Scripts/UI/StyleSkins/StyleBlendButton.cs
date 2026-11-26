@@ -20,6 +20,9 @@ public class StyleBlendButton : MonoBehaviour, IPointerEnterHandler, IPointerExi
     public enum Art { MenuButton, HudPause }
 
     public StyleSkinLibrarySO library;
+    public bool stretchMiddle;
+    public bool accentFace;
+    private Material _accentMaterial;
     public Art art = Art.MenuButton;
     public Image classicLayer;
     public Image styleLayer;
@@ -83,7 +86,7 @@ public class StyleBlendButton : MonoBehaviour, IPointerEnterHandler, IPointerExi
         if (classicLayer != null)
         {
             classicLayer.sprite = classic;
-            classicLayer.enabled = true;
+            classicLayer.enabled = styled == null || _weight < .9999f;
             classicLayer.material = art == Art.HudPause ? library.classicPauseMaterial : null;
             var classicColor=classicLayer.color;
             classicColor.a=art==Art.HudPause && styled!=null ? 1-_weight : 1;
@@ -108,18 +111,28 @@ public class StyleBlendButton : MonoBehaviour, IPointerEnterHandler, IPointerExi
             }
         }
         if (label != null) label.color = on ? library.labelSelected : library.labelNormal;
+        if(accentFace&&styleLayer!=null&&library.customSongAccentMaterial!=null)
+        {
+            if(_accentMaterial==null)_accentMaterial=new Material(library.customSongAccentMaterial){name="Custom song CTA accent",hideFlags=HideFlags.DontSave};
+            Color accent=library.SongHeadingColor(_style,false);Color.RGBToHSV(accent,out _,out var saturation,out _);
+            if(saturation<.35f)SongStyleSurface.Palette(library,_style,out _,out accent);
+            _accentMaterial.SetColor("_Accent",accent);styleLayer.material=_accentMaterial;
+            var linear=accent.linear;float luminance=.2126f*linear.r+.7152f*linear.g+.0722f*linear.b;
+            if(label!=null)label.color=luminance>.179f?library.labelNormal:Color.white;
+        }
     }
 
-    private void OnDestroy() => UIStyleTransition.Release(_transition);
+    private void OnDestroy(){UIStyleTransition.Release(_transition);if(_accentMaterial!=null){if(Application.isPlaying)Destroy(_accentMaterial);else DestroyImmediate(_accentMaterial);}}
 
     // The art's body (1152×192 of 1280×320) matches the button rect; the glow margin hangs outside it.
-    private void FitLayers()
+    public void FitLayers()
     {
         if (art != Art.MenuButton) return;
         var rect = ((RectTransform)transform).rect;
         var canvas = StyleSkinLibrarySO.ButtonCanvas;
         var body = StyleSkinLibrarySO.ButtonBody;
         float sx = rect.width / body.width, sy = rect.height / body.height;
+        if(stretchMiddle)sx=sy;
         var min = new Vector2(-body.x * sx, -(canvas.y - body.yMax) * sy);
         var max = new Vector2((canvas.x - body.xMax) * sx, body.y * sy);
         foreach (var layer in new[] { classicLayer, styleLayer })

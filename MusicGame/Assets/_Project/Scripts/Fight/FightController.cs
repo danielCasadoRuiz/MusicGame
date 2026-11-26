@@ -671,6 +671,7 @@ public class FightController : MonoBehaviour
         float weight = _pauseStyleGroup.library.FightWeight(player, rival,
             match != null ? match.PlayerRoundsWon : 0, match != null ? match.OpponentRoundsWon : 0);
         _pauseStyleGroup.Apply(StyleSkinLibrarySO.CurrentStyle(), weight);
+        foreach(var title in _pausePanel.GetComponentsInChildren<TitleText>(true)){title.gameplayStyle=true;title.ApplyColor();}
     }
 
     private void PopulateInfo()

@@ -11,6 +11,8 @@ public sealed class DetectedStyleLabel : MonoBehaviour
     private Material ownedMaterial;
     private Coroutine motion;
     private bool showing;
+    private StyleSkinLibrarySO styleLibrary;
+    private GameMusicStyle detectedStyle;
     private bool ownsHudSlot;
     private UnityEngine.UI.Image flash;
     private Material flashMaterial;
@@ -43,6 +45,7 @@ public sealed class DetectedStyleLabel : MonoBehaviour
             text.raycastTarget=false;
         }
         var self=instance;
+        self.styleLibrary=template.GetComponentInParent<AnalysisPresentation>()?.library??template.GetComponentInParent<FrontendStyleBackground>()?.library;self.detectedStyle=style;
         self.impactEntrance = impact;
         self.inlineSlot = inline ? template : null;
         if (self.flash != null) self.flash.gameObject.SetActive(false);
@@ -97,6 +100,8 @@ public sealed class DetectedStyleLabel : MonoBehaviour
                 self.flash.rectTransform.sizeDelta = rt.sizeDelta * new Vector2(1.3f, 1.7f);
             }
         }
+        self.label.enableVertexGradient=false;
+        if(self.styleLibrary!=null)self.label.color=UIStylePalette.ForStyle(self.styleLibrary,style,AppearancePreference.LightWeight);
         self.motion=self.StartCoroutine(self.Entrance());
     }
     private void PlaceInline()
@@ -112,7 +117,7 @@ public sealed class DetectedStyleLabel : MonoBehaviour
         // autosizing while the letter animation held its mesh, clipping longer style names.
         label.wordSpacing = inlineSlot.wordSpacing;
     }
-    private void LateUpdate() { if (inlineSlot != null && showing) PlaceInline(); }
+    private void LateUpdate() { if(styleLibrary!=null&&showing&&label!=null)label.color=UIStylePalette.ForStyle(styleLibrary,detectedStyle,AppearancePreference.LightWeight); if (inlineSlot != null && showing) PlaceInline(); }
     private IEnumerator Entrance()
     {
         label.ForceMeshUpdate();int count=label.textInfo.characterCount;

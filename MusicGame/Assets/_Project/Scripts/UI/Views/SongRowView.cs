@@ -30,6 +30,8 @@ public class SongRowView : MonoBehaviour
     public Image playedBadge;
     public bool IsPreviewing { get; private set; }
     public bool showcase;
+    public float cardSlant=72;
+    public float selectedScale=1.08f;
     public Image selectionArtwork;
     public Image cardShadow;
     private string laidOutTitle;
@@ -92,29 +94,33 @@ public class SongRowView : MonoBehaviour
         if(showcase&&skin!=null)
         {
             transform.localScale=Vector3.one;
-            var grow=skin.Selected?new Vector2(22,40):Vector2.zero;
+            var baseSize=((RectTransform)transform).rect.size;
+            var grow=skin.Selected?baseSize*(selectedScale-1):Vector2.zero;
             float blend=Application.isPlaying?1-Mathf.Exp(-14*Time.unscaledDeltaTime):1;
             if(background!=null)
             {
                 var rect=background.rectTransform;
                 rect.offsetMin=Vector2.Lerp(rect.offsetMin,-grow*.5f,blend);rect.offsetMax=Vector2.Lerp(rect.offsetMax,grow*.5f,blend);
+                float currentScale=baseSize.y>0?rect.rect.height/baseSize.y:1;
+                var surface=background.GetComponent<SongCardSurfaceMesh>();surface.slant=cardSlant*currentScale;surface.SetVerticesDirty();
+                if(selectionArtwork!=null)
+                {
+                    var frame=(RectTransform)selectionFrame.transform;frame.offsetMin=rect.offsetMin;frame.offsetMax=rect.offsetMax;
+                    var outline=selectionArtwork.GetComponent<SongNeonStroke>();outline.slant=surface.slant;selectionArtwork.SetVerticesDirty();
+                }
                 if(cardShadow!=null)
                 {
                     cardShadow.rectTransform.offsetMin=rect.offsetMin+new Vector2(0,-7);
                     cardShadow.rectTransform.offsetMax=rect.offsetMax+new Vector2(0,-7);
+                    var shadow=cardShadow.GetComponent<SongNeonStroke>();shadow.slant=surface.slant;cardShadow.SetVerticesDirty();
                 }
-            }
-            if(selectionArtwork!=null)
-            {
-                var rect=(RectTransform)selectionFrame.transform;
-                rect.offsetMin=-grow*.5f-new Vector2(3,3);rect.offsetMax=grow*.5f+new Vector2(3,3);
             }
             if(label!=null&&artistLabel!=null&&(laidOutTitle!=label.text||!Mathf.Approximately(laidOutWidth,label.rectTransform.rect.width)))
             {
                 laidOutTitle=label.text;laidOutWidth=label.rectTransform.rect.width;
                 float height=Mathf.Clamp(label.GetPreferredValues(label.text,Mathf.Max(1,laidOutWidth),0).y,40,86);
                 var pos=artistLabel.rectTransform.anchoredPosition;pos.y=label.rectTransform.anchoredPosition.y-height-12;
-                float slant=background.GetComponent<SongCardSurfaceMesh>().slant;
+                float slant=cardSlant;
                 pos.x=label.rectTransform.anchoredPosition.x-slant*(height+12)/Mathf.Max(1,((RectTransform)transform).rect.height);
                 artistLabel.rectTransform.anchoredPosition=pos;
             }

@@ -16,6 +16,7 @@ public class MainMenuView : MonoBehaviour
 {
     [Header("Root")]
     public GameObject root;
+    public System.Action<GameMusicStyle> SkinPicked;
     [Header("Central menu sizing")]
     public RectTransform presentationRoot;
     public float presentationScale=1.2f;
@@ -40,6 +41,9 @@ public class MainMenuView : MonoBehaviour
     private Material _backgroundMaterial, _previousBackgroundMaterial;
     private GameMusicStyle _shownBackground, _priorBackground;
     private float _backgroundBlend=1;
+    public GameMusicStyle DisplayedStyle=>_shownBackground==GameMusicStyle.Unknown?StyledTitleView.MenuStyle(logo.library):_shownBackground;
+    public GameMusicStyle PreviousStyle=>_priorBackground==GameMusicStyle.Unknown?DisplayedStyle:_priorBackground;
+    public float StyleBlend=>_backgroundBlend;
     public float InkLightWeight => logo == null || logo.library == null ? 0 : AppearancePreference.LightWeight * Mathf.Lerp(logo.library.DayUsesDarkInk(_priorBackground)?1:0,logo.library.DayUsesDarkInk(_shownBackground)?1:0,_backgroundBlend);
     private void OnEnable() { AppearancePreference.Updated += RenderAppearance; RenderAppearance(); }
     private void OnDisable() => AppearancePreference.Updated -= RenderAppearance;

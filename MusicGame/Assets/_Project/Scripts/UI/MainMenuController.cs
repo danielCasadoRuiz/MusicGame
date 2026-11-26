@@ -120,6 +120,7 @@ public class MainMenuController : MonoBehaviour
         _buttonStackGap = view.buttonStackGap;
         _buttonSlots    = view.buttonSlots;
         _logo          = view.logo;
+        view.SkinPicked = ChangeMenuSkin;
         _buttonStyle   = view.buttonStyle;
         PrewarmFadingLogo();
 
@@ -355,6 +356,29 @@ public class MainMenuController : MonoBehaviour
         else _styleFade = StartCoroutine(FadeFromPlayedStyle(playedStyle, style));
     }
 
+    private void ChangeMenuSkin(GameMusicStyle style)
+    {
+        if(_logo==null||!isActiveAndEnabled)return;
+        var from=_logo.Shown;
+        if(!StyledTitleView.SetMenuSkin(_logo.library,style))return;
+        if(_styleFade!=null)StopCoroutine(_styleFade);
+        _logo.StopIntro();_logo.Show(style);
+        PreparePlayedStyle(from,style);
+        _styleFade=StartCoroutine(FadeChosenSkin(from,style));
+    }
+    private System.Collections.IEnumerator FadeChosenSkin(GameMusicStyle from,GameMusicStyle to)
+    {
+        var group=_fadingLogo.GetComponent<CanvasGroup>();
+        for(float t=0;t<StyleFadeDuration;t+=Time.unscaledDeltaTime)
+        {
+            float k=Mathf.SmoothStep(0,1,t/StyleFadeDuration);
+            group.alpha=1-k;SetLogoAlpha(k);_view.ShowBackground(to,from,k);
+            if(_buttonStyle!=null)_buttonStyle.Apply(to,k,from);
+            yield return null;
+        }
+        _view.ShowBackground(to);_buttonStyle?.Apply(to,1);SetLogoAlpha(1);_fadingLogo.SetActive(false);_styleFade=null;
+    }
+
     // First menu of the launch: the letters land on the announcer's two words (the shout's attack on the T, the F on
     // "Fury"). Without the clip (no announcer, not loaded yet) the title animates on its own timing, silently.
     private void LaunchIntro()
@@ -390,6 +414,7 @@ public class MainMenuController : MonoBehaviour
         SetLogoAlpha(0f);
         group.blocksRaycasts = group.interactable = false;
         var played = _fadingLogo.GetComponent<StyledTitleView>();
+        played.StopIntro();
         played.Show(from);
         _view.ShowBackground(to, from, 0f);
         if (_buttonStyle != null) _buttonStyle.Apply(to, 0f, from);

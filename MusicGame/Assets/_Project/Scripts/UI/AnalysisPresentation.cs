@@ -47,6 +47,7 @@ public sealed class AnalysisPresentation : MonoBehaviour
     private float revealBlend = 1, handoffProgress;
     private bool carryTint;
     private int waveIndex = -1;
+    private Color ThemeAccent(GameMusicStyle style)=>library!=null?library.SongHeadingColor(style,false):Accent(style);
     private Color Ivory => library != null ? library.titleColor : new Color(.953f, .918f, .827f, 1);
     public GameMusicStyle CurrentStyle => current;
     public float HandoffProgress => handoffProgress;
@@ -70,6 +71,7 @@ public sealed class AnalysisPresentation : MonoBehaviour
         song.wordSpacing = BrushWordSpacing;
         if (library != null && library.titleFont != null)
         { song.font = library.titleFont; song.fontSharedMaterial = library.titleFont.material; }
+        var songInk=song.gameObject.AddComponent<StyleTitleInk>();songInk.library=library;
         artist = Text("Artist", details, 0, -220, 1100, 48, 30, Ivory);
         artist.font = view.tipText.font; artist.fontSharedMaterial = view.tipText.fontSharedMaterial;
         view.tipText.transform.SetParent(details, false);
@@ -151,7 +153,7 @@ public sealed class AnalysisPresentation : MonoBehaviour
     private static void Box(RectTransform rect, float x, float y, float width, float height) =>
         UIFactory.SetBox(rect, new Vector2(.5f, .5f), new Vector2(.5f, .5f), new Vector2(.5f, .5f), new Vector2(x, y), new Vector2(width, height));
     private void ApplyImmediate(GameMusicStyle style)
-    { current = style; revealBlend = 1; ApplyTheme(style == GameMusicStyle.Unknown ? inheritedTint : Accent(style), style == GameMusicStyle.Unknown ? 0 : 1); }
+    { current = style; revealBlend = 1; ApplyTheme(style == GameMusicStyle.Unknown ? inheritedTint : ThemeAccent(style), style == GameMusicStyle.Unknown ? 0 : 1); }
     private void ApplyTheme(Color tint, float reveal)
     {
         displayedTint = tint;
@@ -175,7 +177,7 @@ public sealed class AnalysisPresentation : MonoBehaviour
     {
         if (view == null) return;
         DetectedStyleLabel.Cancel();
-        if (!carryTint) inheritedTint = Accent(StyledTitleView.MenuStyle(library));
+        if (!carryTint) inheritedTint = ThemeAccent(StyledTitleView.MenuStyle(library));
         carryTint = false; handoffProgress = 0; metadata.alpha = 1;
         ApplyImmediate(GameMusicStyle.Unknown);
         var selected = GameSession.Instance != null ? GameSession.Instance.SelectedSong : null;
@@ -189,7 +191,7 @@ public sealed class AnalysisPresentation : MonoBehaviour
     public void BeginPendingSelection()
     {
         var prior = GameSession.Instance != null ? GameSession.Instance.DetectedGameStyle : GameMusicStyle.Unknown;
-        Begin(); inheritedTint = prior == GameMusicStyle.Unknown ? inheritedTint : Accent(prior);
+        Begin(); inheritedTint = prior == GameMusicStyle.Unknown ? inheritedTint : ThemeAccent(prior);
         carryTint = true; ApplyImmediate(GameMusicStyle.Unknown); song.text = artist.text = "";
     }
     public void Reveal(GameMusicStyle style)
@@ -214,7 +216,7 @@ public sealed class AnalysisPresentation : MonoBehaviour
         {
             revealBlend = Mathf.Min(1, revealBlend + Time.unscaledDeltaTime / .85f);
             float blend = Mathf.SmoothStep(0, 1, revealBlend);
-            ApplyTheme(Color.Lerp(inheritedTint, Accent(current), blend), blend);
+            ApplyTheme(Color.Lerp(inheritedTint, ThemeAccent(current), blend), blend);
         }
         int frame = Mathf.FloorToInt(Time.unscaledTime * WaveFramesPerSecond) % WaveFrames;
         if (wave != null && frame != waveIndex) { wave.sprite = waveSprites[frame]; waveIndex = frame; }

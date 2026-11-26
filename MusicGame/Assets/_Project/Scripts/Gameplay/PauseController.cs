@@ -223,6 +223,7 @@ public class PauseController : MonoBehaviour
         if (group == _hudPauseGroup)
             weight = 1f - lib.CurtainClassic(1f - weight, StyleSkinLibrarySO.HudPauseCenter.x / StyleSkinLibrarySO.HudBarCanvas.x);
         group.Apply(StyleSkinLibrarySO.CurrentStyle(), weight, useCurtain: group == _styleGroup);
+        if(group==_styleGroup&&_overlayRoot!=null)foreach(var title in _overlayRoot.GetComponentsInChildren<TitleText>(true)){title.gameplayStyle=true;title.ApplyColor();}
     }
 
     public void Resume()

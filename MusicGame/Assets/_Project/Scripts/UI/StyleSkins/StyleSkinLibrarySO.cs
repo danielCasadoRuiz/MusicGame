@@ -61,6 +61,8 @@ public class StyleSkinLibrarySO : ScriptableObject
     [Header("Titles (TitleText) — one size per tier, one colour for all")]
     public TMP_FontAsset titleFont;
     public Color titleColor = new(0.953f, 0.918f, 0.827f, 1f);   // ivory
+    [Range(0,1)] public float titleDayTint=.70f;
+    [Range(0,1)] public float titleNightTint=.70f;
     [Tooltip("Countdown 3-2-1 TEMPO! / FURY!, ROUND, KO!, FINISH!, PERFECT!, VS.")]
     public float displaySize = 220f;
     [Tooltip("Title of a menu / screen: PAUSE, YOU WIN, RIVALS, PROFILE…")]
@@ -136,6 +138,20 @@ public class StyleSkinLibrarySO : ScriptableObject
         public Sprite sprite;
         public bool darkInk;
         public Color selectedTint=Color.white;
+    }
+    [System.Serializable]
+    public class SongHeadingInk
+    {
+        public GameMusicStyle style;
+        public Color day,night;
+    }
+    public Material customSongAccentMaterial;
+    public List<SongHeadingInk> songHeadingInks=new();
+    public Color SongHeadingColor(GameMusicStyle style,bool day)
+    {
+        var entry=songHeadingInks.Find(e=>e.style==style);
+        if(entry!=null)return day?entry.day:entry.night;
+        SongStyleSurface.Palette(this,style,out var dark,out var bright);return day?dark:bright;
     }
     public List<SongCardSkin> songCards = new();
     public SongCardSkin SongCard(GameMusicStyle style) => songCards.Find(s=>s.style==style)??songCards.Find(s=>s.style==GameMusicStyle.Cinematic);

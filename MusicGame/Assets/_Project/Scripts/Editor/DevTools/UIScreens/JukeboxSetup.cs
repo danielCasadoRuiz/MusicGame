@@ -178,12 +178,14 @@ public static class JukeboxSetup
             title.textWrappingMode = TextWrappingModes.NoWrap;
             title.alignment = TextAlignmentOptions.Center;
             title.fontSize = 82;
-            title.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/_Project/UI/Fonts/TempoFuryBrush/TempoFuryBrush SDF.asset");
+            title.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/_Project/UI/Fonts/TempoFuryFusion/TempoFuryFusion SDF.asset");
             var titleTheme = title.GetComponent<ThemeTextReceiver>();
             if (titleTheme != null) UnityEngine.Object.DestroyImmediate(titleTheme);
             title.color = new Color(1f, .964f, .89f);
         }
         view.archedTitle = title;
+        var titleFinish=AssetDatabase.LoadAssetAtPath<Material>("Assets/_Project/Configs/UI/JukeboxTitleIvory.mat");
+        if(titleFinish!=null){title.fontSharedMaterial=titleFinish;title.color=new Color(1f,.964f,.89f);title.UpdateMeshPadding();}
         panel.Find("Subtitle").gameObject.SetActive(false);
         Box(view.summary.rectTransform, 1405, 851, 175, 62);
         view.summary.alignment = TextAlignmentOptions.Right;
@@ -252,6 +254,7 @@ public static class JukeboxSetup
         view.back.image.color = Color.white;
         view.lyrics.gameObject.SetActive(false);
         view.background.gameObject.SetActive(false);
+        if(JukeboxOwnerSetup.AssetsReady)JukeboxOwnerSetup.Configure(root);
         Skin(view.delete, 1365, 546, 184, 58, true);
         Skin(view.full, 913, 325, 351, 108, true);
         var offerLabel = view.full.GetComponentInChildren<TextMeshProUGUI>(true);

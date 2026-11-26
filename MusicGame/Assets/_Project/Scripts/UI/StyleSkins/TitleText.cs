@@ -12,7 +12,7 @@ public enum TitleTier
 }
 
 /// <summary>
-/// Marks a TMP text as a title: TempoFuryBrush font, ivory colour and the size of its tier, all read from
+/// Marks a TMP text as a title: Fusion font, soft skin colour and the size of its tier, all read from
 /// StyleSkinLibrarySO so every title of a tier matches (change the size there, not here). Auto-size keeps a
 /// long line (e.g. "MOZART WINS THE ROUND") inside its rect, never above the tier size.
 /// Added by TempoFuryUISetup; it replaces the ThemeTextReceiver those texts had.
@@ -23,8 +23,16 @@ public class TitleText : MonoBehaviour
 {
     public StyleSkinLibrarySO library;
     public TitleTier tier = TitleTier.ScreenTitle;
+    public bool songTextureInk;
+    public bool gameplayStyle;
+    [Tooltip("Local scale relative to the shared title tier; other screens stay at 1.")]
+    [Range(.5f,2f)] public float sizeMultiplier=1f;
 
     private void OnEnable() => Apply();
+    private void LateUpdate() => ApplyColor();
+#if UNITY_EDITOR
+    public static float ReviewTint=-1;
+#endif
 #if UNITY_EDITOR
     private void OnValidate() => Apply();
 #endif
@@ -41,12 +49,21 @@ public class TitleText : MonoBehaviour
         text.fontStyle = FontStyles.Normal;   // the brush lettering has no bold cut
         if (text.fontFeatures == null || !text.fontFeatures.Contains(OTL_FeatureTag.kern))
             text.fontFeatures = new List<OTL_FeatureTag> { OTL_FeatureTag.kern };
-        text.color = library.titleColor;
-        float size = library.TitleSize(tier);
+        ApplyColor(false);
+        float size = library.TitleSize(tier)*sizeMultiplier;
         text.textWrappingMode = TextWrappingModes.NoWrap;
         text.enableAutoSizing = true;
         text.fontSizeMax = size;
         text.fontSizeMin = size * 0.5f;
         text.fontSize = size;
+    }
+
+    public void ApplyColor(bool preserveAlpha=true)
+    {
+        if(library==null)return;
+        var text=GetComponent<TMP_Text>();if(text==null)return;
+        var ink=UIStylePalette.Ink(this,library,gameplayStyle||GetComponentInParent<PauseView>(true)!=null);
+        ink.a=preserveAlpha?text.color.a:library.titleColor.a;
+        text.color=ink;
     }
 }

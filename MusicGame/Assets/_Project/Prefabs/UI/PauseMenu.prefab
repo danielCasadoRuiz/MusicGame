@@ -212,6 +212,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StyleBlendButton
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  stretchMiddle: 0
+  accentFace: 0
   art: 0
   classicLayer: {fileID: 4459114511671336671}
   styleLayer: {fileID: 6545087130107285603}
@@ -640,6 +642,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StyleBlendButton
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  stretchMiddle: 0
+  accentFace: 0
   art: 0
   classicLayer: {fileID: 5454372606156062475}
   styleLayer: {fileID: 5210886029592662381}
@@ -856,6 +860,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StyleBlendButton
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  stretchMiddle: 0
+  accentFace: 0
   art: 0
   classicLayer: {fileID: 4597000215549799841}
   styleLayer: {fileID: 8276233726922796092}
@@ -2021,15 +2027,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Pause.Title
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
-  m_sharedMaterial: {fileID: -7326861909581889668, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
+  m_sharedMaterial: {fileID: -1737045903294810586, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.953, g: 0.918, b: 0.827, a: 1}
+  m_fontColor: {r: 0.9843137, g: 0.7254902, b: 0.08627451, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2105,6 +2111,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TitleText
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
   tier: 1
+  songTextureInk: 0
+  gameplayStyle: 1
+  sizeMultiplier: 1
 --- !u!1 &6371594082668969472
 GameObject:
   m_ObjectHideFlags: 0
@@ -2252,6 +2261,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3662799236293953161}
   - component: {fileID: 7636434427359910832}
+  - component: {fileID: 7238065155136310176}
   m_Layer: 0
   m_Name: PauseMenu
   m_TagString: Untagged
@@ -2312,6 +2322,19 @@ MonoBehaviour:
   firstPersonIcon: {fileID: 21300000, guid: 4957b07b723d40cab42b4113eb366ba2, type: 3}
   bonusHelpButton: {fileID: 2899525642675422257}
   bonusHelpButtonLabel: {fileID: 3676204677070158705}
+--- !u!114 &7238065155136310176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7064213725314633028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32c8b07da76b9f342a85fa59ab23c395, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIStyleScope
+  domain: 2
 --- !u!1 &7213371307135476536
 GameObject:
   m_ObjectHideFlags: 0
@@ -2464,6 +2487,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StyleBlendButton
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  stretchMiddle: 0
+  accentFace: 0
   art: 1
   classicLayer: {fileID: 799725743285087980}
   styleLayer: {fileID: 1026218909898702043}
@@ -2620,6 +2645,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StyleBlendButton
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  stretchMiddle: 0
+  accentFace: 0
   art: 0
   classicLayer: {fileID: 3051224058446867680}
   styleLayer: {fileID: 4753265190154880823}

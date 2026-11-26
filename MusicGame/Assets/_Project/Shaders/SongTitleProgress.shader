@@ -239,7 +239,8 @@ SubShader {
             float position=(input.titleX-_PreviewBounds.x)/span;
             float fill=(1-smoothstep(_PreviewProgress-.008,_PreviewProgress+.008,position))*step(.0001,_PreviewProgress)*_PreviewAmount;
             if(_PreviewProgress>=.9999)fill=_PreviewAmount;
-            // Keep the white face untouched. Progress exists only in its outside stroke and halo.
+            // A 35% skin tint makes progress legible while retaining the white base and opacity.
+            c.rgb=lerp(c.rgb,_PreviewGlow.rgb*c.a,fill*.35);
             float faceDistance=tex2D(_MainTex,input.texcoord0.xy).a*input.param.x-input.param.w;
             float face=saturate(faceDistance);
             float outer=saturate(faceDistance+1.8);

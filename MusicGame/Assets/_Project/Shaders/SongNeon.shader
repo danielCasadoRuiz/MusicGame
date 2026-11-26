@@ -35,7 +35,8 @@ Shader "MusicGame/UI/SongNeon"
             fixed4 frag(output i):SV_Target
             {
                 float2 p=(i.uv-.5)*i.shape.xy;
-                p.x-=_Slant*p.y/max(1,2*i.shape.w);
+                float authoredSlant=i.shape.x-i.shape.y+2*i.shape.w-2*i.shape.z;
+                p.x-=authoredSlant*p.y/max(1,2*i.shape.w);
                 float rounding=_ShadowOnly>.5?0:min(i.shape.z,i.shape.w)*.85;
                 float2 q=abs(p)-max(float2(.05,.05),i.shape.zw-rounding);
                 float d=length(max(q,0))+min(max(q.x,q.y),0)-rounding;

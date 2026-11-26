@@ -860,6 +860,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3504135911742347405}
   - component: {fileID: 6371165449003423375}
+  - component: {fileID: 3375842210023398260}
   m_Layer: 0
   m_Name: ProfileScreen
   m_TagString: Untagged
@@ -932,6 +933,19 @@ MonoBehaviour:
   noteText: {fileID: 272431833825159062}
   backButton: {fileID: 124858528941136422}
   backLabel: {fileID: 6363489219612765871}
+--- !u!114 &3375842210023398260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1576455265104110830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32c8b07da76b9f342a85fa59ab23c395, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIStyleScope
+  domain: 1
 --- !u!1 &1782322526049437579
 GameObject:
   m_ObjectHideFlags: 0
@@ -1906,15 +1920,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
-  m_sharedMaterial: {fileID: -7326861909581889668, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
+  m_sharedMaterial: {fileID: -1737045903294810586, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.953, g: 0.918, b: 0.827, a: 1}
+  m_fontColor: {r: 0.9843137, g: 0.7254902, b: 0.08627451, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1990,6 +2004,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TitleText
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
   tier: 1
+  songTextureInk: 0
+  gameplayStyle: 0
+  sizeMultiplier: 1
 --- !u!1 &3914665507456286246
 GameObject:
   m_ObjectHideFlags: 0
@@ -2058,15 +2075,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
-  m_sharedMaterial: {fileID: -7326861909581889668, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
+  m_sharedMaterial: {fileID: -1737045903294810586, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.953, g: 0.918, b: 0.827, a: 1}
+  m_fontColor: {r: 0.9843137, g: 0.7254902, b: 0.08627451, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2142,6 +2159,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TitleText
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
   tier: 2
+  songTextureInk: 0
+  gameplayStyle: 0
+  sizeMultiplier: 1
 --- !u!1 &3929684247592509405
 GameObject:
   m_ObjectHideFlags: 0
@@ -3152,6 +3172,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &99270006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7532020579803603618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a107db1be6dc48d09711610f6302140a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  night: {r: 0.015, g: 0.018, b: 0.03, a: 0.72}
+  day: {r: 0.97, g: 0.965, b: 0.94, a: 0.58}
 --- !u!1 &7597462282548763247
 GameObject:
   m_ObjectHideFlags: 0
@@ -3685,15 +3719,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
-  m_sharedMaterial: {fileID: -7326861909581889668, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
+  m_sharedMaterial: {fileID: -1737045903294810586, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.953, g: 0.918, b: 0.827, a: 1}
+  m_fontColor: {r: 0.9843137, g: 0.7254902, b: 0.08627451, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3769,6 +3803,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TitleText
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
   tier: 2
+  songTextureInk: 0
+  gameplayStyle: 0
+  sizeMultiplier: 1
 --- !u!1 &8747033358419764894
 GameObject:
   m_ObjectHideFlags: 0
@@ -3996,17 +4033,3 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &99270006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7532020579803603618}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a107db1be6dc48d09711610f6302140a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  night: {r: 0.015, g: 0.018, b: 0.03, a: 0.72}
-  day: {r: 0.97, g: 0.965, b: 0.94, a: 0.58}

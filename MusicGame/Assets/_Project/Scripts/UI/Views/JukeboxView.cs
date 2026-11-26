@@ -5,11 +5,14 @@ using UnityEngine.UI;
 public class JukeboxView : MonoBehaviour
 {
     public RectTransform list, cabinetContent;
+    [Tooltip("Breathing room around the complete cabinet, at a 1080-high viewport.")]
+    public Vector2 framingInsets=new Vector2(90,50);
     public TextMeshProUGUI summary, selected, nowPlaying, status, playLabel, backgroundLabel;
     public Image cover, progress, progressKnob, transportIcon;
     public Sprite defaultCover, playIcon, pauseIcon;
     public Sprite[] styleSleeves;
     public Image[] medallions;
+    public JukeboxOwnerPlaque ownerPlaque;
     public JukeboxCarousel carousel;
     public StyledTitleView tempoFury;
     public TextMeshProUGUI archedTitle;
@@ -21,6 +24,11 @@ public class JukeboxView : MonoBehaviour
 
     private void OnEnable()
     {
+        if(archedTitle!=null&&tempoFury!=null)
+        {
+            var ink=archedTitle.GetComponent<StyleTitleInk>();if(ink==null)ink=archedTitle.gameObject.AddComponent<StyleTitleInk>();
+            ink.library=tempoFury.library;ink.inverseOutline=true;ink.Apply();
+        }
         ApplyTitleCurve();
         FitCabinet();
     }
@@ -119,8 +127,9 @@ public class JukeboxView : MonoBehaviour
         var size = ((RectTransform)transform).rect.size;
         var design = cabinetContent.rect.size;
         if (size.x <= 0 || size.y <= 0 || design.x <= 0 || design.y <= 0) return;
-        float widthScale = size.x / design.x;
-        float heightScale = size.y / design.y;
+        var available=size-framingInsets*(2*size.y/1080f);
+        float widthScale = Mathf.Max(1,available.x) / design.x;
+        float heightScale = Mathf.Max(1,available.y) / design.y;
         float scale = Mathf.Min(widthScale, heightScale);
         // The authored 1740 x 980 proportions differ slightly from exact 16:9.
         // Absorb that small difference without separating the artwork from its controls.
@@ -273,7 +282,7 @@ public class JukeboxView : MonoBehaviour
         _sleeveBezel = cabinetContent.Find("SleeveBezel")?.gameObject;
         // The 21 added art pixels occupy 22 units in the 980-unit design.
         foreach (RectTransform child in cabinetContent)
-            if (child != cabinet.rectTransform)
+            if (child != cabinet.rectTransform && child.name!="PaperSpillRoot" && child.name!="OwnerDisplayRoot" && child.name!="CabinetClearedTop")
                 child.anchoredPosition += Vector2.down * CabinetDrop;
     }
 

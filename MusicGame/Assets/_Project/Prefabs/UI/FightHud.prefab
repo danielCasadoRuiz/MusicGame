@@ -921,6 +921,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StyleBlendButton
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  stretchMiddle: 0
+  accentFace: 0
   art: 0
   classicLayer: {fileID: 1591333130679580381}
   styleLayer: {fileID: 6338977214105186569}
@@ -2559,6 +2561,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StyleBlendButton
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  stretchMiddle: 0
+  accentFace: 0
   art: 0
   classicLayer: {fileID: 1375947018647817754}
   styleLayer: {fileID: 2247460238118109349}
@@ -8375,6 +8379,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4773378492601003171}
   - component: {fileID: 5232912336989549837}
+  - component: {fileID: 2105218971762937685}
   m_Layer: 0
   m_Name: FightHud
   m_TagString: Untagged
@@ -8459,6 +8464,19 @@ MonoBehaviour:
   jumpButton: {fileID: 4205824107738573244}
   jumpAction: {fileID: 4993247345188522192}
   jumpButtonLabel: {fileID: 2399450704292561566}
+--- !u!114 &2105218971762937685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5299204116565749546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32c8b07da76b9f342a85fa59ab23c395, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIStyleScope
+  domain: 2
 --- !u!1 &5335030581789748098
 GameObject:
   m_ObjectHideFlags: 0
@@ -11695,6 +11713,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StyleBlendButton
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
+  stretchMiddle: 0
+  accentFace: 0
   art: 0
   classicLayer: {fileID: 249689752072922929}
   styleLayer: {fileID: 3114449646308659499}
@@ -12937,15 +12957,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Fight.Paused
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
-  m_sharedMaterial: {fileID: -7326861909581889668, guid: d3cf3ad17c68fac4086ba4d68cf917cf, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
+  m_sharedMaterial: {fileID: -1737045903294810586, guid: f7d12f7cd2384974183ca906e7e7f58c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.953, g: 0.918, b: 0.827, a: 1}
+  m_fontColor: {r: 0.9843137, g: 0.7254902, b: 0.08627451, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -13034,6 +13054,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TitleText
   library: {fileID: 11400000, guid: eb317697e0474b241aeeda108d0004be, type: 2}
   tier: 1
+  songTextureInk: 0
+  gameplayStyle: 1
+  sizeMultiplier: 1
 --- !u!1 &9103074717460640802
 GameObject:
   m_ObjectHideFlags: 0

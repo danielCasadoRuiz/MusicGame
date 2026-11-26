@@ -33,9 +33,11 @@ Shader "MusicGame/UI/SongSelectionRim"
             fixed4 frag(output i):SV_Target
             {
                 float2 p=(i.uv-.5)*i.shape.xy;
-                p.x-=_Slant*p.y/max(1,2*i.shape.w);
+                float authoredSlant=i.shape.x-i.shape.y+2*i.shape.w-2*i.shape.z;
+                p.x-=authoredSlant*p.y/max(1,2*i.shape.w);
                 float2 q=abs(p)-i.shape.zw;
-                float d=length(max(q,0))+min(max(q.x,q.y),0);
+                float slope=authoredSlant/max(1,2*i.shape.w);
+                float d=max(q.x/sqrt(1+slope*slope),q.y);
                 float edge=1-smoothstep(.8,1.7,abs(d));
                 float inset=(1-smoothstep(.45,1.15,abs(d+4.2)))*.65;
                 float glow=exp(-pow(abs(d)/3.2,2))*.28;

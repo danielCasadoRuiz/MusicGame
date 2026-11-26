@@ -41,7 +41,7 @@ public static class SongShowcaseSetup
     }
     public static void ConfigureRow(GameObject root)
     {
-        var row=root.GetComponent<SongRowView>();row.showcase=true;
+        var row=root.GetComponent<SongRowView>();row.showcase=true;row.cardSlant=72;row.selectedScale=1.08f;
         var source=root.GetComponent<Image>();source.sprite=null;source.material=null;source.color=Color.clear;source.raycastTarget=false;
         var oldMesh=root.GetComponent<SongCardSurfaceMesh>();if(oldMesh!=null)oldMesh.enabled=false;
         var surface=root.transform.Find("CardSurface") as RectTransform;if(surface==null)surface=UIFactory.CreateRect("CardSurface",(RectTransform)root.transform);
@@ -71,6 +71,44 @@ public static class SongShowcaseSetup
         var rimMesh=artwork.GetComponent<SongNeonStroke>();if(rimMesh==null)rimMesh=artwork.gameObject.AddComponent<SongNeonStroke>();
         rimMesh.padding=10;rimMesh.slant=72;
     }
+    public static void ConfigureHeading(SongSelectionView view)
+    {
+        Box(view.titleText.rectTransform,0,15,1430,142);
+        view.titleText.alignment=TextAlignmentOptions.Center;
+        var title=view.titleText.GetComponent<TitleText>();title.songTextureInk=true;title.sizeMultiplier=1.15f;title.Apply();
+        var ivory=title.library.titleColor;
+        var ink=view.titleText.GetComponent<AppearanceText>();if(ink!=null){ink.day=ink.night=ivory;ink.Apply();}
+        // No shadow/underlay: contrast is decided by the text colour and its actual background.
+        view.titleText.fontSharedMaterial=title.library.titleFont.material;view.titleText.UpdateMeshPadding();
+    }
+    public static void ConfigureSelectedHeadline(SongSelectionView view)
+    {
+        var font=view.titleText.GetComponent<TitleText>().library.titleFont;
+        var placeholder=view.selectedCard.transform.Find("PlaceholderTitle")?.GetComponent<TextMeshProUGUI>();
+        foreach(var text in new[]{view.selectedSongText,placeholder})
+        {
+            if(text==null)continue;
+            text.font=font;text.fontSharedMaterial=font.material;
+            text.fontStyle=FontStyles.UpperCase;text.fontWeight=FontWeight.Regular;
+            text.enableAutoSizing=true;text.fontSize=216;text.fontSizeMax=216;text.fontSizeMin=62;
+              text.characterSpacing=-4.5f;text.textWrappingMode=TextWrappingModes.NoWrap;
+            text.UpdateMeshPadding();
+        }
+        var progress=view.selectedSongText.GetComponent<SongTitlePreviewProgress>();if(progress!=null)progress.nativeItalicAngle=15;
+    }
+    public static void CaptureUnifiedTypography()
+    {
+        Patch(SongSelectionSkinSetup.ScreenPath,root=>
+        {
+            var view=root.GetComponent<SongSelectionView>();ConfigureHeading(view);ConfigureSelectedHeadline(view);
+        });
+        AssetDatabase.SaveAssets();SongShowcaseReview.CaptureUnifiedTypography();
+    }
+    public static void CaptureHeadingComparison()
+    {
+        Patch(SongSelectionSkinSetup.ScreenPath,root=>ConfigureHeading(root.GetComponent<SongSelectionView>()));
+        AssetDatabase.SaveAssets();SongShowcaseReview.CaptureHeadingComparison();
+    }
     static void TextBox(TextMeshProUGUI text,float x,float y,float width,float height)
     {
         var rect=text.rectTransform;rect.anchorMin=new Vector2(0,1);rect.anchorMax=Vector2.one;rect.pivot=new Vector2(0,1);
@@ -82,8 +120,7 @@ public static class SongShowcaseSetup
     {
         var view=root.GetComponent<SongSelectionView>();var content=view.contentRoot;
         var showcase=root.GetComponent<SongSelectionShowcase>();if(showcase==null)showcase=root.AddComponent<SongSelectionShowcase>();showcase.view=view;
-        Box(view.titleText.rectTransform,0,21,1370,120);
-        view.titleText.alignment=TextAlignmentOptions.Center;
+        ConfigureHeading(view);
         var logo=content.Find("SkinLogo");
         if(logo==null)
         {
@@ -128,8 +165,7 @@ public static class SongShowcaseSetup
         view.selectedCard.transform.SetSiblingIndex(2);
         view.selectedSongText.transform.SetParent(view.selectedCard.transform,false);
         Box(view.selectedSongText.rectTransform,-246,34,1060,204);
-        view.selectedSongText.font=HeadlineFont();view.selectedSongText.fontStyle=FontStyles.Bold|FontStyles.Italic|FontStyles.UpperCase;view.selectedSongText.fontWeight=FontWeight.Bold;
-        view.selectedSongText.fontSize=216;view.selectedSongText.fontSizeMax=216;view.selectedSongText.fontSizeMin=62;view.selectedSongText.characterSpacing=0;
+        ConfigureSelectedHeadline(view);
         view.selectedSongText.alignment=TextAlignmentOptions.MidlineLeft;
         view.selectedTexture.GetComponent<SongCardSurfaceMesh>().slant=0;
         UIFactory.Stretch(view.selectedTexture.rectTransform);
@@ -199,7 +235,7 @@ public static class SongShowcaseSetup
         if(showcase.titleProgress==null)showcase.titleProgress=view.selectedSongText.gameObject.AddComponent<SongTitlePreviewProgress>();
         showcase.titleProgress.title=view.selectedSongText;
         showcase.titleProgress.progressShader=AssetDatabase.LoadAssetAtPath<Shader>("Assets/_Project/Shaders/SongTitleProgress.shader");
-        showcase.titleProgress.reviewPlaying=false;
+        showcase.titleProgress.reviewPlaying=false;showcase.titleProgress.nativeItalicAngle=12;
         view.previewProgressRoot.SetActive(false);
         var strings=LocalizationEditorSettings.GetStringTableCollection("UIText");
         foreach(var table in strings.StringTables)
@@ -226,6 +262,7 @@ public static class SongShowcaseSetup
         view.playButtonLabel.fontStyle=FontStyles.Bold|FontStyles.Italic;view.playButtonLabel.fontSize=48;
         view.backButtonLabel.fontStyle=FontStyles.Bold|FontStyles.Italic;view.backButtonLabel.fontSize=36;
         view.playYourSongLabel.fontStyle=FontStyles.Bold|FontStyles.Italic;view.playYourSongLabel.fontSize=28;
+        SongSelectionPolishSetup.ConfigureScreen(root);
     }
     static TextMeshProUGUI Placeholder(TextMeshProUGUI source,string name)
     {

@@ -268,7 +268,7 @@ public class GameplayHUD : MonoBehaviour
         if (lib != null)
         {
             float classic = StyleSkinLibrarySO.CurrentStyle() == GameMusicStyle.Classical ? 1 : 1 - lib.RunnerWeight(SongProgress);
-            _comboToast.color = Color.Lerp(lib.titleColor, lib.HudAccent(GameMusicStyle.Classical), classic);
+            _comboToast.color = Color.Lerp(UIStylePalette.ForStyle(lib,StyleSkinLibrarySO.CurrentStyle(),AppearancePreference.LightWeight), lib.HudAccent(GameMusicStyle.Classical), classic);
         }
         _comboToast.alpha = a;
         _comboToast.rectTransform.localScale = Vector3.one * (1 + .16f * (1 - Mathf.Clamp01(t / .18f)));

@@ -352,7 +352,7 @@ public static class SongSelectionSkinSetup
         foreach(var button in new[]{view.backButton,view.playButton})
             TempoFuryUISetup.SkinButton(button,button.GetComponentInChildren<TextMeshProUGUI>(true),background.library);
         Bottom((RectTransform)view.backButton.transform,-240,48,280,60);Bottom((RectTransform)view.playButton.transform,160,40,440,76);
-        var backGroup=view.backButton.GetComponent<CanvasGroup>();if(backGroup==null)backGroup=view.backButton.gameObject.AddComponent<CanvasGroup>();backGroup.alpha=.78f;
+        var backGroup=view.backButton.GetComponent<CanvasGroup>();if(backGroup==null)backGroup=view.backButton.gameObject.AddComponent<CanvasGroup>();backGroup.alpha=1;
         view.playAvailability=view.playButton.GetComponent<CanvasGroup>();if(view.playAvailability==null)view.playAvailability=view.playButton.gameObject.AddComponent<CanvasGroup>();
         Box(view.statusText.rectTransform,0,303,1540,16);view.statusText.fontSize=16;
         Bottom(streaming,0,26,1080,30);

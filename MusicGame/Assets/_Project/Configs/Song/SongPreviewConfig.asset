@@ -13,4 +13,91 @@ MonoBehaviour:
   m_Name: SongPreviewConfig
   m_EditorClassIdentifier: Assembly-CSharp::SongPreviewConfigSO
   defaultPreviewDuration: 30
-  songs: []
+  songs:  - songId: song_001
+    previewStartTime: 44.58
+    previewDuration: 30
+    gameplayStartTime: 21.08
+  - songId: song_002
+    previewStartTime: 33.1
+    previewDuration: 30
+    gameplayStartTime: 9.6
+  - songId: song_003
+    previewStartTime: 43.34
+    previewDuration: 30
+    gameplayStartTime: 19.84
+  - songId: song_004
+    previewStartTime: 60.36
+    previewDuration: 30
+    gameplayStartTime: 36.86
+  - songId: song_005
+    previewStartTime: 35.88
+    previewDuration: 30
+    gameplayStartTime: 12.38
+  - songId: song_006
+    previewStartTime: 44.24
+    previewDuration: 30
+    gameplayStartTime: 20.74
+  - songId: song_007
+    previewStartTime: 57.78
+    previewDuration: 30
+    gameplayStartTime: 34.28
+  - songId: song_008
+    previewStartTime: 56.34
+    previewDuration: 30
+    gameplayStartTime: 32.84
+  - songId: song_009
+    previewStartTime: 59.18
+    previewDuration: 30
+    gameplayStartTime: 35.68
+  - songId: song_010
+    previewStartTime: 69.58
+    previewDuration: 30
+    gameplayStartTime: 46.08
+  - songId: song_011
+    previewStartTime: 26.16
+    previewDuration: 30
+    gameplayStartTime: 2.66
+  - songId: song_012
+    previewStartTime: 64.28
+    previewDuration: 30
+    gameplayStartTime: 40.78
+  - songId: song_013
+    previewStartTime: 145.58
+    previewDuration: 30
+    gameplayStartTime: 122.08
+  - songId: song_014
+    previewStartTime: 30.42
+    previewDuration: 30
+    gameplayStartTime: 6.92
+  - songId: song_015
+    previewStartTime: 68.5
+    previewDuration: 30
+    gameplayStartTime: 45
+  - songId: song_016
+    previewStartTime: 24.12
+    previewDuration: 30
+    gameplayStartTime: 0.62
+  - songId: song_017
+    previewStartTime: 65.26
+    previewDuration: 30
+    gameplayStartTime: 41.76
+  - songId: song_018
+    previewStartTime: 70.86
+    previewDuration: 30
+    gameplayStartTime: 47.36
+  - songId: song_019
+    previewStartTime: 45.22
+    previewDuration: 30
+    gameplayStartTime: 21.72
+  - songId: song_020
+    previewStartTime: 43.34
+    previewDuration: 30
+    gameplayStartTime: 19.84
+  - songId: song_021
+    previewStartTime: 85.62
+    previewDuration: 30
+    gameplayStartTime: 62.12
+  - songId: song_022
+    previewStartTime: 42.34
+    previewDuration: 30
+    gameplayStartTime: 18.84

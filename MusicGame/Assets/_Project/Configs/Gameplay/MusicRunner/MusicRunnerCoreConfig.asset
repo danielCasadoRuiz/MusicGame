@@ -30,3 +30,8 @@ MonoBehaviour:
   checkpointMusicFadeInDuration: 0.8
   enableCheckpoints: 0
   checkpointIntervalSeconds: 60
+  useSongHighlights: 1
+  songHighlightDurationSeconds: 90
+  useManualPlayRange: 1
+  manualPlayRangeStartSeconds: 0
+  manualPlayRangeEndSeconds: 90

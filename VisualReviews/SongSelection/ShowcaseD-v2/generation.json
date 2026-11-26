@@ -1,0 +1,21 @@
+{
+  "mode": "Built-in image_gen",
+  "concept": {
+    "file": "concept-D-no-logo-plate.png",
+    "reference": "concept-D.png",
+    "final_prompt": "Edit this existing concept image with one precise change only: remove the navy angular rectangular/parallelogram plaque behind the TEMPO FURY logo in the upper-left corner, including its surrounding metallic outline. Continue the surrounding existing warm champagne brushed background naturally across the cleared area. Keep the TEMPO FURY logo itself at the same size and position, floating directly on the background; make its white lettering dark navy if needed for legibility on the now light background, retaining the hot pink underline. Preserve EVERYTHING else exactly: selected ZERO NINE stage, all text, palette, brushwork, waveform, thin progress bar, song card row and glowing selected card, filters, footer, spacing, and composition. No new panels, no other redesign."
+  },
+  "shared_mask": {
+    "file": "C:/Users/VISYON/Documents/MusicGame/MusicGame/Assets/_Project/Art/UI/SongCards/Shared/StageBrushMask.png",
+    "final_prompt": "Use case: ui-mockup. Generate ONE production-ready reusable alpha-mask sprite for a horizontal videogame selected-song banner, wide aspect about 3.5:1. Pure WHITE opaque paint on a genuinely TRANSPARENT background. A wide, substantial nearly rectangular horizontal band of coarse energetic brushed paint, with assertive 35-degree rising diagonal cuts and dragged scratch strokes at both far ends, ragged dry-brush top and bottom boundaries. Central 75% area MUST be fully opaque pure white, solid and smooth enough to contain text; scratches and alpha holes only near outside edges. Rough angular brushed edges, not torn paper, not smoke, not cloud, no rounded corners. A few long narrow diagonal dry-brush tails extend slightly beyond lower left and upper right, lively speed texture. No frame, no border, no text, no symbols, no objects, no grey canvas, no black background, no coloured paint, no shadow, no glow. Flat white silhouette with detailed transparent edge cutouts, usable as an alpha mask in a UI shader. Fill almost the whole canvas with small transparent margin; coherent compact broad banner silhouette. This is a utility asset that will reveal existing colourful scratched texture inside it; do not draw any image inside."
+  },
+  "font_source": "https://github.com/google/fonts/tree/main/ofl/barlow",
+  "font_license": "SIL Open Font License 1.1; copied beside the font sources",
+  "reference_comparison": {
+    "before": "unity-before.png",
+    "after": "Dance-light.png (Unity prefab render; review animation sample)",
+    "runtime_validation": "C:/Users/VISYON/Documents/MusicGame/song-selection-live-validation.txt",
+    "target": "concept-D-no-logo-plate.png",
+    "changes": ["Single integrated painted stage with shared mask and current skin art", "Cards overlap in front of the stage", "Stronger selected-card frame without oversized corner ornaments", "Headline and artist on separate lines", "Waveform and preview progress on the right", "Current-skin logo directly over the background"]
+  }
+}

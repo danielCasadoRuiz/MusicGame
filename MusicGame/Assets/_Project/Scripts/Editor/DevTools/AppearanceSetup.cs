@@ -105,6 +105,7 @@ public static class AppearanceSetup
         }
         selector.automatic=buttons[0];selector.lightButton=buttons[1];selector.dark=buttons[2];selector.Refresh();
         UIFactory.SetBox((RectTransform)view.closeButton.transform,new Vector2(.5f,0),new Vector2(.5f,0),new Vector2(.5f,0),new Vector2(0,24),new Vector2(220,48));
+        if(view.logo!=null&&view.logo.library!=null)SettingsDSetup.Configure(root);
     }
 
     public static void ConfigureScreen(GameObject root)

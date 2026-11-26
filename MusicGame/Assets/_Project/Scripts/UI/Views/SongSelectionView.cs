@@ -35,7 +35,7 @@ public class SongSelectionView : MonoBehaviour
         FitContent();
         if(playAvailability!=null)playAvailability.alpha=Mathf.MoveTowards(playAvailability.alpha,playButton.interactable?1f:.42f,Time.unscaledDeltaTime*3);
         var bg=GetComponent<FrontendStyleBackground>();float day=bg!=null?bg.InkLightWeight:0;
-        if(customSurface!=null&&bg!=null)
+        if(customSurface!=null&&customSurface.gameObject.activeSelf&&bg!=null)
         {
             SongStyleSurface.Palette(bg.library,bg.HomeStyle,out var from,out var to);
             float transition=Mathf.Min(1,Time.unscaledDeltaTime*8);
@@ -46,6 +46,7 @@ public class SongSelectionView : MonoBehaviour
             customSurface.Apply(Color.Lerp(customSurface.color,surface,transition),Color.Lerp(customSurface.EndColor,surface,transition),Color.Lerp(from,Color.black,.25f));
             playYourSongLabel.color=Color.Lerp(Color.white,bg.library.songNormalInk,night);
         }
+        playYourSongButton.GetComponent<StyleBlendButton>()?.SetBlend(bg.HomeStyle,1);
         if(selectedSongText!=null)selectedSongText.color=Color.Lerp(new Color(.98f,.96f,.88f),new Color(.08f,.1f,.15f),day);
         if(selectedCard!=null)selectedCard.gameObject.SetActive(!string.IsNullOrWhiteSpace(selectedSongText.text)||GetComponent<SongSelectionShowcase>()!=null);
         if(selectedAppearance!=null&&bg!=null)
